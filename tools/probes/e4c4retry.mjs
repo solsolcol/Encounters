@@ -341,6 +341,14 @@ if (MODE === 'button') {
   log('the fight ended:', JSON.stringify(kept), 'flicks', flicks);
   const sK = await savedNow();
   checks.wonSavedAtOnce = !!sK && /^kept/.test(sK.phase || '') && (await p.evaluate(() => window.__enc.loseHold() === null));
+  /* (the coordinator's case a) after the WIN, the page reloaded and Continue tapped: after the fight (the room kept, its
+     trance), never its start */
+  await p.reload({ waitUntil: 'load', timeout: 240000 });
+  checks.wonContinue = await boot('after-win');
+  const AW = await p.evaluate(() => { const E = window.__enc, q = E.kitDebug().event; return { phase: E.stage.info().phase, brief: !!q && q.kind === 'guard', held: E.loseHold() }; });
+  checks.wonContinueTrance = await until(() => window.__enc.getState() === 'cine', 600000);
+  log('after the win, reload and Continue:', JSON.stringify(AW), 'the trance', checks.wonContinueTrance);
+  checks.wonContinueAfterFight = AW.phase === 'kept' && !AW.brief && AW.held === null;
   /* the trance (skipped by its button), the decision, the ending, the card */
   let decided = false, carded = false;
   const tE = Date.now();

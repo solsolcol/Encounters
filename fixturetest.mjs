@@ -272,7 +272,10 @@ K.weaponGlowSeam = await p.evaluate(() => {
   R.breathes = /wpnBreath/.test(anim()) && /wpnGlow/.test(ring().animationName) && ring().content !== 'none';
   R.waterColour = /150, 225, 255/.test(ring().boxShadow);
   E.kit.sprayColor(0xffc24a);
-  R.goldColour = /255, 194, 74/.test(ring().boxShadow);
+  /* (the gold is the engine's own reading of the water's colour, three's linear values, as the button's border has it:
+     the light is read against the button's own --wg, never a typed number) */
+  { const wg = fb.style.getPropertyValue('--wg'); R.goldColour = !!wg && ring().boxShadow.includes(wg.split(',').map(Number).join(', '))
+      && !/150, 225, 255/.test(ring().boxShadow); }
   E.kit.sprayColor(null);
   R.colourBack = /150, 225, 255/.test(ring().boxShadow) && !fb.style.getPropertyValue('--wg');
   E.kit.weaponBlock('No.');

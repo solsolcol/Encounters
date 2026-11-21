@@ -281,8 +281,8 @@
          GOLD only where his light falls on it (the faces turned to his shoulders, near him: uNPho); its hue normal-blended;
          (3) ITS GLOW, a layer of its own: the back faces of a skin a hand's breadth out, added (never normal-blended), drawn
          only round its silhouette (the first draw hides the rest), brightest at its edge and gone a hand away. A light it
-         adds none (v9.4). uNA its strength (the fight's last stage keeps it at 0.3: under 0.5 the nearest-surface pass and
-         the glow stand aside, so a dim Naga hides nothing drawn after it), uNT its clock */
+         adds none (v9.4). uNA its strength (the fight's last stage keeps it at 0.3: under 0.5 its glow goes out and it is
+         drawn after everything else, so a dim Naga hides nothing behind it), uNT its clock */
       const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
@@ -298,7 +298,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
 `;
       SH5.vsBody = `#include <begin_vertex>
   #ifdef NAGA_GLOW
-    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0));
+    /* (as thick as the body is where it stands: thinned with it where it leaves the stick, or a glow of full width stood
+       round a thin body there as a pale sleeve, together-phone 5.8 on lab 5) */
+    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0) * (aReg < 1.5 ? smoothstep(0.0, 1.0, clamp(aO2 * uNKK * uNLen / 1.6, 0.0, 1.0)) : 1.0));
   #endif
   vNWp = (modelMatrix * vec4(transformed, 1.0)).xyz;
   vNWn = normalize(mat3(modelMatrix) * normal);
@@ -308,9 +310,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       SH5.fsHead = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
 varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
 `;
-      /* the nearest surface: depth only (and none at all while it is dim: a dim Naga hides nothing behind it) */
-      SH5.depth = `if (uNA < 0.5) discard;
-  gl_FragColor = vec4(0.0);`;
+      /* the nearest surface: depth only */
+      SH5.depth = `gl_FragColor = vec4(0.0);`;
       /* the body */
       SH5.body = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nFr = pow(1.0 - clamp(abs(dot(nN, nV)), 0.0, 1.0), uNLook.y);
@@ -489,9 +490,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              laid skin is its outside for the lens: drawn double-sided before, nothing showed which side was which) */
           if (st.along === 'z' && geo.index) { const X = geo.index.array; for (let t = 0; t < X.length; t += 3) { const s0 = X[t + 1]; X[t + 1] = X[t + 2]; X[t + 2] = s0; } }
           const mD = new THREE.Mesh(geo, nagaMat('depth')), mB = new THREE.Mesh(geo, nagaMat('body')), mG = new THREE.Mesh(geo, nagaMat('glow'));
-          /* (drawn after the court's own transparent things and its painted ground, and before the fight's effects and the
-             cage (renderOrder 3 and on), which the nearest surface then hides where the body stands in front of them) */
-          for (const [me, ro] of [[mD, 2.5], [mB, 2.6], [mG, 2.7]]) { me.frustumCulled = false; me.renderOrder = ro; g.add(me); }
+          /* (WHEN IT IS DRAWN, by its light. Bright (its film): after the court's own transparent things and its painted
+             ground, and before the cage and the fight's effects (renderOrder 3 and on), which its nearest surface then hides
+             where its body stands in front of them, and which stand over it where they are in front. Dim (under 0.5: the
+             fight's last stage keeps it at 0.3): LAST, so the effects of the fight behind it show through it and none is
+             cut out by a body nearly not there. Dim and drawn among them, only its front faces and nothing nearest, every
+             scale and fold of the crumpled model drew its own faint line: glass again, together-phone 26.8 on lab 4) */
+          for (const [me, lo, hi] of [[mD, 2.5, 9.5], [mB, 2.6, 9.6], [mG, 2.7, 9.7]]) { me.frustumCulled = false;
+            Object.defineProperty(me, 'renderOrder', { get: () => (U.uNA.value < 0.5 ? hi : lo), set: () => {}, configurable: true }); g.add(me); }
           st.mesh = mB; st.mat = mB.material; st.meshes = [mD, mB, mG];
           /* ITS EMBERS (the plan's 11: "embers rising"; the film's u5embers): forty sparks of its light, a fixed set (the same
              on every phone: the plan's 13), each rising from a point of its lying body (chosen once, seeded) a metre and a
@@ -504,17 +510,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             eg.setAttribute('aPh', new THREE.BufferAttribute(ph, 1)); eg.setAttribute('aSpd', new THREE.BufferAttribute(sp, 1)); owned.push(eg);
             const soft = (() => { const [c, x] = canvas(64, 64); const gd = x.createRadialGradient(32, 32, 1, 32, 32, 31);
               gd.addColorStop(0, 'rgba(255,255,255,1)'); gd.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gd.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gd; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
-            const em = new THREE.PointsMaterial({ map: soft, color: 0xff5530, size: 0.075, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(em);
+            const em = new THREE.PointsMaterial({ map: soft, color: 0xff6a3a, size: 0.11, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(em);
             em.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
               sh.vertexShader = 'attribute float aPh; attribute float aSpd; uniform float uNT; varying float vEA;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
                 float eC = fract(uNT * aSpd + aPh);
-                transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * 0.08, 1.35, cos(aPh * 4.1 + uNT * 1.1) * 0.08) * eC;
+                transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * (0.12 + 0.2 * aPh), 1.35, cos(aPh * 4.1 + uNT * 1.1) * (0.12 + 0.2 * fract(aPh * 3.7))) * eC;
                 vEA = (1.0 - eC) * (1.0 - eC) * smoothstep(0.0, 0.12, eC);`);
-              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.2, 0.6, uNA) );');
+              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.2, 0.6, uNA) * smoothstep(0.1, 0.6, uNGR) );');
               if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s embers found no colour line to write (three changed?)');
-              sh.fragmentShader = 'uniform float uNA; varying float vEA;\n' + out; };
+              sh.fragmentShader = 'uniform float uNA, uNGR; varying float vEA;\n' + out; };
             em.customProgramCacheKey = () => 'e4c5nagaEmbers';
-            const pts = new THREE.Points(eg, em); pts.frustumCulled = false; pts.renderOrder = 2.8; g.add(pts); st.emb = { ev, eg, pts }; }
+            const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => (U.uNA.value < 0.5 ? 9.8 : 2.8), set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
       }
@@ -543,7 +549,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* k: the head's place along the path (0 .. 1); a: its light; t: the scales' clock; (sx, sz): the stick's head; s:
            the body's thickness (the model's 0.78 m is laid at s of it) */
         set(k, a, t, sx, sz, s = 0.9) {
-          if (!st.ready || !(a > 0.001)) { g.visible = false; return; }
+          /* (hidden, it forgets its laying and its head, so nothing aimed at its head reads a head from another moment: a seek
+             back to before it rises found the head where a later moment had laid it) */
+          if (!st.ready || !(a > 0.001)) { g.visible = false; st.laid = ''; st.head = null; return; }
           g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
           if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
@@ -1151,7 +1159,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the court low under the trance; the smell of the tall shape until it comes apart */
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
         /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
-        const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
+        /* (the stick planted 0.38 m before him and 0.40 m to his right, FIGHT-IN's measure of the strike: at 0.42 and 0.18 the
+           place stood inside his body as his cast struck it down at 1.7 s, 1578 points of his trunk in the shaft; here it is
+           clear of his waist and in his hand's reach from his shoulder. Laid from here, none of the Naga is in a wall or the
+           house at 32 stick places) */
+        const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
         /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls (laid
            first in the frame: his look and the lens are aimed at its head as this moment lays it) */
         /* (its light comes down over the boom's last two seconds to the 0.3 the fight's last stage keeps it at: it had
@@ -1161,10 +1173,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
            one frame, on screen: R25) */
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
-          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
-          if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
+          /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops
+             there, its time going on at a twentieth (so he still lives), his hand on the stick as the Naga rises out of it;
+             then he is handed to his rest over 0.9 s. Played on, the cast's own step carried his hips 0.33 m to his right
+             and forward and his left arm across his front: into the planted stick, wherever his hand can plant it,
+             FIGHT-IN's scan of his whole skin, 1.5 to 4.3 s) */
+          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.6) / 0.9)), ct = Math.max(0, t - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
+          if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', t);
           if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 2.6)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (up at its head as it rises: R25)
+          fmGaze(P, t, [[0, () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (on the stick's head, then up at its head as it rises: R25)
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
@@ -1192,7 +1209,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            the high shot 3.8 m over the arch lost the head past a phone's edge as it reared at the east side; now the head
            stands within 0.82 of a phone's half-width from 9 s to 14.5 s, the body never nearer the high lens than 4.5 m.)
            The low eye is kept inside the court's walls wherever he stands */
-        const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 2.4);
+        /* (before it rises its head is the stick's head, where it will come out: the lens on the strike turns to it, and the
+           first laid head stands there; aimed up its path at 2.4 m, the lens swung to the empty wall over the strike and
+           jumped down to the stick's head as it rose, together-phone 1.9 on lab 5) */
+        const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
         const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },

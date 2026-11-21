@@ -36,8 +36,15 @@ const PLAN = {
   fire:  { take: 'mage_soell_cast_7', us: [...spanAt(0.45, 0.95, 0.28), ...spanAt(0.95, 2.20, 0.55).slice(1)], keys: [0.66, 0.95, 1.30] },
   gold:  { take: 'Charged_Spell_Cast', us: [...spanAt(0.50, 2.00, 1.5), ...spanAt(2.00, 2.60, 0.6).slice(1)], keys: [1.20, 1.88, 2.00] },
   bag:   { take: 'mage_soell_cast_8', us: spanAt(0.00, 0.40, 0.6), keys: [0.40] },
-  plant: { take: 'Charged_Spell_Cast_1', us: evenAt(0.0, 1.70), keys: [1.40, 1.70] }
+  plant: { take: 'Charged_Spell_Cast_1', us: evenAt(0.0, 1.70), keys: [1.40, 1.70] },
+  /* (his rest's other holds, the place moved: his walk's and his run's cycles) */
+  walk:  { take: 'Walking', us: evenAt(0.0, 1.0), keys: [0.25] },
+  run:   { take: 'Running', us: evenAt(0.0, 0.6), keys: [0.3] }
 };
+/* PLANTED=1: the film's planting done as TOGETHER does it (STICK5.plant at its place, PLACE='0.38,0.40': before him, to his
+   right) at 1.70 s of the cast: how far the stick moves and turns as it leaves his hand; then his hand kept on it there while
+   his cast plays (1.70 to 1.90 s), measured as every other moment */
+const PLACE = (process.env.PLACE || '0.38,0.40').split(',').map(Number);
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [], logs = [];
@@ -176,7 +183,26 @@ for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = []
     if (s.low < -0.005) bad.push(`stick ${s.low} under the paving`);
     if (s.feet.L < -0.01 || s.feet.R < -0.01) bad.push(`feet ${s.feet.L} ${s.feet.R}`);
     say(act, u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s.face, 'foot', s.foot[1], JSON.stringify(r.mv), JSON.stringify(r.R)); }
-  res.acts[act] = rows; }
+  res.acts[act] = rows;
+  if (act === 'plant' && process.env.PLANTED === '1') {
+    await pose(A.take, 1.70);
+    const jump = await p.evaluate((PL) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g = E.stage.things.nagaStaff, S5 = E.stage.films.STICK5;
+      g.updateWorldMatrix(true, false); const m0 = g.matrixWorld.clone(), V = g.position.constructor, Q = g.quaternion.constructor;
+      const ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), x = P.group.position.x, z = P.group.position.z;
+      S5.plant(x + fx * PL[0] - fz * PL[1], z + fz * PL[0] + fx * PL[1], ry); g.updateWorldMatrix(true, false);
+      const p0 = new V().setFromMatrixPosition(m0), p1 = new V().setFromMatrixPosition(g.matrixWorld), q0 = new Q().setFromRotationMatrix(m0), q1 = new Q().setFromRotationMatrix(g.matrixWorld);
+      return { moved: +p0.distanceTo(p1).toFixed(4), turned: +(2 * Math.acos(Math.min(1, Math.abs(q0.dot(q1)))) * 180 / Math.PI).toFixed(2), who: S5.who }; }, PLACE);
+    say('planted: the stick as it leaves his hand', JSON.stringify(jump)); res.plantJump = jump;
+    const held = [];
+    for (const u of [1.70, 1.75, 1.80, 1.85, 1.90]) { await pose(A.take, u); await frames(2); const r = await measure('planted@' + u); held.push(r);
+      const s2 = r.st, bad = [];
+      if (r.flags && r.flags.length) bad.push('joints ' + JSON.stringify(r.flags));
+      for (const f in s2.skin) if (f !== 'grip' && s2.skin[f].inside) bad.push(`skin ${f} ${s2.skin[f].inside} in, ${s2.skin[f].deep} cm at ${s2.skin[f].at} m`);
+      if (s2.face < restFace - 0.005) bad.push(`face ${s2.face} < rest ${restFace}`);
+      say('planted', u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s2.face, 'grip', JSON.stringify(s2.skin.grip), JSON.stringify(r.R)); }
+    res.acts.planted = held;
+    await p.evaluate(() => { const S5 = window.__enc.stage.films.STICK5; S5.to('pho'); }); await frames(3); }
+  }
 fs.writeFileSync(OUT + '/acts.json', JSON.stringify({ res, errs, logs }, null, 1));
 /* THE PICTURES: the fight's own lens first (the tag mode on), then his front and side (the mode left) */
 if (PICS) {
