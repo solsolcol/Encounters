@@ -1,0 +1,10 @@
+started image-to-3d nagastaff 01a1fad1-9e16-72a2-8ab5-46675a67428c
+  nagastaff IN_PROGRESS 1%
+  nagastaff IN_PROGRESS 10%
+  nagastaff IN_PROGRESS 45%
+  nagastaff IN_PROGRESS 53%
+  nagastaff IN_PROGRESS 58%
+  nagastaff IN_PROGRESS 80%
+  nagastaff IN_PROGRESS 99%
+  nagastaff SUCCEEDED 100%
+done nagastaff {'glb': 68103532} credits 40

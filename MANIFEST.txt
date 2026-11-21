@@ -1440,3 +1440,8 @@ d3d242f84f713673ea2ffe393a583cafe77f1cdc2aed0ebe5729a01d135b569f  masters/v27.0/
 e92eefbe87a2b3fbdfbc67ff90685b5b1f9955470bc2ba4c6d0a785e0febda30  masters/v27.0/src/wander-people.log
 41577be275f99c267d64fea2c1f2c3118a42b28e8d7d5d35581214268e7dca12  masters/v27.0/src/wander-rig.log
 8c10966797222f274264cc6ae043825868237b2b0c534c08d95bcc31231a2029  masters/v27.0/src/wander-takes.log
+e4414d909513e193fce477dd8215ecd2fb1cb32cebd4f2acbf66f72b1c4a752e  masters/v28.0/src/body-zavier4-40000.glb
+c43bb9cc489a288050835bceb8abad7ccbb921e960dfb3d864c4821898413a28  masters/v28.0/src/jobs.json
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v28.0/src/jobs.json.lock
+2a183811bd97545e4f7a3604a7b8de68ca3d40dfabc60e19dd34c9d91537dd02  masters/v28.0/src/nagastaff-model.log
+fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb

@@ -1,0 +1,226 @@
+{
+ "nagastaff": {
+  "credits": 40,
+  "expires_at": 1795468846080,
+  "image": "masters/v28.0/props/refs/nagastaff-a-2k.png",
+  "image_to_3d": "01a1fad1-9e16-72a2-8ab5-46675a67428c",
+  "remesh": {
+   "30000": "01a1fad8-c191-772b-ad99-4a1febd192cf"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "symmetry_mode": "off",
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68103532
+  }
+ },
+ "zavier": {
+  "credits": 40,
+  "expires_at": 1795468859685,
+  "image": "masters/v28.0/ref/zavier-a-2k.png",
+  "image_to_3d": "01a1fad1-8abc-701a-954a-da0a538b9722",
+  "remesh": {
+   "40000": "01a1fadb-b2de-736a-a089-418cf5833685"
+  },
+  "rig": "01a1fad8-70ea-70d4-8a99-31198f97e6be",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1fad1-8abc-701a-954a-da0a538b9722",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 82608944,
+   "walk": 82850596
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 78282680,
+   "pre": 10938280
+  }
+ },
+ "zavier2": {
+  "credits": 40,
+  "expires_at": 1795473470445,
+  "image": "masters/v28.0/ref/zavier-a2-2k.png",
+  "image_to_3d": "01a1fb17-af8d-74ef-9443-8c659a7ae9a0",
+  "remesh": {
+   "40000": "01a1fb1e-bf3c-760f-9a62-848653f78804"
+  },
+  "rig": "01a1fb1c-0c2b-7057-abe7-028cb85ce670",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1fb17-af8d-74ef-9443-8c659a7ae9a0",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 80910552,
+   "walk": 81151544
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 76301460,
+   "pre": 12372376
+  }
+ },
+ "zavier3": {
+  "credits": 40,
+  "expires_at": 1795474505162,
+  "image": "masters/v28.0/ref/zavier-a2-2k.png",
+  "image_to_3d": "01a1fb27-c9c3-7711-9c1b-5f2af89e5c0e",
+  "remesh": {
+   "40000": "01a1fb2e-3e83-776d-8459-0212c5726807"
+  },
+  "rig": "01a1fb2b-e7a4-75d8-a428-fd7ef92793f0",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1fb27-c9c3-7711-9c1b-5f2af89e5c0e",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72111100,
+   "walk": 72213944
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 67773156,
+   "pre": 11237988
+  }
+ },
+ "zavier3b": {
+  "image": "masters/v28.0/ref/zavier-a2-2k.png",
+  "image_to_3d": "01a1fb27-c9c3-7711-9c1b-5f2af89e5c0e",
+  "note": "the third body rigged a second time: its first rig came back with no finger bones (32 joints for 66)",
+  "rig": "01a1fb34-359b-73cc-a392-6b5f110fa0ed",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1fb27-c9c3-7711-9c1b-5f2af89e5c0e",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72111184,
+   "walk": 72214124
+  }
+ },
+ "zavier4": {
+  "credits": 40,
+  "expires_at": 1795475332777,
+  "image": "masters/v28.0/ref/zavier-a2-2k.png",
+  "image_to_3d": "01a1fb34-5aaf-76bb-a93e-b8db74645b31",
+  "remesh": {
+   "40000": "01a1fb3c-1e3d-70e3-9858-bd1702390164"
+  },
+  "rig": "01a1fb38-74a9-774b-8d83-96bfd5a80c18",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1fb34-5aaf-76bb-a93e-b8db74645b31",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 83311132,
+   "walk": 83552200
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 79352556,
+   "pre": 9831780
+  }
+ }
+}
