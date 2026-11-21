@@ -795,7 +795,7 @@
     place('w5clothtable', R.cx, 0, R.cz, 0, { name: 'clothtable', sz: 0.70 / 0.976 });
     solidXZ(R.cx - 0.66, R.cz - 0.40, R.cx + 0.66, R.cz + 0.40, 0.34);
     things.padcase = place('w5padcase', R.cx - 0.36, 0.34, R.cz - 0.05, 18 * DEG, { name: 'padcase', matte: true });
-    const SEAT = { pho: { x: R.cx, z: R.cz + 0.78 }, him: { x: R.cx, z: R.cz - 0.80 }, collector: { x: R.cx - 0.98, z: R.cz - 0.05 } };
+    const SEAT = { pho: { x: R.cx, z: R.cz + 0.78 }, him: { x: R.cx, z: R.cz - 0.80 }, collector: { x: R.cx - 1.23, z: R.cz - 0.05 } };   // (R25: 0.25 m west of where it was: seated there his knees crossed the cloth table's edge and the padded case, clipscan)
     place('w5cushion', SEAT.pho.x, 0, SEAT.pho.z, 0); place('w5cushion', SEAT.him.x, 0, SEAT.him.z, 0); place('w5cushion', SEAT.collector.x, 0, SEAT.collector.z, 0);
     place('w5altarshelf', R.cx, 1.55, R.z1 - 0.2, Math.PI, { name: 'altarshelf', wood: true });
     things.fan = place('w5ceilfan', R.cx, R.ceil - 0.52, R.cz, 0, { name: 'ceilfan' });
@@ -920,7 +920,7 @@
                /* (the PLAY helper's measure: from the spawn Ton must be in a phone's view, v12.3; each clears the balustrade (x 0.8),
                   the inner wall (x -0.95) and the others by 0.7 m or more) */
                pho: { x: 0.0, z: -3.2, ry: Math.PI }, ton: { x: -0.3, z: -2.0, ry: 0.13 }, jun: { x: 0.32, z: -2.35, ry: -0.12 },
-               koh: { x: -9.0, z: -4.4, ry: Math.PI } },
+               koh: { x: -9.6, z: -4.75, ry: Math.PI } },   // (R25: out of the sofa, between it and the shoe cabinet, the door's west side)
       hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
                pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
