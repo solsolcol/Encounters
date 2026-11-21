@@ -182,7 +182,8 @@
 #     the weave near each cuff; in the walk from behind a white hairline of 40 mm low on his left back and one along
 #     the hem (neither can be made out at the fight's distance on a phone).
 #   the near body only (drawn beyond 2.2 m): a tone seam of 25 mm down the chin and a flat, crumpled underside of the
-#     nose, both in Meshy's own remesh (photographed on the source); a faceted fold on the right cuff; and of the 82
+#     nose, both in Meshy's own remesh (photographed on the source). PHOTOGRAPHED FROM 2.2 m ON A PHONE'S FRAME (780 x
+#     1688, the game's 72 degrees: the nearest it is ever drawn), opened at its full size: neither can be made out; a faceted fold on the right cuff; and of the 82
 #     back-facing triangles measured before the fins came out (the largest 211 mm2 on his right side), those that are
 #     left were not photographed one by one.
 #   THE WALK'S HANDS: the rig's own walk carries the leading hand palm forward with straight, spread fingers (the bind
