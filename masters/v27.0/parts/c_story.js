@@ -403,8 +403,10 @@
     }
 
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
-    const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
-                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
+    const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4whisper',
+                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart',
+                        /* (R142: why the green ones come for her, said in the dark before the holy water) */
+                        'ph4k1', 'ph4k2', 'ph4k3', 'ph4k4',
                         'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
@@ -493,21 +495,20 @@
        stool for her chair, both bowls stand on it, its seat 0.445 m up, where they were on the floor at its foot: his large
        bowl on the seat's middle, and the small silver one resting in its water, its rim over the water (the seat is some
        0.29 m across, the large bowl 0.33 and the small 0.155: the two cannot stand side by side on it). Moved in the black
-       (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark, the press on the
-       small bowl and the dip's reach follow them, and the large bowl's column on the floor goes up with it */
-    const DIP_AT = { x: BOWL.x, z: BOWL.z }, SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
+       (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark and the press on the
+       small bowl follow them, and the large bowl's column on the floor goes up with it. (R141: nothing is filled again from
+       the large one now; it stands there as his bowl, gold through the vision: R62) */
+    const SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
     let waterLast = null;                                                // (R58: the water offered only in the blessing, once taken)
     const BOWLS_UP = { x: STOOL.x, z: STOOL.z, y: STOOL_TOP, small: { dx: 0.03, dz: -0.035, y: 0.097 } };
-    let bowlsUp = false;
     function bowlsOnStool(up) {
-      bowlsUp = !!up;
       const big = (things.w4bigbowl || [])[0], hs = STORY_SPOTS.find(h => h.id === 'water');
-      if (up) { DIP_AT.x = BOWLS_UP.x; DIP_AT.z = BOWLS_UP.z;
+      if (up) {
         Object.assign(SMALLBOWL_AT, { x: BOWLS_UP.x + BOWLS_UP.small.dx, y: BOWLS_UP.y + BOWLS_UP.small.y + 0.04, z: BOWLS_UP.z + BOWLS_UP.small.dz });
         if (big) big.position.set(BOWLS_UP.x, BOWLS_UP.y, BOWLS_UP.z);
         bowlOnFloor.position.set(BOWLS_UP.x + BOWLS_UP.small.dx, BOWLS_UP.y + BOWLS_UP.small.y, BOWLS_UP.z + BOWLS_UP.small.dz);
         if (bigBowlBox) bigBowlBox.set(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)); }
-      else { DIP_AT.x = BOWL.x; DIP_AT.z = BOWL.z; Object.assign(SMALLBOWL_AT, SMALLBOWL_FLOOR);
+      else { Object.assign(SMALLBOWL_AT, SMALLBOWL_FLOOR);
         if (big) big.position.set(BOWL.x, 0, BOWL.z);
         bowlOnFloor.position.set(SMALLBOWL_FLOOR.x, 0, SMALLBOWL_FLOOR.z);
         if (bigBowlBox && bigBowlBox0) bigBowlBox.copy(bigBowlBox0); }
@@ -967,7 +968,6 @@
       }
       fx('u4goldflick', 0.9, 0);
       if (n) { fx('u4goldclear', Math.min(1, 0.78 + 0.03 * n), 0); F.lastStrike = F.t; F.cleared += n; }
-      if (kit && kit.ammo) kit.ammo(DATA.weapon.rounds);       // (the golden water never runs dry: no dip in the swarm)
     }
     /* WATER THROWN AT APPA: he turns, looks at the student, and fades for the rest of the night (a price on the card,
        and his teacher's word after) */
@@ -1134,8 +1134,9 @@
          throughout the scene, tracing every item and silhouette similar to how the spirit vision works". Build 21: 14 m in
          3.2 s with a slow trail, so the room stays traced in gold while it fades: at 26 m in 2.6 s it crossed the room in a
          fifth of a second and was gone. Here, as it merges into the water, its second wave: the nova's, R109) */
-      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds);
-        if (kit.ammoInf) kit.ammoInf(true); }                                   // (R56: the count reads the infinity sign)
+      /* (R141: the water never runs out, so there is no count for R56's infinity sign to stand in: the gold is in the
+         edges of his sight, the water and its button) */
+      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); }
       if (!F.released) fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
          she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
@@ -1514,105 +1515,12 @@
     }
 
     /* ---------------------------------------------------------------- WHERE THE WATER GOES (the engine's shot path)
-       stage.shootables: what the lens's line may reach. The bowl in his hand is filled again from anywhere in the room (R133,
-       R136: a tap on the gold sign over his teacher's bowl, stage.reloadHits below, or R on a desktop), and nothing is
-       refused at her altar (R134, Chad, 20 Nov: "allow flicking water at the altar, instead of showing the 'not at her
-       altar' warning": the refusal and its words are gone) */
+       stage.shootables: what the lens's line may reach. Nothing is refused at her altar (R134, Chad, 20 Nov: "allow flicking
+       water at the altar, instead of showing the 'not at her altar' warning": the refusal and its words are gone). The
+       water never runs out (R141, 21 Nov: "completely and cleanly and safely remove the reload water mechanism"): the
+       weapon is the engine's `unlimited` (a_head.js), so the sign over his teacher's bowl (R127), its tap (R133), R (R136)
+       and the motes of a refill (R63) are gone with it */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
-    /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
-       flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
-       purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
-       bowl and fly, each on its own arc, to just under the middle of his sight, shrinking and fading as they reach him
-       (half a second; gold in his gold, the water's pale blue otherwise). On the wall clock, so a slow phone sees all of it;
-       drawn in the world and through the vision alike */
-    const DIPFX = { n: 18, secs: [0.42, 0.62], stagger: 0.012, arc: 0.28, size: [0.055, 0.018] };
-    const dipFx = { sprites: null, motes: [], t0: 0 };
-    function dipTex() {
-      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
-      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-    }
-    function dipBurst() {
-      if (!dipFx.sprites) { const tex = dipTex(); owned.push(tex); dipFx.sprites = [];
-        for (let i = 0; i < DIPFX.n; i++) { const m = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
-          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 30; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); dipFx.sprites.push(sp); } }
-      const F = play.fight, gold = !!(F && F.on && F.call === 'gold'), col = gold ? 0xffd27a : 0xbfe8ff, now = wallNow();
-      const y0 = (bowlsUp ? BOWLS_UP.y : 0) + 0.15;
-      dipFx.motes = dipFx.sprites.map((sp, i) => { const a = i * 2.39996, r = 0.03 + 0.09 * ((i * 0.618) % 1);
-        sp.material.color.set(col);
-        return { sp, t0: now + i * DIPFX.stagger, T: DIPFX.secs[0] + (DIPFX.secs[1] - DIPFX.secs[0]) * ((i * 0.37) % 1),
-          a: new THREE.Vector3(DIP_AT.x + Math.cos(a) * r, y0, DIP_AT.z + Math.sin(a) * r), jx: (((i * 0.71) % 1) - 0.5) * 0.12, jy: (((i * 0.43) % 1) - 0.5) * 0.06 }; });
-    }
-    const _dpE = new THREE.Vector3(), _dpF = new THREE.Vector3(), _dpU = new THREE.Vector3(), _dpR = new THREE.Vector3(), _dpP = new THREE.Vector3();
-    function dipFxTick() {
-      if (!dipFx.motes.length) return;
-      const now = wallNow(); let live = 0;
-      camera.updateMatrixWorld(); camera.getWorldPosition(_dpE); camera.getWorldDirection(_dpF);
-      _dpR.crossVectors(_dpF, THREE.Object3D.DEFAULT_UP).normalize(); _dpU.crossVectors(_dpR, _dpF).normalize();
-      for (const M of dipFx.motes) { const u = (now - M.t0) / M.T;
-        if (u < 0 || u >= 1) { M.sp.visible = false; if (u < 0) live++; continue; } live++;
-        const e = u * u * (3 - 2 * u);
-        _dpP.copy(_dpE).addScaledVector(_dpF, 0.42).addScaledVector(_dpU, -0.13 + M.jy).addScaledVector(_dpR, M.jx);   // (just under the middle of his sight)
-        M.sp.position.copy(M.a).lerp(_dpP, e); M.sp.position.y += DIPFX.arc * 4 * e * (1 - e);
-        const s = DIPFX.size[0] + (DIPFX.size[1] - DIPFX.size[0]) * e; M.sp.scale.setScalar(s);
-        M.sp.material.opacity = Math.min(1, u * 6) * (1 - Math.max(0, (u - 0.7) / 0.3)); M.sp.visible = true; }
-      if (!live) dipFx.motes = [];
-    }
-    /* (R127, Chad, 20 Nov: "add a slow bobbing floating reload icon floating on top of the holy water bowl, in the same yellow
-       golden colour as the bowl, so that the player know that is where to reload the water") THE PLACE TO DIP, MARKED: the
-       HUD's own reload sign (its DIP button's arrow round in a circle, the same drawing) floating over his teacher's large
-       bowl in the bowl's gold as his sight shows it (SPIRIT.bowl's 0xffc456, R62), with a dark edge so it reads on the
-       vision's pale negative too, rising and sinking slowly (3 cm either way, once in 2.8 s, on the wall clock), its middle
-       0.27 m over the bowl's rim. Shown in the fight while the water is his and can be filled there (never under the
-       showcase, nor in the gold, whose water never runs out), in play only, eased in and out over a third of a second; drawn
-       in the world and through the vision alike (both layers), over what stands before it (a mark, like the order's),
-       never lit, never fogged */
-    const DIPMARK = { size: 0.2, rim: 0.19, above: 0.27, bob: 0.03, period: 2.8, ease: 0.35 };
-    const dipMark = { sp: null, k: 0, last: 0 };     // (made with the world, hidden, so the curtain's warm compiles it: dipMarkMake below)
-    function dipMarkMake() {
-      const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
-      const u = 7.2, o = (S - 24 * u) / 2;                                 // (the HUD's 24-unit drawing, 173 px across, centred)
-      g.translate(o, o); g.scale(u, u); g.lineCap = 'round'; g.lineJoin = 'round';
-      const path = () => { g.beginPath(); g.arc(12, 12, 7, 0, Math.PI * 1.75, false); g.moveTo(19, 3); g.lineTo(19, 8); g.lineTo(14, 8); };
-      g.shadowColor = 'rgba(255,196,86,0.85)'; g.shadowBlur = 18; g.strokeStyle = 'rgba(58,36,6,0.92)'; g.lineWidth = 4.4; path(); g.stroke();
-      g.shadowBlur = 0; g.strokeStyle = '#ffc456'; g.lineWidth = 2.5; path(); g.stroke();
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; owned.push(t);
-      const m = new THREE.SpriteMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
-      mats.push(m);
-      const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 29; sp.scale.set(DIPMARK.size, DIPMARK.size, 1);
-      if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer);
-      world.add(sp); return sp;
-    }
-    dipMark.sp = dipMarkMake();
-    /* (R133, Chad, 20 Nov: "just allow the player to instantly reload the water by clicking on the floating reload icon
-       above the holy water bowl. Remove the reload button at the bottom of the screen."): THE SIGN IS THE REFILL. A tap on
-       it (or a click while the mouse is free) fills the bowl in his hand at once, wherever he stands (the engine's
-       weaponReloadTap asks here, then reloads as R does: the dip's sound, the motes from the big bowl to him). On the sign
-       while it is shown: inside its drawn size made half as large again, or a finger's width (34 px) of its middle,
-       whichever is larger, since three metres off it is some forty pixels across on a phone. On a desktop R reloads,
-       anywhere (R136, "on desktop just make it button 'r'"): under the mouse's lock a click stays the flick */
-    const RELOADTAP = { finger: 34, grow: 1.5 };
-    const _rhP = new THREE.Vector3(), _rhE = new THREE.Vector3();
-    function reloadHits(x, y) {
-      const sp = dipMark.sp; if (!sp || !sp.visible || dipMark.k < 0.5) return false;
-      camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); camera.getWorldPosition(_rhE);
-      sp.updateWorldMatrix(true, false); sp.getWorldPosition(_rhP);
-      const d = Math.max(0.05, _rhE.distanceTo(_rhP));
-      _rhP.project(camera);
-      if (!(_rhP.z > -1 && _rhP.z < 1)) return false;                      // (behind him, or past the far plane)
-      const vw = innerWidth, vh = innerHeight, sx = (_rhP.x + 1) / 2 * vw, sy = (1 - _rhP.y) / 2 * vh;
-      const half = (DIPMARK.size / 2) / (d * Math.tan(camera.fov * Math.PI / 360)) * (vh / 2);
-      return Math.hypot(x - sx, y - sy) <= Math.max(RELOADTAP.finger, half * RELOADTAP.grow);
-    }
-    function dipMarkTick() {
-      const F = play.fight, now = wallNow(), dt = dipMark.last ? Math.min(0.1, now - dipMark.last) : 0; dipMark.last = now;
-      const want = phase === 'bless' && play.water && !!(F && F.on) && F.call !== 'shown' && F.call !== 'gold' && getState() === 'play';
-      dipMark.k = want ? Math.min(1, dipMark.k + dt / DIPMARK.ease) : Math.max(0, dipMark.k - dt / DIPMARK.ease);
-      if (!dipMark.k) { if (dipMark.sp.visible) dipMark.sp.visible = false; return; }
-      const sp = dipMark.sp;
-      sp.position.set(DIP_AT.x, (bowlsUp ? BOWLS_UP.y : 0) + DIPMARK.rim + DIPMARK.above + DIPMARK.bob * Math.sin(now * Math.PI * 2 / DIPMARK.period), DIP_AT.z);
-      sp.material.opacity = dipMark.k * dipMark.k * (3 - 2 * dipMark.k); sp.visible = true;
-    }
     /* ---------------------------------------------------------------- the story's frame, its start and its reset */
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt);   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)

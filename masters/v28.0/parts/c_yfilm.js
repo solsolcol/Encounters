@@ -285,9 +285,9 @@
          the glow stand aside, so a dim Naga hides nothing drawn after it), uNT its clock */
       const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
-                  uNDeep: { value: new THREE.Color(0x5c0513) }, uNCol: { value: new THREE.Color(0xd0163a) }, uNRim: { value: new THREE.Color(0xff8a9c) },
-                  uNGlowC: { value: new THREE.Color(0xff2a4c) }, uNGold: { value: new THREE.Color(0xffc860) },
-                  uNLook: { value: new THREE.Vector4(0.56, 2.0, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
+                  uNDeep: { value: new THREE.Color(0x48040f) }, uNCol: { value: new THREE.Color(0xc2102e) }, uNRim: { value: new THREE.Color(0xff5c74) },
+                  uNGlowC: { value: new THREE.Color(0xff1e3c) }, uNGold: { value: new THREE.Color(0xffc860) },
+                  uNLook: { value: new THREE.Vector4(0.74, 2.4, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
       /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
          so the nearest surface and the body are the same depths to the bit */
@@ -330,14 +330,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   nCol = mix(nCol, uNRim, nFr);
   /* his light: gold on the faces turned to his shoulders, near him, and nowhere else */
   vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
-  float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.6, 3.0, nDl));
-  nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.85));
+  float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.6, 2.6, nDl));
+  nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.6));
   gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`;
       /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
       SH5.glow = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nK = clamp(-dot(nN, nV), 0.0, 1.0);
   vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
-  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.7 * nGk, 0.0, 0.7)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.45 * nGk, 0.0, 0.45)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
       function nagaMat(kind) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
           depthWrite: kind === 'depth', colorWrite: kind !== 'depth',
@@ -510,7 +510,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           T.set([_np.x, _np.y, _np.z, _nt.x, _nt.y, _nt.z, _nb.x, _nb.y, _nb.z, _nn.x, _nn.y, _nn.z], j * 12); }
         st.tab = T;
       }
-      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12), FRP = new Float32Array(12);
+      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12), FRP = new Float32Array(12), FRQ = new Float32Array(12);
       function frameAt(u, out) {
         const T = st.tab, x = Math.max(0, Math.min(1, u)) * TABN, j = Math.min(TABN - 1, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
         for (let q = 0; q < 12; q++) out[q] = T[a + q] + (T[b + q] - T[a + q]) * w;
@@ -526,20 +526,31 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
           if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
           /* THE LYING MIDDLE stretched from the stick's head to where the head has come (k), thin where it leaves the stick
-             (its first 1.6 m: it rises from a point; full-thick, it brushed his teacher's arm); THE HEAD carried along the
-             path ahead of that point FLAT (each slice of it pressed to the body's own height round the path) and RAISED, the
-             model's whole reared head and hood, over the last eighth of the way, where the path runs straight up the court's
-             east side; THE TAIL folded into the stick's head. All of it grows out of the stick over the first quarter of the
-             way, and nothing goes under the ground. Measured before it was drawn (tools: four stick places, every twentieth
-             of the way): no point of it in a wall or under the ground; a head carried whole round the path stood in the
-             west wall at its turns, up to 1.3 m (its hood leans with the path) */
-          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), hr = smo(c01((kk - 0.88) / 0.12)), arr = st.geo.attributes.position.array, n = arr.length / 3;
+             (its first 1.6 m: it rises from a point; full-thick, it brushed his teacher's arm); THE HEAD standing whole on
+             its leading point (below); THE TAIL folded into the stick's head. All of it grows out of the stick over the
+             first quarter of the way, and nothing goes under the ground (each point held at 1 cm over it). Measured again
+             with the file read whole (FILMS-2: before, the file was folded into two metres, see make()), every twentieth of
+             the way at 32 stick places (eight places over the court, each faced four ways): none of it in a wall or the
+             house */
+          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), arr = st.geo.attributes.position.array, n = arr.length / 3;
           U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr;
           /* (laid again only when its laying moves: once it lies whole, a frame changes its light and clock alone) */
-          const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5) + '|' + hr.toFixed(5);
+          const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5);
           if (st.laid === lk) return;
           st.laid = lk;
           const R = st.reg, O = st.off, B = st.base, cl = st.cl, LEN = st.len, alZ = st.along === 'z', T0 = frameAt(0, FRT), F = FR;
+          /* THE HEAD CARRIED WHOLE AND UPRIGHT (FILMS-2, with the file read whole at last: the "flat" head of the rewrite
+             was each slice of the reared neck and head pressed to the body's height round the path, a jagged wedge at the
+             body's front): the model's own reared neck, head and crest, rigid, standing on the body's leading point (where
+             the lying middle ends: the neck's foot is that slice), upright, and facing the way the path goes 4 m ahead
+             over the ground (the chord's way, so at a turn it already faces along the next side and never into a wall: at
+             1.9 m ahead it stood 0.3 m into the west wall as it came down to the north-west corner; at 4 m none of it is in
+             a wall or the house, every twentieth of the way, at 32 stick places, masters/v28.0 calc). It rises with the
+             body out of the stick, looks over the court from the top of its arch, comes down and goes round with its head
+             up, and stands at the end of the east side facing the house: always the Naga's own head, never a wedge */
+          const HA = frameAt(kk, FRH), HQ = frameAt(Math.min(1, kk + 4.5 * Math.max(gr, 0.05) / LEN), FRQ);
+          let hx = HQ[0] - HA[0], hz = HQ[2] - HA[2], hl = Math.hypot(hx, hz); if (hl < 1e-3) { hx = HA[3]; hz = HA[5]; hl = Math.hypot(hx, hz) || 1; } hx /= hl; hz /= hl;
+          st.head = [HA[0] + hx * 0.8 * gr, HA[1] + 1.6 * gr, HA[2] + hz * 0.8 * gr];
           /* (its normals turned with it: the model's (across, up, along) onto the path's (B, N, T), the along part scaled by
              the cross-section's scale over the middle's stretch along the path, as a stretched skin's normals are) */
           const NR = st.geo.attributes.normal.array, BN = st.bn, str = Math.max(0.05, kk * LEN / Math.max(1e-3, st.parts.ZH - st.parts.ZT));
@@ -550,11 +561,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp, na = ba * Math.max(0.02, gr * tp) / str;
               px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy;
               ex = F[3] * na + F[6] * bx + F[9] * by; ey = F[4] * na + F[7] * bx + F[10] * by; ez = F[5] * na + F[8] * bx + F[11] * by; }
-            else if (r === 2) { const b0 = cl.bin[i], c = alZ ? B[i * 3] : B[i * 3 + 2], fx = (c - cl.cx[b0]) * gr, fy = Math.max(-0.32, Math.min(0.32, B[i * 3 + 1] - cl.cy[b0])) * gr;
-              const xx = fx + (o0 * gr - fx) * hr, yy = fy + (o1 * gr - fy) * hr, uv = kk + o2 * gr / LEN, xa = uv > 1 ? (uv - 1) * LEN : 0;
-              frameAt(Math.min(1, uv), F);
-              px = F[0] + F[3] * xa + F[6] * xx + F[9] * yy; py = F[1] + F[4] * xa + F[7] * xx + F[10] * yy; pz = F[2] + F[5] * xa + F[8] * xx + F[11] * yy;
-              ex = F[3] * ba + F[6] * bx + F[9] * by; ey = F[4] * ba + F[7] * bx + F[10] * by; ez = F[5] * ba + F[8] * bx + F[11] * by; }
+            else if (r === 2) { /* (the model's across onto (-hz, 0, hx), its up onto the world's, its along onto (hx, 0, hz): the
+                 path's own B, N, T where the path lies level, so the neck's foot meets the body there exactly) */
+              px = HA[0] + (-hz * o0 + hx * o2) * gr; py = HA[1] + o1 * gr; pz = HA[2] + (hx * o0 + hz * o2) * gr;
+              ex = -hz * bx + hx * ba; ey = by; ez = hx * bx + hz * ba; }
             else { px = T0[0]; py = T0[1]; pz = T0[2]; ex = T0[3]; ey = T0[4]; ez = T0[5]; }
             arr[i * 3] = px; arr[i * 3 + 1] = Math.max(0.01, py); arr[i * 3 + 2] = pz;
             const el = Math.hypot(ex, ey, ez) || 1; NR[i * 3] = ex / el; NR[i * 3 + 1] = ey / el; NR[i * 3 + 2] = ez / el;
@@ -564,6 +574,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none); the faces turned to it go gold */
         light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
         ready: () => st.ready,
+        /* the middle of its head as last laid (a film aims at it: a pure function of the film's clock, as set() is), or null */
+        headAt: () => (st.ready && st.head ? st.head.slice() : null),
         /* (a probe's lab: its state, its draws; tools/probes/e4c5nagalab.mjs) */
         lab: () => Object.assign(st, { SH: SH5, U }),
         /* a place on its path `d` metres from the stick's head, where the films aim (the same path set() lays) */
@@ -1116,21 +1128,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
         /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
+        /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls (laid
+           first in the frame: his look and the lens are aimed at its head as this moment lays it) */
+        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3)));
+        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.set(kN, aN, t, sx, sz);
         /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
            one frame, on screen: R25) */
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
           if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, () => NAGA5.pointAtDist(sx, sz, 2.6)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (up its own path as it rises: R25)
+          fmGaze(P, t, [[0, () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 2.6)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (up at its head as it rises: R25)
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
         CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart });
         TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
-        /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls */
-        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3)));
-        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.set(kN, aN, t, sx, sz);
         /* the tall shape: the last three drawn together over him, leaning in; it comes apart into its three, and they sink
            low and lie where the fight's last stage finds them */
         const lay = F.laid.length === 3 ? F.laid : [courtWorld(-1.15, -0.8), courtWorld(0, -1.35), courtWorld(1.15, -0.8)];
@@ -1143,18 +1156,29 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         PRAI5.tick(0.016);
         /* Mr Koh, at the doorway behind the thread, at its end */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', t, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
-        /* THE LENS: the fight's picture; down low beside him as the Naga rises (the sky above the court, its head over
-           them); high over the court as its body closes round it; the shape coming apart; the doorway; the boom again */
-        const B0 = boomAt({ x: pz.x, z: pz.z });
+        /* THE LENS: the fight's picture; down low beside him, ON ITS HEAD as it rises out of the stick, looks over the court
+           from the top of its arch, comes down to the far corner and down the west side toward the lens; on the line's last
+           word a CUT to high over the gate end, over the walls' top, the whole court and its edge in a phone's frame as it
+           runs round, easing in toward the east side where its head stands facing the house; the shape coming apart; down
+           to the three; the doorway; the boom again. (FILMS-2, each key measured against the laid Naga before it was drawn:
+           its nearest point to the lens, its share of the frame and where its head stands on a phone and a desk. The crane
+           from beside him up through its rising body drew the column 1.8 m from the lens across half a phone's frame, and
+           the high shot 3.8 m over the arch lost the head past a phone's edge as it reared at the east side; now the head
+           stands within 0.82 of a phone's half-width from 9 s to 14.5 s, the body never nearer the high lens than 4.5 m.)
+           The low eye is kept inside the court's walls wherever he stands */
+        const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 2.4);
+        const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
-          /* (aimed at its own path, 2.4 and 5 m from the stick's head: it rises leaning toward the court's middle now, and
-             a fixed aim north of the stick could miss its body, R25) */
-          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: () => NAGA5.pointAtDist(sx, sz, 2.4), fp: 70, fd: 62 },
-          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: () => NAGA5.pointAtDist(sx, sz, 5.0), fp: 72, fd: 64 },
-          { t: T.lay + 2.2, name: 'high', eye: [COURT5.x + 0.4, 7.6, COURT.z0 + 1.3], at: [COURT5.x, 0.2, (COURT.z0 + HOUSE.face) / 2 + 0.6], fp: 66, fd: 58 },
-          { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.2, 6.8, COURT.z0 + 1.6], at: [zz.x, 0.6, zz.z + 0.6], fp: 62, fd: 54 },
+          { t: T.rise + 0.3, name: 'low', eye: LOWEYE([pz.x - 1.2, 0.9, pz.z - 1.4]), at: HEADAT, fp: 70, fd: 62 },
+          { t: T.ph5c2 + 0.6, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 72, fd: 64 },
+          { t: T.lay - 0.65, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 72, fd: 64 },
+          { t: T.lay - 0.6, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.0, -9.0], fp: 66, fd: 56, cut: true },
+          { t: T.lay + 1.4, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.0, -9.0], fp: 66, fd: 56 },
+          { t: T.lay + 3.0, name: 'high', eye: [COURT5.x + 0.1, 8.6, COURT.z0 + 0.4], at: [COURT5.x + 0.4, 0.2, -8.9], fp: 64, fd: 54 },
+          { t: T.apart - 1.1, name: 'high', eye: [COURT5.x + 0.2, 8.0, COURT.z0 + 0.6], at: [COURT5.x + 0.55, 0.4, -8.8], fp: 62, fd: 53 },
+          { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.5, 6.6, COURT.z0 + 1.0], at: [zz.x + 0.2, 0.6, zz.z + 0.5], fp: 60, fd: 52 },
           { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },

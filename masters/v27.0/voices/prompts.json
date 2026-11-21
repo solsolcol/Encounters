@@ -168,6 +168,34 @@
   "prompt": "[gentle] Please light her lamp. Let her goddess see what we do."
  },
  {
+  "key": "ph4k1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Over many years, Amma served as Mae Kali's medium. She helped many people."
+ },
+ {
+  "key": "ph4k2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] In helping them, she involved herself in their karma."
+ },
+ {
+  "key": "ph4k3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Sometimes, after she helped someone, their karmic creditors came after her instead."
+ },
+ {
+  "key": "ph4k4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Their karmic debt is still unresolved. That is why the green spirits are going after Amma."
+ },
+ {
   "key": "ph4b1",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",

@@ -44,6 +44,15 @@ LINES = [
     ('ph4s4', 'pho', 'play, the sight', "I will bless her, and release the spirit on her back. Take the holy water, and keep the green spirits away from her."),
     # ---- play III, the blessing (§4.3)
     ('ph4b0', 'pho', 'play, the blessing', "Please light her lamp. Let her goddess see what we do."),
+    # (Chad, 21 Nov, R142: "I want grandmaster pho to give more context and explanation on why the green spirits are going
+    # after amma ... This should be explained at the most appropriate time before the holy water fight starts.": said in
+    # the dark, once her lamp is lit and the room has died, before he takes the holy water. Written from his words; two
+    # corrections said to him: "Mae Kali's medium" (his teacher's own name for her goddess, as ph4s3) and the third line
+    # in the past, "helped" and "came" (she stopped serving when Appa passed))
+    ('ph4k1', 'pho', 'play, the blessing: in the dark, before the holy water (R142)', "Over many years, Amma served as Mae Kali's medium. She helped many people."),
+    ('ph4k2', 'pho', 'play, the blessing: in the dark, before the holy water (R142)', "In helping them, she involved herself in their karma."),
+    ('ph4k3', 'pho', 'play, the blessing: in the dark, before the holy water (R142)', "Sometimes, after she helped someone, their karmic creditors came after her instead."),
+    ('ph4k4', 'pho', 'play, the blessing: in the dark, before the holy water (R142)', "Their karmic debt is still unresolved. That is why the green spirits are going after Amma."),
     ('ph4b1', 'pho', 'play, the blessing', "I am closing your Spirit Vision. Breathe."),
     ('ph4b2', 'pho', 'play, the blessing', "Not him. The pale blue spirit is her husband. Only flick the holy water at the green spirits."),
     # (Chad, 18 Nov: "If the player gets out of spirit vision for too long and is not doing anything to chase the green spirits

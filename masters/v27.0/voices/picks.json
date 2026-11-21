@@ -3541,5 +3541,221 @@
     "heard": "You're losing control, close your Spirit Vision, and re -open it again."
    }
   }
+ },
+ "ph4k1": {
+  "who": "pho",
+  "text": "[calm] Over many years, Amma served as Mae Kali's medium. She helped many people.",
+  "pick": "b",
+  "why": "the unhurried read",
+  "med": 5.82,
+  "takes": {
+   "a": {
+    "len": 5.84,
+    "first": 0.0,
+    "last": 5.46,
+    "e_first": 0.0,
+    "e_last": 5.82,
+    "tail_db": -37.8,
+    "tail_rel": -23.8,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.23,
+    "heard": "Over many years, Amma served as Mae Kali's medium. She helped many people."
+   },
+   "b": {
+    "len": 6.08,
+    "first": 0.0,
+    "last": 5.84,
+    "e_first": 0.18,
+    "e_last": 6.06,
+    "tail_db": -26.0,
+    "tail_rel": -11.2,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.21,
+    "heard": "Over many years, Amma served as Mae Kali's medium. She helped many people."
+   },
+   "c": {
+    "len": 5.92,
+    "first": 0.0,
+    "last": 5.66,
+    "e_first": 0.18,
+    "e_last": 5.9,
+    "tail_db": -24.9,
+    "tail_rel": -10.7,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.27,
+    "heard": "Over many years, Amma served as Mae Kali's medium. She helped many people."
+   }
+  }
+ },
+ "ph4k2": {
+  "who": "pho",
+  "text": "[serious] In helping them, she involved herself in their karma.",
+  "pick": "a",
+  "why": "the unhurried read",
+  "med": 3.6,
+  "takes": {
+   "a": {
+    "len": 5.2,
+    "first": 0.0,
+    "last": 3.62,
+    "e_first": 0.1,
+    "e_last": 3.82,
+    "tail_db": -37.0,
+    "tail_rel": -21.4,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.42,
+    "heard": "In helping them, she involved herself in their karma."
+   },
+   "b": {
+    "len": 3.68,
+    "first": 0.0,
+    "last": 3.4,
+    "e_first": 0.06,
+    "e_last": 3.66,
+    "tail_db": -37.2,
+    "tail_rel": -22.8,
+    "hole": 0.4,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.5,
+    "heard": "In helping them, she involved herself in their karma."
+   },
+   "c": {
+    "len": 3.44,
+    "first": 0.0,
+    "last": 3.22,
+    "e_first": 0.12,
+    "e_last": 3.42,
+    "tail_db": -31.7,
+    "tail_rel": -17.5,
+    "hole": 0.28,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.73,
+    "heard": "In helping them, she involved herself in their karma."
+   }
+  }
+ },
+ "ph4k3": {
+  "who": "pho",
+  "text": "[serious] Sometimes, after she helped someone, their karmic creditors came after her instead.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 5.88,
+  "takes": {
+   "a": {
+    "len": 6.0,
+    "first": 0.0,
+    "last": 5.74,
+    "e_first": 0.0,
+    "e_last": 5.88,
+    "tail_db": -34.1,
+    "tail_rel": -20.1,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.04,
+    "heard": "Sometimes, after she helped someone, their karmic creditors came after her instead."
+   },
+   "b": {
+    "len": 6.48,
+    "first": 0.0,
+    "last": 5.44,
+    "e_first": 0.06,
+    "e_last": 5.62,
+    "tail_db": -36.9,
+    "tail_rel": -23.2,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.16,
+    "heard": "Sometimes, after she helped someone, their karmic creditors came after her instead."
+   },
+   "c": {
+    "len": 6.0,
+    "first": 0.0,
+    "last": 5.74,
+    "e_first": 0.08,
+    "e_last": 5.98,
+    "tail_db": -48.0,
+    "tail_rel": -34.4,
+    "hole": 0.5,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.03,
+    "heard": "Sometimes, after she helped someone, their karmic creditors came after her instead."
+   }
+  }
+ },
+ "ph4k4": {
+  "who": "pho",
+  "text": "[serious] Their karmic debt is still unresolved. That is why the green spirits are going after Amma.",
+  "pick": "c",
+  "why": "the only clean and whole take",
+  "med": 6.1,
+  "takes": {
+   "a": {
+    "len": 5.68,
+    "first": 0.0,
+    "last": 5.6,
+    "e_first": 0.0,
+    "e_last": 5.66,
+    "tail_db": -23.4,
+    "tail_rel": -10.0,
+    "hole": 0.9,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.83,
+    "heard": "Their karmic debt is still unresolved. That is why the green spirits are going after Amma."
+   },
+   "b": {
+    "len": 6.24,
+    "first": 0.0,
+    "last": 6.14,
+    "e_first": 0.06,
+    "e_last": 6.22,
+    "tail_db": -25.4,
+    "tail_rel": -10.9,
+    "hole": 0.68,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.6,
+    "heard": "Their karmic debt is still unresolved. That is why the green spirits are going after Amma."
+   },
+   "c": {
+    "len": 6.16,
+    "first": 0.0,
+    "last": 6.06,
+    "e_first": 0.04,
+    "e_last": 6.14,
+    "tail_db": -30.1,
+    "tail_rel": -18.2,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.62,
+    "heard": "Their karmic debt is still unresolved. That is why the green spirits are going after Amma."
+   }
+  }
  }
 }

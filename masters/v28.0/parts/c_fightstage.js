@@ -1633,9 +1633,15 @@
         const walk = Math.min(1, (w.Walking || 0) + (w.Running || 0));
         /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear;
            in an act, its move from there) */
-        const m = moveOf(P);
+        const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
         const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
+        /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
+           rises from its head under his hand) */
+        if (planted) { const g = things.nagaStaff; g.updateWorldMatrix(true, false);
+          Ct.set(STICK_C[0], STICK_Y + 0.004, STICK_C[1]).applyMatrix4(g.matrixWorld);
+          up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); front.setFromMatrixColumn(g.matrixWorld, 0).normalize().negate(); }
+        else {
         /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it; in his own frame) */
         if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fz = front.z;
           front.set(fx * cl, sl, fz * cl).normalize(); up.set(-fx * sl, cl, -fz * sl).normalize(); }
@@ -1645,7 +1651,7 @@
         if (m.tip) { const c = Math.cos(m.tip), s = Math.sin(m.tip);
           for (const v of [up, front]) v.set(v.x, v.y * c - v.z * s, v.y * s + v.z * c); }
         up.applyQuaternion(_sq).normalize(); front.applyQuaternion(_sq).normalize();
-        keepClear(P, Ct, up, m.w);
+        keepClear(P, Ct, up, m.w * (MOVES[m.take] && MOVES[m.take].plant ? 1 - Math.max(0, Math.min(1, (m.u - 1.5) / 0.2)) : 1)); }
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
@@ -1663,13 +1669,20 @@
           _sq.copy(a.hand.quaternion); a.hand.quaternion.copy(_keep[2]).slerp(_sq, share); a.up.updateWorldMatrix(false, true); }
         wroteArm = [a.up.quaternion.clone(), a.fore.quaternion.clone(), a.hand.quaternion.clone()];
       }
+      /* (the planted stick is still under his hand while his planting cast plays and it stands within his reach: the Naga's film
+         hands him back to his rest from 3.9 s of it, and his hand comes off it as it does) */
+      const _hp = V();
+      function heldPlanted(P) { const A = P.acts && P.acts.Charged_Spell_Cast_1; if (!A || !((P.w || {}).Charged_Spell_Cast_1 > 0.5)) return false;
+        const a = armsOf(P) && armsOf(P).R; if (!a) return false; a.up.getWorldPosition(_hp); const g = things.nagaStaff; g.updateWorldMatrix(true, false);
+        _sf.set(STICK_C[0], STICK_Y, STICK_C[1]).applyMatrix4(g.matrixWorld); return _sf.distanceTo(_hp) < 0.62; }
       const hook = new THREE.Object3D(); hook.name = 'his grip on the Naga stick';
       hook.updateMatrixWorld = function (force) {
         const P = cast.pho;
         try {
           const now = performance.now(), dt = lastNow ? Math.min(0.1, (now - lastNow) / 1000) : 0;
           if (now - lastNow > 1) { lastNow = now;
-            const holding = !!(P && P.ready && typeof STICK5 === 'object' && STICK5.who === 'pho' && things.nagaStaff && things.nagaStaff.visible && P.group.visible);
+            const holding = !!(P && P.ready && typeof STICK5 === 'object' && things.nagaStaff && things.nagaStaff.visible && P.group.visible &&
+                                 (STICK5.who === 'pho' || (STICK5.who === 'planted' && heldPlanted(P))));
             k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
           if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }

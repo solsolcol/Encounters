@@ -60,30 +60,37 @@ await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.ki
    between 2 cm and 1.45 m up laid on a 2 cm grid of the paving in his own frame; for each place on a 5 cm grid, how near his
    body comes to the stick's line standing there (its shaft's middle 8 cm behind it, as the grip holds it), and how far his
    right shoulder is at 1.7 s from where his fist would be to strike it down there */
-if (process.env.PLANTSCAN === '1') {
+if (process.env.PLANTSCAN === '1' || process.env.PLANTSCAN === '2') {
+  /* (PLANTSCAN=2: his right arm left out (it holds the planted stick until his cast is done), his right shoulder read at every
+     moment, and the reach from it to where his fist holds the stick taken at each, from 1.7 s to 4.2 s) */
+  const NOARM = process.env.PLANTSCAN === '2', shs = [];
   const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
   const occ = new Set(); let sh17 = null;
   for (let u = 1.5; u <= 4.301; u += 0.1) { await pose('Charged_Spell_Cast_1', +u.toFixed(2));
-    const r = await p.evaluate((u) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor; P.group.updateWorldMatrix(true, true);
+    const r = await p.evaluate(([u, NOARM]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor; P.group.updateWorldMatrix(true, true);
       const cells = new Set(), v = new V();
       P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return; let vis = true; for (let q = o; q; q = q.parent) if (!q.visible) vis = false; if (!vis) return;
-        const n = o.geometry.attributes.position.count; for (let i = 0; i < n; i += 10) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); P.group.worldToLocal(v);
+        const A = o.geometry.attributes, si = A.skinIndex, sw = A.skinWeight, arm = o.skeleton.bones.map(b => /Right(Fore)?Arm$|RightHand/.test(b.name));
+        const n = A.position.count; for (let i = 0; i < n; i += 10) {
+          if (NOARM) { let bw = 0, bi = -1; for (let q = 0; q < 4; q++) { const w = sw.getComponent(i, q); if (w > bw) { bw = w; bi = si.getComponent(i, q); } } if (bi >= 0 && arm[bi]) continue; }
+          o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); P.group.worldToLocal(v);
           if (v.y < 0.02 || v.y > 1.45) continue; cells.add(Math.round(v.x / 0.02) + ',' + Math.round(v.z / 0.02)); } });
-      let sh = null; if (Math.abs(u - 1.7) < 0.01) { for (const n in P.bone) if (/^(mixamorig:?)?RightArm$/.test(n)) { sh = P.bone[n].getWorldPosition(new V()); P.group.worldToLocal(sh); sh = sh.toArray(); } }
-      return { cells: [...cells], sh }; }, +u.toFixed(2));
-    for (const c of r.cells) occ.add(c); if (r.sh) sh17 = r.sh; }
+      let sh = null; for (const n in P.bone) if (/^(mixamorig:?)?RightArm$/.test(n)) { sh = P.bone[n].getWorldPosition(new V()); P.group.worldToLocal(sh); sh = sh.toArray(); }
+      return { cells: [...cells], sh }; }, [+u.toFixed(2), NOARM]);
+    for (const c of r.cells) occ.add(c); if (Math.abs(u - 1.7) < 0.01) sh17 = r.sh; if (u >= 1.69 && u <= 4.21) shs.push(r.sh); }
   const pts = [...occ].map(c => c.split(',').map(n => +n * 0.02));
   const out = Math.PI / 2 - 15 * Math.PI / 180, cx = 0.082 * Math.cos(out) - 0.003 * Math.sin(out), cz = -0.082 * Math.sin(out) - 0.003 * Math.cos(out);
   const cand = [];
   for (let x = -0.95; x <= 0.5; x += 0.05) for (let z = -0.3; z <= 1.4; z += 0.05) {
     const sx = x + cx, sz = z + cz; let d = 9; for (const [px, pz] of pts) { const e = Math.hypot(px - sx, pz - sz); if (e < d) d = e; }
     const reach = sh17 ? Math.hypot(sx - sh17[0], 1.074 - sh17[1], sz - sh17[2]) : null;
-    cand.push({ at: [+x.toFixed(2), +z.toFixed(2)], clear: +d.toFixed(3), reach: reach != null ? +reach.toFixed(3) : null }); }
+    let rlo = 9, rhi = 0; if (NOARM) for (const h of shs) { const e = Math.hypot(sx - h[0], 1.074 - h[1], sz - h[2]); rlo = Math.min(rlo, e); rhi = Math.max(rhi, e); }
+    cand.push({ at: [+x.toFixed(2), +z.toFixed(2)], clear: +d.toFixed(3), reach: reach != null ? +reach.toFixed(3) : null, held: NOARM ? [+rlo.toFixed(3), +rhi.toFixed(3)] : null }); }
   const film = cand.find(c => Math.abs(c.at[0] + 0.2) < 0.03 && Math.abs(c.at[1] - 0.4) < 0.03);
-  const best = cand.filter(c => c.reach != null && c.reach <= 0.52).sort((a, b) => b.clear - a.clear).slice(0, 15);
+  const best = cand.filter(c => c.reach != null && c.reach <= 0.52 && (!c.held || (c.held[0] >= 0.22 && c.held[1] <= 0.55))).sort((a, b) => b.clear - a.clear).slice(0, 15);
   say('plantscan shoulder@1.7', JSON.stringify(sh17), 'the film\'s place (-0.18, 0.42) near:', JSON.stringify(film));
   say('plantscan best within reach', JSON.stringify(best));
-  fs.writeFileSync(OUT + '/plantscan.json', JSON.stringify({ sh17, cand }, null, 0));
+  fs.writeFileSync(OUT + '/plantscan.json', JSON.stringify({ sh17, shs, cand }, null, 0));
   await pose(null, 0); }
 if (process.env.GRIP !== '0') say('grip on', await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.gripOn ? L.gripOn() : 'no gripOn'; }));
 if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));

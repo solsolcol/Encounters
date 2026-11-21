@@ -183,23 +183,19 @@
               heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
-       right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
+       right hand's fingers a press; the HUD says the chapter's words */
+    /* (R141, Chad, 21 Nov 2026: "completely and cleanly and safely remove the reload water mechanism on both desktop and
+       mobile, as some players have given feedback that it makes the game too hard without adding any gameplay depth"):
+       THE WATER NEVER RUNS OUT. The weapon is the engine's `unlimited` (v13.0's: no count, no reload button, R and every
+       refill a no-op, no flick ever dry), so there is nothing to fill again and nothing that says so: the sign over his
+       teacher's bowl and its tap (R127, R133), R (R136), the motes of the refill (R63), the dry flick's words (R57) and the
+       dip's sound are gone. The bowl still glows gold through his sight (R62: his blessed water) */
     /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
        until then the hands are his own and empty (an item-less weapon is always out) */
-    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger, and slightly increase the amount of times the water can be
-       flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
-       flick now reaches: c_story.js onShot) */
-    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
-              /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
-                 message asking the player to reload the water.") */
-              /* (R133, R136) the words said on a dry flick are the chapter's own, on the sheet (words.waterEmpty for a mouse and
-                 keyboard, waterEmptyTouch for a touch screen), laid in below */
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
-              /* (R133, Chad, 20 Nov: "Remove the reload button at the bottom of the screen." and "instantly reload the water"):
-                 no reload button (main.js `reloadButton`; the sign over his teacher's bowl is the refill, c_story.js
-                 reloadHits, and R on a desktop), and the dip takes no time: nothing is drawn of it (view: false below), so a
-                 dip's 1.6 s would only have held the next flick back */
-              reloadButton: false, dipSecs: [0, 0, 0],
+    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger": the drops thrown wider, as wide as what a flick now
+       reaches: c_story.js onShot) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', unlimited: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
+              words: { fire: 'FLICK' }, shot: 'u4flick',
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
               icon: 'spray',
@@ -274,14 +270,12 @@
       objHold: 'Keep the green spirits away from Amma by using the holy water.',
       guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
-         read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
+         read natural, direct and straightforward."; the button shows water now, not the word FLICK) */
       /* (19 Nov, R96: its sentence on the strain, approved by Chad as written, after the sentence on Spirit Vision) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Tap the gold icon above the holy water bowl to reload. If her bar runs out, the blessing fails.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Press R to reload. If her bar runs out, the blessing fails.',
-      /* (R133, R136) said under the reticle on a dry flick (the engine's weapon words, laid in below the chapter): on a touch
-         screen the gold sign over the bowl is the refill, with a mouse and keyboard R */
-      waterEmpty: 'Out of holy water. Press R to reload.',
-      waterEmptyTouch: 'Out of holy water. Tap the gold icon above the holy water bowl.',
+      /* (R141, 21 Nov: the water never runs out, so the sentence on reloading is gone from both: "Tap the gold icon above the
+         holy water bowl to reload." and "Press R to reload.") */
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
@@ -302,6 +296,3 @@
     },
     sayPrefix: 'q4'
   };
-  /* (R133, R136) the water's dry-flick words are the chapter's own words (so they are on the sheet): the weapon says them */
-  DATA.weapon.words.empty = DATA.words.waterEmpty;
-  DATA.weapon.words.emptyTouch = DATA.words.waterEmptyTouch;

@@ -22,6 +22,10 @@ TAGS = {
     # the blessing
     'ph4b0': 'gentle', 'ph4b1': 'calm', 'ph4b2': 'serious', 'ph4b3': 'firm', 'ph4b4': 'serious', 'ph4b5': 'firm',
     'ph4b6': 'calm', 'ph4b7': 'urgent',
+    # (R128, R129: the tags their takes were given at build 53, written here so prompts.json is remade with them)
+    'ph4b8': 'gentle', 'ph4b9': 'firm',
+    # (R142) why the green ones come for her, in the dark before the fight: told plainly, a teacher's gravity
+    'ph4k1': 'calm', 'ph4k2': 'serious', 'ph4k3': 'serious', 'ph4k4': 'serious',
     # the fight speaks (Chad, 18 Nov)
     'q4f1': 'tense', 'q4f2': 'afraid', 'ph4f1': 'firm', 'rv4f1': 'panicked', 'q4f3': 'desperate', 'ph4f2': 'urgent',
     'q4f4': 'pleading', 'ph4f3': 'firm',
