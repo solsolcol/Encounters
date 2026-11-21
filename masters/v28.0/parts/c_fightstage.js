@@ -33,7 +33,7 @@
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
-                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [] };
+                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0 };
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
     const fsCanvas = (n) => { const c = document.createElement('canvas'); c.width = c.height = n; return [c, c.getContext('2d')]; };
@@ -301,12 +301,16 @@
     function fsMouth(out) { const g = things.nagaStaff; if (g && g.visible) { g.updateWorldMatrix(true, false); return out.set(0, 1.34, 0).applyMatrix4(g.matrixWorld); }
       const p = cast.pho ? cast.pho.group.position : { x: 0, z: 0 }; return out.set(p.x, 1.8, p.z); }
     function fsHead(P, out, y = 1.62) { if (P && P.ready && P.head) { P.head.getWorldPosition(out); return out; } const g = P ? P.group.position : { x: 0, z: 0 }; return out.set(g.x, y, g.z); }
-    function fsBallStart(f) {
+    /* (let go `wait` seconds after the press: at the top of his swing, from where the stick's head is then; it lands when
+       the rules land it, the flight the shorter by the wait) */
+    function fsBallStart(f, wait = 0) {
       const B = fsBalls.find(b => !b.on) || fsBalls[0];
-      B.on = true; B.t = 0; B.T = FN5.flight || 0.7; B.ai = !!f.ai; B.id = f.id || 0; B.hist.length = 0;
+      B.on = true; B.t = 0; B.wait = Math.max(0, wait); B.T = Math.max(0.25, (FN5.flight || 0.7) - B.wait); B.ai = !!f.ai; B.id = f.id || 0; B.hist.length = 0;
       fsMouth(B.a); const w = fsW(f.x, f.z); B.b.set(w.x, 0.85, w.z);
       if (!f.id && !f.cloud) B.b.y = 0.05;
+      if (!B.wait) fsBallSound(B);
     }
+    function fsBallSound(B) { const m = B.a; fsFx(fsDeal('ball'), B.ai ? 0.45 : 0.8, m.x, m.z); fsFx('u5flight', B.ai ? 0.32 : 0.6, m.x, m.z); }
     function fsBloom(x, z, col, k = 1) { const L = fsBlooms.find(b => !b.on) || fsBlooms[0]; L.on = true; L.t = 0; L.col = col; L.k = k;
       L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, 0.9, z); L.g.position.set(x, 0.017, z); }
     function fsFxFrame(wdt, ft) {
@@ -314,6 +318,7 @@
       /* the fireballs: up out of the mouth, over, and down (a parabola above the line between them; it rises 1.6 m) */
       for (const B of fsBalls) {
         if (!B.on) { if (B.core.visible) { B.core.visible = B.glow.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
+        if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallSound(B); }   // (let go now, from the stick's head)
         B.t += wdt; const u = c01(B.t / B.T), h = (B.ai ? 1.1 : 1.6) * 4 * u * (1 - u);
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
         const sz = B.ai ? 0.62 : 1;
@@ -399,10 +404,55 @@
     }
 
     /* ---------------------------------------------------------------- THE TWO OF THEM: their takes, their faces */
-    const fsTake = { pho: { walking: false, t: 0 }, zav: { walking: false, t: 0 } };
+    const fsTake = { pho: { walking: false, t: 0, pace: 0 }, zav: { walking: false, t: 0, pace: 0 } };
+    /* HIS ACTS IN HIS OWN BODY: three of Grandmaster Pho's own file's takes (none was made for the fight), each played
+       between two of its own moments (span) on the frame the rules begin the act, with every posture law of his as it
+       stands (none is keyed to these three, so each plays as his file has it). Read from his file through its bones
+       (hands, head, hips and feet at thirty moments of each: M8's takeread), then photographed in the game:
+       FIRE, mage_soell_cast: the stick swept up over his head from its rise (0.50 of the take) to its top (0.71) in
+         0.12 s, the fireball let go at the top, then brought down to 1.30 in 0.42 s; he plants for it (his walk held
+         from the rise to the stick's coming down: 0.54 s of the fire's 1.1 s wait)
+       SHOCKWAVE, Charged_Spell_Cast: the gather low (0.50 to 1.50 of it) and both hands up (2.0) over the gold's 1.5 s,
+         held up until the wheel goes out, then down (2.6) in 0.6 s; broken, he lets it go at once
+       BAG, mage_soell_cast_8: both hands drawn in to his mouth (0 to 0.40 of it) over 0.6 s of the bag's draw, held
+         until it is in the bag, then let down
+       FS_ACTS off: he fires from his walk and his rest, as the first pass had him */
+    const FS_ACTS = true;
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false },
+                          wave: { take: 'Charged_Spell_Cast', a: 0.50, top: 2.00, b: 2.60, up: 1.5, down: 0.60, hold: true },
+                          bag:  { take: 'mage_soell_cast_8', a: 0.00, top: 0.40, b: 0.40, up: 0.6, down: 0.35, hold: true } };
+    function fsPhoAct(kind, up) {
+      const P = cast.pho, A = FS_PHO_TAKE[kind];
+      if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
+      const run = FS5.run, n = ++FS5.actN, u = up != null ? up : A.up;
+      FS5.act = { kind, n, top: false, down: false, at: FS5.wall, until: FS5.wall + u + (A.hold ? 9 : A.down) };
+      span(P, A.take, A.a, A.top, u, { fade: Math.min(0.2, u), then: () => { if (run !== FS5.run || !FS5.act || FS5.act.n !== n) return;
+        FS5.act.top = true; if (!A.hold) fsPhoDown(); } });
+      return u;
+    }
+    /* from the act's top back down, then his walk or his rest */
+    function fsPhoDown() {
+      const P = cast.pho, Ac = FS5.act; if (!P || !Ac || Ac.down) return;
+      const A = FS_PHO_TAKE[Ac.kind], run = FS5.run, n = Ac.n;
+      Ac.down = true; Ac.until = FS5.wall + A.down;
+      span(P, A.take, A.top, A.b, A.down, { fade: 0, then: () => { if (run !== FS5.run || !FS5.act || FS5.act.n !== n) return; fsPhoBack(); } });
+    }
+    function fsPhoBack(fade = 0.3) {
+      const P = cast.pho; FS5.act = null; if (!P) return;
+      const T = fsTake.pho;
+      if (T.pace > 0.08) { T.walking = true; T.t = 0; if (P.win) delete P.win.Walking; take(P, 'Walking', fade); if (P.acts.Walking) P.acts.Walking.timeScale = 1; }
+      else { T.walking = false; T.t = 0; rest(P, fade); }
+    }
+    /* the act's held top let go (the wave gone out, the Prai in the bag), or the act broken off (the gold broken) */
+    function fsPhoRelease(kind) { const Ac = FS5.act; if (!Ac || Ac.kind !== kind || Ac.down) return; if (Ac.top) fsPhoDown(); else { const P = cast.pho, A = FS_PHO_TAKE[kind];
+      if (P && A) { const n = Ac.n, run = FS5.run; Ac.down = true; Ac.until = FS5.wall + A.down; span(P, A.take, P.acts[A.take] ? P.acts[A.take].time : A.top, A.b, A.down, { fade: 0, then: () => { if (run === FS5.run && FS5.act && FS5.act.n === n) fsPhoBack(); } }); } } }
+    function fsPhoCut(kind) { const Ac = FS5.act; if (!Ac || (kind && Ac.kind !== kind)) return; fsPhoBack(0.25); }
+    const fsActing = () => !!(FS5.act && FS5.wall < FS5.act.until);
     function fsBodyTake(P, who, pace, wdt) {
       if (!P || !P.ready) return;
-      const T = fsTake[who], moving = pace > 0.08;
+      const T = fsTake[who]; T.pace = pace;
+      if (who === 'pho' && fsActing()) return;                         // (an act's take holds him: it hands him back itself)
+      const moving = pace > 0.08;
       if (moving) { T.t = 0; if (!T.walking) { T.walking = true; if (P.win) delete P.win.Walking; take(P, 'Walking', 0.25); if (P.acts.Walking) P.acts.Walking.timeScale = 1; } }
       else if (T.walking) { T.t += wdt; if (T.t > 0.25) { T.walking = false;
         if (who === 'zav') { const rt = zavRest(); if (rt) rest(P, 0.35); else hold(P, 'Walking', ZAV_STAND5, 0.001, 0.35); } else rest(P, 0.35); } }
@@ -501,9 +551,11 @@
             if (FS5.wall - FS5.drainSnd > 2.2) { FS5.drainSnd = FS5.wall; const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5zbreath', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
             break;
           case 'sanity': { const now = kit && kit.stat ? kit.stat('sanity') : null; if (now != null && e.to > now + 0.01 && kit.award) kit.award('sanity', e.to - now); break; }
-          case 'fireball': { fsBallStart(e); const m = fsMouth(_fsA);
-            if (!e.ai) { fsFx(fsDeal('swing'), 0.8, m.x, m.z); fsFx(fsDeal('ball'), 0.8, m.x, m.z); fsFx('u5flight', 0.6, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
-            else { fsFx(fsDeal('ball'), 0.45, m.x, m.z); fsFx('u5flight', 0.32, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
+          case 'fireball': { const m = fsMouth(_fsA);
+            /* (his swing: always when played, he plants for it; unplayed, only standing, for the rules walk him) */
+            const up = !e.ai || (FS5.aiPace.pho || 0) < 0.08 ? fsPhoAct('phoFire') : 0;
+            if (!e.ai) fsFx(fsDeal('swing'), 0.8, m.x, m.z);
+            fsBallStart(e, up); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7;
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
             if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1; }
@@ -525,15 +577,16 @@
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null); break; }
           case 'lendEnd': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5lendback', 0.8, zw ? zw.x : null, zw ? zw.z : null); break; }
           case 'waveReady': fsFx('u5waveready', 0.8, null); break;
-          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.6, pw ? pw.x : null, pw ? pw.z : null); break; }
-          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; break;
-          case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); break; }
+          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.6, pw ? pw.x : null, pw ? pw.z : null);
+            fsPhoAct('wave', FN5.windSecs || 1.5); break; }
+          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave'); break;
+          case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave'); fsFx(fsDeal('drawn'), 0.8, null);
-            if (e.by === 'bag') fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z);
+            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
-          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); break; }
+          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoAct('bag'); break; }
           case 'enter': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; if (w) fsFx(fsDeal('rise'), 0.8, w.x, w.z); break; }
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
@@ -615,7 +668,7 @@
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
-      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null;
+      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
@@ -684,9 +737,14 @@
         else { if (off > 0.004) kit.tagPlace(who, w.x, w.z); if (who === 'pho') FS5.aiPace.pho = dt > 0 ? off / dt : 0; }
         FS5.last[k2] = { x: R2.x, z: R2.z };
       }
-      /* (his teacher stands still while the gold gathers and while the bag draws: the rules' own) */
+      /* (a held act let go when the rules let it go, whatever ended it: the gold out or broken, the bag's draw done or
+         stopped; it never holds him past its rules) */
+      if (FS5.act && !FS5.act.down && FS5.wall - FS5.act.at > 0.3) {
+        if (FS5.act.kind === 'wave' && !(st.pho.wind > 0)) fsPhoRelease('wave');
+        else if (FS5.act.kind === 'bag' && !(st.pho.draw > 0)) fsPhoRelease('bag'); }
+      /* (his teacher stands still while the gold gathers and while the bag draws: the rules' own; and for his swing) */
       const still = !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last');
-      kit.tagBody('pho', { root: still || st.pho.wind > 0 || st.pho.draw > 0 });
+      kit.tagBody('pho', { root: still || st.pho.wind > 0 || st.pho.draw > 0 || (!!FS5.act && FS5.act.kind === 'phoFire' && fsActing()) });
       kit.tagBody('zavier', { root: still });
       fsFaces(wdt, playedNow);
       /* 5. the screen and the court */
@@ -812,7 +870,7 @@
                hud: { main: H.main, second: H.second, third: H.third, swap: H.swap, together: H.together, objective: H.objective, cage: H.cage },
                pho: { x: +st.pho.x.toFixed(3), z: +st.pho.z.toFixed(3) }, zav: { x: +st.zav.x.toFixed(3), z: +st.zav.z.toFixed(3) },
                prai: st.prai.map(p => ({ id: p.id, kind: p.kind, st: p.st, x: +p.x.toFixed(2), z: +p.z.toFixed(2) })), pick: FS5.pick,
-               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), ...left };
+               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), act: FS5.act ? FS5.act.kind : null, phoTake: cast.pho ? cast.pho.cur : null, ...left };
     }
     function fightReset() {
       FS5.run++;
@@ -821,7 +879,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0 });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
