@@ -1,0 +1,54 @@
+  motion wander crawl IN_PROGRESS 1%
+  motion wander creep IN_PROGRESS 1%
+  motion wander crawl IN_PROGRESS 42%
+  motion wander creep IN_PROGRESS 42%
+  motion wander crawl IN_PROGRESS 79%
+  motion wander creep IN_PROGRESS 84%
+  motion wander creep IN_PROGRESS 90%
+  motion wander crawl IN_PROGRESS 90%
+  motion wander crawl SUCCEEDED 100%
+  motion wander creep SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+wander t2m done
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'crawl'
+refetched wander creep 90022676
+body identical to masters/v27.0/src/rigged-wander.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-wander-creep.glb 374620 bytes ["retarget_clip (132 ch, 5.97 s)"]
+  motion wander crawl IN_PROGRESS 1%
+  motion wander crawl IN_PROGRESS 42%
+  motion wander crawl IN_PROGRESS 84%
+  motion wander crawl IN_PROGRESS 90%
+  motion wander crawl SUCCEEDED 100%
+motion done wander crawl 90022628
+body identical to masters/v27.0/src/rigged-wander.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-wander-crawl.glb 374620 bytes ["retarget_clip (132 ch, 5.97 s)"]
+wander crawl strip exit 0
+wander t2m done

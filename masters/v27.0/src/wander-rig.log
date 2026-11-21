@@ -1,0 +1,10 @@
+started rig wander 01a1eb75-4cad-74c7-9d72-aec5ee94eced
+  rig wander IN_PROGRESS 0%
+  rig wander IN_PROGRESS 47%
+  rig wander IN_PROGRESS 90%
+  rig wander IN_PROGRESS 95%
+  rig wander SUCCEEDED 100%
+rig done wander {'rigged': 89125568, 'walk': 89366536}
+body identical to masters/v27.0/src/rigged-wander.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-wander-walking.glb 98264 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

@@ -1,0 +1,23 @@
+wrote masters/v27.0/src/merged-wander.glb 26789156 bytes
+["creep (132 ch, 5.97 s)","crawl (132 ch, 5.97 s)"]
+calmarms masters/v27.0/src/merged-wander.glb: the body's left 1.00,0.00,-0.06, its face 0.06,0.00,1.00
+  Idle_3: not in this file (left out)
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+wrote masters/v27.0/src/merged-wander.glb
+  skin weights: 28701 vertices in 7628 positions over 65 joints, 24 diffusion passes; 5020 vertices' main weight moved
+prune: Removed types... Texture (1)
+  28701 vertices in 7628 positions; 23367 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 28701 points joined into 7628 places; 15799 triangles
+  repaint [   0.0s] the face 1960 triangles, the rest of the head 5214, the hands 640, the body 7985 (looking [-0.0, 0.0, 1.0])
+  repaint [   2.3s] xatlas: 2018 charts, 84% of the square used
+  repaint [   3.0s] packed again: 2018 charts in a 1621x1613 square drawn at 1024 (77% used), a margin of 2.5 pixels at 1024
+  repaint [   3.0s] texels a metre at 1024, before -> now: face 905 -> 957, head 970 -> 725, hands 574 -> 453, body 452 -> 344; 2021 charts, margin 2.5 px
+  repaint [   3.1s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.0s] baked
+  repaint [   7.0s] written
+  repaint: 28701 points -> 30187 (1486 copied along the new seams), 15799 triangles; texels a metre at 1024, before -> now: face 905 -> 957, head 970 -> 725, hands 574 -> 453, body 452 -> 344; 2021 charts, margin 2.5 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4wander.glb: tris 15799 -> 15799, 2 takes, 978 KB
