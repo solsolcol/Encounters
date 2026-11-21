@@ -162,10 +162,12 @@ const STICK = () => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g
       const into = -((v.x - S.pts[3 * bj]) * S.nrm[3 * bj] + (v.y - S.pts[3 * bj + 1]) * S.nrm[3 * bj + 1] + (v.z - S.pts[3 * bj + 2]) * S.nrm[3 * bj + 2]) * ws;
       const f = best >= 0 ? fams[best] : 'other', F = per[f] || (per[f] = { near: 0, inside: 0, deep: 0, at: null });
       F.near++; if (into > 0.001) F.in1 = (F.in1 || 0) + 1; if (into > 0.003) { F.inside++; if (into > F.deep) { F.deep = into; F.at = +(v.y * ws).toFixed(2); } }
-      if (f === 'grip' && best >= 0) { const nm = sk.bones[best].name.replace(/^mixamorig:?/, '').replace(/^RightHand/, ''), B = byBone[nm] || (byBone[nm] = { n: 0, in1: 0, deep: 0 });
-        B.n++; if (into > 0.001) B.in1++; if (into > B.deep) B.deep = into; } } });
+      if (f === 'grip' && best >= 0) { const nm = sk.bones[best].name.replace(/^mixamorig:?/, '').replace(/^RightHand/, ''), B = byBone[nm] || (byBone[nm] = { n: 0, in1: 0, deep: 0, top: -9 });
+        B.n++; if (into > 0.001) B.in1++; if (into > B.deep) B.deep = into; if (into > B.top) B.top = into; } } });
   for (const f in per) per[f].deep = +(per[f].deep * 100).toFixed(2);
-  for (const nm in byBone) byBone[nm].deep = +(byBone[nm].deep * 100).toFixed(2);
+  /* (each bone of his hand: how deep its skin goes into the shaft at most (cm), or, where none of it does, how near it comes:
+     top, the most of it inside, negative a gap) */
+  for (const nm in byBone) { byBone[nm].deep = +(byBone[nm].deep * 100).toFixed(2); byBone[nm].top = +(byBone[nm].top * 100).toFixed(2); }
   const gp = new V(), gq = P.group.quaternion.clone(); P.group.getWorldPosition(gp); P.group.getWorldQuaternion(gq); gq.invert();
   const Lc = (q) => { const r = q.clone().sub(gp).applyQuaternion(gq); return [+(r.x * 100).toFixed(1), +(r.y * 100).toFixed(1), +(r.z * 100).toFixed(1)]; };
   const Bn = (re) => { for (const n in P.bone) if (re.test(n)) { const q = new V(); P.bone[n].getWorldPosition(q); return Lc(q); } return null; };
@@ -273,13 +275,15 @@ if (PICS) {
       const f = `${OUT}/${act}-${u}-${view}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); res.pics.push(f); } }
   /* (his fist round the shaft at rest, close: from above it and from before it, through a 26 degree lens: a detail taken with a
      lens, never by enlarging) */
-  if (process.env.HANDS !== '0') for (const view of ['handtop', 'handfront']) { await pose(REST[0], REST[1]);
+  if (process.env.HANDS !== '0') for (const view of ['handtop', 'handfront', 'handside']) { await pose(REST[0], REST[1]);
     await p.evaluate(([view]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor;
       P.group.rotation.y = window.__ry0; P.group.updateWorldMatrix(true, true);
       let mb = null, hb = null; for (const n in P.bone) { if (/^(mixamorig:?)?RightHandMiddle1$/.test(n)) mb = P.bone[n]; if (/^(mixamorig:?)?RightHand$/.test(n)) hb = P.bone[n]; }
       const fist = new V(), h = new V(); hb.getWorldPosition(h); mb.getWorldPosition(fist); fist.lerp(h, 0.35);
       const ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry);
-      const c = view === 'handtop' ? new V(fist.x + fx * 0.06, fist.y + 0.62, fist.z + fz * 0.06) : new V(fist.x + fx * 0.62, fist.y + 0.08, fist.z + fz * 0.62);
+      /* (from above it, from before it, and from his right side: beside him, his fist's outside) */
+      const c = view === 'handtop' ? new V(fist.x + fx * 0.06, fist.y + 0.62, fist.z + fz * 0.06) : view === 'handside' ? new V(fist.x - fz * 0.62, fist.y + 0.08, fist.z + fx * 0.62)
+              : new V(fist.x + fx * 0.62, fist.y + 0.08, fist.z + fz * 0.62);
       E.yaw.position.copy(c); window.__aim = fist; if (E.kit.lens) E.kit.lens(26, { secs: 0 }); }, [view]);
     await frames(2);
     await p.evaluate(() => { const E = window.__enc, tg = window.__aim, c = E.yaw.position, d = tg.clone().sub(c);

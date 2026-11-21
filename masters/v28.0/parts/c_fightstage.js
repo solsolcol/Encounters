@@ -1389,6 +1389,14 @@
       let GRIP_ON = false;
       const STICK_C = [0.082, -0.003];
       let STICK_R = 0.036, FING_R = 0.008, GAP = 0.003;
+      /* (the shaft is carved, not turned: round its middle line its ridges stand 3.7 to 4.0 cm out and its grooves 3.2 to 3.6,
+         read from its file every centimetre (masters/v28.0/m8 shaftr), the ninetieth of each centimetre's points here, from 0.96
+         to 1.13 m up it. BYH: each finger closed round the ridges where it crosses, its own radius, not one for all; FGAP: a
+         gap of each finger's own, metres, where its skin is thicker or thinner than FING_R) */
+      const SHAFT_P90 = [3.96, 3.91, 3.78, 3.77, 3.77, 3.72, 3.73, 3.65, 3.71, 3.73, 3.80, 3.84, 3.88, 3.95, 3.95, 3.87, 3.95, 3.76];
+      let BYH = false, FGAP = {};
+      const shaftR = (y) => { const f = Math.max(0, Math.min(SHAFT_P90.length - 1, (y - 0.96) * 100)), i = Math.min(SHAFT_P90.length - 2, Math.floor(f));
+        return (SHAFT_P90[i] + (SHAFT_P90[i + 1] - SHAFT_P90[i]) * (f - i)) / 100; };
       let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
@@ -1418,7 +1426,9 @@
           const cs = C.clone().addScaledVector(A, P0.clone().sub(C).dot(w) / A.dot(w)); // (the shaft's line where it crosses this finger's plane)
           const x3 = d.clone().addScaledVector(w, -d.dot(w)).normalize(), y3 = w.clone().cross(x3).normalize();
           if (y3.dot(up) < 0) y3.negate();                                             // (y the back of the hand, -y the palm)
-          const to2 = (p) => [p.clone().sub(P0).dot(x3), p.clone().sub(P0).dot(y3)], c = to2(cs), rho = M(STICK_R + FING_R + GAP);
+          const yAt = STICK_Y + cs.clone().sub(C).dot(A) * s;                         // (how far up the stick this finger crosses it)
+          const to2 = (p) => [p.clone().sub(P0).dot(x3), p.clone().sub(P0).dot(y3)], c = to2(cs), rho = M((BYH ? shaftR(yAt) : STICK_R) + FING_R + (FGAP[nm] != null ? FGAP[nm] : GAP));
+          out.report['y' + nm] = +yAt.toFixed(3);
           /* the first bone: turned toward the palm until its far joint meets the circle (the first meeting) */
           let phi = 0; const hit = (ph) => Math.hypot(l[0] * Math.cos(ph) - c[0], -l[0] * Math.sin(ph) - c[1]) - rho;
           for (let t = 0; t <= 100; t++) { const ph = t * D2R; if (hit(ph) <= 0) { phi = ph; break; } phi = ph; }
@@ -1434,7 +1444,8 @@
           const P0 = J.Thumb[0], seg = [0, 1, 2].map(i => J.Thumb[i + 1].clone().sub(J.Thumb[i])), l = seg.map(v => v.length());
           const st = J.Thumb[1].clone().sub(C).dot(A), cs = C.clone().addScaledVector(A, st);
           const x3 = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(), y3 = A.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
-          const rho = M(STICK_R + THUMB_R + GAP), Q = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
+          const yT = STICK_Y + st * s; out.report.yThumb = +yT.toFixed(3);
+          const rho = M((BYH ? shaftR(yT) : STICK_R) + THUMB_R + (FGAP.Thumb != null ? FGAP.Thumb : GAP)), Q = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
           /* its knuckle on the circle above the shaft, nearer the wrist, the metacarpal's own length from its base */
           let best = null; const es = []; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q(b).distanceTo(P0) - l[0]); es.push([t, e]); if (!best || e < best.e) best = { b, e }; }
           /* (where the circle meets the metacarpal's reach: each place it comes nearest, said in the report, the one taken first) */
@@ -1755,6 +1766,7 @@
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
           if (o.out != null) STAFF.out = o.out * D2R;
           if (o.stickR != null) STICK_R = +o.stickR; if (o.fingR != null) FING_R = +o.fingR; if (o.gap != null) GAP = +o.gap;
+          if (o.byH != null) BYH = !!o.byH; if (o.fgap) FGAP = Object.assign({}, o.fgap);
           /* (an act's keys tried: { take: [[moment, out, up, on, tip, lean, shape], ...] }) */
           if (o.moves) for (const nm in o.moves) if (MOVES[nm]) MOVES[nm].keys = o.moves[nm];
           if (o.plantAt) PLANT_AT.splice(0, 2, +o.plantAt[0], +o.plantAt[1]);
@@ -1762,7 +1774,7 @@
           G = null; failed = false; wroteQ = null; wroteArm = null;
           if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
           return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1),
-                   stickR: STICK_R, fingR: FING_R, gap: GAP }; }
+                   stickR: STICK_R, fingR: FING_R, gap: GAP, byH: BYH, fgap: FGAP }; }
       };
     })();
     if (typeof STICK5 === 'object') { STICK5.grip = PHOGRIP5;
