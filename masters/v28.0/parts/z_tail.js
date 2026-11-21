@@ -74,6 +74,8 @@
     sfx(T.turn - 0.2, 'u5lamptick', 0.32);
     sfxFade(T.end - 1.4, T.end - 0.1, 'u5m3room');
     step(T.end, () => F.end());
+    /* (it ends where the hunt begins, inside his doors: that view is kept, v19.2) */
+    c.keep.view = true;
   }
 
   /* THE PREPARATION, AND THE TURN (the plan's 4.4): night; the stick unwrapped and taken; the thread; his teacher's two
@@ -215,6 +217,8 @@
     sfx(T.co5t2, 'co5t2', 1);                                                  // "Lately nothing goes right. I am tired all the time. And there is a smell. ..."
     sfxFade(T.end - 1.2, T.end - 0.1, 'u5m13shop');
     step(T.end, () => F.end());
+    /* (it ends on his seat's view, where the table's play seats him: kept) */
+    c.keep.view = true;
   }
 
   /* THE FOUR ENDINGS (the plan's 4.9): each its own beats, THE RITE at its `rite` (its own beats RT5, from there), the
