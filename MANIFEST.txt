@@ -1480,6 +1480,8 @@ b2178a1d189968bc0202acbc7b660bdb2d56cd7b245d5a5a252aa4c5e4f563c5  masters/v28.0/
 0a4ce47aba8dce906d1b2db2cb294e13caceb55ed290cdef1a83667ed6d1356a  masters/v28.0/src/original-dinchair.glb
 50d3bc8de4ca05fb6c275cb99010299f7798d1fa62ec22e657db1b50c57dee2b  masters/v28.0/src/original-dintable.glb
 ec7cdd944a6589962e554373e6aa2b4386a20b94c0f4ed06d0f2765cef1b17a4  masters/v28.0/src/original-duffel.glb
+3d33e4fa627866e286bc3c712ff2028fa2e68daff1ade19827c48c481ae50f3b  masters/v28.0/src/original-floorlamp.glb
+35e9452c08bd138bf8ddbdd3e902c8973f473dd3967d94002cd8cbef6bbb0d05  masters/v28.0/src/original-frame.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
