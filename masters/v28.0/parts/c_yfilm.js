@@ -280,7 +280,7 @@
             d.sp.position.set(lp(from[0], cx + d.dx, u), lp(from[1], top + 0.01, u) + d.up * 4 * u * (1 - u), lp(from[2], cz + d.dz, u)); } },
         dropsOff() { for (const d of drops) d.sp.visible = false; },
         /* the string round the tied bag's neck, by k (0 none: the bag as it came) */
-        string(k, bag) { strRing.visible = k > 0.01 && !!bag && bag.visible; if (!strRing.visible) return; strRing.position.set(bag.position.x, bag.position.y + 0.205, bag.position.z); strRing.scale.setScalar(0.92 + 0.08 * k); }
+        string(k, bag) { strRing.visible = k > 0.01 && !!bag && bag.visible; if (!strRing.visible) return; strRing.position.set(bag.position.x, bag.position.y + 0.295, bag.position.z); strRing.scale.setScalar(0.92 + 0.08 * k); }
       };
     })();
 
@@ -1022,13 +1022,15 @@
        the close's CL5. Each ends on its black: the card lies over it */
     const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.22], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
+    const BAGBLOB5 = { m: null };
     FILMS5.ending = {
       begin(k, api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
         if (api && api.handsRoot) api.handsRoot.visible = false;
         fmShow(cast.phoS, true); fmShow(cast.col, true); PIECES5.set(true);
         RITE5.bowl.visible = true;
-        if (things.bagTied) { if (things.bagTied.parent !== world) world.attach(things.bagTied); things.bagTied.visible = false; }
+        if (things.bagTied) { if (things.bagTied.parent !== world) world.attach(things.bagTied); things.bagTied.visible = false;
+          if (!BAGBLOB5.m) BAGBLOB5.m = blob(things.bagTied, 0.34, 0.3); }   // (a painted contact shadow: on the cloth it read as floating; kept here, never in userData: v25.4)
       },
       frame(k, t, api) {
         const E = EN5[k], R = ROOM, r0 = E.rite, RT = RT5, CL = CL5, c0 = E.close, me = SEATEYE5();
@@ -1088,8 +1090,10 @@
           { t: r0 + RT.end, name: 'bag', eye: [me[0] + 0.12, me[1] - 0.1, me[2] + 0.12], at: [RITE_AT.bag[0], 0.48, RITE_AT.bag[1]], fp: 32, fd: 28 },
           { t: r0 + RT.end + 0.05, name: 'lighter', eye: me, at: COL, fp: 46, fd: 40, cut: true }
         ]).concat(X.after(me, COL, PHO, E)).concat([
-          { t: c0, name: 'last', eye: [RITE_AT.bag[0] + 0.62, 0.78, RITE_AT.bag[1] - 0.55], at: [RITE_AT.bag[0] - 0.05, 0.42, RITE_AT.bag[1] + 0.05], fp: 36, fd: 32, cut: true },
-          { t: c0 + CL.end, name: 'last', eye: [RITE_AT.bag[0] + 0.55, 0.74, RITE_AT.bag[1] - 0.5], at: [RITE_AT.bag[0] - 0.04, 0.42, RITE_AT.bag[1] + 0.05], fp: 32, fd: 28 }
+          /* (the bag, its string, his teacher's hand on it and the empty case beside it, all in the picture: at 0.9 m on a 36
+             degree lens the bag alone filled the phone, the hand at its edge: endA-00050, 21 Nov) */
+          { t: c0, name: 'last', eye: [RITE_AT.bag[0] + 0.8, 1.02, RITE_AT.bag[1] - 0.72], at: [RITE_AT.bag[0] - 0.1, 0.44, RITE_AT.bag[1] + 0.06], fp: 46, fd: 38, cut: true },
+          { t: c0 + CL.end, name: 'last', eye: [RITE_AT.bag[0] + 0.72, 0.98, RITE_AT.bag[1] - 0.66], at: [RITE_AT.bag[0] - 0.09, 0.44, RITE_AT.bag[1] + 0.06], fp: 42, fd: 35 }
         ]);
         keys.sort((a, b) => a.t - b.t);
         fmTrack(t, keys);
@@ -1138,8 +1142,10 @@
              { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5A1 - 0.1, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5A1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5A1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             /* (to his teacher on a CUT: the door is behind his left shoulder and his teacher before him, and panned the look
+                swung 138 degrees in half a second: endA lens, three steps read as cuts) */
+             { t: E.ph5A1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.ph5A2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5A2 + 0.4, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
@@ -1157,8 +1163,8 @@
              { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5B1 - 0.2, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5B1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5B1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
            colLook: (t, E) => (t < E.co5B4 ? [-0.2, 0.36, 239.8] : t < E.lid ? [0.2, 0.36, 239.85] : null) },
