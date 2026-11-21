@@ -112,8 +112,9 @@ go koh && ( HERO=koh CALM="Idle_3=12,0.6 Stand_and_Chat=12 Listening_Gesture=12 
 go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
   one jun 40000 2048 $(T jun lib Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Right_Hand_Open) $(T jun walking Walking) )
 # THE COLLECTOR (plan 4.7; 1.77 m): NOT PREPARED. His body is good and his RIG CAME BACK WRONG (52 joints where a rig
-# with fingers has 66: one finger's bones a hand, and stray chains from the spine, the hips and the toes). Stopped
-# there by the rule of v28.0 (no remesh, no takes): RECORD.md has the pictures and what each way on costs. His line,
+# with fingers has 66: each hand one piece on its hand bone, one finger chain a hand carrying almost nothing, and
+# eighteen stray bones holding his chest, sides, hips and feet). Stopped there by the rule of v28.0 (no remesh, no
+# takes): RECORD.md section 3 has what was measured and his five ways on, each with its cost. His line,
 # once Chad has picked (the sitting take is 307, Sitting_Answering_Questions):
 #   go collector && ( HERO=collector WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= one collector 40000 2048 $(T collector lib ...) $(T collector walking Walking) )
 # THE NINE (plan 9.2, 5.4): three bodies, one for each kind (the four that COME 1.60 m, the two that HIDE 1.42 m, the
@@ -121,6 +122,8 @@ go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
 # the nine at about 24 joints each), one level each at 16,000 triangles, colour at 1024 (the chapter draws them as
 # black oil and a pale sheen, never their paint). The rig's own walk and the library's stand; what the fight asks of
 # them (the strain at the cage, the stagger, lying tired, rising) waits for docs/V28.0-FIGHT.md.
+# (a plain rig's armature is scaled 0.01: tools/mergetakes.mjs keeps a bone's tracks its own where both parents stand
+#  the same, so the merge no longer refuses it; earlier merges come out the same bytes. THE NAGA is people/naga.sh.)
 prai() { LEVELS=none; one "$@"; LEVELS=; }
 go praicome && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praicome 16000 1024 $(T praicome lib Idle_3) $(T praicome walking Walking) )
 go praihide && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praihide 16000 1024 $(T praihide lib Idle_3) $(T praihide walking Walking) )
