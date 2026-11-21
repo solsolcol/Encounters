@@ -408,12 +408,16 @@
       const list = [];
       /* three rows across the table's front half (the cloth's x -0.55 .. 0.55), the presences' three where the play
          puts them (TABLE5.P) and the rest about them, a little apart, each turned to him */
-      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
+      /* (CLEAR OF THE PADDED CASE, PLAY's finding: the case stands at (cx - 0.36, cz - 0.05), 0.34 by 0.27 m turned 18
+         degrees, so its footprint runs to x -0.17 over z cz - 0.21 .. cz + 0.11, and four pieces of the two rows behind the
+         first stood inside it. Those rows now start east of it (x -0.15), and a fourth row behind them takes the rest) */
+      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06, R.cz + 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
+      const caseX = R.cx - 0.15, caseZ0 = R.cz - 0.24, caseZ1 = R.cz + 0.14;
       let n = 0; const r = rng(28650);
-      for (let j = 0; j < 3 && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
+      for (let j = 0; j < rowsZ.length && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
         const x = xs[i] + (j % 2) * 0.05, z = rowsZ[j];
         const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.09);
-        if (clash || x > 0.56 || x < -0.56) continue;
+        if (clash || x > 0.56 || x < -0.56 || (x < caseX && z > caseZ0 && z < caseZ1)) continue;
         const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); list.push({ g, x, z }); n++;
       }
       return { list, set(on) { for (const p of list) p.g.visible = on; for (const k of ['w5wuathanu', 'w5rakyom', 'w5hunphayon']) if (things[k]) things[k].visible = on; } };
@@ -1317,7 +1321,7 @@
          two questions first."; when he has gone his teacher's word; his own thought */
       B: { shots: (me, COL, PHO, E) => [
              { t: 0, name: 'row1', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.42, 0.36, 239.7], fp: 40, fd: 34 },
-             { t: E.co5B2 + 0.2, name: 'row2', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.18, 0.36, 239.82], fp: 40, fd: 34 },
+             { t: E.co5B2 + 0.2, name: 'row2', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.06, 0.36, 239.78], fp: 40, fd: 34 },   // (the pieces east of the case: PIECES5)
              { t: E.co5B3 + 0.2, name: 'row3', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [0.12, 0.36, 239.94], fp: 40, fd: 34 },
              { t: E.co5B4 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.lid - 0.2, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
