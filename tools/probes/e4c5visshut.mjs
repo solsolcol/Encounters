@@ -40,7 +40,15 @@ for (const q of [2, 1]) {
   const hid = await p.evaluate(() => { const L = (window.__enc.stage.films && window.__enc.stage.films.PRAI5 && window.__enc.stage.films.PRAI5.list) || []; const was = L.map(P => P.group.visible); L.forEach(P => { P.group.visible = false; }); window.__was = was; return L.length; });
   const B = await frame();
   await p.evaluate(() => { const L = window.__enc.stage.films.PRAI5.list; L.forEach((P, i) => { P.group.visible = window.__was[i]; }); });
-  out.push({ turned: q * 90, sight: s0, drawnDuring: s1.drawn - s0.drawn, withPrai: A, praiHidden: B, praiCost: A.tris - B.tris, praiCount: hid });
+  /* (frame() spans two drawn frames: halve its counts for one) and what the scene holds drawn many times over: every
+     visible InstancedMesh, its triangles an instance and its count, and every visible mesh of the hands' pass is not in
+     the scene, so the rest of the frame's GL count is what the scene cut never sees */
+  const inst = await p.evaluate(() => { const E = window.__enc, scene = E.scene, L = [];
+    const nameOf = (o) => { const n = []; for (let q = o; q && q !== scene && n.length < 4; q = q.parent) if (q.name) n.push(q.name); return n.join(' < ') || o.type; };
+    scene.traverse(o => { if (!o.isInstancedMesh) return; for (let q = o; q; q = q.parent) if (!q.visible) return;
+      const g = o.geometry, t = g.index ? g.index.count / 3 : g.attributes.position.count / 3; L.push({ name: nameOf(o), per: Math.round(t), count: o.count, total: Math.round(t * o.count), layer: o.layers.mask }); });
+    L.sort((x, y) => y.total - x.total); return L.slice(0, 20); });
+  out.push({ turned: q * 90, sight: s0, drawnDuring: s1.drawn - s0.drawn, oneFrame: Math.round(A.tris / 2), withPrai: A, praiHidden: B, praiCost: A.tris - B.tris, praiCount: hid, instanced: inst });
 }
 console.log(JSON.stringify({ out, errs: errs.slice(0, 5) }, null, 1));
 await b.close();
