@@ -1095,3 +1095,11 @@ cded4a284a39f3ab66362002b24a2c099545b26fbfccb1dbc48c3f2557d9f9d3  masters/v27.0/
 5fa8f7e92fd8b2b498994d2f8ed6399a40dea84ccd751222fe015903bf9b0751  masters/v27.0/src/motion-creep.fbx
 55328f64eb42fbc6c4004827a22f767ee2cae7717cc210c9e93c26c1635e256f  masters/v27.0/src/motion-cry.fbx
 3a8ddae3ed7421a1a73c090b481e2b9924c361ae83d4e6a92feaf9dfbbda5dd0  masters/v27.0/src/motion-kneelhold.fbx
+22b9ba7de8d44e488daa8f7d6a66afd1a81e9eaf544ed27916c96277801842fd  masters/v27.0/src/motion-lamp.fbx
+7e27a847c985291a8e5a68ec1469281cb4647c86acff811f93952c0bf755215e  masters/v27.0/src/motion-lightlamp.fbx
+6db1314a3853c0fc232e49f38d8a0f4883dede06410a2273914b7fd65cf87b29  masters/v27.0/src/motion-lumber.fbx
+3b12c6cb5d9981c25f96c59f06b83dd28ce494e39604aca80b7c2756b32af891  masters/v27.0/src/motion-oturn.fbx
+9da046a8e8ce2b20e1d503eba5df8c6be5b1539b7508c6bbe39a5f7eb39808a2  masters/v27.0/src/motion-rise.fbx
+af4374852733e5d197e76de3a4786e4439e411d6fc3c17e607b601097a3d977d  masters/v27.0/src/motion-rush.fbx
+101e370af001bc515e01b519d19ae51a136646dfd2018d25719c5dc44a34d8a5  masters/v27.0/src/motion-scream.fbx
+a79a313d619efdb733e753865ae5263c37a8c175c78eda5fd751909f279de1f4  masters/v27.0/src/motion-steps.fbx
