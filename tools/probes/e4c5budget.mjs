@@ -31,7 +31,7 @@ await p.goto(PAGE + '?ch=e4c5', { waitUntil: 'load', timeout: 300000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 180000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
-await p.waitForFunction(() => { try { return window.__enc.stage.ready(); } catch { return false; } }, null, { timeout: 900000, polling: 500 });
+await p.waitForFunction(() => { try { return window.__enc.stage.ready() && window.__enc.stage.info().applied; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 say('ready');
 const count = (tag, nf = 6) => p.evaluate(async ([tag, nf]) => {
   const E = window.__enc, C = window.__gl, scene = E.scene;

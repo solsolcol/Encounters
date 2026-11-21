@@ -1063,7 +1063,11 @@
         ],
         played: 'pho', targets: fsMarks, onAct: fsOnAct }));
       FS5.mode = ok; FS5.fallback = !ok;
-      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9); }
+      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9);
+        /* (the run is held with him in first person, where a Continue lands; then, while the brief stands and the mode is
+           not yet live, the view is the boom behind his teacher, the picture the preparation ends on and START keeps: the
+           engine derives the boom from the bodies only once the mode is live, and holds whatever stands meanwhile) */
+        const B = boomAt({ x: F.pho.x, z: F.pho.z }); yaw.position.set(B.eye[0], B.eye[1], B.eye[2]); yaw.rotation.y = B.heading; pitch.rotation.x = B.pitch; }
       return ok;
     }
     /* THE BRIEF (v8.7, v18.2: instructions first, the mode's own picture under its title, START): nothing moves until START */

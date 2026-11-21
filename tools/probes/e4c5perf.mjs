@@ -16,7 +16,7 @@ await p.goto(PAGE + '?ch=e4c5', { waitUntil: 'load', timeout: 300000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 180000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
-await p.waitForFunction(() => { try { return window.__enc.stage.ready(); } catch { return false; } }, null, { timeout: 900000, polling: 500 });
+await p.waitForFunction(() => { try { return window.__enc.stage.ready() && window.__enc.stage.info().applied; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 say('ready');
 await p.evaluate(() => { const S = window.__enc.stage, f = S.updateNotes; window.__perf = { n: 0, ms: 0 };
   S.updateNotes = (dt, t) => { const a = performance.now(); try { f(dt, t); } finally { window.__perf.n++; window.__perf.ms += performance.now() - a; } }; });
