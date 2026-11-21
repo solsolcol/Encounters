@@ -32,9 +32,9 @@ await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForFunction(() => { try { return window.__enc.stage.ready(); } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 say('ready');
-const count = (tag) => p.evaluate(async (tag) => {
+const count = (tag, nf = 6) => p.evaluate(async ([tag, nf]) => {
   const E = window.__enc, C = window.__gl, scene = E.scene;
-  const frames = []; for (let i = 0; i < 6; i++) { await new Promise(r => requestAnimationFrame(r)); C.calls = 0; C.tris = 0; C.on = true; await new Promise(r => requestAnimationFrame(r)); C.on = false; frames.push({ calls: C.calls, tris: Math.round(C.tris) }); }
+  const frames = []; for (let i = 0; i < nf; i++) { await new Promise(r => requestAnimationFrame(r)); C.calls = 0; C.tris = 0; C.on = true; await new Promise(r => requestAnimationFrame(r)); C.on = false; frames.push({ calls: C.calls, tris: Math.round(C.tris) }); }
   let camera = null; scene.traverse(o => { if (o.isPerspectiveCamera && !camera) camera = o; }); if (!camera) E.yaw.traverse(o => { if (o.isPerspectiveCamera && !camera) camera = o; });
   scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
   const M = new camera.projectionMatrix.constructor().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse), me = M.elements, planes = [];
@@ -70,8 +70,17 @@ const count = (tag) => p.evaluate(async (tag) => {
   const ts = E.kit.tagState();
   return { tag, frames, drawsMax: Math.max(...frames.map(f => f.calls)), trisMax: Math.max(...frames.map(f => f.tris)), cut: { meshes, tris: triCut, big }, bones, skeletons: skel.size,
            textures: tex.size, pictureMB: Math.round(bytes / 1048576), people: L, lens: [+camera.getWorldPosition(new V3()).x.toFixed(2), +camera.getWorldPosition(new V3()).y.toFixed(2), +camera.getWorldPosition(new V3()).z.toFixed(2)], played: ts.played, mode: ts.on };
-}, tag);
+}, [tag, nf]);
 const res = [];
+/* THE COURT IN FIRST PERSON FIRST (the lead's word: the hunt's view, its four ways), one drawn frame each (a count at the
+   GL is exact: the frame drawn is the frame counted) */
+await p.evaluate(() => window.__enc.stage.setPhase('hunt'));
+await new Promise(r => setTimeout(r, 6000));
+const y0 = await p.evaluate(() => window.__enc.yaw.rotation.y);
+for (let q = 0; q < 4; q++) {
+  await p.evaluate(([y0, q]) => { const E = window.__enc; E.yaw.rotation.y = y0 + q * Math.PI / 2; }, [y0, q]);
+  res.push(await count('the hunt in first person, turned ' + (q * 90) + ' degrees from its start', 1));
+}
 await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 300000, polling: 500 });
 await new Promise(r => setTimeout(r, 3000));
