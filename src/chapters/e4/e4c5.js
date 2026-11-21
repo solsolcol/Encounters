@@ -1895,26 +1895,82 @@
     const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI }),
                     lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI })];
     /* (the rooms' holders, tested before each draw: see INSIDE) */
+    /* THE ESTATE DRAWN ONLY WHERE THE COURT CAN SEE IT (R23, the second cut): from the court, three drew every instance of
+       the estate's stock (the balustrades, the walkway's lights, the trees and the palms on the lawn: each InstancedMesh
+       culled only by the sphere round ALL its instances) though the court is closed by walls to the block's roof. While
+       the lens is in the court, each instance of a 'stock:' InstancedMesh is drawn only if its sphere meets the court
+       itself, or meets the lens's own frustum AND the frustum from the lens through one of the court's openings: its open
+       south side (z -14, from the paving to the roof's slab, the gate and the walkways' storeys in it), its open top (the
+       walls' tops, 8.85 m), and the house's door and two windows (anything seen through the rooms). Each is CONSERVATIVE
+       (the low wall, the slabs, the rails and the house's walls are not counted as hiding anything). The kept instances
+       are packed to the buffer's front (the engine's own cullInstances way); outside the court every instance is drawn as
+       placed. window.__e5nocut (a probe's switch) turns both cuts off, for the same frame drawn both ways. */
     { const PZ = HOUSE.face - 0.2, PORTS = [WIN_A, { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, sill: 0, head: DOOR_FRONT.h }, WIN_B];
-      const N = PORTS.map(() => [0, 1, 2, 3].map(() => new THREE.Vector3()));
+      const C = COURT, TOP = C.wallTop;
+      /* every opening as its four corners, in order round it */
+      const RECTS = PORTS.map(P => [[P.x0, P.sill, PZ], [P.x1, P.sill, PZ], [P.x1, P.head, PZ], [P.x0, P.head, PZ]]);
+      const NFRONT = RECTS.length;
+      RECTS.push([[C.x0, 0, C.z0], [C.x1, 0, C.z0], [C.x1, TOP, C.z0], [C.x0, TOP, C.z0]]);          // the court's open south side
+      RECTS.push([[C.x0, TOP, C.z0], [C.x1, TOP, C.z0], [C.x1, TOP, HOUSE.face], [C.x0, TOP, HOUSE.face]]);   // its open top
+      const N = RECTS.map(() => [0, 1, 2, 3].map(() => new THREE.Vector3()));
       const e = new THREE.Vector3(), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), bx = new THREE.Box3(), bs = new THREE.Sphere();
+      const COURTBOX = new THREE.Box3(new THREE.Vector3(C.x0, -1, C.z0), new THREE.Vector3(C.x1, TOP, HOUSE.face));
+      const fr = new THREE.Frustum(), pv = new THREE.Matrix4(), m4 = new THREE.Matrix4(), sph = new THREE.Sphere();
+      const seenBy = (i, x, y, z, r) => { const Nn = N[i]; for (let k = 0; k < 4; k++) { const n = Nn[k]; if (n.x * (x - e.x) + n.y * (y - e.y) + n.z * (z - e.z) < -r) return false; } return true; };
+      const EST = [], estSeen = new WeakSet(); let worldKids = -1;
+      function estateFind() {
+        if (world.children.length === worldKids) return; worldKids = world.children.length;
+        for (const im of world.children) {
+          if (!im.isInstancedMesh || estSeen.has(im) || !/^stock:/.test(im.name)) continue;
+          estSeen.add(im); const n = im.count, g = im.geometry; if (!(n > 0)) continue;
+          if (!g.boundingSphere) g.computeBoundingSphere(); const gs = g.boundingSphere; if (!gs) continue;
+          im.updateWorldMatrix(true, false);
+          const full = im.instanceMatrix.array.slice(0, n * 16), cs = new Float32Array(n * 4);
+          for (let i = 0; i < n; i++) { m4.fromArray(full, i * 16).premultiply(im.matrixWorld); a.copy(gs.center).applyMatrix4(m4);
+            cs[i * 4] = a.x; cs[i * 4 + 1] = a.y; cs[i * 4 + 2] = a.z; cs[i * 4 + 3] = gs.radius * m4.getMaxScaleOnAxis() * 1.02 + 0.05; }
+          im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+          EST.push({ im, n, full, cs, vis: new Uint8Array(n).fill(1), whole: true });
+        }
+      }
+      function estateCull(cam, out) {
+        estateFind();
+        if (out) { pv.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse); fr.setFromProjectionMatrix(pv); }
+        for (const U of EST) {
+          const im = U.im, arr = im.instanceMatrix.array;
+          if (!out) { if (!U.whole) { arr.set(U.full); im.count = U.n; U.whole = true; U.vis.fill(1);
+            im.instanceMatrix.clearUpdateRanges(); im.instanceMatrix.needsUpdate = true; } continue; }
+          let changed = U.whole;
+          for (let i = 0; i < U.n; i++) {
+            const x = U.cs[i * 4], y = U.cs[i * 4 + 1], z = U.cs[i * 4 + 2], r = U.cs[i * 4 + 3];
+            sph.center.set(x, y, z); sph.radius = r;
+            let keep = COURTBOX.intersectsSphere(sph);
+            if (!keep && fr.intersectsSphere(sph)) for (let q = 0; q < RECTS.length && !keep; q++) keep = seenBy(q, x, y, z, r);
+            const v = keep ? 1 : 0; if (v !== U.vis[i]) { U.vis[i] = v; changed = true; }
+          }
+          if (!changed) continue;
+          let k = 0; for (let i = 0; i < U.n; i++) if (U.vis[i]) { arr.set(U.full.subarray(i * 16, i * 16 + 16), k * 16); k++; }
+          im.count = k; U.whole = false;
+          if (k > 0) { im.instanceMatrix.clearUpdateRanges(); im.instanceMatrix.addUpdateRange(0, k * 16); im.instanceMatrix.needsUpdate = true; }
+        }
+      }
       function insideCull(cam) {
         e.setFromMatrixPosition(cam.matrixWorld);
-        const out = e.x > COURT.x0 && e.x < COURT.x1 && e.z > COURT.z0 && e.z < PZ - 0.01 && e.y > 0 && e.y < COURT.wallTop;
-        if (out) PORTS.forEach((P, i) => { const cr = [[P.x0, P.sill], [P.x1, P.sill], [P.x1, P.head], [P.x0, P.head]];
-          c.set((P.x0 + P.x1) / 2, (P.sill + P.head) / 2, PZ).sub(e);
-          for (let k = 0; k < 4; k++) { const p0 = cr[k], p1 = cr[(k + 1) % 4];
-            a.set(p0[0], p0[1], PZ).sub(e); b.set(p1[0], p1[1], PZ).sub(e);
+        const out = !window.__e5nocut && e.x > C.x0 && e.x < C.x1 && e.z > C.z0 && e.z < PZ - 0.01 && e.y > 0 && e.y < TOP;
+        if (out) RECTS.forEach((R, i) => {
+          c.set(0, 0, 0); for (const q of R) c.x += q[0] / 4, c.y += q[1] / 4, c.z += q[2] / 4; c.sub(e);
+          for (let k = 0; k < 4; k++) { const p0 = R[k], p1 = R[(k + 1) % 4];
+            a.set(p0[0], p0[1], p0[2]).sub(e); b.set(p1[0], p1[1], p1[2]).sub(e);
             const n = N[i][k].crossVectors(a, b).normalize(); if (n.dot(c) < 0) n.negate(); } });
         for (const T of INSIDE) {
           let cnt = 0; T.h.traverse(q => { if (q.isMesh) cnt++; });
           if (cnt !== T.n) { T.n = cnt; T.h.updateWorldMatrix(true, true); bx.setFromObject(T.h);
             if (bx.isEmpty()) T.r = -1; else { bx.getBoundingSphere(bs); T.c.copy(bs.center); T.r = bs.radius; } }
           if (!out || T.r < 0) { T.h.visible = true; continue; }
-          a.copy(T.c).sub(e); let seen = false;
-          for (let i = 0; i < PORTS.length && !seen; i++) { seen = true; for (let k = 0; k < 4; k++) if (N[i][k].dot(a) < -T.r) { seen = false; break; } }
+          let seen = false;
+          for (let i = 0; i < NFRONT && !seen; i++) seen = seenBy(i, T.c.x, T.c.y, T.c.z, T.r);
           T.h.visible = seen;
         }
+        estateCull(cam, out);
       }
       const prevBR = scene.onBeforeRender;
       const onBR = function (r, sc, cam, rt) {
