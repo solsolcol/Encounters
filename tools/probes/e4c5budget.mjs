@@ -24,8 +24,17 @@ await p.addInitScript(() => {
     const tri = (mode, n) => mode === 4 ? n / 3 : mode === 5 || mode === 6 ? Math.max(0, n - 2) : 0;
     for (const [nm, ci, ii] of [['drawElements', 1, -1], ['drawArrays', 2, -1], ['drawElementsInstanced', 1, 4], ['drawArraysInstanced', 2, 3]]) {
       const f = proto[nm]; if (!f) continue;
-      proto[nm] = function (...a) { if (C.on) { C.calls++; C.tris += tri(a[0], a[ci]) * (ii >= 0 ? (a[ii] || 1) : 1); } return f.apply(this, a); }; } };
+      proto[nm] = function (...a) { if (C.on && !C.inProto) { C.calls++; C.tris += tri(a[0], a[ci]) * (ii >= 0 ? (a[ii] || 1) : 1); } return f.apply(this, a); }; } };
   wrap(window.WebGL2RenderingContext && WebGL2RenderingContext.prototype); wrap(window.WebGLRenderingContext && WebGLRenderingContext.prototype);
+  /* (and on the context itself, as the game's canvas hands it out: the lead's way, whatever the prototype does) */
+  const gc = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function (kind, ...a) { const g = gc.call(this, kind, ...a);
+    if (g && /webgl/.test(String(kind)) && !g.__counted) { g.__counted = true; C.ctxs = (C.ctxs || 0) + 1;
+      const tri = (mode, n) => mode === 4 ? n / 3 : mode === 5 || mode === 6 ? Math.max(0, n - 2) : 0;
+      for (const [nm, ci, ii] of [['drawElements', 1, -1], ['drawArrays', 2, -1], ['drawElementsInstanced', 1, 4], ['drawArraysInstanced', 2, 3]]) {
+        const f = g[nm]; if (typeof f !== 'function') continue;
+        g[nm] = function (...b) { if (C.on && !C.inProto) { C.calls++; C.tris += tri(b[0], b[ci]) * (ii >= 0 ? (b[ii] || 1) : 1); } C.inProto = true; try { return f.apply(this, b); } finally { C.inProto = false; } }; } }
+    return g; };
 });
 await p.goto(PAGE + '?ch=e4c5', { waitUntil: 'load', timeout: 300000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 180000 });
