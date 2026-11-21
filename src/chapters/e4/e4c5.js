@@ -5821,7 +5821,7 @@
       cast.col = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, hidden: true, skins: false,
         win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
         seat: { y: CUSHION_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
-        shoulders: { Sitting_Answering_Questions: 1, Idle_3: 1 },
+        shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },              // (the sit's shrug let down half: let down whole, his collar stood off his neck in the close shot: collector-00015)
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.col.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
 
@@ -7422,25 +7422,26 @@
        act's own colour so a phone reads the act at a glance; no person is drawn: v21.16) */
     function fsIcon(draw) { const [c, x] = fsCanvas(96); x.lineCap = 'round'; x.lineJoin = 'round'; draw(x); return c; }
     const FS_ICON = {
-      flame: fsIcon((x) => { const g = x.createRadialGradient(48, 52, 2, 48, 52, 34); g.addColorStop(0, '#fff1e8'); g.addColorStop(0.35, '#ff6a7c'); g.addColorStop(1, 'rgba(255,42,74,0)');
-        x.fillStyle = g; x.beginPath(); x.arc(48, 52, 34, 0, Math.PI * 2); x.fill();
-        x.strokeStyle = '#ff4a62'; x.lineWidth = 5; x.beginPath(); x.moveTo(30, 30); x.quadraticCurveTo(48, 6, 66, 30); x.stroke(); }),
-      shock: fsIcon((x) => { x.strokeStyle = '#ffcf6a'; x.lineWidth = 7; x.beginPath(); x.arc(48, 48, 33, 0, Math.PI * 2); x.stroke();
-        x.lineWidth = 3.5; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; x.beginPath(); x.moveTo(48 + Math.cos(a) * 12, 48 + Math.sin(a) * 12); x.lineTo(48 + Math.cos(a) * 28, 48 + Math.sin(a) * 28); x.stroke(); }
-        x.fillStyle = '#fff0c8'; x.beginPath(); x.arc(48, 48, 7, 0, Math.PI * 2); x.fill(); }),
-      bag: fsIcon((x) => { x.fillStyle = '#20242c'; x.strokeStyle = '#d8dce6'; x.lineWidth = 4;
-        x.beginPath(); x.moveTo(34, 30); x.bezierCurveTo(14, 46, 16, 84, 48, 84); x.bezierCurveTo(80, 84, 82, 46, 62, 30); x.closePath(); x.fill(); x.stroke();
-        x.beginPath(); x.moveTo(30, 28); x.quadraticCurveTo(48, 38, 66, 28); x.stroke(); x.beginPath(); x.moveTo(42, 20); x.lineTo(40, 31); x.moveTo(54, 20); x.lineTo(56, 31); x.stroke(); }),
-      bind: fsIcon((x) => { const g = x.createRadialGradient(48, 48, 10, 48, 48, 36); g.addColorStop(0, 'rgba(155,107,255,0.08)'); g.addColorStop(0.8, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(200,170,255,0.95)');
-        x.fillStyle = g; x.beginPath(); x.arc(48, 48, 36, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#c9b0ff'; x.lineWidth = 4; x.stroke();
-        x.fillStyle = 'rgba(255,255,255,0.85)'; x.beginPath(); x.arc(36, 34, 6, 0, Math.PI * 2); x.fill(); }),
-      smell: fsIcon((x) => { x.strokeStyle = '#c8d6a8'; x.lineWidth = 6;
-        x.beginPath(); x.moveTo(38, 14); x.bezierCurveTo(36, 34, 26, 50, 22, 60); x.bezierCurveTo(18, 70, 28, 76, 38, 74); x.bezierCurveTo(42, 80, 50, 80, 54, 74); x.stroke();
-        x.lineWidth = 4.5; for (let i = 0; i < 3; i++) { const y0 = 34 + i * 16; x.beginPath(); x.moveTo(62, y0); x.bezierCurveTo(70, y0 - 7, 76, y0 + 7, 86, y0); x.stroke(); } }),
-      lend: fsIcon((x) => { x.strokeStyle = '#b896ff'; x.lineWidth = 5; for (let i = 0; i < 5; i++) { const px = 22 + i * 13; x.beginPath(); x.moveTo(px, 20); x.lineTo(px, 76); x.stroke(); }
-        x.lineWidth = 4; x.beginPath(); x.ellipse(48, 78, 32, 7, 0, 0, Math.PI * 2); x.stroke(); }),
-      together: fsIcon((x) => { x.lineWidth = 6; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(38, 48, 22, 0, Math.PI * 2); x.stroke();
-        x.strokeStyle = '#b896ff'; x.beginPath(); x.arc(58, 48, 22, 0, Math.PI * 2); x.stroke(); x.strokeStyle = '#ff4a62'; x.lineWidth = 4; x.beginPath(); x.moveTo(48, 18); x.quadraticCurveTo(70, 48, 48, 78); x.stroke(); })
+      /* (bold enough to read in a button's 42 %: each fills most of its square; v26.0's phone at 360 points as the floor) */
+      flame: fsIcon((x) => { const g = x.createLinearGradient(48, 92, 48, 6); g.addColorStop(0, '#ff2a4a'); g.addColorStop(0.55, '#ff6a7c'); g.addColorStop(1, '#fff1e8');
+        x.fillStyle = g; x.beginPath(); x.moveTo(48, 4); x.bezierCurveTo(70, 30, 86, 46, 84, 64); x.bezierCurveTo(82, 84, 66, 93, 48, 93); x.bezierCurveTo(30, 93, 14, 84, 12, 64);
+        x.bezierCurveTo(10, 46, 26, 30, 48, 4); x.closePath(); x.fill();
+        x.fillStyle = '#fff6ee'; x.beginPath(); x.ellipse(48, 68, 13, 18, 0, 0, Math.PI * 2); x.fill(); }),
+      shock: fsIcon((x) => { x.strokeStyle = '#ffcf6a'; x.lineWidth = 10; x.beginPath(); x.arc(48, 48, 37, 0, Math.PI * 2); x.stroke();
+        x.lineWidth = 6; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; x.beginPath(); x.moveTo(48 + Math.cos(a) * 13, 48 + Math.sin(a) * 13); x.lineTo(48 + Math.cos(a) * 31, 48 + Math.sin(a) * 31); x.stroke(); }
+        x.fillStyle = '#fff0c8'; x.beginPath(); x.arc(48, 48, 10, 0, Math.PI * 2); x.fill(); }),
+      bag: fsIcon((x) => { x.fillStyle = '#2a2f3a'; x.strokeStyle = '#e8ecf4'; x.lineWidth = 6;
+        x.beginPath(); x.moveTo(32, 26); x.bezierCurveTo(6, 44, 8, 92, 48, 92); x.bezierCurveTo(88, 92, 90, 44, 64, 26); x.closePath(); x.fill(); x.stroke();
+        x.beginPath(); x.moveTo(26, 24); x.quadraticCurveTo(48, 38, 70, 24); x.stroke(); x.beginPath(); x.moveTo(40, 8); x.lineTo(38, 26); x.moveTo(56, 8); x.lineTo(58, 26); x.stroke(); }),
+      bind: fsIcon((x) => { const g = x.createRadialGradient(40, 38, 6, 48, 48, 44); g.addColorStop(0, 'rgba(230,220,255,0.95)'); g.addColorStop(0.45, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(201,176,255,1)');
+        x.fillStyle = g; x.beginPath(); x.arc(48, 48, 42, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#e6dcff'; x.lineWidth = 7; x.stroke(); }),
+      smell: fsIcon((x) => { x.strokeStyle = '#d4e2b4'; x.lineWidth = 8;
+        x.beginPath(); x.moveTo(34, 6); x.bezierCurveTo(32, 30, 18, 50, 14, 62); x.bezierCurveTo(10, 76, 24, 84, 36, 80); x.bezierCurveTo(40, 88, 50, 88, 54, 80); x.stroke();
+        x.lineWidth = 7; for (let i = 0; i < 3; i++) { const y0 = 30 + i * 20; x.beginPath(); x.moveTo(60, y0); x.bezierCurveTo(68, y0 - 9, 78, y0 + 9, 90, y0); x.stroke(); } }),
+      lend: fsIcon((x) => { x.strokeStyle = '#c9b0ff'; x.lineWidth = 8; for (let i = 0; i < 5; i++) { const px = 14 + i * 17; x.beginPath(); x.moveTo(px, 8); x.lineTo(px, 78); x.stroke(); }
+        x.lineWidth = 6; x.beginPath(); x.ellipse(48, 82, 40, 9, 0, 0, Math.PI * 2); x.stroke(); }),
+      together: fsIcon((x) => { x.lineWidth = 9; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(34, 48, 26, 0, Math.PI * 2); x.stroke();
+        x.strokeStyle = '#c9b0ff'; x.beginPath(); x.arc(62, 48, 26, 0, Math.PI * 2); x.stroke(); x.strokeStyle = '#ff4a62'; x.lineWidth = 7; x.beginPath(); x.moveTo(48, 6); x.quadraticCurveTo(80, 48, 48, 90); x.stroke(); })
     };
 
     /* ---------------------------------------------------------------- THE FIGHT'S SOUNDS (the manifest's map; each a
@@ -7748,9 +7749,10 @@
          until it is in the bag, then let down
        FS_ACTS off: he fires from his walk and his rest, as the first pass had him */
     const FS_ACTS = true;
-    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false },
-                          wave: { take: 'Charged_Spell_Cast', a: 0.50, top: 2.00, b: 2.60, up: 1.5, down: 0.60, hold: true },
-                          bag:  { take: 'mage_soell_cast_8', a: 0.00, top: 0.40, b: 0.40, up: 0.6, down: 0.35, hold: true } };
+    /* (SHOCKWAVE and BAG are left standing, measured: his Charged_Spell_Cast lifts both feet 6 cm off the paving in its
+       crouch, mage_soell_cast_8 sinks his left foot 2 cm into it; their takes are listed wanted. The gold's and the bag's
+       own pictures carry those acts. fsPhoAct answers 0 for a kind with no row, so their calls stand ready) */
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false } };
     function fsPhoAct(kind, up) {
       const P = cast.pho, A = FS_PHO_TAKE[kind];
       if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
@@ -8152,7 +8154,7 @@
         CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: C0.x, z: C0.z, t: FS5.wall, crack: c.broken || st.stage === 'surge' }); }
       TRANCE5.set(1, FS5.wall); TRANCE5.pools(c.lent > 0 ? null : zw, pw, 1, 1);
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
-      TRANCE5.gold(Math.min(1.8, 1 + 0.8 * wind));
+      TRANCE5.gold(0.35 + 0.65 * wind);                   // (the fight's lens is behind him: the card lies over his back, so a glow, full only as the gold gathers)
       if (FS5.flare > 0) courtLamps(0.15 + 0.85 * FS5.flare);
       /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
       if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }
@@ -8319,7 +8321,11 @@
         ],
         played: 'pho', targets: fsMarks, onAct: fsOnAct }));
       FS5.mode = ok; FS5.fallback = !ok;
-      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9); }
+      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9);
+        /* (the run is held with him in first person, where a Continue lands; then, while the brief stands and the mode is
+           not yet live, the view is the boom behind his teacher, the picture the preparation ends on and START keeps: the
+           engine derives the boom from the bodies only once the mode is live, and holds whatever stands meanwhile) */
+        const B = boomAt({ x: F.pho.x, z: F.pho.z }); yaw.position.set(B.eye[0], B.eye[1], B.eye[2]); yaw.rotation.y = B.heading; pitch.rotation.x = B.pitch; }
       return ok;
     }
     /* THE BRIEF (v8.7, v18.2: instructions first, the mode's own picture under its title, START): nothing moves until START */
@@ -9639,14 +9645,17 @@
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
           const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
-          const ALONG = along === 'z' ? 'position.z' : 'position.x', ACROSS = along === 'z' ? 'position.x' : 'position.z';
+          /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
+             on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
+             shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga
+             was never drawn: together-00012, 21 Nov) */
+          { const P = geo.attributes.position, nf = new Float32Array(P.count), sp = st.maxX - st.minX;
+            for (let i = 0; i < P.count; i++) nf[i] = ((along === 'z' ? P.getZ(i) : P.getX(i)) - st.minX) / sp;
+            geo.setAttribute('aNf', new THREE.BufferAttribute(nf, 1)); }
           m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
-            sh.vertexShader = 'uniform float uNK, uNT, uNLen; uniform sampler2D uNPath; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
+            sh.vertexShader = 'attribute float aNf; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
               .replace('#include <begin_vertex>', `#include <begin_vertex>
-                /* along the body: 0 at the tail, 1 at the head (the head leads along the path) */
-                float nf = (${ALONG} - ${st.minX.toFixed(4)}) / ${(st.maxX - st.minX).toFixed(4)};
-                vNf = nf; vNn = normal;
-                transformed = vec3(0.0);`);
+                vNf = aNf; vNn = normal;`);
             sh.fragmentShader = 'uniform float uNA, uNT, uNK; uniform vec3 uNCol, uNGold; varying float vNf; varying vec3 vNn;\n' + sh.fragmentShader
               .replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
                 float scl = 0.55 + 0.45 * sin(vNf * 180.0 - uNT * 3.0) * sin(vNf * 37.0 + uNT * 1.7);
@@ -9722,7 +9731,7 @@
             d.sp.position.set(lp(from[0], cx + d.dx, u), lp(from[1], top + 0.01, u) + d.up * 4 * u * (1 - u), lp(from[2], cz + d.dz, u)); } },
         dropsOff() { for (const d of drops) d.sp.visible = false; },
         /* the string round the tied bag's neck, by k (0 none: the bag as it came) */
-        string(k, bag) { strRing.visible = k > 0.01 && !!bag && bag.visible; if (!strRing.visible) return; strRing.position.set(bag.position.x, bag.position.y + 0.205, bag.position.z); strRing.scale.setScalar(0.92 + 0.08 * k); }
+        string(k, bag) { strRing.visible = k > 0.01 && !!bag && bag.visible; if (!strRing.visible) return; strRing.position.set(bag.position.x, bag.position.y + 0.295, bag.position.z); strRing.scale.setScalar(0.92 + 0.08 * k); }
       };
     })();
 
@@ -10233,7 +10242,7 @@
        eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
     const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
-                    liftPho: [0.35, 0.05], liftTon: [-0.45, -0.55], liftJun: [0.45, -0.9], liftEye: [-0.1, EYE, -1.55] };
+                    liftPho: [0.35, 0.05], liftTon: [-0.6, 0.2], liftJun: [0.6, -0.3], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -10340,8 +10349,10 @@
           { t: T.room3 - 0.05, name: 'dining', eye: [A.eyeDine[0], EYE, A.eyeDine[2] + 0.1], at: [A.dine[0] - 0.7, 1.45, A.dine[1] + 1.6], fp: 54, fd: 48 },
           { t: T.room3, name: 'terrace', eye: A.eyeTerr, at: [A.terr[0] - 1.2, 1.45, A.terr[1]], fp: 56, fd: 50, cut: true },
           { t: T.knot - 0.05, name: 'terrace', eye: [A.eyeTerr[0] - 0.1, EYE, A.eyeTerr[2]], at: [A.terr[0] - 1.3, 1.45, A.terr[1]], fp: 54, fd: 48 },
-          { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.55, 1.05, A.tie[1] - 0.6], at: [A.tie[0], 0.48, A.tie[1]], fp: 30, fd: 26, cut: true },
-          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.5, 1.02, A.tie[1] - 0.58], at: [A.tie[0], 0.5, A.tie[1]], fp: 28, fd: 24 },
+          /* (the bag on its table with the table round it, the knot readable: at 0.85 m on a 30 degree lens its black cloth
+             filled the whole phone: bagtied-018_5) */
+          { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.7, 1.15, A.tie[1] - 0.75], at: [A.tie[0], 0.5, A.tie[1]], fp: 46, fd: 38, cut: true },
+          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.62, 1.1, A.tie[1] - 0.68], at: [A.tie[0], 0.52, A.tie[1]], fp: 42, fd: 35 },
           { t: T.tn5b1, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 46, fd: 40, cut: true },
           { t: T.window - 0.05, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 44, fd: 38 },
           { t: T.window, name: 'window', eye: A.eyeKoh, at: () => lp3(fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), [A.kohWin[0] - 0.3, 1.5, A.kohWin[1] - 0.5], 0.3), fp: 52, fd: 46, cut: true },
@@ -10403,6 +10414,11 @@
     /* HIS EYE AT THE TABLE: his seat (STATION.table.at) at the seated height the play gives him (c_story.js SIT5), so the
        collector's film and the endings stand where the table's play seats him, whatever view a film began in */
     const SEATEYE5 = () => [STATION.table.at.x, SIT5.y, STATION.table.at.z];
+    /* the collector's head as a shot aims at it: his seat, a hand forward of it along his facing (he sits leaning forward
+       over the table; aimed at his seat his face stood at the phone's edge: collector-00015, 21 Nov), at a seated head's
+       height */
+    const colHead5 = () => { const P = cast.col, S0 = STATION.table.collector, g = P && P.ready && P.group.visible ? P.group.position : null,
+      r = g ? P.group.rotation.y : S0.ry, x = g ? g.x : S0.x, z = g ? g.z : S0.z; return [x + Math.sin(r) * 0.22, 0.98, z + Math.cos(r) * 0.22]; };
     FILMS5.collector = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -10427,7 +10443,7 @@
           fmTalk(P, 'col', t, t < T.co5t2 ? T.co5t1 : T.co5t2, t < T.co5t2 ? SECS.co5t1 : SECS.co5t2, 'Sitting_Answering_Questions');
           lookNow(P, t < T.co5t1 ? [R.cx - 0.1, 0.35, R.cz - 0.1] : t < T.co5t2 + 3.0 ? fmHead(cast.phoS, [0, 0.95, 240.78]) : 'lens', 0.8, 0.7); });
         whenReady(cast.jun, (P) => { const s0 = STATION.table.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, [R.cx, 0.4, R.cz], 0.5, 0.7); });
-        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]);
+        const COL = colHead5;
         fmTrack(t, [
           { t: 0, name: 'room', eye: [R.x1 - 0.35, 1.5, R.z0 + 0.45], at: [R.cx - 0.2, 0.55, R.cz + 0.4], fp: 62, fd: 54 },
           { t: T.case, name: 'room', eye: [R.x1 - 0.4, 1.45, R.z0 + 0.5], at: [R.cx - 0.3, 0.5, R.cz + 0.2], fp: 58, fd: 50 },
@@ -10435,8 +10451,8 @@
           { t: T.laid - 0.05, name: 'case', eye: [me[0] - 0.25, me[1], me[2] + 0.05], at: () => lp3(COL(), [R.cx - 0.36, 0.4, R.cz - 0.05], 0.5), fp: 48, fd: 42 },
           { t: T.laid, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx, 0.35, R.cz - 0.12], fp: 40, fd: 34, cut: true },
           { t: T.co5t1 + SECS.co5t1, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx - 0.1, 0.36, R.cz - 0.15], fp: 44, fd: 38 },
-          { t: T.co5t2 + 0.6, name: 'col', eye: me, at: COL, fp: 46, fd: 40 },
-          { t: T.co5t2 + SECS.co5t2 - 1.2, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+          { t: T.co5t2 + 0.6, name: 'col', eye: me, at: COL, fp: 54, fd: 46 },
+          { t: T.co5t2 + SECS.co5t2 - 1.2, name: 'col', eye: me, at: COL, fp: 50, fd: 44 },
           /* (it ends on his seat's own view and KEEPS it (z_tail.js: keep.view), where the table's play seats him (c_story.js
              seatHim): the view it began in was the court's, where the bag tied film left the rig) */
           { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
@@ -10457,13 +10473,15 @@
        the close's CL5. Each ends on its black: the card lies over it */
     const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.22], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
+    const BAGBLOB5 = { m: null };
     FILMS5.ending = {
       begin(k, api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
         if (api && api.handsRoot) api.handsRoot.visible = false;
         fmShow(cast.phoS, true); fmShow(cast.col, true); PIECES5.set(true);
         RITE5.bowl.visible = true;
-        if (things.bagTied) { if (things.bagTied.parent !== world) world.attach(things.bagTied); things.bagTied.visible = false; }
+        if (things.bagTied) { if (things.bagTied.parent !== world) world.attach(things.bagTied); things.bagTied.visible = false;
+          if (!BAGBLOB5.m) BAGBLOB5.m = blob(things.bagTied, 0.34, 0.3); }   // (a painted contact shadow: on the cloth it read as floating; kept here, never in userData: v25.4)
       },
       frame(k, t, api) {
         const E = EN5[k], R = ROOM, r0 = E.rite, RT = RT5, CL = CL5, c0 = E.close, me = SEATEYE5();
@@ -10514,7 +10532,7 @@
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
         /* THE LENS: the ending's own shots, the rite's, the close's */
-        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
+        const COL = colHead5, PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
         const keys = X.shots(me, COL, PHO, E).concat([
           { t: r0, name: 'rite', eye: [me[0] + 0.2, me[1] + 0.05, me[2] - 0.1], at: () => lp3(PHO(), [R.cx, 0.4, R.cz], 0.55), fp: 52, fd: 46 },
           { t: r0 + RT.see + 1.2, name: 'rite', eye: [me[0] + 0.1, me[1], me[2]], at: [R.cx, 0.42, R.cz - 0.05], fp: 46, fd: 40 },
@@ -10523,8 +10541,10 @@
           { t: r0 + RT.end, name: 'bag', eye: [me[0] + 0.12, me[1] - 0.1, me[2] + 0.12], at: [RITE_AT.bag[0], 0.48, RITE_AT.bag[1]], fp: 32, fd: 28 },
           { t: r0 + RT.end + 0.05, name: 'lighter', eye: me, at: COL, fp: 46, fd: 40, cut: true }
         ]).concat(X.after(me, COL, PHO, E)).concat([
-          { t: c0, name: 'last', eye: [RITE_AT.bag[0] + 0.62, 0.78, RITE_AT.bag[1] - 0.55], at: [RITE_AT.bag[0] - 0.05, 0.42, RITE_AT.bag[1] + 0.05], fp: 36, fd: 32, cut: true },
-          { t: c0 + CL.end, name: 'last', eye: [RITE_AT.bag[0] + 0.55, 0.74, RITE_AT.bag[1] - 0.5], at: [RITE_AT.bag[0] - 0.04, 0.42, RITE_AT.bag[1] + 0.05], fp: 32, fd: 28 }
+          /* (the bag, its string, his teacher's hand on it and the empty case beside it, all in the picture: at 0.9 m on a 36
+             degree lens the bag alone filled the phone, the hand at its edge: endA-00050, 21 Nov) */
+          { t: c0, name: 'last', eye: [RITE_AT.bag[0] + 0.8, 1.02, RITE_AT.bag[1] - 0.72], at: [RITE_AT.bag[0] - 0.1, 0.44, RITE_AT.bag[1] + 0.06], fp: 46, fd: 38, cut: true },
+          { t: c0 + CL.end, name: 'last', eye: [RITE_AT.bag[0] + 0.72, 0.98, RITE_AT.bag[1] - 0.66], at: [RITE_AT.bag[0] - 0.09, 0.44, RITE_AT.bag[1] + 0.06], fp: 42, fd: 35 }
         ]);
         keys.sort((a, b) => a.t - b.t);
         fmTrack(t, keys);
@@ -10573,8 +10593,10 @@
              { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5A1 - 0.1, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5A1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5A1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             /* (to his teacher on a CUT: the door is behind his left shoulder and his teacher before him, and panned the look
+                swung 138 degrees in half a second: endA lens, three steps read as cuts) */
+             { t: E.ph5A1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.ph5A2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5A2 + 0.4, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
@@ -10592,8 +10614,8 @@
              { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5B1 - 0.2, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5B1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5B1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
            colLook: (t, E) => (t < E.co5B4 ? [-0.2, 0.36, 239.8] : t < E.lid ? [0.2, 0.36, 239.85] : null) },
