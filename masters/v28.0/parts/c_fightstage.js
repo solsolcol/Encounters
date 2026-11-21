@@ -26,9 +26,9 @@
     const fsW = (lx, lz) => courtWorld(lx, lz);
     const fsL = (wx, wz) => ({ x: COURT5.x - wx, z: COURT5.z - wz });
     /* which of the rules' acts each body's buttons carry (FIGHT.SLOT), and the engine's id for each */
-    const FS_ACT = { fire: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
-    const FS_ID = { pho: { main: 'fire', second: 'shock', third: 'bag' }, zavier: { main: 'bind', second: 'smell', third: 'lend' } };
-    const FS_SLOT = { fire: 'main', shock: 'second', bag: 'third', bind: 'main', smell: 'second', lend: 'third' };
+    const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
+    const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', second: 'smell', third: 'lend' } };
+    const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', smell: 'second', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
@@ -112,7 +112,7 @@
        act's own colour so a phone reads the act at a glance; no person is drawn: v21.16) */
     function fsIcon(draw) { const [c, x] = fsCanvas(96); x.lineCap = 'round'; x.lineJoin = 'round'; draw(x); return c; }
     const FS_ICON = {
-      fire: fsIcon((x) => { const g = x.createRadialGradient(48, 52, 2, 48, 52, 34); g.addColorStop(0, '#fff1e8'); g.addColorStop(0.35, '#ff6a7c'); g.addColorStop(1, 'rgba(255,42,74,0)');
+      flame: fsIcon((x) => { const g = x.createRadialGradient(48, 52, 2, 48, 52, 34); g.addColorStop(0, '#fff1e8'); g.addColorStop(0.35, '#ff6a7c'); g.addColorStop(1, 'rgba(255,42,74,0)');
         x.fillStyle = g; x.beginPath(); x.arc(48, 52, 34, 0, Math.PI * 2); x.fill();
         x.strokeStyle = '#ff4a62'; x.lineWidth = 5; x.beginPath(); x.moveTo(30, 30); x.quadraticCurveTo(48, 6, 66, 30); x.stroke(); }),
       shock: fsIcon((x) => { x.strokeStyle = '#ffcf6a'; x.lineWidth = 7; x.beginPath(); x.arc(48, 48, 33, 0, Math.PI * 2); x.stroke();
@@ -136,7 +136,7 @@
     /* ---------------------------------------------------------------- THE FIGHT'S SOUNDS (the manifest's map; each a
        literal name). One-shots from where they happen (panned by where it is on the screen), dealt in turn from a list;
        the cue volume is the manifest's */
-    const FS_DEAL = { swing: ['u5swing1', 'u5swing2'], fire: ['u5fire1', 'u5fire2', 'u5fire3'], land: ['u5land1', 'u5land2'], tired: ['u5tired1', 'u5tired2'],
+    const FS_DEAL = { swing: ['u5swing1', 'u5swing2'], ball: ['u5fire1', 'u5fire2', 'u5fire3'], land: ['u5land1', 'u5land2'], tired: ['u5tired1', 'u5tired2'],
                       bind: ['u5bind1', 'u5bind2'], sniff: ['u5sniff1', 'u5sniff2', 'u5sniff3'], drawn: ['u5drawn1', 'u5drawn2'], rise: ['u5rise1', 'u5rise2'],
                       strain: ['u5strain1', 'u5strain2', 'u5strain3'], bars: ['u5barring1', 'u5barring2'], gather: ['u5gather1', 'u5gather2'],
                       note: ['u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9'] };
@@ -202,6 +202,8 @@
         } catch (e) { }
       }
     }
+    /* a one-shot the part holds (M8 under the surge) brought down and stopped */
+    function fsFade(s, secs) { if (!s || !s.__g || !s.context) return; try { const t = s.context.currentTime, g = s.__g.gain; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + secs); s.stop(t + secs + 0.05); } catch (e) { } }
     function fsLoopsStop() {
       for (const L of fsLoops.values()) if (L.s) { try { const t = L.s.context.currentTime; L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(L.g.gain.value, t); L.g.gain.linearRampToValueAtTime(0.0001, t + 0.25); L.s.stop(t + 0.3); } catch (e) { } }
       fsLoops.clear(); FS5.stemsOn = false;
@@ -434,7 +436,7 @@
       const surge = st.stage === 'surge';
       for (const who of ['pho', 'zavier']) for (const slot of ['main', 'second', 'third']) {
         const id = FS_ID[who][slot];
-        if (who !== played) { kit.tagAct(id, { hidden: true, pulse: false }); continue; }
+        if (who !== played) continue;                                     // (only the one played has buttons on the screen)
         if (surge) {
           if (slot === 'main') kit.tagAct(id, { hidden: false, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
                                                 label: W5.btnTogether, icon: FS_ICON.together });
@@ -442,7 +444,7 @@
           continue;
         }
         const o = fsActState(H[slot]);
-        const base = { fire: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
+        const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
         kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, label: o.label || base, icon: FS_ICON[id] });
       }
       /* the switch: free once taught; said, never pressed, otherwise (the engine shows it whenever there are two) */
@@ -487,7 +489,6 @@
     }
 
     /* ---------------------------------------------------------------- WHAT THE RULES ANSWERED, drawn and sounded */
-    const FS_COLOR_KIND = { come: 1, slip: 1, hide: 1 };
     function fsEvents(ev) {
       const st = FS5.st;
       for (const e of ev) {
@@ -498,14 +499,14 @@
             break;
           case 'sanity': { const now = kit && kit.stat ? kit.stat('sanity') : null; if (now != null && e.to > now + 0.01 && kit.award) kit.award('sanity', e.to - now); break; }
           case 'fireball': { fsBallStart(e); const m = fsMouth(_fsA);
-            if (!e.ai) { fsFx(fsDeal('swing'), 0.8, m.x, m.z); fsFx(fsDeal('fire'), 0.8, m.x, m.z); fsFx('u5flight', 0.6, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
-            else { fsFx(fsDeal('fire'), 0.45, m.x, m.z); fsFx('u5flight', 0.32, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
+            if (!e.ai) { fsFx(fsDeal('swing'), 0.8, m.x, m.z); fsFx(fsDeal('ball'), 0.8, m.x, m.z); fsFx('u5flight', 0.6, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
+            else { fsFx(fsDeal('ball'), 0.45, m.x, m.z); fsFx('u5flight', 0.32, m.x, m.z); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7; }
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
             if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1; }
             else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_COL.ruby, e.result === 'setback' ? 0.7 : 1); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); }
             else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_COL.ruby, 0.5); fsFx('u5slipthru', 0.8, w.x, w.z); }
-            else if (e.result === 'stale') { fsBloom(w.x, 0.017 + w.z * 0, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); }
+            else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); }
             else { fsBloom(w.x, w.z, FS_COL.ruby, 0.6); fsFx(fsDeal('land'), 0.6, w.x, w.z); }
             break; }
           case 'bind': { const zw = cast.zav ? cast.zav.group.position : null;
@@ -540,7 +541,7 @@
           case 'hold': fsFx('u5plant', 0.8, null); break;
           case 'stage': fsStage(e.to); break;
           case 'surge': fsFx('u5shape', 0.8, null); { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
-            fsFx('u5m8surge', 0.7, null); for (const V of fsVis) V.from = null; break;
+            FS5.m8 = fsFx('u5m8surge', 0.7, null); for (const V of fsVis) V.from = null; break;
           case 'together': fsFx('u5togfill', 0.8, null); break;
           case 'won': fsFx('u5done', 0.8, null); FS5.wonAt = FS5.wall; break;
           case 'lost': fsFx('u5broken', 0.8, null); FS5.lostAt = FS5.wall; break;
@@ -580,7 +581,16 @@
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
       if (typeof FILMS5 === 'object' && FILMS5.together) FILMS5.together.three = three.length === 3 ? three : null;
       FS5.film = true;
-      const run = FS5.run, back = () => { if (run !== FS5.run || !FS5.st) return; FS5.film = false; fsStep({ act: 'FILMDONE' }, 0); };
+      /* M8 under the surge goes down as the film comes in (the film plays M9 over everything; the fight's loops go quiet by
+         themselves under it, their frame stopped) */
+      fsFade(FS5.m8, 0.4); FS5.m8 = null;
+      const run = FS5.run, back = () => { if (run !== FS5.run || !FS5.st) return; FS5.film = false; fsStep({ act: 'FILMDONE' }, 0);
+        /* the two stand where the film left them (where they stood when it began), whatever the rules reset them to; the
+           three lie low and dim as its last picture laid them */
+        const st2 = FS5.st, ts = kit.tagState();
+        for (const b of ts.bodies) { const R2 = b.id === 'pho' ? st2.pho : st2.zav, l = fsL(b.x, b.z); R2.x = l.x; R2.z = l.z; FS5.last[b.id === 'pho' ? 'pho' : 'zav'] = l; }
+        st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; } });
+        FS5.nagaDim = true; };
       const sealed = !!(ctx.sealedBefore && ctx.sealedBefore('e4c5'));
       if (!kit || !kit.film || !kit.film('together', { noSkip: !sealed, onDone: back })) back();
     }
@@ -659,7 +669,6 @@
       } else if (FS5.swNeed) { input.act = 'SWITCH'; FS5.swNeed = false; }
       /* 3. the step */
       if (st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won' && st.stage !== 'naga') fsStep(input, dt);
-      else if (st.stage === 'naga' && dt > 0) fsStep({}, 0);
       /* (the rules and the engine must agree on who is played: a switch the engine made inside the rules' last instant of
          lock is told to the rules again on the next frame) */
       if (st.stage === 'learn' || st.stage === 'fight') { const rw = st.who === 'pho' ? 'pho' : 'zavier'; if (rw !== played && !FS5.swNeed) FS5.swNeed = true; }
@@ -667,14 +676,15 @@
       const playedNow = kit.tagState().played === 'zavier' ? 'zavier' : 'pho';
       for (const who of ['pho', 'zavier']) {
         const B = who === 'pho' ? phoB : zavB, R2 = who === 'pho' ? st.pho : st.zav, k2 = who === 'pho' ? 'pho' : 'zav'; if (!B) continue;
-        const w = fsW(R2.x, R2.z);
-        if (who === playedNow) { if (Math.hypot(w.x - B.x, w.z - B.z) > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z); }
-        else if (Math.hypot(w.x - B.x, w.z - B.z) > 0.004) kit.tagPlace(who, w.x, w.z);
+        const w = fsW(R2.x, R2.z), off = Math.hypot(w.x - B.x, w.z - B.z);
+        if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z); }
+        else { if (off > 0.004) kit.tagPlace(who, w.x, w.z); if (who === 'pho') FS5.aiPace.pho = dt > 0 ? off / dt : 0; }
         FS5.last[k2] = { x: R2.x, z: R2.z };
       }
       /* (his teacher stands still while the gold gathers and while the bag draws: the rules' own) */
-      kit.tagBody('pho', { root: st.pho.wind > 0 || st.pho.draw > 0 || st.stage === 'surge' });
-      kit.tagBody('zavier', { root: st.stage === 'surge' });
+      const still = !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last');
+      kit.tagBody('pho', { root: still || st.pho.wind > 0 || st.pho.draw > 0 });
+      kit.tagBody('zavier', { root: still });
       fsFaces(wdt, playedNow);
       /* 5. the screen and the court */
       fsHud();
@@ -706,9 +716,8 @@
        pools and the gold at his shoulders, the nine, the effects, the souring of the picture when he is reached */
     function fsLookFrame(wdt, played, phoB, zavB) {
       const st = FS5.st, ft = st.t;
-      const pp = played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), zp = played === 'zavier' ? (zavB ? zavB.v : 0) : 0;
-      fsBodyTake(cast.pho, 'pho', played === 'pho' ? pp : (FS5.aiPace.pho || 0), wdt);
-      fsBodyTake(cast.zav, 'zav', zp, wdt);
+      fsBodyTake(cast.pho, 'pho', played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), wdt);
+      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (zavB ? zavB.v : 0) : 0, wdt);
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
       const c = st.cage, at = c.lent > 0 ? pw : zw;
@@ -717,6 +726,8 @@
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
       TRANCE5.gold(Math.min(1.8, 1 + 0.8 * wind));
       if (FS5.flare > 0) courtLamps(0.15 + 0.85 * FS5.flare);
+      /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
+      if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }
       PRAI5.tick(wdt);
       if (st.stage === 'surge') fsSurgeFrame(wdt); else fsPraiFrame(wdt);
       fsFxFrame(wdt, ft);
@@ -743,7 +754,8 @@
     const FS_M7 = 0.55;                                                     // (M7's mix sits where the chapter's other play music does: the music loops' cue volume)
     FS5.aiPace = { pho: 0 };
     function fsSoundFrame(wdt, played) {
-      const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = FS5.live && st.stage !== 'lost';
+      /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
+      const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = (FS5.live || FS5.brief) && st.stage !== 'lost';
       const fighting = st.stage === 'learn' || st.stage === 'fight', zw = cast.zav ? cast.zav.group.position : null;
       fsLoop('cagehum', 'u5cagehum', live && st.stage !== 'won' ? 0.4 * str : 0, { tau: 0.2 });
       fsLoop('cagethin', 'u5cagethin', live && fighting ? (1 - str) * 0.45 : 0, { tau: 0.2 });
@@ -769,8 +781,7 @@
       const busy = FS5.lastLine && FS5.wall - FS5.wonAt < (SECS[FS5.lastLine] || 2.5) + 0.5;
       if (FS5.wall - FS5.wonAt < 2.8 || (busy && FS5.wall - FS5.wonAt < 6)) return;
       FS5.done = true;
-      fightLeave();
-      if (typeof cleanse === 'function') cleanse();
+      cleanse();                                                // (c_story.js: the mode left, the bag tied, the next afternoon)
     }
     /* the mode left for good, the court as the bag tied film finds it */
     function fightLeave() {
@@ -782,7 +793,7 @@
       if (kit && kit.captions) kit.captions(null);
       NAGA5.set(0, 0, 0, 0, 0);
       for (const P of PRAI5.list) { P.group.rotation.x = 0; P.group.rotation.order = 'XYZ'; P.group.scale.setScalar(1); }
-      FS5.live = false; FS5.mode = false;
+      FS5.live = false; FS5.mode = false; FS5.on = false;
     }
     /* what a probe and the walk test read (stage.snap().story.fight) */
     function fightSnap() {
@@ -797,6 +808,7 @@
     }
     function fightReset() {
       FS5.run++;
+      if (FS5.brief && kit && kit.abortEvent) kit.abortEvent();           // (the brief's own answer then finds a new run, and does nothing)
       if (FS5.on) fightLeave();
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
@@ -840,7 +852,7 @@
       const ok = !!(kit && kit.tag && pho && zav && kit.tag({
         bodies: [
           { id: 'pho', obj: pho.group, name: W5.btnPho, speed: FN5.phoWalk || 1.2, radius: 0.45, acts: [
-            { id: 'fire', slot: 'main', label: W5.btnFire, icon: FS_ICON.fire, key: 'Space' },
+            { id: 'flame', slot: 'main', label: W5.btnFire, icon: FS_ICON.flame, key: 'Space' },
             { id: 'shock', slot: 'second', label: W5.btnShockwave, icon: FS_ICON.shock, key: 'KeyQ' },
             { id: 'bag', slot: 'third', label: W5.btnBag, icon: FS_ICON.bag, key: 'KeyE' }] },
           { id: 'zavier', obj: zav.group, name: W5.btnZavier, speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
