@@ -616,6 +616,12 @@
                            kit.tagPlace('a', F_HOME.a[0], F_HOME.a[1], { ry: Math.PI });
                            kit.tagPlace('b', F_HOME.b[0], F_HOME.b[1], { ry: Math.PI });
                            kit.tagCount(3, 3);
+                           /* the fight as it begins again, read in the same instant (a frame later its targets have drifted
+                              by however long that frame was) */
+                           F.atRetryFight = JSON.stringify({ left: F.left, picked: F.picked,
+                             t: fTargets.map(T => [T.m.position.x, T.m.position.z, T.tired, T.taken, T.hidden]),
+                             a: [bodyA.position.x, bodyA.position.z, bodyA.rotation.y], b: [bodyB.position.x, bodyB.position.z, bodyB.rotation.y],
+                             played: kit.tagState().played });
                          } });
     }
     function fightReset() { F.on = false; F.losses = 0; F.restarts = 0; F.lastRetry = null; F.manual = false; bodyA.visible = bodyB.visible = false; fReset(); }

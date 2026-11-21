@@ -2719,6 +2719,11 @@ await lbl('tag');
    and puts it back, with the pin held off while it looks) */
 await p.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;
   window.__tagPin = setInterval(() => { if (!window.__noPin && E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
+/* (a trace of the mode's state while the block runs, printed when a check of it fails: [seconds, state, on, live, played,
+   a minigame open, the check last begun]) */
+await p.evaluate(() => { const E = window.__enc; window.__tagTrace = []; let last = '';
+  window.__tagTraceT = setInterval(() => { const T = E.tag(), s = [E.getState(), T.on, T.live, T.played, !!E.kitDebug().event].join(' ');
+    if (s !== last) { window.__tagTrace.push([Math.round(performance.now() / 100) / 10, s, window.__lbl || '']); last = s; if (window.__tagTrace.length > 400) window.__tagTrace.shift(); } }, 150); });
 const tagParts = {};
 const TAG_HELP = `
   const E = window.__enc, kit = E.kit, st = E.stage, F = st.fight;
@@ -2729,9 +2734,11 @@ const TAG_HELP = `
 `;
 const tagEval = (body, arg) => p.evaluate(new Function('arg', 'return (async () => {' + TAG_HELP + body + '})();'), arg);
 const tagCheckSrc = async (name, body, arg) => {
+  await p.evaluate(n => { window.__lbl = 'tag.' + n; }, name);
   const r = await tagEval(body, arg).catch(e => ({ threw: String(e && e.message || e) }));
   tagParts[name] = r;
-  const ok = !!r && typeof r === 'object' && !r.threw && Object.values(r).every(v => v === true);
+  /* (a part named with a leading _ is a reading kept for the log, never part of the verdict) */
+  const ok = !!r && typeof r === 'object' && !r.threw && Object.entries(r).every(([k, v]) => k[0] === '_' || v === true);
   if (!ok) console.log('tag ' + name + ' parts:', JSON.stringify(r));
   return ok;
 };
@@ -2780,7 +2787,9 @@ K.chillSour = await tagCheckSrc('sour', `
   const R = {};
   kit.chill(0.6, { tint: 'sour', secs: 0 }); await frames(3);
   const c = E.cold().chill;
-  R.tinted = c.tint === '150,166,128 128,146,104 52,64,40' && c.shown && /rgba\\(52,64,40,/.test(c.tintBg);
+  /* (the colours as the page reads them back: a browser writes rgba() with spaces, as the fog's check reads them) */
+  R.tinted = c.tint === '150,166,128 128,146,104 52,64,40' && c.shown && /128,\\s*146,\\s*104/.test(c.tintBg) && /52,\\s*64,\\s*40/.test(c.tintBg)
+    && !/104,\\s*158,\\s*232/.test(c.tintBg);
   kit.chill(0, { secs: 0, tint: null }); await frames(3);
   const d = E.cold().chill;
   R.goneAtZero = !d.shown && d.tint === null && d.filter === '';
@@ -3011,7 +3020,9 @@ await p.waitForTimeout(1500);
 await p.keyboard.up('KeyA');
 K.tagBodiesKept = await tagCheckSrc('kept', `
   clearInterval(window.__apart); clearInterval(window.__wallT);
-  return { apart: window.__minD >= 0.84 - 1e-6 && window.__minD < 0.97, wall: window.__minX >= -11 && window.__minX < -10.85 && !window.__inWall };`);
+  const T = E.tag();
+  return { apart: window.__minD >= 0.84 - 1e-6 && window.__minD < 0.97, wall: window.__minX >= -11 && window.__minX < -10.85 && !window.__inWall,
+           _minD: window.__minD, _minX: window.__minX, _st: [E.getState(), T.on, T.live, T.played, !!E.kitDebug().event, T.t] };`);
 
 /* the lens kept out of a wall: the violet one stands where his boom would pass through the pillar; switched to, the lens
    stands in front of it, never inside a blocker, and inside the chapter's box */
@@ -3023,16 +3034,23 @@ K.tagLensClear = await tagCheckSrc('lensClear', `
   await frames(3);
   const T = E.tag(), L = new (E.yaw.position.constructor)(...T.lens);
   return { pulledIn: T.boomK < 0.95, inFront: L.z < st.pillar.position.z - 0.4 - 0.28, notInABlocker: !E.blockers.some(b => b.containsPoint(L)),
-           insideBox: L.x >= -10.4 && L.x <= 10.4 && L.z >= -10.4 && L.z <= 10.2 };`);
+           insideBox: L.x >= -10.4 && L.x <= 10.4 && L.z >= -10.4 && L.z <= 10.2,
+           _lens: T.lens, _boomK: T.boomK, _b: [st.fightBodies.b.position.x, st.fightBodies.b.position.z], _st: [E.getState(), T.on, T.live, T.played, T.t] };`);
 
 /* the other one's mark at the screen's edge while he is out of the picture: his name, his share */
-await tagEval(`kit.tagPlace('a', -3.2, 10.3, {}); await frames(3); return true;`);
+/* (the gold one carries no share of the fixture's own; one is given here, so its ring is seen drawn, and taken back) */
+await tagEval(`kit.tagPlace('a', -3.2, 10.3, {}); kit.tagBody('a', { share: 0.5 }); await frames(3); return true;`);
 K.tagMate = await tagCheckSrc('mate', `
   await poll(() => document.getElementById('tagMate').classList.contains('on'), 20000);
-  const el = document.getElementById('tagMate'), r = el.getBoundingClientRect();
-  return { shown: el.classList.contains('on') && el.querySelector('.tmName').textContent === 'GOLD',
+  await frames(2);
+  const el = document.getElementById('tagMate'), r = el.getBoundingClientRect(), T = E.tag();
+  const R = { shown: el.classList.contains('on') && el.querySelector('.tmName').textContent === 'GOLD',
            onScreen: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight,
-           share: !el.classList.contains('noShare') };`);
+           share: !el.classList.contains('noShare') && Math.abs(parseFloat(el.querySelector('.tmArc').style.strokeDashoffset) - 50.27 * 0.5) < 0.2,
+           _cls: el.className, _a: [st.fightBodies.a.position.x, st.fightBodies.a.position.z], _st: [E.getState(), T.on, T.live, T.played, T.t] };
+  kit.tagBody('a', { share: null }); await frames(2);
+  R.shareGone = el.classList.contains('noShare');
+  return R;`);
 await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', st.fightHome.b[0], st.fightHome.b[1], {}); await frames(2); return true;`);
 
 /* under a minigame, the menu and a hidden tab NOTHING moves and the mode's clock stands; a held key's walk stops */
@@ -3075,6 +3093,8 @@ K.tagStillHidden = await tagCheckSrc('hiddenTab', `
    the film left them */
 K.tagFilmInside = await tagCheckSrc('film', `
   const R = {}, A = st.fightBodies.a, B = st.fightBodies.b;
+  /* (both at rest first: a walk let go under the menu above coasts on for a moment once play is back, as his own does) */
+  let still = 0; await poll(() => { still = E.tag().bodies.every(b => b.v === 0) ? still + 1 : 0; return still >= 3; }, 20000);
   const a0 = [A.position.x, A.position.z, B.position.x, B.position.z], s0 = JSON.stringify(E.tagSave0());
   window.__filmDone = null;
   R.started = kit.film('probe', { onDone: () => { window.__filmDone = true; kit.fade(0, 0.2); } }) === true;
@@ -3088,6 +3108,7 @@ K.tagFilmInside = await tagCheckSrc('film', `
   R.handsStillOff = E.vmPasses() === vm0;
   R.saveStillHeld = JSON.stringify(E.tagSave0()) === s0 && JSON.stringify(E.checkpointData().stats) === JSON.stringify(JSON.parse(s0).st.stats);
   R.bodiesStay = A.position.x === a0[0] && A.position.z === a0[1] && B.position.x === a0[2] && B.position.z === a0[3];
+  R._a0 = a0; R._a1 = [A.position.x, A.position.z, B.position.x, B.position.z]; R._v = E.tag().bodies.map(b => b.v);
   return R;`);
 
 /* 65 · A LOSS THAT BEGINS AGAIN: the card (its own state, the chapter's words), its guard, and on BEGIN AGAIN the run as the
@@ -3110,9 +3131,7 @@ const retryOnce = async (i) => {
     const s0 = E.tagSave0();
     return { atRetry: F.atRetry, held: { s: s0.st.stats.sanity, a: s0.st.stats.awareness, w: s0.st.stats.wisdom, phase: s0.st.phase },
              restarts: F.restarts, last: F.lastRetry, told: window.__lr && window.__lr.button, presses: E.retryState().presses,
-             fight: JSON.stringify({ left: F.left, picked: F.picked, t: st.fightTargets.map(t => [t.m.position.x, t.m.position.z, t.tired, t.taken, t.hidden]),
-                                     a: [st.fightBodies.a.position.x, st.fightBodies.a.position.z], b: [st.fightBodies.b.position.x, st.fightBodies.b.position.z] }),
-             played: E.tag().played, count: E.tag().count };`);
+             fight: F.atRetryFight, played: E.tag().played, count: E.tag().count };`);
   return { card, after, useMore };
 };
 const retries = [];
@@ -3122,7 +3141,7 @@ K.tagRetry = retries.every((r, i) => r.card.early === false && r.card.open && r.
     && (i < 2 ? r.card.more === null : r.card.more === 'AN EASIER WAY')
     && r.after.atRetry.s === r.after.held.s && r.after.atRetry.a === r.after.held.a && r.after.atRetry.w === r.after.held.w && r.after.atRetry.phase === r.after.held.phase
     && r.after.restarts === i + 1 && r.after.presses === i + 1 && r.after.told === (r.useMore ? 'more' : 'again') && r.after.last === r.after.told
-    && r.after.fight === retries[0].after.fight && r.after.count && r.after.count.left === 3);
+    && typeof r.after.fight === 'string' && r.after.fight === retries[0].after.fight && r.after.count && r.after.count.left === 3);
 if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
 
 /* 63 · THE CAPTION IN THE MODE, and every overlap of what the mode adds, by bounding box (a desktop of 900 x 600 here; the
@@ -3172,7 +3191,9 @@ K.tagLeave = await tagCheckSrc('leave', `
 await tagEval(`kit.take('rifle'); kit.button('nose', null); await frames(2); return true;`);
 K.buttonGone = await tagCheckSrc('buttonGone', `await frames(2); return { gone: !document.querySelector('.cBtn') && E.buttons().length === 0 && !document.body.classList.contains('hasCBtn') };`);
 await p.evaluate((parts) => { window.__tag = parts; }, tagParts);
-await p.evaluate(() => { clearInterval(window.__tagPin); window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
+if (Object.entries(K).some(([k, v]) => /^(tag|button|chillSour)/.test(k) && v !== true))
+  console.log('tag trace', JSON.stringify(await p.evaluate(() => window.__tagTrace)));
+await p.evaluate(() => { clearInterval(window.__tagPin); clearInterval(window.__tagTraceT); window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;
@@ -3320,16 +3341,24 @@ K.tagGoneWithChapter = await p.evaluate(() => {
   const pCheck = async (name, body, arg) => {
     const r = await pEval(body, arg).catch(e => ({ threw: String(e && e.message || e) }));
     tagParts['phone.' + name] = r;
-    const ok = !!r && typeof r === 'object' && !r.threw && Object.values(r).every(v => v === true);
+    const ok = !!r && typeof r === 'object' && !r.threw && Object.entries(r).every(([k, v]) => k[0] === '_' || v === true);
     if (!ok) console.log('tag phone ' + name + ' parts:', JSON.stringify(r));
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone']) K[k] = false;
   try {
-    await pp.goto(PAGE + sep + 'ch=chtest', { waitUntil: 'load' });
-    await pp.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
+    /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
+       time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
+    const tp0 = Date.now();
+    await pp.goto(PAGE + sep + 'ch=chtest', { waitUntil: 'load', timeout: 300000 });
+    await pp.waitForFunction(() => !!window.__enc, null, { timeout: 300000, polling: 500 });
     await pp.tap('#startBtn');
-    await pp.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 180000 });
+    const left = await pp.waitForFunction(() => window.__enc.getState() !== 'title', null, { timeout: 60000, polling: 500 }).then(() => true, () => false);
+    if (!left) { console.log('tag phone: the tap on Start was not taken', JSON.stringify(await pp.evaluate(() => ({ st: window.__enc.getState(),
+      at: (() => { const r = document.getElementById('startBtn').getBoundingClientRect(), el = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return el ? (el.id || el.className) : null; })() }))));
+      await pp.evaluate(() => document.getElementById('startBtn').click()); }
+    await pp.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 900000, polling: 500 });
+    console.log('tag phone: in play after ' + Math.round((Date.now() - tp0) / 1000) + ' s');
     await pp.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;      // (pinned, as the desktop block is)
       setInterval(() => { if (E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
     const cdp = await pctx.newCDPSession(pp);

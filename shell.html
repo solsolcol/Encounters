@@ -482,7 +482,7 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    thumbs (the sixty-third seam) and a refused press says why above the caption, never over the court's middle */
 #tagHud{display:none}
 body.inplay.tagOn #tagHud{display:block}
-body.tagOn.cardup #tagHud,body.tagOn.evopen #tagHud,body.tagOn.cine #tagHud,body.tagOn.menuopen #tagHud{display:none}
+body.tagOn.cardup #tagHud,body.tagOn.evopen #tagHud,body.tagOn.cine #tagHud,body.tagOn.menuopen #tagHud,body.tagOn.retryopen #tagHud{display:none}
 .tagBtn{position:fixed;z-index:9;pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;cursor:pointer;
   display:grid;place-items:center;align-content:center;gap:3px;padding:0;border-radius:50%;color:var(--bone);
   background:rgba(7,8,11,.66);border:1.5px solid rgba(232,226,212,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
@@ -527,7 +527,7 @@ body.tagOn.capsOn #nofire{bottom:calc(var(--capTop,140px) + 10px)}
 /* the marks over the chapter's targets (a tap or a click on one picks it), the other one's mark at the screen's edge
    while he is out of the picture, and the count under the objective */
 #tagMarks{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden}
-body.cardup #tagMarks,body.cine #tagMarks,body.evopen #tagMarks{display:none}
+body.cardup #tagMarks,body.cine #tagMarks,body.evopen #tagMarks,body.retryopen #tagMarks{display:none}
 .tmark{position:absolute;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;box-sizing:border-box;
   border:2px solid var(--tc,#FFE0A0);box-shadow:0 0 10px var(--tc,#FFE0A0);opacity:.85;will-change:transform}
 .tmark.picked{border-width:3px;opacity:1;animation:tmPick 1s ease-in-out infinite}
@@ -537,7 +537,7 @@ body.cardup #tagMarks,body.cine #tagMarks,body.evopen #tagMarks{display:none}
   align-items:center;gap:6px;padding:5px 10px 5px 7px;border-radius:999px;background:rgba(8,10,14,.74);
   box-shadow:0 0 0 1px rgba(232,226,212,.3),0 2px 10px rgba(0,0,0,.5);font:700 11px/1 var(--ui);letter-spacing:.14em;color:#F4ECD8}
 #tagMate.on{display:flex}
-body.cardup #tagMate.on,body.cine #tagMate.on,body.evopen #tagMate.on{display:none}
+body.cardup #tagMate.on,body.cine #tagMate.on,body.evopen #tagMate.on,body.retryopen #tagMate.on{display:none}
 #tagMate .tmRing{width:18px;height:18px;transform:rotate(-90deg)}
 #tagMate .tmRing circle{fill:none;stroke-width:3}
 #tagMate .tmTrack{stroke:rgba(255,255,255,.18)}
@@ -548,7 +548,7 @@ body.cardup #tagMate.on,body.cine #tagMate.on,body.evopen #tagMate.on{display:no
 #tagCount{position:fixed;left:50%;transform:translateX(-50%);z-index:4;display:none;gap:7px;pointer-events:none;
   top:calc(max(14px,env(safe-area-inset-top)) + 4px + var(--objH,38px) + 8px)}
 #tagCount.on{display:flex}
-body.cardup #tagCount.on,body.cine #tagCount.on,body.evopen #tagCount.on{display:none}
+body.cardup #tagCount.on,body.cine #tagCount.on,body.evopen #tagCount.on,body.retryopen #tagCount.on{display:none}
 #tagCount i{display:block;width:9px;height:9px;border-radius:50%;box-sizing:border-box;border:1.5px solid rgba(232,226,212,.5);background:rgba(7,8,11,.6)}
 #tagCount i.lit{background:#F4ECD8;border-color:#F4ECD8;box-shadow:0 0 8px rgba(244,236,216,.7)}
 #tagCount i.out{animation:tagOut .6s ease-out}
