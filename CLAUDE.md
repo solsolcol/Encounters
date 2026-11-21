@@ -97,7 +97,7 @@ from his **phone**. Consequences:
    feel it is unnecesary", and he was right): refresh
    `Encounters-backup.bundle` (`git bundle create
    Encounters-backup.bundle --all`, split at 20 MB for the upload limit;
-   the branch `claude/model-sources` (v26.12: the 3D sources generated here, 9.24 GiB, tools/srcbackup.py) is never
+   the branch `claude/model-sources` (v26.12: the 3D sources generated here, tools/srcbackup.py; 13.6 GiB since 21 Nov 2026, when episode 4's chapters 4 and 5 went up) is never
    fetched into a working copy except to restore, never by a bare `git fetch` or `git pull`, and never in the bundle)
    when a CHAPTER ships, or whenever he asks — not every release. Why the
    old rule is retired: GitHub now holds the branch and its whole history,

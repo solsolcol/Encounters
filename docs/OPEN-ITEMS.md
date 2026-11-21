@@ -441,3 +441,7 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
   download the branch too; the copies these sessions make are shallow and of one branch, which do not, and this
   machine's copy fetches the game's branch only (`remote.origin.fetch`). Never fetch it into a working copy unless
   restoring, and never put it in the backup bundle (CLAUDE.md, rule 3).
+  **Added 21 Nov 2026:** episode 4 chapter 4's sources (masters/v27.0/src, 381 files) and chapter 5's so far (the body
+  of Master Zavier the game uses and the Naga stick, 22 files; his three refused bodies are left out by rule), 4,502
+  MiB in chunks 26 to 78; the branch now holds 1,464 files, its tip 9d232f73 read back from GitHub. Chapter 4's had
+  sat on this machine alone for three days after Meshy's own copies were due to go.

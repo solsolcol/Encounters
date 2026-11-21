@@ -140,3 +140,12 @@
 #    as before with the change (it had none).
 # f. A WATCH IS NOT MENDED BY A FILL. The first body's noisy watch was filled smooth inside a slab: a white bandage with
 #    a ragged skin edge. Taken back out. A thing the generator draws wrong is made again (a new body), not painted over.
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 7. THE SOURCES, ON THE SOURCES BRANCH (21 Nov 2026)
+# ---------------------------------------------------------------------------------------------------------------------
+# masters/v28.0/src's fourth body and the Naga stick (22 files), and with them chapter 4's whole folder
+# (masters/v27.0/src, 381 files), went up in chunks 26 to 78 of claude/model-sources:
+#   SRCBACKUP_GIT=<scratch> SRCBACKUP_LABEL=v28.0 SRCBACKUP_CHUNK_MB=120 python3 -I tools/srcbackup.py pushnew
+# GitHub's tip read back as the last commit pushed (9d232f735583). The three refused bodies stay on this machine only
+# (tools/srcbackup.py SKIP). A source made after this goes up with the same command.
