@@ -487,7 +487,34 @@
     }
 
     /* ---------------------------------------------------------------- THE TWO OF THEM: their takes, their faces */
-    const fsTake = { pho: { walking: false, t: 0, pace: 0 }, zav: { walking: false, t: 0, pace: 0 } };
+    const fsTake = { pho: { walking: false, t: 0, pace: 0, gait: 'Walking' }, zav: { walking: false, t: 0, pace: 0, gait: 'Walking' } };
+    /* THEIR WALK AND HIS RUN, by the ground each covers (R25: "the characters walking speed feels sluggish, make it faster
+       and more responsive"; "Fireball, shockwave, walking and bagging can all be different animations"): Grandmaster Pho
+       WALKS (his file's Walking, 1.42 m a second of its own) below 1.7 m a second and RUNS (his file's Running, 2.31 of
+       its own) above 1.9, keeping the one he has between; each played at the rate the ground asks of it (its own pace,
+       read from his file the way c_cast.js `pace` reads it: the planted foot's way back), so a planted foot stays planted
+       at every pace. A change between the two is a crossfade of a fifth of a second IN STEP: the new take begins where
+       the old one's feet are, the run's phase the walk's less a tenth (each foot's stance in his run, 0.88 to 0.05 and
+       0.35 to 0.52 of it, lies inside its stance in his walk, 0.90 to 0.25 and 0.43 to 0.65, shifted so: read from his
+       file at a hundredth of each take). His student has only his Walking (1.23 of its own). The rates are held between
+       0.35 and 1.5 of a take's own (a slower walk is a stroll, never a frozen leg) */
+    const FS_RUN = { on: 1.9, off: 1.7, shift: -0.10, fade: 0.2 };
+    function fsGait(P, who, pace) {
+      if (who !== 'pho' || !P.acts.Running) return 'Walking';
+      return fsTake[who].gait === 'Running' && fsTake[who].walking ? (pace < FS_RUN.off ? 'Walking' : 'Running') : (pace > FS_RUN.on ? 'Running' : 'Walking');
+    }
+    const fsGaitRate = (P, name, pace) => Math.max(0.35, Math.min(1.5, pace / ((P.pace && P.pace[name]) || (name === 'Running' ? 2.31 : 1.29))));
+    /* into the walk or the run this pace asks for: from his rest (eased in over 0.15 s), or from the other one, in step */
+    function fsGaitTo(P, who, g, fade) {
+      const T = fsTake[who], from = T.walking && T.gait !== g ? T.gait : null;
+      T.walking = true; T.t = 0; T.gait = g;
+      if (P.win) delete P.win[g];
+      take(P, g, from ? FS_RUN.fade : fade);
+      if (from && P.acts[from] && P.acts[g]) {
+        const A0 = P.acts[from], A1 = P.acts[g], d0 = A0.getClip().duration || 1, d1 = A1.getClip().duration || 1;
+        const u0 = (((A0.time % d0) + d0) % d0) / d0, u1 = (((u0 + (g === 'Running' ? FS_RUN.shift : -FS_RUN.shift)) % 1) + 1) % 1;
+        A1.time = u1 * d1; }
+    }
     /* HIS ACTS IN HIS OWN BODY: three of Grandmaster Pho's own file's takes (none was made for the fight), each played
        between two of its own moments (span) on the frame the rules begin the act, with every posture law of his as it
        stands (none is keyed to these three, so each plays as his file has it). Read from his file through its bones
@@ -560,7 +587,7 @@
     function fsPhoBack(fade = 0.3) {
       const P = cast.pho; FS5.act = null; if (!P) return;
       const T = fsTake.pho;
-      if (T.pace > 0.08) { T.walking = true; T.t = 0; if (P.win) delete P.win.Walking; take(P, 'Walking', fade); if (P.acts.Walking) P.acts.Walking.timeScale = 1; }
+      if (T.pace > 0.08) { T.walking = false; fsGaitTo(P, 'pho', fsGait(P, 'pho', T.pace), fade); fsGaitRates(P, T.pace); }
       else { T.walking = false; T.t = 0; rest(P, fade); }
     }
     /* the act's held top let go (the wave gone out, the Prai in the bag), or the act broken off (the gold broken) */
@@ -573,30 +600,39 @@
       const T = fsTake[who]; T.pace = pace;
       if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
       const moving = pace > 0.08;
-      if (moving) { T.t = 0; if (!T.walking) { T.walking = true; if (P.win) delete P.win.Walking; take(P, 'Walking', 0.25); if (P.acts.Walking) P.acts.Walking.timeScale = 1; } }
-      else if (T.walking) { T.t += wdt; if (T.t > 0.25) { T.walking = false;
-        if (who === 'zav') { const rt = zavRest(); if (rt) rest(P, 0.35); else hold(P, 'Walking', ZAV_STAND5, 0.001, 0.35); } else rest(P, 0.35); } }
-      const wp = (P.pace && P.pace.Walking) || 1.29;
-      P.rate = moving ? Math.max(0.3, Math.min(1.6, pace / wp)) : 1;
+      if (moving) { T.t = 0; const g = fsGait(P, who, pace); if (!T.walking || g !== T.gait) fsGaitTo(P, who, g, 0.15); }
+      else if (T.walking) { T.t += wdt; if (T.t > 0.12) { T.walking = false;           // (stopped: his rest within 0.12 s, eased 0.25)
+        if (who === 'zav') { const rt = zavRest(); if (rt) rest(P, 0.25); else hold(P, 'Walking', ZAV_STAND5, 0.001, 0.25); } else rest(P, 0.25); } }
+      fsGaitRates(P, moving ? pace : 0);
+    }
+    /* each walking take at the rate its own pace asks (the one fading out too, so its feet keep step as it goes); his
+       whole body at its own rate (P.rate, which his rest and every other take of his run on) */
+    function fsGaitRates(P, pace) {
+      P.rate = 1;
+      for (const nm of ['Walking', 'Running']) { const A = P.acts[nm];
+        if (!A || (P.span && P.span.name === nm) || (P.win && P.win[nm])) continue;
+        A.timeScale = pace > 0.08 ? fsGaitRate(P, nm, pace) : 1; }
     }
     /* THEIR FOOTFALLS on the paving (the engine's steps are the first person's, and he does not walk in the mode): each
        body's walk struck where its own take sets a foot down, read from each file through its bones (M8's takeread: his
        teacher's Walking at 0.37 and 0.85 of its 1.03 s, his own at 0.28 and 0.78), at the manifest's gain */
-    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85], run: [0.30, 0.86] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    /* (his run's own strikes, the same way: each foot within 3.5 cm of its lowest, at 0.30 and 0.86 of its 0.63 s) */
     function fsSteps() {
       for (const who of ['pho', 'zav']) {
         const P = who === 'pho' ? cast.pho : cast.zav, S = FS_STEP[who], T = fsTake[who];
-        if (!P || !P.ready || !P.acts.Walking || !P.group.visible) continue;
-        const A = P.acts.Walking, d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepU;
-        T.stepU = u;
-        if (last == null || !T.walking || (P.w.Walking || 0) < 0.5) continue;
-        for (const a of S.at) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
+        const g = T.gait === 'Running' && S.run && P && P.acts && P.acts.Running ? 'Running' : 'Walking';
+        if (!P || !P.ready || !P.acts[g] || !P.group.visible) continue;
+        const A = P.acts[g], d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepG === g ? T.stepU : null;
+        T.stepU = u; T.stepG = g;
+        if (last == null || !T.walking || (P.w[g] || 0) < 0.5) continue;
+        for (const a of (g === 'Running' ? S.run : S.at)) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
           const k = Math.min(1, (T.pace || 0) / (who === 'pho' ? (FN5.phoWalk || 1.2) : (FN5.zavWalk || 0.6)));
           fsFx(S.name, 0.4 * (0.75 + 0.25 * k), P.group.position.x, P.group.position.z); }
       }
     }
     function fsStand(P, who) {
-      if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0;
+      if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0; fsTake[who].gait = 'Walking';
       whenReady(P, (Q) => { Q.rate = 1; if (who === 'zav') { const rt = zavRest(); if (rt) rest(Q, 0); else hold(Q, 'Walking', ZAV_STAND5, 0.001, 0); } else rest(Q, 0); });
     }
 
@@ -890,7 +926,8 @@
       for (const who of ['pho', 'zavier']) {
         const B = who === 'pho' ? phoB : zavB, R2 = who === 'pho' ? st.pho : st.zav, k2 = who === 'pho' ? 'pho' : 'zav'; if (!B) continue;
         const w = fsW(R2.x, R2.z), off = Math.hypot(w.x - B.x, w.z - B.z);
-        if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z); }
+        /* (the played one kept in by the rules keeps walking along what kept him (R25): only the push into it is lost) */
+        if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z, { keep: true }); }
         else { if (off > 0.004) kit.tagPlace(who, w.x, w.z); if (who === 'pho') FS5.aiPace.pho = dt > 0 ? off / dt : 0; }
         FS5.last[k2] = { x: R2.x, z: R2.z };
       }
@@ -1030,6 +1067,16 @@
       pose(name, t) { FS5.labPose = name && cast.pho && cast.pho.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labPose || !name; },
       ground() { const P = cast.pho; return P && P.groundRep ? JSON.parse(JSON.stringify(P.groundRep)) : null; },
       groundOn() { FS5.groundOn = true; fsGroundActs(cast.pho); return this.ground(); },
+      /* (a probe's walk measured from a clear start: one of the two set down at a place of the court in the rules' own frame,
+         the rules and the engine both, standing still; and the switch shown, as the lesson shows it once it needs it) */
+      place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
+        R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
+      swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
+        out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
+          w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
+          ts: Object.fromEntries(['Walking', 'Running'].filter(k => P.acts[k]).map(k => [k, +P.acts[k].timeScale.toFixed(3)])) }; }
+        return out; },
       clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {

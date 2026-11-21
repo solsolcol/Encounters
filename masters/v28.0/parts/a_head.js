@@ -164,7 +164,12 @@
        declaration, so the preparation's film ends on exactly the mode's first picture */
     tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
            camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
-           radius: 0.45, speed: 1.2, turn: 9, eye: 1.62, keys: { switch: 'KeyF' } },
+           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
+           /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
+              it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
+              so a thumb's easy push runs; and turns to its walk at 16 a second, where 9 took 0.26 s for 90 %. The
+              engine's seam 60 reads ease and reach; one without them walks as before) */
+           ease: 18, reach: 0.7 },
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
        seam, with this chapter's own sounds: another chapter's sound named here would leave that chapter's pack), SMELL (a
