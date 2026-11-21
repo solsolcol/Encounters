@@ -284,6 +284,7 @@
          adds none (v9.4). uNA its strength (the fight's last stage keeps it at 0.3: under 0.5 its glow goes out and it is
          drawn after everything else, so a dim Naga hides nothing behind it), uNT its clock */
       const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
+                  uNS0: { value: 1 }, uNLm: { value: 1 }, uNJ: { value: 0.5 }, uNTPL: { value: 1.6 },   // (the lying middle's stretch, its length in the file, its neck's length, its taper: set())
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
                   uNGlowC: { value: new THREE.Color(0xff1030) }, uNGold: { value: new THREE.Color(0xffc860) },
@@ -293,18 +294,22 @@
          so the nearest surface and the body are the same depths to the bit */
       const SH5 = {};
       SH5.vsHead = `attribute float aNf; attribute float aReg; attribute float aO2; attribute vec2 aCS; attribute float aW;
-uniform float uNKK, uNLen, uNGR, uNGW;
+uniform float uNKK, uNLen, uNGR, uNGW, uNS0, uNLm, uNJ, uNTPL;
 varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
 `;
       SH5.vsBody = `#include <begin_vertex>
+  /* (the lying middle's place along the path, metres from the stick's head, as set() lays it: stretched evenly, and
+     unstretched over its last uNJ metres of the file, its neck, so it meets the head at the head's own scale) */
+  float nXm = aO2 * uNLm, nWj = clamp((nXm - (uNLm - uNJ)) / max(uNJ, 1e-4), 0.0, 1.0);
+  float nDm = uNS0 * nXm + (uNGR - uNS0) * uNJ * (nWj * nWj * nWj - 0.5 * nWj * nWj * nWj * nWj);
   #ifdef NAGA_GLOW
     /* (as thick as the body is where it stands: thinned with it where it leaves the stick, or a glow of full width stood
        round a thin body there as a pale sleeve, together-phone 5.8 on lab 5) */
-    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0) * (aReg < 1.5 ? smoothstep(0.0, 1.0, clamp(aO2 * uNKK * uNLen / 1.6, 0.0, 1.0)) : 1.0));
+    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0) * (aReg < 1.5 ? smoothstep(0.0, 1.0, clamp(nDm / max(uNTPL, 1e-3), 0.0, 1.0)) : 1.0));
   #endif
   vNWp = (modelMatrix * vec4(transformed, 1.0)).xyz;
   vNWn = normalize(mat3(modelMatrix) * normal);
-  vNS = aReg < 0.5 ? 0.0 : (aReg < 1.5 ? aO2 * uNKK * uNLen : uNKK * uNLen + aO2 * uNGR);
+  vNS = aReg < 0.5 ? 0.0 : (aReg < 1.5 ? nDm : uNKK * uNLen + aO2 * uNGR);
   vNCS = aCS; vNReg = aReg; vNNf = aNf;
 `;
       SH5.fsHead = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
@@ -573,7 +578,16 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              candidate 0f693b7; now its head is a third of its size a metre out of the stick and whole at the top of its
              rise. Laid so, none of it is in a wall, a planter or the house at 32 stick places, every twentieth of the way) */
           const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.10)), arr = st.geo.attributes.position.array, n = arr.length / 3;
-          U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr;
+          /* THE NECK UNSTRETCHED (FILMS-2). The lying middle is laid stretched along the path (its 5.8 m in the file over up to
+             25.6 m) and the head is not, so where they met the body's detail and its normals changed in one step: a twisted
+             ring round its neck, together-phone 14, 15.4 and 16.5 on ba6a2bb (at 15.4 the path and the head stand within a
+             degree of each other there: the ring was the stretch). Now the middle's last half metre of the file, its neck,
+             eases to the head's own scale along the path (its stretch S0 elsewhere, so the whole still ends at the head's
+             place); and it thins out of the stick over at most six tenths of its laid length, so a body still short is never
+             a thread under its head (together-phone 3.5: a flower on a stem) */
+          const Lm = Math.max(1e-3, st.parts.ZH - st.parts.ZT), NJ = Math.min(0.5, 0.3 * Lm), NZ0 = Lm - NJ, LK = kk * st.len;
+          const S0 = Math.max(1e-3, (LK - gr * NJ / 2) / (Lm - NJ / 2)), TPL = Math.max(1e-3, Math.min(1.6, 0.6 * LK));
+          U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr; U.uNS0.value = S0; U.uNLm.value = Lm; U.uNJ.value = NJ; U.uNTPL.value = TPL;
           /* (laid again only when its laying moves: once it lies whole, a frame changes its light and clock alone) */
           const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5);
           if (st.laid === lk) return;
@@ -593,14 +607,29 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           st.head = [HA[0] + hx * 0.8 * gr, HA[1] + 1.6 * gr, HA[2] + hz * 0.8 * gr];
           /* (its normals turned with it: the model's (across, up, along) onto the path's (B, N, T), the along part scaled by
              the cross-section's scale over the middle's stretch along the path, as a stretched skin's normals are) */
-          const NR = st.geo.attributes.normal.array, BN = st.bn, str = Math.max(0.05, kk * LEN / Math.max(1e-3, st.parts.ZH - st.parts.ZT));
+          const NR = st.geo.attributes.normal.array, BN = st.bn;
+          /* (THE NECK'S SLOPE: where the path rises or falls under the head, over the planters' humps, the neck's slices are
+             turned toward the head's upright along its length, so the two meet in one ring: 13 degrees apart at the east
+             hump's foot, together-phone 14. A slope steeper than 25 degrees there (its rise out of the stick, the dive to the
+             far corner) is laid as it was, the turn eased out by 45, where turning the slices would press the neck flat) */
+          const nj0 = HA[9], nj1 = HA[10], nj2 = HA[11], kl = Math.hypot(nj2, nj0), PH = Math.atan2(kl, nj1);
+          const PA = kl > 1e-6 ? PH * (1 - smo(c01((PH - 0.436) / 0.349))) : 0, kx = kl > 1e-6 ? -nj2 / kl : 0, kz = kl > 1e-6 ? nj0 / kl : 0;
           for (let i = 0; i < n; i++) {
             const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
             const bx = BN ? BN[i * 3] : 0, by = BN ? BN[i * 3 + 1] : 1, ba = BN ? BN[i * 3 + 2] : 0;
             let px, py, pz, ex, ey, ez;
-            if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp, na = ba * Math.max(0.02, gr * tp) / str;
-              px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy;
-              ex = F[3] * na + F[6] * bx + F[9] * by; ey = F[4] * na + F[7] * bx + F[10] * by; ez = F[5] * na + F[8] * bx + F[11] * by; }
+            if (r === 1) { const xm = o2 * Lm; let d, sg, wj = 0;
+              if (xm <= NZ0) { d = S0 * xm; sg = S0; }
+              else { wj = (xm - NZ0) / NJ; const w3 = wj * wj * wj; d = S0 * xm + (gr - S0) * NJ * (w3 - 0.5 * w3 * wj); sg = S0 + (gr - S0) * wj * wj * (3 - 2 * wj); }
+              frameAt(d / LEN, F); const tp = smo(c01(d / TPL)), xx = o0 * gr * tp, yy = o1 * gr * tp, na = ba * Math.max(0.02, gr * tp) / Math.max(1e-3, sg);
+              let vx = F[6] * xx + F[9] * yy, vy = F[7] * xx + F[10] * yy, vz = F[8] * xx + F[11] * yy;
+              ex = F[3] * na + F[6] * bx + F[9] * by; ey = F[4] * na + F[7] * bx + F[10] * by; ez = F[5] * na + F[8] * bx + F[11] * by;
+              if (wj > 0 && PA > 1e-4) { const a = PA * wj * wj * (3 - 2 * wj), ca = Math.cos(a), sa = Math.sin(a);
+                let kv = kx * vx + kz * vz, qx = vx * ca - kz * vy * sa + kx * kv * (1 - ca), qy = vy * ca + (kz * vx - kx * vz) * sa, qz = vz * ca + kx * vy * sa + kz * kv * (1 - ca);
+                vx = qx; vy = qy; vz = qz;
+                kv = kx * ex + kz * ez; qx = ex * ca - kz * ey * sa + kx * kv * (1 - ca); qy = ey * ca + (kz * ex - kx * ez) * sa; qz = ez * ca + kx * ey * sa + kz * kv * (1 - ca);
+                ex = qx; ey = qy; ez = qz; }
+              px = F[0] + vx; py = F[1] + vy; pz = F[2] + vz; }
             else if (r === 2) { /* (the model's across onto (-hz, 0, hx), its up onto the world's, its along onto (hx, 0, hz): the
                  path's own B, N, T where the path lies level, so the neck's foot meets the body there exactly) */
               px = HA[0] + (-hz * o0 + hx * o2) * gr; py = HA[1] + o1 * gr; pz = HA[2] + (hx * o0 + hz * o2) * gr;
@@ -1223,6 +1252,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            first laid head stands there; aimed up its path at 2.4 m, the lens swung to the empty wall over the strike and
            jumped down to the stick's head as it rose, together-phone 1.9 on lab 5) */
         const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
+        const LC = { x: (lay[0].x + lay[1].x + lay[2].x) / 3, z: (lay[0].z + lay[1].z + lay[2].z) / 3 };   // (the three laid: their middle)
         const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
@@ -1235,7 +1265,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.lay + 3.0, name: 'high', eye: [COURT5.x + 0.1, 8.6, COURT.z0 + 0.4], at: [COURT5.x + 0.4, 0.2, -8.9], fp: 64, fd: 54 },
           { t: T.apart - 1.1, name: 'high', eye: [COURT5.x + 0.2, 8.0, COURT.z0 + 0.6], at: [COURT5.x + 0.55, 0.4, -8.8], fp: 62, fd: 53 },
           { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.5, 6.6, COURT.z0 + 1.0], at: [zz.x + 0.2, 0.6, zz.z + 0.5], fp: 60, fd: 52 },
-          { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },
+          /* (DOWN TO THE THREE where the Naga laid them, from high enough over his student that none of them is behind him,
+             wherever the fight left him: from 1.9 m beside him the lens stood 0.71 m from the Naga's hump over the east
+             planter, its body a red blob across a phone's top corner, one of the three out of the frame and one behind him,
+             together-phone 19.9 on ba6a2bb; measured from here, all three in a phone's frame and a desk's, the Naga's
+             nearest 2.2 m) */
+          { t: T.low + 1.2, name: 'three', eye: [LC.x + 0.2, 5.2, LC.z - 4.48], at: [LC.x, 0.3, LC.z - 0.28], fp: 56, fd: 50 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },

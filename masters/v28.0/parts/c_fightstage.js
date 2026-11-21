@@ -1619,7 +1619,7 @@
          (CLEAR, metres between the lines), and its upper third no nearer his face than CLEAR.face; where any comes nearer,
          the fist is moved out along the paving, straight away from it, by what is missing (three passes: one way out of one
          can lead into another), by the act's own weight (his rest, walk and run were clear without it and stay as they were) */
-      const CLEAR = { trunk: 0.25, head: 0.20, thigh: 0.25, shin: 0.22, face: 0.45, reach: 0.50 };   // (face: his rest's 0.42, and 3 cm)
+      const CLEAR = { trunk: 0.25, head: 0.20, thigh: 0.25, shin: 0.22, face: 0.45, reach: 0.56 };   // (face: his rest's 0.42, and 3 cm; reach: his elbow still bent 45 degrees)
       const _ka = V(), _kb = V(), _kc = V(), _kd = V(), _kn = V(), _kp = V(), _kq = V(), _k0 = V(), _kw = [V(), V(), V(), V(), V(), V(), V()];
       let kBones = null;
       function segClosest(a0, a1, b0, b1, p, q) {
@@ -1766,7 +1766,7 @@
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
           if (o.out != null) STAFF.out = o.out * D2R;
           if (o.stickR != null) STICK_R = +o.stickR; if (o.fingR != null) FING_R = +o.fingR; if (o.gap != null) GAP = +o.gap;
-          if (o.byH != null) BYH = !!o.byH; if (o.fgap) FGAP = Object.assign({}, o.fgap);
+          if (o.byH != null) BYH = !!o.byH; if (o.fgap) FGAP = Object.assign({}, o.fgap); if (o.clear) Object.assign(CLEAR, o.clear);
           /* (an act's keys tried: { take: [[moment, out, up, on, tip, lean, shape], ...] }) */
           if (o.moves) for (const nm in o.moves) if (MOVES[nm]) MOVES[nm].keys = o.moves[nm];
           if (o.plantAt) PLANT_AT.splice(0, 2, +o.plantAt[0], +o.plantAt[1]);
