@@ -1176,3 +1176,5 @@ e66e8a99ad498d4069a0ef98b4a52eca312b8676268dcc55e50a1d32d21d1be0  masters/v27.0/
 184c345b4e91f4f801c1d6c392ab70ce7ca44189f8aa5534022fa2ec3307836b  masters/v27.0/src/ravi-people.log
 5b9fb704d3b2a78a4af02e46ac9eeded2a80d9c75c2b69d82816f0756f63748a  masters/v27.0/src/ravi-rig.log
 7ea1f3233ceb3e54d3c931498c2184213384ec57cdacc77b9e812ab6c6e100e4  masters/v27.0/src/ravi-takes.log
+12085aeb14c33c06335d1451637e11a43c2ff5ce132da98150446e67fd38ee6c  masters/v27.0/src/remeshed-framesmall2-4000.glb
+ad2f27212296ae1961654dcba46c0bcfb1434bff3568541e366c492104cfd2dc  masters/v27.0/src/rigged-amma.glb
