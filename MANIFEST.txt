@@ -1146,3 +1146,4 @@ e7b090e0236feedc63615252ebe5137a01ec517bab21f2d8957c60d677be2b62  masters/v27.0/
 a9047921dc60a805d192f77eddf7f382811ba80a8e301937136155fa71ac9e64  masters/v27.0/src/original-oppress.glb
 558783660aec9d57bb7939d800c39029ccf92cf2fedd60faa743cd5c965cfece  masters/v27.0/src/original-phonetable.glb
 12d05f59c27c4d9b7fe21ff119a55254cdcedd72cb5ff85240930aa1f6c8d6ed  masters/v27.0/src/original-pilltray.glb
+463056a0f88e5279329092eb5540f5ce3abc0a965d6d49ff21bf547e84eb75be  masters/v27.0/src/original-poles.glb
