@@ -8031,7 +8031,12 @@
     }
     /* (on only once proved: until tools/probes/e4c5ground.mjs has measured his feet over each window and photographed him,
        the gold and the bag stand as before and the fire keeps its build-time grounding; a probe turns it on: lab.groundOn) */
-    const FS_GROUND_ON = false;
+    /* (PROVED, 21 Nov, tools/probes/e4c5ground.mjs over each act's window at 13 moments, his own skin: the planted soles
+       0.15 to 0.47 cm into the paving (GROUND_SOLE's 0.3), a lifted foot up to 5.6 cm in the throw's step and 5.2 in the
+       bag's; the gold's crouch lays his robe's hem on the paving (its lowest 6 cm into it, read in the pictures as cloth
+       pooled on the floor); his front and side photographed at the gold's crouch and top, the bag's draw, the throw and its
+       held hand) */
+    const FS_GROUND_ON = true;
     if (FS_GROUND_ON) whenReady(cast.pho, fsGroundActs);
     const fsActOn = (kind) => kind === 'phoFire' || FS_GROUND_ON || FS5.groundOn;
     function fsPhoAct(kind, up) {
@@ -9662,12 +9667,12 @@
        offered here: dimmed, and pressed it says why in his teacher's voice, once ("Not yet. First your nose."). The decoy,
        the drain, nine metres on; the true trail on round the turn to the gate; at the gate, the gate's two lines, and the
        devotee's film. RECEIPTS on the phase string: t Ton asked, j Jun asked, d the drain smelled, e the eye's line said */
-    const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null, drain: false };
+    const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, since: null, wp: false, tonCalled: false, nag: null, drain: false };
     const asked = () => play.found.has('t') && play.found.has('j');
     function walkBegin() {
       lookAt0(LOOK_OF.walk); castPhase('walk'); warm5('walk');
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
-      Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null, drain: false });
+      Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, since: null, wp: false, tonCalled: false, nag: null, drain: false });
       smellButton(false);
       if (asked()) giveSmell();
       objectiveFor();
@@ -9701,7 +9706,10 @@
       if (smell.presses === 0) nagTick(walk5.nag, true, walk5.given);
       /* nothing done (no step on toward the gate) for 40 s: his teacher walks on ahead and waits at the gate, and the
          gate is marked; the gate is marked too once SMELL has gone unpressed for 20 s (the way on, 4.1) */
-      if (sp > walk5.best + 0.5) { walk5.best = sp; walk5.idle = 0; } else walk5.idle += wdt;
+      /* (on the chapter's clock, as every wait of the play is: a sum of frame steps ran slow on a slow phone, where each
+         step is capped, and his teacher never walked on in a probe at five seconds a frame) */
+      if (sp > walk5.best + 0.5 || walk5.since == null) { walk5.best = Math.max(walk5.best, sp); walk5.since = dayClock.t; }
+      walk5.idle = dayClock.t - walk5.since;
       if (!walk5.wp && (walk5.idle > 40 || (smell.presses === 0 && dayClock.t - walk5.given > 20))) { walk5.wp = true; objectiveFor(); }
       if (walk5.idle > 40) phoWalksAhead();
     }
