@@ -1,0 +1,19 @@
+ok   e4c4: nothing in the world is NaN
+ok   e4c4: every model it loads lands
+ok   e4c4: spawn is on open floor
+ok   e4c4: can WALK to the pile (his bed)
+ok   e4c4: can WALK to hotspot ravi
+ok   e4c4: can WALK to hotspot mala
+ok   e4c4: can WALK to hotspot folder
+ok   e4c4: can WALK to hotspot old
+ok   e4c4: can WALK to hotspot appa
+ok   e4c4: can WALK to hotspot amma
+ok   e4c4: can WALK to hotspot tell
+ok   e4c4: can WALK to hotspot look1
+ok   e4c4: can WALK to hotspot look2
+ok   e4c4: can WALK to hotspot look3
+ok   e4c4: can WALK to hotspot water
+ok   e4c4: cannot walk out of her flat
+ok   no chapter throws while it plays
+
+every target is walkable, and nothing throws

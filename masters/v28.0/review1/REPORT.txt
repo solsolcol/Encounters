@@ -1,0 +1,143 @@
+INDEPENDENT REVIEW of FILMS-2's Naga proof pictures (ba6a2bb, chapter 17c04240da50), 21 Nov 2026.
+The reviewer was given only the 15 pictures and the question "what looks fake, blank, floating, doubled or wrong?"
+(each opened whole, then in halves, then in crops). Its report, verbatim:
+
+phone-003.50.png
+- Bottom half, the man in white's back, the left half of his robe (x 100–330, y 1230–1500). Glaring: the robe is blown out to flat pure white with no folds or shading, and it runs into a hot yellow glare at his neck and shoulder, so it reads as a white blob.
+- Bottom half, the top-right corner of the robe on his back (x 330–370, y 1305–1345). Noticeable: there is a ragged patch of black specks on the white cloth that looks like dirt or a torn texture.
+- Bottom half, the brown carved staff in front of him (x 390–560, y 1270–1500). Noticeable: both of his hands are open and neither one grips the staff, so it seems to hang in the air in front of him.
+- Bottom half, the upper hand beside his right upper arm (x 455–525, y 1225–1295). Noticeable: a hand sticks out from behind his arm with no wrist or forearm showing, so it looks detached.
+- Middle, the red-orange creature (x 340–450, y 770–1250). Noticeable: it is a flat, molten-looking shape with a ragged red outline and no features you can read, and its tail thins to a hairline that ends at his arm.
+- Bottom left, the large grey figure (x 0–140, y 1140–1420). Noticeable: it has a smooth, untextured grey body with no face or clothing detail and reads like a clay placeholder; part of it is see-through over the dark-haired man.
+- Left of his head (x 130–155, y 1040–1290) and behind his head (x 400–415, y 1140–1210). Minor: pale lilac see-through vertical streaks hang in the air with no source.
+- Top half, the roof edge at upper right (x 600–720, y 410–440). Minor: the edge shows a jagged, stair-stepped dark strip.
+
+phone-004.20.png
+- Centre, the red creature (x 300–590, y 750–1500). Glaring: its surface is made of crumpled, faceted triangles and it has no readable head, eye or mouth (the "head" is a rounded red lump), so it reads as a smeared red mass and not a creature.
+- Both edges of the creature. Noticeable: several see-through copies of it are stacked slightly offset around the outline, so the silhouette looks doubled and smeared.
+- Sky above the creature (x 430–470, y 700–720 and x 505–520, y 785–800). Minor: soft, blurry orange smudges float there.
+- Bottom left, beside the downpipe (x 235–275, y 1410–1500). Minor: a pale lilac vertical bar glows with no source.
+- Top-right building corner (x 715–760, y 450–560). Minor: a thin dark wedge reads as a spike on the corner.
+
+phone-005.80.png
+- Centre, the creature (x 180–580, y 660–1500). Glaring: it is the same crumpled, faceless red-orange column, and its top is a blunt lump ringed with dark tooth-like spikes, so it reads like a giant red cone or worm.
+- Its left and right edges. Noticeable: see-through spiral shells with hard triangular edges wrap around it, and the window frame shows through them (x 230–300, y 1060–1200), so the outline looks doubled and glassy.
+- Bottom-left corner (x 55–195, y 1430–1500). Minor: the top of a shaved head shows as a fuzzy beige dome cut off by the black bar, and it reads as a ball.
+- Sky (x 290–435, y 590–660). Minor: soft orange smudges.
+- Right building edge (x 670–730, y 580–700). Minor: a dark sliver wedge sits on the corner.
+
+phone-008.50.png
+- Centre, the big glowing red carved staff, upper half (x 300–390, y 385–545). Noticeable: the staff is see-through, and the lit window behind it shows as a hard pale rectangle inside it.
+- Top-left corner (x 0–190, y 185–750). Noticeable: a jagged, streaky orange-red spiked shape fills the corner and is cut off by the frame, so it reads as a smear.
+- Left, the man in white in the doorway (x 0–90, y 1105–1145). Noticeable: a thin, straight white line crosses his legs.
+- Base of the red staff (x 270–500, y 1290–1445). Minor: it has no contact shadow, so you can't tell whether it stands on the tiles or hovers.
+- Left edge (x 0–145, y 760–930). Minor: a brown carved dragon head juts in at head height, and nothing in frame holds it.
+- Bottom-left floor (x 10–30, y 1270–1290). Minor: a stray small white ball lies on the floor.
+- Bottom, centre-right (x 475–580, y 1450–1500). Minor: a yellow leaf-like sliver pokes up from the bottom edge.
+
+phone-011.80.png
+- Right of centre, the man in white seen from above (x 540–660, y 975–1090). Glaring: his robe is a flat, glowing white blob with no folds and only small orange flaps for arms, so he reads as a lump and not a person.
+- The serpent around the courtyard. Noticeable: neither end has a readable head. The top-right end is a smooth rounded sausage tip with a small knob (x 390–560, y 290–500), and the left end is a mass of crest flaps, so it reads as a giant red worm.
+- The bottom stretch of the serpent (x 110–780, y 1300–1450). Noticeable: it has pinched kinks with bright pink seams (near x 340–370 and x 600–640), and a ragged see-through outer shell is split from the body by a dark gap, so the body looks folded and doubled.
+- The grey figures (x 220–560, y 545–920). Noticeable: thin glowing purple sticks show inside their bodies (the big woman's hip, the middle woman's chest, the right woman's head), and they read as stray lines.
+- The same grey figures. Noticeable: they are smooth, faceless, untextured grey mannequins, and the big one is far bulkier than the others.
+- Top centre, the man in the doorway (x 390–470, y 450–485). Noticeable: the thin white line crosses his legs.
+- Planters, left (x 0–100, y 1180–1360) and right (x 670–720, y 1080–1300). Minor: the serpent lies over them and their edges show through it.
+- Floor near the door (x 463–476, y 618–631). Minor: the stray white ball again.
+
+phone-014.00.png
+- Lower right, the man in white (x 605–750, y 1040–1180). Noticeable: he is again a flat, blown-out white blob, flecked with dark specks, with orange smudges for hands.
+- The grey figures (x 245–620, y 530–970). Noticeable: glowing purple sticks stand inside and across their bodies. A long one runs from the big woman's hand to her feet (x 295–315, y 740–920), and others sit on her chest and beside the right woman's head.
+- The same figures. Noticeable: they are faceless grey mannequins, and the big woman is much taller and wider than everyone else.
+- Top, the doorway (x 450–535, y 440–485). Noticeable: the white line crosses the man's legs.
+- Left, the serpent's upright crest (x 65–215, y 410–870). Minor: it narrows into a pinched knot with a white band and reads as a twisted knot, not a neck.
+- Bottom edge (x 0–780, y 1420–1500). Minor: the serpent's lower edge is a ragged see-through shell with jagged shards and a dark hole.
+
+phone-015.40.png
+- Top right, on the serpent's neck (x 700–745, y 305–360). Noticeable: a bright white triangular patch on the red body looks like a hole or a texture error.
+- Right edge, the man in white (x 635–780, y 1040–1215). Noticeable: he is a flat, blown-out white blob, and the frame edge cuts him in half.
+- Right of the group (x 495–680, y 600–1135). Noticeable: several thin glowing purple lines stand at odd angles in empty air and look like scratches or rain on the picture.
+- Doorway (x 395–490, y 405–450). Noticeable: the white line is very clear here, running from jamb to jamb across the man's legs.
+- The grey figures (x 190–615, y 480–990). Noticeable: the right woman's head is tipped hard onto her shoulder like a broken neck, and the big woman is a featureless grey mass.
+
+phone-016.50.png
+- The purple light bars round the ring. Noticeable: they pass straight through the figures. One runs through the big woman's arm and hand (x 265–300, y 605–880), and one runs through the right woman's shoulder (x 450–465, y 550–700).
+- The big woman's hip (x 275–320, y 580–640). Noticeable: a round, head-like lump shows through her see-through body, so she seems to have a second head at her hip.
+- Left of the big woman (x 210–260, y 645–700). Noticeable: a beige wedge like a cushion hangs in the air at hip height with nothing under it.
+- Right edge, the man in white (x 660–780, y 1080–1240). Noticeable: he is a flat white cut-out with a hard edge and an orange hand, and half of him is out of frame.
+- Doorway (x 355–435, y 390–425). Noticeable: the white line crosses the man's knees.
+- The big woman (x 230–460, y 385–910). Noticeable: she is a huge, smooth, faceless grey body, far bulkier than anyone else, and reads like a clay mannequin.
+
+phone-019.90.png
+- Upper left (x 0–120, y 495–530). Noticeable: the thin white line starts at the man in the doorway (cut off by the left edge) and ends in mid-air at the door.
+- The see-through ghost, left of centre (x 115–345, y 475–870). Minor: a white ball and a dark ring show through her belly, so she seems to have a glowing orb inside her.
+- The purple columns (x 0–330). Minor: they end in rounded capsule caps (x 20–100, y 1230–1300 and x 265–325, y 1020–1050) and look like floating tubes rather than light rising from the floor.
+- Right, the young man (x 490–760, y 860–1290). Minor: his knees are bent and splayed in an awkward half-squat, and his feet are shapeless dark sock lumps.
+- Top right, the serpent over the window (x 420–560, y 186–560). Minor: the window frame shows through it, and it fades out into the wall at the tile line.
+
+phone-022.00.png
+- The top two-thirds of the frame (x 230–780, y 186–1000). Glaring: the back wall is a blank, flat surface made of mismatched rectangles (a mauve panel, a green-grey block stepped above it, and a hairline seam near x 437). It reads as untextured placeholder panels and fills most of the screen.
+- The framing as a whole. Noticeable: the two men are squeezed into the bottom-right corner, the left third is a black doorframe and a grey strip, and the young man's shoulder and arm run off the right edge.
+- The young man's shirt (x 725, y 1155–1170; x 575–585, y 1290–1300). Minor: there is a small dark tick on his chest and some faint white scratches.
+
+phone-025.50.png
+- Centre, the man in white (x 290–520, y 780–1245). Noticeable: the left half of his robe is flat, blown-out white with no folds.
+- His staff (x 465–560, y 840–1145). Noticeable: his right hand hangs open beside it, and the staff ends at about knee height, well above the floor, so it floats next to him unheld.
+- The serpent at top and right (x 100–780, y 186–1500). Noticeable: it reads as torn see-through red cloth, with jagged shard edges (x 520–590, y 840–1000) and a white spike near the top (x 530–575, y 215–275), and it runs through the right planter with the plants sticking up through it (x 570–780, y 1150–1500).
+- Doorway (x 180–275, y 630–670). Noticeable: the white line crosses the young man's legs.
+- Left, the young man walking away (x 50–180, y 650–1025). Minor: a purple light bar runs exactly down through his head and body and splits him in two.
+- Left edge (x 30–60, y 800–830). Minor: a beige lump hangs in the air at hip height.
+- Right (x 740–770, y 650–760). Minor: orange dots float beside the window.
+
+desk-004.20.png
+- Centre, the creature (x 590–750, y 350–712). Noticeable: it is the same crumpled, faceless red lump with a spiky spine, and no head can be read.
+- The right third (x 870–1280, y 88–712). Noticeable: a plain wall with no detail fills a third of the screen.
+- Right building edge (x 900–990, y 330–540). Minor: a window seen edge-on reads as a thin dark spike.
+- Bottom centre (x 600–640, y 705–712). Minor: a sliver of a head peeks over the bottom bar.
+- Sky (x 665–685, y 322–332). Minor: orange smudges.
+
+desk-007.00.png
+- The right 40 % (x 760–1280, y 88–712). Noticeable: a blank flat wall fills almost half the screen and pushes the action to the left.
+- Centre and right, the serpent and its head (x 400–730, y 88–680). Noticeable: it is flat, see-through red with the window frame visible through its neck, and the head (x 600–730, y 255–470) reads as a flat red cut-out with a glowing rim.
+- Bottom left, the man in white (x 130–440, y 480–712). Noticeable: his robe is blown out to flat white beside a hot yellow-white glare on his shoulder.
+
+desk-011.80.png
+- Right building windows (x 1000–1160, y 355–615 and x 860–910, y 230–390). Noticeable: the window reveals and louvres carry a green, grass-like texture, which reads as a texture error.
+- Right of centre, the man in white (x 730–800, y 470–545). Noticeable: he is a flat white blob with no folds.
+- The serpent around the courtyard. Noticeable: it has no readable head (the top end is a blunt sausage tip), and on the right it lies over the planter, whose edge shows through it (x 800–890, y 530–712).
+- The grey figures (x 540–730, y 225–445). Minor: they are faceless grey mannequins with purple sticks inside their bodies.
+- Doorway (x 645–690, y 165–190). Minor: the white line is faintly visible.
+
+desk-025.50.png
+- Right of centre, the man in white (x 590–720, y 370–590). Noticeable: his robe is blown out to flat white, and the staff hangs beside his open right hand and ends at mid-calf height above the floor, so it floats.
+- The right third (x 800–1280, y 88–712). Noticeable: a plain blank wall fills it.
+- Left, the serpent (x 0–380, y 380–640). Noticeable: it is a flat, see-through red ribbon with no volume, and the wall's skirting tiles show through it.
+- Right, the serpent (x 700–960, y 380–712). Noticeable: it runs through the right planter, and its plants stick up through it.
+- Doorway (x 545–585, y 300–320). Noticeable: the white line crosses the young man's legs.
+- Centre (x 470–485, y 380–400). Minor: a beige lump hangs at hip height beside the young man.
+- Right (x 790–890, y 290–520). Minor: orange dots float in the air.
+
+The three worst faults across all fifteen pictures
+1. The man in white's robe is blown out to a flat white blob with no folds, and from above he reads as a white lump, not a person. Glaring, and it is in nearly every shot he is in: phone 3.50, 11.80, 14.00, 15.40, 16.50 and 25.50, and desktop 7.00, 11.80 and 25.50.
+2. The red serpent itself has a crumpled, faceted surface and no readable head or face, with see-through copies stacked round its outline and torn shard edges. Glaring where it fills the screen as a smeared red mass (phone 4.20 and 5.80), and noticeable in phone 11.80, 14.00 and 25.50 and desktop 4.20 and 7.00.
+3. In phone 22.00, two-thirds of the frame is a blank wall of mismatched flat panels with the two men crammed into the bottom-right corner. Glaring. On desktop the same empty plain wall takes a third to almost half the screen in 4.20, 7.00 and 25.50.
+
+Close behind those three: a thin, straight white line hangs across the doorway at knee height in phone 8.50 to 25.50 and desktop 11.80 and 25.50; the staff is never gripped and floats; and the purple light bars pass through the grey figures' bodies.
+
+COORDINATOR'S CHECK (21 Nov): the four worst opened full size and confirmed: $S/e4c5/rv1/robe003.png (robe white, a yellow
+glare on the shoulder, his hands open by the staff), figs011.png (the cage's purple bars standing inside the Prai; Pho from
+above a white glowing lump), door015.png (a hard straight white diagonal from jamb to jamb across the legs of the man in the
+doorway, tied to nothing seen), wall022.png (two thirds of the frame a flat mauve wall and a green-grey block; the two men low
+right).
+
+CORRECTION (Chad, 21 Nov 2026, R28 of docs/V28.0-E4C5-PLAN.md): "The first image of pho is not the white robe problem but the
+brown bits on his robe, amd the naga stick clipping through his wrist." and "the white line across the door was always
+intended". So:
+- THE WHITE LINE ACROSS THE DOORWAY IS THE THREAD JUN DRAWS ACROSS IT (the plan's case three, beat 2: "Stay behind the
+  thread"). It STAYS. Do not remove it.
+- phone-003.50's biggest faults: the BROWN/DARK FLECKS along the top edge of his robe at his right shoulder blade (full
+  picture about x 330-370, y 1305-1345; $S/e4c5/rv1/robeA.png), the class of chapter 4's R43 (PHO_FLECKS, painted over his
+  sheet by lookD): check whether that cover reaches this chapter's p5pho at all, and measure what is left; and the NAGA STICK
+  THROUGH HIS RIGHT WRIST with his hand open beside it ($S/e4c5/rv1/wristA.png): the grip (GRIP_ON) and clipscan's stick x
+  body pairs.
+- A reviewer's list is read against the plan before it is passed on, and a picture of a body is read for the body first.

@@ -1,0 +1,40 @@
+8s first title button: Continue
+58s in play: {"st":"play","phase":"sight","queued":0,"pending":null,"busy":false,"water":false,"why":false,"ev":null,"fight":null,"obj":"Close your Spirit Vision"}
+246s the reading heard
+691s after the why: {"st":"play","phase":"bless","queued":0,"pending":null,"busy":false,"water":false,"why":true,"ev":null,"fight":null,"obj":"Take the holy water"}
+691s voices: ph4s2@94.75-100.92 ph4s3@156.94-165.4 ph4s4@236.71-246.47 ph4b0@344.37-349.23 ph4k1@455.32-461.16 ph4k2@512.39-516.38 ph4k3@553.95-559.95 ph4k4@614.37-620.54
+765s the water: badge
+780s first the brief: true "PROTECT AMMA Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails. START"
+806s fight HUD: {"noAmmo":true,"ammo":"none","reload":"none","fire":"grid","sign":0,"held":true,"heldPhase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y","glow":true,"anim":"wpnBreath","saved":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y"}
+806s the button at its largest breath: {"l":295.7200012207031,"t":703.719970703125,"r":376.2799987792969,"b":784.280029296875,"w":80.55999755859375} animations paused 2 ring rgba(150, 225, 255, 0.85) 0px 0px 16px 5px, rgba(150, 225, 255, 0.35) 0px 0px 9px 0px inset
+806s   boxes over the button: []  over its light: []
+971s twenty flicks and R: {"flicks":20,"dry":0,"words":"","dip":null,"motes":0}
+1024s mid-fight, Appa struck true {"phase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,x,y","san":71,"notes":["You flicked holy water at her husband, who was watching over her."],"saved":{"phase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y","san":90,"notes":[]}}
+1043s mid-fight title button: Continue
+1095s mid-fight the brief: true "PROTECT AMMA Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails. START"
+1122s a mid-fight tab close and Continue against the first arrival: [ 'beds: ["dark"] / ["dark","estate","flat"]' ]
+1529s loss1 lost: film true card true ready true {"say":"Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.","retry":"Retry","restart":"Restart chapter"}
+1530s the save after the loss: {"phase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y","stats":{"sanity":90,"awareness":55,"wisdom":52},"at":{"x":0.5202643303443886,"y":1.62,"z":2.5520246513602287,"ry":-2.9074015644824587}}
+1541s reload title button: Continue
+1596s reload the brief: true "PROTECT AMMA Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails. START"
+1624s reload + Continue against the first arrival: [ 'beds: ["dark"] / ["dark","estate","flat"]' ]
+1995s loss2 lost: film true card true ready true {"say":"Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.","retry":"Retry","restart":"Restart chapter"}
+2011s   both presses as they landed: [{"st":"play","fade":1,"phase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y"}]
+2011s after a double tap on Retry: {"st":"play","fade":1,"phase":"bless:r,m,f,o,a,k,v,l1,l2,l3,w,y"}
+2015s retry-double the brief: true "PROTECT AMMA Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails. START"
+2039s Retry (double tap) against the first arrival: [
+  'spirits: [{"v":true,"gone":false,"x":1.72,"z":2.85},{"v":false,"gone":false,"x":0,"z":0},{"v":true,"gone":false,"x":-0.272,"z":3.392},{"v":true,"gone":false,"x":5.95,"z" / [{"v":true,"gone":false,"x":1.72,"z":2.85},{"v":false,"gone":false,"x":0,"z":0},{"v":true,"gone":false,"x":-0.272,"z":3.392},{"v":true,"gone":false,"x":5.95,"z"',
+  'beds: ["dark"] / ["dark","flat"]'
+]
+2401s loss3 lost: film true card true ready true {"say":"Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.","retry":"Retry","restart":"Restart chapter"}
+2410s retry-again the brief: true "PROTECT AMMA Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails. START"
+2432s Retry again against the first arrival: [
+  'spirits: [{"v":true,"gone":false,"x":1.72,"z":2.85},{"v":false,"gone":false,"x":0,"z":0},{"v":true,"gone":false,"x":-0.272,"z":3.392},{"v":true,"gone":false,"x":5.95,"z" / [{"v":true,"gone":false,"x":1.72,"z":2.85},{"v":false,"gone":false,"x":0,"z":0},{"v":true,"gone":false,"x":-0.272,"z":3.392},{"v":true,"gone":false,"x":5.95,"z"',
+  'beds: ["dark"] / ["dark","estate","flat"]'
+]
+5269s the fight ended: {"st":"play","phase":"kept","queued":0,"pending":null,"busy":false,"water":true,"why":true,"ev":null,"fight":{"on":false,"ended":true,"lost":false,"hp":60,"k":1,"call":"gold"},"obj":"OBJECTIVE COMPLETE"} flicks 83
+5269s the button under the golden showcase, 0 reads: []
+5281s after-win title button: Continue
+5317s after the win, reload and Continue: {"phase":"kept","brief":false,"held":null} the trance true
+5352s   the trance skipped
+5373s   the decision: C of 4
