@@ -1114,3 +1114,4 @@ c5cd563a10e232a76ae3432abc5eef7a9a74552dd8244ccfe59a4128c6b6ba93  masters/v27.0/
 b58a235dd22a8f7d33852e99f22d755ef721581bcb1b9ffeb9cb484243a1a43b  masters/v27.0/src/oppress-takes.log
 bb9b5cdcf26a8d0ae3d5a588bc4f349786760f8ca48624b44d05177373d9b51c  masters/v27.0/src/original-altartray.glb
 5ecafcb76b0599f34071c3db8ca7fffa0809c223b7e1d2aa2da72d5ddb29d7c4  masters/v27.0/src/original-amma.glb
+ea5268b00f7b8792520a8e309b1c6749b8c38a7de575ff7d5e8feda8f72eb147  masters/v27.0/src/original-angsana.glb
