@@ -154,12 +154,15 @@ const measure = async (tag) => {
 };
 const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
 const res = { rest: null, acts: {}, pics: [] };
+/* HIS REST, the stick's distances to beat (his standing rest's own moment, Sit_to_Stand_Transition_M at 5.85 s, as the fight
+   stands him: held by the lab, so a take posed before it cannot linger) */
+const REST = ['Sit_to_Stand_Transition_M', 5.85];
 /* (TRIES='[{...},...]': other settings of the grip tried at his rest first, each measured, then the run's own put back) */
 if (process.env.TRIES) { for (const T of JSON.parse(process.env.TRIES)) { await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), T);
-    await pose(null, 0); await frames(4); const r = await measure('try'); say('try', JSON.stringify(T), JSON.stringify(r.flags), JSON.stringify(r.R), 'face', r.st.face, 'grip', JSON.stringify(r.st.skin.grip)); }
+    await pose(REST[0], REST[1]); await frames(4); const r = await measure('try'); say('try', JSON.stringify(T), JSON.stringify(r.flags), JSON.stringify(r.R), 'face', r.st.face, 'grip', JSON.stringify(r.st.skin.grip)); }
   await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), process.env.TUNE ? JSON.parse(process.env.TUNE) : {}); }
 /* HIS REST, the stick's distances to beat */
-await pose(null, 0); await frames(4);
+await pose(REST[0], REST[1]); await frames(4);
 res.rest = await measure('rest'); say('rest', JSON.stringify(res.rest));
 const restFace = res.rest.st.face, restHead = res.rest.st.head;
 /* EVERY FRAME OF EACH ACT */
@@ -178,7 +181,7 @@ fs.writeFileSync(OUT + '/acts.json', JSON.stringify({ res, errs, logs }, null, 1
 /* THE PICTURES: the fight's own lens first (the tag mode on), then his front and side (the mode left) */
 if (PICS) {
   const keyset = []; for (const act of ACTS) { const A = PLAN[act]; if (A) for (const u of A.keys) keyset.push([act, A.take, u]); }
-  keyset.unshift(['rest', null, 0]);
+  keyset.unshift(['rest', REST[0], REST[1]]);
   await p.evaluate(() => { const E = window.__enc, k = E.kit; if (k.tagState().played !== 'pho' && k.tagSwitch) k.tagSwitch('pho', { force: true }); });
   for (const [act, take, u] of keyset) { await pose(take, u); await frames(3);
     const f = `${OUT}/${act}-${u}-lens.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); res.pics.push(f); }
@@ -202,7 +205,7 @@ if (PICS) {
       const f = `${OUT}/${act}-${u}-${view}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); res.pics.push(f); } }
   /* (his fist round the shaft at rest, close: from above it and from before it, through a 26 degree lens: a detail taken with a
      lens, never by enlarging) */
-  if (process.env.HANDS !== '0') for (const view of ['handtop', 'handfront']) { await pose(null, 0);
+  if (process.env.HANDS !== '0') for (const view of ['handtop', 'handfront']) { await pose(REST[0], REST[1]);
     await p.evaluate(([view]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor;
       P.group.rotation.y = window.__ry0; P.group.updateWorldMatrix(true, true);
       let mb = null, hb = null; for (const n in P.bone) { if (/^(mixamorig:?)?RightHandMiddle1$/.test(n)) mb = P.bone[n]; if (/^(mixamorig:?)?RightHand$/.test(n)) hb = P.bone[n]; }
