@@ -1,0 +1,47 @@
+[
+ {
+  "name": "staffcloth",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/staffcloth-2k.png"
+ },
+ {
+  "name": "planter2",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/planter2-2k.png"
+ },
+ {
+  "name": "tvconsole",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/tvconsole-2k.png"
+ },
+ {
+  "name": "floorlamp",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/floorlamp-2k.png"
+ },
+ {
+  "name": "tablelamp",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/tablelamp-2k.png"
+ },
+ {
+  "name": "pendant",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/pendant-2k.png"
+ },
+ {
+  "name": "curtain",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/curtain-2k.png"
+ },
+ {
+  "name": "dinchair",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/dinchair-2k.png"
+ },
+ {
+  "name": "frontdoor",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/frontdoor-2k.png"
+ }
+]

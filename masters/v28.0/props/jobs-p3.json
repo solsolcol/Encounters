@@ -1,0 +1,37 @@
+[
+ {
+  "name": "bagopen",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/bagopen-2k.png"
+ },
+ {
+  "name": "threadreel",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/threadreel-2k.png"
+ },
+ {
+  "name": "staffwrap",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/staffwrap-2k.png"
+ },
+ {
+  "name": "clothtable",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/clothtable-2k.png"
+ },
+ {
+  "name": "gatepost",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/gatepost-2k.png"
+ },
+ {
+  "name": "sofa",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/sofa-2k.png"
+ },
+ {
+  "name": "lowtable",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/lowtable-2k.png"
+ }
+]

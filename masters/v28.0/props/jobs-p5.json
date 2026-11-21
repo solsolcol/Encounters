@@ -1,0 +1,67 @@
+[
+ {
+  "name": "liftpanel",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/liftpanel-2k.png"
+ },
+ {
+  "name": "dintable",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/dintable-2k.png"
+ },
+ {
+  "name": "sideboard",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/sideboard-2k.png"
+ },
+ {
+  "name": "wallclock",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/wallclock-2k.png"
+ },
+ {
+  "name": "frame",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/frame-2k.png"
+ },
+ {
+  "name": "walllamp",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/walllamp-2k.png"
+ },
+ {
+  "name": "rail",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/rail-2k.png"
+ },
+ {
+  "name": "walklight",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/walklight-2k.png"
+ },
+ {
+  "name": "slippers",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/slippers-2k.png"
+ },
+ {
+  "name": "duffel",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/duffel-2k.png"
+ },
+ {
+  "name": "cushion",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/cushion-2k.png"
+ },
+ {
+  "name": "altarshelf",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/altarshelf-2k.png"
+ },
+ {
+  "name": "ceilfan",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/ceilfan-2k.png"
+ }
+]
