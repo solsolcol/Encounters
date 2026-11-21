@@ -139,6 +139,11 @@ for (const job of JOBS) {
     const dur = await p.evaluate(() => window.__enc.cine.dur()), labels = await p.evaluate(() => window.__labels());
     log(job, 'dur', dur.toFixed(2), 'people', labels.length, ready ? 'all ready' : 'NOT ALL READY');
     const res = { view: VIEW, mode: MODE, job, dur, labels, step: STEP, rows: [], rowsD: BOTH ? [] : undefined, clips: [], errs };
+    /* (R29, 21 Nov: the place's solids as the film begins, each [x0, x1, z0, z1] as the blockers hold them (grown 0.14 m for
+       his eye) or null where made empty, so tools/probes/e4c5bodies.py can read every body against them; and the walkable
+       map's counts where the build has one, stage.nav5) */
+    res.solids = await p.evaluate(() => (window.__enc.stage.blockers || []).map(b => b.isEmpty() ? null : [b.min.x, b.max.x, b.min.z, b.max.z]));
+    res.nav = await p.evaluate(() => { const n = window.__enc.stage.nav5; return n ? { on: n.on, r: n.r, rOf: n.rOf, counts: n.counts() } : null; });
     if (MODE === 'seek') {
       /* forward only: a seek applies the tracks it passes and undoes none, so every scan is made on the way through */
       const marks = []; if (CLIP) { for (let m = 0; m < dur - 0.3; m += CLIP) marks.push(+m.toFixed(2)); marks.push(+(dur - 0.3).toFixed(2)); }
