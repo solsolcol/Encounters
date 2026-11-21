@@ -1158,3 +1158,4 @@ cac6a15bb89750a510881122de38ffa27a9b120a73690553eedfbe98fe26d865  masters/v27.0/
 74dfd17893c398b5bc6ee8a4ff98e939d4c0081aa2396fa6cda529a30a8458bc  masters/v27.0/src/original-tubelight.glb
 da96234a86cfcd19e35ac2e2feed69c0bdec1a24c8b5e225818aa5ae3678056c  masters/v27.0/src/original-tulsi.glb
 aabaa816a66c594c8ffc138e44be79a1c179f4fc90fe2c3fb279eb04b76fc830  masters/v27.0/src/original-tvconsole.glb
+928e8a1dee857283b00ffbcec1f98a43e00c478ec50a374ee2c2109061964bad  masters/v27.0/src/original-vilakku.glb
