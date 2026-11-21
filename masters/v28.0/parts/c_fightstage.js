@@ -1611,7 +1611,7 @@
             if (t < 0) { t = 0; s = Math.max(0, Math.min(1, -c / a)); } else if (t > 1) { t = 1; s = Math.max(0, Math.min(1, (b - c) / a)); } } }
         p.copy(a0).addScaledVector(d1, s); q.copy(b0).addScaledVector(d2, t); return p.distanceTo(q);
       }
-      function keepClear(P, Ct, up, w) {
+      function keepClear(P, Ct, up, w, lifted) {
         if (!(w > 0.001)) return;
         if (!kBones) { kBones = {}; for (const nm of ['Hips', 'Neck', 'Head', 'RightUpLeg', 'RightLeg', 'RightFoot']) kBones[nm] = boneOf(P, nm); }
         const B = kBones; if (!B.Hips || !B.Neck || !B.Head || !B.RightUpLeg || !B.RightLeg || !B.RightFoot) return;
@@ -1632,8 +1632,9 @@
           if (a) { a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(_kq); const dx = Ct.x - _kq.x, dy = Ct.y - _kq.y, dz = Ct.z - _kq.z;
             if (Math.hypot(dx, dy, dz) > CLEAR.reach) { const hz = Math.hypot(dx, dz), need = Math.sqrt(Math.max(0, CLEAR.reach * CLEAR.reach - dy * dy));
               if (hz > need && hz > 1e-6) { Ct.x = _kq.x + dx / hz * need; Ct.z = _kq.z + dz / hz * need; } } } }
-        /* (moved, it is carried, never dragged over the paving: lifted a third of the way it goes) */
-        Ct.y += 0.33 * Math.hypot(Ct.x - _k0.x, Ct.z - _k0.z);
+        /* (moved while it is off the paving, it is carried: lifted a third more of the way it goes; one the act strikes or sets
+           on the paving lands where it is moved to, its foot on the paving) */
+        if (lifted) Ct.y += 0.33 * Math.hypot(Ct.x - _k0.x, Ct.z - _k0.z);
         if (w < 0.999) Ct.lerpVectors(_k0, Ct, w);
       }
       /* HIS RIGHT SHOULDER LEFT DOWN IN HIS ACTS (the gold's take shrugs it near 80 degrees as both hands go up, the throw's 30:
@@ -1682,7 +1683,7 @@
         if (m.tip) { const c = Math.cos(m.tip), s = Math.sin(m.tip);
           for (const v of [up, front]) v.set(v.x, v.y * c - v.z * s, v.y * s + v.z * c); }
         up.applyQuaternion(_sq).normalize(); front.applyQuaternion(_sq).normalize();
-        keepClear(P, Ct, up, m.w * (MOVES[m.take] && MOVES[m.take].plant ? 1 - Math.max(0, Math.min(1, (m.u - 1.5) / 0.2)) : 1)); }
+        keepClear(P, Ct, up, m.w * (MOVES[m.take] && MOVES[m.take].plant ? 1 - Math.max(0, Math.min(1, (m.u - 1.5) / 0.2)) : 1), m.y > 0.01); }
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);

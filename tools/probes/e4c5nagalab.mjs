@@ -12,7 +12,7 @@
    many of its points stand within 0.5 m and 1 m of the lens, its extent on this screen (NDC), its triangles drawn and
    whether it is shown. Each job answers $LABDIR/out/<id>.json ({ ret, rows, errs }).
    The page's handle on the Naga: stage.films.NAGA5 (its `lab()` the laid state: geometry, draws, normals).
-     LABDIR=<dir> ENC_DIST=<snapshot> CHFILE=<chapter.js> CHROMIUM_PATH=... [DPR=2] [SETTLE=900] node tools/probes/e4c5nagalab.mjs
+     LABDIR=<dir> ENC_DIST=<snapshot> CHFILE=<chapter.js> CHROMIUM_PATH=... [VIEW=desktop] [DPR=2] [SETTLE=900] node tools/probes/e4c5nagalab.mjs
    (through tools/bslot.sh: it holds one of the box's two browser slots while it is open) */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -26,7 +26,10 @@ const CHSRC = process.env.CHFILE ? fs.readFileSync(process.env.CHFILE, 'utf8') :
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
 const log = (...a) => { const s = el() + ' ' + a.join(' '); console.log(s); fs.appendFileSync(DIR + 'lab.log', s + '\n'); };
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: DPR, hasTouch: true, isMobile: true });
+/* (VIEW=desktop: a desk's 1280 x 800 window, DPR 1 unless said; a phone's by default) */
+const DESK = process.env.VIEW === 'desktop';
+const ctx = await b.newContext(DESK ? { viewport: { width: 1280, height: 800 }, deviceScaleFactor: +(process.env.DPR || 1) }
+                                    : { viewport: { width: 390, height: 844 }, deviceScaleFactor: DPR, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error' || m.type() === 'warning' || /failed|threw/i.test(m.text())) errs.push('CONSOLE ' + m.type() + ' ' + m.text().slice(0, 300)); });

@@ -180,6 +180,14 @@ log('the water:', await pressSpot('water'));
 await closeSplash();
 }
 const A = await atBrief('first');
+if (MODE === 'button') {
+  /* (the beds after a Continue into the fight's start, frame by frame: the chapter mixes them before it lays the phase on
+     (updateNotes: mixBeds, then applyPhase), so its first frame mixes the lit room's beds; read until they settle. On this
+     box a frame is a quarter second of the beds' clock) */
+  const seq = [];
+  for (let i = 0; i < 16; i++) { seq.push(await p.evaluate(() => { const M = window.__enc.stage.amb().beds, o = {}; for (const k in M) if (M[k] > 0.001) o[k] = +M[k].toFixed(3); return o; })); await frames(1); }
+  log('the beds after the Continue, frame by frame:', JSON.stringify(seq));
+}
 checks.briefFirst = A.ok;
 checks.briefNoReload = !/reload|R to |gold icon|refill/i.test(A.text);
 checks.firstNotHeld = A.S.held === false;                                   // (nothing is held before the fight begins)

@@ -44,7 +44,7 @@ const PLAN = {
 /* PLANTED=1: the film's planting done as TOGETHER does it (STICK5.plant at its place, PLACE='0.38,0.40': before him, to his
    right) at 1.70 s of the cast: how far the stick moves and turns as it leaves his hand; then his hand kept on it there while
    his cast plays (1.70 to 1.90 s), measured as every other moment */
-const PLACE = (process.env.PLACE || '0.38,0.40').split(',').map(Number);
+const PLACE = () => (process.env.PLACE || '0.38,0.40').split(',').map(Number);
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [], logs = [];
@@ -73,7 +73,9 @@ if (process.env.PLANTSCAN === '1' || process.env.PLANTSCAN === '2') {
   const NOARM = process.env.PLANTSCAN === '2', shs = [];
   const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
   const occ = new Set(); let sh17 = null;
-  for (let u = 1.5; u <= 4.301; u += 0.1) { await pose('Charged_Spell_Cast_1', +u.toFixed(2));
+  /* (PLANTWIN='a,b': only that window of the cast, every 0.04 s: the strike and the film's hold after it) */
+  const PW = process.env.PLANTWIN ? process.env.PLANTWIN.split(',').map(Number) : [1.5, 4.3], PS = process.env.PLANTWIN ? 0.04 : 0.1;
+  for (let u = PW[0]; u <= PW[1] + 1e-3; u += PS) { await pose('Charged_Spell_Cast_1', +u.toFixed(2));
     const r = await p.evaluate(([u, NOARM]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor; P.group.updateWorldMatrix(true, true);
       const cells = new Set(), v = new V();
       P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return; let vis = true; for (let q = o; q; q = q.parent) if (!q.visible) vis = false; if (!vis) return;
@@ -98,6 +100,9 @@ if (process.env.PLANTSCAN === '1' || process.env.PLANTSCAN === '2') {
   say('plantscan shoulder@1.7', JSON.stringify(sh17), 'the film\'s place (-0.18, 0.42) near:', JSON.stringify(film));
   say('plantscan best within reach', JSON.stringify(best));
   fs.writeFileSync(OUT + '/plantscan.json', JSON.stringify({ sh17, shs, cand }, null, 0));
+  /* (PLACE=auto: the clearest place within his reach, to his right, is the one the planting is then measured at) */
+  if (process.env.PLACE === 'auto') { const pick = cand.filter(c => c.reach != null && c.reach <= 0.55 && c.at[0] <= -0.3).sort((a, b) => b.clear - a.clear)[0];
+    if (pick) { process.env.PLACE = (pick.at[1]).toFixed(2) + ',' + (-pick.at[0]).toFixed(2); say('plantscan picks', JSON.stringify(pick), 'PLACE', process.env.PLACE); } }
   await pose(null, 0); }
 if (process.env.GRIP !== '0') say('grip on', await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.gripOn ? L.gripOn() : 'no gripOn'; }));
 if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));
@@ -191,7 +196,7 @@ for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = []
       const ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), x = P.group.position.x, z = P.group.position.z;
       S5.plant(x + fx * PL[0] - fz * PL[1], z + fz * PL[0] + fx * PL[1], ry); g.updateWorldMatrix(true, false);
       const p0 = new V().setFromMatrixPosition(m0), p1 = new V().setFromMatrixPosition(g.matrixWorld), q0 = new Q().setFromRotationMatrix(m0), q1 = new Q().setFromRotationMatrix(g.matrixWorld);
-      return { moved: +p0.distanceTo(p1).toFixed(4), turned: +(2 * Math.acos(Math.min(1, Math.abs(q0.dot(q1)))) * 180 / Math.PI).toFixed(2), who: S5.who }; }, PLACE);
+      return { moved: +p0.distanceTo(p1).toFixed(4), turned: +(2 * Math.acos(Math.min(1, Math.abs(q0.dot(q1)))) * 180 / Math.PI).toFixed(2), who: S5.who }; }, PLACE());
     say('planted: the stick as it leaves his hand', JSON.stringify(jump)); res.plantJump = jump;
     const held = [];
     for (const u of [1.70, 1.75, 1.80, 1.85, 1.90]) { await pose(A.take, u); await frames(2); const r = await measure('planted@' + u); held.push(r);

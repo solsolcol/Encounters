@@ -287,7 +287,7 @@
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
                   uNGlowC: { value: new THREE.Color(0xff1030) }, uNGold: { value: new THREE.Color(0xffc860) },
-                  uNLook: { value: new THREE.Vector4(0.82, 2.6, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
+                  uNLook: { value: new THREE.Vector4(0.9, 2.6, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength; the core at 0.82 showed the court's tiles and edges through it, red glass: together-phone 8.5 and 11.8 on 0f693b7)
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
       /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
          so the nearest surface and the body are the same depths to the bit */
@@ -568,7 +568,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              with the file read whole (FILMS-2: before, the file was folded into two metres, see make()), every twentieth of
              the way at 32 stick places (eight places over the court, each faced four ways): none of it in a wall or the
              house */
-          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), arr = st.geo.attributes.position.array, n = arr.length / 3;
+          /* (its girth and its head grow to their full size over its first tenth of the way, 2.6 m of the 25.6: grown over
+             its first quarter, it rose as a red thread with a speck for a head for two seconds, together-phone 3.5 on the
+             candidate 0f693b7; now its head is a third of its size a metre out of the stick and whole at the top of its
+             rise. Laid so, none of it is in a wall, a planter or the house at 32 stick places, every twentieth of the way) */
+          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.10)), arr = st.geo.attributes.position.array, n = arr.length / 3;
           U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr;
           /* (laid again only when its laying moves: once it lies whole, a frame changes its light and clock alone) */
           const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5);
