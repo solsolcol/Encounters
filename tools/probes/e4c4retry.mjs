@@ -273,6 +273,32 @@ checks.rNothing = F20.dip !== 'reload' && F20.motes === 0;
 await shot('fight-flicks');
 
 if (MODE === 'button') {
+  /* (R140, never breathing under the golden showcase, where it cannot be pressed: the retry mode's win polled past its 7.5 s
+     on this box. The chapter opens the showcase from inside its own frame (its clock's callbacks run in updateNotes) and
+     the engine takes the weapon's buttons down later in that same frame (weaponUp is derived on the frame, in play only),
+     so the glow is never painted under it. Opened here the same way, the engine's own showcase from inside the stage's
+     frame, held 30 s (`auto`); the button read on every drawn frame until play is back; and once, with the showcase up,
+     the class of its last 0.6 s (scToHud: the weapon's buttons on the screen again, for the amulet to go down into)) */
+  await p.evaluate(() => { const E = window.__enc, S = E.stage, orig = S.updateNotes, b = document.body, fb = document.getElementById('fireBtn'), hud = document.getElementById('weaponHud');
+    const R = window.__sc = { began: null, rec: [], forced: null, done: false }, t0 = performance.now();
+    const read = () => ({ ms: Math.round(performance.now() - t0), st: E.getState(), up: b.classList.contains('weaponUp'), toHud: b.classList.contains('scToHud'),
+      hud: getComputedStyle(hud).display, anim: getComputedStyle(fb).animationName, light: getComputedStyle(fb, '::before').content });
+    let go = true;
+    S.updateNotes = function (dt, t) { orig.call(this, dt, t); if (go) { go = false; R.began = E.kit.unlock('amulet', { showcase: true, gather: 'swirl', auto: 30 }); } };
+    const tick = () => {
+      const q = read(); R.rec.push(q);
+      if (q.st === 'unlock' && !q.up && !R.forced && !q.toHud) { b.classList.add('scToHud'); R.forced = read(); b.classList.remove('scToHud'); }
+      if (!go && (q.st === 'play' && R.rec.some(x => x.st === 'unlock') || R.began === false) || performance.now() - t0 > 600000) { S.updateNotes = orig; R.done = true; return; }
+      requestAnimationFrame(tick); };
+    requestAnimationFrame(tick); });
+  await until(() => window.__sc && window.__sc.done, 900000);
+  const SC = await p.evaluate(() => window.__sc);
+  const under = SC.rec.filter(q => q.st !== 'play');
+  log('the showcase opened:', SC.began, '; the button on', SC.rec.length, 'drawn frames, as it changed:', JSON.stringify(SC.rec.filter((q, i) => i === 0 || JSON.stringify({ ...q, ms: 0 }) !== JSON.stringify({ ...SC.rec[i - 1], ms: 0 }))));
+  log('  with its last 0.6 s\'s class laid on:', JSON.stringify(SC.forced));
+  checks.noGlowUnderShowcase = SC.began === true && under.length > 0 && under.every(q => !/wpnBreath/.test(q.anim) && q.light === 'none')
+    && !!SC.forced && SC.forced.hud !== 'none' && !/wpnBreath/.test(SC.forced.anim) && SC.forced.light === 'none';
+  checks.glowBackAfterShowcase = /wpnBreath/.test(SC.rec[SC.rec.length - 1].anim);
   /* (a loss and Retry here too, the start compared in detail: which differences touch anything shown, and the beds frame by
      frame as they settle) */
   const L = await loseIt('button-loss');
