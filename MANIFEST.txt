@@ -1138,3 +1138,5 @@ c2433aafa1ea31133ba1fcfe4ad377e9a883dfa4ace92c9d3759071900e211d3  masters/v27.0/
 d85c676f33b355b97201efb821de1e83de2d5c5f1226b852791a2e620131d67c  masters/v27.0/src/original-framesmall.glb
 b03c46b267637134d6bc0f8fca451990b4b5c254eb58c890f2bcc49e2198248a  masters/v27.0/src/original-framesmall2.glb
 19793774f66fc7fe28fec94f8abb03e032f02d81cfb0b0726000f13affde1523  masters/v27.0/src/original-fridge.glb
+d6190e51b838101bd4e594de59fa57dc26a402b9278f9cfdb82cbd0f9f692e2b  masters/v27.0/src/original-garlandhang.glb
+c7245f1829429ab7407994d3f48b456d3544740eb0f0299ed590e9461cd3a81f  masters/v27.0/src/original-gate.glb
