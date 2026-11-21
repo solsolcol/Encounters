@@ -1,0 +1,23 @@
+wrote masters/v27.0/src/merged-large.glb 26000892 bytes
+["lumber (132 ch, 5.97 s)"]
+calmarms masters/v27.0/src/merged-large.glb: the body's left 1.00,0.00,-0.01, its face 0.01,0.00,1.00
+  Idle_3: not in this file (left out)
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+wrote masters/v27.0/src/merged-large.glb
+  skin weights: 26713 vertices in 12476 positions over 65 joints, 24 diffusion passes; 5045 vertices' main weight moved
+prune: Removed types... Texture (1)
+  26713 vertices in 12476 positions; 12911 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 26713 points joined into 12476 places; 24970 triangles
+  repaint [   0.0s] the face 687 triangles, the rest of the head 581, the hands 2390, the body 21312 (looking [0.0, 0.0, 1.0])
+  repaint [   2.7s] xatlas: 790 charts, 74% of the square used
+  repaint [   3.2s] packed again: 790 charts in a 1200x1200 square drawn at 1024 (77% used), a margin of 2.6 pixels at 1024
+  repaint [   3.3s] texels a metre at 1024, before -> now: face 391 -> 591, head 358 -> 511, hands 444 -> 338, body 316 -> 263; 790 charts, margin 2.6 px
+  repaint [   3.4s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.2s] baked
+  repaint [   7.2s] written
+  repaint: 26713 points -> 30412 (3699 copied along the new seams), 24970 triangles; texels a metre at 1024, before -> now: face 391 -> 591, head 358 -> 511, hands 444 -> 338, body 316 -> 263; 790 charts, margin 2.6 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4large.glb: tris 24970 -> 24970, 1 takes, 878 KB

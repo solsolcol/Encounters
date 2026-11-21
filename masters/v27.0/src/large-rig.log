@@ -1,0 +1,10 @@
+started rig large 01a1eb75-4c96-712e-b0ba-aeba063f4e23
+  rig large IN_PROGRESS 0%
+  rig large IN_PROGRESS 42%
+  rig large IN_PROGRESS 84%
+  rig large IN_PROGRESS 90%
+  rig large SUCCEEDED 100%
+rig done large {'rigged': 72372324, 'walk': 72613500}
+body identical to masters/v27.0/src/rigged-large.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-large-walking.glb 98316 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

@@ -1,0 +1,35 @@
+started image-to-3d angsana 01a1edb4-ddc2-72e1-81d1-9fe574e3d77c
+started image-to-3d foxpalm 01a1edb4-ed4d-72b9-9c4c-a5cb019a3756
+started image-to-3d streetlamp 01a1edb4-f7be-7341-a958-ddbc5976063f
+started image-to-3d bougain 01a1edb4-ff9f-7060-a5df-ae72c3908b6e
+started image-to-3d corrpots 01a1edb5-0d6f-711a-9743-79208a3992e9
+started image-to-3d bicycle 01a1edb5-1a30-758d-9bf9-309887bab0c5
+started image-to-3d clothesrack 01a1edb5-2497-7415-8320-3646ac87968a
+  angsana IN_PROGRESS 4%
+  angsana IN_PROGRESS 11%
+  angsana IN_PROGRESS 15%
+  angsana IN_PROGRESS 25%
+  angsana IN_PROGRESS 29%
+  angsana IN_PROGRESS 33%
+  angsana IN_PROGRESS 37%
+  angsana IN_PROGRESS 41%
+  angsana IN_PROGRESS 45%
+  angsana IN_PROGRESS 53%
+  angsana IN_PROGRESS 58%
+  angsana IN_PROGRESS 67%
+  angsana IN_PROGRESS 80%
+  angsana IN_PROGRESS 99%
+  angsana SUCCEEDED 100%
+done angsana {'glb': 74061780} credits 40
+  foxpalm SUCCEEDED 100%
+done foxpalm {'glb': 88777784} credits 40
+  streetlamp SUCCEEDED 100%
+done streetlamp {'glb': 25610824} credits 40
+  bougain SUCCEEDED 100%
+done bougain {'glb': 98180172} credits 40
+  corrpots SUCCEEDED 100%
+done corrpots {'glb': 74972120} credits 40
+  bicycle SUCCEEDED 100%
+done bicycle {'glb': 82651408} credits 40
+  clothesrack SUCCEEDED 100%
+done clothesrack {'glb': 82302332} credits 40

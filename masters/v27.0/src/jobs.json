@@ -1,0 +1,1933 @@
+{
+ "_motions": {
+  "aturn": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211333639,
+   "prompt": "An old man standing still and calm slowly turns his head and shoulders to look at someone to his right, holds the look steadily, then slowly turns back to face forward.",
+   "size": 16826064,
+   "task": "01a1eb7b-5974-7745-b013-2ee3eb765f46"
+  },
+  "claw": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211368068,
+   "prompt": "A person crouched low clutches and claws with both hands at something in front of it, shoulders straining, the head thrown back.",
+   "size": 16826064,
+   "task": "01a1eb7b-5928-72b9-9e45-48b0c40d3a10"
+  },
+  "cling": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1795211340241,
+   "prompt": "A thin person crouches low and hunched, knees deeply bent and drawn up, both arms wrapped tightly forward around something in front of its chest, the head low and pressed forward, breathing slowly, almost motionless.",
+   "size": 16954704,
+   "task": "01a1eb7b-59d7-7715-8096-b5b534061524"
+  },
+  "crawl": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211353424,
+   "prompt": "A person crawls slowly forward on hands and knees close to the floor, head hanging low, moving in a jerky, uneven way, pausing and starting again.",
+   "size": 16868848,
+   "task": "01a1eb7b-5999-7741-ae85-6c4e341fc898"
+  },
+  "creep": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211336639,
+   "prompt": "A person walks slowly forward bent far over at the waist, the arms hanging loose toward the floor, dragging its feet, the head low and swaying.",
+   "size": 16868848,
+   "task": "01a1eb7b-58d6-76d8-81b4-bed9a8105f6b"
+  },
+  "cry": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211321125,
+   "prompt": "A person crouched low throws its head back and its arms out wide, the whole body arching and shaking as if screaming.",
+   "size": 16826064,
+   "task": "01a1eb7b-5907-7749-9721-6f3a728bf79b"
+  },
+  "kneelhold": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211363889,
+   "prompt": "A person kneels down on one knee beside a chair and takes the hand of someone sitting in it in both hands, holding it gently and looking up at them.",
+   "size": 16868848,
+   "task": "01a1eb7b-5968-71d8-a3b1-372149de280a"
+  },
+  "lamp": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211344429,
+   "prompt": "An elderly woman standing in front of a shelf at chest height reaches forward with her right hand to light a small oil lamp, then steps back slightly, presses her palms together in front of her chest and bows her head.",
+   "size": 16868848,
+   "task": "01a1eb7b-597b-76f2-a823-0db53123b8d9"
+  },
+  "lightlamp": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211306816,
+   "prompt": "A woman standing in front of a shelf at head height reaches up with her right hand to light a small oil lamp with a match, then shakes the match out and presses her palms together in front of her chest, bowing her head slightly.",
+   "size": 16868848,
+   "task": "01a1eb7b-5958-7045-a632-7491cf69d23f"
+  },
+  "lumber": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211351242,
+   "prompt": "A very large heavy person walks slowly forward with a hunched back, the shoulders rolling with each heavy step and the arms swinging loosely.",
+   "size": 2789136,
+   "task": "01a1eb7b-593b-7236-96f7-42662b11be6c"
+  },
+  "oturn": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211300482,
+   "prompt": "A person crouched low with its arms wrapped forward around something slowly turns its head all the way to look back over its right shoulder, holds the stare, then slowly turns back.",
+   "size": 16826064,
+   "task": "01a1eb7b-58cb-729c-9ac2-7531a3243d37"
+  },
+  "rise": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211312565,
+   "prompt": "An elderly woman sitting in a chair puts both hands on the armrests, leans forward and slowly pushes herself up to standing, unsteady at first, then straightens and stands still.",
+   "size": 16826064,
+   "task": "01a1eb7b-5903-76e4-a4ee-44ee1ef97f5d"
+  },
+  "rush": {
+   "credits": 10,
+   "duration": 3.0,
+   "expires_at": 1795211360511,
+   "prompt": "A man standing suddenly lunges forward two or three quick steps with one arm reaching out in alarm, then stops.",
+   "size": 16768672,
+   "task": "01a1eb7b-597a-713c-b017-cd2a3fe4f86d"
+  },
+  "scream": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1795211325335,
+   "prompt": "A woman standing presses both hands to her mouth in fear, then cries out with her hands raised to her face, stepping back.",
+   "size": 16825904,
+   "task": "01a1eb7b-5923-77eb-886c-3a1ceb605172"
+  },
+  "steps": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211345065,
+   "prompt": "An elderly woman who has just stood up takes slow, careful, unsteady steps forward, arms a little out from her sides for balance, then steadies and walks slowly on.",
+   "size": 16868848,
+   "task": "01a1eb7b-5926-70d1-81bd-50c905765d9e"
+  },
+  "struggle": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211329648,
+   "prompt": "A man pushes forward against someone holding him back around the chest from behind, twisting and straining to get free, then gives up, goes still and lowers his head.",
+   "size": 16868848,
+   "task": "01a1eb7b-5887-754a-8876-48747964be94"
+  },
+  "torn": {
+   "credits": 10,
+   "duration": 3.0,
+   "expires_at": 1795211319264,
+   "prompt": "A person is violently pulled backwards off something in front of it, its arms flung forward, tumbling back.",
+   "size": 16768672,
+   "task": "01a1eb7b-5953-7475-bce7-56181a09eacc"
+  },
+  "trance": {
+   "credits": 10,
+   "duration": 10.0,
+   "expires_at": 1795211314579,
+   "prompt": "An elderly woman sitting in a chair takes a deep slow breath and sits very still, then slowly straightens her back and lifts her head, her eyes open wide, both open hands rising slowly up in front of her with a fine tremor, her upper body beginning to sway slowly in a small circle.",
+   "size": 16931312,
+   "task": "01a1eb7b-58d0-73ba-9010-d81df0a7dd0c"
+  },
+  "wsit": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1795211304131,
+   "prompt": "An elderly woman sits in a wheelchair with her hands resting in her lap, breathing slowly and tiredly, shoulders a little rounded, her head turning slightly to one side and back again, otherwise very still.",
+   "size": 16954704,
+   "task": "01a1eb7b-589d-75dd-aea5-f369f4133740"
+  },
+  "wturn": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1795211357899,
+   "prompt": "An elderly woman sitting in a chair slowly turns her head and shoulders to look at someone standing to her right, holds the look for a moment, then slowly turns back to face forward.",
+   "size": 16825904,
+   "task": "01a1eb7b-5993-757e-9532-e86fd9d105bb"
+  }
+ },
+ "altartray": {
+  "credits": 40,
+  "expires_at": 1795213769849,
+  "image": "masters/v27.0/props/refs/altartray-2k.png",
+  "image_to_3d": "01a1eb9b-dc84-77ce-bc50-d1e9abc5008f",
+  "remesh": {
+   "16000": "01a1ebfc-4901-75f8-aa43-f3c79a4ced04"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 63408772
+  }
+ },
+ "amma": {
+  "credits": 40,
+  "expires_at": 1795210840520,
+  "image": "masters/v27.0/people/refs/amma-a-2k.png",
+  "image_to_3d": "01a1eb6f-8b85-77c6-bb62-056a0b7648e1",
+  "remesh": {
+   "40000": "01a1eba4-58c9-775d-8e15-9c7921bd60b8",
+   "8000": "01a1eba4-5d71-7408-acde-83d21b7937ca"
+  },
+  "rig": "01a1eb75-4cc6-727a-bc9a-5a6c6fb33859",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.52,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-8b85-77c6-bb62-056a0b7648e1",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 78770032,
+   "walk": 79017484
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74529548,
+   "pre": 15876664
+  },
+  "takes": {
+   "lamp": {
+    "credits": 3,
+    "motion": "01a1eb7b-597b-76f2-a823-0db53123b8d9",
+    "size": 79690196,
+    "task": "01a1eb86-2871-77e0-bce6-100e2bc33dc0"
+   },
+   "lib": {
+    "actions": [
+     307
+    ],
+    "task": "01a1eb7c-fa02-7609-9c43-0c1012ddd5cb"
+   },
+   "rise": {
+    "credits": 3,
+    "motion": "01a1eb7b-5903-76e4-a4ee-44ee1ef97f5d",
+    "size": 79553956,
+    "task": "01a1eb86-28cc-76a4-89f8-820a6b8e3d64"
+   },
+   "steps": {
+    "credits": 3,
+    "motion": "01a1eb7b-5926-70d1-81bd-50c905765d9e",
+    "size": 79690220,
+    "task": "01a1eb86-279b-75ed-8ef6-f1bebd45a2e9"
+   },
+   "trance": {
+    "credits": 3,
+    "motion": "01a1eb7b-58d0-73ba-9010-d81df0a7dd0c",
+    "size": 80235148,
+    "task": "01a1eb86-28ba-7391-bec5-a0b1a3baf796"
+   },
+   "wsit": {
+    "credits": 3,
+    "motion": "01a1eb7b-589d-75dd-aea5-f369f4133740",
+    "size": 79962624,
+    "task": "01a1eb86-287f-729e-b13f-e7ab980a06e8"
+   },
+   "wturn": {
+    "motion": "01a1eb7b-5993-757e-9532-e86fd9d105bb",
+    "task": "01a1eb7d-b928-72d6-94c8-5e877c7f8fcf"
+   }
+  }
+ },
+ "angsana": {
+  "credits": 40,
+  "expires_at": 1795249641784,
+  "image": "masters/v27.0/props/refs/angsana-2k.png",
+  "image_to_3d": "01a1edb4-ddc2-72e1-81d1-9fe574e3d77c",
+  "remesh": {
+   "40000": "01a1edc5-8d73-767b-bee8-add66e70f44e"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74061780
+  }
+ },
+ "angsana2": {
+  "image": "masters/v27.0/props/refs/angsana2-2k.png",
+  "image_to_3d": "01a1edce-9793-732a-8547-279e84fdc9c2",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_prompt": "dense glossy green leaves in heavy clumps, grey-brown furrowed bark",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "angsana3": {
+  "credits": 35,
+  "expires_at": 1795251031033,
+  "image": "masters/v27.0/props/refs/angsana-2k.png",
+  "image_to_3d": "01a1edd3-86ba-7676-a7e4-90e23980c774",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "image_enhancement": false,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "symmetry_mode": "off",
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_prompt": "lush green leaves, grey-brown furrowed bark",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 86719184
+  }
+ },
+ "angsana4": {
+  "credits": 35,
+  "expires_at": 1795251198154,
+  "image": "masters/v27.0/props/refs/angsana2-2k.png",
+  "image_to_3d": "01a1edd3-9e8c-7350-898a-005b59c988c4",
+  "remesh": {
+   "40000": "01a1edde-428f-76f5-8899-a03619003fb4"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "image_enhancement": false,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "symmetry_mode": "off",
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_prompt": "dense glossy green leaves in heavy clumps, grey-brown furrowed bark",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 93617284
+  }
+ },
+ "appa": {
+  "credits": 40,
+  "expires_at": 1795210756907,
+  "image": "masters/v27.0/people/refs/appa-a-2k.png",
+  "image_to_3d": "01a1eb6f-08a2-764e-bae3-78f304dbca6c",
+  "remesh": {
+   "30000": "01a1eba4-62ff-7313-b798-5c46a9a22e23"
+  },
+  "rig": "01a1eb75-4c89-743d-ad9d-67833d830d95",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.66,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-08a2-764e-bae3-78f304dbca6c",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 57801188,
+   "walk": 58041428
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 54087656,
+   "pre": 9009876
+  },
+  "takes": {
+   "aturn": {
+    "credits": 3,
+    "motion": "01a1eb7b-5974-7745-b013-2ee3eb765f46",
+    "size": 58564668,
+    "task": "01a1eb84-101c-7481-be9d-7433ab0a2a72"
+   },
+   "lib": {
+    "actions": [
+     243
+    ],
+    "credits": 3,
+    "size": 59229136,
+    "task": "01a1eb83-4824-77fe-99f5-b7f10a280fe0"
+   }
+  }
+ },
+ "armchair": {
+  "credits": 40,
+  "expires_at": 1795212681809,
+  "image": "masters/v27.0/props/refs/armchair-2k.png",
+  "image_to_3d": "01a1eb8b-0aee-75e8-b106-d2bedb069ac1",
+  "remesh": {
+   "20000": "01a1eba2-50b9-72b0-b9ef-ec278fa605c8"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 70973112
+  }
+ },
+ "bed": {
+  "credits": 40,
+  "expires_at": 1795213691161,
+  "image": "masters/v27.0/props/refs/bed-2k.png",
+  "image_to_3d": "01a1eb9b-abf8-77c5-a6be-87714b648cba",
+  "remesh": {
+   "16000": "01a1ebeb-c124-7577-a60b-fc6da48d4035"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 48058264
+  }
+ },
+ "bicycle": {
+  "credits": 40,
+  "expires_at": 1795249017519,
+  "image": "masters/v27.0/props/refs/bicycle-2k.png",
+  "image_to_3d": "01a1edb5-1a30-758d-9bf9-309887bab0c5",
+  "remesh": {
+   "30000": "01a1edd0-e9c2-72dc-9f2b-64eb751163d4"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 82651408
+  }
+ },
+ "bigbowl": {
+  "credits": 40,
+  "expires_at": 1795212425035,
+  "image": "masters/v27.0/props/refs/bigbowl-2k.png",
+  "image_to_3d": "01a1eb85-1adc-77f4-b87f-ad55c2c00cf9",
+  "remesh": {
+   "16000": "01a1eba2-3e1a-72f7-9103-3b92b6e69a8a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 97968264
+  }
+ },
+ "bougain": {
+  "credits": 40,
+  "expires_at": 1795249404760,
+  "image": "masters/v27.0/props/refs/bougain-2k.png",
+  "image_to_3d": "01a1edb4-ff9f-7060-a5df-ae72c3908b6e",
+  "remesh": {
+   "30000": "01a1edd0-e65c-74b3-927c-bb5f5514cc1b"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 98180172
+  }
+ },
+ "cabinet": {
+  "credits": 40,
+  "expires_at": 1795212345199,
+  "image": "masters/v27.0/props/refs/cabinet-2k.png",
+  "image_to_3d": "01a1eb85-3955-7659-ab37-9fe54952c094",
+  "remesh": {
+   "20000": "01a1eba2-41e0-7027-9411-8831bbbc603f"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58723240
+  }
+ },
+ "clock": {
+  "credits": 40,
+  "expires_at": 1795213704222,
+  "image": "masters/v27.0/props/refs/clock-2k.png",
+  "image_to_3d": "01a1eb9b-9035-77a0-acb2-7719538ca861",
+  "remesh": {
+   "4000": "01a1ebe3-a1d3-776f-b7e6-05f5b34f0b23"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58924588
+  }
+ },
+ "clothesrack": {
+  "credits": 40,
+  "expires_at": 1795249071648,
+  "image": "masters/v27.0/props/refs/clothesrack-2k.png",
+  "image_to_3d": "01a1edb5-2497-7415-8320-3646ac87968a",
+  "remesh": {
+   "20000": "01a1edd0-eb27-7464-8adc-670b19ce4747"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 82302332
+  }
+ },
+ "coffeetable": {
+  "credits": 40,
+  "expires_at": 1795213806699,
+  "image": "masters/v27.0/props/refs/coffeetable-2k.png",
+  "image_to_3d": "01a1eb9b-ed64-70e2-ab89-769b7863a162",
+  "remesh": {
+   "8000": "01a1ebc8-d2c7-749a-ab6f-23e678be4f43"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 54316648
+  }
+ },
+ "commode": {
+  "credits": 40,
+  "expires_at": 1795213811548,
+  "image": "masters/v27.0/props/refs/commode-2k.png",
+  "image_to_3d": "01a1eb9b-b610-7122-aff4-a239deea7701",
+  "remesh": {
+   "8000": "01a1ebef-7c2d-75f4-9a24-08b89d73b102"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 35398880
+  }
+ },
+ "corrpots": {
+  "credits": 40,
+  "expires_at": 1795249165827,
+  "image": "masters/v27.0/props/refs/corrpots-2k.png",
+  "image_to_3d": "01a1edb5-0d6f-711a-9743-79208a3992e9",
+  "remesh": {
+   "30000": "01a1edd0-e820-7164-b225-666a0720c5bb"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74972120
+  }
+ },
+ "dinechair": {
+  "credits": 40,
+  "expires_at": 1795212294745,
+  "image": "masters/v27.0/props/refs/dinechair-2k.png",
+  "image_to_3d": "01a1eb85-4d86-707b-a622-fea10eba8de6",
+  "remesh": {
+   "12000": "01a1eba2-4574-739c-9bd3-4796a04e4086"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50430464
+  }
+ },
+ "diningtable": {
+  "credits": 40,
+  "expires_at": 1795212306797,
+  "image": "masters/v27.0/props/refs/diningtable-2k.png",
+  "image_to_3d": "01a1eb85-4404-77ff-a614-c9fdd33226b8",
+  "remesh": {
+   "16000": "01a1eba2-43a4-70a9-8391-9197ce9ce565"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 56116252
+  }
+ },
+ "door": {
+  "credits": 40,
+  "expires_at": 1795213725449,
+  "image": "masters/v27.0/props/refs/door-2k.png",
+  "image_to_3d": "01a1eb9b-6a06-7018-9cf0-4ad5b3cc1e40",
+  "remesh": {
+   "4000": "01a1ebcd-8985-7550-8726-ccd9b3681bb0"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50265636
+  }
+ },
+ "folder": {
+  "credits": 40,
+  "expires_at": 1795212942738,
+  "image": "masters/v27.0/props/refs/folder-2k.png",
+  "image_to_3d": "01a1eb8a-e153-7292-926b-65603cc18305",
+  "remesh": {
+   "6000": "01a1eba2-4b10-7483-99f8-235cb3b02e58"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 66302704
+  }
+ },
+ "foxpalm": {
+  "credits": 40,
+  "expires_at": 1795249272718,
+  "image": "masters/v27.0/props/refs/foxpalm-2k.png",
+  "image_to_3d": "01a1edb4-ed4d-72b9-9c4c-a5cb019a3756",
+  "remesh": {
+   "30000": "01a1edca-0d90-7740-b740-ca23acc2d68d"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 88777784
+  }
+ },
+ "frameport": {
+  "credits": 40,
+  "expires_at": 1795212598279,
+  "image": "masters/v27.0/props/refs/frameport-2k.png",
+  "image_to_3d": "01a1eb8a-fac8-77e6-b447-86f294daa6f8",
+  "remesh": {
+   "12000": "01a1eba2-4eed-73c0-9a0e-22486c7dde66"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 81866788
+  }
+ },
+ "framesmall": {
+  "credits": 40,
+  "expires_at": 1795212363526,
+  "image": "masters/v27.0/props/refs/framesmall-2k.png",
+  "image_to_3d": "01a1eb85-5691-730c-98ea-6d8a8d5ed5f9",
+  "remesh": {
+   "4000": "01a1eba2-476d-72ce-b391-f889b4722856"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40650708
+  }
+ },
+ "framesmall2": {
+  "credits": 40,
+  "expires_at": 1795232241261,
+  "image": "masters/v27.0/props/refs/framesmall2-2k.png",
+  "image_to_3d": "01a1ecb5-5858-73cd-b266-dd2b5587c5b9",
+  "remesh": {
+   "4000": "01a1ecbb-da59-742e-9c5d-ba6a1d5e3446"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40929960
+  }
+ },
+ "fridge": {
+  "credits": 40,
+  "expires_at": 1795213681679,
+  "image": "masters/v27.0/props/refs/fridge-2k.png",
+  "image_to_3d": "01a1eb9b-7446-758a-ac0e-6d6ecbe650fb",
+  "remesh": {
+   "8000": "01a1ebdc-40d0-72cd-b674-b7d7328718e2"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 36202280
+  }
+ },
+ "garlandhang": {
+  "credits": 40,
+  "expires_at": 1795213800840,
+  "image": "masters/v27.0/props/refs/garlandhang-2k.png",
+  "image_to_3d": "01a1eb9b-fa65-739c-a141-4099d7161dbc",
+  "remesh": {
+   "12000": "01a1ec01-34fb-74ca-b827-a6dc9c842e4c"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 78331652
+  }
+ },
+ "gate": {
+  "credits": 40,
+  "expires_at": 1795212560807,
+  "image": "masters/v27.0/props/refs/gate-2k.png",
+  "image_to_3d": "01a1eb8a-f19d-774d-9b20-02643ad9cbe1",
+  "remesh": {
+   "20000": "01a1eba2-4d09-752f-8f59-e3fad08a9bd9"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 39998808
+  }
+ },
+ "hugger": {
+  "credits": 40,
+  "expires_at": 1795212228755,
+  "image": "masters/v27.0/props/refs/hugger-2k.png",
+  "image_to_3d": "01a1eb85-634f-739f-9b21-49ad46bb26f5",
+  "remesh": {
+   "8000": "01a1eba2-4948-7560-bd5d-3c5a07149427"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 26374468
+  }
+ },
+ "large": {
+  "credits": 40,
+  "expires_at": 1795210799996,
+  "image": "masters/v27.0/people/refs/large-a-2k.png",
+  "image_to_3d": "01a1eb6f-1cfb-7581-856d-b7c8b47c1035",
+  "remesh": {
+   "24000": "01a1eba4-6885-7600-9006-b69fdd170839"
+  },
+  "rig": "01a1eb75-4c96-712e-b0ba-aeba063f4e23",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 2.1,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-1cfb-7581-856d-b7c8b47c1035",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72372324,
+   "walk": 72613500
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68337932,
+   "pre": 14261076
+  },
+  "takes": {
+   "lumber": {
+    "credits": 3,
+    "motion": "01a1eb7b-593b-7236-96f7-42662b11be6c",
+    "size": 73269664,
+    "task": "01a1eb83-0ad0-7716-951e-17599a51779e"
+   }
+  }
+ },
+ "mala": {
+  "credits": 40,
+  "expires_at": 1795210755698,
+  "image": "masters/v27.0/people/refs/mala-a-2k.png",
+  "image_to_3d": "01a1eb6e-fe05-7791-a6e4-972a1f0a7078",
+  "remesh": {
+   "40000": "01a1eba4-5bf5-7293-b24e-1c2cd047b366",
+   "8000": "01a1eba4-611a-7697-b332-642104d92c96"
+  },
+  "rig": "01a1eb75-4cc3-7576-bb0e-47886076689a",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.58,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6e-fe05-7791-a6e4-972a1f0a7078",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 62840988,
+   "walk": 63082308
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58186288,
+   "pre": 14652324
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     243,
+     47,
+     56,
+     314
+    ],
+    "credits": 12,
+    "size": 66563128,
+    "task": "01a1eb7c-fa02-740a-aa14-89fccb205dce"
+   },
+   "lightlamp": {
+    "credits": 3,
+    "motion": "01a1eb7b-5958-7045-a632-7491cf69d23f",
+    "size": 63738476,
+    "task": "01a1eb82-3be1-7757-bba1-4337af7a3f34"
+   }
+  }
+ },
+ "oppress": {
+  "credits": 40,
+  "expires_at": 1795210833682,
+  "image": "masters/v27.0/people/refs/oppress-a-2k.png",
+  "image_to_3d": "01a1eb6f-95ec-72df-8f7c-5bdce5fefb11",
+  "remesh": {
+   "30000": "01a1eba4-6483-77bb-860a-412584a9da18"
+  },
+  "rig": "01a1eb75-4ce2-70c7-99b3-58a83b928a50",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.78,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-95ec-72df-8f7c-5bdce5fefb11",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 78576744,
+   "walk": 78817884
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 73305696,
+   "pre": 17870344
+  },
+  "takes": {
+   "claw": {
+    "credits": 3,
+    "motion": "01a1eb7b-5928-72b9-9e45-48b0c40d3a10",
+    "size": 79341168,
+    "task": "01a1eb87-3809-70ba-87c8-51d62df77950"
+   },
+   "cling": {
+    "credits": 3,
+    "motion": "01a1eb7b-59d7-7715-8096-b5b534061524",
+    "size": 79739852,
+    "task": "01a1eb87-384c-70df-86d2-060b5c74eb58"
+   },
+   "cry": {
+    "motion": "01a1eb7b-5907-7749-9721-6f3a728bf79b",
+    "task": "01a1eb7c-fa0e-75cb-8c35-2c4fa59ab5ad"
+   },
+   "oturn": {
+    "credits": 3,
+    "motion": "01a1eb7b-58cb-729c-9ac2-7531a3243d37",
+    "size": 79341132,
+    "task": "01a1eb87-382d-70f2-81dc-c4053a15e6bf"
+   },
+   "torn": {
+    "credits": 3,
+    "motion": "01a1eb7b-5953-7475-bce7-56181a09eacc",
+    "size": 79075060,
+    "task": "01a1eb87-387c-7783-abb1-92d3bd26f5a6"
+   }
+  }
+ },
+ "phonetable": {
+  "credits": 40,
+  "expires_at": 1795213741664,
+  "image": "masters/v27.0/props/refs/phonetable-2k.png",
+  "image_to_3d": "01a1eb9b-9d58-7700-8b47-30b61b32b3f0",
+  "remesh": {
+   "12000": "01a1ebe7-9545-7482-bc21-7d381df6d868"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58742760
+  }
+ },
+ "pilltray": {
+  "credits": 40,
+  "expires_at": 1795213735991,
+  "image": "masters/v27.0/props/refs/pilltray-2k.png",
+  "image_to_3d": "01a1eb9b-7e73-7472-8662-10db840ffd61",
+  "remesh": {
+   "12000": "01a1ebdf-f3bb-7385-ba10-94b1f284d4d9"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 41357404
+  }
+ },
+ "poles": {
+  "credits": 40,
+  "expires_at": 1795213661685,
+  "image": "masters/v27.0/props/refs/poles-2k.png",
+  "image_to_3d": "01a1eb9b-c087-76bb-b183-62d1e7cead9c",
+  "remesh": {
+   "16000": "01a1ebf3-a63b-74d0-8ee0-d38ac10f6d3f"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 64109944
+  }
+ },
+ "prayershelf": {
+  "credits": 40,
+  "expires_at": 1795212408436,
+  "image": "masters/v27.0/props/refs/prayershelf-2k.png",
+  "image_to_3d": "01a1eb84-f2dc-713e-aec7-cfec634198dd",
+  "remesh": {
+   "30000": "01a1eba2-3880-724f-ba77-bd0049a7a2e1"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 67465804
+  }
+ },
+ "ravi": {
+  "credits": 40,
+  "expires_at": 1795210767058,
+  "image": "masters/v27.0/people/refs/ravi-a-2k.png",
+  "image_to_3d": "01a1eb6e-f516-76f9-a622-c73600b22642",
+  "remesh": {
+   "40000": "01a1eba4-5a56-72f4-995e-ad3595773a8f",
+   "8000": "01a1eba4-5f38-71bd-9f25-ebb62aaad6f6"
+  },
+  "rig": "01a1eb75-4c46-71e8-835b-fec8be51523b",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.7,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6e-f516-76f9-a622-c73600b22642",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 63398316,
+   "walk": 63639384
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 59190960,
+   "pre": 17200216
+  },
+  "takes": {
+   "kneelhold": {
+    "credits": 3,
+    "motion": "01a1eb7b-5968-71d8-a3b1-372149de280a",
+    "size": 64295560,
+    "task": "01a1eb82-78f1-7624-85e5-5f15c36b098c"
+   },
+   "lib": {
+    "actions": [
+     243,
+     47,
+     56,
+     313
+    ],
+    "credits": 12,
+    "size": 67873860,
+    "task": "01a1eb7c-f993-745c-90aa-3bf1b921d05d"
+   }
+  }
+ },
+ "shoerack": {
+  "credits": 40,
+  "expires_at": 1795213915281,
+  "image": "masters/v27.0/props/refs/shoerack-2k.png",
+  "image_to_3d": "01a1eb9b-49df-72e7-8c35-0ae1b0c7a331",
+  "remesh": {
+   "30000": "01a1ebd2-bb84-7374-8e4a-db180f257b92"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 71254972
+  }
+ },
+ "sofa": {
+  "credits": 40,
+  "expires_at": 1795212354269,
+  "image": "masters/v27.0/props/refs/sofa-2k.png",
+  "image_to_3d": "01a1eb85-2a83-7574-87c4-5eb9a8412678",
+  "remesh": {
+   "30000": "01a1eba2-4007-70b4-9bb6-070ea8ef587c"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 87800660
+  }
+ },
+ "standfan": {
+  "credits": 40,
+  "expires_at": 1795212597917,
+  "image": "masters/v27.0/props/refs/standfan-2k.png",
+  "image_to_3d": "01a1eb8b-3ad6-76e4-a704-4445b45b0743",
+  "remesh": {
+   "12000": "01a1eba2-588d-718d-b9af-566d45cf7829"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 44311056
+  }
+ },
+ "stool": {
+  "credits": 40,
+  "expires_at": 1795212672325,
+  "image": "masters/v27.0/props/refs/stool-2k.png",
+  "image_to_3d": "01a1eb8b-2f49-72f9-be97-9e2c80f1a98d",
+  "remesh": {
+   "6000": "01a1eba2-56b5-7182-bbdd-546397ab7328"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 43021964
+  }
+ },
+ "streetlamp": {
+  "credits": 40,
+  "expires_at": 1795248852443,
+  "image": "masters/v27.0/props/refs/streetlamp-2k.png",
+  "image_to_3d": "01a1edb4-f7be-7341-a958-ddbc5976063f",
+  "remesh": {
+   "6000": "01a1edcf-3aaf-76bd-9005-5d4ee685d9c9"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 25610824
+  }
+ },
+ "thoranam": {
+  "credits": 40,
+  "expires_at": 1795213676522,
+  "image": "masters/v27.0/props/refs/thoranam-2k.png",
+  "image_to_3d": "01a1eb9b-cc82-746c-8dd6-9b6a18601248",
+  "remesh": {
+   "12000": "01a1ebf8-1700-733f-9ef2-097042b2070a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 59440036
+  }
+ },
+ "tubelight": {
+  "credits": 40,
+  "expires_at": 1795212541770,
+  "image": "masters/v27.0/props/refs/tubelight-2k.png",
+  "image_to_3d": "01a1eb8b-1b18-711e-b49e-26e1864712f3",
+  "remesh": {
+   "3000": "01a1eba2-52ab-7316-8463-f8ab9e6c8c98"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 27447044
+  }
+ },
+ "tulsi": {
+  "credits": 40,
+  "expires_at": 1795213982708,
+  "image": "masters/v27.0/props/refs/tulsi-2k.png",
+  "image_to_3d": "01a1eb9b-5aa3-7677-b17c-aafb73103e5f",
+  "remesh": {
+   "30000": "01a1ebd7-2561-7710-a71b-93b1cb5e9bb9"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 84107448
+  }
+ },
+ "tvconsole": {
+  "credits": 40,
+  "expires_at": 1795212635171,
+  "image": "masters/v27.0/props/refs/tvconsole-2k.png",
+  "image_to_3d": "01a1eb8b-25bb-7642-a794-cef8ccc08d31",
+  "remesh": {
+   "16000": "01a1eba2-549c-77df-9b2b-c129ada74364"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 60902564
+  }
+ },
+ "vilakku": {
+  "credits": 40,
+  "expires_at": 1795212214672,
+  "image": "masters/v27.0/props/refs/vilakku-2k.png",
+  "image_to_3d": "01a1eb85-0129-70fa-b18a-3f6f1a147e00",
+  "remesh": {
+   "20000": "01a1eba2-3a54-71b2-a7c4-662409dd2e76"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 77728084
+  }
+ },
+ "wander": {
+  "credits": 40,
+  "expires_at": 1795210845867,
+  "image": "masters/v27.0/people/refs/wander-a-2k.png",
+  "image_to_3d": "01a1eb6f-1324-735a-bdc5-2a9c90f9c4bc",
+  "remesh": {
+   "16000": "01a1eba4-6668-75b2-8364-769ab7600860"
+  },
+  "rig": "01a1eb75-4cad-74c7-9d72-aec5ee94eced",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.35,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-1324-735a-bdc5-2a9c90f9c4bc",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 89125568,
+   "walk": 89366536
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 80545336,
+   "pre": 41638604
+  },
+  "takes": {
+   "crawl": {
+    "credits": 3,
+    "motion": "01a1eb7b-5999-7741-ae85-6c4e341fc898",
+    "size": 90022628,
+    "task": "01a1eb88-4971-72fc-9ee3-d6bd0c41f2b6"
+   },
+   "creep": {
+    "motion": "01a1eb7b-58d6-76d8-81b4-bed9a8105f6b",
+    "task": "01a1eb7d-fa3c-71e2-8f68-c38ced6b6711"
+   }
+  }
+ },
+ "waterbowl": {
+  "credits": 40,
+  "expires_at": 1795212382081,
+  "image": "masters/v27.0/props/refs/waterbowl-2k.png",
+  "image_to_3d": "01a1eb85-0a80-71c1-a80d-f559b7712758",
+  "remesh": {
+   "20000": "01a1eba2-3c41-72ab-92ff-8a262e278061"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 76767632
+  }
+ },
+ "wheelchair": {
+  "credits": 40,
+  "expires_at": 1795212392537,
+  "image": "masters/v27.0/props/refs/wheelchair-2k.png",
+  "image_to_3d": "01a1eb84-e440-77b4-9569-a510a6bbfeb9",
+  "remesh": {
+   "40000": "01a1eba2-36c3-759e-9be5-bc3f207a03fd"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 80103608
+  }
+ }
+}

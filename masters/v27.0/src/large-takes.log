@@ -1,0 +1,11 @@
+  motion large lumber IN_PROGRESS 1%
+  motion large lumber IN_PROGRESS 42%
+  motion large lumber IN_PROGRESS 84%
+  motion large lumber IN_PROGRESS 95%
+  motion large lumber SUCCEEDED 100%
+motion done large lumber 73269664
+body identical to masters/v27.0/src/rigged-large.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-large-lumber.glb 374672 bytes ["retarget_clip (132 ch, 5.97 s)"]
+large lumber strip exit 0
+large t2m done

@@ -1,0 +1,42 @@
+started animation mala lib 01a1eb7c-fa02-740a-aa14-89fccb205dce
+  anim mala lib IN_PROGRESS 1%
+  anim mala lib IN_PROGRESS 81%
+  anim mala lib IN_PROGRESS 84%
+  anim mala lib IN_PROGRESS 88%
+  anim mala lib IN_PROGRESS 92%
+  anim mala lib IN_PROGRESS 95%
+  anim mala lib SUCCEEDED 100%
+animation done mala lib 66563128
+a re-export of masters/v27.0/src/rigged-mala.glb: 66 bones at the same rest pose in the world, 310759 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v27.0/src/takes-mala-lib.glb 892496 bytes ["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Right_Hand_Open (198 ch, 3.73 s)"]
+mala lib strip exit 0
+mala lib done
+  motion mala scream IN_PROGRESS 1%
+  motion mala kneelhold IN_PROGRESS 1%
+  motion mala lightlamp IN_PROGRESS 1%
+  motion mala scream IN_PROGRESS 42%
+  motion mala kneelhold IN_PROGRESS 42%
+  motion mala lightlamp IN_PROGRESS 42%
+  motion mala kneelhold IN_PROGRESS 84%
+  motion mala scream IN_PROGRESS 84%
+  motion mala lightlamp IN_PROGRESS 84%
+  motion mala lightlamp SUCCEEDED 100%
+  motion mala scream SUCCEEDED 100%
+  motion mala kneelhold SUCCEEDED 100%
+motion done mala kneelhold 63738480
+body identical to masters/v27.0/src/rigged-mala.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-mala-kneelhold.glb 374416 bytes ["retarget_clip (132 ch, 5.97 s)"]
+mala kneelhold strip exit 0
+motion done mala scream 63472744
+motion done mala lightlamp 63738476
+body identical to masters/v27.0/src/rigged-mala.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-mala-lightlamp.glb 374416 bytes ["retarget_clip (132 ch, 5.97 s)"]
+body identical to masters/v27.0/src/rigged-mala.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+mala lightlamp strip exit 0
+wrote masters/v27.0/src/takes-mala-scream.glb 262460 bytes ["retarget_clip (132 ch, 3.97 s)"]
+mala scream strip exit 0
+mala t2m done

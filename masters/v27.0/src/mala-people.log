@@ -1,0 +1,50 @@
+masters/v27.0/src/takes-mala-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v27.0/src/merged-mala.glb 24554796 bytes
+["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Right_Hand_Open (198 ch, 3.73 s)","Walking (132 ch, 1.03 s)","lightlamp (132 ch, 5.97 s)","kneelhold (132 ch, 5.97 s)","scream (132 ch, 3.97 s)"]
+calmarms masters/v27.0/src/merged-mala.glb: the body's left 1.00,0.00,-0.00, its face 0.00,0.00,1.00
+  Idle_3: Left out 11.4..20.7 (mean 17.2) -> 2.5..8.1; swing -5.5..4.2 -> -5.5..4.2 | Right out 12.5..21.8 (mean 17.3) -> 3.1..8.7; swing -5.0..3.1 -> -5.0..3.1
+  Stand_and_Chat: Left out 3.6..24.3 (mean 15.7) -> -5.1..15.6; swing -9.0..35.1 -> -9.0..35.1 | Right out 3.5..23.0 (mean 13.1) -> -2.6..16.9; swing -25.2..-0.2 -> -25.2..-0.2
+  Listening_Gesture: Left out 7.9..27.5 (mean 14.7) -> 0.1..19.7; swing -18.4..19.4 -> -18.4..19.4 | Right out 4.6..18.5 (mean 11.5) -> 0.1..14.1; swing -15.9..4.5 -> -15.9..4.5
+  Walking: Left out 7.1..23.9 (mean 15.7) -> 2.7..11.1; swing -25.3..30.6 -> -17.7..21.4 | Right out 8.8..29.9 (mean 18.9) -> 2.0..12.5; swing -23.5..28.6 -> -16.4..20.0
+wrote masters/v27.0/src/merged-mala.glb
+  skin weights: 41159 vertices in 20787 positions over 65 joints, 24 diffusion passes; 4303 vertices' main weight moved
+prune: Removed types... Texture (1), Accessor (8)
+  41159 vertices in 20787 positions; 20832 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 41159 points joined into 20787 places; 41565 triangles
+  repaint [   0.0s] the face 3136 triangles, the rest of the head 9772, the hands 3208, the body 25449 (looking [-0.0, 0.0, 1.0])
+  repaint [   6.1s] xatlas: 1033 charts, 76% of the square used
+  repaint [   7.5s] packed again: 1033 charts in a 2531x2548 square drawn at 2048 (77% used), a margin of 4.0 pixels at 2048
+  repaint [   7.6s] 10 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (10)
+  repaint [   7.6s] texels a metre at 2048, before -> now: face 1666 -> 2129, head 1853 -> 1648, hands 1838 -> 1165, body 885 -> 792; 1036 charts, margin 4.0 px; 10 unplaced corners mended
+  repaint [   7.7s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  12.7s] baked
+  repaint [  12.7s] written
+  repaint: 41159 points -> 46099 (4940 copied along the new seams), 41565 triangles; texels a metre at 2048, before -> now: face 1666 -> 2129, head 1853 -> 1648, hands 1838 -> 1165, body 885 -> 792; 1036 charts, margin 4.0 px; 10 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4mala.glb: tris 41565 -> 41565, 8 takes, 2389 KB
+  skin weights: 10986 vertices in 4174 positions over 65 joints, 24 diffusion passes; 4167 vertices' main weight moved
+prune: Removed types... Texture (1)
+  10986 vertices in 4174 positions; 6805 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 10986 points joined into 4174 places; 8341 triangles
+  repaint [   0.0s] the face 570 triangles, the rest of the head 1562, the hands 668, the body 5541 (looking [-0.0, 0.0, 1.0])
+  repaint [   0.4s] xatlas: 303 charts, 74% of the square used
+  repaint [   0.8s] packed again: 303 charts in a 1250x1273 square drawn at 1024 (73% used), a margin of 2.4 pixels at 1024
+  repaint [   0.8s] texels a metre at 1024, before -> now: face 752 -> 1046, head 809 -> 834, hands 915 -> 568, body 450 -> 394; 303 charts, margin 2.4 px
+  repaint [   0.8s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   4.7s] baked
+  repaint [   4.7s] written
+  repaint: 10986 points -> 11972 (986 copied along the new seams), 8341 triangles; texels a metre at 1024, before -> now: face 752 -> 1046, head 809 -> 834, hands 915 -> 568, body 450 -> 394; 303 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4malam.glb: tris 8341 -> 8341, 0 takes, 444 KB
+  skin weights: 230944 vertices in 155391 positions over 65 joints, 24 diffusion passes; 5297 vertices' main weight moved
+prune: Removed types... Texture (2), Accessor (1)
+  230944 vertices in 155391 positions; 77160 normals turned more than 10° to agree across a seam; normals of no length: 0
+  thin charts: 100 of 729 charts (775 triangles) were edge-only and bled their neighbours — each pointed at a uniform spot of its colour, 17 taking the colour of the surface round it; 2645 triangles on the thin arms of solid charts; 5539 border vertices pulled 1.5 texels in from a neighbour of another colour (569 left where the pull would fold a triangle) (worst match 0.187)
+  largest fixed charts (texels at 2048): 147 69 57 47 44 40 39 36 35 30 25 18
+prune: Removed types... Accessor (6)
+quantize: Skipping TEXCOORD_0; out of [0,1] range.
+prune: Removed types... Skin (1), Accessor (4)
+prepmonk p4malah.glb: tris 310759 -> 310759, 0 takes, 5055 KB

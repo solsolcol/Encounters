@@ -1,0 +1,10 @@
+started rig mala 01a1eb75-4cc3-7576-bb0e-47886076689a
+  rig mala IN_PROGRESS 0%
+  rig mala IN_PROGRESS 47%
+  rig mala IN_PROGRESS 84%
+  rig mala IN_PROGRESS 90%
+  rig mala SUCCEEDED 100%
+rig done mala {'rigged': 62840988, 'walk': 63082308}
+body identical to masters/v27.0/src/rigged-mala.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-mala-walking.glb 98056 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]
