@@ -963,6 +963,11 @@
     /* HIS EYE AT THE TABLE: his seat (STATION.table.at) at the seated height the play gives him (c_story.js SIT5), so the
        collector's film and the endings stand where the table's play seats him, whatever view a film began in */
     const SEATEYE5 = () => [STATION.table.at.x, SIT5.y, STATION.table.at.z];
+    /* the collector's head as a shot aims at it: his seat, a hand forward of it along his facing (he sits leaning forward
+       over the table; aimed at his seat his face stood at the phone's edge: collector-00015, 21 Nov), at a seated head's
+       height */
+    const colHead5 = () => { const P = cast.col, S0 = STATION.table.collector, g = P && P.ready && P.group.visible ? P.group.position : null,
+      r = g ? P.group.rotation.y : S0.ry, x = g ? g.x : S0.x, z = g ? g.z : S0.z; return [x + Math.sin(r) * 0.22, 0.98, z + Math.cos(r) * 0.22]; };
     FILMS5.collector = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -987,7 +992,7 @@
           fmTalk(P, 'col', t, t < T.co5t2 ? T.co5t1 : T.co5t2, t < T.co5t2 ? SECS.co5t1 : SECS.co5t2, 'Sitting_Answering_Questions');
           lookNow(P, t < T.co5t1 ? [R.cx - 0.1, 0.35, R.cz - 0.1] : t < T.co5t2 + 3.0 ? fmHead(cast.phoS, [0, 0.95, 240.78]) : 'lens', 0.8, 0.7); });
         whenReady(cast.jun, (P) => { const s0 = STATION.table.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, [R.cx, 0.4, R.cz], 0.5, 0.7); });
-        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]);
+        const COL = colHead5;
         fmTrack(t, [
           { t: 0, name: 'room', eye: [R.x1 - 0.35, 1.5, R.z0 + 0.45], at: [R.cx - 0.2, 0.55, R.cz + 0.4], fp: 62, fd: 54 },
           { t: T.case, name: 'room', eye: [R.x1 - 0.4, 1.45, R.z0 + 0.5], at: [R.cx - 0.3, 0.5, R.cz + 0.2], fp: 58, fd: 50 },
@@ -995,8 +1000,8 @@
           { t: T.laid - 0.05, name: 'case', eye: [me[0] - 0.25, me[1], me[2] + 0.05], at: () => lp3(COL(), [R.cx - 0.36, 0.4, R.cz - 0.05], 0.5), fp: 48, fd: 42 },
           { t: T.laid, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx, 0.35, R.cz - 0.12], fp: 40, fd: 34, cut: true },
           { t: T.co5t1 + SECS.co5t1, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx - 0.1, 0.36, R.cz - 0.15], fp: 44, fd: 38 },
-          { t: T.co5t2 + 0.6, name: 'col', eye: me, at: COL, fp: 46, fd: 40 },
-          { t: T.co5t2 + SECS.co5t2 - 1.2, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+          { t: T.co5t2 + 0.6, name: 'col', eye: me, at: COL, fp: 54, fd: 46 },
+          { t: T.co5t2 + SECS.co5t2 - 1.2, name: 'col', eye: me, at: COL, fp: 50, fd: 44 },
           /* (it ends on his seat's own view and KEEPS it (z_tail.js: keep.view), where the table's play seats him (c_story.js
              seatHim): the view it began in was the court's, where the bag tied film left the rig) */
           { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
@@ -1074,7 +1079,7 @@
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
         /* THE LENS: the ending's own shots, the rite's, the close's */
-        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
+        const COL = colHead5, PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
         const keys = X.shots(me, COL, PHO, E).concat([
           { t: r0, name: 'rite', eye: [me[0] + 0.2, me[1] + 0.05, me[2] - 0.1], at: () => lp3(PHO(), [R.cx, 0.4, R.cz], 0.55), fp: 52, fd: 46 },
           { t: r0 + RT.see + 1.2, name: 'rite', eye: [me[0] + 0.1, me[1], me[2]], at: [R.cx, 0.42, R.cz - 0.05], fp: 46, fd: 40 },

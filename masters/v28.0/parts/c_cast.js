@@ -114,7 +114,7 @@
       cast.col = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, hidden: true, skins: false,
         win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
         seat: { y: CUSHION_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
-        shoulders: { Sitting_Answering_Questions: 1, Idle_3: 1 },
+        shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },              // (the sit's shrug let down half: let down whole, his collar stood off his neck in the close shot: collector-00015)
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.col.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
 
