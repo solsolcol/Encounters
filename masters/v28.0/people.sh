@@ -97,4 +97,32 @@ go zavier3 && ( HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking) )
 # triangles were left at the sheet's corner (16.7 cm2 of him, drawn as dark and pink specks along every edge) and 8,036
 # slivers torn; in millimetres none, and his sheet is sharper (full body: face 1,944 -> 2,264 texels a metre, body 700 -> 818).
 go zavier4 && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier4 one zavier4 40000 2048 $(T zavier4 walking Walking) )
+# ---------------------------------------------------------------------------------------------------------------------
+# THE CAST OF 21 NOV 2026 (helper CAST; masters/v28.0/people/RECORD.md is the record: every id, every fault, every
+# picture looked at). Each body made ONCE (the rule of v28.0). Each line is the first body's pattern (WSMOOTH=0
+# XSCALE=1000 FINS=1) and names its own HERO, so that no line above is touched; run a body BY NAME, never the whole file.
+#   three levels a person (plan 13: beyond 2.2 m the lighter body; "the three in the doorway on their lighter bodies"):
+#   assets/p5<name>.glb near (40,000, every take), p5<name>m.glb mid (8,000), p5<name>h.glb every triangle (HEROKEEP
+#   empty: repainted, as Master Zavier's).
+# MR KOH (plan 4.2: "a heavy man in a polo tee, tired"; 1.68 m): the library's stand, listening, chat and talk, and the
+# rig's own walk. His arms are brought in less than the others' (12 degrees, not 7): his belly and hips are wider.
+go koh && ( HERO=koh CALM="Idle_3=12,0.6 Stand_and_Chat=12 Listening_Gesture=12 Walking=12,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
+  one koh 40000 2048 $(T koh lib Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Hands_Open) $(T koh walking Walking) )
+# JUN (the second follower, plan 4.0 and 4.1; 1.72 m): the same set, his talk the one-handed one.
+go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
+  one jun 40000 2048 $(T jun lib Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Right_Hand_Open) $(T jun walking Walking) )
+# THE COLLECTOR (plan 4.7; 1.77 m): NOT PREPARED. His body is good and his RIG CAME BACK WRONG (52 joints where a rig
+# with fingers has 66: one finger's bones a hand, and stray chains from the spine, the hips and the toes). Stopped
+# there by the rule of v28.0 (no remesh, no takes): RECORD.md has the pictures and what each way on costs. His line,
+# once Chad has picked (the sitting take is 307, Sitting_Answering_Questions):
+#   go collector && ( HERO=collector WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= one collector 40000 2048 $(T collector lib ...) $(T collector walking Walking) )
+# THE NINE (plan 9.2, 5.4): three bodies, one for each kind (the four that COME 1.60 m, the two that HIDE 1.42 m, the
+# three that are HEAVY 1.90 m), each on a PLAIN rig of 24 joints (people/rigplain.sh: no finger bones; plan 13 counts
+# the nine at about 24 joints each), one level each at 16,000 triangles, colour at 1024 (the chapter draws them as
+# black oil and a pale sheen, never their paint). The rig's own walk and the library's stand; what the fight asks of
+# them (the strain at the cage, the stagger, lying tired, rising) waits for docs/V28.0-FIGHT.md.
+prai() { LEVELS=none; one "$@"; LEVELS=; }
+go praicome && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praicome 16000 1024 $(T praicome lib Idle_3) $(T praicome walking Walking) )
+go praihide && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praihide 16000 1024 $(T praihide lib Idle_3) $(T praihide walking Walking) )
+go praiheavy && ( CALM="Idle_3=18,0.6 Walking=18,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praiheavy 16000 1024 $(T praiheavy lib Idle_3) $(T praiheavy walking Walking) )
 echo PEOPLE DONE
