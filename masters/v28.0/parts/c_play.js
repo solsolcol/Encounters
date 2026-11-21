@@ -246,6 +246,10 @@
       const P = W0.P, g = P.group.position, dx = tx - g.x, dz = tz - g.z, d = Math.hypot(dx, dz);
       if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } return false; }
       if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
+      /* (a line said while he walks does not stop his feet: his talk's take, and the rest after it, slid him along the
+         walkway standing (the motion probe: Grandmaster Pho walking on ahead while his "SMELL." was said). He walks on;
+         the voice is heard) */
+      else if (P.cur !== 'Walking') { P.actN++; take(P, 'Walking', 0.3); }
       const want = Math.min(pace, 0.6 + d * 1.2);
       W0.v += (want - W0.v) * Math.min(1, wdt * 3.5);
       const st = Math.min(d, W0.v * wdt); g.x += dx / d * st; g.z += dz / d * st;
