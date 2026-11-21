@@ -1063,7 +1063,7 @@
         const xx = r() * 128; x.beginPath(); x.moveTo(xx, 0); x.bezierCurveTo(xx + r() * 8 - 4, 80, xx + r() * 8 - 4, 170, xx + r() * 6 - 3, 256); x.stroke(); }
       return M({ map: pic(c, 0.9, 2.1), roughness: 0.55 }); })();
     const mAlu = M({ color: 0xb9bcbd, roughness: 0.4, metalness: 0.5 });
-    const mGlass = M({ color: 0x2a3038, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.22, depthWrite: false });
+    const mGlass = M({ color: 0x9aa6b4, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false });
     const mGlassDay = M({ color: 0xcfe0ee, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.18, depthWrite: false });
     /* the lift: brushed steel, its floor a grey rubber, its ceiling a lit panel (painted light) */
     const mSteel = (() => { const [c, x] = canvas(256, 256), r = rng(28509);
@@ -1152,7 +1152,14 @@
       wallX(mCourtWall, -6.65, 0.1, W.x0 - 2.4, W.x0 - 0.2, [], 0, 2.6, false); wallX(mCourtWall, -5.3, 0.1, W.x0 - 2.4, W.x0 - 0.2, [], 0, 2.6, false);
       /* THE INNER SIDE of run 2 (z -14.0): the corner's wall, the neighbours' court wall, his gate between its posts, his
          court's low front wall, and the end wall */
-      wallX(mFace, W.turnZ + 0.1, 0.2, W.x0 - 0.2, COURT.x1 + 0.1, [], 0, s);
+      wallX(mFace, W.turnZ + 0.1, 0.2, COURT.x1 + 0.1, W.x0 - 0.2, [{ x0: -3.8, x1: -2.55, y0: 0, y1: 1.4 }], 0, s);   // (x0 < x1: the walk test found it missing)
+      /* (a second neighbour's gate in it, shut: its bars, and its court's strip behind) */
+      for (let x = -3.75; x < -2.6; x += 0.12) bar(mBand, [x, 0.02, W.turnZ + 0.1], [x, 1.38, W.turnZ + 0.1], 0.009, 5);
+      for (const y of [0.1, 0.7, 1.35]) bar(mBand, [-3.8, y, W.turnZ + 0.1], [-2.55, y, W.turnZ + 0.1], 0.012, 5);
+      solidXZ(-3.8, W.turnZ, -2.55, W.turnZ + 0.2);
+      floor(mPave, -3.8, W.turnZ + 0.2, -2.55, W.turnZ + 2.4, -0.002);
+      wallX(M({ color: 0x9a9284, roughness: 0.95 }), W.turnZ + 2.4, 0.1, -3.9, -2.45, [], 0, 2.6, false);
+      wallZ(mCourtWall, -3.85, 0.1, W.turnZ + 0.2, W.turnZ + 2.4, [], 0, 2.6, false); wallZ(mCourtWall, -2.5, 0.1, W.turnZ + 0.2, W.turnZ + 2.4, [], 0, 2.6, false);
       wallX(mFace, W.turnZ + 0.1, 0.2, W.endX - 0.2, COURT.x0 - 0.1, [], 0, s);
       const gp = GATE.w / 2 + GATE.post / 2 + 0.005;
       const gl = GATE.x - gp - GATE.post / 2, gr = GATE.x + gp + GATE.post / 2;
@@ -1208,7 +1215,7 @@
         x.fillStyle = '#b9bcbd'; x.fillRect(126, 70, 4, 112);
         return B({ map: pic(c, C.x1 - C.x0, STOREY, 4) }); })();
       for (let st = 1; st <= 2; st++) { const y = st * STOREY;
-        quad(upWin, [C.x0, y, H.face - 0.11], [C.x1, y, H.face - 0.11], [C.x1, y + STOREY, H.face - 0.11], [C.x0, y + STOREY, H.face - 0.11], C.x0, y); }
+        quad(upWin, [C.x1, y, H.face - 0.21], [C.x0, y, H.face - 0.21], [C.x0, y + STOREY, H.face - 0.21], [C.x1, y + STOREY, H.face - 0.21], 0, y); }
       box(mBand, (C.x0 + C.x1) / 2, STOREY - 0.13, H.face - 0.12, C.x1 - C.x0, 0.26, 0.08);
       /* the roof's coping round the court's top, against the sky */
       box(mBand, C.x0 - 0.1, C.wallTop + 0.1, (C.z0 + H.face) / 2, 0.3, 0.2, H.face - C.z0);
@@ -1354,7 +1361,7 @@
       /* (each a model of ~28,000 triangles: a few where they are seen, past the balustrade and the terrace, in cells of
          24 m, each cell its own instanced mesh culled by its own sphere: the phone's budget, the plan's 13) */
       const TREES = [], PALMS = [], tr = rng(28544);
-      for (const [x, z] of [[10, -8], [22, -6], [16, 8], [30, 4], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
+      for (const [x, z] of [[17, -11], [24, -4], [18, 9], [30, 4], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
         TREES.push({ x: x + (tr() - 0.5) * 2, y: G, z: z + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.75 + tr() * 0.25 });
       for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22]])
         PALMS.push({ x, y: G, z, ry: tr() * 6.28, s: 0.85 + tr() * 0.2 });
@@ -1528,7 +1535,7 @@
        the other (RECORD.md 1: the cloth's two slits are each covered by the other's cloth), their rails 5 cm under the
        ceiling; and one gathered beside the terrace doors, pushed to the side */
     /* (a drawn curtain is lit from the room: its back glows a little in the lamps' warmth, seen from the court at dusk) */
-    const lamplit = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if (mt && mt.emissive) { mt.emissive.set(0x3a2a18); if (mt.map) mt.emissiveMap = mt.map; } });
+    const lamplit = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if (mt && mt.emissive) { mt.emissive.set(0x2a2824); if (mt.map) mt.emissiveMap = mt.map; } });
     for (const Wn of [WIN_A, WIN_B]) { const xm = (Wn.x0 + Wn.x1) / 2;
       place('w5curtain', xm - 0.07, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 0.82, done: lamplit });
       place('w5curtain', xm + 0.09, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 0.80, done: lamplit }); }
@@ -3864,6 +3871,13 @@
       { what: 'case three\'s room (the table)', enter: () => { if (S && S.setPhase) S.setPhase('table'); }, ready: () => worldAt === 'table' && worldReady() }
     ];
 
+    /* EACH THING TO PRESS IS TRIED BY THE WALK TEST IN THE GROUND IT BELONGS TO (v26.18 `ground`): the stains in the hunt's
+       ground (the gate open), the cleansing in the court shut, the pieces in case three's room; the gate on the first
+       frame. d_play.js hands the stage its hotspots through this (a hotspot the play adds later is tagged by its id) */
+    const GROUND_OF = { stain1: GROUNDS[0].what, stain2: GROUNDS[0].what, stain3: GROUNDS[0].what, armchair: GROUNDS[0].what,
+                        cleanse: GROUNDS[1].what, pieces: GROUNDS[2].what };
+    function worldHotspots(list) { for (const h of list) if (h && GROUND_OF[h.id] && !h.ground) h.ground = GROUND_OF[h.id]; return list; }
+
     /* WHERE THE SKELETON'S STAND-INS LIE (each at the height a mark is read at: v7.5), now the story's own places: the
        gate between its posts (from the walkway), the floor under the shoe cabinet, the left planter's foot, the threshold
        between the gate posts, the court's middle, and the table's pieces */
@@ -4243,7 +4257,7 @@
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       /* (a probe's handle on the script as the chapter holds it) */
       script: { SECS, LINES, SAID },
-      hotspots,
+      hotspots: worldHotspots(hotspots),                         // (the world's: each tagged with the ground the walk test tries it in)
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
     });

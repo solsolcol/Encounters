@@ -92,6 +92,13 @@
       { what: 'case three\'s room (the table)', enter: () => { if (S && S.setPhase) S.setPhase('table'); }, ready: () => worldAt === 'table' && worldReady() }
     ];
 
+    /* EACH THING TO PRESS IS TRIED BY THE WALK TEST IN THE GROUND IT BELONGS TO (v26.18 `ground`): the stains in the hunt's
+       ground (the gate open), the cleansing in the court shut, the pieces in case three's room; the gate on the first
+       frame. d_play.js hands the stage its hotspots through this (a hotspot the play adds later is tagged by its id) */
+    const GROUND_OF = { stain1: GROUNDS[0].what, stain2: GROUNDS[0].what, stain3: GROUNDS[0].what, armchair: GROUNDS[0].what,
+                        cleanse: GROUNDS[1].what, pieces: GROUNDS[2].what };
+    function worldHotspots(list) { for (const h of list) if (h && GROUND_OF[h.id] && !h.ground) h.ground = GROUND_OF[h.id]; return list; }
+
     /* WHERE THE SKELETON'S STAND-INS LIE (each at the height a mark is read at: v7.5), now the story's own places: the
        gate between its posts (from the walkway), the floor under the shoe cabinet, the left planter's foot, the threshold
        between the gate posts, the court's middle, and the table's pieces */

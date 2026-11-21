@@ -127,6 +127,11 @@ if (WSMOOTH > 0) for (const mesh of root.listMeshes()) for (const p of mesh.list
   }
   console.log(`  skin weights: ${n} vertices in ${G} positions over ${NJ} joints, ${WSMOOTH} diffusion passes; ${moved} vertices' main weight moved`);
 }
+/* v28.0 · WFIX=<spec.json> (Mr Koh: a spike out of his left shoulder in his talk, his shirt drawn deep in under both arms
+   in his stand and walk; masters/v28.0/people/RECORD.md section 5): a person's skin weights mended by the rules his spec
+   names, tools/wfix.mjs (a bone's share eased off where it does not belong; the arm's share taken off the side under it).
+   Unset, nothing here runs. */
+if (process.env.WFIX) { const { wfix } = await import('./wfix.mjs'); wfix(doc, JSON.parse(fs.readFileSync(process.env.WFIX, 'utf8'))); }
 /* v24.54 · THINLOCK=<r> (masters/v24.54/PLAN.md): the thinning may not move or take out a point within r of his right
    shoulder joint whose arm share (RightArm, RightForeArm, RightHand) lies between 0.02 and 0.98, nor a point joined to one
    by an edge (meshopt's vertex lock; every other point is thinned by the same rule as before). His right armpit, rebuilt in

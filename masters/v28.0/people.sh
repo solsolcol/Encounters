@@ -106,7 +106,11 @@ go zavier4 && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier4 one zavier4 
 #   empty: repainted, as Master Zavier's).
 # MR KOH (plan 4.2: "a heavy man in a polo tee, tired"; 1.68 m): the library's stand, listening, chat and talk, and the
 # rig's own walk. His arms are brought in less than the others' (12 degrees, not 7): his belly and hips are wider.
-go koh && ( HERO=koh CALM="Idle_3=12,0.6 Stand_and_Chat=12 Listening_Gesture=12 Walking=12,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
+# (CAST-2, 21 Nov 2026: his skin weights MENDED, tools/wfix.mjs by prepmonk WFIX=, people/wfix-koh.json, on all three levels:
+#  the Head's share eased off his shoulders (one point of his left shoulder, 15 cm out from his head's line, was three
+#  quarters on the Head: the spike in his talk), and the arm's share taken off his sides under the arms (they held 0.5 to
+#  0.66 on the arm, and went in with it when his stand and walk bring the arms in: the hourglass). RECORD.md section 5.)
+go koh && ( export WFIX=masters/v28.0/people/wfix-koh.json; HERO=koh CALM="Idle_3=12,0.6 Stand_and_Chat=12 Listening_Gesture=12 Walking=12,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
   one koh 40000 2048 $(T koh lib Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Hands_Open) $(T koh walking Walking) )
 # JUN (the second follower, plan 4.0 and 4.1; 1.72 m): the same set, his talk the one-handed one.
 go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
@@ -119,7 +123,10 @@ go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
 #      to the bone of a man's body it stands in for (people/rigmend-collector.json); his toe bones kept but carrying
 #      nothing (his left toe joint stands mid-shoe); each hand ONE rigid piece, as made (fingers spread, never closing);
 #   2. his takes at no credits, from files already here (Meshy's library takes are the same motion laid on each rig):
-#      tools/retarget.mjs `same` (each bone by its own name, in the world: a Meshy rig to a Meshy rig) with --hips:
+#      tools/retarget.mjs `same` (each bone by its own name, in the world: a Meshy rig to a Meshy rig) with --hips and,
+#      for the three library takes, --align (each bone's rest first swung onto the source's: without it his own rest, which
+#      leans his spine back 11 degrees where Jun's leans 5, was carried into every take, and the stand leant him back 17
+#      degrees and put his upper arms into his sides; with it every limb's line is the source's, measured at the moment):
 #      Sitting_Answering_Questions (307) from the seated hermit's file (assets/e4hermita.glb, chapter 3's), Idle_3 from
 #      Jun's library file, Talk_with_Hands_Open from Mr Koh's, and his own walk (proved: retargeted onto his mended rig it
 #      is his rig's own walk to 0.0000 degrees, every bone at every key);
@@ -128,9 +135,9 @@ go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
 #      is seated across the table from the player, inside 2.2 m, where an important person is drawn whole (v26.5).
 go collectorrig && ( W=${WORK:-$OUT/collector}; mkdir -p $W
   node tools/rigmend.mjs $SRC/rigged-collector.glb $SRC/body-collector-full.glb masters/v28.0/people/rigmend-collector.json &&
-  node tools/retarget.mjs assets/e4hermita.glb $SRC/body-collector-full.glb $W/r1.glb Sitting_Answering_Questions same --hips &&
-  node tools/retarget.mjs $SRC/takes-jun-lib.glb $W/r1.glb $W/r2.glb Idle_3 same --hips &&
-  node tools/retarget.mjs $SRC/takes-koh-lib.glb $W/r2.glb $W/r3.glb Talk_with_Hands_Open same --hips &&
+  node tools/retarget.mjs assets/e4hermita.glb $SRC/body-collector-full.glb $W/r1.glb Sitting_Answering_Questions same --hips --align &&
+  node tools/retarget.mjs $SRC/takes-jun-lib.glb $W/r1.glb $W/r2.glb Idle_3 same --hips --align &&
+  node tools/retarget.mjs $SRC/takes-koh-lib.glb $W/r2.glb $W/r3.glb Talk_with_Hands_Open same --hips --align &&
   node tools/retarget.mjs $SRC/takes-collector-walking.glb $W/r3.glb $W/r4.glb "Armature|walking_man|baselayer" same --hips &&
   node tools/mergetakes.mjs strip $W/r4.glb $SRC/takes-collector-mended.glb $SRC/body-collector-full.glb && rm -f $W/r[1-4].glb )
 go collector && ( LEVELS=none WSMOOTH=0 XSCALE=1000 FINS=1 \
@@ -145,5 +152,9 @@ go collector && ( LEVELS=none WSMOOTH=0 XSCALE=1000 FINS=1 \
 prai() { LEVELS=none; one "$@"; LEVELS=; }
 go praicome && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praicome 16000 1024 $(T praicome lib Idle_3) $(T praicome walking Walking) )
 go praihide && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praihide 16000 1024 $(T praihide lib Idle_3) $(T praihide walking Walking) )
-go praiheavy && ( CALM="Idle_3=18,0.6 Walking=18,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praiheavy 16000 1024 $(T praiheavy lib Idle_3) $(T praiheavy walking Walking) )
+# (CAST-2, 21 Nov 2026: her arms hang wider, and swing less in and out, so her right forearm no longer passes into her
+#  side at the waist in the walk: tools/probes/armside.mjs, the walk at every 1/30 s: at 18 (as first prepared) the right arm
+#  was in her side in 6 of 33 moments, 2.4 cm deep; at 24 with a third of its in-and-out kept, in none (the left: two points
+#  of the back of the upper arm close under the armpit in one moment, 1.7 cm, as before). RECORD.md section 7.)
+go praiheavy && ( CALM="Idle_3=21,0.6 Walking=24,0.3,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praiheavy 16000 1024 $(T praiheavy lib Idle_3) $(T praiheavy walking Walking) )
 echo PEOPLE DONE

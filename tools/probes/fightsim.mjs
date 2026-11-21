@@ -106,9 +106,10 @@ function follower(prof) {
       mem.heardAt = -1;
     }
     if (!nd) return mem.moving ? keepMoving(st, mem) : {};
-    if (mem.listen && heard === nd.id && mem.heardAt < 0) mem.heardAt = st.t;
+    // a new instruction is heard to its END before it is acted on (a careful first-timer listens, then acts)
+    if (mem.listen && heard && heard.need === nd.id && mem.heardAt < 0) mem.heardAt = heard.end;
     let ready = st.t - mem.since >= mem.react;
-    if (mem.listen) ready = ready && (mem.heardAt >= 0 ? st.t - mem.heardAt >= 0.6 : st.t - mem.since >= prof.read);
+    if (mem.listen) ready = ready && (mem.heardAt >= 0 ? st.t - mem.heardAt >= prof.think : st.t - mem.since >= prof.read);
     if (!ready) return mem.moving ? keepMoving(st, mem) : {};
     mem.known[nd.id] = 1;
     if (nd.move) {
@@ -130,7 +131,7 @@ function keepMoving(st, mem) { const b = st.who === 'pho' ? st.pho : st.zav; con
 
 const PROF = {
   fast:    { brief: 3, card: 1, lead: true, listen: false, read: 0, fresh: [0.15, 0.15], known: [0.15, 0.15], again: 0.15, gap: 0.15, wrong: 0 },
-  careful: { brief: 9, card: 3, lead: true, listen: true, read: 4.5, fresh: [0.9, 1.7], known: [0.7, 1.3], again: 0.5, gap: 0.45, wrong: 0.04 },
+  careful: { brief: 9, card: 3, lead: true, listen: true, read: 4.5, think: 0.5, fresh: [0.9, 1.7], known: [0.7, 1.3], again: 0.5, gap: 0.45, wrong: 0.04 },
   slow:    { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [0.4, 0.4], known: [0.4, 0.4], again: 0.4, gap: 0.4, wrong: 0.15 },
   late:    { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [1.5, 1.5], known: [1.5, 1.5], again: 1.5, gap: 1.5, wrong: 0 }
 };
@@ -154,19 +155,19 @@ function optimalAct(st, F, onlyWho) {
   if (P) {
     if (ph.wind > 0 || ph.draw > 0) return {};
     if (lent && live('SHOCKWAVE')) return { act: 'SHOCKWAVE' };
-    if (untiredBound && !flying(untiredBound.p.id)) {
+    if (untiredBound && !flying(untiredBound.p.id) && !(st.hold > 0)) {
       if (untiredBound.d <= n.fireReach) { if (live('FIRE')) return { act: 'FIRE', pick: untiredBound.p.id }; }
       else return towards(ph, untiredBound.p.x, untiredBound.p.z) || {};
     }
     if (atHimCome && live('FIRE') && !flying(atHimCome.id)) return { act: 'FIRE', pick: atHimCome.id };
-    if (tired) { if (live('BAG')) return { act: 'BAG', pick: tired.p.id }; if (F.why(st, 'BAG') === 'none' || tired.d > n.bagReach) { const m = towards(ph, tired.p.x, tired.p.z); if (m) return m; } }
+    if (tired && !(st.hold > 0)) { if (live('BAG')) return { act: 'BAG', pick: tired.p.id }; if (F.why(st, 'BAG') === 'none' || tired.d > n.bagReach) { const m = towards(ph, tired.p.x, tired.p.z); if (m) return m; } }
     if (waveReady && bound >= 1 && live('SHOCKWAVE')) {
       const near = st.prai.some(p => (p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown') && Math.hypot(p.x - ph.x, p.z - ph.z) - n.breakDist <= n.rush * n.windSecs);
       if (!near) return { act: 'SHOCKWAVE' };
     }
     if (onlyWho !== 'pho') {
       const zWork = (hidden && z.smellWait <= 0.2) || (bindable && z.bindWait <= 0.3 && bound < n.bubbleMax) || (waveReady && bound >= 1 && !lent);
-      if (zWork && live('SWITCH') && !untiredBound && !(tired && !F.why(st, 'BAG'))) return { act: 'SWITCH' };
+      if (zWork && live('SWITCH') && ((st.hold > 0) || (!untiredBound && !(tired && !F.why(st, 'BAG'))))) return { act: 'SWITCH' };
     }
     if (onlyWho === 'pho' && live('FIRE')) {
       // alone, the best he can do is chase off whatever nears his student's cage
@@ -183,7 +184,7 @@ function optimalAct(st, F, onlyWho) {
   if (live('BIND')) return { act: 'BIND' };
   if (waveReady && bound >= Math.min(2, Math.max(1, st.left - 3)) && !lent && live('LEND') && onlyWho !== 'zav') return { act: 'LEND' };
   if (onlyWho === 'zav') { if (waveReady && !lent && live('LEND')) return {}; return {}; }
-  const pWork = untiredBound || tired || (waveReady && lent) || atHimCome;
+  const pWork = (!(st.hold > 0) && (untiredBound || tired)) || (waveReady && lent) || atHimCome;
   const zSoon = (hidden && z.smellWait <= 0.6) || (bindable && z.bindWait <= 0.6 && bound < n.bubbleMax);
   if (pWork && !zSoon && live('SWITCH')) return { act: 'SWITCH' };
   return {};
@@ -260,8 +261,8 @@ function campaign(F, L, who, seed, opts) {
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
   const res = { who, seed, won: false, firstWin: false, tries: 1, length: 0, firstLength: 0, losses: 0, sanity: 0, stalled: '',
-                bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0 };
-  let heard = '', prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99;
+                bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0, where: [] };
+  let heard = null, prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99;
   const fuzz = who === 'fuzz';
   const bad = (what) => { if (res.bad.length < 8) res.bad.push(what + ' @' + st.t.toFixed(1) + ' ' + st.stage); };
   while (st.stage !== 'won') {
@@ -271,13 +272,13 @@ function campaign(F, L, who, seed, opts) {
     const dt = fuzz ? 0.004 + r() * 0.246 : 0.1;
     const stageBefore = st.stage, lockBefore = st.lock;
     const ev = F.step(st, inp, dt, io);
-    heard = '';
+    heard = null;
     let acts = 0;
     for (const e of ev) {
-      if (e.e === 'say') { heard = e.need || heard; res.said[e.key] = (res.said[e.key] || 0) + 1; res.sayN++; }
+      if (e.e === 'say') { if (e.need) heard = { need: e.need, end: st.t + (L.secs[e.key] || 2.5) }; res.said[e.key] = (res.said[e.key] || 0) + 1; res.sayN++; }
       else if (e.e === 'state') { const ok = F.STATES[e.from] && F.STATES[e.from].exits.includes(e.to); if (!ok) res.illegal[e.from + '>' + e.to] = (res.illegal[e.from + '>' + e.to] || 0) + 1; }
       else if (e.e === 'stage') { const k = stageBefore + '>' + e.to; if (!STAGE_MOVES.has(k)) bad('stage move ' + k); }
-      else if (e.e === 'lost') { res.losses++; lostAt.push(st.t); }
+      else if (e.e === 'lost') { res.losses++; lostAt.push(st.t); res.where.push((st.hold ? 'in hold ' + st.hold : st.left + ' left') + (res.losses === 1 ? ' (1st)' : ' (2nd+)')); }
       if (ACTED.has(e.e) || (e.e === 'fireball' && !e.ai)) acts++;
       if (e.e === 'switch') { if (st.t - lastSwitch < st.n.switchLock - 1e-6) bad('a switch inside the lock'); lastSwitch = st.t; }
     }
@@ -331,7 +332,7 @@ function campaign(F, L, who, seed, opts) {
 /* ------------------------------------------------------------------ the tally of one player's campaigns */
 function tally(F, L, who, seeds, opts) {
   const T = { who, n: 0, firstWins: 0, twoWins: 0, wins: 0, lens: [], allLens: [], losses: [], sanity: [], stalls: {}, bad: {}, illegal: {},
-              dwell: {}, stage: {}, timed: {}, trans: {}, said: {}, sayN: 0, statsSum: {}, lead: 0, lostAt: [], firstLossAt: [] };
+              dwell: {}, stage: {}, timed: {}, trans: {}, said: {}, sayN: 0, statsSum: {}, lead: 0, lostAt: [], firstLossAt: [], where: {} };
   for (const seed of seeds) {
     const r = campaign(F, L, who, seed, opts);
     T.n++;
@@ -341,6 +342,7 @@ function tally(F, L, who, seeds, opts) {
     T.losses.push(r.losses);
     if (r.lead) T.lead++;
     if (r.lostAt.length) T.firstLossAt.push(r.lostAt[0]);
+    for (const w of r.where) T.where[w] = (T.where[w] || 0) + 1;
     if (r.stalled) T.stalls[r.stalled] = (T.stalls[r.stalled] || 0) + 1;
     for (const b of r.bad) { const k = b.replace(/ @.*$/, ''); if (!T.bad[k]) T.bad[k] = { n: 0, eg: b + ' seed ' + seed }; T.bad[k].n++; }
     for (const k in r.illegal) T.illegal[k] = (T.illegal[k] || 0) + r.illegal[k];
@@ -358,7 +360,7 @@ function merge(a, b) {
   if (!a) return b;
   for (const k of ['n', 'firstWins', 'twoWins', 'wins', 'lead', 'sayN']) a[k] += b[k];
   for (const k of ['lens', 'allLens', 'losses', 'sanity', 'firstLossAt']) a[k] = a[k].concat(b[k]);
-  for (const k of ['stalls', 'illegal', 'trans', 'said', 'statsSum']) for (const q in b[k]) a[k][q] = (a[k][q] || 0) + b[k][q];
+  for (const k of ['stalls', 'illegal', 'trans', 'said', 'statsSum', 'where']) for (const q in b[k]) a[k][q] = (a[k][q] || 0) + b[k][q];
   for (const k of ['dwell', 'stage', 'timed']) for (const q in b[k]) a[k][q] = Math.max(a[k][q] || 0, b[k][q]);
   for (const q in b.bad) { if (!a.bad[q]) a.bad[q] = b.bad[q]; else a.bad[q].n += b.bad[q].n; }
   return a;
@@ -389,7 +391,7 @@ async function main() {
   const opts = { sanity: SAN, hash: false, num };
   if (Object.keys(num).length) console.log('NUMBERS SET FOR THIS RUN (not the table): ' + JSON.stringify(num));
 
-  if (arg('--trace', '')) { trace(F, L, arg('--trace', ''), +arg('--seed', 1), opts); return; }
+  if (arg('--trace', '')) { trace(F, L, arg('--trace', ''), +arg('--seed', 1), { ...opts, verbose: args.includes('--verbose') }); return; }
 
   // THE LINES: every key the rules can say is in the script, or added by the specification, and none is a dropped one
   const missing = F.LINES.filter(k => !L.words[k]), dropped = F.LINES.filter(k => L.drop.has(k)), fromSpec = F.LINES.filter(k => L.from[k] === 'spec');
@@ -425,7 +427,7 @@ async function main() {
   printTable(rows);
 
   console.log('\nTHE FIRST LOSS, for those who lose (seconds of fight clock from START): median and the fastest');
-  for (const who of players) { const a = T[who].firstLossAt; if (a.length) console.log(`  ${who.padEnd(8)} ${a.length} lost at least once; median ${median(a).toFixed(0)} s, fastest ${Math.min(...a).toFixed(0)} s`); }
+  for (const who of players) { const a = T[who].firstLossAt; if (a.length) console.log(`  ${who.padEnd(8)} ${a.length} lost at least once; median ${median(a).toFixed(0)} s, fastest ${Math.min(...a).toFixed(0)} s; where: ` + Object.entries(T[who].where).sort((x, y) => y[1] - x[1]).slice(0, 6).map(([k, v]) => k + ' ' + v).join(', ')); }
 
   // THE STATES: the longest stand in each, every move the state list does not allow, every state entered and never left
   const all = Object.values(T);
@@ -515,14 +517,19 @@ function trace(F, L, who, seed, opts) {
   const play = PLAYERS[who]();
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
-  let heard = '', g = 0;
+  let heard = null, g = 0;
   while (st.stage !== 'won' && g++ < 40000) {
     const inp = play(st, mem, r, heard) || {};
     const ev = F.step(st, inp, 0.1, io);
-    heard = '';
+    heard = null;
     for (const e of ev) {
-      if (e.e === 'say') { heard = e.need || heard; console.log(`${st.t.toFixed(1).padStart(6)}  ${st.who === 'pho' ? 'P' : 'Z'}  say ${e.key.padEnd(7)} ${e.need ? '(' + e.need + ')' : '      '} "${L.words[e.key] || '?'}"`); }
-      else if (['stage', 'lost', 'wave', 'broken', 'lend', 'cageBreak', 'gathered', 'surge', 'waveReady'].includes(e.e)) console.log(`${st.t.toFixed(1).padStart(6)}  ${st.who === 'pho' ? 'P' : 'Z'}  ${e.e} ${JSON.stringify(e).replace(/"e":"[a-zA-Z]+",?/, '')}  left ${st.left}, sanity ${st.sanity.toFixed(0)}, cage ${st.cage.str.toFixed(0)}`);
+      if (e.e === 'say') { if (e.need) heard = { need: e.need, end: st.t + (L.secs[e.key] || 2.5) }; console.log(`${st.t.toFixed(1).padStart(6)}  ${st.who === 'pho' ? 'P' : 'Z'}  say ${e.key.padEnd(7)} ${e.need ? '(' + e.need + ')' : '      '} "${L.words[e.key] || '?'}"`); }
+      else if (['stage', 'lost', 'wave', 'broken', 'lend', 'cageBreak', 'gathered', 'surge', 'waveReady'].concat(opts.verbose ? ['bind', 'unbind', 'smell', 'refused', 'land', 'windup', 'lendEnd', 'rise', 'reach'] : []).includes(e.e)) console.log(`${st.t.toFixed(1).padStart(6)}  ${st.who === 'pho' ? 'P' : 'Z'}  ${e.e} ${JSON.stringify(e).replace(/"e":"[a-zA-Z]+",?/, '')}  left ${st.left}, sanity ${st.sanity.toFixed(0)}, cage ${st.cage.str.toFixed(0)}`);
+    }
+    if (opts.verbose && Math.abs(st.t / 2 - Math.round(st.t / 2)) < 0.026 && (st.stage === 'fight' || st.stage === 'learn')) {
+      const c = st.cur;
+      console.log(`${st.t.toFixed(1).padStart(6)}  ${st.who === 'pho' ? 'P' : 'Z'}  . need ${c ? c.id + ' ' + c.act + (c.ready ? '' : ' (not ready)') : '-'}; gold ${st.pho.waveWait.toFixed(1)}, bind ${st.zav.bindWait.toFixed(1)}, smell ${st.zav.smellWait.toFixed(1)}, fire ${st.pho.fireWait.toFixed(1)}, lock ${st.lock.toFixed(1)}; ` +
+        st.prai.filter(p => p.st !== 'gathered' && p.st !== 'waiting').map(p => p.id + p.kind[0] + ':' + p.st + (p.hold ? '/' + p.hold : '')).join(' '));
     }
     if (st.t > MAX_CLOCK) break;
   }

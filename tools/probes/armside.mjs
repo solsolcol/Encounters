@@ -1,10 +1,10 @@
 /* v28.0 · ARM IN THE SIDE: does an arm pass INTO the body's side in a take, and how deep, over the whole take (the heavy
    Prai's right forearm through her waist in the walk: masters/v28.0/people/RECORD.md section 7). Read only. The body is
    posed in plain Node from the file's own take as the engine skins it (tools/probes/edgestrain.mjs's posing), at every
-   1/30 s of the take. In each moment the torso's skin (points held half or more by the spine and the hips) is binned in
+   1/30 s of the take, and read in the body's own frame at that moment (its hips and shoulders: a seated take turns him). In each moment the torso's skin (points held half or more by the spine and the hips) is binned in
    cells of 2 cm of height and depth; an arm point (held half or more by that side's upper arm, forearm or hand) inside
    the torso's span across its own cell is in the side, and its depth is how far in it is from the nearer edge.
-     node tools/probes/armside.mjs <file.glb> <take> [--cell=0.02]
+     node tools/probes/armside.mjs <file.glb> <take> [--cell=0.02] [--armpit=0.12]
    Prints, for each side, the moments with any arm point in the side, the deepest, and when. */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -39,8 +39,20 @@ const names = joints.map(j => j.getName()), cls = (n) => /^(Hips|Spine\d*)$/.tes
 const prim = prims[0], Jw = prim.getAttribute('JOINTS_0'), Ww = prim.getAttribute('WEIGHTS_0'), NP = prim.getAttribute('POSITION').getCount();
 const who = new Uint8Array(NP); { const jj = [], ww = []; for (let i = 0; i < NP; i++) { Jw.getElement(i, jj); Ww.getElement(i, ww); const s = { T: 0, L: 0, R: 0 }; for (let k = 0; k < 4; k++) { const c = cls(names[jj[k]]); if (c) s[c] += ww[k]; }
   who[i] = s.T >= 0.5 ? 1 : s.L >= 0.5 ? 2 : s.R >= 0.5 ? 3 : 0; } }
+/* (the armpit is no clip: the inner arm's skin joins the side there, and an arm point within ARMPIT metres below its
+   shoulder joint at rest is not counted; --armpit=0 counts it) */
+const ARMPIT = +((rest.find(a => a.startsWith('--armpit=')) || '--armpit=0.12').slice(9));
+{ const ibm = skin.getInverseBindMatrices().getArray(), jy = (nm) => { const k = names.indexOf(nm); return new Matrix4().fromArray(ibm, k * 16).invert().elements[13]; };
+  const Ry = R[0], yL = jy('LeftArm'), yR = jy('RightArm'), P0 = prim.getAttribute('POSITION'), v = [];
+  for (let i = 0; i < NP; i++) if ((who[i] === 2 || who[i] === 3)) { P0.getElement(i, v); if (v[1] > (who[i] === 2 ? yL : yR) - ARMPIT) who[i] = 0; } }
 const res = { L: { hit: 0, deep: 0, at: 0, pts: 0 }, R: { hit: 0, deep: 0, at: 0, pts: 0 } }, step = 1 / 30, F = Math.max(1, Math.round(dur / step));
-for (let f = 0; f <= F; f++) { const t = Math.min(dur, f * step), Q = posed(t)[0], cells = new Map();
+/* the body's own frame at each moment (a seated take may turn the whole body): its left from the right hip and shoulder
+   to the left ones, up the world's, its front their cross; every point is binned in that frame */
+const jointAt = (t) => { const L = local(t), Wm = new Map(), world = n => { if (Wm.has(n)) return Wm.get(n); const p = parent.get(n), m = p ? world(p).clone().multiply(L.get(n)) : L.get(n).clone(); Wm.set(n, m); return m; };
+  const P = (nm) => { const j = joints.find(x => x.getName() === nm); return j ? new Vector3().setFromMatrixPosition(world(j)) : null; }; return P; };
+for (let f = 0; f <= F; f++) { const t = Math.min(dur, f * step), Q0 = posed(t)[0], cells = new Map();
+  const JP = jointAt(t), lf = JP('LeftArm').add(JP('LeftUpLeg')).sub(JP('RightArm')).sub(JP('RightUpLeg')); lf.y = 0; lf.normalize(); const fr = new Vector3().crossVectors(lf, new Vector3(0, 1, 0)).negate();
+  const Q = new Float64Array(Q0.length); for (let i = 0; i < Q0.length; i += 3) { Q[i] = Q0[i] * lf.x + Q0[i + 2] * lf.z; Q[i + 1] = Q0[i + 1]; Q[i + 2] = Q0[i] * fr.x + Q0[i + 2] * fr.z; }
   for (let i = 0; i < NP; i++) if (who[i] === 1) { const k = Math.round(Q[3 * i + 1] / CELL) + ':' + Math.round(Q[3 * i + 2] / CELL); const c = cells.get(k); if (c) { c[0] = Math.min(c[0], Q[3 * i]); c[1] = Math.max(c[1], Q[3 * i]); } else cells.set(k, [Q[3 * i], Q[3 * i]]); }
   for (const [side, w] of [['L', 2], ['R', 3]]) { let deep = 0, n = 0;
     for (let i = 0; i < NP; i++) if (who[i] === w) { const c = cells.get(Math.round(Q[3 * i + 1] / CELL) + ':' + Math.round(Q[3 * i + 2] / CELL)); if (!c) continue; const x = Q[3 * i];

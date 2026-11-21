@@ -1,0 +1,8 @@
+{
+  "_": "v28.0 · Mr Koh's skin weights mended (tools/wfix.mjs, run by prepmonk WFIX=; RECORD.md section 5): the Head's share eased off his shoulders (the spike), and the arm's share taken off his sides under the arms (the hourglass).",
+  "leak": [{ "bone": "Head", "below": "Head", "from": 0.10, "to": 0.14 }],
+  "relief": [
+    { "side": "Left",  "keep": 0.3, "from": 1.0, "to": 1.8, "tfrom": 0.15, "tto": 0.45, "passes": 6, "spine": ["Spine02", "Spine01", "Spine"] },
+    { "side": "Right", "keep": 0.3, "from": 1.0, "to": 1.8, "tfrom": 0.15, "tto": 0.45, "passes": 6, "spine": ["Spine02", "Spine01", "Spine"] }
+  ]
+}

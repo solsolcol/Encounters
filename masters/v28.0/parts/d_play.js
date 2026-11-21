@@ -98,7 +98,7 @@
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       /* (a probe's handle on the script as the chapter holds it) */
       script: { SECS, LINES, SAID },
-      hotspots,
+      hotspots: worldHotspots(hotspots),                         // (the world's: each tagged with the ground the walk test tries it in)
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
     });

@@ -2719,6 +2719,10 @@ await lbl('tag');
    and puts it back, with the pin held off while it looks) */
 await p.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;
   window.__tagPin = setInterval(() => { if (!window.__noPin && E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
+/* (the mouse free, as a player who presses Esc has it: under the walk's pointer lock every click is the lens's, and a
+   button of the chapter's own is pressed by its key there; the block's clicks are a free mouse's) */
+await p.evaluate(() => document.exitPointerLock?.());
+await p.waitForFunction(() => !document.pointerLockElement, null, { timeout: 20000 }).catch(() => {});
 /* (a trace of the mode's state while the block runs, printed when a check of it fails: [seconds, state, on, live, played,
    a minigame open, the check last begun]) */
 await p.evaluate(() => { const E = window.__enc; window.__tagTrace = []; let last = '';
