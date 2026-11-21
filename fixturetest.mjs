@@ -3152,7 +3152,16 @@ if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
    phone's 390 x 844 and a low phone's 360 x 780 below) */
 const TAG_HUD_MINE = ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire'];
 const TAG_HUD_ALL = TAG_HUD_MINE.concat(['#stats', '#mute', '#menuBtn', '#volWrap', '#objective .obox']);
-const tagOverlaps = (pg) => pg.evaluate(([mine, all]) => {
+/* (`risen`: measured from inside the page the frame the refusal's words and the caption stand risen — their rise is 0.3 s
+   from nothing, the words stand 2.2 s, and a slow page's round trips between a press and a measure outlasted them) */
+const tagOverlaps = (pg, risen) => pg.evaluate(async ([mine, all, risen]) => {
+  const op = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? +getComputedStyle(el).opacity : 0; };
+  let waited = 0;
+  if (risen) { const t0 = performance.now();
+    while (!(op('nofire') >= 0.999 && op('caption') >= 0.999) && performance.now() - t0 < 6000) await new Promise(r => requestAnimationFrame(r));
+    waited = Math.round(performance.now() - t0); }
+  const up = { caption: op('caption'), nofire: op('nofire'), take: !document.getElementById('tagA2').classList.contains('hide'),
+               mate: document.getElementById('tagMate').classList.contains('on'), waited };
   const shown = el => { for (let a = el; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; } return true; };
   const box = s => { const el = document.querySelector(s); if (!el || !shown(el)) return null; const r = el.getBoundingClientRect(); return r.width >= 1 && r.height >= 1 ? { s, x: r.left, y: r.top, w: r.width, h: r.height } : null; };
   const B = all.map(box).filter(Boolean), bad = [], off = [];
@@ -3161,8 +3170,8 @@ const tagOverlaps = (pg) => pg.evaluate(([mine, all]) => {
     const a = B[i], b = B[j]; if (!mine.includes(a.s) && !mine.includes(b.s)) continue;
     if (a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5) bad.push(a.s + ' x ' + b.s);
   }
-  return { measured: B.map(b => b.s), bad, off, boxes: B };
-}, [TAG_HUD_MINE, TAG_HUD_ALL]);
+  return { measured: B.map(b => b.s), bad, off, boxes: B, up };
+}, [TAG_HUD_MINE, TAG_HUD_ALL, !!risen]);
 await p.waitForTimeout(950);
 /* (everything the mode can put up at once: the caption, TAKE beside a tired one, the other one's mark at the edge while he
    is behind the lens, the count, and a refusal's words, the refusal last so its words are measured standing) */
@@ -3176,12 +3185,10 @@ await tagEval(`
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
   await frames(2);
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
-  await poll(() => document.getElementById('nofire').classList.contains('on'), 5000);
-  await new Promise(r => setTimeout(r, 450));              // (its rise, 0.3 s from nothing: measured risen)
   return true;`);
-const ovD = await tagOverlaps(p);
+const ovD = await tagOverlaps(p, true);
 K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagMate', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
-console.log('tag HUD 900x600:', JSON.stringify({ bad: ovD.bad, off: ovD.off, measured: ovD.measured }));
+console.log('tag HUD 900x600:', JSON.stringify({ bad: ovD.bad, off: ovD.off, measured: ovD.measured, up: ovD.up }));
 await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', st.fightHome.b[0], st.fightHome.b[1], {}); await frames(2); return true;`);
 await tagEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); await frames(2); return true;`);
 
@@ -3459,12 +3466,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       await new Promise(r => setTimeout(r, 950));
       const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
       await tap(r0.x, r0.y, 6);
-      await pUntil(`return document.getElementById('nofire').classList.contains('on');`, 5000);
-      await new Promise(r => setTimeout(r, 450));          // (its rise, 0.3 s from nothing: measured risen)
-      const ov = await tagOverlaps(pp);
-      const up = await pp.evaluate(() => ({ caption: document.getElementById('caption').classList.contains('on'), nofire: document.getElementById('nofire').classList.contains('on'),
-        take: !document.getElementById('tagA2').classList.contains('hide'), mate: document.getElementById('tagMate').classList.contains('on') }));
-      console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured, up }));
+      const ov = await tagOverlaps(pp, true);
+      console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured, up: ov.up }));
       return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s));
     };
     K.tagHudPhone = await phoneHud('390x844');
