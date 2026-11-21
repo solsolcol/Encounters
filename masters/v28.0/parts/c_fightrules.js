@@ -105,6 +105,7 @@
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
         needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0, holdLate: 30.0,
+        calmLong: 0, calmNear: 2.0,           // a lesson longer than calmLong seconds waits for a calm court (nothing within calmNear)
         // THE FRAME: no step moves the fight more than this (a slow phone gets a slower fight, never a jump)
         dtMax: 0.1
       };
@@ -305,7 +306,7 @@
           if (!due) return;
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
-        } else if (qp >= 2 || (qp >= 0 && !due)) { key = v.q[best].key; v.q.splice(best, 1); }
+        } else if ((qp >= 2 || (qp >= 0 && !due)) && (calmOk(st, v.q[best].key, io) || v.q[best].prio < 2)) { key = v.q[best].key; v.q.splice(best, 1); }
         else if (due) {
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
@@ -317,6 +318,22 @@
         st.stats.lines++;
         st.ev.push({ e: 'say', key, need: fromNeed ? id : '' });
         if (key === 'ko5c1') sayOnce(st, 'tn5c1', 3.0);          // Ton answers Mr Koh
+      }
+
+      /* a long lesson waits for a calm court: one that would still be speaking when a Prai could reach him does not begin
+         while one is at him, at his bars, or near him unseen or shown, or while his cage is lent (a seven-second line begun
+         in such a moment left the next order unsaid, and the careful player lost the last hold for it) */
+      function calmOk(st, key, io) {
+        const n = st.n, z = st.zav;
+        if (!(n.calmLong > 0) || st.stage !== 'fight') return true;
+        const secs = (io && io.secs ? +io.secs(key) : 0) || 2.5;
+        if (secs <= n.calmLong) return true;
+        if (st.cage.lent > 0) return false;
+        for (const p of st.prai) {
+          if (atHim(p) || p.st === 'pressing' || p.st === 'rushing') return false;
+          if ((p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || p.st === 'coming') && dist(z.x, z.z, p.x, p.z) < n.calmNear) return false;
+        }
+        return true;
       }
 
       /* ------------------------------------------------------------------ what can be pressed, and why not (the HUD and
