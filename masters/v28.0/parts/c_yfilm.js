@@ -270,8 +270,89 @@
        walls, a rounded loop; `k` how far along the path the head has come (0 .. 1), `a` its light */
     const NAGA5 = (() => {
       const g = new THREE.Group(); g.visible = false; world.add(g);
-      const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNCol: { value: new THREE.Color(0xff2a4a) }, uNGold: { value: new THREE.Color(0xffc860) } };
-      const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null };
+      /* ITS LIGHT (R25, FILMS-2: the laying was right and the look was not: an unlit, double-sided red with no depth drew
+         every inner face of the crumpled model over every other, "red sheets of glass", a cone, a wall and a slab of red
+         shards, together-phone 5.8, 8.5 and 11.8 on the rewrite). Now a body of ruby light in three draws of the one laid
+         skin: (1) its NEAREST SURFACE only (a pass that writes depth and no colour, so the next draws only the surface the
+         lens meets first: no inner face, no fold behind another); (2) THE BODY: a deep ruby whose faces turned to the lens
+         thin toward the court behind them and whose edges burn bright (a fresnel on its own smooth normals, welded across
+         the file's split seams and turned with the path every lay), scales flowing along it (a pattern in metres along the
+         body and round it, so they are never stretched with the body's length), a slow breath of light down its length, and
+         GOLD only where his light falls on it (the faces turned to his shoulders, near him: uNPho); its hue normal-blended;
+         (3) ITS GLOW, a layer of its own: the back faces of a skin a hand's breadth out, added (never normal-blended), drawn
+         only round its silhouette (the first draw hides the rest), brightest at its edge and gone a hand away. A light it
+         adds none (v9.4). uNA its strength (the fight's last stage keeps it at 0.3: under 0.5 the nearest-surface pass and
+         the glow stand aside, so a dim Naga hides nothing drawn after it), uNT its clock */
+      const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
+                  uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
+                  uNDeep: { value: new THREE.Color(0x5c0513) }, uNCol: { value: new THREE.Color(0xd0163a) }, uNRim: { value: new THREE.Color(0xff8a9c) },
+                  uNGlowC: { value: new THREE.Color(0xff2a4c) }, uNGold: { value: new THREE.Color(0xffc860) },
+                  uNLook: { value: new THREE.Vector4(0.56, 2.0, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
+      const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
+      /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
+         so the nearest surface and the body are the same depths to the bit */
+      const NAGA_VS_HEAD = `attribute float aNf; attribute float aReg; attribute float aO2; attribute vec2 aCS; attribute float aW;
+uniform float uNKK, uNLen, uNGR, uNGW;
+varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
+`;
+      const NAGA_VS_BODY = `#include <begin_vertex>
+  #ifdef NAGA_GLOW
+    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0));
+  #endif
+  vNWp = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  vNWn = normalize(mat3(modelMatrix) * normal);
+  vNS = aReg < 0.5 ? 0.0 : (aReg < 1.5 ? aO2 * uNKK * uNLen : uNKK * uNLen + aO2 * uNGR);
+  vNCS = aCS; vNReg = aReg; vNNf = aNf;
+`;
+      const NAGA_FS_HEAD = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
+varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
+`;
+      const NAGA_FS = {
+        /* the nearest surface: depth only (and none at all while it is dim: a dim Naga hides nothing behind it) */
+        depth: `if (uNA < 0.5) discard;
+  gl_FragColor = vec4(0.0);`,
+        /* the body */
+        body: `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
+  float nFr = pow(1.0 - clamp(abs(dot(nN, nV)), 0.0, 1.0), uNLook.y);
+  /* the scales: sixteen round the body, 0.17 m long, rows offset by half, each row over the one behind it (its free edge
+     toward the tail), flowing slowly toward the head; drawn only on the lying body, and faded where they would be finer
+     than the screen can hold */
+  vec2 nP = vec2(atan(vNCS.y, vNCS.x) * (16.0 / 6.2831853), (vNS - uNT * 0.28) / 0.17);
+  float nJ = floor(nP.y) + 1.0, nO = 0.5 * mod(nJ, 2.0);
+  float nD = length(nP - vec2(floor(nP.x - nO) + 0.5 + nO, nJ)) / 0.72;
+  if (nD >= 1.0) { nJ -= 1.0; nO = 0.5 * mod(nJ, 2.0); nD = length(nP - vec2(floor(nP.x - nO) + 0.5 + nO, nJ)) / 0.72; }
+  float nFw = (fwidth(vNCS.x) + fwidth(vNCS.y)) * (16.0 / 6.2831853) + fwidth(nP.y);
+  float nAa = clamp(1.6 - 2.2 * nFw, 0.0, 1.0) * (1.0 - step(1.5, vNReg)) * step(0.5, vNReg);
+  float nSc = mix(0.62, mix(0.45, 1.0, smoothstep(0.62, 0.97, nD)) * (1.0 - 0.55 * smoothstep(0.97, 1.0, nD)), nAa * uNLook.w / 0.3);
+  /* a slow breath of light down its length */
+  float nBr = 0.84 + 0.32 * (0.5 + 0.5 * sin(vNS * 0.7 - uNT * 1.9));
+  vec3 nCol = mix(uNDeep, uNCol, nSc) * nBr;
+  nCol = mix(nCol, uNRim, nFr);
+  /* his light: gold on the faces turned to his shoulders, near him, and nowhere else */
+  vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
+  float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.6, 3.0, nDl));
+  nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.85));
+  gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`,
+        /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
+        glow: `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
+  float nK = clamp(-dot(nN, nV), 0.0, 1.0);
+  vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.7 * nGk, 0.0, 0.7)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`
+      };
+      function nagaMat(kind) {
+        const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
+          depthWrite: kind === 'depth', colorWrite: kind !== 'depth',
+          blending: kind === 'glow' ? THREE.AdditiveBlending : THREE.NormalBlending,
+          side: kind === 'glow' ? THREE.BackSide : THREE.FrontSide }); mats.push(m);
+        if (kind === 'glow') m.defines = { NAGA_GLOW: 1 };
+        m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+          sh.vertexShader = NAGA_VS_HEAD + sh.vertexShader.replace('#include <begin_vertex>', NAGA_VS_BODY);
+          const out = sh.fragmentShader.replace('#include <opaque_fragment>', NAGA_FS[kind]);
+          if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s light found no line to write (three changed?)');
+          sh.fragmentShader = NAGA_FS_HEAD + out; };
+        m.customProgramCacheKey = () => 'e4c5naga2-' + kind;
+        return m;
+      }
       /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
          corner and round it a little inside the walls: west side, gate end, east side, where its head turns in toward the
          court and rears, facing the house */
@@ -323,9 +404,6 @@
             if (Na) g2.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(Na), 3));
             g2.setIndex(new THREE.BufferAttribute(Pa.length / 3 > 65535 ? new Uint32Array(out) : new Uint16Array(out), 1));
             geo.dispose(); geo = g2; owned.push(geo); }
-          /* (its light normal-blended, never added: added, every layer of its body over another summed to white, a white
-             blot with pink edges where the Naga should be ruby, together-phone 5.8 on deploy 10; the standing rule's) */
-          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.NormalBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
           /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
              on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
              shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga
@@ -333,18 +411,6 @@
           { const P = geo.attributes.position, nf = new Float32Array(P.count), sp = st.maxX - st.minX;
             for (let i = 0; i < P.count; i++) nf[i] = ((along === 'z' ? P.getZ(i) : P.getX(i)) - st.minX) / sp;
             geo.setAttribute('aNf', new THREE.BufferAttribute(nf, 1)); }
-          m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
-            sh.vertexShader = 'attribute float aNf; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
-              .replace('#include <begin_vertex>', `#include <begin_vertex>
-                vNf = aNf; vNn = normal;`);
-            sh.fragmentShader = 'uniform float uNA, uNT, uNK; uniform vec3 uNCol, uNGold; varying float vNf; varying vec3 vNn;\n' + sh.fragmentShader
-              .replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
-                float scl = 0.55 + 0.45 * sin(vNf * 180.0 - uNT * 3.0) * sin(vNf * 37.0 + uNT * 1.7);
-                float edge = 0.35 + 0.65 * pow(1.0 - abs(normalize(vNn).y), 2.0);
-                vec3 nc = mix(uNCol, uNGold, 0.18 * smoothstep(0.85, 1.0, vNf));
-                vec4 diffuseColor = vec4(nc * (0.55 + 0.45 * scl) * edge, uNA * (0.42 + 0.3 * scl));`);
-          };
-          m.customProgramCacheKey = () => 'e4c5naga';
           /* (the body is laid on the CPU, not in the shader: its points moved once a frame the film draws it, along the
              path by their place along the body, a cross-section kept round the path's own frame) */
           const base = geo.attributes.position.array.slice(0);
@@ -378,7 +444,50 @@
               else if (b0 < bT) { reg[i] = 0; off[i * 3] = c - cx[bT]; off[i * 3 + 1] = y - cy[bT]; off[i * 3 + 2] = 0; }
               else { reg[i] = 1; off[i * 3] = c - cx[b0]; off[i * 3 + 1] = y - cy[b0]; off[i * 3 + 2] = (ax - ZT) / Math.max(1e-3, ZH - ZT); } }
             st.reg = reg; st.off = off; st.parts = { ZT, ZH, bT, bH }; }
-          const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.renderOrder = 3; g.add(mesh); st.mesh = mesh; st.mat = m;
+          /* ITS OWN SMOOTH NORMALS (FILMS-2). The file's 87,610 points stand on 31,214 places, and 55,546 of the 56,396 points
+             that share a place with another carry a different normal (up to opposite): a fresnel read on them draws every seam
+             as a line and every facet as a shard. Each place's normal is made again from the faces round it (each weighed by
+             its area, the file's own winding outward); a point whose place's faces cancel (the two sides of a thin fin meet
+             there) keeps its own faces' normal. Kept in the model's frame as (across, up, along), turned with the path at
+             each lay (set(), below) */
+          if (geo.index) { const P = st.base, X = geo.index.array, n = P.length / 3, rep = new Int32Array(n), idx = new Map(), q = 1e4;
+            for (let i = 0; i < n; i++) { const k = Math.round(P[i * 3] * q) + ',' + Math.round(P[i * 3 + 1] * q) + ',' + Math.round(P[i * 3 + 2] * q);
+              const r0 = idx.get(k); if (r0 === undefined) { idx.set(k, i); rep[i] = i; } else rep[i] = r0; }
+            const acc = new Float64Array(n * 3), own = new Float64Array(n * 3), mag = new Float64Array(n);
+            for (let t = 0; t < X.length; t += 3) { const a = X[t], b = X[t + 1], c = X[t + 2];
+              const ux = P[b * 3] - P[a * 3], uy = P[b * 3 + 1] - P[a * 3 + 1], uz = P[b * 3 + 2] - P[a * 3 + 2], vx = P[c * 3] - P[a * 3], vy = P[c * 3 + 1] - P[a * 3 + 1], vz = P[c * 3 + 2] - P[a * 3 + 2];
+              const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx, fl = Math.hypot(fx, fy, fz);
+              for (const v of [a, b, c]) { const r0 = rep[v]; acc[r0 * 3] += fx; acc[r0 * 3 + 1] += fy; acc[r0 * 3 + 2] += fz; mag[r0] += fl; own[v * 3] += fx; own[v * 3 + 1] += fy; own[v * 3 + 2] += fz; } }
+            const BN = new Float32Array(n * 3), alZ = st.along === 'z';
+            for (let i = 0; i < n; i++) { const r0 = rep[i]; let x = acc[r0 * 3], y = acc[r0 * 3 + 1], z = acc[r0 * 3 + 2], l = Math.hypot(x, y, z);
+              if (!(l > 0.3 * mag[r0])) { x = own[i * 3]; y = own[i * 3 + 1]; z = own[i * 3 + 2]; l = Math.hypot(x, y, z); }
+              if (!(l > 1e-12)) { x = 0; y = 1; z = 0; l = 1; }
+              BN[i * 3] = (alZ ? x : z) / l; BN[i * 3 + 1] = y / l; BN[i * 3 + 2] = (alZ ? z : x) / l; }
+            st.bn = BN; }
+          /* what the shaders read of each point, laid once: its region (0 the tail, 1 the lying middle, 2 the head), its place
+             along its region (the middle's share 0 .. 1, the head's metres past the middle's end), its way round its
+             slice's centre line (cosine and sine: an angle itself would be drawn through 0 across the seam at its back),
+             and how far its glow stands out (the head's a third of the middle's: its crest and fins are thin) */
+          { const n = st.base.length / 3, R = st.reg, O = st.off, B = st.base, cl = st.cl, alZ = st.along === 'z';
+            const aReg = new Float32Array(n), aO2 = new Float32Array(n), aCS = new Float32Array(n * 2), aW = new Float32Array(n);
+            for (let i = 0; i < n; i++) { const r0 = R[i]; aReg[i] = r0; aO2[i] = r0 === 0 ? 0 : O[i * 3 + 2];
+              let cx0 = O[i * 3], cy0 = O[i * 3 + 1];
+              if (r0 === 2) { const b0 = cl.bin[i]; cx0 = (alZ ? B[i * 3] : B[i * 3 + 2]) - cl.cx[b0]; cy0 = B[i * 3 + 1] - cl.cy[b0]; }
+              const l = Math.hypot(cx0, cy0) || 1; aCS[i * 2] = cx0 / l; aCS[i * 2 + 1] = cy0 / l;
+              aW[i] = r0 === 1 ? 1 : r0 === 2 ? 0.35 : 0; }
+            geo.setAttribute('aReg', new THREE.BufferAttribute(aReg, 1)); geo.setAttribute('aO2', new THREE.BufferAttribute(aO2, 1));
+            geo.setAttribute('aCS', new THREE.BufferAttribute(aCS, 2)); geo.setAttribute('aW', new THREE.BufferAttribute(aW, 1));
+            const nb = new THREE.BufferAttribute(new Float32Array(n * 3), 3); nb.setUsage(THREE.DynamicDrawUsage); geo.setAttribute('normal', nb);
+            geo.attributes.position.setUsage(THREE.DynamicDrawUsage); }
+          /* (the laying maps the model's across, up and along onto the path's B, N and T, and B x N = -T: a mirror. So each
+             triangle's order is turned once, here, after its normals were read from the file's own, and the front of the
+             laid skin is its outside for the lens: drawn double-sided before, nothing showed which side was which) */
+          if (st.along === 'z' && geo.index) { const X = geo.index.array; for (let t = 0; t < X.length; t += 3) { const s0 = X[t + 1]; X[t + 1] = X[t + 2]; X[t + 2] = s0; } }
+          const mD = new THREE.Mesh(geo, nagaMat('depth')), mB = new THREE.Mesh(geo, nagaMat('body')), mG = new THREE.Mesh(geo, nagaMat('glow'));
+          /* (drawn after the court's own transparent things and its painted ground, and before the fight's effects and the
+             cage (renderOrder 3 and on), which the nearest surface then hides where the body stands in front of them) */
+          for (const [me, ro] of [[mD, 2.5], [mB, 2.6], [mG, 2.7]]) { me.frustumCulled = false; me.renderOrder = ro; g.add(me); }
+          st.mesh = mB; st.mat = mB.material; st.meshes = [mD, mB, mG];
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
       }
