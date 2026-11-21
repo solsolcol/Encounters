@@ -8051,6 +8051,10 @@ function kitFilm(key, opts = {}) {
        left e3c3's hands, and the joss sticks in them, gone for the whole
        shrine. The chapter's order is fixed too; this is the net under it */
     handsRoot.visible = true;
+    /* v28.0 (the films' builder, measured): a film that ENDS ON ITS OWN VIEW (`c.keep.view`) had restoreWorld hide the arm,
+       as it does for the outcome card a scene's kept view lies under; play has no card, so the arm is given back as the
+       film found it, on play's first frame. Only on that path: a film that does not keep its view is not touched (v11.1) */
+    if (c && c.keep && c.keep.view && c.snap) armR.visible = c.snap.armVis;
     ui.hud.classList.remove('hide');
     hint.classList.add('hide');
     document.body.classList.add('inplay');
@@ -19693,7 +19697,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  kitReset,                                 // v23.0: the fixture proves a pose is cleared by it
                  armNow: () => {
                    const L = prayerArmL, BL = hpReady() && L ? hpBonesLeft() : null;
-                   return { rp: armR.position.toArray(), rq: armR.quaternion.toArray(),
+                   return { rv: armR.visible, rp: armR.position.toArray(), rq: armR.quaternion.toArray(),
                             rf: hpBonesR ? hpBonesR.map(b => (b ? b.quaternion.toArray() : null)) : null,
                             lv: !!(L && L.visible), lp: L ? L.position.toArray() : null, lq: L ? L.quaternion.toArray() : null,
                             lf: BL ? BL.map(b => (b ? b.quaternion.toArray() : null)) : null,

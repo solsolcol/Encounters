@@ -731,6 +731,14 @@
     step(3.5, () => {});
   };
 
+  /* v28.0: a film from play that ENDS ON ITS OWN VIEW (`c.keep.view`): play takes up where the film left the lens, and the
+     arm the film's end had hidden (restoreWorld does, for a card) is given back on play's first frame (kitFilm) */
+  const fiKeepView = (c, s, api) => {
+    const { step } = api;
+    step(0.6, () => {});
+    c.keep.view = true;
+  };
+
   /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
      film goes on, and hands back to play, once it resolves */
   const fiClimb = (c, s, api) => {
@@ -744,7 +752,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash },
+    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash, keepView: fiKeepView },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();

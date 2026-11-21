@@ -3214,6 +3214,29 @@ K.tagLeave = await tagCheckSrc('leave', `
   return R;`);
 await tagEval(`kit.take('rifle'); kit.button('nose', null); await frames(2); return true;`);
 K.buttonGone = await tagCheckSrc('buttonGone', `await frames(2); return { gone: !document.querySelector('.cBtn') && E.buttons().length === 0 && !document.body.classList.contains('hasCBtn') };`);
+
+/* v28.0 (the films' builder, measured): A FILM FROM PLAY THAT KEEPS ITS OWN VIEW gives the arm back on play's first frame, as
+   the film found it (restoreWorld hides it for a scene's card; play has none) — read by the page on that very frame; and a
+   film that does not keep its view is untouched: an arm hidden in play before it is hidden after it, as it always was */
+const filmArm = (key, hideBefore) => tagEval(`
+  await frames(2);
+  E.armR.visible = !arg.hide; await frames(2);
+  const before = E.armNow().rv;
+  window.__armFirst = null; window.__filmDone = null; let was = E.getState();
+  const f = () => { const s = E.getState(); if (was === 'cine' && s === 'play' && window.__armFirst === null) window.__armFirst = E.armNow().rv; was = s;
+                    if (window.__armFirst === null) requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+  const started = kit.film(arg.key, { onDone: () => { window.__filmDone = true; kit.fade(0, 0.2); } }) === true;
+  await poll(() => window.__filmDone && E.getState() === 'play' && window.__armFirst !== null, 90000);
+  await poll(() => kit.getFade() < 0.02, 30000); await frames(2);
+  const r = { started, before, first: window.__armFirst, after: E.armNow().rv };
+  E.armR.visible = true; await frames(2);
+  return r;`, { key, hide: hideBefore });
+const kvShown = await filmArm('keepView', false), kvHidden = await filmArm('keepView', true), nkHidden = await filmArm('probe', true);
+K.filmKeepViewArmBack = kvShown.started && kvShown.before === true && kvShown.first === true && kvShown.after === true
+  && kvHidden.started && kvHidden.before === false && kvHidden.first === false;
+K.filmNoKeepArmUntouched = nkHidden.started && nkHidden.before === false && nkHidden.first === false && nkHidden.after === false;
+if (!K.filmKeepViewArmBack || !K.filmNoKeepArmUntouched) console.log('film arm', JSON.stringify({ kvShown, kvHidden, nkHidden }));
 await p.evaluate((parts) => { window.__tag = parts; }, tagParts);
 if (Object.entries(K).some(([k, v]) => /^(tag|button|chillSour)/.test(k) && v !== true))
   console.log('tag trace', JSON.stringify(await p.evaluate(() => window.__tagTrace)));
