@@ -254,6 +254,10 @@ for R in SPEC['regions']:
     if 'turn' in R:                                              # (one class painted as another wherever it lies: flat grey as the knit beside it)
         for a_, b_ in R['turn'].items():
             sel = c1 == names.index(a_); c1[sel] = names.index(b_); turned |= sel
+        if turned.any() and R.get('grow'):                       # ('grow', metres: and what lies that near a turned texel, the rim a patch leaves and the holes in it)
+            tm = np.zeros(shape, bool); tm[gi[turned, 0], gi[turned, 1], gi[turned, 2]] = True
+            tm = ndimage.binary_dilation(tm, structure=np.ones((3, 3, 3), bool), iterations=max(1, int(round(float(R['grow']) / VOX))))
+            turned |= tm[gi[:, 0], gi[:, 1], gi[:, 2]] & np.isin(c1, [names.index(b_) for b_ in R['turn'].values()]); del tm
     occ[:] = -1; occ[gi[:, 0], gi[:, 1], gi[:, 2]] = c1
     if protect.any():                                            # (and a margin round a kept island)
         pm = np.zeros(shape, bool); pm[gi[protect, 0], gi[protect, 1], gi[protect, 2]] = True
@@ -271,11 +275,11 @@ for R in SPEC['regions']:
     rawbad = np.zeros(len(r), bool)                               # (a texel whose own colour is not its material's)
     for k in range(K):
         if 'raw' in rules[k]: sel = c1 == k; rawbad[sel] = ~fits(Lr[sel], rules[k]['raw'])
-    smoothk = np.array([rules[k].get('fill', 'smooth') != 'mirror' for k in range(K)] + [False])
+    smoothk = np.array([rules[k].get('fill', 'smooth') not in ('mirror', 'clone') for k in range(K)] + [False])
     # (a box of ONE material, `everywhere`: hair with flecks of skin's colour in its creases. There is no edge to be
     #  near, so whatever in the box is not the material's own colour is painted, wherever it lies)
     reachq = (dist < REACH) | bool(R.get('everywhere')) | turned
-    paint = inside & (c1 >= 0) & ~protect & ((((c0 != c1) | rawbad) & reachq) | ((dist < BAND) & smoothk[c1]))
+    paint = inside & (c1 >= 0) & ~protect & ((((c0 != c1) | rawbad | turned) & reachq) | ((dist < BAND) & smoothk[c1]))
     pure = inside & (c0 == c1) & (c1 >= 0) & ~paint & ~rawbad & (dist > BAND + 0.001) & ~protect    # (clean texels are taken from inside the box only)
     if turned.any():                                             # (and not from the rim of what was turned: its texels are half the other colour)
         tm = np.zeros(shape, bool); tm[gi[turned, 0], gi[turned, 1], gi[turned, 2]] = True
@@ -288,7 +292,29 @@ for R in SPEC['regions']:
         if len(q) == 0 and not smoothk[k]: continue
         if len(src) < 16: log(f'{name}: {names[k]} has no clean texels to paint {len(q)} from: left as they are'); paint[q] = False; continue
         tree = cKDTree(p[src])
-        if rules[k].get('fill', 'smooth') == 'mirror':
+        if rules[k].get('fill', 'smooth') == 'clone':
+            # ('clone', v28.0: a patch too wide for the mirror, whose texels far from clean ones all found the same few and
+            #  came out as blocks. The painted texels are taken a cell of 3 cm at a time, and each cell takes the paint of
+            #  the clean surface ONE MOVE away, the same move for the whole cell: a piece of the real weave carried over,
+            #  not folded. The move is one of a set (a step of 12 to 65 mm along the body's axes and between them, or a
+            #  turn of 15 to 60 degrees about the body's upright axis, which carries a patch on the side of a trunk round
+            #  to its front or back) and the one chosen sends the cell's texels to the most DIFFERENT clean texels, near
+            #  them: a move that lands on painted ground sends them all to the same few, and scores nothing.)
+            cell = np.floor(p[q] / 0.03).astype(np.int64); cell -= cell.min(0); ckey = (cell[:, 0] * 4096 + cell[:, 1]) * 4096 + cell[:, 2]
+            order = np.argsort(ckey, kind='stable'); ks, starts = np.unique(ckey[order], return_index=True); ends = np.append(starts[1:], len(q))
+            dirs = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1), (0, 1, 1), (0, 1, -1), (0, -1, 1), (0, -1, -1), (1, 1, 0), (-1, 1, 0), (1, -1, 0), (-1, -1, 0)]
+            moves = [('s', np.array(v, float) / np.linalg.norm(v) * s_) for s_ in (0.012, 0.02, 0.03, 0.045, 0.065) for v in dirs] + [('t', math.radians(a_)) for a_ in (15, -15, 25, -25, 35, -35, 45, -45, 60, -60)]
+            def moved(x, mv):
+                if mv[0] == 's': return x + mv[1]
+                c_, s_ = math.cos(mv[1]), math.sin(mv[1]); y = x.copy(); y[:, 0] = c_ * x[:, 0] + s_ * x[:, 2]; y[:, 2] = -s_ * x[:, 0] + c_ * x[:, 2]; return y
+            for a_, b_ in zip(starts, ends):
+                qq = q[order[a_:b_]]; sub = qq if len(qq) <= 1200 else qq[np.linspace(0, len(qq) - 1, 1200).astype(int)]
+                best = moves[0]; bs = -9.0
+                for mv in moves:
+                    d_, j = tree.query(moved(p[sub], mv)); sc = len(np.unique(j)) / len(sub) - 4.0 * float(d_.mean())
+                    if sc > bs: bs = sc; best = mv
+                _, j = tree.query(moved(p[qq], best)); newL[qq] = L[src[j]]
+        elif rules[k].get('fill', 'smooth') == 'mirror':
             _, j = tree.query(p[q]); bq = p[src[j]]
             _, j2 = tree.query(2 * bq - p[q])
             newL[q] = L[src[j2]]

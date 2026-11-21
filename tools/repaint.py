@@ -168,9 +168,13 @@ okE = d3 > 1e-6
 medR = float(np.median(duv[okE] / d3[okE])) if okE.any() else 0.0
 badT = ((duv > 6) & ((~okE) | (duv > 8 * medR * np.maximum(d3, 1e-9)))).any(axis=1)
 if outT is not None: badT = badT | outT                                              # (v28.0: the ones left outside the square)
-if XSCALE != 1:                                                                    # (v28.0: and, with XSCALE, any triangle xatlas still left whole at one point of the sheet)
-    lostT = (duv.max(axis=1) < 1e-6) & (A3 > 1e-14); badT = badT | lostT
-    if lostT.any(): log(f'{int(lostT.sum())} triangles were left whole at one point of the sheet ({A3[lostT].sum() * 1e6:.2f} mm2 of the body): mended with the rest')
+if XSCALE != 1:
+    # (v28.0: and, with XSCALE, the triangles xatlas still left WHOLE at the sheet's corner: all three corners within three
+    #  texels of (0, 0) and every sheet edge under a quarter of what its body edge asks. In millimetres 3,971 of his full
+    #  body's 312,932 still were, 6.9 cm2 of him, ordinary small triangles (half of them over 0.15 mm2). They are mended
+    #  with the slivers below, each laid back in the chart round it where its three places share one.)
+    lostT = (cu.reshape(m, 6) * PX < 3).all(axis=1) & (duv.max(axis=1) < 0.25 * medR * d3.max(axis=1)) & (A3 > 1e-14); badT = badT | lostT
+    if lostT.any(): log(f'{int(lostT.sum())} triangles were left whole at the corner of the sheet ({A3[lostT].sum() * 1e6:.1f} mm2 of the body): mended with the rest')
 nBad = int(badT.sum())
 if nBad:
     good = np.nonzero(~badT)[0]
@@ -181,7 +185,30 @@ if nBad:
             if q not in at_place: at_place[q] = cu[t, k].copy()
     cent = W[LI].mean(axis=1)
     fixed = 0
+    # (v28.0, with XSCALE: a place on a seam has one coordinate for each chart that meets there, and the FIRST sound
+    #  triangle's was taken for every corner, so a mended triangle's corners came from different charts and it fell to one
+    #  point, one flat colour, often the wrong material's at the cardigan's edges. Here every coordinate a sound triangle
+    #  has at each place is kept, and the three are chosen that lie closest together: the triangle is laid back whole in
+    #  the chart its three places share, and the bake paints it with its own colour. Without XSCALE, as it always was.)
+    at_all = {}; whole = 0
+    if XSCALE != 1:
+        for t in good:
+            for k in range(3): at_all.setdefault(int(LI[t, k]), []).append(cu[t, k])
+        for q in at_all: at_all[q] = np.unique(np.round(np.array(at_all[q]), 7), axis=0)
     for t in np.nonzero(badT)[0]:
+        if XSCALE != 1:
+            c3 = [at_all.get(int(LI[t, k])) for k in range(3)]
+            if all(c is not None for c in c3):
+                lim = max(6.0, 4.0 * medR * float(d3[t].max())) / PX; best = None; bd = 1e9
+                for a_ in c3[0]:
+                    for b_ in c3[1]:
+                        dab = float(np.hypot(*(a_ - b_)))
+                        if dab > lim or dab >= bd: continue
+                        for c_ in c3[2]:
+                            d_ = max(dab, float(np.hypot(*(b_ - c_))), float(np.hypot(*(c_ - a_))))
+                            if d_ < bd: bd = d_; best = (a_, b_, c_)
+                if best is not None and bd <= lim:
+                    cu[t] = np.array(best); fixed += 1; whole += 1; continue
         new = [at_place.get(int(LI[t, k])) for k in range(3)]
         have = [u for u in new if u is not None]
         if not have:
@@ -192,7 +219,7 @@ if nBad:
         if (np.linalg.norm(tri - np.roll(tri, -1, axis=0), axis=1) * PX).max() > 6: tri[:] = have[0]
         cu[t] = tri; fixed += 1
     a3 = 0.5 * np.linalg.norm(np.cross(W[LI[badT, 1]] - W[LI[badT, 0]], W[LI[badT, 2]] - W[LI[badT, 0]]), axis=1)
-    log(f'{nBad} triangles reached across the sheet from a corner xatlas never placed: each given its neighbours\' place ({fixed}); '
+    log(f'{nBad} triangles reached across the sheet from a corner xatlas never placed: each given its neighbours\' place ({fixed}' + (f', {whole} of them laid back whole in the chart round them, {fixed - whole} at one point' if XSCALE != 1 else '') + '); '
         f'together {a3.sum() * 1e6:.1f} mm2 of the body, the largest {a3.max() * 1e6:.3f} mm2 with an edge of {d3[badT].max() * 1000:.2f} mm')
 summary_note += f'; {nBad} unplaced corners mended' if nBad else ''
 
