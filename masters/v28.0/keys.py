@@ -61,6 +61,19 @@ group("e4c5: THE HOME'S AND THE ROOM'S THINGS (M5b), each made once: a checked p
        ('w5clothtable', 'w5clothtable.glb', "case three's low table under its white cloth"),
        ('w5padcase', 'w5padcase.glb', "the collector's padded case"), ('w5cushion', 'w5cushion.glb', 'the floor cushions'),
        ('w5altarshelf', 'w5altarshelf.glb', 'the altar shelf, empty'), ('w5ceilfan', 'w5ceilfan.glb', 'the ceiling fan')])
+group("e4c5: CAST AT LAST by the shared cast (masters/v28.0/parts/c_cast.js, M9): the collector (people/RECORD.md 3b,\n"
+      "his rig mended here, way B: one level, his full body), the nine's three bodies (one for each kind: the plain rig of\n"
+      "24), and the Naga of the fight's film (people/naga.sh: drawn as ruby light, cut and laid round the court)",
+      [('p5collector', 'p5collector.glb', 'the collector, 1.77 m: his rig mended here (way B), his four takes'),
+       ('p5praicome', 'p5praicome.glb', 'the Prai that come, 1.60 m'),
+       ('p5praihide', 'p5praihide.glb', 'the Prai that hide, 1.42 m'),
+       ('p5praiheavy', 'p5praiheavy.glb', 'the third body of the nine, 1.90 m (the kind that slips)'),
+       ('p5naga', 'p5naga.glb', 'the Naga of the fight\'s film, 8.41 m long (static)')])
+group("e4c5: THE COLLECTOR'S THREE PIECES (THINGS-2, 29245cb), each from real photographs of its kind first\n"
+      "(docs/research/V28.0-PIECES.md); which presence sits on which is the game's own picture",
+      [('w5wuathanu', 'w5wuathanu.glb', 'a Wua Thanu, the cast humped bull (0.054 m): the angry presence'),
+       ('w5rakyom', 'w5rakyom.glb', 'a Rak Yom, two small figures in a bottle of oil (0.060 m): the hungry one'),
+       ('w5hunphayon', 'w5hunphayon.glb', 'a Hun Phayon, a bound black effigy (0.100 m): the one looking for energy')])
 
 B0, B1 = '    # >>> e4c5 keys: written by masters/v28.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c5 keys: the rows end <<<'
 S0, S1 = '           # >>> e4c5 keys (masters/v28.0/keys.py) >>>\n', '           # <<< e4c5 keys <<<'
