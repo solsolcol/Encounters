@@ -33,7 +33,7 @@
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
-                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0 };
+                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
     const fsCanvas = (n) => { const c = document.createElement('canvas'); c.width = c.height = n; return [c, c.getContext('2d')]; };
@@ -462,6 +462,22 @@
       const wp = (P.pace && P.pace.Walking) || 1.29;
       P.rate = moving ? Math.max(0.3, Math.min(1.6, pace / wp)) : 1;
     }
+    /* THEIR FOOTFALLS on the paving (the engine's steps are the first person's, and he does not walk in the mode): each
+       body's walk struck where its own take sets a foot down, read from each file through its bones (M8's takeread: his
+       teacher's Walking at 0.37 and 0.85 of its 1.03 s, his own at 0.28 and 0.78), at the manifest's gain */
+    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    function fsSteps() {
+      for (const who of ['pho', 'zav']) {
+        const P = who === 'pho' ? cast.pho : cast.zav, S = FS_STEP[who], T = fsTake[who];
+        if (!P || !P.ready || !P.acts.Walking || !P.group.visible) continue;
+        const A = P.acts.Walking, d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepU;
+        T.stepU = u;
+        if (last == null || !T.walking || (P.w.Walking || 0) < 0.5) continue;
+        for (const a of S.at) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
+          const k = Math.min(1, (T.pace || 0) / (who === 'pho' ? (FN5.phoWalk || 1.2) : (FN5.zavWalk || 0.6)));
+          fsFx(S.name, 0.4 * (0.75 + 0.25 * k), P.group.position.x, P.group.position.z); }
+      }
+    }
     function fsStand(P, who) {
       if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0;
       whenReady(P, (Q) => { Q.rate = 1; if (who === 'zav') { const rt = zavRest(); if (rt) rest(Q, 0); else hold(Q, 'Walking', ZAV_STAND5, 0.001, 0); } else rest(Q, 0); });
@@ -500,6 +516,10 @@
           continue;
         }
         const o = fsActState(H[slot]);
+        /* (a button come ready after a wait of its own of 2.4 s or more: the manifest's u5ready; the gold has its own) */
+        const Wt = FS5.waits[id] || (FS5.waits[id] = { on: false, at: 0 });
+        if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
+        else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
         kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, label: o.label || base, icon: FS_ICON[id] });
       }
@@ -580,16 +600,19 @@
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null); break; }
           case 'lendEnd': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5lendback', 0.8, zw ? zw.x : null, zw ? zw.z : null); break; }
           case 'waveReady': fsFx('u5waveready', 0.8, null); break;
-          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.6, pw ? pw.x : null, pw ? pw.z : null);
+          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
             fsPhoAct('wave', FN5.windSecs || 1.5); break; }
           case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave'); break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
-          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave'); fsFx(fsDeal('drawn'), 0.8, null);
-            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }
+          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
+            /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
+               drawing was heard at its press) */
+            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); } else fsFx(fsDeal('drawn'), 0.8, null);
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
-          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoAct('bag'); break; }
+          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null);
+            { const w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); } fsPhoAct('bag'); break; }
           case 'enter': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; if (w) fsFx(fsDeal('rise'), 0.8, w.x, w.z); break; }
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
@@ -782,6 +805,7 @@
       const st = FS5.st, ft = st.t;
       fsBodyTake(cast.pho, 'pho', played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), wdt);
       fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (zavB ? zavB.v : 0) : 0, wdt);
+      fsSteps();
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
       const c = st.cage, at = c.lent > 0 ? pw : zw;
@@ -818,7 +842,7 @@
     }
     /* THE FIGHT'S LOOPS, aimed each frame: the cage, the murmur, each Prai's voice where it is, each bubble's note, the
        shape, M7's stems (the one played leads: the manifest's levels), M10 for the last three */
-    const FS_M7 = 0.55;                                                     // (M7's mix sits where the chapter's other play music does: the music loops' cue volume)
+    const FS_M7 = 1;                                                        // (M7 at the manifest's own gains, each stem's note: the sound helper's measured mix)
     FS5.aiPace = { pho: 0 };
     function fsSoundFrame(wdt, played) {
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
@@ -882,8 +906,9 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0 });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {} });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
+      fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
     }
