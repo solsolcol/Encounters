@@ -230,9 +230,11 @@ if (MODE === 'button') {
   /* and in the gold: the water's colour handed to the button as the gold gives it (kit.sprayColor), at the same breath */
   await p.evaluate(() => window.__enc.kit.sprayColor(0xffc24a, { size: 1.6 }));
   await frames(3);
-  const ring = await p.evaluate(() => getComputedStyle(document.getElementById('fireBtn'), '::before').boxShadow);
-  log('in the gold, its light:', ring);
-  checks.goldLight = /255, 194, 74/.test(ring);
+  /* (the button's gold is the engine's own reading of the water's colour, three's linear values: its border and its light
+     share it, so the light is read against the button's own --wg) */
+  const ring = await p.evaluate(() => { const fb = document.getElementById('fireBtn'); return { shadow: getComputedStyle(fb, '::before').boxShadow, wg: fb.style.getPropertyValue('--wg') }; });
+  log('in the gold, its light:', JSON.stringify(ring));
+  checks.goldLight = !!ring.wg && ring.shadow.includes(ring.wg.split(',').map(Number).join(', ')) && !/150, 225, 255/.test(ring.shadow);
   await shot('button-gold-largest-breath');
   await shot('button-gold-crop', { x: Math.max(0, M.fb.l - 60), y: Math.max(0, M.fb.t - 60), width: Math.min(W, M.fb.r + 60) - Math.max(0, M.fb.l - 60), height: Math.min(H, M.fb.b + 60) - Math.max(0, M.fb.t - 60) });
   await p.evaluate(() => window.__enc.kit.sprayColor(null));
@@ -257,6 +259,25 @@ await shot('fight-flicks');
 if (MODE === 'button') {
   /* (nothing more: the button's pictures and boxes are this mode's) */
 } else if (MODE === 'retry') {
+  /* ========================================================== (R144 case 6) a tab closed in the middle of the fight, no loss:
+     the fight has moved the run on (the water thrown at Appa: his receipt x and the card's note, and his nerve spent), and
+     the page is reloaded and Continue tapped: the fight's start, every number of it, none of what the fight did */
+  await eye(true); await wait(2400);
+  const ap = await p.evaluate(() => { const g = window.__enc.stage.dbg.spirits.appa.group.position; return { x: g.x, y: 1.2, z: g.z }; });
+  await aimAt(ap); await frames(2); await pressSel('#fireBtn');
+  const struck = await until(() => window.__enc.stage.dbg.play.appaGone, 60000);
+  await p.evaluate(() => window.__enc.kit.award('sanity', -7));
+  const mid = await p.evaluate(() => ({ phase: window.__enc.kit.getPhase(), san: window.__enc.stats.sanity, notes: window.__enc.kit.getConduct().notes,
+    saved: (() => { try { const s = JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); return { phase: s.phase, san: s.stats.sanity, notes: s.conduct.notes }; } catch { return null; } })() }));
+  log('mid-fight, Appa struck', struck, JSON.stringify(mid));
+  checks.midFightSaveHeld = struck && /(^|,)x(,|$)/.test(mid.phase.split(':')[1] || '') && !!mid.saved && mid.saved.phase === A.S.phase && mid.saved.san === A.S.stats.s;
+  await p.reload({ waitUntil: 'load', timeout: 240000 });
+  checks.midFightContinue = await boot('mid-fight');
+  const M6 = await atBrief('mid-fight');
+  const d6 = same(A.S, M6.S, ['voicesLive']);
+  log('a mid-fight tab close and Continue against the first arrival:', d6.length ? d6 : 'the same');
+  checks.midFightAtStart = M6.ok && d6.length === 0;
+  checks.fightOn1b = await start();
   /* ========================================================== lost, the page reloaded, Continue */
   const L1 = await loseIt('loss1');
   checks.loss1 = L1.filmed && L1.lost && L1.ready && L1.card.say.startsWith('Too many green spirits reached Amma') && L1.card.restart === 'Restart chapter';
