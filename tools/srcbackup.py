@@ -42,7 +42,7 @@ GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 
 # was (no key, no signed link, no address; one link to Meshy's documentation in a log). NOT pushed from v28.0: the second
 # and third bodies of Master Zavier, made and refused (zavier2, zavier3, and zavier3's second rig): likenesses of a real
 # man that the game does not use. The FIRST body (zavier) goes up since 21 Nov 2026, when Chad said it looked the best
-# (plan R8): until his pick between it and the fourth (zavier4) it must not exist on one machine only. Its fourteen
+# (plan R8), and it is the game's body since his R10 the same day: it must not exist on one machine only. Its fourteen
 # files were scanned the same way first (no link, no key, no address).
 SKIP = {'v28.0': re.compile(r'zavier[23]')}
 # the size of a chunk: 600 MB by default, less (SRCBACKUP_CHUNK_MB) when the machine has less room free than a chunk and

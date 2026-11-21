@@ -70,7 +70,11 @@ go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 
 #  way under the weight smoothing: its back in the walk at 0.3, 99th percentile edge stretch and roughness 1.727 / 1.14
 #  as it was first prepared, the fourth's 1.741 / 1.13 before its switches. Without them this line made the bytes
 #  committed at 54038f5, proved: masters/v28.0/make.sh 5g.)
-go zavier && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking) )
+# HIS FIRST BODY IS THE BODY THE GAME DRAWS (assets/p5zavier.glb, p5zavierh.glb) since Chad's R10 of 21 Nov 2026: "Stop
+# wasting effort and just use the first model unless there is a very strong reason to use the 4th model". Its face is
+# the closest to the reference (his R9); its four fingers of each hand are one piece of mesh and its watch a checkered
+# patch, and he has seen both. Nothing below this line is run again without his word.
+go zavier && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier 40000 2048 $(T zavier walking Walking) )
 # HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
 # them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
 # (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.
@@ -79,7 +83,8 @@ go zavier2 && ( HEROKEEP= one zavier2 40000 2048 $(T zavier2 walking Walking) )
 # its left hand; this one has neither, and every finger its own. REFUSED all the same: its rig came back with no finger
 # bones, twice (masters/v28.0/make.sh 4).
 go zavier3 && ( HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking) )
-# HIS FOURTH (the same reference a third time), THE BODY THE GAME DRAWS (assets/p5zavier.glb, p5zavierh.glb): the third's
+# HIS FOURTH (the same reference a third time). It was the game's body from 21 Nov (commit c5ff5cf) until his R10 the same
+# day; its files are in git there and its sources on the sources branch; this line now writes p5zavier4*. The third's
 # rig came back with no finger bones, twice (Meshy rigs no fingers on hands it has left palm-forward); this one has all
 # sixty-six joints, every finger its own, the eyes ahead, and a watch that reads as a watch.
 # FINS=1: his near body came from the remesh with a leftover triangle 9 mm across lying on his left cheek, drawn dark
@@ -91,5 +96,5 @@ go zavier3 && ( HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking) )
 # XSCALE=1000: xatlas takes a triangle too small in its unit for no triangle. In metres, 12,807 of his full body's
 # triangles were left at the sheet's corner (16.7 cm2 of him, drawn as dark and pink specks along every edge) and 8,036
 # slivers torn; in millimetres none, and his sheet is sharper (full body: face 1,944 -> 2,264 texels a metre, body 700 -> 818).
-go zavier4 && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier4 40000 2048 $(T zavier4 walking Walking) )
+go zavier4 && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier4 one zavier4 40000 2048 $(T zavier4 walking Walking) )
 echo PEOPLE DONE

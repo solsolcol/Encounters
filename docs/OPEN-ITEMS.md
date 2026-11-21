@@ -395,10 +395,13 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
     confirmed in a live play of the ending (tools/probes/filmlive.mjs) before it is called nothing.
   - **Episode 4 chapter 5 (S1·14 and S1·15): PLANNED, nothing built** (21 Nov 2026). docs/V28.0-E4C5-PLAN.md is its
     second draft (attacked by an independent reader, then corrected from a second reader's check of its research: its
-    §0.2 and §0.3). Made so far: Master Zavier's body (`p5zavier`, `p5zavierh`) and the Naga stick (`w5nagastaff`).
+    §0.2 and §0.3). Made so far: Master Zavier's body (`p5zavier`, `p5zavierh`: the FIRST of four made, his pick of 21
+    Nov, "just use the first model"; what is still wrong with it is in the plan's §0.1) and the Naga stick (`w5nagastaff`).
     WAITING ON HIM before anything is built: the plan's §16 (26 questions, each with a default; the five that shape
-    everything are its first table), every line of Grandmaster Pho's (docs/V28.0-PHO-LINES.md), and two photographs
-    asked of him (the fan of case three; a sharper front photograph of Master Zavier's face).
+    everything are its first table), every line of Grandmaster Pho's (docs/V28.0-PHO-LINES.md), and one photograph
+    asked of him (the fan of case three). NOTHING RUNS UNTIL HE SAYS GO (21 Nov: "I can't believe you spent my entire
+    week of fable credits just doing this zavier model"; the measure and what changes are the plan's R11). A generated
+    model is never made a second time without his yes (CLAUDE.md, v28.0).
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

@@ -84,7 +84,7 @@
 #                       sh masters/v28.0/bodies.sh <name> 40000                             (5; Meshy's remesh + riglod)
 #                       LEVELS=none BPY=<Blender's Python with xatlas> sh masters/v28.0/people.sh <name>
 #   -> assets/p5zavier.glb (the near body, about 41,500 triangles, its walk) and assets/p5zavierh.glb (every triangle).
-#   people.sh's OUTN names the files a body writes: the fourth writes p5zavier*, the first now writes p5zavier1*.
+#   people.sh's OUTN names the files a body writes: since Chad's R10 (21 Nov) the FIRST writes p5zavier*, the fourth p5zavier4*.
 #
 # zavier  (reference zavier-a-2k.png; model 01a1fad1-8abc-701a-954a-da0a538b9722, rig 01a1fad8-70ea-70d4-8a99-31198f97e6be,
 #   remesh 01a1fadb-b2de-736a-a089-418cf5833685): the face nearest the reference (a young, narrow face, eyes ahead).
@@ -104,8 +104,8 @@
 #   forward, and Meshy's rig gives such hands no fingers. Its face was also broader and older than the reference's.
 # zavier4 (the same reference a third time; people/jobs-r4.json; model 01a1fb34-5aaf-76bb-a93e-b8db74645b31, rig
 #   01a1fb38-74a9-774b-8d83-96bfd5a80c18, remesh 01a1fb3c-1e3d-70e3-9858-bd1702390164): 66 joints, every finger its
-#   own with its bones, the eyes ahead, a young face near the reference's, a watch that reads as a watch. THE BODY THAT
-#   GOES ON (6).
+#   own with its bones, the eyes ahead, a young face near the reference's, a watch that reads as a watch. IT WAS THE GAME'S
+#   BODY for some hours (6 is its prep), until Chad's R10 the same day made it the first (8).
 # WHAT A REFERENCE MUST SHOW for a person whose hands will be seen: the PALMS TOWARD THE LENS with every finger apart
 #   (hands held edge on come back as mittens). And even then each generation is its own throw: count the rig's joints
 #   (66 with fingers, 32 without) and look at the eyes and the backs of the hands before anything is built on a body.
@@ -115,9 +115,9 @@
 #   third's second rig in it) and 9 Higgsfield (the second reference). THE RULE SINCE (CLAUDE.md, v28.0): a generated
 #   model is not made a second time without his yes: the first is shown as it is, its fault said, the price said, and he
 #   picks. The first body was photographed from its committed files (54038f5; no credits) and sent beside the fourth:
-#   face, whole, left hand. WHICH OF THE TWO IS HIS IS OPEN. The first's line in people.sh is `OUTN=zavier1 one zavier`;
-#   with the fourth's switches (WSMOOTH=0 XSCALE=1000 FINS=1) and its own edge spec (people/edgeclean-zavier.json) it is
-#   a local re-run at no credits, checked like the fourth before it is called his. Not run until he picks.
+#   face, whole, left hand. HIS PICK came the same day (R9, R10): "The first model face is the closest to reference,";
+#   "Stop wasting effort and just use the first model unless there is a very strong reason to use the 4th model". There
+#   is none: the fourth's one gain is separate fingers. THE FIRST BODY IS THE GAME'S (section 8).
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 5. THE PREP, and five things these bodies found (tools/prepmonk.mjs, tools/repaint.py, tools/edgeclean.py)
@@ -221,3 +221,28 @@
 # files (original, rigged, the remesh before and after riglod, the walk, four thumbnails, five logs; scanned first: no
 # link, no key, no address), 193 MiB in chunks 79 and 80, GitHub's tip 4588c25c8b83 read back. Until then they were on
 # this machine only. The second and third bodies still are, and stay so (tools/srcbackup.py SKIP: zavier2, zavier3).
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 8. THE FIRST BODY, HIS PICK (21 Nov 2026, plan R8 to R11): the game's Master Zavier
+# ---------------------------------------------------------------------------------------------------------------------
+#   LEVELS=none BPY=<Blender's Python with xatlas> sh masters/v28.0/people.sh zavier
+#   ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier 40000 2048 ... )   -> assets/p5zavier.glb, p5zavierh.glb
+# No credits: its sources were already here (and are on the sources branch since the same day, section 7). The three
+# switches are the fourth's (section 6), taken because this body's knit smeared the same way: edgestrain, the walk at
+# 0.3, his back: 99th percentile edge stretch and roughness 1.727 / 1.14 as first prepared (the files of 54038f5), 1.348
+# / 0.47 now. Its edge spec is its own, as fitted on 20 Nov (people/edgeclean-zavier.json: collar, frontR, frontL, hairtop).
+# THE LOG (src/zavier-people.log): near body 41,418 triangles, 21 fins out, 1,311 charts, face 2,270 texels a metre,
+#   11,109 texels painted again at the edges; full body 312,614 triangles, 26 fins out, 3,342 charts, face 2,241, 11,385.
+#   Files: near 2,088,160 bytes, full 5,166,132.
+# LOOKED AT, each at its full size (scratch e4c5/first): full body H-face-front, H-whole-front, H-sideL-back,
+#   H-torso-front; near body N-phone22 (a phone's frame from 2.2 m), N-face22; the walk WN03-fight, WN03-fightphone,
+#   WN065-fight. His back in the walk is clean from the fight's camera.
+# STILL WRONG: four fingers of each hand one piece of mesh (38 finger bones in the rig all the same: they bend together);
+#   the watch a checkered patch; the belt a white band with black marks; three plain grey streaks under each arm on the
+#   cardigan's sides, 2 to 3 cm wide and up to about 20 cm long (the fourth's sideL / sideR regions, class `sd`, fill
+#   `clone`, are the mend when a close shot needs it; not seen at the fight's distance on a phone); the walk's leading hand
+#   carried palm forward with straight fingers (the take: mended in every take made for him, section 6's note).
+# NOT LOOKED AT YET: twelve of the sixteen pictures taken of the full body (H-whole-back, -left, -right, H-face-three,
+#   H-handL-out, H-handR-out, H-neck-front, H-sideL-front, H-sideR-back, H-sideR-front, H-torso-back, H-feet-front),
+#   N-whole-front, N-whole-back, WN03-front, WN03-side; feet on the ground, joints in motion. All of it when his takes are made.
+# src/zavier-people.log is this run's now; the copy on the sources branch is the first run's (it goes up with the next pushnew).
