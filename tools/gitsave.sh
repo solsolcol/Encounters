@@ -8,5 +8,5 @@ exec 8>/tmp/encounters-git.lock; flock 8
 cd "$(dirname "$0")/.." || exit 2
 git add -- "$@" && git commit -q -m "$msg
 
-Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
+Co-Authored-By: ${ENC_COAUTHOR:-Claude Opus 5.5} <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_012dssR6qAN57acivr6t6QeS" -- "$@" && { for i in 1 2 3 4; do git push -q -u origin claude/new-session-bampns && break; sleep $((i * 4)); done; git log --oneline -1; }
