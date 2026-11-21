@@ -231,6 +231,17 @@
         if (b.z < z0) b.z = Math.min(z0, b.z + s); else if (b.z > z1) b.z = Math.max(z1, b.z - s);
         return [b.x - ox, b.z - oz];
       }
+      /* (and never into his student's cage as either is eased: Grandmaster Pho set back out to its ring along the line from
+         his student, round it toward the court's middle where that line meets a wall) */
+      function wallApart(st) {
+        const n = st.n, ph = st.pho, z = st.zav; let dx = ph.x - z.x, dz = ph.z - z.z, d = Math.sqrt(dx * dx + dz * dz);
+        if (d >= n.apart) return;
+        if (d < 1e-6) { dx = -z.x || 1; dz = -z.z; d = Math.sqrt(dx * dx + dz * dz) || 1; }
+        const xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, a0 = Math.atan2(dz, dx), r = n.apart + 1e-3;
+        for (let i = 0; i <= 36; i++) for (const sg of i ? [1, -1] : [1]) { const a = a0 + sg * i * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
+          if (Math.abs(qx) <= xm + 1e-6 && qz >= z0 - 1e-6 && qz <= z1 + 1e-6) { ph.x = qx; ph.z = qz; return; } }
+        ph.x = z.x + dx / d * r; ph.z = z.z + dz / d * r;
+      }
       function wallHold(st, b, ox, oz) {
         if (!offWalls(st)) return;
         const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff;
@@ -645,7 +656,7 @@
           if (st.left <= 3) surge(st);
         } else if (st.stage === 'surge') {
           /* (off the walls before the Naga is called: each eased in; the tall shape over his student goes with him) */
-          wallEase(st, st.pho, dt); const [zx, zz] = wallEase(st, st.zav, dt);
+          const [zx, zz] = wallEase(st, st.zav, dt); wallEase(st, st.pho, dt); wallApart(st);
           if (zx || zz) for (const p of st.prai) if (p.st === 'shape') { p.x += zx; p.z += zz; }
           if (st.preSurge > n.surgeTo && st.stageT <= n.surgeSecs + dt) {
             st.sanity = Math.max(n.surgeTo, st.sanity - (st.preSurge - n.surgeTo) / n.surgeSecs * dt);
@@ -660,7 +671,7 @@
           st.film += dt; timed(st, 'naga', st.film);
           if (st.film >= n.filmGuard) layThree(st);               // a film that never says it ended cannot hold the fight
         } else if (st.stage === 'last') {
-          wallEase(st, st.pho, dt); wallEase(st, st.zav, dt);
+          wallEase(st, st.zav, dt); wallEase(st, st.pho, dt); wallApart(st);
           if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallLast += dt;
           if (st.left <= 0) { setStage(st, 'won'); st.stats.length = st.t; st.ev.push({ e: 'won', sanity: st.sanity }); }
         }

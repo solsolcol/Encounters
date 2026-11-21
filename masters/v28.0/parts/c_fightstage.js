@@ -1530,10 +1530,10 @@
         Charged_Spell_Cast_1: { follow: null, plant: true, keys: null },
         mage_soell_cast_8: { follow: null, keys: [[0, 0, 0, 0, 0, 0]] }
       };
-      /* where the Naga's film stands the stick: 0.42 m before him and 0.18 to his right (c_yfilm.js TOGETHER, its own two
-         numbers), the stick's own origin there; his fist brings its shaft down onto that place, the stick turned as his hand
-         holds it (plantYaw) */
-      const PLANT_AT = [-0.18, 0.42];
+      /* where the Naga's film stands the stick: 0.38 m before him and 0.40 to his right (c_yfilm.js TOGETHER's own two numbers,
+         sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
+         there; his fist brings its shaft down onto that place, the stick turned as his hand holds it (plantYaw) */
+      const PLANT_AT = [-0.40, 0.38];
       function plantKeys() {
         const ph = Math.PI / 2 - STAFF.out, cx = STICK_C[0] * Math.cos(ph) + STICK_C[1] * Math.sin(ph), cz = -STICK_C[0] * Math.sin(ph) + STICK_C[1] * Math.cos(ph);
         const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2];

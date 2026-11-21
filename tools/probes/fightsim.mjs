@@ -499,7 +499,10 @@ async function main() {
   // WHAT WAS DONE, a fight on average (the careful player's and the optimal one's)
   for (const who of ['careful', 'optimal', 'masher'].filter(w => T[w])) {
     const s = T[who].statsSum, k = T[who].n;
-    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines', 'emptySmell'].map(q => q + ' ' + ((s[q] || 0) / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}`);
+    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines', 'emptySmell'].map(q => q + ' ' + ((s[q] || 0) / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}` +
+      /* (from the surge on, off the court's walls: fights whose Naga film began with one of them nearer than wallOff, and
+         seconds of the last stage one of them stood nearer) */
+      `, near a wall: as the Naga came ${s.wallFilm || 0} of ${k} fights, in the last stage ${((s.wallLast || 0) / k).toFixed(2)} s a fight`);
   }
   if (T.careful) {
     const heardKeys = Object.keys(T.careful.said).sort((a, b) => T.careful.said[b] - T.careful.said[a]);
