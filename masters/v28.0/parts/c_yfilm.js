@@ -1387,8 +1387,10 @@
              { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5B1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
+             /* (to his teacher on the cut BEFORE the collector goes, so he goes out of shot: on the door until his teacher's
+                word, he vanished from the doorway in the shot at 40.0 s, e4c5filmread POP on deploy 12) */
+             { t: E.gone - 0.15, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.gone - 0.1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              /* (held on him to his line's last word: eased to the table from his first, the look left him all through it) */
              { t: E.ph5B1 + SECS.ph5B1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5B2 + 0.6, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
