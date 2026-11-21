@@ -936,7 +936,12 @@
                   m from Ton, 567 between them. The doorway's floor is 0.8 m wide and 0.83 m deep to the sofa's front (z -4.67),
                   the open leaf along its west side: the three in it as a group, Ton in its west half, Jun in its east half, both
                   at the threshold, Mr Koh a step behind and between them, clear of the sofa) */
-               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.66, z: -5.22, ry: Math.PI }, jun: { x: -7.72, z: -5.24, ry: Math.PI },   // (Jun 0.14 m east: his arm crossed Mr Koh's, clipscan)
+               /* (FILMS-2, from the films' after-measure on the leaf's 85.5 degrees (724e203): Ton at (-8.66, -5.22) had his left
+                  hand at x -8.886 at its widest, and the open leaf reaches x -8.79: 241 to 608 crossings in the preparation, the
+                  together and the bag tied films, at hip height. 0.12 m east clears it by 2 cm at his widest; 0.13 m toward the
+                  court keeps his back clear of Mr Koh's front, a step behind him, as before; his walk in from the court still
+                  crosses the threshold inside the doorway, 0.2 m off either jamb) */
+               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.54, z: -5.35, ry: Math.PI }, jun: { x: -7.72, z: -5.24, ry: Math.PI },   // (Jun 0.14 m east: his arm crossed Mr Koh's, clipscan)
                koh: { x: -8.28, z: -4.98, ry: Math.PI } },
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },

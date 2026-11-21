@@ -589,7 +589,8 @@
     /* (R62, Chad, 18 Nov evening: "when spirit vision is turned on, make the holy water bowl silohuette in a golden glow too
        so player can more easily find it to reload the water"): Grandmaster Pho's large bowl, where the water is dipped
        again, in gold through the vision (gold is his alone, v25.5, and this is his bowl); its glow's twins ride the bowl
-       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp) */
+       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp). (R141, 21 Nov: the water
+       never runs out now and nothing is filled there; the glow stays, his blessed water, and nothing says it refills) */
     { const groups = things.w4bigbowl || [];
       if (groups.length && have('w4bigbowl')) parseOnce('w4bigbowl').then(() => { if (!alive) return;
         for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, SPIRIT.bowl) : null; if (a) auras.push(a); } }, () => {}); }

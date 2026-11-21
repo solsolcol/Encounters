@@ -493,6 +493,28 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              cage (renderOrder 3 and on), which the nearest surface then hides where the body stands in front of them) */
           for (const [me, ro] of [[mD, 2.5], [mB, 2.6], [mG, 2.7]]) { me.frustumCulled = false; me.renderOrder = ro; g.add(me); }
           st.mesh = mB; st.mat = mB.material; st.meshes = [mD, mB, mG];
+          /* ITS EMBERS (the plan's 11: "embers rising"; the film's u5embers): forty sparks of its light, a fixed set (the same
+             on every phone: the plan's 13), each rising from a point of its lying body (chosen once, seeded) a metre and a
+             third over 1.6 to 2.6 s and going out as it rises; their rise is the shader's, on its clock (uNT), so they rise on
+             wherever the body lies, the fight's last stage included, with nothing laid again */
+          { const NE = 40, r = rng(28700), pick = []; for (let i = 0; i < st.reg.length; i++) if (st.reg[i] === 1) pick.push(i);
+            const ev = new Int32Array(NE), ph = new Float32Array(NE), sp = new Float32Array(NE);
+            for (let i = 0; i < NE; i++) { ev[i] = pick[Math.floor(r() * pick.length)] || 0; ph[i] = r(); sp[i] = 1 / (1.6 + r() * 1.0); }
+            const eg = new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NE * 3), 3).setUsage(THREE.DynamicDrawUsage));
+            eg.setAttribute('aPh', new THREE.BufferAttribute(ph, 1)); eg.setAttribute('aSpd', new THREE.BufferAttribute(sp, 1)); owned.push(eg);
+            const soft = (() => { const [c, x] = canvas(64, 64); const gd = x.createRadialGradient(32, 32, 1, 32, 32, 31);
+              gd.addColorStop(0, 'rgba(255,255,255,1)'); gd.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gd.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gd; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+            const em = new THREE.PointsMaterial({ map: soft, color: 0xff5530, size: 0.075, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(em);
+            em.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+              sh.vertexShader = 'attribute float aPh; attribute float aSpd; uniform float uNT; varying float vEA;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+                float eC = fract(uNT * aSpd + aPh);
+                transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * 0.08, 1.35, cos(aPh * 4.1 + uNT * 1.1) * 0.08) * eC;
+                vEA = (1.0 - eC) * (1.0 - eC) * smoothstep(0.0, 0.12, eC);`);
+              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.2, 0.6, uNA) );');
+              if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s embers found no colour line to write (three changed?)');
+              sh.fragmentShader = 'uniform float uNA; varying float vEA;\n' + out; };
+            em.customProgramCacheKey = () => 'e4c5nagaEmbers';
+            const pts = new THREE.Points(eg, em); pts.frustumCulled = false; pts.renderOrder = 2.8; g.add(pts); st.emb = { ev, eg, pts }; }
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
       }
@@ -570,6 +592,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             const el = Math.hypot(ex, ey, ez) || 1; NR[i * 3] = ex / el; NR[i * 3 + 1] = ey / el; NR[i * 3 + 2] = ez / el;
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.attributes.normal.needsUpdate = true; st.geo.computeBoundingSphere();
+          if (st.emb) { const E = st.emb, ep = E.eg.attributes.position.array; for (let i = 0; i < E.ev.length; i++) { const v = E.ev[i]; ep[i * 3] = arr[v * 3]; ep[i * 3 + 1] = arr[v * 3 + 1]; ep[i * 3 + 2] = arr[v * 3 + 2]; }
+            E.eg.attributes.position.needsUpdate = true; }
         },
         /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none); the faces turned to it go gold */
         light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
@@ -1130,7 +1154,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
         /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls (laid
            first in the frame: his look and the lens are aimed at its head as this moment lays it) */
-        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3)));
+        /* (its light comes down over the boom's last two seconds to the 0.3 the fight's last stage keeps it at: it had
+           ended at 0.65, and the fight's first frame put it at 0.3 in one frame, the glow gone with it, on the same view) */
+        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3))) * lp(1, 0.3 / 0.65, smo(c01((t - T.back - 0.1) / 1.8)));
         NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.set(kN, aN, t, sx, sz);
         /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
            one frame, on screen: R25) */

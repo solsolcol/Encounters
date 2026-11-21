@@ -47,7 +47,7 @@
       // key            x       y      z      ry               foot [w, d] (the file's own extent)   (what)
       ['w4wheelchair', CHAIR.x, 0, CHAIR.z, CHAIR.ry,          [0.65, 1.00]],   // her chair, facing her altar
       ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,             [0.40, 0.39]],   // Grandmaster Pho's, at her left (+x: she faces +z)
-      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor: he dips here
+      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor (on his stool from the blessing: R53; nothing is filled from it since R141)
       // her altar: a wall-mounted cabinet (the research's "floating unit", [32]), its back on the wall, its base at 1.15
       ['w4prayershelf', ALTAR.x, 1.15, ROOMS.living.z1 - 0.226 - 0.004, Math.PI, null],
       /* (18 Nov, measured and photographed: the tray is a whole puja set on a plate, 0.25 m across and 0.15 high, its bell,

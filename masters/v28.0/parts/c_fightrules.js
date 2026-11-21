@@ -48,6 +48,10 @@
         praiIn: 0.2,                          // a Prai keeps this far inside the court's walls
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
         bodyX: 1.6, bodyZ0: -2.3, bodyZ1: 2.6, // where the two of them may stand
+        wallOff: 1.1, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
+                                              // pace where the surge finds one nearer (never a snap): the Naga's body lies
+                                              // 0.27 to 0.97 m off them round the court, and passed through whoever stood
+                                              // within about a metre of one (FILMS-2, 21 Nov)
         zavAt: [0, 0.7], phoAt: [1.15, 2.0],
         lessonAt: [0.6, -1.6],                // where the lesson's Prai stands and strains toward him (0.6 to the side, 21 Nov:
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
@@ -217,6 +221,22 @@
         if (p.x < -xm) p.x = -xm; else if (p.x > xm) p.x = xm;
         if (p.z < z0) p.z = z0; else if (p.z > z1) p.z = z1;
       }
+      /* (FROM THE SURGE ON: off the walls. How far the nearer wall is; each body eased in where it is nearer; and no step
+         taking it nearer again) */
+      const offWalls = (st) => st.stage === 'surge' || st.stage === 'naga' || st.stage === 'last';
+      const wallGap = (n, b) => Math.min(n.courtX - Math.abs(b.x), b.z - n.courtZ0, n.courtZ1 - b.z);
+      function wallEase(st, b, dt) {
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, s = n.wallSlide * dt, ox = b.x, oz = b.z;
+        if (b.x > xm) b.x = Math.max(xm, b.x - s); else if (b.x < -xm) b.x = Math.min(-xm, b.x + s);
+        if (b.z < z0) b.z = Math.min(z0, b.z + s); else if (b.z > z1) b.z = Math.max(z1, b.z - s);
+        return [b.x - ox, b.z - oz];
+      }
+      function wallHold(st, b, ox, oz) {
+        if (!offWalls(st)) return;
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff;
+        if (Math.abs(b.x) > xm && Math.abs(b.x) > Math.abs(ox)) b.x = Math.sign(b.x) * Math.max(xm, Math.abs(ox));
+        if (b.z < z0 && b.z < oz) b.z = Math.min(z0, oz); else if (b.z > z1 && b.z > oz) b.z = Math.max(z1, oz);
+      }
       function clampBody(n, b) {
         if (b.x < -n.bodyX) b.x = -n.bodyX; else if (b.x > n.bodyX) b.x = n.bodyX;
         if (b.z < n.bodyZ0) b.z = n.bodyZ0; else if (b.z > n.bodyZ1) b.z = n.bodyZ1;
@@ -249,7 +269,7 @@
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
           stats: { fires: 0, chased: 0, slipped: 0, binds: 0, smells: 0, lends: 0, waves: 0, broken: 0, bags: 0, byWave: 0,
-                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0, emptySmell: 0 },
+                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0, emptySmell: 0, wallFilm: 0, wallLast: 0 },
           ev: []
         };
         st.prai.push(fresh(1, 'come'));
@@ -337,7 +357,8 @@
         if (act === 'RETRY') return st.stage === 'lost' ? '' : 'stage';
         if (act === 'LEAD') return st.stage === 'lost' && st.losses >= 3 ? '' : 'stage';
         if (act === 'FILMDONE') return st.stage === 'naga' ? '' : 'stage';
-        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together ? '' : 'stage';
+        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together &&
+                                       wallGap(n, st.pho) >= n.wallOff - 0.01 && wallGap(n, st.zav) >= n.wallOff - 0.01 ? '' : 'stage';
         if (st.stage !== 'learn' && st.stage !== 'fight' && st.stage !== 'last') return 'stage';
         if (st.lock > 0) return 'lock';
         if (act === 'SWITCH') return st.seen.swap && st.stage !== 'last' ? '' : 'stage';
@@ -584,7 +605,8 @@
         st.sanity = Math.max(st.sanity, st.preSurge);             // what the surge pressed out of him comes back
         st.ev.push({ e: 'sanity', to: st.sanity });
         st.who = 'pho'; st.lock = 0; st.lockUntil = 0;
-        st.pho.x = n.phoAt[0]; st.pho.z = n.phoAt[1]; st.zav.x = n.zavAt[0]; st.zav.z = n.zavAt[1];   // where the film left them
+        /* (where the film left them: where they stood as it began, off the walls since the surge; it was the fight's first
+           places, which stand 0.8 m off a wall and snapped him there as play came back) */
         setStage(st, 'last');
         sayOnce(st, 'ph5c1'); sayOnce(st, 'ph5c3');
       }
@@ -622,18 +644,24 @@
           }
           if (st.left <= 3) surge(st);
         } else if (st.stage === 'surge') {
+          /* (off the walls before the Naga is called: each eased in; the tall shape over his student goes with him) */
+          wallEase(st, st.pho, dt); const [zx, zz] = wallEase(st, st.zav, dt);
+          if (zx || zz) for (const p of st.prai) if (p.st === 'shape') { p.x += zx; p.z += zz; }
           if (st.preSurge > n.surgeTo && st.stageT <= n.surgeSecs + dt) {
             st.sanity = Math.max(n.surgeTo, st.sanity - (st.preSurge - n.surgeTo) / n.surgeSecs * dt);
           }
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.ev.push({ e: 'naga' }); }
+            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.ev.push({ e: 'naga' });
+              if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
           }
         } else if (st.stage === 'naga') {
           st.film += dt; timed(st, 'naga', st.film);
           if (st.film >= n.filmGuard) layThree(st);               // a film that never says it ended cannot hold the fight
         } else if (st.stage === 'last') {
+          wallEase(st, st.pho, dt); wallEase(st, st.zav, dt);
+          if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallLast += dt;
           if (st.left <= 0) { setStage(st, 'won'); st.stats.length = st.t; st.ev.push({ e: 'won', sanity: st.sanity }); }
         }
       }
@@ -654,6 +682,7 @@
           clampBody(n, b);
           if (dist(b.x, b.z, other.x, other.z) < n.apart - 1e-6) { b.x = ox; b.z = oz; }
         }
+        wallHold(st, b, ox, oz);
       }
       function aiTick(st, dt) {
         const n = st.n, ph = st.pho, z = st.zav;

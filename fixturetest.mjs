@@ -259,6 +259,30 @@ K.weaponNoAimWithoutZoom = await p.evaluate(() => {
   console.log('weaponNoAimWithoutZoom', JSON.stringify(r));
   return r.noAim && r.aimHidden && r.word && r.ico && r.icoClass;
 });
+/* v27.0 (the sixty-seventh seam, R140): THE FIRE BUTTON'S GLOW. Never asked (the rifle, as here), the button is exactly as
+   it was: no class, no animation, nothing drawn round it. Asked while it can be pressed: the breathing (wpnBreath) and the
+   light round it (::before, wpnGlow) in the water's colour, the gold when the water is gold; still while the chapter's
+   rule refuses the shot (wpnBlocked), back when it allows it; let go by kit.weaponGlow(false). (kitReset's clear and the
+   refusal with no weapon are proved with the kit's other clears, below) */
+K.weaponGlowSeam = await p.evaluate(() => {
+  const E = window.__enc, b = document.body, fb = document.getElementById('fireBtn'), R = {};
+  const anim = () => getComputedStyle(fb).animationName, ring = () => getComputedStyle(fb, '::before');
+  R.offByDefault = !b.classList.contains('wpnGlow') && anim() === 'none' && ring().content === 'none' && E.weaponGlowOn() === false;
+  R.asked = E.kit.weaponGlow(true) === true && b.classList.contains('wpnGlow') && E.weaponGlowOn() === true;
+  R.breathes = /wpnBreath/.test(anim()) && /wpnGlow/.test(ring().animationName) && ring().content !== 'none';
+  R.waterColour = /150, 225, 255/.test(ring().boxShadow);
+  E.kit.sprayColor(0xffc24a);
+  R.goldColour = /255, 194, 74/.test(ring().boxShadow);
+  E.kit.sprayColor(null);
+  R.colourBack = /150, 225, 255/.test(ring().boxShadow) && !fb.style.getPropertyValue('--wg');
+  E.kit.weaponBlock('No.');
+  R.stillWhenRefused = anim() === 'none' && ring().content === 'none';
+  E.kit.weaponBlock(null);
+  R.backWhenAllowed = /wpnBreath/.test(anim());
+  R.letGo = E.kit.weaponGlow(false) === true && !b.classList.contains('wpnGlow') && anim() === 'none' && ring().content === 'none';
+  console.log('weaponGlowSeam', JSON.stringify(R));
+  return Object.values(R).every(v => v === true);
+});
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(0, 1.62, 9); e.yaw.rotation.y = 0; e.pitch.rotation.x = 0; });
 await settle();
 K.weaponHits = await p.evaluate(() => {
@@ -3309,7 +3333,7 @@ out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
 /* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
 await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); window.__enc.kit.lens(44, { secs: 0 }); window.__enc.kit.hush(1, { secs: 0 }); });   // (v24.0: and rain, for the reset to clear; v26.0: a borrowed lens and a hush)
-await p.evaluate(() => { const k = window.__enc.kit; k.health({ label: 'x', k: 0.5, at: () => [0, 1, 0] }); k.edge({ k: 1, secs: 0.01 }); k.sprayColor(0xff0000); k.visionUrge('open'); });   // (v27.0: the stakes, for the reset to clear)
+await p.evaluate(() => { const k = window.__enc.kit; k.health({ label: 'x', k: 0.5, at: () => [0, 1, 0] }); k.edge({ k: 1, secs: 0.01 }); k.sprayColor(0xff0000); k.visionUrge('open'); k.weaponGlow(true); });   // (v27.0: the stakes, for the reset to clear; seam 67: and the fire button's glow)
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
 await p.evaluate(() => window.__enc.kitReset());
 await p.waitForTimeout(400);
@@ -3319,6 +3343,7 @@ K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); r
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
 K.barClearedByReset = await p.evaluate(() => window.__enc.kitBar() === null);                                                       // v27.0 (S52)
 K.stakesClearedByReset = await p.evaluate(() => { const q = window.__enc.stakes(); return q.life.on === false && q.edge.to === 0 && q.edge.k === 0 && q.spray.col === null && q.spray.scale === 1 && q.urge === false && q.wave.on === false && q.show === null; });   // v27.0 (S54, S56, S55, S57)
+K.glowClearedByReset = await p.evaluate(() => !document.body.classList.contains('wpnGlow') && window.__enc.weaponGlowOn() === false);   // v27.0 (seam 67)
 /* v27.0 (S50): a chapter that declares no vision takes the seam down (no eye, no state, no class): what setChapter's
    kitReset does on a real change of chapter. The swap above is rebuildStage alone, which builds the next stage and keeps
    the chapter (CH), so the fixture's own declaration is taken away for a moment instead, and put back */
@@ -3329,6 +3354,15 @@ K.visionGoneWithChapter = await p.evaluate(() => {
   const gone = v.decl === false && v.on === false && v.r === 0 && !document.body.classList.contains('hasVision') && !document.body.classList.contains('visionOn');
   C.vision = had; E.kitReset();
   return gone && E.vision().decl === true && document.body.classList.contains('hasVision');
+});
+/* v27.0 (seam 67): with no weapon there is no button to glow: kit.weaponGlow refused, nothing drawn (the fixture's own weapon
+   taken away for a moment, as the vision's is above, and put back) */
+K.glowNeedsWeapon = await p.evaluate(() => {
+  const E = window.__enc, C = window.__CHAPTERS__.chtest, had = C.weapon;
+  delete C.weapon; E.kitReset();
+  const refused = E.kit.weaponGlow(true) === false && !document.body.classList.contains('wpnGlow') && E.weaponGlowOn() === false;
+  C.weapon = had; E.kitReset();
+  return refused && E.kit.weaponGlow(true) === true && E.kit.weaponGlow(false) === true && !document.body.classList.contains('wpnGlow');
 });
 
 /* v27.0 (the fifty-third seam): THE CHAPTER'S OWN LOSS, last of all (Retry begins the chapter again, and nothing after

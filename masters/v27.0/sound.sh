@@ -92,7 +92,8 @@ fx   u4tvdie     $R/u4tvdie_b.mp3     -14                                     # 
 # ---- the fight
 fx   u4flick     $R/u4flick_a.mp3     -14                                     # a: the flick, 16 dB fuller than b
 fx   u4patter    sound/made/u4patter.wav -14                                  # MADE (synth.py): both takes 94 % under 150 Hz and near silent
-fx   u4dip       $R/u4dip_a.mp3       -14                                     # a: the dip, less in the voice's band than b (64 % against 88: the chant goes on over it)
+# RETIRED 21 Nov 2026 (R141, the reload removed: nothing plays it; v24.3's rule, its file and its sound row gone, its takes
+# kept in $R): fx   u4dip       $R/u4dip_a.mp3       -14   # a: the dip, less in the voice's band than b (64 % against 88)
 fx   u4release   $R/u4release_b.mp3   -14                                     # b: the sigh and its shimmer, 15 dB fuller, no word heard
 fx   u4large     $R/u4large_a.mp3     -14                                     # a: 48 % where a phone plays (b is 95 % under 150 Hz)
 fx   u4gaspf     $R/u4gaspf_b.mp3     -14                                     # b: a woman's gasp (67 % in the voice's band; a is mostly air), no word heard

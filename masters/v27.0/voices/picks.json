@@ -3545,8 +3545,8 @@
  "ph4k1": {
   "who": "pho",
   "text": "[calm] Over many years, Amma served as Mae Kali's medium. She helped many people.",
-  "pick": "b",
-  "why": "the unhurried read",
+  "pick": "a",
+  "why": "by hand (21 Nov, R142): the end that dies away (its last 0.3 s fall from -16 to -32 dB, and the voice is gone 0.38 s before the file ends); b and c drop to -38 and -46 dB and rise again to -18 and -14 dB in their last quarter second (the last syllable still sounding as the file stops); the same pace (2.23 words a second, b 2.21, c 2.27)",
   "med": 5.82,
   "takes": {
    "a": {

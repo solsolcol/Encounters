@@ -13,7 +13,7 @@
     const PHASES = ['history', 'sight', 'bless', 'kept'];
     const play = { run: 0, busy: false, learned: new Set(), spoke: false, told: false, peeked: false,
                    opened: false, looked: new Set(), closed: false, read: false,
-                   water: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
+                   water: false, why: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
                    lit: false, dark: 0, fanK: 1, fanTo: 1, scareAt: 0, scareSeed: 0, scared: new Set(), doorTo: -0.12, doorK: -0.12,
                    fogged: false, fogAt: 0, closeHold: 0, breathSaid: -99,
                    /* (R128, R129) the last shut and the strain it was made at; his teacher's two words on the strain, when last said */
@@ -38,7 +38,8 @@
 
     /* ---------------------------------------------------------------- the receipts (§9 of the plan: the phase string)
        history: r m f o a (each source learned), k (her line heard), p (he opened his sight before he had listened);
-       sight:   v (opened), l1 l2 l3 (each presence looked at);  bless: w (the water taken), x (the water thrown at Appa) */
+       sight:   v (opened), l1 l2 l3 (each presence looked at);  bless: w (the water taken), x (the water thrown at Appa),
+       y (R142: his teacher's why, heard to its end, before the water) */
     function mark() {
       const t = [...play.learned];
       if (play.spoke) t.push('k');
@@ -47,13 +48,14 @@
       for (const c of play.looked) t.push('l' + c);
       if (play.water) t.push('w');
       if (play.appaGone) t.push('x');
+      if (play.why) t.push('y');
       return t.join(',');
     }
     function readMark(p0) {
       const [p1, tag = ''] = String(p0 || '').split(':');
       const p = PHASES.includes(p1) ? p1 : 'history', f = new Set(tag.split(',').filter(Boolean));
       return { p, learned: ['r', 'm', 'f', 'o', 'a'].filter(c => f.has(c)), spoke: f.has('k'), peeked: f.has('p'), opened: f.has('v'),
-               looked: ['1', '2', '3'].filter(c => f.has('l' + c)), water: f.has('w'), appaGone: f.has('x') };
+               looked: ['1', '2', '3'].filter(c => f.has('l' + c)), water: f.has('w'), appaGone: f.has('x'), why: f.has('y') };
     }
     /* (R137) where the one source not yet learned is: its anchor, as its tap is tested against */
     function HIST_LEFT() {
@@ -418,20 +420,39 @@
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
+      play.why = R.why || R.water;                                         // (R142: the water is taken only after his why)
       if (warmSounds) warmSounds(WARM_BLESS);
       if (kit && kit.vision) kit.vision(false);
       const run = play.run;
       if (fresh) {
         /* the change of places in the black (v16.1: a scene change happens in the black): Grandmaster Pho up from his
-           stool and behind her chair; the order waits for Mala's lamp and the room going dark */
+           stool and behind her chair; the order waits for Mala's lamp, the room going dark and his teacher's why (R142) */
         play.busy = true; setPhase('bless', { complete: false }); if (kit) kit.fade(1, 0.5);
         after(0.6, () => { if (!live(run)) return; blessStage(); if (kit) kit.fade(0, 0.7);
           after(0.9, () => { if (!live(run)) return; say('ph4b0', cast.phoB);
-            queueFn(() => { lightLamp(() => { if (!live(run)) return; roomDies(() => { if (!live(run)) return; play.busy = false; objectiveFor('bless'); }); }); }); }); });
+            queueFn(() => { lightLamp(() => { if (!live(run)) return; roomDies(() => { if (!live(run)) return;
+              whyLines(run, () => { play.busy = false; objectiveFor('bless'); }); }); }); }); }); });
       } else {
+        /* (R142) a Continue before the water whose save never heard his teacher's why to its end hears it now, in the dark,
+           and then the order; with the water taken (the fight's start, and every Retry of it) it is never said again */
+        const why = !play.water && !play.why;
+        if (why) play.busy = true;
         blessStage(); lampLit(true); roomDark(true); setPhase('bless', { complete: false });
         if (play.water) { giveWater(true); after(0.8, () => { if (live(run)) briefFight(); }); }
+        else if (why) after(0.9, () => { if (!live(run)) return; whyLines(run, () => { play.busy = false; objectiveFor('bless'); }); });
       }
+    }
+    /* WHY THEY COME FOR HER (R142, Chad, 21 Nov: "I want grandmaster pho to give more context and explanation on why the green
+       spirits are going after amma. It is because over the many years of serving as Kali medium, Amma has helped many people
+       and involved herself in the karma of many people. After helping these people, sometimes their karmic creditors will go
+       after amma instead, as there are still unresolved karmic debt. Pho should explain all this clearly, directly,
+       straightforwardly through his voicelines. This should be explained at the most appropriate time before the holy water
+       fight starts."): in the dark, her lamp lit and the room died, before the holy water is taken, his teacher says it in
+       four lines, one at a time off the queue, looking at him; heard to its end it is the receipt y (a Continue before the
+       water says it again only if it was not), and the order comes after it */
+    function whyLines(run, done) {
+      for (const k of ['ph4k1', 'ph4k2', 'ph4k3', 'ph4k4']) say(k, cast.phoB);
+      queueFn(() => { if (!live(run)) return; play.why = true; saveMark(); done(); });
     }
     /* who stands where for the blessing */
     function blessStage() {
@@ -620,6 +641,13 @@
                                   is held open (the engine's lock) */
                                climaxAt: null, climaxCall: null, locked: false };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
+      /* (R139, Chad, 21 Nov: "if the player loses the holy water fight, instead of restarting the entire chapter again, have
+         it restart at the start of the holy water fight"; R144: only a run that reached it): THE FIGHT'S START HELD (the
+         sixty-sixth seam). While it holds, the save is this moment (a tab closed in the fight comes back here, with these
+         numbers and nothing the fight took or banked); her life running out keeps it (ammaLost), and its Retry begins here;
+         the fight's end lets it go. And (R140) the water's button glows and breathes while the fight is on (the
+         sixty-seventh) */
+      if (kit) { if (kit.losePoint) kit.losePoint(); if (kit.weaponGlow) kit.weaponGlow(true); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
       whenReady(cast.phoB, (P) => handOnHead(P, true));
@@ -824,16 +852,18 @@
       else if (!F.saidRavi && F.hp <= 55) { F.saidRavi = true; say('rv4f1', cast.ravi, false); }   // "Amma! What's happening to her?"
       if (F.hp <= 0) ammaLost();
     }
-    /* HER LIFE RUNS OUT: the chapter is lost (the fifty-third seam, kit.lose): its own film (FILMS.lost), its card's two lines,
-       the save put back at the chapter's start, Retry from there (Chad: "the player loses this game and chapter and has to
-       restart again") */
+    /* HER LIFE RUNS OUT: the fight is lost (the fifty-third seam, kit.lose): its own film (FILMS.lost) and its card's two
+       lines; and (R139, the sixty-sixth seam's `resume`) the save stays the fight's start, the card's Retry begins the fight
+       again there, and its Restart chapter begins the chapter (Chad, 18 Nov: "the player loses this game and chapter and
+       has to restart again"; 21 Nov: "have it restart at the start of the holy water fight") */
+    const LOSS = () => ({ film: 'lost', say: W.lostSay, teaching: W.lostTeach, resume: true });
     function ammaLost() {
       const F = play.fight; if (!F || F.lost) return;
       F.lost = true; F.on = false; F.chantHeld = true; shadesOff();
       fightMusOff(); chantStop(); chantNow = null; lineQ.length = 0;
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
-      if (!kit || !kit.lose || !kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = true;   // (refused: asked again on the next frame of play)
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
+      if (!kit || !kit.lose || !kit.lose(LOSS())) play.loseWait = true;   // (refused: asked again on the next frame of play)
     }
     /* the water reaches one (stage.onShot): released, or staggered (the large one takes three) */
     const hitOwner = new Map();
@@ -912,6 +942,13 @@
        struck (its sphere); eight at once, the oldest given back first */
     const HITFX = { slots: 16, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };   // (R109: sixteen at once, so every one the gold's wave strikes bursts whole)
     const hitFx = { slots: null, next: 0 };
+    /* the soft round glow every strike (hitFx, below) and the films' motes and drops (c_ufilm.js) are drawn with: made for the
+       refill's motes (R63), kept here when the refill went (R141) */
+    function dipTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
     function hitTex(ring) {
       const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
       if (ring) { r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.6, 'rgba(255,255,255,0)'); r.addColorStop(0.8, 'rgba(255,255,255,1)'); r.addColorStop(0.9, 'rgba(255,255,255,0.4)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
@@ -1041,11 +1078,14 @@
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));
       if (kit && kit.vision) kit.vision(false);
       setPhase('kept');
+      /* (R139, R144) the fight is kept: its start is held no more, and the save is the room kept, at once (the sixty-sixth
+         seam saves the live run as the hold is let go) */
+      if (kit && kit.losePoint) kit.losePoint(null);
       const run = play.run;
       after(2.6, () => { if (live(run)) trance(); });
     }
@@ -1527,8 +1567,6 @@
       fightTick(wdt);
       strainLinesTick();                                                  // (R128, R129: after the fight's frame, so a call due is made first)
       shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
-      dipFxTick();                                                        // (R63: the refill seen)
-      dipMarkTick();                                                      // (R127: where to dip, marked)
       hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
          the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
@@ -1536,7 +1574,7 @@
          once he has taken it: derived on the frame (v11.1), written only when it changes, asked again after a reset */
       const waterUp = phase === 'bless' && !!play.water;
       if (kit && kit.weaponOut && waterLast !== waterUp) { waterLast = waterUp; kit.weaponOut(waterUp ? null : false); }
-      if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = false;
+      if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose(LOSS())) play.loseWait = false;
     }
     function applyPhase(saved) {
       const R = readMark(saved);
@@ -1551,19 +1589,18 @@
     function storyReset() {
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
-      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
+      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false; play.why = false;
       play.sightWas = false; play.shutPeak = 0; play.restSaid = true; play.topArmed = true; play.topAt = -99; play.restAt = -99;
       shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
-      dipMark.k = 0; dipMark.last = 0; dipMark.sp.visible = false;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
       lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));
     }
     function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2),
-      hp: play.fight ? play.fight.hp : null, call: play.fight ? play.fight.call : null }; }
+      hp: play.fight ? play.fight.hp : null, call: play.fight ? play.fight.call : null, why: play.why }; }
 

@@ -72,7 +72,7 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 76 of 76 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 80 of 80 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
@@ -82,10 +82,10 @@
     'rv4C1': 2.58, 'rv4D1': 2.98, 'rv4R1': 4.59,
     /* Grandmaster Pho */
     'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4h2': 2.81, 'ph4s0': 8.57, 'ph4s1': 4.57, 'ph4s2': 6.17, 'ph4s3': 8.45,
-    'ph4s4': 9.77, 'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2,
-    'ph4b6': 4.43, 'ph4b7': 1.47, 'ph4b8': 3.56, 'ph4b9': 5.05, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37,
-    'ph4A1': 6.61, 'ph4B0': 1.19, 'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56,
-    'ph4z1': 6.63,
+    'ph4s4': 9.77, 'ph4b0': 4.86, 'ph4k1': 5.85, 'ph4k2': 3.99, 'ph4k3': 6, 'ph4k4': 6.17, 'ph4b1': 4.65,
+    'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4b6': 4.43, 'ph4b7': 1.47, 'ph4b8': 3.56,
+    'ph4b9': 5.05, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 1.19, 'ph4B1': 9.13,
+    'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
@@ -183,23 +183,19 @@
               heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
-       right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
+       right hand's fingers a press; the HUD says the chapter's words */
+    /* (R141, Chad, 21 Nov 2026: "completely and cleanly and safely remove the reload water mechanism on both desktop and
+       mobile, as some players have given feedback that it makes the game too hard without adding any gameplay depth"):
+       THE WATER NEVER RUNS OUT. The weapon is the engine's `unlimited` (v13.0's: no count, no reload button, R and every
+       refill a no-op, no flick ever dry), so there is nothing to fill again and nothing that says so: the sign over his
+       teacher's bowl and its tap (R127, R133), R (R136), the motes of the refill (R63), the dry flick's words (R57) and the
+       dip's sound are gone. The bowl still glows gold through his sight (R62: his blessed water) */
     /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
        until then the hands are his own and empty (an item-less weapon is always out) */
-    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger, and slightly increase the amount of times the water can be
-       flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
-       flick now reaches: c_story.js onShot) */
-    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
-              /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
-                 message asking the player to reload the water.") */
-              /* (R133, R136) the words said on a dry flick are the chapter's own, on the sheet (words.waterEmpty for a mouse and
-                 keyboard, waterEmptyTouch for a touch screen), laid in below */
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
-              /* (R133, Chad, 20 Nov: "Remove the reload button at the bottom of the screen." and "instantly reload the water"):
-                 no reload button (main.js `reloadButton`; the sign over his teacher's bowl is the refill, c_story.js
-                 reloadHits, and R on a desktop), and the dip takes no time: nothing is drawn of it (view: false below), so a
-                 dip's 1.6 s would only have held the next flick back */
-              reloadButton: false, dipSecs: [0, 0, 0],
+    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger": the drops thrown wider, as wide as what a flick now
+       reaches: c_story.js onShot) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', unlimited: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
+              words: { fire: 'FLICK' }, shot: 'u4flick',
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
               icon: 'spray',
@@ -274,14 +270,12 @@
       objHold: 'Keep the green spirits away from Amma by using the holy water.',
       guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
-         read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
+         read natural, direct and straightforward."; the button shows water now, not the word FLICK) */
       /* (19 Nov, R96: its sentence on the strain, approved by Chad as written, after the sentence on Spirit Vision) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Tap the gold icon above the holy water bowl to reload. If her bar runs out, the blessing fails.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Press R to reload. If her bar runs out, the blessing fails.',
-      /* (R133, R136) said under the reticle on a dry flick (the engine's weapon words, laid in below the chapter): on a touch
-         screen the gold sign over the bowl is the refill, with a mouse and keyboard R */
-      waterEmpty: 'Out of holy water. Press R to reload.',
-      waterEmptyTouch: 'Out of holy water. Tap the gold icon above the holy water bowl.',
+      /* (R141, 21 Nov: the water never runs out, so the sentence on reloading is gone from both: "Tap the gold icon above the
+         holy water bowl to reload." and "Press R to reload.") */
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. If her bar runs out, the blessing fails.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
@@ -302,9 +296,6 @@
     },
     sayPrefix: 'q4'
   };
-  /* (R133, R136) the water's dry-flick words are the chapter's own words (so they are on the sheet): the weapon says them */
-  DATA.weapon.words.empty = DATA.words.waterEmpty;
-  DATA.weapon.words.emptyTouch = DATA.words.waterEmptyTouch;
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
             assetBytes, rescueTextures, getState, startDecision, worldSfx, warmSounds, soundOff, unifySkeletons,
@@ -5010,7 +5001,7 @@
       // key            x       y      z      ry               foot [w, d] (the file's own extent)   (what)
       ['w4wheelchair', CHAIR.x, 0, CHAIR.z, CHAIR.ry,          [0.65, 1.00]],   // her chair, facing her altar
       ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,             [0.40, 0.39]],   // Grandmaster Pho's, at her left (+x: she faces +z)
-      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor: he dips here
+      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor (on his stool from the blessing: R53; nothing is filled from it since R141)
       // her altar: a wall-mounted cabinet (the research's "floating unit", [32]), its back on the wall, its base at 1.15
       ['w4prayershelf', ALTAR.x, 1.15, ROOMS.living.z1 - 0.226 - 0.004, Math.PI, null],
       /* (18 Nov, measured and photographed: the tray is a whole puja set on a plate, 0.25 m across and 0.15 high, its bell,
@@ -5790,7 +5781,8 @@
     /* (R62, Chad, 18 Nov evening: "when spirit vision is turned on, make the holy water bowl silohuette in a golden glow too
        so player can more easily find it to reload the water"): Grandmaster Pho's large bowl, where the water is dipped
        again, in gold through the vision (gold is his alone, v25.5, and this is his bowl); its glow's twins ride the bowl
-       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp) */
+       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp). (R141, 21 Nov: the water
+       never runs out now and nothing is filled there; the glow stays, his blessed water, and nothing says it refills) */
     { const groups = things.w4bigbowl || [];
       if (groups.length && have('w4bigbowl')) parseOnce('w4bigbowl').then(() => { if (!alive) return;
         for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, SPIRIT.bowl) : null; if (a) auras.push(a); } }, () => {}); }
@@ -5830,7 +5822,7 @@
     const PHASES = ['history', 'sight', 'bless', 'kept'];
     const play = { run: 0, busy: false, learned: new Set(), spoke: false, told: false, peeked: false,
                    opened: false, looked: new Set(), closed: false, read: false,
-                   water: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
+                   water: false, why: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
                    lit: false, dark: 0, fanK: 1, fanTo: 1, scareAt: 0, scareSeed: 0, scared: new Set(), doorTo: -0.12, doorK: -0.12,
                    fogged: false, fogAt: 0, closeHold: 0, breathSaid: -99,
                    /* (R128, R129) the last shut and the strain it was made at; his teacher's two words on the strain, when last said */
@@ -5855,7 +5847,8 @@
 
     /* ---------------------------------------------------------------- the receipts (§9 of the plan: the phase string)
        history: r m f o a (each source learned), k (her line heard), p (he opened his sight before he had listened);
-       sight:   v (opened), l1 l2 l3 (each presence looked at);  bless: w (the water taken), x (the water thrown at Appa) */
+       sight:   v (opened), l1 l2 l3 (each presence looked at);  bless: w (the water taken), x (the water thrown at Appa),
+       y (R142: his teacher's why, heard to its end, before the water) */
     function mark() {
       const t = [...play.learned];
       if (play.spoke) t.push('k');
@@ -5864,13 +5857,14 @@
       for (const c of play.looked) t.push('l' + c);
       if (play.water) t.push('w');
       if (play.appaGone) t.push('x');
+      if (play.why) t.push('y');
       return t.join(',');
     }
     function readMark(p0) {
       const [p1, tag = ''] = String(p0 || '').split(':');
       const p = PHASES.includes(p1) ? p1 : 'history', f = new Set(tag.split(',').filter(Boolean));
       return { p, learned: ['r', 'm', 'f', 'o', 'a'].filter(c => f.has(c)), spoke: f.has('k'), peeked: f.has('p'), opened: f.has('v'),
-               looked: ['1', '2', '3'].filter(c => f.has('l' + c)), water: f.has('w'), appaGone: f.has('x') };
+               looked: ['1', '2', '3'].filter(c => f.has('l' + c)), water: f.has('w'), appaGone: f.has('x'), why: f.has('y') };
     }
     /* (R137) where the one source not yet learned is: its anchor, as its tap is tested against */
     function HIST_LEFT() {
@@ -6220,8 +6214,10 @@
     }
 
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
-    const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
-                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
+    const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4whisper',
+                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart',
+                        /* (R142: why the green ones come for her, said in the dark before the holy water) */
+                        'ph4k1', 'ph4k2', 'ph4k3', 'ph4k4',
                         'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
@@ -6233,20 +6229,39 @@
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
+      play.why = R.why || R.water;                                         // (R142: the water is taken only after his why)
       if (warmSounds) warmSounds(WARM_BLESS);
       if (kit && kit.vision) kit.vision(false);
       const run = play.run;
       if (fresh) {
         /* the change of places in the black (v16.1: a scene change happens in the black): Grandmaster Pho up from his
-           stool and behind her chair; the order waits for Mala's lamp and the room going dark */
+           stool and behind her chair; the order waits for Mala's lamp, the room going dark and his teacher's why (R142) */
         play.busy = true; setPhase('bless', { complete: false }); if (kit) kit.fade(1, 0.5);
         after(0.6, () => { if (!live(run)) return; blessStage(); if (kit) kit.fade(0, 0.7);
           after(0.9, () => { if (!live(run)) return; say('ph4b0', cast.phoB);
-            queueFn(() => { lightLamp(() => { if (!live(run)) return; roomDies(() => { if (!live(run)) return; play.busy = false; objectiveFor('bless'); }); }); }); }); });
+            queueFn(() => { lightLamp(() => { if (!live(run)) return; roomDies(() => { if (!live(run)) return;
+              whyLines(run, () => { play.busy = false; objectiveFor('bless'); }); }); }); }); }); });
       } else {
+        /* (R142) a Continue before the water whose save never heard his teacher's why to its end hears it now, in the dark,
+           and then the order; with the water taken (the fight's start, and every Retry of it) it is never said again */
+        const why = !play.water && !play.why;
+        if (why) play.busy = true;
         blessStage(); lampLit(true); roomDark(true); setPhase('bless', { complete: false });
         if (play.water) { giveWater(true); after(0.8, () => { if (live(run)) briefFight(); }); }
+        else if (why) after(0.9, () => { if (!live(run)) return; whyLines(run, () => { play.busy = false; objectiveFor('bless'); }); });
       }
+    }
+    /* WHY THEY COME FOR HER (R142, Chad, 21 Nov: "I want grandmaster pho to give more context and explanation on why the green
+       spirits are going after amma. It is because over the many years of serving as Kali medium, Amma has helped many people
+       and involved herself in the karma of many people. After helping these people, sometimes their karmic creditors will go
+       after amma instead, as there are still unresolved karmic debt. Pho should explain all this clearly, directly,
+       straightforwardly through his voicelines. This should be explained at the most appropriate time before the holy water
+       fight starts."): in the dark, her lamp lit and the room died, before the holy water is taken, his teacher says it in
+       four lines, one at a time off the queue, looking at him; heard to its end it is the receipt y (a Continue before the
+       water says it again only if it was not), and the order comes after it */
+    function whyLines(run, done) {
+      for (const k of ['ph4k1', 'ph4k2', 'ph4k3', 'ph4k4']) say(k, cast.phoB);
+      queueFn(() => { if (!live(run)) return; play.why = true; saveMark(); done(); });
     }
     /* who stands where for the blessing */
     function blessStage() {
@@ -6310,21 +6325,20 @@
        stool for her chair, both bowls stand on it, its seat 0.445 m up, where they were on the floor at its foot: his large
        bowl on the seat's middle, and the small silver one resting in its water, its rim over the water (the seat is some
        0.29 m across, the large bowl 0.33 and the small 0.155: the two cannot stand side by side on it). Moved in the black
-       (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark, the press on the
-       small bowl and the dip's reach follow them, and the large bowl's column on the floor goes up with it */
-    const DIP_AT = { x: BOWL.x, z: BOWL.z }, SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
+       (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark and the press on the
+       small bowl follow them, and the large bowl's column on the floor goes up with it. (R141: nothing is filled again from
+       the large one now; it stands there as his bowl, gold through the vision: R62) */
+    const SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
     let waterLast = null;                                                // (R58: the water offered only in the blessing, once taken)
     const BOWLS_UP = { x: STOOL.x, z: STOOL.z, y: STOOL_TOP, small: { dx: 0.03, dz: -0.035, y: 0.097 } };
-    let bowlsUp = false;
     function bowlsOnStool(up) {
-      bowlsUp = !!up;
       const big = (things.w4bigbowl || [])[0], hs = STORY_SPOTS.find(h => h.id === 'water');
-      if (up) { DIP_AT.x = BOWLS_UP.x; DIP_AT.z = BOWLS_UP.z;
+      if (up) {
         Object.assign(SMALLBOWL_AT, { x: BOWLS_UP.x + BOWLS_UP.small.dx, y: BOWLS_UP.y + BOWLS_UP.small.y + 0.04, z: BOWLS_UP.z + BOWLS_UP.small.dz });
         if (big) big.position.set(BOWLS_UP.x, BOWLS_UP.y, BOWLS_UP.z);
         bowlOnFloor.position.set(BOWLS_UP.x + BOWLS_UP.small.dx, BOWLS_UP.y + BOWLS_UP.small.y, BOWLS_UP.z + BOWLS_UP.small.dz);
         if (bigBowlBox) bigBowlBox.set(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)); }
-      else { DIP_AT.x = BOWL.x; DIP_AT.z = BOWL.z; Object.assign(SMALLBOWL_AT, SMALLBOWL_FLOOR);
+      else { Object.assign(SMALLBOWL_AT, SMALLBOWL_FLOOR);
         if (big) big.position.set(BOWL.x, 0, BOWL.z);
         bowlOnFloor.position.set(SMALLBOWL_FLOOR.x, 0, SMALLBOWL_FLOOR.z);
         if (bigBowlBox && bigBowlBox0) bigBowlBox.copy(bigBowlBox0); }
@@ -6436,6 +6450,13 @@
                                   is held open (the engine's lock) */
                                climaxAt: null, climaxCall: null, locked: false };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
+      /* (R139, Chad, 21 Nov: "if the player loses the holy water fight, instead of restarting the entire chapter again, have
+         it restart at the start of the holy water fight"; R144: only a run that reached it): THE FIGHT'S START HELD (the
+         sixty-sixth seam). While it holds, the save is this moment (a tab closed in the fight comes back here, with these
+         numbers and nothing the fight took or banked); her life running out keeps it (ammaLost), and its Retry begins here;
+         the fight's end lets it go. And (R140) the water's button glows and breathes while the fight is on (the
+         sixty-seventh) */
+      if (kit) { if (kit.losePoint) kit.losePoint(); if (kit.weaponGlow) kit.weaponGlow(true); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
       whenReady(cast.phoB, (P) => handOnHead(P, true));
@@ -6640,16 +6661,18 @@
       else if (!F.saidRavi && F.hp <= 55) { F.saidRavi = true; say('rv4f1', cast.ravi, false); }   // "Amma! What's happening to her?"
       if (F.hp <= 0) ammaLost();
     }
-    /* HER LIFE RUNS OUT: the chapter is lost (the fifty-third seam, kit.lose): its own film (FILMS.lost), its card's two lines,
-       the save put back at the chapter's start, Retry from there (Chad: "the player loses this game and chapter and has to
-       restart again") */
+    /* HER LIFE RUNS OUT: the fight is lost (the fifty-third seam, kit.lose): its own film (FILMS.lost) and its card's two
+       lines; and (R139, the sixty-sixth seam's `resume`) the save stays the fight's start, the card's Retry begins the fight
+       again there, and its Restart chapter begins the chapter (Chad, 18 Nov: "the player loses this game and chapter and
+       has to restart again"; 21 Nov: "have it restart at the start of the holy water fight") */
+    const LOSS = () => ({ film: 'lost', say: W.lostSay, teaching: W.lostTeach, resume: true });
     function ammaLost() {
       const F = play.fight; if (!F || F.lost) return;
       F.lost = true; F.on = false; F.chantHeld = true; shadesOff();
       fightMusOff(); chantStop(); chantNow = null; lineQ.length = 0;
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
-      if (!kit || !kit.lose || !kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = true;   // (refused: asked again on the next frame of play)
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
+      if (!kit || !kit.lose || !kit.lose(LOSS())) play.loseWait = true;   // (refused: asked again on the next frame of play)
     }
     /* the water reaches one (stage.onShot): released, or staggered (the large one takes three) */
     const hitOwner = new Map();
@@ -6728,6 +6751,13 @@
        struck (its sphere); eight at once, the oldest given back first */
     const HITFX = { slots: 16, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };   // (R109: sixteen at once, so every one the gold's wave strikes bursts whole)
     const hitFx = { slots: null, next: 0 };
+    /* the soft round glow every strike (hitFx, below) and the films' motes and drops (c_ufilm.js) are drawn with: made for the
+       refill's motes (R63), kept here when the refill went (R141) */
+    function dipTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
     function hitTex(ring) {
       const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
       if (ring) { r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.6, 'rgba(255,255,255,0)'); r.addColorStop(0.8, 'rgba(255,255,255,1)'); r.addColorStop(0.9, 'rgba(255,255,255,0.4)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
@@ -6784,7 +6814,6 @@
       }
       fx('u4goldflick', 0.9, 0);
       if (n) { fx('u4goldclear', Math.min(1, 0.78 + 0.03 * n), 0); F.lastStrike = F.t; F.cleared += n; }
-      if (kit && kit.ammo) kit.ammo(DATA.weapon.rounds);       // (the golden water never runs dry: no dip in the swarm)
     }
     /* WATER THROWN AT APPA: he turns, looks at the student, and fades for the rest of the night (a price on the card,
        and his teacher's word after) */
@@ -6858,11 +6887,14 @@
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));
       if (kit && kit.vision) kit.vision(false);
       setPhase('kept');
+      /* (R139, R144) the fight is kept: its start is held no more, and the save is the room kept, at once (the sixty-sixth
+         seam saves the live run as the hold is let go) */
+      if (kit && kit.losePoint) kit.losePoint(null);
       const run = play.run;
       after(2.6, () => { if (live(run)) trance(); });
     }
@@ -6951,8 +6983,9 @@
          throughout the scene, tracing every item and silhouette similar to how the spirit vision works". Build 21: 14 m in
          3.2 s with a slow trail, so the room stays traced in gold while it fades: at 26 m in 2.6 s it crossed the room in a
          fifth of a second and was gone. Here, as it merges into the water, its second wave: the nova's, R109) */
-      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds);
-        if (kit.ammoInf) kit.ammoInf(true); }                                   // (R56: the count reads the infinity sign)
+      /* (R141: the water never runs out, so there is no count for R56's infinity sign to stand in: the gold is in the
+         edges of his sight, the water and its button) */
+      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); }
       if (!F.released) fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
          she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
@@ -7331,113 +7364,18 @@
     }
 
     /* ---------------------------------------------------------------- WHERE THE WATER GOES (the engine's shot path)
-       stage.shootables: what the lens's line may reach. The bowl in his hand is filled again from anywhere in the room (R133,
-       R136: a tap on the gold sign over his teacher's bowl, stage.reloadHits below, or R on a desktop), and nothing is
-       refused at her altar (R134, Chad, 20 Nov: "allow flicking water at the altar, instead of showing the 'not at her
-       altar' warning": the refusal and its words are gone) */
+       stage.shootables: what the lens's line may reach. Nothing is refused at her altar (R134, Chad, 20 Nov: "allow flicking
+       water at the altar, instead of showing the 'not at her altar' warning": the refusal and its words are gone). The
+       water never runs out (R141, 21 Nov: "completely and cleanly and safely remove the reload water mechanism"): the
+       weapon is the engine's `unlimited` (a_head.js), so the sign over his teacher's bowl (R127), its tap (R133), R (R136)
+       and the motes of a refill (R63) are gone with it */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
-    /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
-       flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
-       purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
-       bowl and fly, each on its own arc, to just under the middle of his sight, shrinking and fading as they reach him
-       (half a second; gold in his gold, the water's pale blue otherwise). On the wall clock, so a slow phone sees all of it;
-       drawn in the world and through the vision alike */
-    const DIPFX = { n: 18, secs: [0.42, 0.62], stagger: 0.012, arc: 0.28, size: [0.055, 0.018] };
-    const dipFx = { sprites: null, motes: [], t0: 0 };
-    function dipTex() {
-      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
-      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-    }
-    function dipBurst() {
-      if (!dipFx.sprites) { const tex = dipTex(); owned.push(tex); dipFx.sprites = [];
-        for (let i = 0; i < DIPFX.n; i++) { const m = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
-          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 30; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); dipFx.sprites.push(sp); } }
-      const F = play.fight, gold = !!(F && F.on && F.call === 'gold'), col = gold ? 0xffd27a : 0xbfe8ff, now = wallNow();
-      const y0 = (bowlsUp ? BOWLS_UP.y : 0) + 0.15;
-      dipFx.motes = dipFx.sprites.map((sp, i) => { const a = i * 2.39996, r = 0.03 + 0.09 * ((i * 0.618) % 1);
-        sp.material.color.set(col);
-        return { sp, t0: now + i * DIPFX.stagger, T: DIPFX.secs[0] + (DIPFX.secs[1] - DIPFX.secs[0]) * ((i * 0.37) % 1),
-          a: new THREE.Vector3(DIP_AT.x + Math.cos(a) * r, y0, DIP_AT.z + Math.sin(a) * r), jx: (((i * 0.71) % 1) - 0.5) * 0.12, jy: (((i * 0.43) % 1) - 0.5) * 0.06 }; });
-    }
-    const _dpE = new THREE.Vector3(), _dpF = new THREE.Vector3(), _dpU = new THREE.Vector3(), _dpR = new THREE.Vector3(), _dpP = new THREE.Vector3();
-    function dipFxTick() {
-      if (!dipFx.motes.length) return;
-      const now = wallNow(); let live = 0;
-      camera.updateMatrixWorld(); camera.getWorldPosition(_dpE); camera.getWorldDirection(_dpF);
-      _dpR.crossVectors(_dpF, THREE.Object3D.DEFAULT_UP).normalize(); _dpU.crossVectors(_dpR, _dpF).normalize();
-      for (const M of dipFx.motes) { const u = (now - M.t0) / M.T;
-        if (u < 0 || u >= 1) { M.sp.visible = false; if (u < 0) live++; continue; } live++;
-        const e = u * u * (3 - 2 * u);
-        _dpP.copy(_dpE).addScaledVector(_dpF, 0.42).addScaledVector(_dpU, -0.13 + M.jy).addScaledVector(_dpR, M.jx);   // (just under the middle of his sight)
-        M.sp.position.copy(M.a).lerp(_dpP, e); M.sp.position.y += DIPFX.arc * 4 * e * (1 - e);
-        const s = DIPFX.size[0] + (DIPFX.size[1] - DIPFX.size[0]) * e; M.sp.scale.setScalar(s);
-        M.sp.material.opacity = Math.min(1, u * 6) * (1 - Math.max(0, (u - 0.7) / 0.3)); M.sp.visible = true; }
-      if (!live) dipFx.motes = [];
-    }
-    /* (R127, Chad, 20 Nov: "add a slow bobbing floating reload icon floating on top of the holy water bowl, in the same yellow
-       golden colour as the bowl, so that the player know that is where to reload the water") THE PLACE TO DIP, MARKED: the
-       HUD's own reload sign (its DIP button's arrow round in a circle, the same drawing) floating over his teacher's large
-       bowl in the bowl's gold as his sight shows it (SPIRIT.bowl's 0xffc456, R62), with a dark edge so it reads on the
-       vision's pale negative too, rising and sinking slowly (3 cm either way, once in 2.8 s, on the wall clock), its middle
-       0.27 m over the bowl's rim. Shown in the fight while the water is his and can be filled there (never under the
-       showcase, nor in the gold, whose water never runs out), in play only, eased in and out over a third of a second; drawn
-       in the world and through the vision alike (both layers), over what stands before it (a mark, like the order's),
-       never lit, never fogged */
-    const DIPMARK = { size: 0.2, rim: 0.19, above: 0.27, bob: 0.03, period: 2.8, ease: 0.35 };
-    const dipMark = { sp: null, k: 0, last: 0 };     // (made with the world, hidden, so the curtain's warm compiles it: dipMarkMake below)
-    function dipMarkMake() {
-      const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
-      const u = 7.2, o = (S - 24 * u) / 2;                                 // (the HUD's 24-unit drawing, 173 px across, centred)
-      g.translate(o, o); g.scale(u, u); g.lineCap = 'round'; g.lineJoin = 'round';
-      const path = () => { g.beginPath(); g.arc(12, 12, 7, 0, Math.PI * 1.75, false); g.moveTo(19, 3); g.lineTo(19, 8); g.lineTo(14, 8); };
-      g.shadowColor = 'rgba(255,196,86,0.85)'; g.shadowBlur = 18; g.strokeStyle = 'rgba(58,36,6,0.92)'; g.lineWidth = 4.4; path(); g.stroke();
-      g.shadowBlur = 0; g.strokeStyle = '#ffc456'; g.lineWidth = 2.5; path(); g.stroke();
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; owned.push(t);
-      const m = new THREE.SpriteMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
-      mats.push(m);
-      const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 29; sp.scale.set(DIPMARK.size, DIPMARK.size, 1);
-      if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer);
-      world.add(sp); return sp;
-    }
-    dipMark.sp = dipMarkMake();
-    /* (R133, Chad, 20 Nov: "just allow the player to instantly reload the water by clicking on the floating reload icon
-       above the holy water bowl. Remove the reload button at the bottom of the screen."): THE SIGN IS THE REFILL. A tap on
-       it (or a click while the mouse is free) fills the bowl in his hand at once, wherever he stands (the engine's
-       weaponReloadTap asks here, then reloads as R does: the dip's sound, the motes from the big bowl to him). On the sign
-       while it is shown: inside its drawn size made half as large again, or a finger's width (34 px) of its middle,
-       whichever is larger, since three metres off it is some forty pixels across on a phone. On a desktop R reloads,
-       anywhere (R136, "on desktop just make it button 'r'"): under the mouse's lock a click stays the flick */
-    const RELOADTAP = { finger: 34, grow: 1.5 };
-    const _rhP = new THREE.Vector3(), _rhE = new THREE.Vector3();
-    function reloadHits(x, y) {
-      const sp = dipMark.sp; if (!sp || !sp.visible || dipMark.k < 0.5) return false;
-      camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); camera.getWorldPosition(_rhE);
-      sp.updateWorldMatrix(true, false); sp.getWorldPosition(_rhP);
-      const d = Math.max(0.05, _rhE.distanceTo(_rhP));
-      _rhP.project(camera);
-      if (!(_rhP.z > -1 && _rhP.z < 1)) return false;                      // (behind him, or past the far plane)
-      const vw = innerWidth, vh = innerHeight, sx = (_rhP.x + 1) / 2 * vw, sy = (1 - _rhP.y) / 2 * vh;
-      const half = (DIPMARK.size / 2) / (d * Math.tan(camera.fov * Math.PI / 360)) * (vh / 2);
-      return Math.hypot(x - sx, y - sy) <= Math.max(RELOADTAP.finger, half * RELOADTAP.grow);
-    }
-    function dipMarkTick() {
-      const F = play.fight, now = wallNow(), dt = dipMark.last ? Math.min(0.1, now - dipMark.last) : 0; dipMark.last = now;
-      const want = phase === 'bless' && play.water && !!(F && F.on) && F.call !== 'shown' && F.call !== 'gold' && getState() === 'play';
-      dipMark.k = want ? Math.min(1, dipMark.k + dt / DIPMARK.ease) : Math.max(0, dipMark.k - dt / DIPMARK.ease);
-      if (!dipMark.k) { if (dipMark.sp.visible) dipMark.sp.visible = false; return; }
-      const sp = dipMark.sp;
-      sp.position.set(DIP_AT.x, (bowlsUp ? BOWLS_UP.y : 0) + DIPMARK.rim + DIPMARK.above + DIPMARK.bob * Math.sin(now * Math.PI * 2 / DIPMARK.period), DIP_AT.z);
-      sp.material.opacity = dipMark.k * dipMark.k * (3 - 2 * dipMark.k); sp.visible = true;
-    }
     /* ---------------------------------------------------------------- the story's frame, its start and its reset */
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt);   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
       strainLinesTick();                                                  // (R128, R129: after the fight's frame, so a call due is made first)
       shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
-      dipFxTick();                                                        // (R63: the refill seen)
-      dipMarkTick();                                                      // (R127: where to dip, marked)
       hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
          the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
@@ -7445,7 +7383,7 @@
          once he has taken it: derived on the frame (v11.1), written only when it changes, asked again after a reset */
       const waterUp = phase === 'bless' && !!play.water;
       if (kit && kit.weaponOut && waterLast !== waterUp) { waterLast = waterUp; kit.weaponOut(waterUp ? null : false); }
-      if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = false;
+      if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose(LOSS())) play.loseWait = false;
     }
     function applyPhase(saved) {
       const R = readMark(saved);
@@ -7460,21 +7398,20 @@
     function storyReset() {
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
-      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
+      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false; play.why = false;
       play.sightWas = false; play.shutPeak = 0; play.restSaid = true; play.topArmed = true; play.topAt = -99; play.restAt = -99;
       shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
-      dipMark.k = 0; dipMark.last = 0; dipMark.sp.visible = false;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); if (kit.weaponGlow) kit.weaponGlow(false); }
       lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));
     }
     function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2),
-      hp: play.fight ? play.fight.hp : null, call: play.fight ? play.fight.call : null }; }
+      hp: play.fight ? play.fight.hp : null, call: play.fight ? play.fight.call : null, why: play.why }; }
 
     /* ====================================================== THE FLAT'S SOUND (M8; masters/v27.0/sound.sh made every file)
        THE BEDS, each eased toward what the beat wants (chapter 3's mixBeds; the engine ducks every bed 8 dB under a voice):
@@ -8890,9 +8827,9 @@
         return { meshes, tris: Math.round(tris), textures: texs.size, texMB: +mb.toFixed(1) };
       },
       hotspots,
-      /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, the sign
-         a tap on which fills the bowl again (R133), and the refill seen */
-      onVision, shootables, onShot, reloadHits, onReload: dipBurst,
+      /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach and what it reached (R141:
+         nothing to fill again: the water never runs out) */
+      onVision, shootables, onShot,
       films: filmsApi,                                                          // the films' pictures (c_ufilm.js), for the scenes
       stepSound: stepNext,                                                      // his bare feet on her tiles (c_tsound.js)
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
