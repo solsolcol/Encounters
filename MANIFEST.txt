@@ -1160,3 +1160,4 @@ da96234a86cfcd19e35ac2e2feed69c0bdec1a24c8b5e225818aa5ae3678056c  masters/v27.0/
 aabaa816a66c594c8ffc138e44be79a1c179f4fc90fe2c3fb279eb04b76fc830  masters/v27.0/src/original-tvconsole.glb
 928e8a1dee857283b00ffbcec1f98a43e00c478ec50a374ee2c2109061964bad  masters/v27.0/src/original-vilakku.glb
 01624dd3bed9aa0453c4ede58fbb9bffd18264ca01ec0483b1a5d7e28d4f574b  masters/v27.0/src/original-wander.glb
+afb2e66efd5cfb251ab3c45ec35486b99c7611eb037b5055d3a78ce448e33a34  masters/v27.0/src/original-waterbowl.glb
