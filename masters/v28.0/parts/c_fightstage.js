@@ -1465,24 +1465,28 @@
         wroteQ = a.fing.map(F => F.b.quaternion.clone());
         for (const nm of NAMES) G.chains[nm][0].updateMatrixWorld(true);
       }
-      /* HIS ARM HOLDING IT UPRIGHT while he rests, walks and runs (his takes' arms hang and swing: a stick through a hanging
+      /* HIS ARM HOLDING IT UPRIGHT while he rests, walks, runs and talks (his takes' arms hang and swing: a stick through a hanging
          fist would lie across his path). His right arm solved as an arm (armHinge: the elbow on its pole's side, its hinge
          the one ALL his takes bend about, (0.805, 0, 0.593) in his upper arm's frame, read from ten of them), the fist where
          a man stands holding a staff (in his own frame 0.30 m out to his right, 1.10 m up, 0.36 m before him: the forearm a
          little under level, the elbow near a right angle), turned thumb-up so the stick stands upright with its Naga's head
          toward where he faces, turned 15 degrees out; the hand's turn along the forearm carried by the forearm (thumb-up is
          a forearm's middle), the wrist bent only toward the little finger by the shaft's slope across the palm; lifted 6 cm
-         as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). By those takes' weights: in an
-         act (the throw, the gold, the bag) his own take's arm carries the stick */
-      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593] };
+         as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). In every take but a cast, by
+         the casts' weights: in a cast (the throw, the gold, the bag, the Naga's planting) his own take's arm carries it */
+      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593],
+                      casts: /^(Charged_Spell_Cast|mage_soell_cast|Right_Hand_Sword_Slash)/ };
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       let wroteArm = null;
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
-        const w = P.w || {}, rt = P.rest && P.rest.take;
-        let share = 0; for (const nm of [rt, 'Walking', 'Running']) if (nm && w[nm]) share += w[nm];
-        share = Math.min(1, share) * kk; if (!(share > 0.001)) return;
+        /* (every take of his holds it so but his casts, whose own arm carries the stick: his rest, walk and run, and his talk
+           in the films, the free hand talking (with the talk's arm the stick swung through his robe: FILMS' clipscan of the
+           preparation at 27 s, 144 crossings at 1.1 m); a cast by its weight, so the arm is handed over as the take is) */
+        const w = P.w || {};
+        let cast = 0; for (const nm in w) if (w[nm] > 0 && STAFF.casts.test(nm)) cast += w[nm];
+        const share = Math.max(0, 1 - Math.min(1, cast)) * kk; if (!(share > 0.001)) return;
         if (a.wrote && wroteArm && a.up.quaternion.equals(wroteArm[0]) && a.fore.quaternion.equals(wroteArm[1]) && a.hand.quaternion.equals(wroteArm[2])) return;   // (laid already in this frame)
         if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
         _keep[0].copy(a.up.quaternion); _keep[1].copy(a.fore.quaternion); _keep[2].copy(a.hand.quaternion);

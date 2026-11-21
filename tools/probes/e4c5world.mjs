@@ -46,6 +46,8 @@ const ALL = {
   room:       ['table', 0, 239.4, Math.PI, -0.3],
   roomwide:   ['table', -1.6, 237.9, Math.PI + 0.64, -0.2],
   roomseat:   ['table', 0, 239.2, Math.PI, -0.62, -0.47],
+  seated:     ['table', 0, 239.2, Math.PI, -0.5, 1.02 - 1.62],      // (the play's own seat: c_story.js SIT5)
+  doorin:     ['hunt', -8.3, -4.45, Math.PI + 0.55, -0.15],          // (the open leaf against its jamb, from inside)
   roomdoor:   ['table', 1.5, 242.0, 0.85, -0.25],
   roomwin:    ['table', -0.8, 240.6, -Math.PI / 2, -0.04]
 };

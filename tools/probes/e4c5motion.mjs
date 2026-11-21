@@ -81,16 +81,18 @@ if (want('table')) { await phase('table:'); await rec(true); await new Promise(r
 const names = ['pho', 'phoS', 'ton', 'jun', 'koh', 'col'];
 const out = [];
 for (const k in runs) { const R = runs[k];
-  for (const n of names) { let jumps = 0, snaps = 0, flick = 0, pops = 0, shown = 0, hidden = 0; const notes = [];
+  for (const n of names) { let jumps = 0, snaps = 0, flick = 0, pops = 0, shown = 0, hidden = 0, slides = 0; const notes = [];
     for (let i = 1; i < R.length; i++) { const a = R[i - 1][n], c = R[i][n]; if (!a || !c || R[i].st !== 'play' || R[i - 1].st !== 'play') continue;
       const dt = Math.max(0.001, R[i].t - R[i - 1].t), d = Math.hypot(c[0] - a[0], c[1] - a[1]);
       const dr = Math.abs(Math.atan2(Math.sin(c[2] - a[2]), Math.cos(c[2] - a[2])));
+      /* a SLIDE: carried over the ground in a take that is not a walk */
+      if (a[3] && c[3] && d / dt > 0.3 && d < 0.5 && !/Walk|Run/.test(c[5])) { slides++; if (notes.length < 6) notes.push(`slides ${(d / dt).toFixed(2)} m/s in ${c[5]} at f${i}`); }
       if (a[3] && c[3] && d > Math.max(0.15, 2.2 * dt)) { jumps++; if (notes.length < 6) notes.push(`jump ${d.toFixed(2)} m in ${dt.toFixed(2)} s at f${i} seen ${a[6]}${c[6]}`); }
       if (a[3] && c[3] && dr > Math.max(0.35, 6 * dt) && (a[6] || c[6])) { snaps++; if (notes.length < 6) notes.push(`turn ${dr.toFixed(2)} rad in ${dt.toFixed(2)} s at f${i}`); }
       if (a[3] !== c[3]) { if (c[3]) shown++; else hidden++; if (a[6] || c[6] || (c[3] && R[i + 1] && R[i + 1][n] && R[i + 1][n][6])) { flick++; if (notes.length < 6) notes.push(`${c[3] ? 'shown' : 'hidden'} in the lens at f${i}`); } }
       if (a[4] !== c[4] && a[3] && c[3] && (a[6] || c[6])) { pops++; if (notes.length < 6) notes.push(`level ${a[4]}->${c[4]} in the lens at f${i}, ${Math.hypot(c[0] - R[i].me[0], c[1] - R[i].me[1]).toFixed(1)} m`); } }
     const any = R.some(r => r[n] && r[n][3]);
-    if (any || shown || hidden) out.push(`${k} ${n}: jumps ${jumps}, snaps ${snaps}, shown/hidden in the lens ${flick} (shown ${shown}, hidden ${hidden}), level pops ${pops}${notes.length ? ' | ' + notes.join('; ') : ''}`); } }
+    if (any || shown || hidden) out.push(`${k} ${n}: jumps ${jumps}, slides ${slides}, snaps ${snaps}, shown/hidden in the lens ${flick} (shown ${shown}, hidden ${hidden}), level pops ${pops}${notes.length ? ' | ' + notes.join('; ') : ''}`); } }
 for (const s of out) log('READ', s);
 log('errors', errs.length ? errs.join('\n') : 'none');
 await b.close(); process.exit(0);
