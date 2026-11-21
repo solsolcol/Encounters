@@ -1473,6 +1473,8 @@ dcf2b356ce3c8530f2824af3852dfbda99dc6387e966cdcbaf8eeab9e64a3df9  masters/v28.0/
 62746e05c0d6b6aab38ddc3b1d2ee559b908e995b70077b2ca6097896a60219d  masters/v28.0/src/original-bagopen.glb
 6693176889fd5803e39db0c160b8a0ccab85407ffcb8e7fc0a60d4af8fd5e0f3  masters/v28.0/src/original-bagtied.glb
 0bf2a0ffe2e5bb3e88f250ce546bc9861c8184140fbfc498c232256bd55063a3  masters/v28.0/src/original-ceilfan.glb
+f875f91b96285afc6af2109199a90e6839a06032fd6f2b465be5910b1e86d502  masters/v28.0/src/original-clothtable.glb
+f261aa843835999837b0140d7e3859d49bb5dcaebb10cb909ea78fb124955f48  masters/v28.0/src/original-collector.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
