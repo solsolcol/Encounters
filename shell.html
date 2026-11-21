@@ -472,6 +472,119 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
      row's bottom, its 76 px, and 12 px of air */
   body.weaponUp #interact{padding-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 44px + 76px + 12px)}
 }
+/* v28.0 · THE TAG MODE (the sixtieth seam, kit.tag): two bodies the chapter hands over, one played, seen from behind and
+   above. The played one's three acts and the switch stand at the bottom right (docs/V28.0-E4C5-PLAN.md §5.6, on a 390 x 844
+   phone: the MAIN act 80 pt at y 730, the third 60 at y 730, the second 60 at y 665, the switch 64 at y 630, carrying the
+   OTHER one's picture and name); each wears its wait as a ring (the eye's strain ring's language), and the one the moment
+   calls for grows and shrinks. Shown only while the mode is on and in play: the show rule counts three classes and its
+   hide rules carry as many and come after (v11.7's lesson). While it is on, the first-person HUD it has no use for steps
+   aside (the bag, the torch's button, the eye; the weapon's class is never set in the mode), the caption stands above the
+   thumbs (the sixty-third seam) and a refused press says why above the caption, never over the court's middle */
+#tagHud{display:none}
+body.inplay.tagOn #tagHud{display:block}
+body.tagOn.cardup #tagHud,body.tagOn.evopen #tagHud,body.tagOn.cine #tagHud,body.tagOn.menuopen #tagHud{display:none}
+.tagBtn{position:fixed;z-index:9;pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;cursor:pointer;
+  display:grid;place-items:center;align-content:center;gap:3px;padding:0;border-radius:50%;color:var(--bone);
+  background:rgba(7,8,11,.66);border:1.5px solid rgba(232,226,212,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 14px rgba(0,0,0,.5);font-family:var(--ui);font-weight:700;letter-spacing:.06em;line-height:1}
+.tagBtn.hide{display:none}
+.tagBtn:active{background:rgba(232,226,212,.2)}
+.tagBtn .tgLbl{font-size:.74rem;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.85);pointer-events:none}
+.tagBtn.long .tgLbl{font-size:.6rem;letter-spacing:.02em}
+.tagBtn .tgIco{display:none;pointer-events:none}
+.tagBtn.hasIco .tgIco{display:block;width:42%;height:42%}
+.tagBtn .tgIco .tgIcoIn,.tagBtn .tgIco img,.tagBtn .tgIco canvas{display:block;width:100%;height:100%;object-fit:contain}
+.tagBtn .tgRing{position:absolute;left:-1.5px;top:-1.5px;width:calc(100% + 3px);height:calc(100% + 3px);transform:rotate(-90deg);pointer-events:none}
+.tagBtn .tgRing circle{fill:none;stroke-width:5}
+.tagBtn .tgTrack{stroke:rgba(0,0,0,.45)}
+.tagBtn .tgWait{stroke:rgba(232,226,212,.55);stroke-dasharray:295.31;stroke-dashoffset:0;stroke-linecap:butt}
+.tagBtn .tgFill{stroke:#FFFFFF;stroke-dasharray:295.31;stroke-dashoffset:295.31;stroke-linecap:butt;filter:drop-shadow(0 0 3px rgba(255,255,255,.7))}
+.tagBtn.waiting .tgLbl,.tagBtn.waiting .tgIco,.tagBtn.waiting .tgFace,.tagBtn.waiting .tgName{opacity:.55}
+.tagBtn.ready{border-color:rgba(232,226,212,.8)}
+.tagBtn.ready .tgWait{stroke:rgba(232,226,212,.95)}
+.tagBtn.blocked{opacity:.42;border-color:rgba(232,226,212,.26)}
+.tagBtn.on{border-color:#FFFFFF;box-shadow:0 0 22px rgba(255,255,255,.45),0 2px 14px rgba(0,0,0,.5)}
+.tagBtn.pulse{animation:tagAsk 1.1s ease-in-out infinite}
+@keyframes tagAsk{0%,100%{transform:scale(.94);box-shadow:0 0 0 0 rgba(255,255,255,.6),0 2px 14px rgba(0,0,0,.5)}
+  50%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(255,255,255,0),0 0 26px 6px rgba(255,255,255,.5)}}
+.tagBtn.nope{animation:visHeldTap .38s ease-out}
+.tagBtn.noKey .wpnKey{display:none}
+.tagSw .tgFace{display:block;width:30px;height:30px;border-radius:50%;overflow:hidden;pointer-events:none}
+.tagSw .tgFace:empty{display:none}
+.tagSw .tgFace img,.tagSw .tgFace canvas,.tagSw .tgFace>span>*{display:block;width:100%;height:100%;object-fit:cover}
+.tagSw .tgName{font-size:.62rem;letter-spacing:.1em;pointer-events:none}
+/* a desktop's places (the key under each button, to a fine pointer only: the weapon's .wpnKey) */
+.tagMain{width:82px;height:82px;right:max(28px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 30px)}
+.tag3{width:62px;height:62px;right:calc(max(28px,env(safe-area-inset-right)) + 104px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 40px)}
+.tag2{width:62px;height:62px;right:calc(max(28px,env(safe-area-inset-right)) + 90px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 132px)}
+.tagSw{width:66px;height:66px;right:calc(max(28px,env(safe-area-inset-right)) + 8px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 146px)}
+body.hasTorch.tagOn .torchBtn,body.hasVision.tagOn .visionBtn{display:none}
+body.tagOn .invBtn{display:none}
+/* the caption beside the buttons, never under one (63); a refusal above the caption */
+body.tagOn:not(.cine) #caption{max-width:calc(100vw - 420px)}
+body.tagOn #nofire{top:auto;margin-top:0;bottom:calc(max(10vh,calc(env(safe-area-inset-bottom) + 72px)) + 74px)}
+body.tagOn.capsOn #nofire{bottom:calc(var(--capTop,140px) + 10px)}
+/* the marks over the chapter's targets (a tap or a click on one picks it), the other one's mark at the screen's edge
+   while he is out of the picture, and the count under the objective */
+#tagMarks{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+body.cardup #tagMarks,body.cine #tagMarks,body.evopen #tagMarks{display:none}
+.tmark{position:absolute;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;box-sizing:border-box;
+  border:2px solid var(--tc,#FFE0A0);box-shadow:0 0 10px var(--tc,#FFE0A0);opacity:.85;will-change:transform}
+.tmark.picked{border-width:3px;opacity:1;animation:tmPick 1s ease-in-out infinite}
+.tmark.dim{opacity:.42;border-style:dashed;box-shadow:none}
+@keyframes tmPick{0%,100%{box-shadow:0 0 8px var(--tc,#FFE0A0)}50%{box-shadow:0 0 22px 4px var(--tc,#FFE0A0)}}
+#tagMate{position:fixed;left:0;top:0;z-index:4;display:none;pointer-events:none;transform:translate(-50%,-50%);
+  align-items:center;gap:6px;padding:5px 10px 5px 7px;border-radius:999px;background:rgba(8,10,14,.74);
+  box-shadow:0 0 0 1px rgba(232,226,212,.3),0 2px 10px rgba(0,0,0,.5);font:700 11px/1 var(--ui);letter-spacing:.14em;color:#F4ECD8}
+#tagMate.on{display:flex}
+body.cardup #tagMate.on,body.cine #tagMate.on,body.evopen #tagMate.on{display:none}
+#tagMate .tmRing{width:18px;height:18px;transform:rotate(-90deg)}
+#tagMate .tmRing circle{fill:none;stroke-width:3}
+#tagMate .tmTrack{stroke:rgba(255,255,255,.18)}
+#tagMate .tmArc{stroke:#F4ECD8;stroke-dasharray:50.27;stroke-dashoffset:50.27}
+#tagMate.noShare .tmRing{display:none}
+#tagMate .tmArrow{position:absolute;left:50%;top:50%;width:0;height:0}
+#tagMate .tmArrow::before{content:'';position:absolute;left:var(--ad,40px);top:-6px;border:6px solid transparent;border-left:10px solid #F4ECD8;border-right:0}
+#tagCount{position:fixed;left:50%;transform:translateX(-50%);z-index:4;display:none;gap:7px;pointer-events:none;
+  top:calc(max(14px,env(safe-area-inset-top)) + 4px + var(--objH,38px) + 8px)}
+#tagCount.on{display:flex}
+body.cardup #tagCount.on,body.cine #tagCount.on,body.evopen #tagCount.on{display:none}
+#tagCount i{display:block;width:9px;height:9px;border-radius:50%;box-sizing:border-box;border:1.5px solid rgba(232,226,212,.5);background:rgba(7,8,11,.6)}
+#tagCount i.lit{background:#F4ECD8;border-color:#F4ECD8;box-shadow:0 0 8px rgba(244,236,216,.7)}
+#tagCount i.out{animation:tagOut .6s ease-out}
+@keyframes tagOut{0%{transform:scale(1.8);background:#FFFFFF;box-shadow:0 0 14px #FFFFFF}100%{transform:scale(1)}}
+/* v28.0 · A BUTTON OF THE CHAPTER'S OWN (kit.button, the sixty-first seam): a round button in the right-hand column, under
+   the torch's and the eye's (its place is written by main.js), for a sense the chapter gives him in play (episode 4 chapter
+   5's SMELL, N); its wait a ring, its ask the eye's, its lock said when pressed. Hidden under every panel, film and card,
+   and in the tag mode (whose own buttons are the acts) */
+.cBtn{display:none}
+body.inplay .cBtn{display:grid}
+body.cine .cBtn,body.invopen .cBtn,body.menuopen .cBtn,body.cardup .cBtn,body.evopen .cBtn,body.unlockopen .cBtn,
+body.chooseopen .cBtn,body.galleryopen .cBtn,body.pictureopen .cBtn,body.tagOn .cBtn{display:none}
+body.inplay .cBtn.hide{display:none}
+.cBtn .cbIco{display:grid;place-items:center;width:24px;height:24px;pointer-events:none}
+.cBtn .cbIco .cbIcoIn,.cBtn .cbIco img,.cBtn .cbIco canvas{display:block;width:100%;height:100%;object-fit:contain}
+.cBtn .cbIco:empty::before{content:attr(data-l);font:700 10px/1 var(--ui);letter-spacing:.06em;color:var(--bone)}
+.cBtn .cbRing{position:absolute;inset:-1px;width:46px;height:46px;transform:rotate(-90deg);pointer-events:none}
+.cBtn .cbRing circle{fill:none;stroke-width:3}
+.cBtn .cbTrack{stroke:rgba(0,0,0,.45)}
+.cBtn .cbArc{stroke:rgba(232,226,212,.85);stroke-dasharray:135.09;stroke-dashoffset:0;stroke-linecap:butt}
+.cBtn.waiting .cbIco{opacity:.5}
+.cBtn.locked{opacity:.48;border-color:rgba(190,200,210,.4)}
+.cBtn.on{border-color:#FFFFFF;box-shadow:0 0 16px rgba(255,255,255,.45)}
+.cBtn.urge{animation:visUrgeOpen 1.15s ease-in-out infinite}
+.cBtn.nope{animation:visHeldTap .38s ease-out}
+@media (max-width:640px){
+  .tagMain{width:80px;height:80px;right:max(16px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 56px)}
+  .tag3{width:60px;height:60px;right:calc(max(16px,env(safe-area-inset-right)) + 94px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 66px)}
+  .tag2{width:60px;height:60px;right:calc(max(16px,env(safe-area-inset-right)) + 82px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 131px)}
+  .tagSw{width:64px;height:64px;right:calc(max(16px,env(safe-area-inset-right)) + 8px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 164px)}
+  body.tagOn:not(.cine) #caption{max-width:92vw;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 240px)}
+  body.tagOn #nofire{bottom:calc(max(18px,env(safe-area-inset-bottom)) + 240px)}
+  #tagCount{top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,37px) + 8px)}
+  /* (the objective box clears the column a chapter's own button stands in, as it does the torch's and the eye's) */
+  body.hasCBtn .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
+}
 /* v7.0: the objective line — top centre, clear of the stats and the buttons */
 #objective{align-items:flex-start;justify-content:center;
   padding-top:calc(max(14px,env(safe-area-inset-top)) + 4px)}
@@ -1110,6 +1223,24 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   70%{transform:translateX(-50px) scale(1.7);opacity:1;filter:brightness(1.8)}80%,100%{transform:translateX(-50px) scale(2.2);opacity:0}}
 @keyframes dhd{0%,56%{transform:translate(0,0);opacity:0}58%{opacity:1}68%{transform:translate(105px,-12px);opacity:1}71%,100%{transform:translate(105px,-12px);opacity:0}}
 @keyframes dhf{0%,46%{transform:scale(1);opacity:0}50%{opacity:.95;transform:scale(1)}56%{transform:scale(.78)}62%{transform:scale(1);opacity:.95}72%,100%{opacity:0}}
+/* v28.0 · tag — TWO OF THEM, ONE PLAYED (the sixty-fourth seam: the tag mode's brief): two figures stand apart, a ring of
+   light under the one being played; a fingertip taps the switch at the right and the ring passes to the other, who steps
+   forward while he is the one; a second tap, and it passes back */
+#evDemo.tag .dka,#evDemo.tag .dkb,#evDemo.tag .dkr,#evDemo.tag .dks,#evDemo.tag .dkf{display:block}
+#evDemo .dka,#evDemo .dkb{position:absolute;top:8px;width:16px;height:16px;border-radius:50%;background:#F4ECD8;box-shadow:0 0 8px rgba(244,236,216,.55)}
+#evDemo .dka::after,#evDemo .dkb::after{content:'';position:absolute;left:-5px;top:18px;width:26px;height:20px;border-radius:13px 13px 6px 6px;background:inherit;opacity:.9}
+#evDemo .dka{left:58px;animation:dka 4.8s ease-in-out infinite}
+#evDemo .dkb{left:132px;background:#CDBBFF;box-shadow:0 0 8px rgba(205,187,255,.55);animation:dkb 4.8s ease-in-out infinite}
+#evDemo .dkr{position:absolute;top:44px;left:50px;width:32px;height:12px;border-radius:50%;box-sizing:border-box;border:2px solid #FFE27A;
+  box-shadow:0 0 10px rgba(255,226,122,.8);animation:dkr 4.8s ease-in-out infinite}
+#evDemo .dks{position:absolute;right:6px;top:18px;width:26px;height:26px;border-radius:50%;box-sizing:border-box;border:1.5px solid rgba(232,226,212,.7);background:rgba(7,8,11,.6)}
+#evDemo .dkf{position:absolute;right:9px;top:21px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.92);
+  box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);opacity:0;animation:dkf 4.8s ease-in-out infinite}
+@keyframes dkr{0%,18%{transform:translateX(0)}30%,68%{transform:translateX(74px)}80%,100%{transform:translateX(0)}}
+@keyframes dkf{0%,6%{opacity:0;transform:scale(1)}10%{opacity:.95;transform:scale(1)}14%{transform:scale(.78)}18%{opacity:.95;transform:scale(1)}24%,52%{opacity:0}
+  56%{opacity:.95;transform:scale(1)}60%{transform:scale(.78)}64%{opacity:.95;transform:scale(1)}70%,100%{opacity:0}}
+@keyframes dka{0%,18%{opacity:1}30%,68%{opacity:.5}80%,100%{opacity:1}}
+@keyframes dkb{0%,22%{transform:translateX(0);opacity:.5}32%{opacity:1}42%,58%{transform:translateX(-10px);opacity:1}68%{transform:translateX(0)}78%,100%{opacity:.5}}
 /* v27.0 · the objective's bar (the fifty-second seam): the chapter's progress along the foot of the box (kit.bar) — a
    blessing's: gold, its own (Grandmaster Pho's alone, as his light is) */
 #objBar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.12);pointer-events:none}
@@ -2097,6 +2228,9 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
   background:rgba(4,5,8,.86);backdrop-filter:blur(3px);padding:24px}
 #result .card,#complete .card,#over .card{width:min(600px,100%);max-height:88vh;overflow-y:auto;
   opacity:1;animation:fadeup .5s var(--ease)}
+/* v28.0 (seam 65): the retry card is the lost card's shape over a dimmer veil (the court stays seen behind it) */
+#retryCard{align-items:center;justify-content:center;pointer-events:auto;background:rgba(4,5,8,.72);backdrop-filter:blur(2px);padding:24px}
+#retryCard .card{width:min(560px,100%);max-height:88vh;overflow-y:auto;opacity:1;animation:fadeup .5s var(--ease);text-align:center}
 @keyframes fadeup{from{transform:translateY(14px)}}
 /* ── the outcome plays out, it is not stated ─────────────────────────
    The HUD's own bars reappear in the middle of the card and MOVE: each
@@ -2145,6 +2279,16 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
 #nextBtn:hover,#againBtn:hover,#retryBtn:hover,
 #nextBtn:focus-visible,#againBtn:focus-visible,#retryBtn:focus-visible{
   background:var(--sodium);transform:translateY(-2px);outline:none}
+/* v28.0 (seam 65): the card that begins a fight again — the lost card's button, and a quieter second one */
+#retryCard{z-index:6}
+#rtLine{font-size:1.3rem;line-height:1.55;color:#CDD2DB;margin-top:14px;text-wrap:pretty}
+#retryCard .rtBtns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+#rtAgain,#rtMore{margin-top:26px;font-family:var(--ui);font-size:1.08rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--void);background:var(--bone);border:0;padding:16px 34px;cursor:pointer;transition:background .18s,transform .18s var(--ease)}
+#rtMore{color:var(--bone);background:rgba(232,226,212,.12);box-shadow:inset 0 0 0 1px rgba(232,226,212,.4)}
+#rtAgain:hover,#rtAgain:focus-visible,#rtMore:hover,#rtMore:focus-visible{background:var(--sodium);color:var(--void);transform:translateY(-2px);outline:none}
+#retryCard.guard #rtAgain,#retryCard.guard #rtMore{opacity:.5;pointer-events:none}
+#rtMore.hide{display:none}
 
 /* ── case complete ──────────────────────────────────────────────────── */
 #complete .card{text-align:center;position:relative;padding-top:8px}
@@ -3309,6 +3453,20 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
      game, so the reason lands under the reticle - which is where the eye
      already is when the trigger is pressed. -->
 <div id="nofire" class="stencil" aria-live="polite"></div>
+<!-- v28.0 · THE TAG MODE (the sixtieth seam): the played one's three acts and the switch, which carries the OTHER one's
+     picture and name; drawn only while a chapter's mode is on, in play. Their words and pictures are the chapter's, put on
+     the page as text (main.js tagPaint); each ring is its wait (the switch's, its lock) and its fill a hold's progress -->
+<div id="tagHud">
+  <button id="tagSw" class="tagBtn tagSw" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgFace"></span><span class="tgName"></span><span class="wpnKey"><kbd></kbd></span></button>
+  <button id="tagA1" class="tagBtn tag2" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
+  <button id="tagA2" class="tagBtn tag3" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
+  <button id="tagA0" class="tagBtn tagMain" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
+</div>
+<!-- the marks over the chapter's targets (a tap or a click on one picks it), the other one's mark at the screen's edge while
+     he is out of the picture (with his share, if the chapter gives one), and the count under the objective -->
+<div id="tagMarks" aria-hidden="true"></div>
+<div id="tagMate" aria-hidden="true"><svg class="tmRing" viewBox="0 0 20 20"><circle class="tmTrack" cx="10" cy="10" r="8"/><circle class="tmArc" cx="10" cy="10" r="8"/></svg><span class="tmName"></span><span class="tmArrow"></span></div>
+<div id="tagCount" aria-hidden="true"></div>
 <!-- v14.11: THE AMULET BROKE. A worn ward item's charge has just run out:
      the glass shatters (wardbreak) and this says so, over whatever is on
      screen, for four seconds. wardBroke() in main.js raises it. -->
@@ -3895,7 +4053,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i><i class="dga"></i><i class="dgl"></i><i class="dgr"></i><b class="dgo"></b><span class="dgf"></span><i class="dlm"></i><i class="dlg"></i><i class="dll"><b></b><b></b><b></b><b></b><b></b><b></b></i><span class="dlf"></span><i class="dhw"></i><i class="dhe"></i><b class="dhp"></b><b class="dhs"></b><i class="dhd"></i><span class="dhf"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i><i class="dga"></i><i class="dgl"></i><i class="dgr"></i><b class="dgo"></b><span class="dgf"></span><i class="dlm"></i><i class="dlg"></i><i class="dll"><b></b><b></b><b></b><b></b><b></b><b></b></i><span class="dlf"></span><i class="dhw"></i><i class="dhe"></i><b class="dhp"></b><b class="dhs"></b><i class="dhd"></i><span class="dhf"></span><i class="dka"></i><i class="dkb"></i><i class="dkr"></i><i class="dks"></i><span class="dkf"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -4013,6 +4171,16 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
       <p id="overTeach" data-t="lost.teaching">Fear is not the danger.</p>
     </div>
     <button id="retryBtn" data-t="lost.retry">Walk it again</button>
+  </div>
+</div>
+
+<!-- v28.0 · A LOSS THAT BEGINS AGAIN (kit.retry, the sixty-fifth seam): a card of its own over the stopped world, its words
+     the chapter's (or the sheet's), put on the page as text; BEGIN AGAIN, and a second button only when the chapter offers one -->
+<div id="retryCard" class="layer hide">
+  <div class="card">
+    <span class="stencil" id="rtLabel"></span>
+    <p id="rtLine"></p>
+    <div class="rtBtns"><button id="rtAgain" type="button"></button><button id="rtMore" class="hide" type="button"></button></div>
   </div>
 </div>
 

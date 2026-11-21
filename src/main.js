@@ -3090,6 +3090,13 @@ let ev = null;                                      // the live event, one at a 
 let evEndedAt = 0;                                  // v24.5 (R2-1): when the last one resolved (performance.now())
 let activeSpot = null;
 let kitInited = false;
+/* v28.0 · THE TAG MODE's state (the sixtieth seam: kit.tag, below the film from play). Declared here with the kit's own, so
+   no frame and no verb can reach it before it exists. `on` is set by kit.tag alone, and kit.tag refuses a chapter that does
+   not declare `tag`: every branch the mode adds to the frame, the input and the saves stands behind it */
+const tag = { decl: null, cfg: null, on: false, live: false, bodies: [], played: 0, onAct: null, targets: null, acts: {},
+              t: 0, last: 0, lockTo: 0, glideFrom: -1, glideT0: 0, boomK: 1, snap: null, save0: null, wrote: false,
+              queue: [], down: new Map(), dead: new Set(), stale: new Set(), tgtTouch: new Map(), drawn: [],
+              count: null, log: [], acted: 0, dropped: 0, refused: 0, classOn: false, el: null, wired: false };
 const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
 
 /* ---- hotspots ---------------------------------------------------------- */
