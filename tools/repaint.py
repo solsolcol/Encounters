@@ -99,7 +99,12 @@ cen = np.zeros((C, 2)); cnt = np.bincount(vchart, minlength=C); np.add.at(cen, v
 uv2 = (cen[vchart] + (uv - cen[vchart]) * kC[vchart][:, None]).astype(np.float32)
 pad = PAD
 for attempt in range(6):
-    a2 = xatlas.Atlas(); a2.add_uv_mesh(uv2, ix.astype(np.uint32))
+    # (v28.0, with XSCALE: xatlas's first cut answers coordinates over a square of ONE, and its second packing, handed
+    #  them so, took every triangle under a ten-millionth of that square (half a texel's area at 2048: three quarters of
+    #  a square millimetre of his body) or with an edge under a ten-thousandth of it for no triangle at all. Those were
+    #  the 8,036 "torn slivers" and the 12,807 triangles left at the sheet's corner. With XSCALE the second packing is
+    #  handed the same coordinates 4,096 times as large, and no triangle of a body is too small to place.)
+    a2 = xatlas.Atlas(); a2.add_uv_mesh(uv2 if XSCALE == 1 else (uv2.astype(np.float64) * 4096.0).astype(np.float32), ix.astype(np.uint32))
     p2 = xatlas.PackOptions(); p2.resolution = PX; p2.padding = int(math.ceil(pad)); p2.bilinear = True; p2.rotate_charts = True
     a2.generate(xatlas.ChartOptions(), p2)
     vm2, ix2, uvp = a2[0]

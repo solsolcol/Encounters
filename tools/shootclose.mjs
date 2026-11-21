@@ -9,6 +9,7 @@
 //   spec: { "models": [{ "file": "a.glb", "h": 0.24, "x": 0, "z": 0, "ry": 0, "node": "name_near" }],
 //           "shots": [{ "name": "macro", "w": 390, "h": 844, "fov": 44, "pos": [0,1,0.3], "at": [0,0.9,0] }],
 //           "bg": "#3a3530", "light": "warm" | "studio", "env": 1 }
+// A model's "clip" and "at" (optional, v28.0) pose it in one of its own takes, at that share of the take's length.
 // A model's "node" (optional) keeps only that node's mesh visible (a near or a far level of a lodpair file).
 import { chromium } from 'playwright';
 import { createServer } from 'http';
@@ -71,7 +72,15 @@ await Promise.all(SPEC.models.map((m, i) => new Promise((ok) => loader.load('/mo
   root.scale.setScalar(s); root.rotation.y = m.ry || 0;
   root.position.set(m.x || 0, (SPEC.floor ?? 0.8) - box.min.y * s, m.z || 0);
   scene.add(root); root.updateMatrixWorld(true);
+  // (v28.0: a model's "clip" and "at" (0..1 of its length) pose it in one of its own takes before it is photographed;
+  //  it is sized and stood from its bind pose, as without them)
+  if (m.clip) { const c = g.animations.find(a => a.name === m.clip);
+    if (c) { const mixer = new THREE.AnimationMixer(root); mixer.clipAction(c).play(); mixer.setTime((m.at ?? 0) * c.duration); root.updateMatrixWorld(true);
+      root.traverse(o => { if (o.isSkinnedMesh) { o.frustumCulled = false; o.skeleton.update(); } }); }
+    else info.push({ file: m.file, err: 'no take named ' + m.clip + ' (' + g.animations.map(a => a.name).join(', ') + ')' }); }
   let tris = 0; root.traverse(o => { if (o.isMesh && o.visible) tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; });
+  // (v28.0: "aniso": n draws the model's colour sheets with that anisotropy, as the chapters draw a repainted body's (4: c_cast.js sheetOf))
+  if (m.aniso) root.traverse(o => { if (o.isMesh && o.material.map) { o.material.map.anisotropy = m.aniso; o.material.map.needsUpdate = true; } });
   if (m.nomip) root.traverse(o => { if (o.isMesh && o.material.map) { o.material.map.generateMipmaps = false; o.material.map.minFilter = THREE.LinearFilter; o.material.map.needsUpdate = true; } });
   info.push({ file: m.file, scale: +s.toFixed(5), tris, box: [box.min.toArray().map(v => +v.toFixed(3)), box.max.toArray().map(v => +v.toFixed(3))] });
   ok();
