@@ -956,8 +956,10 @@
           q.grp.visible = tr < RT.away + 3.6 + i * 0.7 && u < 0.999;
           if (q.grp.visible) { q.grp.position.set(q.home.x + (q.home.x - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, q.home.z + 0.9 * u);
             if (q.fx) q.fx.set('uAlpha', 1 - u); } }
-        /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it) */
-        fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
+        /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
+           it earlier, on his hands at the case */
+        const vv = ENDS5[k].vis ? ENDS5[k].vis(E) : [r0 + RT.see, r0 + RT.unsee];
+        fmVision(t, vv[0], 1.8, vv[1], 1.4);
         /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
@@ -1000,6 +1002,94 @@
         if (things.padcase && tc >= 0) { things.padcase.position.set(RITE_AT.bag[0] - 0.34, 0.34, RITE_AT.bag[1] + 0.02); things.padcase.rotation.set(0, 0.3, 0); }
       },
       end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null); }
+    };
+
+    /* EACH ENDING'S OWN DIRECTION (its lines' times are its clock, EN5[k], z_tail.js): its shots before the rite and after
+       it, the things it moves, where the collector looks. The four are four KINDS of answer (the plan's 4.8): an order
+       obeyed (A), a man finding out that he does not know (B), a collection sorted by a smell (C), a rule about kinds (D) */
+    const DOOR5 = [-1.15, 1.55, 237.95];
+    const casePos0 = { x: null, z: null, ry: null };
+    function caseAt5(x, z, ry) { const pc = things.padcase; if (!pc) return; if (casePos0.x === null) { casePos0.x = pc.position.x; casePos0.z = pc.position.z; casePos0.ry = pc.rotation.y; }
+      pc.position.set(x != null ? x : casePos0.x, 0.34, z != null ? z : casePos0.z); pc.rotation.set(0, ry != null ? ry : casePos0.ry, 0); }
+    function casePush5(t, t0, t1, to) { caseAt5(); const u = smo(c01((t - t0) / Math.max(0.05, t1 - t0))); caseAt5(lp(casePos0.x, to[0], u), lp(casePos0.z, to[1], u), casePos0.ry + 0.35 * u); }
+    const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
+    const threeHome5 = {};
+    function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
+      const h = threeHome5[key]; g.position.set(lp(h.x, h.x * 0.4 + 0.05, u), h.y, lp(h.z, 240.28, u)); } }
+    /* (ending C) something small that his nose never caught, on a piece he has already packed: a pale thing lifting its
+       head out of the case's foam, seen only in his sight (drawn as the play's presences are: ctx.spirit) */
+    const SMALL5 = (() => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), matProxy); owned.push(m.geometry); g.add(m); g.visible = false; world.add(g);
+      const fx = ctx.spirit ? ctx.spirit(g, { color: 0xd8c8ff, fill: 0.16, rim: 1.6, flicker: 0.12, power: 2.2, xray: 0.4 }) : null;
+      return { set(k, t) { g.visible = k > 0.01; if (!g.visible) return; const pc = things.padcase, x = pc ? pc.position.x : -0.36, z = pc ? pc.position.z : 239.95;
+        g.position.set(x + 0.03, 0.43 + 0.05 * k + 0.006 * Math.sin(t * 2.1), z - 0.02); g.scale.setScalar(0.6 + 0.4 * k); if (fx) fx.set('uAlpha', k); } };
+    })();
+    const ENDS5 = {
+      /* A · "None of them. Let them all go." (good): he flinches, then nods, too quickly; "All." He pushes the case over as
+         a man pays a fine. After the rite, at the door, lighter, already asking where to buy good ones; the student has no
+         answer ready; his teacher's two lines; his own thought */
+      A: { shots: (me, COL, PHO, E) => [
+             { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.q5A1 + 0.4, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
+             { t: E.push + 0.2, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.18, 0.42, 240.02], fp: 46, fd: 40 },
+             { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+           after: (me, COL, PHO, E) => [
+             { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
+             { t: E.ph5A1 - 0.1, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.ph5A1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5A2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.q5A2 + 0.4, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
+           things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
+      /* B · "Tell me what each one is, and where it came from." (best): he starts confidently at the first row; the second;
+         the third he turns over twice; he stops with his hand on the fourth, looks along the rows, and is quiet. He closes
+         the case's lid himself and pushes it across. After the rite, at the door: "If I ever buy another..." "Ask it those
+         two questions first."; when he has gone his teacher's word; his own thought */
+      B: { shots: (me, COL, PHO, E) => [
+             { t: 0, name: 'row1', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.42, 0.36, 239.7], fp: 40, fd: 34 },
+             { t: E.co5B2 + 0.2, name: 'row2', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.18, 0.36, 239.82], fp: 40, fd: 34 },
+             { t: E.co5B3 + 0.2, name: 'row3', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [0.12, 0.36, 239.94], fp: 40, fd: 34 },
+             { t: E.co5B4 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.lid - 0.2, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
+             { t: E.lid + 0.4, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.2, 0.42, 240.02], fp: 46, fd: 40 },
+             { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+           after: (me, COL, PHO, E) => [
+             { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
+             { t: E.ph5B1 - 0.2, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.ph5B1 + 0.4, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
+           things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
+           colLook: (t, E) => (t < E.co5B4 ? [-0.2, 0.36, 239.8] : t < E.lid ? [0.2, 0.36, 239.85] : null) },
+      /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
+         across with one finger and fits the seventeen back into their foam; the film opens his sight on the case: on a
+         piece already packed something small that his nose never caught lifts its head; his teacher's hand flat on the lid:
+         "This one. What is it?" "I... do not know." "Nor does he. Your nose is not a certificate." All twenty go across;
+         the rite; his own thought */
+      C: { shots: (me, COL, PHO, E) => [
+             { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.three, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.1, 0.37, 239.95], fp: 42, fd: 36 },
+             { t: E.pack, name: 'pack', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.34, 0.4, 239.95], fp: 40, fd: 34, cut: true },
+             { t: E.see + 1.2, name: 'small', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.33, 0.45, 239.93], fp: 32, fd: 28 },
+             { t: E.ph5C1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.co5C2, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.ph5C2, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.across, name: 'across', eye: [me[0], me[1] - 0.04, me[2]], at: [0.0, 0.38, 240.05], fp: 46, fd: 40 },
+             { t: E.rite - 0.05, name: 'across', eye: [me[0], me[1] - 0.04, me[2]], at: [0.0, 0.38, 240.1], fp: 46, fd: 40 } ],
+           after: (me, COL, PHO, E) => [
+             { t: E.q5C1 + 0.3, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
+           things: (t, E) => { threeAt5(t < E.across ? smo(c01((t - E.three) / 1.4)) : 1);
+             const packed = t >= E.pack && t < E.across; for (const p of PIECES5.list) p.g.visible = p.g.visible && !packed;
+             SMALL5.set(t >= E.see && t < E.across ? smo(c01((t - E.see - 0.6) / 1.2)) : 0, t); },
+           vis: (E) => [E.see, E.rite + RT5.unsee] },
+      /* D · "Keep the holy ones. The Yin ones are the trouble." (worst): his face clears, he knows a man, twenty by
+         Friday, already counting on his fingers; his teacher does not laugh, quite: to him, then to the student; the
+         collector's hand comes down from his counting; the rite; his own thought */
+      D: { shots: (me, COL, PHO, E) => [
+             { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.ph5D1 + 0.3, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
+             { t: E.ph5D2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.down, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.rite - 0.05, name: 'col', eye: me, at: COL, fp: 44, fd: 38 } ],
+           after: (me, COL, PHO, E) => [
+             { t: E.q5D1 + 0.3, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ] }
     };
 
     /* what a scene reaches of the films (stage.films): each film's three hands */
