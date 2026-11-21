@@ -805,6 +805,10 @@ ASSETS = {
     # e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its
     # own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)
     'w5nagastaff':  ('assets/w5nagastaff.glb', True, False),     # Grandmaster Pho's Naga stick, light brown, 1.40 m
+    # e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the
+    # library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga
+    # stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)
+    'p5pho':        ('assets/p5pho.glb', True, False),     # Grandmaster Pho, his right hand with finger bones (at rest exactly his own)
     # e4c5: MR KOH and JUN (M5a), made here end to end: the near body with their takes, `m` the mid body, `h` every
     # triangle for within 2.2 m (v26.5). masters/v28.0/people/RECORD.md, people.sh
     'p5koh':        ('assets/p5koh.glb', True, False),     # Mr Koh, the devotee, 1.68 m: a heavy man in a polo tee
@@ -1027,7 +1031,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
-           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
+           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
            'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
            'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable',
            'w5tvconsole', 'w5oldchair', 'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',

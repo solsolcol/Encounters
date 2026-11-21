@@ -71,7 +71,7 @@
        arms down, there and back in a slow breath; his talk the library's open hands, his head greatly restrained; every
        posture law). His walk is his own file's (never yet seen in a chapter: photographed before it is cast at length) */
     { const S0 = at0('walk', 'pho');
-      cast.pho = mkPerson('pho', S0.x, S0.z, S0.ry, { take: 'Sit_to_Stand_Transition_M',
+      cast.pho = mkPerson('p5pho', S0.x, S0.z, S0.ry, { take: 'Sit_to_Stand_Transition_M',
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD, pace: true,
         upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES,
@@ -81,7 +81,7 @@
        seat, its numbers (CROSS) and its cloth, on this room's cushion (w5cushion: its top 0.12 m) */
     const CUSHION_TOP = 0.12;
     { const S0 = at0('table', 'pho');
-      cast.phoS = mkPerson('pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
+      cast.phoS = mkPerson('p5pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.phoS.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
@@ -136,6 +136,7 @@
     }
     const STICK5 = {
       who: 'away', off: null,
+      grip: null,                                   // (R25/R26: his closed hand round it, c_fightstage.js PHOGRIP5, where his hand has fingers)
       /* who carries it: 'pho' (upright in his right hand), 'ton' (held out on his palms), 'tonWrap' (wrapped, on his
          palms), 'planted' (standing by itself where it was set: TOGETHER), 'away' */
       to(who) { this.who = who; const g = things.nagaStaff, w = things.staffWrap; if (!g) return;
@@ -146,6 +147,7 @@
       /* laid in his right hand from his standing rest (once: the offset is kept), and carried by the hand bone */
       inHand(P) {
         const g = things.nagaStaff, hb = boneOf(P, 'RightHand'); if (!g || !hb) return;
+        if (!this.off && this.grip) this.off = this.grip.offset(P);                 // (R25: through his closed fist, where his hand has fingers)
         if (!this.off) {
           const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
           const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;

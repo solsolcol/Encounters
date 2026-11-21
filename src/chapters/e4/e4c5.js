@@ -441,13 +441,13 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail',
-      'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp',
-      'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair',
-      'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
-      'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
-      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
-      'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
+      'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
+      'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole',
+      'w5oldchair', 'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant',
+      'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel',
+      'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
+      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
@@ -455,7 +455,7 @@
          Pho and Ton, chapter 3's; the white cloth over his crossed legs and the rite's fan, chapter 3's; the holy-water
          bowls, chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
          rows (the plan's 9.4) */
-      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
+      'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
       'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
@@ -463,7 +463,7 @@
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
     reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool",
-      pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D)",
+      p5pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): this chapter's copy of his file with finger bones on his right hand (R26), his own pho.glb untouched",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
       w3fan: "chapter 3's peacock-feather fan, from his own Wai Kru's photographs: the rite's fan (the plan's 16: his photograph was asked and not sent)",
@@ -5839,7 +5839,7 @@
        arms down, there and back in a slow breath; his talk the library's open hands, his head greatly restrained; every
        posture law). His walk is his own file's (never yet seen in a chapter: photographed before it is cast at length) */
     { const S0 = at0('walk', 'pho');
-      cast.pho = mkPerson('pho', S0.x, S0.z, S0.ry, { take: 'Sit_to_Stand_Transition_M',
+      cast.pho = mkPerson('p5pho', S0.x, S0.z, S0.ry, { take: 'Sit_to_Stand_Transition_M',
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD, pace: true,
         upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES,
@@ -5849,7 +5849,7 @@
        seat, its numbers (CROSS) and its cloth, on this room's cushion (w5cushion: its top 0.12 m) */
     const CUSHION_TOP = 0.12;
     { const S0 = at0('table', 'pho');
-      cast.phoS = mkPerson('pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
+      cast.phoS = mkPerson('p5pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.phoS.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
@@ -5904,6 +5904,7 @@
     }
     const STICK5 = {
       who: 'away', off: null,
+      grip: null,                                   // (R25/R26: his closed hand round it, c_fightstage.js PHOGRIP5, where his hand has fingers)
       /* who carries it: 'pho' (upright in his right hand), 'ton' (held out on his palms), 'tonWrap' (wrapped, on his
          palms), 'planted' (standing by itself where it was set: TOGETHER), 'away' */
       to(who) { this.who = who; const g = things.nagaStaff, w = things.staffWrap; if (!g) return;
@@ -5914,6 +5915,7 @@
       /* laid in his right hand from his standing rest (once: the offset is kept), and carried by the hand bone */
       inHand(P) {
         const g = things.nagaStaff, hb = boneOf(P, 'RightHand'); if (!g || !hb) return;
+        if (!this.off && this.grip) this.off = this.grip.offset(P);                 // (R25: through his closed fist, where his hand has fingers)
         if (!this.off) {
           const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
           const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;
@@ -8529,6 +8531,8 @@
       place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
         R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      /* (his closed hand on the stick: the grip's solve, each joint's turn in degrees, and how far it is closed) */
+      grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -8651,6 +8655,145 @@
       if (kit && kit.tagHold) kit.tagHold();                                     // (a loss begins again from here: his sanity as he opened the fight)
       fsHud();
     }
+
+    /* ---------------------------------------------------------------- THE NAGA STICK IN HIS CLOSED HAND (R25, Chad: "the way
+       the naga stick is attached to pho is very unnatural and wrongly attached, improve it so it looks like he is actually
+       holding it"; R26, his pick: "Finger bones (Recommended)"). His file has no finger bones; this chapter's copy of it
+       (p5pho, tools/fingergraft.mjs: fifteen of the library's, and their ends, grafted onto his right hand from its own
+       geometry, masters/v28.0/pho5) has, and at rest draws exactly as his. Here his hand is CLOSED ROUND THE SHAFT:
+       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.10 m up its middle
+         stands 8.4 cm along its own x and its radius is 3.3 to 3.6 cm (3.6 taken); his hand closes at 1.00 m up it, under
+         the Naga's head (which begins at 1.15 m);
+       ACROSS HIS PALM, in his hand's own frame (armsOf: the fingers' line, the palm's facing; across toward his thumb): its
+         middle 1.8 cm short of his middle finger's knuckle along his hand and pressed into his palm (the palm 1.2 cm off
+         the bone's line, measured from his hand's own skin there: 1.1 to 1.7 cm, a grip's press taken off), the shaft's
+         line sloped 18 degrees from straight across, its upper end toward his fingers (a power grip: the shaft runs from
+         the heel of the little finger's side to the first finger's knuckle), the Naga's head up past his thumb, facing
+         where his knuckles face;
+       EACH FINGER CLOSED ROUND IT, solved from its own three bones' lengths in its own plane (MCP, PIP and DIP turning
+         about the axis square to the finger and to the palm's facing): its first bone turned until its middle joint meets a
+         circle round the shaft's line at the shaft's radius and the finger's (0.8 cm, pressed), then the middle and end
+         bones laid as chords round that circle; THE THUMB the other way round it, from the heel of the hand, its
+         metacarpal turned at its base until its knuckle meets the thumb's circle above the shaft, its two bones as chords
+         round it toward the fingertips; each joint held inside a hand's own range (MCP 90, PIP 110, DIP 85 degrees; the
+         thumb's 60, 60, 80), measured after (tools/probes/jointscan.mjs);
+       LAID at the very start of each drawing of the world, after every take, film and lay of his (a first child of the
+         world whose matrix update runs before his: his bones' matrices are made from it), and taken off before his mixer
+         runs again (armsBack, as every laid pose: v11.5); eased over 0.3 s as the stick comes into his hand or leaves it.
+       The stick is laid in this hand at that place (STICK5.inHand asks PHOGRIP5 for it), and goes where the hand goes */
+    const PHOGRIP5 = (() => {
+      const STICK_R = 0.036, STICK_Y = 1.0, STICK_C = [0.084, -0.005], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
+      const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
+      const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
+      let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
+      const V = () => new THREE.Vector3();
+      /* the solve, once, from his rest: everything in his right hand's own frame (its bone's local space; `s` metres a unit) */
+      function solve(P) {
+        if (G || failed) return G;
+        const As = armsOf(P), a = As && As.R; if (!a || !a.fingers) { failed = true; return null; }
+        const hand = a.hand, chains = {};
+        for (const nm of NAMES) { const L = [1, 2, 3, 4].map(i => boneOf(P, 'RightHand' + nm + i)); if (L.some(b => !b)) { failed = true; console.warn('PHOGRIP5: no ' + nm + ' bones on ' + P.key); return null; } chains[nm] = L; }
+        hand.updateWorldMatrix(true, true);
+        const s = new THREE.Vector3().setFromMatrixColumn(hand.matrixWorld, 0).length() / Math.max(1e-9, new THREE.Vector3().setFromMatrixColumn(P.group.matrixWorld, 0).length());
+        const M = (m) => m / s;                                                        // (metres to the hand's units)
+        const fL = a.fL.clone(), nL = a.nL.clone();                                    // (the fingers' line; the palm's facing)
+        const J = {}; for (const nm of NAMES) { const L = chains[nm], p = [V()]; for (let i = 0; i < 4; i++) p.push(p[i].clone().add(L[i].position)); p.shift(); J[nm] = p; }   // (each joint's place in the hand's frame)
+        const acL = J.Index[0].clone().sub(J.Pinky[0]); acL.addScaledVector(fL, -acL.dot(fL)).normalize();   // (across, toward the thumb)
+        const up = nL.clone().negate();                                                // (the back of his hand)
+        const A = acL.clone().multiplyScalar(Math.cos(TILT)).addScaledVector(fL, Math.sin(TILT)).normalize();   // (the shaft's line, its upper end toward his thumb)
+        const C = fL.clone().multiplyScalar(J.Middle[0].dot(fL) - M(BACK)).addScaledVector(nL, M(PALM + STICK_R));   // (the shaft's middle under his palm)
+        const out = { s, chains, q: {}, report: {} };
+        const arc = (l, r) => 2 * Math.asin(Math.min(1, l / (2 * r)));
+        /* one finger: its plane, the shaft's circle in it, its joints as chords round it */
+        const finger = (nm) => {
+          const P0 = J[nm][0], seg = [0, 1, 2].map(i => J[nm][i + 1].clone().sub(J[nm][i])), l = seg.map(v => v.length());
+          const d = seg[0].clone().normalize(), w = d.clone().cross(nL).normalize();     // (square to the finger and to the palm's facing)
+          const cs = C.clone().addScaledVector(A, P0.clone().sub(C).dot(w) / A.dot(w)); // (the shaft's line where it crosses this finger's plane)
+          const x3 = d.clone().addScaledVector(w, -d.dot(w)).normalize(), y3 = w.clone().cross(x3).normalize();
+          if (y3.dot(up) < 0) y3.negate();                                             // (y the back of the hand, -y the palm)
+          const to2 = (p) => [p.clone().sub(P0).dot(x3), p.clone().sub(P0).dot(y3)], c = to2(cs), rho = M(STICK_R + FING_R + GAP);
+          /* the first bone: turned toward the palm until its far joint meets the circle (the first meeting) */
+          let phi = 0; const hit = (ph) => Math.hypot(l[0] * Math.cos(ph) - c[0], -l[0] * Math.sin(ph) - c[1]) - rho;
+          for (let t = 0; t <= 100; t++) { const ph = t * D2R; if (hit(ph) <= 0) { phi = ph; break; } phi = ph; }
+          for (let it = 0; it < 30; it++) { const a0 = phi - D2R, a1 = phi; const m2 = (a0 + a1) / 2; if (hit(m2) <= 0) phi = m2; else break; }
+          const p1 = [l[0] * Math.cos(phi), -l[0] * Math.sin(phi)];
+          let al = Math.atan2(p1[1] - c[1], p1[0] - c[0]);                           // (round the shaft from there, the way the fingers close)
+          const pts = [[0, 0], p1];
+          for (const li of [l[1], l[2]]) { al -= arc(li, rho); pts.push([c[0] + rho * Math.cos(al), c[1] + rho * Math.sin(al)]); }
+          return { P0, x3, y3, w, l, pts, rest: seg.map(v => v.clone().normalize()), lim: LIM.f };
+        };
+        /* the thumb: the other way round the shaft, in the plane square to it through his thumb's knuckle */
+        const thumb = () => {
+          const P0 = J.Thumb[0], seg = [0, 1, 2].map(i => J.Thumb[i + 1].clone().sub(J.Thumb[i])), l = seg.map(v => v.length());
+          const st = J.Thumb[1].clone().sub(C).dot(A), cs = C.clone().addScaledVector(A, st);
+          const x3 = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(), y3 = A.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
+          const rho = M(STICK_R + THUMB_R + GAP), Q = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
+          /* its knuckle on the circle above the shaft, nearer the wrist, the metacarpal's own length from its base */
+          let best = null; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q(b).distanceTo(P0) - l[0]); if (!best || e < best.e) best = { b, e }; }
+          let be = best.b; const tg = [P0.clone(), Q(be)];
+          for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q(be)); }       // (round the shaft's near side and under it)
+          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e };
+        };
+        /* each chain's turns: each bone's rest line turned onto its target line, down the chain (each in its parent's frame) */
+        const chainQ = (nm, tgDirs, lim) => {
+          const L = chains[nm], qs = [], acc = new THREE.Quaternion(), rep = [];
+          for (let i = 0; i < 3; i++) {
+            const restW = L[i + 1].position.clone().normalize().applyQuaternion(acc);   // (its rest line as the bones above it now stand)
+            let qw = new THREE.Quaternion().setFromUnitVectors(restW, tgDirs[i]);
+            let ang = 2 * Math.acos(Math.min(1, Math.abs(qw.w)));
+            if (ang > lim[i] * D2R) { qw = new THREE.Quaternion().slerp(qw, lim[i] * D2R / ang); ang = lim[i] * D2R; }
+            const ql = acc.clone().invert().multiply(qw).multiply(acc);                  // (into this bone's parent's frame)
+            qs.push(ql); acc.premultiply(qw); rep.push(+(ang / D2R).toFixed(1));
+          }
+          out.q[nm] = qs; out.report[nm] = rep;
+        };
+        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm);
+          const dir = (i) => { const a0 = F.pts[i], a1 = F.pts[i + 1]; return F.x3.clone().multiplyScalar(a1[0] - a0[0]).addScaledVector(F.y3, a1[1] - a0[1]).normalize(); };
+          chainQ(nm, [dir(0), dir(1), dir(2)], F.lim); }
+        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim); out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); }
+        /* the stick in this hand: its shaft's middle at 1.00 m up it on C, its length along A, the Naga's head facing as his knuckles do */
+        const yA = A.clone(), xA = fL.clone().addScaledVector(A, -fL.dot(A)).normalize().negate(), zA = xA.clone().cross(yA).normalize();
+        const R = new THREE.Matrix4().makeBasis(xA, yA, zA), sc = 1 / s;
+        const off = new THREE.Matrix4().compose(V(), new THREE.Quaternion().setFromRotationMatrix(R), new THREE.Vector3(sc, sc, sc));
+        const at = new THREE.Vector3(STICK_C[0], STICK_Y, STICK_C[1]).applyMatrix4(off);
+        off.setPosition(C.clone().sub(at));
+        out.off = off; out.C = C; out.A = A;
+        G = out; console.log('PHOGRIP5: his grip solved: ' + JSON.stringify(out.report)); return G;
+      }
+      /* the closed hand laid on, by k (0 his file's hand .. 1 closed), from wherever the take left the fingers (they have none
+         of their own tracks: at rest they stand as grafted) */
+      const _q = new THREE.Quaternion();
+      function lay(P, kk) {
+        const As = armsOf(P), a = As && As.R; if (!a || !G) return;
+        if (!a.fing || !a.fingAll) { a.fing = []; for (const nm of NAMES) G.chains[nm].slice(0, 3).forEach((b, i) => a.fing.push({ b, q: new THREE.Quaternion(), i: i + 1, nm, j: i })); a.fingAll = true; }
+        /* (already laid in this frame by an earlier drawing: the same turns again, nothing saved twice) */
+        const fresh = !a.curled || !wroteQ || a.fing.some((F, n) => !F.b.quaternion.equals(wroteQ[n]));
+        if (fresh && !a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.curled = true; }
+        a.fing.forEach((F) => { _q.copy(G.q[F.nm][F.j]); F.b.quaternion.copy(F.q).slerp(_q, kk); });
+        wroteQ = a.fing.map(F => F.b.quaternion.clone());
+        for (const nm of NAMES) G.chains[nm][0].updateMatrixWorld(true);
+      }
+      const hook = new THREE.Object3D(); hook.name = 'his grip on the Naga stick';
+      hook.updateMatrixWorld = function (force) {
+        const P = cast.pho;
+        try {
+          const now = performance.now(), dt = lastNow ? Math.min(0.1, (now - lastNow) / 1000) : 0;
+          if (now - lastNow > 1) { lastNow = now;
+            const holding = !!(P && P.ready && typeof STICK5 === 'object' && STICK5.who === 'pho' && things.nagaStaff && things.nagaStaff.visible && P.group.visible);
+            k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
+          if (P && P.ready && k > 0 && solve(P)) lay(P, k);
+        } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
+        THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+      };
+      world.children.unshift(hook); hook.parent = world;
+      return {
+        /* the stick's place in his right hand, in that hand's frame (null: his hand has no fingers, and the stick stands as before) */
+        offset(P) { const g = solve(P); return g ? g.off : null; },
+        report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
+        k() { return k; }
+      };
+    })();
+    if (typeof STICK5 === 'object') STICK5.grip = PHOGRIP5;
     /* ================================================================ THE PLAY'S OWN MACHINERY (the tracker's M7; the plan's
        4.1 the walkway, 4.3 the hunt, 4.7 the collector's table). The phases' logic, their orders and their lines are in
        c_story.js; what they stand on is here: SMELL (the chapter's own button, kit.button: the sixty-first seam) and the

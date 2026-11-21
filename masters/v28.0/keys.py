@@ -30,6 +30,10 @@ group("e4c5 v28.0 (episode 4 chapter 5, the house with nine Prai): MASTER ZAVIER
 group("e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its\n"
       "own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)",
       [('w5nagastaff', 'w5nagastaff.glb', "Grandmaster Pho's Naga stick, light brown, 1.40 m")])
+group("e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the\n"
+      "library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga\n"
+      "stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)",
+      [('p5pho', 'p5pho.glb', "Grandmaster Pho, his right hand with finger bones (at rest exactly his own)")])
 
 group("e4c5: MR KOH and JUN (M5a), made here end to end: the near body with their takes, `m` the mid body, `h` every\n"
       "triangle for within 2.2 m (v26.5). masters/v28.0/people/RECORD.md, people.sh",
