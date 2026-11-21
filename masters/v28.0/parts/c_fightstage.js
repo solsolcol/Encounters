@@ -166,25 +166,26 @@
        act's own colour so a phone reads the act at a glance; no person is drawn: v21.16) */
     function fsIcon(draw) { const [c, x] = fsCanvas(96); x.lineCap = 'round'; x.lineJoin = 'round'; draw(x); return c; }
     const FS_ICON = {
-      flame: fsIcon((x) => { const g = x.createRadialGradient(48, 52, 2, 48, 52, 34); g.addColorStop(0, '#fff1e8'); g.addColorStop(0.35, '#ff6a7c'); g.addColorStop(1, 'rgba(255,42,74,0)');
-        x.fillStyle = g; x.beginPath(); x.arc(48, 52, 34, 0, Math.PI * 2); x.fill();
-        x.strokeStyle = '#ff4a62'; x.lineWidth = 5; x.beginPath(); x.moveTo(30, 30); x.quadraticCurveTo(48, 6, 66, 30); x.stroke(); }),
-      shock: fsIcon((x) => { x.strokeStyle = '#ffcf6a'; x.lineWidth = 7; x.beginPath(); x.arc(48, 48, 33, 0, Math.PI * 2); x.stroke();
-        x.lineWidth = 3.5; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; x.beginPath(); x.moveTo(48 + Math.cos(a) * 12, 48 + Math.sin(a) * 12); x.lineTo(48 + Math.cos(a) * 28, 48 + Math.sin(a) * 28); x.stroke(); }
-        x.fillStyle = '#fff0c8'; x.beginPath(); x.arc(48, 48, 7, 0, Math.PI * 2); x.fill(); }),
-      bag: fsIcon((x) => { x.fillStyle = '#20242c'; x.strokeStyle = '#d8dce6'; x.lineWidth = 4;
-        x.beginPath(); x.moveTo(34, 30); x.bezierCurveTo(14, 46, 16, 84, 48, 84); x.bezierCurveTo(80, 84, 82, 46, 62, 30); x.closePath(); x.fill(); x.stroke();
-        x.beginPath(); x.moveTo(30, 28); x.quadraticCurveTo(48, 38, 66, 28); x.stroke(); x.beginPath(); x.moveTo(42, 20); x.lineTo(40, 31); x.moveTo(54, 20); x.lineTo(56, 31); x.stroke(); }),
-      bind: fsIcon((x) => { const g = x.createRadialGradient(48, 48, 10, 48, 48, 36); g.addColorStop(0, 'rgba(155,107,255,0.08)'); g.addColorStop(0.8, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(200,170,255,0.95)');
-        x.fillStyle = g; x.beginPath(); x.arc(48, 48, 36, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#c9b0ff'; x.lineWidth = 4; x.stroke();
-        x.fillStyle = 'rgba(255,255,255,0.85)'; x.beginPath(); x.arc(36, 34, 6, 0, Math.PI * 2); x.fill(); }),
-      smell: fsIcon((x) => { x.strokeStyle = '#c8d6a8'; x.lineWidth = 6;
-        x.beginPath(); x.moveTo(38, 14); x.bezierCurveTo(36, 34, 26, 50, 22, 60); x.bezierCurveTo(18, 70, 28, 76, 38, 74); x.bezierCurveTo(42, 80, 50, 80, 54, 74); x.stroke();
-        x.lineWidth = 4.5; for (let i = 0; i < 3; i++) { const y0 = 34 + i * 16; x.beginPath(); x.moveTo(62, y0); x.bezierCurveTo(70, y0 - 7, 76, y0 + 7, 86, y0); x.stroke(); } }),
-      lend: fsIcon((x) => { x.strokeStyle = '#b896ff'; x.lineWidth = 5; for (let i = 0; i < 5; i++) { const px = 22 + i * 13; x.beginPath(); x.moveTo(px, 20); x.lineTo(px, 76); x.stroke(); }
-        x.lineWidth = 4; x.beginPath(); x.ellipse(48, 78, 32, 7, 0, 0, Math.PI * 2); x.stroke(); }),
-      together: fsIcon((x) => { x.lineWidth = 6; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(38, 48, 22, 0, Math.PI * 2); x.stroke();
-        x.strokeStyle = '#b896ff'; x.beginPath(); x.arc(58, 48, 22, 0, Math.PI * 2); x.stroke(); x.strokeStyle = '#ff4a62'; x.lineWidth = 4; x.beginPath(); x.moveTo(48, 18); x.quadraticCurveTo(70, 48, 48, 78); x.stroke(); })
+      /* (bold enough to read in a button's 42 %: each fills most of its square; v26.0's phone at 360 points as the floor) */
+      flame: fsIcon((x) => { const g = x.createLinearGradient(48, 92, 48, 6); g.addColorStop(0, '#ff2a4a'); g.addColorStop(0.55, '#ff6a7c'); g.addColorStop(1, '#fff1e8');
+        x.fillStyle = g; x.beginPath(); x.moveTo(48, 4); x.bezierCurveTo(70, 30, 86, 46, 84, 64); x.bezierCurveTo(82, 84, 66, 93, 48, 93); x.bezierCurveTo(30, 93, 14, 84, 12, 64);
+        x.bezierCurveTo(10, 46, 26, 30, 48, 4); x.closePath(); x.fill();
+        x.fillStyle = '#fff6ee'; x.beginPath(); x.ellipse(48, 68, 13, 18, 0, 0, Math.PI * 2); x.fill(); }),
+      shock: fsIcon((x) => { x.strokeStyle = '#ffcf6a'; x.lineWidth = 10; x.beginPath(); x.arc(48, 48, 37, 0, Math.PI * 2); x.stroke();
+        x.lineWidth = 6; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; x.beginPath(); x.moveTo(48 + Math.cos(a) * 13, 48 + Math.sin(a) * 13); x.lineTo(48 + Math.cos(a) * 31, 48 + Math.sin(a) * 31); x.stroke(); }
+        x.fillStyle = '#fff0c8'; x.beginPath(); x.arc(48, 48, 10, 0, Math.PI * 2); x.fill(); }),
+      bag: fsIcon((x) => { x.fillStyle = '#2a2f3a'; x.strokeStyle = '#e8ecf4'; x.lineWidth = 6;
+        x.beginPath(); x.moveTo(32, 26); x.bezierCurveTo(6, 44, 8, 92, 48, 92); x.bezierCurveTo(88, 92, 90, 44, 64, 26); x.closePath(); x.fill(); x.stroke();
+        x.beginPath(); x.moveTo(26, 24); x.quadraticCurveTo(48, 38, 70, 24); x.stroke(); x.beginPath(); x.moveTo(40, 8); x.lineTo(38, 26); x.moveTo(56, 8); x.lineTo(58, 26); x.stroke(); }),
+      bind: fsIcon((x) => { const g = x.createRadialGradient(40, 38, 6, 48, 48, 44); g.addColorStop(0, 'rgba(230,220,255,0.95)'); g.addColorStop(0.45, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(201,176,255,1)');
+        x.fillStyle = g; x.beginPath(); x.arc(48, 48, 42, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#e6dcff'; x.lineWidth = 7; x.stroke(); }),
+      smell: fsIcon((x) => { x.strokeStyle = '#d4e2b4'; x.lineWidth = 8;
+        x.beginPath(); x.moveTo(34, 6); x.bezierCurveTo(32, 30, 18, 50, 14, 62); x.bezierCurveTo(10, 76, 24, 84, 36, 80); x.bezierCurveTo(40, 88, 50, 88, 54, 80); x.stroke();
+        x.lineWidth = 7; for (let i = 0; i < 3; i++) { const y0 = 30 + i * 20; x.beginPath(); x.moveTo(60, y0); x.bezierCurveTo(68, y0 - 9, 78, y0 + 9, 90, y0); x.stroke(); } }),
+      lend: fsIcon((x) => { x.strokeStyle = '#c9b0ff'; x.lineWidth = 8; for (let i = 0; i < 5; i++) { const px = 14 + i * 17; x.beginPath(); x.moveTo(px, 8); x.lineTo(px, 78); x.stroke(); }
+        x.lineWidth = 6; x.beginPath(); x.ellipse(48, 82, 40, 9, 0, 0, Math.PI * 2); x.stroke(); }),
+      together: fsIcon((x) => { x.lineWidth = 9; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(34, 48, 26, 0, Math.PI * 2); x.stroke();
+        x.strokeStyle = '#c9b0ff'; x.beginPath(); x.arc(62, 48, 26, 0, Math.PI * 2); x.stroke(); x.strokeStyle = '#ff4a62'; x.lineWidth = 7; x.beginPath(); x.moveTo(48, 6); x.quadraticCurveTo(80, 48, 48, 90); x.stroke(); })
     };
 
     /* ---------------------------------------------------------------- THE FIGHT'S SOUNDS (the manifest's map; each a
@@ -492,9 +493,10 @@
          until it is in the bag, then let down
        FS_ACTS off: he fires from his walk and his rest, as the first pass had him */
     const FS_ACTS = true;
-    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false },
-                          wave: { take: 'Charged_Spell_Cast', a: 0.50, top: 2.00, b: 2.60, up: 1.5, down: 0.60, hold: true },
-                          bag:  { take: 'mage_soell_cast_8', a: 0.00, top: 0.40, b: 0.40, up: 0.6, down: 0.35, hold: true } };
+    /* (SHOCKWAVE and BAG are left standing, measured: his Charged_Spell_Cast lifts both feet 6 cm off the paving in its
+       crouch, mage_soell_cast_8 sinks his left foot 2 cm into it; their takes are listed wanted. The gold's and the bag's
+       own pictures carry those acts. fsPhoAct answers 0 for a kind with no row, so their calls stand ready) */
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false } };
     function fsPhoAct(kind, up) {
       const P = cast.pho, A = FS_PHO_TAKE[kind];
       if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
@@ -896,7 +898,7 @@
         CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: C0.x, z: C0.z, t: FS5.wall, crack: c.broken || st.stage === 'surge' }); }
       TRANCE5.set(1, FS5.wall); TRANCE5.pools(c.lent > 0 ? null : zw, pw, 1, 1);
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
-      TRANCE5.gold(Math.min(1.8, 1 + 0.8 * wind));
+      TRANCE5.gold(0.35 + 0.65 * wind);                   // (the fight's lens is behind him: the card lies over his back, so a glow, full only as the gold gathers)
       if (FS5.flare > 0) courtLamps(0.15 + 0.85 * FS5.flare);
       /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
       if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }

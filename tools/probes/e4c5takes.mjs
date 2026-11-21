@@ -71,10 +71,11 @@ if (VIEWS.length) {
         P.acts[name].time = t; P.acts[name].timeScale = 0; P.cur = name; P.fade = 0; P.mixer.update(0);
         const g = P.group.position, ry = P.group.rotation.y;
         if (side !== 'boom') { if (k.tag().on) k.tag(null, null); const yaw = E.yaw, pitch = E.pitch;
-          /* (his right side: 3 m off his right hand; his front: 3.2 m before him; the lens at his chest's height) */
-          const fx = Math.sin(ry), fz = Math.cos(ry), rx = -fz, rz = fx;
-          if (side === 'side') { yaw.position.set(g.x + rx * 3.0, 1.3, g.z + rz * 3.0); yaw.rotation.y = Math.atan2(rx, rz); }
-          else { yaw.position.set(g.x + fx * 3.2, 1.35, g.z + fz * 3.2); yaw.rotation.y = Math.atan2(fx, fz); }
+          /* (his side: 2.6 m off his LEFT hand, the court's open side at the fight's place (his right has 1.15 m to the
+             wall); his front: 3.0 m before him, toward the house; the lens at his chest's height) */
+          const fx = Math.sin(ry), fz = Math.cos(ry), lx = Math.cos(ry), lz = -Math.sin(ry);
+          if (side === 'side') { yaw.position.set(g.x + lx * 2.6, 1.3, g.z + lz * 2.6); yaw.rotation.y = Math.atan2(lx, lz); }
+          else { yaw.position.set(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); yaw.rotation.y = Math.atan2(fx, fz); }
           pitch.rotation.x = -0.05; }
         return { ok: true };
       }, [name, t, side]);

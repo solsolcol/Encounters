@@ -122,7 +122,11 @@ while (Date.now() - T0 < MAXMS) {
     if (pr && me) { const w = toWorld(pr.x, pr.z); const dx = w.x - me.x, dz = w.z - me.z; await walk(-dx, -dz, 450); continue; }
   }
   const k = ACT_BTN[nd.act], r = k ? s.btn[k] : null;
-  if (r && nd.ready && !/waiting|blocked/.test(r.cls)) { await tap(r, nd.act + ' (' + nd.id + ')'); await sleep(350); }
+  if (r && nd.ready && !/waiting|blocked/.test(r.cls)) { await tap(r, nd.act + ' (' + nd.id + ')');
+    /* (his act in his body, the first time each is pressed: a picture a drawn frame after, and two after: the swing's
+       top and its coming down, through the fight's own lens) */
+    if (!seen.has('act:' + nd.act)) { seen.add('act:' + nd.act); await frames(1); await pic('act-' + nd.act + '-1'); await frames(1); await pic('act-' + nd.act + '-2'); }
+    else await sleep(350); }
   else await sleep(250);
 }
 s = await snap();
