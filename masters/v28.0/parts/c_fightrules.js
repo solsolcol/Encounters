@@ -67,22 +67,23 @@
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 6,   // a Prai chased away flees, sinks, and lies still a while before it comes on
         // FIRE (Grandmaster Pho's main act)
         fireWait: 1.1, flight: 0.7, fireReach: 5.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
-        ringSecs: 12,                         // a tired Prai's ring closes over this; then it rises again, and hides
+        ringSecs: 10,                         // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
         bagReach: 2.5, bagSecs: 1.0,
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown")
         waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
-        bindWait: 3.5, bindReach: 5.5, bubbleSecs: 12, bubbleMax: 3,
+        bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
-        drawSecs: 3.0, drawPace: 1.6,         // a breath taken with his senses wide draws every free Prai on, faster, for a while
+        drawSecs: 3.0, drawPace: 2.0, drawWear: 2.0,   // a breath with his senses wide draws every free Prai on, faster and harder, a while
         // LEND (his cage over his teacher while the gold is gathered)
         lendSecs: 6.0, lendAfter: 0.3,
-        // STAGE 3, THE FIGHT: the eight left after the lesson, in this order, each at its time while fewer than freeMax
-        // are free on the court (one at a time once he asks his teacher to lead: after three losses)
+        // STAGE 3, THE FIGHT: the eight left after the lesson, in this order, each at its time while fewer than freeAt
+        // allows are free on the court (one at a time once he asks his teacher to lead: after three losses)
         kinds3: ['come', 'slip', 'hide', 'come', 'slip', 'hide', 'slip', 'hide'],
-        due3: [0, 8, 18, 30, 44, 58, 72, 86], entryGap: 1.5, freeMax: 3, leadMax: 1, breather: 3,
+        due3: [0, 10, 24, 38, 54, 70, 86, 102], entryGap: 1.5, leadMax: 1, breather: 6,
+        freeAt: [[0, 2], [30, 3], [75, 4]],   // how many may be free on the court at once, rising as the fight goes on
         waveLessonLeft: 6,                    // the golden shockwave is taught when its wait first runs out, or at six left
         bagLockLeft: 4,                       // and the count waits at four for the first golden shockwave
         // STAGES 4 TO 6
@@ -149,7 +150,8 @@
         slip:     { pho: ['ph5nw1', 'ph5nw2', 'ph5ns3'], zav: ['ph5nx1', 'ph5nx2', 'ph5f4'] },
         hidden:   { pho: ['ph5ny1', 'ph5ny2', 'ph5ns3'], zav: ['ph5nz1', 'ph5nf2', 'ph5nf3'] },
         come:     { pho: ['ph5nk2', 'ph5nt2', 'ph5ns3'], zav: ['ph5ng1', 'ph5ng2', 'ph5f4'] },
-        cage:     { pho: ['ph5na1', 'ph5na2', 'ph5f1'], zav: ['ph5nb1', 'ph5nb2', 'ph5f4'] },
+        cage:     { pho: ['ph5na1', 'ph5na2', 'ph5f1'] },
+        press:    { pho: ['ph5na3', 'ph5nt2', 'ph5ns3'], zav: ['ph5nb1', 'ph5nb2', 'ph5f4'] },
         together: { pho: ['ph5ca', 'ph5cb', 'ph5cb'], zav: ['ph5ca', 'ph5cb', 'ph5cb'] },
         last:     { pho: ['ph5nd3', 'ph5nd3', 'ph5nd3'] }
       };
@@ -243,10 +245,10 @@
       }
       /* the same state begun again (the gold shows a Prai already shown), or a lesson's hold let go while the state goes
          on: the stand so far is logged as it was, and its clock starts again */
-      function restart(st, p, hold) {
+      function restart(st, p, newHold) {
         const L = st.log, key = p.st + (p.hold ? '*' : '');
         if (!(p.t <= (L.dwell[key] || 0))) L.dwell[key] = p.t;
-        p.t = 0; p.hold = hold;
+        p.t = 0; p.hold = newHold;
       }
       function setStage(st, to) {
         const L = st.log;
@@ -429,7 +431,7 @@
             else if (cloud) { for (const c of st.clouds) if (c.id === cloud) { f.x = c.x; f.z = c.z; } }
             else { f.x = ph.x * 0.5; f.z = ph.z - 2.2; }       // nothing to aim at: it rises and falls on the open paving
             st.flights.push(f);
-            st.ev.push({ e: 'fire', id: f.id, x: f.x, z: f.z, ai: false });
+            st.ev.push({ e: 'fireball', id: f.id, x: f.x, z: f.z, ai: false });
             if (st.stats.fires === 1) sayOnce(st, 'ko5c1', 8.0);
             return;
           }
@@ -481,8 +483,8 @@
       }
 
       /* ------------------------------------------------------------------ the stages */
-      function enter(st, p, x, z, hold) {
-        p.x = x; p.z = z; clampPrai(st.n, p); p.hold = hold || ''; p.stop = 0; p.at = 0; p.lurk = 0;
+      function enter(st, p, x, z, newHold) {
+        p.x = x; p.z = z; clampPrai(st.n, p); p.hold = newHold || ''; p.stop = 0; p.at = 0; p.lurk = 0;
         setSt(st, p, 'entering', 'its turn');
         st.lastEntry = st.stageT;
         st.ev.push({ e: 'enter', id: p.id, kind: p.kind });
@@ -542,6 +544,7 @@
         st.sanity = Math.max(st.sanity, st.preSurge);             // what the surge pressed out of him comes back
         st.ev.push({ e: 'sanity', to: st.sanity });
         st.who = 'pho'; st.lock = 0; st.lockUntil = 0;
+        st.pho.x = n.phoAt[0]; st.pho.z = n.phoAt[1]; st.zav.x = n.zavAt[0]; st.zav.z = n.zavAt[1];   // where the film left them
         setStage(st, 'last');
         sayOnce(st, 'ph5c1'); sayOnce(st, 'ph5c3');
       }
@@ -556,7 +559,8 @@
           for (const p of st.prai) { if (free(p)) freeN++; if (onCourt(p) && p.id > 1) present++; if (!next && p.st === 'waiting' && p.id > 1) next = p; }
           if (next) {
             if (present === 0 && next.due > st.stageT + n.breather) next.due = st.stageT + n.breather;
-            if (st.stageT >= next.due && freeN < (st.lead ? n.leadMax : n.freeMax) && st.stageT - st.lastEntry >= n.entryGap) {
+            let cap = 1; for (const [at, k] of n.freeAt) if (st.stageT >= at) cap = k;
+            if (st.stageT >= next.due && freeN < (st.lead ? n.leadMax : cap) && st.stageT - st.lastEntry >= n.entryGap) {
               const at = n.entryAt[(next.id - 2) % n.entryAt.length], j = n.entryJitter;
               const r1 = io && io.rand ? io.rand() : 0.5, r2 = io && io.rand ? io.rand() : 0.5;
               enter(st, next, at[0] + (r1 - 0.5) * 2 * j, at[1] + (r2 - 0.5) * j);
@@ -621,7 +625,7 @@
             if (best) {
               ph.aiWait = n.aiFireWait;
               st.flights.push({ id: best.id, cloud: 0, t: n.flight, ai: true, x: best.x, z: best.z });
-              st.ev.push({ e: 'fire', id: best.id, x: best.x, z: best.z, ai: true });
+              st.ev.push({ e: 'fireball', id: best.id, x: best.x, z: best.z, ai: true });
             }
           }
           if (ph.wind <= 0 && ph.draw <= 0 && dist(ph.x, ph.z, z.x, z.z) > n.aiFar) {
@@ -712,41 +716,41 @@
         }
       }
       /* the ring drives a free Prai back to the far side and stills it there; what was under the paving it shows */
-      function throwBack(st, p, R) {
+      function throwBack(st, p, circle) {
         const n = st.n, under = p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || (p.st === 'rushing' && p.was === 'shown');
-        p.x = Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - R.x) * 0.5));
+        p.x = Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - circle.x) * 0.5));
         p.z = n.throwZ; clampPrai(n, p); p.stop = n.throwStop; p.at = 0; p.gath = 0; p.lurk = 0;
         if (under) { p.show = n.showSecs; if (p.st === 'shown') restart(st, p, p.hold); else setSt(st, p, 'shown', 'the gold shows it'); }
         else setSt(st, p, 'coming', 'the gold drives it back');
       }
       function ringTick(st, dt) {
-        const n = st.n, ph = st.pho, R = ph.ring;
-        if (!R) return;
-        R.r += n.ringSpeed * dt;
+        const n = st.n, ph = st.pho, circle = ph.ring;
+        if (!circle) return;
+        circle.r += n.ringSpeed * dt;
         for (const p of st.prai) {
           const bit = 1 << p.id;
-          if (R.touched & bit) continue;
+          if (circle.touched & bit) continue;
           if (p.st === 'waiting' || p.st === 'gathered' || p.st === 'drawn' || p.st === 'entering' || p.st === 'fleeing' || p.st === 'shape' || p.st === 'laid' || p.st === 'tired') continue;
-          if (dist(R.x, R.z, p.x, p.z) > R.r) continue;
-          R.touched |= bit;
+          if (dist(circle.x, circle.z, p.x, p.z) > circle.r) continue;
+          circle.touched |= bit;
           if (p.st === 'bound' || p.st === 'held') {
             // gathered at once: never past the three the surge waits on, and never the count jumped (the plan's 5.5)
             if (st.stage === 'fight' && st.left - 1 < 3) { if (p.st === 'bound') { p.ring = n.ringSecs; setSt(st, p, 'held', 'the gold'); } continue; }
-            setSt(st, p, 'gathered', 'the gold'); p.hold = ''; st.left--; R.gathered++; st.stats.byWave++;
+            setSt(st, p, 'gathered', 'the gold'); p.hold = ''; st.left--; circle.gathered++; st.stats.byWave++;
             st.ev.push({ e: 'gathered', id: p.id, by: 'wave', left: st.left });
             leftLines(st);
-          } else throwBack(st, p, R);
+          } else throwBack(st, p, circle);
         }
-        if (R.r >= n.ringMax) {
+        if (circle.r >= n.ringMax) {
           ph.ring = null;
           if (st.cage.lent > n.lendAfter) st.cage.lent = n.lendAfter;
           if (!st.firsts.wave) {
             st.firsts.wave = true; st.lesson.wave = 'done';
             for (const p of st.prai) if (p.hold === 'grace') restart(st, p, '');
             sayOnce(st, 'ph5f10');
-            if (R.gathered) sayOnce(st, 'ph5g3');
+            if (circle.gathered) sayOnce(st, 'ph5g3');
           }
-          st.ev.push({ e: 'waveDone', gathered: R.gathered });
+          st.ev.push({ e: 'waveDone', gathered: circle.gathered });
         }
       }
 
@@ -873,7 +877,7 @@
         let pressing = 0, busy = false;
         for (const p of st.prai) { if (p.st === 'pressing') pressing++; if (p.st === 'pressing' || atHim(p)) busy = true; }
         if (!c.broken && pressing) {
-          c.str -= n.wear * pressing * dt;
+          c.str -= n.wear * pressing * dt * (st.drawT > 0 ? n.drawWear : 1);
           if (c.str <= 0) {
             c.str = 0; c.broken = true; st.stats.breaks++;
             for (const p of st.prai) if (p.st === 'pressing') { p.gath = n.gather; p.at = 2; setSt(st, p, 'through', 'the cage breaks'); }
@@ -931,7 +935,7 @@
         }
         // ---- stage 3, THE FIGHT: what is on the court, in one pass
         let aHim = null, aHimSlip = null, aBen = null, aBound = null, aTired = null, aKeep = null, aShown = null, aSlip = null,
-            aHid = null, aCome = null, aPress = null, freeNear = 0, bound = 0, seenN = 0;
+            aHid = null, aCome = null, aPress = null, aPressCome = null, freeNear = 0, bound = 0, seenN = 0;
         for (const p of st.prai) {
           const s = p.st;
           if (s === 'bound' || s === 'held') bound++;
@@ -945,20 +949,21 @@
           }
           else if (s === 'shown') { if (!aShown || p.show < aShown.show) aShown = p; }
           else if (s === 'hidden') { if (!aHid) aHid = p; }
-          else if ((s === 'coming' || s === 'pressing') && p.kind === 'slip') { if (!aSlip || dist(z.x, z.z, p.x, p.z) < dist(z.x, z.z, aSlip.x, aSlip.z)) aSlip = p; }
-          else if (s === 'coming' || s === 'pressing') {
-            if (!onFlight(st, p.id) && (!aCome || dist(z.x, z.z, p.x, p.z) < dist(z.x, z.z, aCome.x, aCome.z))) aCome = p;
-            if (s === 'pressing' && !onFlight(st, p.id)) aPress = p;
-          }
+          else if (s === 'pressing') { if (!aPress) aPress = p; if (p.kind !== 'slip' && !onFlight(st, p.id)) aPressCome = p; }
+          else if (s === 'coming' && p.kind === 'slip') { if (!aSlip || dist(z.x, z.z, p.x, p.z) < dist(z.x, z.z, aSlip.x, aSlip.z)) aSlip = p; }
+          else if (s === 'coming') { if (!onFlight(st, p.id) && (!aCome || dist(z.x, z.z, p.x, p.z) < dist(z.x, z.z, aCome.x, aCome.z))) aCome = p; }
           if (seenFree(p) && dist(ph.x, ph.z, p.x, p.z) - n.breakDist <= n.rush * n.windSecs) freeNear++;
         }
         const lentGo = st.cage.lent > 0 && ph.waveWait <= 0 && ph.wind <= 0 && !ph.ring;
         const waveReady = st.seen.shock && ph.waveWait <= 0 && ph.wind <= 0 && !ph.ring;
         const worth = bound > 0 || seenN >= 2;
         const pending = st.lesson.wave === 'pending';
-        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && bubbles(st) < n.bubbleMax, smellOk = z.smellWait <= 0;
-        const bindSoon = bubbles(st) < n.bubbleMax && z.bindWait <= 1.5, smellSoon = z.smellWait <= 1.5;
+        const full = bubbles(st) >= n.bubbleMax;
+        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && !full, smellOk = z.smellWait <= 0;
+        const bindSoon = !full && z.bindWait <= 1.5, smellSoon = z.smellWait <= 1.5;
         if (P) {
+          // GRANDMASTER PHO, PLAYED: what only he can do, first (chase off what is at his student, tire the bound, bag the
+          // tired, loose the gold under the lent cage); then send him to his student for what only his student can do
           if (ph.wind > 0 || ph.draw > 0) return null;           // the act in hand finishes first
           if (lentGo) return mk('waveGo', 'SHOCKWAVE');
           if (aHim) return mk('athimF', 'FIRE', aHim, fireOk && !lock);                    // chase it off him
@@ -967,20 +972,24 @@
           if (aBound) return dist(ph.x, ph.z, aBound.x, aBound.z) <= n.fireReach ? mk('bound', 'FIRE', aBound, fireOk && !lock) : mk('bound', 'FIRE', aBound, false, true);
           const bagLock = !st.firsts.wave && st.left <= n.bagLockLeft;   // the count waits at four for the first golden shockwave
           if (aTired && !bagLock) return bagNeed(st, 'tired', aTired, mk);
+          if (aPressCome && st.cage.str < 35) return mk('cage', 'FIRE', aPressCome, fireOk && !lock);   // the cage nearly gone: chase it off
           if (pending) return bound ? mk('waveL', 'SWITCH', null, !lock) : mk('waveB', 'SWITCH', null, !lock);
+          if (aPress) return mk('press', 'SWITCH', aPress, !lock);
           if (aShown) return mk('shown', 'SWITCH', aShown, !lock);
-          if (st.cage.str < 40 && aPress) return mk('cage', 'FIRE', aPress, fireOk && !lock);
           if (waveReady && worth) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aSlip) return mk('slip', 'SWITCH', aSlip, !lock);
           if (aHid) return mk('hidden', 'SWITCH', aHid, !lock);
           if (aCome) return mk('come', 'SWITCH', aCome, !lock);
           return null;
         }
+        // MASTER ZAVIER, PLAYED: what is at him, what is under him, what presses his cage; what the smell has shown; the
+        // golden shockwave's lesson; what hides and what slips; then back to his teacher for what only his teacher can do
         if (lentGo) return mk('waveGo', 'SWITCH', null, !lock);
         if ((aHim || aHimSlip) && bindSoon) return mk('athimB', 'BIND', aHim || aHimSlip, bindOk && !lock);
         if (aHim) return mk('athimSw', 'SWITCH', aHim, !lock);                // his BIND is far off: his teacher's fire chases it off
         if (aHimSlip) return mk('athimB', 'BIND', aHimSlip, false);            // the fire cannot touch it: his BIND, as soon as it is back
         if (aBen && smellSoon) return mk('beneath', 'SMELL', aBen, smellOk && !lock);
+        if (aPress && bindSoon) return mk('press', 'BIND', aPress, bindOk && !lock);
         if (aShown && (bindOk || (bindSoon && z.bindWait < aShown.show))) return mk('shown', 'BIND', aShown, bindOk && !lock);
         if (pending) {
           if (!bound) { const t = bindTarget(st, 0); if (t && bindSoon) return mk('waveB', 'BIND', t, bindOk && !lock); }
@@ -994,7 +1003,6 @@
           return mk('tired', 'SWITCH', aTired, !lock);
         }
         if (waveReady && worth && !(st.cage.lent > 0)) return mk('waveLend', 'LEND', null, !lock);
-        if (st.cage.str < 40 && aPress && bindOk) return mk('cage', 'BIND', aPress, !lock);
         if (aCome && bindSoon) return mk('come', 'BIND', aCome, bindOk && !lock);
         return null;
       }

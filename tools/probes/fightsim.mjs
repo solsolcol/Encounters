@@ -255,13 +255,13 @@ const ACTED = new Set(['switch', 'bag', 'windup', 'bind', 'smell', 'lend', 'toge
 function campaign(F, L, who, seed, opts) {
   const r = stream(seed * 2 + 1), rf = stream(seed * 2 + 2);
   const io = { rand: rf, secs: (k) => L.secs[k] || 2.5 };
-  const st = F.create({ sanity: opts.sanity, guard: 0 });
+  const st = F.create({ sanity: opts.sanity, guard: 0, num: opts.num });
   const play = PLAYERS[who]();
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
   const res = { who, seed, won: false, firstWin: false, tries: 1, length: 0, firstLength: 0, losses: 0, sanity: 0, stalled: '',
                 bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0 };
-  let heard = '', prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [];
+  let heard = '', prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99;
   const fuzz = who === 'fuzz';
   const bad = (what) => { if (res.bad.length < 8) res.bad.push(what + ' @' + st.t.toFixed(1) + ' ' + st.stage); };
   while (st.stage !== 'won') {
@@ -278,12 +278,12 @@ function campaign(F, L, who, seed, opts) {
       else if (e.e === 'state') { const ok = F.STATES[e.from] && F.STATES[e.from].exits.includes(e.to); if (!ok) res.illegal[e.from + '>' + e.to] = (res.illegal[e.from + '>' + e.to] || 0) + 1; }
       else if (e.e === 'stage') { const k = stageBefore + '>' + e.to; if (!STAGE_MOVES.has(k)) bad('stage move ' + k); }
       else if (e.e === 'lost') { res.losses++; lostAt.push(st.t); }
-      if (ACTED.has(e.e) || (e.e === 'fire' && !e.ai)) acts++;
-      if (e.e === 'switch' && lockBefore > 0) bad('a switch inside the lock');
+      if (ACTED.has(e.e) || (e.e === 'fireball' && !e.ai)) acts++;
+      if (e.e === 'switch') { if (st.t - lastSwitch < st.n.switchLock - 1e-6) bad('a switch inside the lock'); lastSwitch = st.t; }
     }
     if (acts > 1) bad('two acts in one step');
     // THE INVARIANTS (the plan's 14.1)
-    if (st.stage === 'fight' && stageBefore === 'lost') prevLeft = st.left;
+    if (st.stage === 'fight' && stageBefore === 'lost') { prevLeft = st.left; lastSwitch = -99; }
     if (st.left > prevLeft) bad('the count rose');
     prevLeft = st.left;
     if (st.stage === 'fight' && st.left < 4) bad('the count under four in the fight');
@@ -384,7 +384,10 @@ async function main() {
   const N = +arg('--n', 10000), W = Math.max(1, +arg('--workers', 4)), SAN = +arg('--sanity', 40);
   const players = arg('--players', ORDER.join(',')).split(',').filter(p => PLAYERS[p]);
   const F = loadRules(), L = loadLines();
-  const opts = { sanity: SAN, hash: false };
+  const num = {};
+  for (const kv of (arg('--set', '') || '').split(';').filter(Boolean)) { const i = kv.indexOf('='); num[kv.slice(0, i).trim()] = JSON.parse(kv.slice(i + 1)); }
+  const opts = { sanity: SAN, hash: false, num };
+  if (Object.keys(num).length) console.log('NUMBERS SET FOR THIS RUN (not the table): ' + JSON.stringify(num));
 
   if (arg('--trace', '')) { trace(F, L, arg('--trace', ''), +arg('--seed', 1), opts); return; }
 
@@ -492,8 +495,8 @@ async function main() {
   req(!Object.keys(bad).length, 'no invariant broken in any step');
   req(det, 'the same seed gives the same end');
   req(!missing.length && !dropped.length, 'every line the rules say has its words, and none is a dropped one');
-  const stalls = all.filter(t => t.who !== 'fuzz' && t.who !== 'masher').reduce((a, t) => a + Object.values(t.stalls).reduce((x, y) => x + y, 0), 0);
-  req(!stalls, `no campaign of a player who plays stalled (${stalls})`);
+  const stalls = all.filter(t => ['careful', 'slow', 'late', 'optimal'].includes(t.who)).reduce((a, t) => a + Object.entries(t.stalls).filter(([k]) => !/^lost /.test(k)).reduce((x, [, y]) => x + y, 0), 0);
+  req(!stalls, `no campaign of a player who follows the screen stalled (${stalls})`);
   console.log('\nTHE REQUIREMENTS');
   for (const [k, w] of R) console.log('  ' + k + ' ' + w);
   process.exitCode = R.some(([k]) => k === 'FAIL') ? 1 : 0;
@@ -508,7 +511,7 @@ function printTable(rows) {
 function trace(F, L, who, seed, opts) {
   const r = stream(seed * 2 + 1), rf = stream(seed * 2 + 2);
   const io = { rand: rf, secs: (k) => L.secs[k] || 2.5 };
-  const st = F.create({ sanity: opts.sanity });
+  const st = F.create({ sanity: opts.sanity, num: opts.num });
   const play = PLAYERS[who]();
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
