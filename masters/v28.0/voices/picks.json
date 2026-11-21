@@ -8782,5 +8782,44 @@
     "heard": "My hand rose by itself. And the thing was held."
    }
   }
+ },
+ "tn5c0": {
+  "who": "ton",
+  "text": "[concerned] Brother has gone quiet. Look at his lips.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 2.9,
+  "takes": {
+   "a": {
+    "len": 3.04,
+    "first": 0.0,
+    "last": 2.8,
+    "e_first": 0.0,
+    "e_last": 3.02,
+    "tail_db": -29.5,
+    "tail_rel": -16.5,
+    "hole": 0.48,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.65,
+    "heard": "Brother has gone quiet. Look at his lips."
+   },
+   "b": {
+    "len": 2.8,
+    "first": 0.0,
+    "last": 2.48,
+    "e_first": 0.0,
+    "e_last": 2.78,
+    "tail_db": -33.1,
+    "tail_rel": -20.0,
+    "hole": 0.4,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.88,
+    "heard": "Brother has gone quiet. Look at his lips."
+   }
+  }
  }
 }

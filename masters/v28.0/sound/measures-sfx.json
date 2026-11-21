@@ -1756,5 +1756,19 @@
   "voice": 0.92,
   "sub120": 0.02,
   "words": ""
+ },
+ "u5strain2_c": {
+  "len": 2.0,
+  "asked": 2.0,
+  "peak": -3.6,
+  "level": -21.2,
+  "loud": -17.0,
+  "silent": 0.05,
+  "first": 0.1,
+  "last": 1.8,
+  "phone": 0.94,
+  "voice": 0.85,
+  "sub120": 0.05,
+  "words": "Rrrrrrrrrrrrrrrrrr"
  }
 }
