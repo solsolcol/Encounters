@@ -1117,3 +1117,5 @@ bb9b5cdcf26a8d0ae3d5a588bc4f349786760f8ca48624b44d05177373d9b51c  masters/v27.0/
 ea5268b00f7b8792520a8e309b1c6749b8c38a7de575ff7d5e8feda8f72eb147  masters/v27.0/src/original-angsana.glb
 6e1e07d7f47ddc5fbe99d5269ba5e6c12167cd3e1bd7f20997f6902d12413418  masters/v27.0/src/original-angsana3.glb
 feba8ea2626d58a3f8e0a4127e9d11b694209c2c9d08601d00c320c0b4fb55d6  masters/v27.0/src/original-angsana4.glb
+65332d43931e977a5d9faa049573abd9f9bb8b468c0006698a092b8f74aeb4e8  masters/v27.0/src/original-appa.glb
+bd6830e27b95df33ba27b593c3466ac97f2f4b203df8c994232908652dfc99d3  masters/v27.0/src/original-armchair.glb
