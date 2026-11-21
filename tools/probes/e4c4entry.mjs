@@ -7,6 +7,9 @@
      heldsel   a save left at the fight's start by a loss, the title's Chapters, chapter 4, Play it: its START, never the fight
      heldnew   the same save, New game and its yes: episode 1's start, the save gone
      after     what chapter 4's end writes (chapter 5's start), Chapters, chapter 4, Play it: its start
+     heldvia   a save left at the fight's start: Continue (the fight's brief), START (the fight held, on the page and in the
+               save), then the in-play menu's Chapters into another chapter (episode 4 chapter 2) and from there the menu's
+               Chapters into chapter 4: its start, never the fight, nothing held
      old-*     saves as v27.0 wrote them before this build (no `y`), Continue: history, the sight, the blessing before the
                water (his teacher's why said once, then the order), the blessing with the water (the fight's brief), the
                room kept (the trance)
@@ -30,6 +33,7 @@ const CASES = {
   heldsel:  { save: HELD, reached: 'e4c4', how: 'selector', want: { film: true, phase: 'history' } },
   heldnew:  { save: HELD, reached: 'e4c4', how: 'newgame', want: { ch: 'ch1' } },
   after:    { save: base({ ch: 'e4c5', at: null, phase: null }), reached: 'e4c5', how: 'selector', want: { film: true, phase: 'history' } },
+  heldvia:  { save: HELD, reached: 'e4c5', how: 'via', want: { film: true, phase: 'history' } },
   'old-history': { save: base({ ch: 'e4c4', phase: 'history:r,m', at: SPAWN }), reached: 'e4c4', how: 'continue', want: { film: false, phase: 'history', obj: /history/i } },
   'old-sight':   { save: base({ ch: 'e4c4', phase: 'sight:r,m,f,o,a,k,v,l1', at: SPAWN }), reached: 'e4c4', how: 'continue', want: { film: false, phase: 'sight' } },
   'old-bless':   { save: base({ ch: 'e4c4', phase: 'bless:r,m,f,o,a,k,v,l1,l2,l3', at: SPAWN }), reached: 'e4c4', how: 'continue', want: { film: false, phase: 'bless', why: true, obj: /Take the holy water/ } },
@@ -58,6 +62,22 @@ for (const name of ONLY) {
   let pressed = false;
   if (C.how === 'continue') pressed = await tap('#startBtn');
   else if (C.how === 'newgame') { pressed = await tap('#newGameBtn') && await until(() => !document.getElementById('newConfirm').classList.contains('hide'), 30000) && await tap('#newYes'); }
+  else if (C.how === 'via') {
+    /* Continue into the fight's brief, its START (the fight held), then the in-play menu into chapter 2 and back to 4 */
+    const menuTo = async (key) => await tap('#menuBtn') && await until(() => window.__enc.getState() === 'menu', 60000) && await tap('#menuChapters')
+      && await until((k) => !!document.querySelector(`#chList .chTile[data-ch="${k}"]`), 60000, key) && await tap(`#chList .chTile[data-ch="${key}"]`)
+      && await until(() => !document.getElementById('chAsk').classList.contains('hide'), 30000) && await tap('#chYes');
+    const skipFilm = async () => { await until(() => ['cine', 'play'].includes(window.__enc.getState()), 1800000);
+      if (await p.evaluate(() => window.__enc.getState() === 'cine')) { await until(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.2, 600000); await tap('#cineSkip'); }
+      return until(() => window.__enc.getState() === 'play', 1800000); };
+    const held = await tap('#startBtn') && await until(() => { const q = window.__enc.kitDebug().event; return !!q && q.kind === 'guard' && !!q.briefing; }, 1800000)
+      && await p.waitForTimeout(1500).then(() => tap('#evBtn')) && await until(() => !!window.__enc.loseHold(), 600000);
+    log(name, 'the fight held:', held);
+    const in2 = held && await menuTo('e4c2') && await skipFilm() && await until(() => window.__enc.chapterKey() === 'e4c2' && window.__enc.loseHold() === null, 600000);
+    log(name, 'in chapter 2, nothing held:', in2);
+    await p.waitForTimeout(3000);
+    pressed = in2 && await menuTo('e4c4');
+  }
   else if (C.how === 'selector') {
     pressed = await tap('#chaptersBtn') && await until(() => !!document.querySelector('#chList .chTile[data-ch="e4c4"]'), 60000)
       && await tap('#chList .chTile[data-ch="e4c4"]') && await until(() => !document.getElementById('chAsk').classList.contains('hide'), 30000) && await tap('#chYes');
@@ -79,7 +99,7 @@ for (const name of ONLY) {
   const R = await p.evaluate(() => { const E = window.__enc; let i = {}; try { i = E.stage.info(); } catch { /* */ }
     const o = document.getElementById('objective'), q = E.kitDebug().event;
     let s = null; try { s = JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); } catch { /* */ }
-    return { ch: E.chapterKey ? E.chapterKey() : (window.__CH_KEY || null), state: E.getState(), phase: i.phase || null, kitPhase: E.kit.getPhase(),
+    return { ch: E.chapterKey ? E.chapterKey() : null, state: E.getState(), phase: i.phase || null, kitPhase: E.kit.getPhase(),
              obj: o && !o.classList.contains('hide') ? (document.getElementById('objTxt') || o).textContent.trim() : null,
              brief: !!q && q.kind === 'guard' && !!q.briefing, held: E.loseHold ? E.loseHold() : null,
              why: (E.voices() || []).filter(v => /^ph4k/.test(v.name)).map(v => v.name), saved: s ? { ch: s.ch, phase: s.phase, at: s.at } : null }; });
@@ -94,7 +114,7 @@ for (const name of ONLY) {
     if (w.obj) ok = ok && w.obj.test(R.obj || '');
     if (w.why) ok = ok && R.why.length === 4 && R.why.join(',') === 'ph4k1,ph4k2,ph4k3,ph4k4';
     if (w.brief) ok = ok && R.brief && R.why.length === 0;
-    if (w.phase === 'history') ok = ok && !R.brief && R.why.length === 0 && (!R.saved || !R.saved.phase || /^history/.test(R.saved.phase));
+    if (w.phase === 'history') ok = ok && R.ch === 'e4c4' && !R.brief && R.why.length === 0 && (!R.saved || !R.saved.phase || /^history/.test(R.saved.phase));
     if (w.trance) ok = ok && trance === true;
   }
   checks[name] = ok;
