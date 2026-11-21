@@ -8821,5 +8821,44 @@
     "heard": "Brother has gone quiet. Look at his lips."
    }
   }
+ },
+ "ko5c1": {
+  "who": "koh",
+  "text": "[puzzled] Who is he talking to? There is nobody there.",
+  "pick": "b",
+  "why": "the easier pace",
+  "med": 2.54,
+  "takes": {
+   "a": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.32,
+    "e_first": 0.0,
+    "e_last": 2.46,
+    "tail_db": -30.6,
+    "tail_rel": -17.5,
+    "hole": 0.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.66,
+    "heard": "Who is he talking to? There is nobody there."
+   },
+   "b": {
+    "len": 2.8,
+    "first": 0.0,
+    "last": 2.46,
+    "e_first": 0.0,
+    "e_last": 2.62,
+    "tail_db": -57.5,
+    "tail_rel": -47.6,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.44,
+    "heard": "Who is he talking to? There is nobody there."
+   }
+  }
  }
 }
