@@ -30,7 +30,7 @@ const F = () => p.evaluate(() => window.__enc.stage.snap().story.fight);
 const TS = () => p.evaluate(() => window.__enc.kit.tagState());
 const briefUp = async () => { try { await p.waitForFunction(() => { const E = window.__enc; try { return E.kit.eventActive() && E.kit.tagState().on && E.stage.snap().story.fight.stage === 'brief'; } catch { return false; } }, null, { timeout: 300000, polling: 250 }); }
   catch (e) { const d = await p.evaluate(() => { const E = window.__enc; let f = null; try { f = E.stage.snap().story.fight; } catch (x) { } return { state: E.getState(), info: E.stage.info(), ev: E.kit.eventActive(), tag: E.kit.tagState(), f }; });
-    say('NO BRIEF', JSON.stringify(d).slice(0, 900)); await p.screenshot({ path: OUT + '/no-brief.png' }); throw e; } };
+    say('NO BRIEF', JSON.stringify(d).slice(0, 900)); await p.screenshot({ path: OUT + '/no-brief.png', timeout: 300000 }); throw e; } };
 const tapEl = async (id) => { const r = await p.evaluate((id) => { const e = document.getElementById(id); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }, id); if (r) await p.touchscreen.tap(r.x, r.y); return !!r; };
 const start = async () => { await sleep(900); await tapEl('evBtn'); await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 90000, polling: 200 }); };
 async function continueFrom(save) {
@@ -70,7 +70,7 @@ const s1 = JSON.parse(JSON.stringify(base)); s1.ch = 'e4c5'; s1.phase = 'fight:'
 await continueFrom(s1);
 const A = await briefRead('continue');
 ok('continue: his sanity as saved', Math.abs(A.san - 83) < 0.01, A.san);
-await p.screenshot({ path: OUT + '/1-continue-brief.png' });
+await p.screenshot({ path: OUT + '/1-continue-brief.png', timeout: 300000 });
 /* 2 · the held save */
 await start();
 const sStart = await p.evaluate(() => window.__enc.stats.sanity);
@@ -83,12 +83,12 @@ ok('held: the phase is the fight\'s', held && held.phase === 'fight:', held && h
 ok('held: his sanity as at START', held && Math.abs(held.stats.sanity - sStart) < 0.01, { saved: held && held.stats.sanity, atStart: sStart, now: await p.evaluate(() => window.__enc.stats.sanity) });
 ok('held: lands in first person at the fight\'s place', held && held.at && Math.hypot(held.at.x + 8.5, held.at.z + 10.6) < 0.1, held && held.at);
 ok('the fight had moved on (so the hold is a hold)', f2.t > 6 && f2.stats.fires > 0, { t: f2.t, stats: f2.stats, stage: f2.stage });
-await p.screenshot({ path: OUT + '/2-before-save.png' });
+await p.screenshot({ path: OUT + '/2-before-save.png', timeout: 300000 });
 /* 3 · a Continue from it */
 await continueFrom(held);
 const B = await briefRead('continue again');
 ok('continue again: his sanity as held', Math.abs(B.san - held.stats.sanity) < 0.01, { now: B.san, held: held.stats.sanity });
-await p.screenshot({ path: OUT + '/3-continue-again.png' });
+await p.screenshot({ path: OUT + '/3-continue-again.png', timeout: 300000 });
 /* 4 · a replay's reset, the fight under way */
 await start(); await p.waitForFunction(() => window.__enc.stage.snap().story.fight.t > 4, null, { timeout: 300000, polling: 500 });
 const pre = await F();
@@ -103,7 +103,7 @@ ok('replay: no objective and no caption of the fight', !/Prai|bind|bag|fire/i.te
 await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 const C = await briefRead('after the replay');
 ok('after the replay: reads as the first', JSON.stringify(C.f.hud) === JSON.stringify(A.f.hud) && JSON.stringify(C.f.prai) === JSON.stringify(A.f.prai), { a: A.f.hud, c: C.f.hud });
-await p.screenshot({ path: OUT + '/4-after-replay.png' });
+await p.screenshot({ path: OUT + '/4-after-replay.png', timeout: 300000 });
 fs.writeFileSync(OUT + '/save.json', JSON.stringify({ res, errs, held }, null, 1));
 for (const e of errs.slice(0, 12)) say(e);
 const bad = Object.values(res).filter(r => !r.ok).length;

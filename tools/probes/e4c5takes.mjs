@@ -80,7 +80,7 @@ if (VIEWS.length) {
       }, [name, t, side]);
       if (ft && ft.err) { say(ft.err); continue; }
       await p.evaluate(() => new Promise(r => { let n = 0; const f = () => (++n >= 4 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
-      const f = `${OUT}/${name}-${t}-${side}.png`; await p.screenshot({ path: f }); say('pic', f);
+      const f = `${OUT}/${name}-${t}-${side}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f);
       if (J.first) {
         const m = await p.evaluate(() => {
           const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor, v = new V(), out = { L: 9, R: 9, all: 9, n: 0 };

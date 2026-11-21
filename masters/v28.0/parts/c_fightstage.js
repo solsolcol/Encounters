@@ -211,7 +211,10 @@
 
     /* ---------------------------------------------------------------- THE WORDS (DATA.words: the sheet's) */
     const fsWords = () => DATA.words;
-    function fsWhy(why) { const w = fsWords(); return ({ none: w.whyNone, gold: w.whyGold, lendFirst: w.whyLendFirst, bindFirst: w.whyBindFirst })[why] || null; }
+    /* (any why the rules answer is said by its own word on the sheet, `why` and its name: whyNone, whyGold, whyLendFirst,
+       whyBindFirst, and whatever the rules come to answer; one with no word is not blocked here, so its press reaches
+       the rules, which refuse it themselves) */
+    function fsWhy(why) { const w = fsWords(); if (!why) return null; const k = 'why' + why[0].toUpperCase() + why.slice(1); return w[k] || null; }
     /* a line of the rules: said (its take), and captioned above the thumbs whether or not the sound is (the plan's 7.1) */
     function fsSay(key) {
       const L = LINES[key]; if (!L) return;

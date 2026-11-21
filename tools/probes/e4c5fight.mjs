@@ -28,7 +28,7 @@ async function frames(n = 2) { await p.evaluate((n) => new Promise(r => { let k 
 async function pic(name) {
   await frames(2);
   const f = `${OUT}/${String(++shot).padStart(3, '0')}-${name}.png`;
-  await p.screenshot({ path: f });
+  await p.screenshot({ path: f, timeout: 300000 });
   const s = await snap();
   log.shots.push({ f, name, t: s && s.f ? s.f.t : null, stage: s && s.f ? s.f.stage : null, who: s && s.f ? s.f.who : null });
   say('  pic', f);
@@ -78,10 +78,16 @@ log.briefText = s.f;
 for (let i = 0; ; i++) {                                     // (START by a tap on it; again if a tap was not taken, each written)
   s = await snap(); say('  START at', JSON.stringify(s.btn.start), 'ev', s.ev, 'state', s.state);
   await tap(s.btn.start, 'START');
-  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 20000, polling: 200 }); break; }
+  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 45000, polling: 300 }); break; }
   catch (e) { await pic('start-missed-' + i); if (i >= 2) throw e; }
 }
-await sleep(800); await pic('learn-start');
+await sleep(800);
+/* (how fast this box draws the fight: drawn frames and the mode's clock over 12 s of wall time) */
+log.rate = await p.evaluate(() => new Promise(r => { const E = window.__enc, w0 = performance.now(), t0 = E.kit.tagState().t; let n = 0;
+  const f = () => { n++; if (performance.now() - w0 < 12000) requestAnimationFrame(f); else r({ fps: +(n / ((performance.now() - w0) / 1000)).toFixed(2), clock: +((E.kit.tagState().t - t0) / ((performance.now() - w0) / 1000)).toFixed(3) }); };
+  requestAnimationFrame(f); }));
+say('RATE', JSON.stringify(log.rate));
+await pic('learn-start');
 
 /* ---- the fight, played by the screen */
 const seen = new Set(), seenNeed = new Set();

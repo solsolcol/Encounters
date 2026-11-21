@@ -32,7 +32,7 @@ for (let i = 0; ; i++) {
   const r0 = await p.evaluate(() => { const e = document.getElementById('evBtn'), r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, w: r.width, h: r.height, txt: e.textContent, cls: e.className, ev: window.__enc.evState ? JSON.stringify(window.__enc.evState()).slice(0, 200) : '' }; });
   say('START at', JSON.stringify(r0));
   await p.touchscreen.tap(r0.x, r0.y);
-  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn' && window.__enc.kit.tagState().live; }, null, { timeout: 20000, polling: 200 }); break; }
+  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn' && window.__enc.kit.tagState().live; }, null, { timeout: 45000, polling: 300 }); break; }
   catch (e) { await p.screenshot({ path: `${OUT}/start-missed-${i}.png` }); if (i >= 2) throw e; }
 }
 say('live');
@@ -56,7 +56,7 @@ async function hold(dx, dy, ms) {
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: ox + dx / L * 50, y: oy + dy / L * 50, id: 3 }] });
   await sleep(ms); await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await cdp.detach();
 }
-const pic = async (n) => { await sleep(600); const f = `${OUT}/${n}.png`; await p.screenshot({ path: f }); say('pic', f); };
+const pic = async (n) => { await sleep(600); const f = `${OUT}/${n}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); };
 const fightT = () => p.evaluate(() => window.__enc.kit.tagState().t);
 async function walkFor(dx, dy, secs) { const t0 = await fightT(); while ((await fightT()) - t0 < secs) await hold(dx, dy, 1500); }
 await pic('cam-start');
