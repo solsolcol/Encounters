@@ -1,0 +1,42 @@
+started animation ravi lib 01a1eb7c-f993-745c-90aa-3bf1b921d05d
+  anim ravi lib IN_PROGRESS 1%
+  anim ravi lib IN_PROGRESS 80%
+  anim ravi lib IN_PROGRESS 84%
+  anim ravi lib IN_PROGRESS 88%
+  anim ravi lib IN_PROGRESS 92%
+  anim ravi lib IN_PROGRESS 95%
+  anim ravi lib SUCCEEDED 100%
+animation done ravi lib 67873860
+a re-export of masters/v27.0/src/rigged-ravi.glb: 66 bones at the same rest pose in the world, 310487 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v27.0/src/takes-ravi-lib.glb 908092 bytes ["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Hands_Open (198 ch, 3.97 s)"]
+ravi lib strip exit 0
+ravi lib done
+  motion ravi struggle PENDING 0%
+  motion ravi rush PENDING 0%
+  motion ravi kneelhold PENDING 0%
+  motion ravi struggle IN_PROGRESS 42%
+  motion ravi rush IN_PROGRESS 42%
+  motion ravi kneelhold IN_PROGRESS 42%
+  motion ravi struggle IN_PROGRESS 84%
+  motion ravi rush IN_PROGRESS 84%
+  motion ravi kneelhold IN_PROGRESS 79%
+  motion ravi struggle SUCCEEDED 100%
+  motion ravi rush SUCCEEDED 100%
+  motion ravi kneelhold SUCCEEDED 100%
+motion done ravi struggle 64295516
+motion done ravi rush 63896524
+body identical to masters/v27.0/src/rigged-ravi.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-ravi-struggle.glb 374216 bytes ["retarget_clip (132 ch, 5.97 s)"]
+ravi struggle strip exit 0
+body identical to masters/v27.0/src/rigged-ravi.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-ravi-rush.glb 206140 bytes ["retarget_clip (132 ch, 2.97 s)"]
+ravi rush strip exit 0
+motion done ravi kneelhold 64295560
+body identical to masters/v27.0/src/rigged-ravi.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-ravi-kneelhold.glb 374216 bytes ["retarget_clip (132 ch, 5.97 s)"]
+ravi kneelhold strip exit 0
+ravi t2m done

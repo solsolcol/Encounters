@@ -1165,3 +1165,14 @@ e2a05eb59b77b5433145e731a967cae7a5584e40cfbcaf1ef8b99e308b3aaff3  masters/v27.0/
 3fc8d6340bad3be8e61fe1e6aa3096ccf16643d6fe54332eb4d7bebbce3ecd50  masters/v27.0/src/preremesh-amma.glb
 394badbd3f63d6cc6d3f660b576225e932d9af068a7754808f437b9db6bcfa9a  masters/v27.0/src/preremesh-appa.glb
 bf75e78d5af107e1459419e12c254cd468948d60544956828d4c5f12816cfa71  masters/v27.0/src/preremesh-large.glb
+ceb10f032a9faa064cfaf140c6c9f5ad083d2b70272473d10481de62f6896512  masters/v27.0/src/preremesh-mala.glb
+957079a89d999807c1b0caa5449b45f1c5feaf28a50df2292772d2c1f3a2cb00  masters/v27.0/src/preremesh-oppress.glb
+3db45ee37790a54f5534a24ed7a23177040937a8db45d1b19c9591a543c4c1b9  masters/v27.0/src/preremesh-ravi.glb
+f27cff1274eb5ce9d846f4758cffc2ab8e157b38cf6a990a040f3a3cfe4f703a  masters/v27.0/src/preremesh-wander.glb
+d6f596c2ecbe8c05557bd94d1f2d8968dd58be6c5dea4a3495e42579f68ffebc  masters/v27.0/src/props.log
+8c9405b433fef0e1ae62dfbed031d87255df79dc0c1cbcfde5ada46b9a150503  masters/v27.0/src/props6.log
+e66e8a99ad498d4069a0ef98b4a52eca312b8676268dcc55e50a1d32d21d1be0  masters/v27.0/src/props7.log
+57458da93d00c6f5a8f99af8667aae8945be70d3e3152b18ba1611e895c5f32a  masters/v27.0/src/ravi-bodies.log
+184c345b4e91f4f801c1d6c392ab70ce7ca44189f8aa5534022fa2ec3307836b  masters/v27.0/src/ravi-people.log
+5b9fb704d3b2a78a4af02e46ac9eeded2a80d9c75c2b69d82816f0756f63748a  masters/v27.0/src/ravi-rig.log
+7ea1f3233ceb3e54d3c931498c2184213384ec57cdacc77b9e812ab6c6e100e4  masters/v27.0/src/ravi-takes.log

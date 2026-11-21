@@ -1,0 +1,10 @@
+started rig ravi 01a1eb75-4c46-71e8-835b-fec8be51523b
+  rig ravi IN_PROGRESS 0%
+  rig ravi IN_PROGRESS 47%
+  rig ravi IN_PROGRESS 84%
+  rig ravi IN_PROGRESS 90%
+  rig ravi SUCCEEDED 100%
+rig done ravi {'rigged': 63398316, 'walk': 63639384}
+body identical to masters/v27.0/src/rigged-ravi.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-ravi-walking.glb 97860 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

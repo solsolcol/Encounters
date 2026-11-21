@@ -1,0 +1,14 @@
+  remesh ravi 40000: the job is in the ledger (01a1eba4-5a56-72f4-995e-ad3595773a8f): waited for, not started again
+  remesh ravi 40000 SUCCEEDED 100%
+remesh done ravi 40000 83554852
+  fit: turn 0 degrees, size x0.8936, moved [0.0002, 0.8507, 0.0009]; a remeshed point lies 0.21 mm from the rig's points on average, 6.8 mm at worst (the other turns: 29.3, 53.8, 55.2 mm)
+  weights: 38963 points from 208941; 1 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-ravi-40000.glb: 41611 triangles on 66 joints; sheets colour 15.1 MB, normal 2.5 MB, mr 0.0 MB; 20.1 MB
+  remesh ravi 8000: the job is in the ledger (01a1eba4-5f38-71bd-9f25-ebb62aaad6f6): waited for, not started again
+  remesh ravi 8000 SUCCEEDED 100%
+remesh done ravi 8000 81141632
+  fit: turn 0 degrees, size x0.8943, moved [0.0002, 0.8505, 0.0010]; a remeshed point lies 0.49 mm from the rig's points on average, 4.8 mm at worst (the other turns: 30.0, 59.4, 60.5 mm)
+  weights: 13017 points from 208941; 0 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-ravi-8000.glb: 8336 triangles on 66 joints; sheets colour 14.8 MB, normal 2.6 MB, mr 0.0 MB; 18.2 MB

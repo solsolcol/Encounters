@@ -1,0 +1,14 @@
+started image-to-3d angsana2 01a1edce-9793-732a-8547-279e84fdc9c2
+  angsana2 IN_PROGRESS 1%
+  angsana2 IN_PROGRESS 10%
+  angsana2 IN_PROGRESS 14%
+  angsana2 IN_PROGRESS 17%
+  angsana2 IN_PROGRESS 21%
+  angsana2 IN_PROGRESS 25%
+  angsana2 IN_PROGRESS 29%
+  angsana2 IN_PROGRESS 32%
+  angsana2 IN_PROGRESS 36%
+  angsana2 IN_PROGRESS 40%
+  angsana2 IN_PROGRESS 44%
+  angsana2 IN_PROGRESS 45%
+angsana2 FAILED: {'type': 'invalid_input', 'code': 'image_too_complex', 'message': 'The uploaded image is too complex for 3D generation.', 'doc_url': 'https://docs.meshy.ai/en/api/errors#image-too-complex'}

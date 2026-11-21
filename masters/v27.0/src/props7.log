@@ -1,0 +1,17 @@
+started image-to-3d angsana3 01a1edd3-86ba-7676-a7e4-90e23980c774
+started image-to-3d angsana4 01a1edd3-9e8c-7350-898a-005b59c988c4
+  angsana3 IN_PROGRESS 9%
+  angsana3 IN_PROGRESS 32%
+  angsana3 IN_PROGRESS 45%
+  angsana3 IN_PROGRESS 58%
+  angsana3 IN_PROGRESS 67%
+  angsana3 IN_PROGRESS 99%
+  angsana3 SUCCEEDED 100%
+done angsana3 {'glb': 86719184} credits 35
+  angsana4 IN_PROGRESS 45%
+  angsana4 IN_PROGRESS 58%
+  angsana4 IN_PROGRESS 67%
+  angsana4 IN_PROGRESS 80%
+  angsana4 IN_PROGRESS 99%
+  angsana4 SUCCEEDED 100%
+done angsana4 {'glb': 93617284} credits 35
