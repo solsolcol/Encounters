@@ -55,10 +55,12 @@ def env(a, b):
     s = m[int(a * SR):int(b * SR)]; e = np.array([np.sqrt(np.mean(s[i:i + hop] ** 2)) for i in range(0, len(s) - hop, hop)])
     return np.maximum(np.diff(np.log(e + 1e-6)), 0)
 best = None
-for st in np.arange(10.0, 14.01, 0.5):
+for st in np.arange(8.75, 15.01, 0.625):
     head = env(st, st + 5)
-    for bars in (30, 31, 32):
-        for dl in np.arange(-0.15, 0.151, 0.01):
+    for bars in (28, 29, 30, 31, 32):
+        for dl in (0.0,):   # WHOLE bars: the piece's beat measured at 0.625 s exactly, with no drift to 77.5 s (its
+                            # onsets' autocorrelation peaks at 0.625, 2.5, 10, 20, 40, 60 and 77.5 s to 5 ms); a loop
+                            # matched to the nearest 10 ms first came out 0.11 s short of 31 bars: a beat skipped at the seam
             Ln = bars * 2.5 + dl
             if st + Ln + 6 > L / SR: continue
             tail = env(st + Ln, st + Ln + 5); n = min(len(head), len(tail))

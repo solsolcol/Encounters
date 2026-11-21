@@ -9,8 +9,8 @@
        never the play. */
     const TOUCH5 = !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window);
     const castOf = (n) => (typeof cast === 'object' && cast && cast[n] && cast[n].group) ? cast[n] : null;
-    const praiOf = () => { try { if (typeof prai !== 'undefined' && Array.isArray(prai)) return prai; } catch (e) { /* not cast yet */ }
-      return (cast && Array.isArray(cast.prai)) ? cast.prai : []; };
+    /* (the nine: c_cast.js's, as cast.prai; none until they are cast) */
+    const praiOf = () => (cast && Array.isArray(cast.prai)) ? cast.prai : [];
     const _pv5 = new THREE.Vector3(), _pw5 = new THREE.Vector3(), _hv5 = new THREE.Vector3();
     /* a mark that is pressed by a tap on it on a phone (v12.5): within a share of the screen of the point or of its mark */
     const markHit5 = (posF, frac = 0.1) => function (x, y) {
@@ -191,11 +191,10 @@
       const D = T.D, d = T.v * age - u * T.L;
       out.set(T.O[0] + D[0] * d, T.O[1] + D[1] * d, T.O[2] + D[2] * d);
       /* the wave across it, in the two directions square to its flow, growing along a rising smoke's length */
-      const px = Math.abs(D[1]) > 0.9 ? 1 : -D[2], pz = Math.abs(D[1]) > 0.9 ? 0 : D[0];
       const amp = T.a * (1 + (T.grow || 0) * 20 * Math.max(0, d));
       const w1 = Math.sin(T.f * age * 1.6 + u * 5.0 + T.ph) * amp, w2 = Math.cos(T.f * age * 1.2 + u * 4.0 + T.ph * 0.7) * amp * 0.7;
-      out.x += px * w1 + (Math.abs(D[1]) > 0.9 ? 0 : 0) ; out.z += pz * w1 + (Math.abs(D[1]) > 0.9 ? w2 : 0);
-      if (Math.abs(D[1]) <= 0.9) out.y += w2 * 0.6;
+      if (Math.abs(D[1]) > 0.9) { out.x += w1; out.z += w2; }                   // (a rising one: it sways both ways)
+      else { const hl = Math.hypot(D[0], D[2]) || 1; out.x += (-D[2] / hl) * w1; out.z += (D[0] / hl) * w1; out.y += w2 * 0.6; }
       return out;
     }
     function threadsFrame(wdt, st) {
@@ -316,7 +315,7 @@
       let u = false;
       if (phase === 'hunt' || phase === 'table') {
         if (open && sight.heat >= WARN5) u = 'close';
-        else if (!open && sightNeeded() && sight.heat <= 0.05 && !play.busy) u = 'open';
+        else if (!open && sightAsk() && sight.heat <= 0.05 && !play.busy) u = 'open';
       }
       if (u !== urgeNow) { urgeNow = u; kit.visionUrge(u); }
     }

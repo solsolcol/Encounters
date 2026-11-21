@@ -25,6 +25,8 @@
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       wallClock.t += wdt;
       worldFrame(wdt, st);                                     // (the world's hook: its people and levels)
+      playFrame(wdt, st);                                      // (the play's: SMELL's threads, the walkers, the strain: c_play.js)
+      if (st === 'decide') askPatience(wdt);                   // (the collector's patience runs on wall time under the window)
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
@@ -32,6 +34,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue();
+      if (booted) storyTick(wdt);
     }
     function updatePile() {}
     function updateFire() {}
@@ -43,7 +46,7 @@
     function reset() {
       phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       dayClock.t = 0; wallClock.t = 0; lastWall0 = 0; lastWall = 0; pausedAt = 0;
-      storyReset(); worldReset();
+      storyReset(); playReset(); worldReset();
     }
 
     /* what he cannot walk through: every solid of the place, a column from the floor (v5.03). TODO-WORLD: none yet */
@@ -90,7 +93,7 @@
          ground for the walk test (`grounds`: the court at night, the receiving room), and the floor's height (`groundAt`) */
       arrivals: ARRIVALS, keepIn: KEEP, grounds: GROUNDS, groundAt: flatGround, things: FLOOR.things,
       get phase() { return phase; },
-      setPhase, applyPhase,
+      setPhase, applyPhase, onVision,
       presets: PRESETS,
       plan: { FLOOR, SPOT },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),

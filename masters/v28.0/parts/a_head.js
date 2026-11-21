@@ -138,6 +138,12 @@
     daylight: DUSK,
     /* (the speed-up of v26.11 that chapters 3 and 4 took: a picture's decoded copy let go once it is on the graphics chip) */
     render: { freePictures: true },
+    /* SPIRIT VISION (chapter 4's fiftieth seam, as chapter 4 tuned it: R61, R105), from the hunt on (the walkway holds it
+       shut: "Not yet. First your nose."). Its own sounds wait for this chapter's (another chapter's sound named here would
+       leave that chapter's pack): the picture, the wave and the heart's beat on the HUD, silent until then */
+    vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
+              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
+              heart: { bpm: 112, rest: 76, vol: 0, secs: 2.2, restSecs: 4.5 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
@@ -155,16 +161,32 @@
       'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair',
       'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
       'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
-      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
+      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
+      'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
+      /* (the shared cast, masters/v28.0/parts/c_cast.js: each a declared reuse in the episode, reuseInEpisode) Grandmaster
+         Pho and Ton, chapter 3's; the white cloth over his crossed legs and the rite's fan, chapter 3's; the holy-water
+         bowls, chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
+         rows (the plan's 9.4) */
+      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
+      'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
     ],
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
-    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool" },
+    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool",
+      pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D)",
+      e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
+      w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
+      w3fan: "chapter 3's peacock-feather fan, from his own Wai Kru's photographs: the rite's fan (the plan's 16: his photograph was asked and not sent)",
+      w4waterbowl: "chapter 4's small silver bowl of holy water: the rite of case three", w4bigbowl: "chapter 4's larger bowl: the rite of case three",
+      e4kuman: "chapter 1's Kuman Thong, another man's piece in the collector's rows", e4ngang: "chapter 1's Phra Ngang, in the collector's rows",
+      e4tani: "chapter 1's Nang Tani, in the collector's rows", e4phraioil: "chapter 1's phial of oil, in the collector's rows",
+      e4phraitab: "chapter 1's powder tablet, in the collector's rows", e4praicase: "chapter 1's cased tablet, in the collector's rows",
+      e4tanitab: "chapter 1's Nang Tani tablet, in the collector's rows" },
     placeholders: {},
     items: [],
 
@@ -187,8 +209,16 @@
       /* the input, beside the order, for the device he is on (v18.5): N for the nose; no voice ever names an input */
       smellTouch: 'Tap SMELL',
       smellKey: 'Press N',
+      hotTon: 'Ask Ton',
+      hotJun: 'Ask Jun',
+      hotDrain: 'Smell the drain',
+      hotGate: 'Go to the gate',
+      /* said under the reticle when the eye is pressed on the walkway (the engine's visionHeldSay), as his teacher said it */
+      visionHeld: 'Not yet. First your nose.',
       // PLAY II · the hunt (the plan's 4.3): the count is derived on the frame from what is found, never stored (v11.6)
       objHunt: 'Find where the smell is strongest. {n}/3',
+      objOpen: 'Open Spirit Vision.',
+      hotStain: 'Look here',
       // THE CLEANSING (the plan's 5.2, 5.5 and 5.8), as the fight's specification gives them (docs/V28.0-FIGHT.md 11,
       // 21 Nov: R14's kit, BIND, SMELL and LEND beside FIRE, SHOCKWAVE and BAG). Every objective is true whoever is played
       fightTitle: 'THE CLEANSING',
@@ -230,12 +260,10 @@
       // PLAY III · the collector (the plan's 4.7)
       objSmell: 'Something smells. SMELL.',
       objLook: 'Open Spirit Vision. Look at the pieces.',
+      hotLook: 'Look',
       // THE SKELETON'S STAND-INS (TODO-PLAY, TODO-FIGHT): what is pressed in each phase until its play is built. Mine,
       // not the plan's: each goes when the play it stands for is built
-      hotGate: 'Go to the gate',
-      hotStain: 'Look here',
-      hotCleanse: 'Begin the cleansing',
-      hotPieces: 'Look at the pieces'
+      hotCleanse: 'Begin the cleansing'
     },
     sayPrefix: 'q5'
   };

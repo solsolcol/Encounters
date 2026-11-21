@@ -852,6 +852,19 @@ ASSETS = {
     'w5cushion':    ('assets/w5cushion.glb', True, False),     # the floor cushions
     'w5altarshelf': ('assets/w5altarshelf.glb', True, False),     # the altar shelf, empty
     'w5ceilfan':    ('assets/w5ceilfan.glb', True, False),     # the ceiling fan
+    # e4c5: CAST AT LAST by the shared cast (masters/v28.0/parts/c_cast.js, M9): the collector (people/RECORD.md 3b,
+    # his rig mended here, way B: one level, his full body), the nine's three bodies (one for each kind: the plain rig of
+    # 24), and the Naga of the fight's film (people/naga.sh: drawn as ruby light, cut and laid round the court)
+    'p5collector':  ('assets/p5collector.glb', True, False),     # the collector, 1.77 m: his rig mended here (way B), his four takes
+    'p5praicome':   ('assets/p5praicome.glb', True, False),     # the Prai that come, 1.60 m
+    'p5praihide':   ('assets/p5praihide.glb', True, False),     # the Prai that hide, 1.42 m
+    'p5praiheavy':  ('assets/p5praiheavy.glb', True, False),     # the third body of the nine, 1.90 m (the kind that slips)
+    'p5naga':       ('assets/p5naga.glb', True, False),     # the Naga of the fight's film, 8.41 m long (static)
+    # e4c5: THE COLLECTOR'S THREE PIECES (THINGS-2, 29245cb), each from real photographs of its kind first
+    # (docs/research/V28.0-PIECES.md); which presence sits on which is the game's own picture
+    'w5wuathanu':   ('assets/w5wuathanu.glb', True, False),     # a Wua Thanu, the cast humped bull (0.054 m): the angry presence
+    'w5rakyom':     ('assets/w5rakyom.glb', True, False),     # a Rak Yom, two small figures in a bottle of oil (0.060 m): the hungry one
+    'w5hunphayon':  ('assets/w5hunphayon.glb', True, False),     # a Hun Phayon, a bound black effigy (0.100 m): the one looking for energy
     # <<< e4c5 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -1020,6 +1033,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w5tvconsole', 'w5oldchair', 'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
            'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap',
            'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
+           'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom',
+           'w5hunphayon',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
