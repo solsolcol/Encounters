@@ -1503,6 +1503,8 @@ a7425f4b02fc51996fba5b0b0a8e51f91fe050a8924b8989717d89cb5d00f526  masters/v28.0/
 90b6b1d2a526fbfa50582500df76c74556c75f0e1d613c8d78199dd8c841363b  masters/v28.0/src/original-rail.glb
 cc29e8b498d8abf2d7ab4099cf781682efaec7f5d4e35f161be56f3016faabef  masters/v28.0/src/original-shoecab.glb
 a8df9f91dd86e25dbfe70f2fa78ec12e7f6680f3f57efcf25c7a180b84448b98  masters/v28.0/src/original-sideboard.glb
+bef3583cb3df9ce6cc35f99342142a61cf7e9e6359eaee203322d6cf20939bef  masters/v28.0/src/original-slippers.glb
+1701d885a6e6e8adc5eded953532d06ffc10d39484cfbf65e1bd4f170a0f3a65  masters/v28.0/src/original-sofa.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
 1047915f3740de26778949faaedc209be48304d15a2b981f188b46b137c95672  masters/v28.0/src/preremesh-zavier.glb
