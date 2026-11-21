@@ -76,8 +76,9 @@
         waveWait: 50, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
         bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
-        bubbleLongest: 30,                    // a bubble's own time, a hold's grace for the gold, the longest lend, and the gold gathered
-                                              // and gone out (none of these run a bubble down: 10 + 8 + 9 + 1.5 + 1.2, rounded up)
+        stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
+                                              // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
+        bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
@@ -207,7 +208,7 @@
         // Prai stands where it is; 'hide' it waits under the paving for the first SMELL; 'show' then shown for the first
         // BIND; 'keep' a bubble that stands still until the lesson's bag; 'grace' a bubble that stands still until the
         // first golden shockwave. lurk: a Prai chased away lies still this long before it comes on
-        return { id, kind, st: 'waiting', x: 0, z: 0, t: 0, at: 0, ring: 0, bub: 0, show: 0, gath: 0, stop: 0,
+        return { id, kind, st: 'waiting', x: 0, z: 0, t: 0, at: 0, ring: 0, bub: 0, stood: 0, show: 0, gath: 0, stop: 0,
                  hideIn: 0, lurk: 0, ph: 0, due: 0, fx: 0, fz: 0, hold: '', was: '' };
       }
 
@@ -473,7 +474,7 @@
             const p = (input && input.pick ? bindTarget(st, input.pick) : null) || bindTarget(st, 0);
             z.bindWait = n.bindWait; st.stats.binds++;
             const lessonShown = p.hold === 'show';
-            p.stop = 0; p.bub = n.bubbleSecs;
+            p.stop = 0; p.bub = n.bubbleSecs; p.stood = 0;
             setSt(st, p, p.st === 'tired' ? 'held' : 'bound', 'bind');
             p.hold = st.stage === 'learn' ? 'keep' : st.lesson.wave === 'pending' ? 'grace' : '';
             if (lessonShown) sayOnce(st, 'ph5g4');
@@ -804,7 +805,9 @@
         const n = st.n, z = st.zav, cage = st.cage, lent = cage.lent > 0, holds = !cage.broken && !lent;
         // a bubble does not run down while the cage is lent, nor while the gold is gathered and goes out, nor, in a hold,
         // for goldGrace seconds from the moment the gold is ready (a bubble never ends in the instant the gold is asked
-        // for; the grace is a number, so a bubble is still a timed thing with a longest stand: bubbleLongest)
+        // for). In all, a bubble stands still stillMax seconds at most, however often the cage is lent or the gold made
+        // ready (a cage lent and lent again, the gold never loosed, had held one bubble 36 s), so a bubble is still a
+        // timed thing with a longest stand: bubbleLongest
         const ph = st.pho, goldNow = st.hold > 0 && ph.waveWait <= 0 && !(ph.wind > 0) && !ph.ring;
         if (!goldNow) st.goldAt = -1; else if (!(st.goldAt >= 0)) st.goldAt = st.t;
         const still = lent || ph.wind > 0 || !!ph.ring || (goldNow && st.t - st.goldAt < n.goldGrace);
@@ -868,10 +871,16 @@
               }
               break;
             case 'bound':
-              if (p.hold !== 'keep' && p.hold !== 'grace' && !still) { p.bub -= dt; if (p.bub <= 0) { p.bub = 0; unbind(st, p); } }
+              if (p.hold !== 'keep' && p.hold !== 'grace') {
+                if (still && p.stood + dt <= n.stillMax + 1e-9) p.stood += dt;
+                else { p.bub -= dt; if (p.bub <= 0) { p.bub = 0; unbind(st, p); } }
+              }
               break;
             case 'held':
-              if (p.hold !== 'keep' && p.hold !== 'grace' && !still) { p.bub -= dt; if (p.bub <= 0) { p.bub = 0; setSt(st, p, 'tired', 'the bubble ends'); p.hold = ''; } }
+              if (p.hold !== 'keep' && p.hold !== 'grace') {
+                if (still && p.stood + dt <= n.stillMax + 1e-9) p.stood += dt;
+                else { p.bub -= dt; if (p.bub <= 0) { p.bub = 0; setSt(st, p, 'tired', 'the bubble ends'); p.hold = ''; } }
+              }
               break;
             case 'tired':
               p.ring -= dt;
