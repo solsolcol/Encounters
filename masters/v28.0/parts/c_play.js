@@ -403,9 +403,11 @@
        Phayon). The three are placed here (stage.things by key: the films move and show them, c_yfilm.js PIECES5, THREE5) */
     const TABLE5 = (() => {
       const R = ROOM, top = 0.345;
-      const P = { angry: { x: R.cx - 0.02, y: top, z: R.cz - 0.20, key: 'w5wuathanu', ry: Math.PI + 0.5 },
-                  hungry: { x: R.cx + 0.20, y: top, z: R.cz - 0.14, key: 'w5rakyom', ry: Math.PI },
-                  energy: { x: R.cx + 0.42, y: top, z: R.cz - 0.22, key: 'w5hunphayon', ry: Math.PI - 0.2 } };
+      /* (inside the cloth's top by a hand's breadth: photographed on the phone, the effigy at x 0.42 stood on the cloth's
+         hanging corner) */
+      const P = { angry: { x: R.cx - 0.04, y: top, z: R.cz - 0.17, key: 'w5wuathanu', ry: Math.PI + 0.5 },
+                  hungry: { x: R.cx + 0.13, y: top, z: R.cz - 0.10, key: 'w5rakyom', ry: Math.PI },
+                  energy: { x: R.cx + 0.30, y: top, z: R.cz - 0.18, key: 'w5hunphayon', ry: Math.PI - 0.2 } };
       return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: top + 0.06, z: R.cz - 0.05 } };
     })();
     FLOOR.pieces = TABLE5;
@@ -421,9 +423,9 @@
     (function presencesBuild() {
       const q = TABLE5.P;
       /* ANGRY: a tight, jagged knot that flinches when it is looked at */
-      { const g = new THREE.IcosahedronGeometry(0.045, 2), p = g.attributes.position, r = rng(28731);
+      { const g = new THREE.IcosahedronGeometry(0.03, 2), p = g.attributes.position, r = rng(28731);
         for (let i = 0; i < p.count; i++) { const k = 0.7 + r() * 0.65; p.setXYZ(i, p.getX(i) * k, p.getY(i) * k, p.getZ(i) * k); }
-        g.computeVertexNormals(); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.angry.x, q.angry.y + 0.075, q.angry.z); world.add(grp);
+        g.computeVertexNormals(); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.angry.x, q.angry.y + 0.06, q.angry.z); world.add(grp);
         pres.angry = { grp, m, home: grp.position.clone(), flinch: 0 }; }
       /* HUNGRY: a thin shape bent over its piece, reaching toward the collector's hands (he sits at the table's west end) */
       { const C = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.0, 0.11, 0.01), new THREE.Vector3(-0.05, 0.16, 0.0), new THREE.Vector3(-0.13, 0.13, -0.02), new THREE.Vector3(-0.2, 0.07, -0.03)]);
