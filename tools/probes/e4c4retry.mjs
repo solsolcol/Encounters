@@ -120,7 +120,9 @@ async function closeSplash() {
 }
 /* at the brief: read it, photograph it, snapshot the fight's start */
 async function atBrief(tag) {
-  const ok = await until(() => { const E = window.__enc; const q = E.kitDebug().event; return E.getState() === 'event' && q && q.kind === 'guard' && q.briefing; }, 1800000);
+  /* (an event is an overlay on play: the state stays 'play' while it is open, so its own record is read, never a state 'event':
+     e4c4reload's wait for a state 'event' could never be met, and read as a slow box twice) */
+  const ok = await until(() => { const q = window.__enc.kitDebug().event; return !!q && q.kind === 'guard' && !!q.briefing; }, 1800000);
   await wait(1200);
   const text = await p.evaluate(() => (document.getElementById('event') || document.body).innerText.replace(/\s+/g, ' '));
   const S = await SNAP();
@@ -273,10 +275,14 @@ if (MODE === 'button') {
   const L2 = await loseIt('loss2');
   checks.loss2 = L2.lost && L2.ready && L2.card.restart === 'Restart chapter';
   const rb = await box('#retryBtn');
+  /* (read in the page as the press lands: the first frame after it is black, and the lift is 0.6 s) */
+  await p.evaluate(() => { window.__atRetry = []; document.getElementById('retryBtn').addEventListener('click', () => {
+    window.__atRetry.push({ st: window.__enc.getState(), fade: window.__enc.kit.getFade(), phase: window.__enc.kit.getPhase() }); }); });
   await Promise.all([tap(rb.x, rb.y), (async () => { await wait(40); await tap(rb.x, rb.y); })()]);
-  const fadeAt = await p.evaluate(() => ({ st: window.__enc.getState(), fade: window.__enc.kit.getFade() }));
+  const fadeAt = await p.evaluate(() => (window.__atRetry || [])[0] || {});
+  log('  both presses as they landed:', JSON.stringify(await p.evaluate(() => window.__atRetry)));
   log('after a double tap on Retry:', JSON.stringify(fadeAt));
-  checks.retryFromBlack = fadeAt.fade > 0.5 || fadeAt.st === 'event';
+  checks.retryFromBlack = fadeAt.st === 'play' && fadeAt.fade > 0.5;
   const C = await atBrief('retry-double');
   const dC = same(A.S, C.S, ['voicesLive']);
   log('Retry (double tap) against the first arrival:', dC.length ? dC : 'the same');
