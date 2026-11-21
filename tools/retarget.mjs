@@ -256,7 +256,9 @@ const mapped = [];
    source's all the same, solved under the parent's rest. The library's talk drops both collar bones 24 degrees and its
    seated take raises them 12 to 24 (the collector, masters/v28.0/people/RECORD.md section 3b): on a narrow man the first
    reads as a coat hanger's shoulders and the second as a shrug; left at rest (held there under their parent as it moves,
-   a track written), his arms still take the source's lines. Unset, nothing changes. */
+   a track written), his arms still take the source's lines. Unset, nothing changes. (Tried on the collector and NOT
+   used: held at rest under a spine the sit curls forward, his collar bones read 21 degrees DOWN and his collar stood off
+   his neck; --noalign below was the cure.) */
 const SKIP = new Set(((process.argv.find(a => a.startsWith('--skip=')) || '--skip=').slice(7)).split(',').filter(Boolean));
 for (const dn of dstRest.order) {
   if (SKIP.has(dn.getName())) { mapped.push({ dn, sn: null, name: '', skip: true }); continue; }

@@ -1,0 +1,135 @@
+[
+ {
+  "name": "u5m1open",
+  "secs": 70,
+  "takes": 3,
+  "prompt": "Dread for a horror film's opening: a slow sustained low drone with no tune, a soft metallic hum like a lift's motor turning into music, faint high glassy tones, a far wind; it grows heavier and sour toward the end, a sickly detuned swell, then holds. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M1: the opening film (the lift, the doors, the sour), about 65 s"
+ },
+ {
+  "name": "u5m2walk",
+  "secs": 60,
+  "takes": 2,
+  "prompt": "Sparse uneasy underscore for walking along an apartment block corridor at dusk: one plucked string figure of four notes, struck now and then over a quiet sustained drone of low strings and a faint wind texture, long spaces between, uneasy and searching. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M2: the walkway (play, a loop)"
+ },
+ {
+  "name": "u5m3room",
+  "secs": 45,
+  "takes": 2,
+  "prompt": "A quiet unsettling underscore for a tired man's living room at dusk: a soft ticking figure on a muted marimba like a clock that does not quite keep time, slipping out of step now and then, over low sustained strings, sad and restless, leaving space for speech. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M3: Mr Koh's room (the devotee film)"
+ },
+ {
+  "name": "u5m4hunt",
+  "secs": 60,
+  "takes": 2,
+  "prompt": "Searching investigation music for a supernatural hunt in a house at night: a low soft pulse of muted drum and pizzicato cellos, a faint glassy pad, a slow rising tension, eerie high harmonics coming and going, careful and patient. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M4: the hunt (play, a loop; the chapter lifts it a step at each stain)"
+ },
+ {
+  "name": "u5m5nine",
+  "secs": 14,
+  "takes": 2,
+  "prompt": "One sustained eerie choir-like chord of strings and soft wordless voices swelling out of silence, cold and still, dissonant at its heart, held and then fading to nothing. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M5: the nine seen (one sung chord, then nothing)"
+ },
+ {
+  "name": "u5m6prep",
+  "secs": 55,
+  "takes": 2,
+  "prompt": "Ritual preparation music at night: a slow steady Thai drum, a long sustained line on a Thai reed oboe (pi), a low bronze gong now and then, a soft drone; it gathers slowly, solemn and tense, building to the edge of something. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M6: the preparation, and the turn"
+ },
+ {
+  "name": "u5m7fight",
+  "secs": 96,
+  "takes": 3,
+  "prompt": "Driving cinematic battle music for a supernatural fight, 96 BPM, D minor, one steady tempo and key from the first second to the last, no tempo change, no breakdown, no silence, the full arrangement playing all the way through so it can be looped and layered: Thai taphon and klong drums with deep frame drums and toms; low cellos and basses in a pulsing ostinato; a fast struck wooden xylophone (ranat) line repeating; a breathy bamboo flute melody over the top; deep bronze gongs and a gong circle with low brass swells; a wordless choir and a small bright bell. Urgent, heroic, mystical. Instrumental, no lyrics.",
+  "where": "M7: the fight (one piece; five stems of one length: sound/stems.py)"
+ },
+ {
+  "name": "u5m8surge",
+  "secs": 14,
+  "takes": 2,
+  "prompt": "One long held tense note of high strings and a faint shimmering drone, all else gone quiet, suspended and fragile, with a slow heartbeat-like soft pulse under it. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M8: the surge (every stem down to one held note and his heart)"
+ },
+ {
+  "name": "u5m9naga",
+  "secs": 42,
+  "takes": 2,
+  "prompt": "Majestic sacred climax for a giant serpent of fire rising: a Thai gong circle and ranat xylophone in a bright heroic theme together with a breathy bamboo flute melody, both themes at once, a wordless choir swelling, deep gongs and horns, triumphant and awe-inspiring, then settling. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M9: TOGETHER (the Naga film: both themes at once, the only time)"
+ },
+ {
+  "name": "u5m10last",
+  "secs": 36,
+  "takes": 2,
+  "prompt": "Very sparse still music: a single struck Tibetan singing bowl ringing out every eight seconds, a faint soft high drone of air and breath between, much room and silence, calm after a storm. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M10: the last three (a struck bowl for each, and room; a loop)"
+ },
+ {
+  "name": "u5m11light",
+  "secs": 40,
+  "takes": 2,
+  "prompt": "Plain warm gentle music for a house that feels lighter after a long night: a soft acoustic guitar and a warm low flute, simple and calm, a little tired, quietly hopeful, no drums. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M11: the house lighter (the bag tied film)"
+ },
+ {
+  "name": "u5m12lift",
+  "secs": 26,
+  "takes": 2,
+  "prompt": "Almost nothing: a very soft sustained high string tone and a few far apart notes of a bamboo flute, thoughtful and quiet, leaving the words room. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M12: at the lift, his teacher's lesson"
+ },
+ {
+  "name": "u5m13shop",
+  "secs": 60,
+  "takes": 2,
+  "prompt": "Quiet afternoon music in a calm room: a soft plucked figure on a Thai zither and a gentle guitar, a ceiling fan's lazy rhythm in it, warm and plain, a little uneasy underneath. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M13: the receiving room in the afternoon (play, a loop)"
+ },
+ {
+  "name": "u5m14sight",
+  "secs": 40,
+  "takes": 2,
+  "prompt": "Thin cold strings for looking at something uncanny: high sustained violins in slow dissonant harmonics, a glassy shimmer, eerie and fragile, very quiet. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M14: the pieces, his sight open (a loop)"
+ },
+ {
+  "name": "u5m15endA",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "An order obeyed and something left unresolved: a measured steady piano and low strings, plain and correct, never arriving home, ending on an open unresolved chord. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M15: ending A"
+ },
+ {
+  "name": "u5m16endB",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "A man finding out for himself: plain gentle warmth, a soft bamboo flute melody over warm strings and a quiet harp, rising slowly into a calm resolved close. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M16: ending B"
+ },
+ {
+  "name": "u5m17endC",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "A small alarm that steadies: begins with uneasy staccato strings and a nervous pulse, then calms, a warm low line coming in and settling it into quiet. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M17: ending C"
+ },
+ {
+  "name": "u5m18endD",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "A wry turn: a light plucked pizzicato and a clarinet with a gently ironic, knowing melody, a little playful, then turning thoughtful and quiet. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M18: ending D"
+ },
+ {
+  "name": "u5m19card",
+  "secs": 32,
+  "takes": 2,
+  "prompt": "The student's theme alone, quiet: a solo breathy bamboo flute melody with a faint soft drone and a small bell at its end, peaceful and thoughtful, a little open. Instrumental, no vocals with words, no deep sub bass; the low end carried by cellos and low reeds a small speaker can play.",
+  "where": "M19: the last picture and the card"
+ }
+]

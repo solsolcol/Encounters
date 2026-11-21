@@ -126,9 +126,11 @@ go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
 #      tools/retarget.mjs `same` (each bone by its own name, in the world: a Meshy rig to a Meshy rig) with --hips and,
 #      for the three library takes, --align (each bone's rest first swung onto the source's: without it his own rest, which
 #      leans his spine back 11 degrees where Jun's leans 5, was carried into every take, and the stand leant him back 17
-#      degrees and put his upper arms into his sides; with it every limb's line is the source's, measured at the moment;
-#      and --skip for both collar bones, held at his rest: the library's talk drops them 24 degrees, a coat hanger's
-#      shoulders on a narrow man with his collar standing off his neck, and its sit raises them 12 to 24, a shrug):
+#      degrees and put his upper arms into his sides; with it every limb's line is the source's, measured at the moment),
+#      but not his neck and head (--noalign: his head joint stands 13 cm in front of his neck joint where the sources'
+#      stand above theirs, and swung onto their line his head rose 10 to 19 cm off his collar, a long bare neck), and in
+#      the talk not his collar bones either (swung onto Mr Koh's sloping ones and dropped by the talk, 28 to 43 degrees: a
+#      coat hanger's shoulders and his collar torn off his neck). Each way photographed, RECORD.md section 3b:
 #      Sitting_Answering_Questions (307) from the seated hermit's file (assets/e4hermita.glb, chapter 3's), Idle_3 from
 #      Jun's library file, Talk_with_Hands_Open from Mr Koh's, and his own walk (proved: retargeted onto his mended rig it
 #      is his rig's own walk to 0.0000 degrees, every bone at every key);
@@ -137,9 +139,9 @@ go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
 #      is seated across the table from the player, inside 2.2 m, where an important person is drawn whole (v26.5).
 go collectorrig && ( W=${WORK:-$OUT/collector}; mkdir -p $W
   node tools/rigmend.mjs $SRC/rigged-collector.glb $SRC/body-collector-full.glb masters/v28.0/people/rigmend-collector.json &&
-  node tools/retarget.mjs assets/e4hermita.glb $SRC/body-collector-full.glb $W/r1.glb Sitting_Answering_Questions same --hips --align --skip=LeftShoulder,RightShoulder &&
-  node tools/retarget.mjs $SRC/takes-jun-lib.glb $W/r1.glb $W/r2.glb Idle_3 same --hips --align --skip=LeftShoulder,RightShoulder &&
-  node tools/retarget.mjs $SRC/takes-koh-lib.glb $W/r2.glb $W/r3.glb Talk_with_Hands_Open same --hips --align --skip=LeftShoulder,RightShoulder &&
+  node tools/retarget.mjs assets/e4hermita.glb $SRC/body-collector-full.glb $W/r1.glb Sitting_Answering_Questions same --hips --align --noalign=neck,Head &&
+  node tools/retarget.mjs $SRC/takes-jun-lib.glb $W/r1.glb $W/r2.glb Idle_3 same --hips --align --noalign=neck,Head &&
+  node tools/retarget.mjs $SRC/takes-koh-lib.glb $W/r2.glb $W/r3.glb Talk_with_Hands_Open same --hips --align --noalign=neck,Head,LeftShoulder,RightShoulder &&
   node tools/retarget.mjs $SRC/takes-collector-walking.glb $W/r3.glb $W/r4.glb "Armature|walking_man|baselayer" same --hips &&
   node tools/mergetakes.mjs strip $W/r4.glb $SRC/takes-collector-mended.glb $SRC/body-collector-full.glb && rm -f $W/r[1-4].glb )
 go collector && ( LEVELS=none WSMOOTH=0 XSCALE=1000 FINS=1 \

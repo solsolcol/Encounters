@@ -1,0 +1,1442 @@
+[
+ {
+  "name": "u5sniff1",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man breathing in slowly and deeply through his nose, a long searching sniff, close, quiet room tone. Only breath, no voice.",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)"
+ },
+ {
+  "name": "u5sniff2",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man taking two short careful sniffs through his nose, testing the air, close. Only breath, no voice.",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)"
+ },
+ {
+  "name": "u5sniff3",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man drawing one slow uneasy breath in through his nose, catching on a bad smell at the end, close. Only breath, no voice.",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)"
+ },
+ {
+  "name": "u5sniffout",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man breathing out slowly through his mouth after holding his breath, a soft uneasy exhale, close. Only breath, no voice.",
+  "family": "nose",
+  "where": "SMELL: the breath out, 2.5 s before the next"
+ },
+ {
+  "name": "u5sour",
+  "secs": 12,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A low queasy sustained drone, sickly and wavering, like nausea turned into sound: a sour detuned hum with a faint wet bubbling texture far inside it. Eerie and unpleasant, steady, no melody, no drums, no voices.",
+  "family": "nose",
+  "where": "the smell: a bed keyed to the source (louder as he nears it)"
+ },
+ {
+  "name": "u5souring",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A sudden sickening wave rising: a detuned low swell with a sour bending pitch and a faint ringing in the ears, like the air turning foul all at once. Ominous, not loud, no drums. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nose",
+  "where": "the opening film: the lift opens and the picture sours"
+ },
+ {
+  "name": "u5threads",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A very faint dry airy hiss like thin smoke curling slowly through still air, soft and continuous, with tiny crackles. Quiet, no voices.",
+  "family": "nose",
+  "where": "the threads drifting while SMELL shows them"
+ },
+ {
+  "name": "u5flies",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A few house flies buzzing around a drain grating outdoors, close, circling and landing, with a faint trickle of standing water.",
+  "family": "nose",
+  "where": "the decoy: the drain's grating"
+ },
+ {
+  "name": "u5weaker",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man letting out a short relieved breath through his nose as a bad smell fades, a small easing exhale, close. Only breath, no voice.",
+  "family": "nose",
+  "where": "\"Weaker here.\" (going back toward the lift)"
+ },
+ {
+  "name": "u5sournote",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "One low sour bending tone that swells and sinks away, sickly and wavering, eerie. Short. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nose",
+  "where": "the fight: SMELL (with the breath in)"
+ },
+ {
+  "name": "u5ripple",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A soft low rippling whoosh spreading outward along a stone floor, dull and murky, like a wave of dark air moving away from the listener. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nose",
+  "where": "the fight: SMELL's ripple out along the paving"
+ },
+ {
+  "name": "u5lifthum",
+  "secs": 14,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "Inside a small apartment block lift going up: a steady electric motor hum and the soft whir of the car moving in its shaft, faint rattles. No voices, no music.",
+  "family": "places",
+  "where": "the opening film: inside the lift car (a bed)"
+ },
+ {
+  "name": "u5cable",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A lift cable ticking and creaking once in its shaft, a small metallic tick and strain, close.",
+  "family": "places",
+  "where": "the opening film: the cable"
+ },
+ {
+  "name": "u5chime",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A modern apartment lift arrival chime, one soft electronic ding, close.",
+  "family": "places",
+  "where": "the opening film: the chime"
+ },
+ {
+  "name": "u5liftopen",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "Brushed steel lift doors sliding open smoothly, a soft rumble and a light clunk as they stop, then outdoor wind coming in.",
+  "family": "places",
+  "where": "the opening film: the doors open"
+ },
+ {
+  "name": "u5liftshut",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "Steel lift doors sliding shut with a soft rumble and a final muffled thud, the outside sound cut off.",
+  "family": "places",
+  "where": "the bag tied film: the doors close on black"
+ },
+ {
+  "name": "u5walkbed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.35,
+  "prompt": "An open-air corridor high up a Singapore apartment block at dusk: a steady warm wind, distant road traffic far below, birds settling in the trees, a faint far murmur of the town. No clear voices, no music.",
+  "family": "places",
+  "where": "the walkway at dusk (a bed)"
+ },
+ {
+  "name": "u5playground",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.4,
+  "prompt": "Children laughing and calling far away in a playground below an apartment block at dusk, very distant and indistinct, fading. No clear words.",
+  "family": "places",
+  "where": "the walkway: the last voices of a playground (one-shot)"
+ },
+ {
+  "name": "u5tvwall",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.4,
+  "prompt": "A television playing muffled through a concrete wall, an indistinct murmur of a drama show and faint music, nothing clear. No words can be made out.",
+  "family": "places",
+  "where": "the walkway: a television through a wall (one-shot)"
+ },
+ {
+  "name": "u5mynah",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A few mynah birds chattering and settling in a tree at dusk, their loud whistles and clicks, a little distant.",
+  "family": "places",
+  "where": "the walkway: mynahs settling (one-shot)"
+ },
+ {
+  "name": "u5courtbed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.35,
+  "prompt": "A small paved courtyard garden outside a ground floor home at night in Singapore: steady crickets, leaves of shrubs moving in a light warm breeze, very distant traffic. Still and a little uneasy. No voices, no music.",
+  "family": "places",
+  "where": "the court after dark (a bed)"
+ },
+ {
+  "name": "u5lampbuzz",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "An outdoor wall lamp humming with a faint electrical buzz, insects ticking against its glass now and then, close.",
+  "family": "places",
+  "where": "the court: a wall lamp's buzz (a bed at its lamp)"
+ },
+ {
+  "name": "u5roombed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.35,
+  "prompt": "Inside a quiet Singapore living room at dusk with the curtains drawn: a refrigerator humming in the next room, the soft whir of an air conditioner, the room's stillness. No voices, no music, no television.",
+  "family": "places",
+  "where": "his living room (a bed)"
+ },
+ {
+  "name": "u5clock",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A wall clock ticking steadily in a quiet room, one clear tick each second, close.",
+  "family": "places",
+  "where": "his living room: the wall clock (a bed at the clock)"
+ },
+ {
+  "name": "u5lamptick",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A lamp's bulb flickering: a few quick faint electrical ticks and a tiny buzz, then steady. Close and quiet.",
+  "family": "places",
+  "where": "his living room: the fourth lamp's flicker"
+ },
+ {
+  "name": "u5fanroom",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.35,
+  "prompt": "A quiet room on a sunny afternoon: a ceiling fan turning steadily overhead with a soft rhythmic whoosh, a faint street murmur through a closed window. Calm. No voices, no music.",
+  "family": "places",
+  "where": "the receiving room in the afternoon (a bed)"
+ },
+ {
+  "name": "u5shutter",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A metal roller shutter being pulled down somewhere outside, a long rattling roll and a clank, a little distant.",
+  "family": "places",
+  "where": "the receiving room: a shutter somewhere (one-shot)"
+ },
+ {
+  "name": "u5farchime",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A distant shopping mall public address chime, two soft electronic tones heard far away through walls, no voice.",
+  "family": "places",
+  "where": "the receiving room: a far chime (one-shot)"
+ },
+ {
+  "name": "u5os1",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A train passing slowly on an elevated track far away at night, a long soft distant rumble and squeal.",
+  "family": "places",
+  "where": "the court at night: far noises (a seeded stream)"
+ },
+ {
+  "name": "u5os2",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A neighbour's metal gate clanking shut far away along an apartment corridor at night, distant.",
+  "family": "places",
+  "where": "the court at night: far noises"
+ },
+ {
+  "name": "u5os3",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A gecko's short clicking chirp at night outdoors, close.",
+  "family": "places",
+  "where": "the court at night: far noises"
+ },
+ {
+  "name": "u5os4",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A motorcycle passing far below on a road at night, distant, fading.",
+  "family": "places",
+  "where": "the walkway and the court: far noises"
+ },
+ {
+  "name": "u5step1",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A single footstep of a man's leather shoe on a smooth concrete corridor floor outdoors, close, dry, no echo. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "places",
+  "where": "his steps on the walkway and the court (dealt in turn)"
+ },
+ {
+  "name": "u5step2",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "One light footstep of a man's shoe on stone paving outdoors, close, crisp, no echo. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "places",
+  "where": "his steps on the walkway and the court (dealt in turn)"
+ },
+ {
+  "name": "u5tile1",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A single soft bare footstep on a smooth ceramic tile floor indoors, very close, dry, no echo. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "places",
+  "where": "his bare steps inside the house (dealt in turn)"
+ },
+ {
+  "name": "u5phostep",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A single soft footstep of a cloth sandal on stone paving, unhurried, close, a slight brush of a long robe. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "places",
+  "where": "Grandmaster Pho's steps on the paving (the fight, the films)"
+ },
+ {
+  "name": "u5ncome",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A thin high ghostly keening, a faint wavering wail of a female spirit, breathy and endless, far inside the air. Wordless, no words.",
+  "family": "nine",
+  "where": "a Prai that COMES: its own voice while it stands or comes on (a loop, panned)"
+ },
+ {
+  "name": "u5nslip",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A low wet slithering drag, something heavy sliding over stone, with a slow dragging breath under it. Eerie, wordless.",
+  "family": "nine",
+  "where": "a Prai that SLIPS: its own voice while it weaves in (a loop)"
+ },
+ {
+  "name": "u5nhide",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Slow dripping of thick dark liquid in a dark place, single heavy drops falling into a pool, with a faint hollow ghostly breath. Eerie, no voice words.",
+  "family": "nine",
+  "where": "a Prai that HIDES: its own sound while it stands or comes on (a loop)"
+ },
+ {
+  "name": "u5rise1",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghostly shape rising up out of the ground: a wet sucking pull and a slow hollow breath in, growing, eerie. Wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "enter: a Prai rises (dealt in turn)"
+ },
+ {
+  "name": "u5rise2",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Dark oily liquid rising and taking shape: a thick gurgling swell and a low ghostly exhale. Wordless, eerie. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "enter: a Prai rises (dealt in turn)"
+ },
+ {
+  "name": "u5gather1",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghost drawing a long wet rasping breath in, growing louder and closer, about to strike. Wordless, no words, menacing. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "reach: a Prai at him gathers itself (2 s before it costs)"
+ },
+ {
+  "name": "u5gather2",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A creature's wet rattling indrawn breath swelling up close behind the listener, eerie, wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "reach: (dealt in turn)"
+ },
+ {
+  "name": "u5strain1",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghostly female spirit's strained low groan as it pushes against something it cannot pass, wordless, eerie, close.",
+  "family": "nine",
+  "where": "a Prai pressing the cage's bars (dealt in turn)"
+ },
+ {
+  "name": "u5strain2",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A hoarse ghostly growl of effort and frustration, straining and shaking, wordless, eerie.",
+  "family": "nine",
+  "where": "pressing (dealt in turn)"
+ },
+ {
+  "name": "u5strain3",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A wet hissing groan of a spirit straining against a barrier, rising and falling, wordless.",
+  "family": "nine",
+  "where": "pressing (dealt in turn)"
+ },
+ {
+  "name": "u5hitc",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghost struck by a ball of fire: a sharp wet gasp and a sizzling hiss, then a thin high wail cut short. Wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "land: a Prai that comes is chased (and the lesson's)"
+ },
+ {
+  "name": "u5hits",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghost hit by fire: a hoarse snarl and a crackling burst of steam, wordless, short. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "land: (dealt with u5hitc)"
+ },
+ {
+  "name": "u5hith",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A dark liquid spirit struck: a heavy wet splash and a hollow ghostly gasp, a hiss of steam. Wordless, short. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "land: a Prai that hides is chased"
+ },
+ {
+  "name": "u5slipthru",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ball of fire passing straight through smoke with a thin airy hiss and a faint ghostly laugh-like breath, no hit, no words. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "land \"slipped\": the fire passes through one that slips"
+ },
+ {
+  "name": "u5tired1",
+  "secs": 2.8,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A long falling exhausted sigh of a ghostly spirit, sinking lower and lower in pitch until it fades, wordless, eerie.",
+  "family": "nine",
+  "where": "land \"tired\": the fire on a bound one (dealt in turn)"
+ },
+ {
+  "name": "u5tired2",
+  "secs": 2.8,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A spirit's weary moaning breath falling away and going quiet, hollow and drained, wordless.",
+  "family": "nine",
+  "where": "land \"tired\" (dealt in turn)"
+ },
+ {
+  "name": "u5sink",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Something sinking down into the ground: a thick wet gurgle draining away and a fading hollow breath, eerie, wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "state to hidden: a Prai sinks into the paving"
+ },
+ {
+  "name": "u5shown",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A dark spirit suddenly revealed: a quick wet rising rush and a sharp ghostly intake of breath, wordless, startling but not loud. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "smell found / state to shown: a hidden one stands up into sight"
+ },
+ {
+  "name": "u5unrise",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A drained ghost stirring and rising again, a low wet groan swelling and a slow breath, wordless, uneasy.",
+  "family": "nine",
+  "where": "rise: a tired one's ring has closed and it rises again"
+ },
+ {
+  "name": "u5drawn1",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ghostly wail being stretched thin and sucked away into the distance by a strong rushing pull, fading into a tiny point. Wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "drawn / gathered: a Prai drawn into the bag (dealt in turn)"
+ },
+ {
+  "name": "u5drawn2",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A spirit's thin cry pulled away fast down a narrow tunnel of wind, stretching and vanishing. Wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "nine",
+  "where": "drawn (dealt in turn)"
+ },
+ {
+  "name": "u5shape",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Three ghostly voices merging into one huge towering presence: a keening, a wet drag and a dripping groan rising together into a single dark column of sound, looming overhead, wordless, terrifying but not loud.",
+  "family": "nine",
+  "where": "surge: the last three draw together into one tall shape"
+ },
+ {
+  "name": "u5shapeloop",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A huge dark towering spirit's sustained low moaning drone of many wordless voices, looming and wavering, eerie.",
+  "family": "nine",
+  "where": "surge and the Naga film: the tall shape stands (a loop)"
+ },
+ {
+  "name": "u5laid",
+  "secs": 4.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A long soft falling chord of ghostly voices sinking down and settling into stillness, calm at last, wordless.",
+  "family": "nine",
+  "where": "the Naga film: the three laid low, at rest"
+ },
+ {
+  "name": "u5swing1",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A wooden staff swung up quickly through the air, a short deep whoosh, close.",
+  "family": "pho",
+  "where": "FIRE: the Naga stick swung up (dealt in turn)"
+ },
+ {
+  "name": "u5swing2",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A long wooden walking staff swept upward, a quick swish and a soft creak of wood, close.",
+  "family": "pho",
+  "where": "FIRE: (dealt in turn)"
+ },
+ {
+  "name": "u5fire1",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ball of fire launched from a reed: a breathy blown whoosh through a reed pipe ending in a soft round thump of flame igniting. Not a gunshot. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "fireball: the ball leaving the Naga's mouth (dealt in turn)"
+ },
+ {
+  "name": "u5fire2",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A soft breathy puff and a warm whoomp of a fireball bursting into the air, magical, not a gunshot. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "fireball: (dealt in turn)"
+ },
+ {
+  "name": "u5fire3",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A rush of breath through a bamboo reed and a small burst of crackling flame launching, quick, magical, not a gunshot. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "fireball: (dealt in turn)"
+ },
+ {
+  "name": "u5flight",
+  "secs": 0.9,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A fireball flying through the air in an arc: a short rising and falling whoosh with a crackling flame trail. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "fireball: its flight (0.7 s in the air)"
+ },
+ {
+  "name": "u5land1",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ball of fire landing on stone paving: a soft deep fiery bloom and crackling sparks scattering. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "land: on the open paving, or \"chased\" (dealt in turn)"
+ },
+ {
+  "name": "u5land2",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A magical fireball hitting the ground with a muffled burst of flame and a hiss of embers. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "land: (dealt in turn)"
+ },
+ {
+  "name": "u5ruby",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ball of fire striking a glassy magical bubble: a bright crystalline ring and a warm burst of flame sealing inside it. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "land \"tired\": the bubble flashes ruby"
+ },
+ {
+  "name": "u5stale",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A fireball landing on empty stone and fizzling out with a thin hiss into nothing, a little puff of smoke. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "land \"stale\": fire at a stale cloud, it finds nothing"
+ },
+ {
+  "name": "u5plant",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A heavy wooden staff planted firmly upright on stone paving, one solid knock and a faint wooden ring.",
+  "family": "pho",
+  "where": "the preparation: the stick set upright; the fight's stage turns"
+ },
+ {
+  "name": "u5waveready",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A soft warm golden shimmer rising: gently swelling sparkling chimes and a faint glowing hum, magical and holy, quiet. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "waveReady: the golden shockwave comes ready"
+ },
+ {
+  "name": "u5windup",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Golden holy energy gathering fast: a swelling reverse whoosh with rising shimmering chimes and a building choir hum, tense, ending just before a release. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "windup: the gold gathers (1.5 s)"
+ },
+ {
+  "name": "u5wave",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A great temple gong struck once with full power, a rising wordless choir, and a huge rushing wave of air bursting outward, ringing and radiant, holy and powerful.",
+  "family": "pho",
+  "where": "wave: the golden shockwave goes out"
+ },
+ {
+  "name": "u5lampflare",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "An electric lamp flaring brightly for a moment: a quick rising electrical buzz and a soft pop of light. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "the ring passing each lamp"
+ },
+ {
+  "name": "u5wavebreak",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A gathering golden energy breaking apart: a sharp crack, then shimmering chimes scattering and collapsing into a dull falling whoosh. Failure, deflating. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "broken: the gold breaks"
+ },
+ {
+  "name": "u5baginhale",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "An old man drawing one enormous long breath in through his mouth, the breath grown huge and windy like air rushing into a cave, magical. No voice, no words.",
+  "family": "pho",
+  "where": "BAG: the long indrawn breath grown huge"
+ },
+ {
+  "name": "u5bagblow",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A strong steady breath blown out into the mouth of a cloth bag, a soft rushing gust and the cloth fluttering. No voice.",
+  "family": "pho",
+  "where": "the bag tied film: the breath blown into the bag (three rooms)"
+ },
+ {
+  "name": "u5bagsnap",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A thick black cloth bag snapped shut quickly, a sharp fabric snap and a muffled flap, close.",
+  "family": "pho",
+  "where": "gathered (by the bag): the cloth snapped shut"
+ },
+ {
+  "name": "u5bagtie",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A cord being pulled tight and knotted round the neck of a cloth bag, the rough rasp of cord on fabric and a firm tug, close.",
+  "family": "pho",
+  "where": "the bag tied film: the knot"
+ },
+ {
+  "name": "u5robe",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A long loose white cotton robe swishing as a man turns and raises his arm, soft fabric movement, close.",
+  "family": "pho",
+  "where": "his robe (films; the gold's raised hand)"
+ },
+ {
+  "name": "u5murmur1",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.55,
+  "prompt": "A man's low soft wordless murmuring hum, a monotone meditative drone under his breath with slow breaths between, calm, steady, close. No words, no melody.",
+  "family": "zavier",
+  "where": "the trance: his murmur (a loop; the shortest of three)"
+ },
+ {
+  "name": "u5murmur2",
+  "secs": 12,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.55,
+  "prompt": "A man murmuring very quietly to himself in a trance, a deep wordless humming that rises and falls slowly, close, steady. No words, no singing.",
+  "family": "zavier",
+  "where": "the trance: his murmur (the second length)"
+ },
+ {
+  "name": "u5murmur3",
+  "secs": 16,
+  "loop": true,
+  "takes": 4,
+  "influence": 0.55,
+  "prompt": "A soft continuous wordless low humming of a meditating man, breathy and deep, with long slow breaths, intimate, steady. No words.",
+  "family": "zavier",
+  "where": "the trance: his murmur (the longest)"
+ },
+ {
+  "name": "u5cagehum",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A warm steady magical hum of a protective energy field, a soft resonant glassy drone with slow gentle shimmering, calm and strong. No voices.",
+  "family": "zavier",
+  "where": "the cage, whole (a loop; its gain is the cage's strength)"
+ },
+ {
+  "name": "u5cagethin",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A thin weak flickering hum of a failing energy field, wavering and crackling faintly, fragile and strained. No voices.",
+  "family": "zavier",
+  "where": "the cage, worn (a loop crossfaded under u5cagehum as it wears)"
+ },
+ {
+  "name": "u5barring1",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A glassy bar of light ringing as something presses against it, a bright metallic hum that bends and wavers. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "a Prai at the bars: they ring (dealt in turn)"
+ },
+ {
+  "name": "u5barring2",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A crystal rod vibrating under strain, a high ringing tone with a buzzing waver, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "the bars ring (dealt in turn)"
+ },
+ {
+  "name": "u5cagecrack",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A magical glass barrier cracking and shattering: sharp glassy cracks, a bright fracture ringing and a falling whoosh of broken energy. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "cageBreak: the cage breaks; the surge: it cracks"
+ },
+ {
+  "name": "u5cagewhole",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A protective energy field sealing whole again: a soft rising glassy chime and a warm swelling hum closing like a breath. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "cageWhole: the cage whole again"
+ },
+ {
+  "name": "u5bind1",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A glassy magical bubble closing round something with a smooth rising crystalline tone and a soft sealing click. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "bind: the bubble closes (dealt in turn)"
+ },
+ {
+  "name": "u5bind2",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A shimmering sphere of light snapping shut: a bright swirling glass chime that rises and seals. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "bind: (dealt in turn)"
+ },
+ {
+  "name": "u5bindhold",
+  "secs": 4.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A held trembling note inside a glass sphere, a steady high shaking hum with a faint waver, as if something is straining inside it. No voice.",
+  "family": "zavier",
+  "where": "a bound Prai: its bubble's held, shaking note (a loop at the bubble)"
+ },
+ {
+  "name": "u5bindpop",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A soft magical bubble popping open with a gentle glassy pop and a tiny airy release. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "unbind: a bubble ends"
+ },
+ {
+  "name": "u5bindstale",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A glassy bubble closing on nothing, a hollow empty crystalline tone that fades thinly, a little disappointed. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "bind stale: a bubble closed on a stale cloud"
+ },
+ {
+  "name": "u5lend",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A ring of glowing glass bars lifting off and sweeping away to close round someone else: a rising glassy whoosh and a resonant chime settling into a hum. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "lend: the cage leaves him and stands round his teacher"
+ },
+ {
+  "name": "u5lendback",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ring of glowing glass bars returning and settling round the listener with a soft descending glassy whoosh and a warm hum. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "lendEnd: the cage comes back to him"
+ },
+ {
+  "name": "u5zbreath",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A young man's strained shaky breath, gasping slightly as if cold fear touches him, close. Only breath, no words.",
+  "family": "zavier",
+  "where": "drain / reach: he is reached (with the engine's pulse)"
+ },
+ {
+  "name": "u5stagger",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A man stumbling one step on stone paving, a scuff of a shoe and a sharp breath, close. No words.",
+  "family": "zavier",
+  "where": "his stagger, when the cage breaks"
+ },
+ {
+  "name": "u5zstep",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "One slow careful footstep of a man's shoe on stone paving at night, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "his slow steps in the fight"
+ },
+ {
+  "name": "u5turn",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A deep soft swelling whoosh into silence, like falling slowly backwards into calm water, a warm low hum and a distant shimmer, dreamlike. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "the turn: the picture floods with violet and the camera leaves his eyes"
+ },
+ {
+  "name": "u5swpho",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "One low warm struck wooden temple block and a soft low gong tone together, short and clear. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "switch: to Grandmaster Pho"
+ },
+ {
+  "name": "u5swzav",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "One small bright brass bell struck once, a clear high ring, short. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "switch: to Master Zavier"
+ },
+ {
+  "name": "u5ready",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A tiny soft crystal chime, one quick bright ping, gentle. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "a button come ready"
+ },
+ {
+  "name": "u5bowl",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "One small Tibetan singing bowl struck once with a soft mallet, a single pure clear ringing note sustaining and fading, close.",
+  "family": "screen",
+  "where": "the count's notes: the source the nine notes are made from (sound/notes.py)"
+ },
+ {
+  "name": "u5start",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A single deep resonant gong struck softly, solemn, a ritual beginning. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "the brief's START"
+ },
+ {
+  "name": "u5broken",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A dull falling tone and a soft hollow thud, like energy draining away, sad and final, quiet. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "lost: the cleansing broken"
+ },
+ {
+  "name": "u5done",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A warm peaceful resolution: a soft gong, bright bells and a gentle rising chord of light ringing out, calm and holy. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "screen",
+  "where": "won: the cleansing done"
+ },
+ {
+  "name": "u5nagarise",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A vast sacred serpent of fire rising: a long deep breath like wind over water, crackling flames swelling, and a low ancient horn sounding, majestic and awe-inspiring.",
+  "family": "together",
+  "where": "together / naga: the Naga rising"
+ },
+ {
+  "name": "u5nagacoil",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A huge serpent body of flame sliding in a great circle around a courtyard: a long sweeping rushing whoosh with crackling fire and scales rasping. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: its body laid round the court"
+ },
+ {
+  "name": "u5nagabreath",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A gigantic creature's slow deep breathing, warm and powerful, with soft crackling flames and embers in each breath, calm and majestic.",
+  "family": "together",
+  "where": "the Naga film: its breath (a loop)"
+ },
+ {
+  "name": "u5shapebreak",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A towering dark presence breaking apart: a deep ripping whoosh splitting into three fading ghostly sighs that sink away. Wordless. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: the tall shape comes apart into its three"
+ },
+ {
+  "name": "u5togfill",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A rising shimmering swell of warm golden light and violet glassy chimes building together, quick, ending on a bright accent. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "TOGETHER: the button filling (1.2 s)"
+ },
+ {
+  "name": "u5embers",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Embers rising and crackling softly in warm air, gentle popping sparks drifting upward, calm.",
+  "family": "together",
+  "where": "the Naga film: embers rising (a loop)"
+ },
+ {
+  "name": "u5clasp",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Two metal clasps of a padded hard case flicked open, click click, and the lid lifted, close.",
+  "family": "case3",
+  "where": "the film in: the case's clasps"
+ },
+ {
+  "name": "u5lay1",
+  "secs": 0.7,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A small metal amulet set down on a white cloth on a wooden table, a soft muffled tap, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "case3",
+  "where": "pieces laid on the cloth (dealt in turn)"
+ },
+ {
+  "name": "u5lay2",
+  "secs": 0.7,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A small clay amulet placed gently on a cloth covered table, a soft dull tap and a little slide, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "case3",
+  "where": "pieces laid (dealt in turn)"
+ },
+ {
+  "name": "u5lay3",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A few small amulets set down one after another on a cloth covered table, quick soft taps, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "case3",
+  "where": "pieces laid in a row"
+ },
+ {
+  "name": "u5whisk1",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A bundle of feathers or a fan flicked through the air sprinkling water, a soft swish and a light patter of drops.",
+  "family": "case3",
+  "where": "the rite: the fan's whisk and the water (dealt in turn)"
+ },
+ {
+  "name": "u5whisk2",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A gentle swish of a fan through the air and a scatter of water drops falling onto cloth and small objects.",
+  "family": "case3",
+  "where": "the rite: (dealt in turn)"
+ },
+ {
+  "name": "u5drops",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Drops of water falling and pattering softly onto a cloth covered table and small metal objects, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "case3",
+  "where": "the rite: the water falls on the pieces"
+ },
+ {
+  "name": "u5pcangry",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A small angry spirit's thin wordless hiss and snarl, sharp and tight, flinching, faint and eerie.",
+  "family": "case3",
+  "where": "the ANGRY presence: looked at, and as it comes away"
+ },
+ {
+  "name": "u5pchungry",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A thin hungry wordless whine of a small spirit, longing and reaching, faint and eerie.",
+  "family": "case3",
+  "where": "the HUNGRY presence: looked at, and as it comes away"
+ },
+ {
+  "name": "u5pcwarm",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A tiny pale lost spirit's soft wordless sigh, curious and drifting, faint and gentle.",
+  "family": "case3",
+  "where": "the one LOOKING FOR ENERGY: looked at, and as it comes away"
+ },
+ {
+  "name": "u5pcry1",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A thin wordless cry of a small spirit rising and fading far away as it lets go, eerie and faint.",
+  "family": "case3",
+  "where": "the rite: the presences crying out as they come away (dealt in turn)"
+ },
+ {
+  "name": "u5pcry2",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Several faint thin ghostly wails rising into the distance and vanishing, wordless.",
+  "family": "case3",
+  "where": "the rite: (dealt in turn)"
+ },
+ {
+  "name": "u5pgather",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Many small amulets gathered up from a table and tipped into a cloth bag, clinking softly, close.",
+  "family": "case3",
+  "where": "the rite: the pieces gathered into the bag"
+ },
+ {
+  "name": "u5string",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A thin white cotton string wound several times round the neck of a cloth bag and tied in a knot, soft rasping thread, close.",
+  "family": "case3",
+  "where": "the rite: the sacred string wound and knotted"
+ },
+ {
+  "name": "u5lighter",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A heavy stillness lifting from a room: a soft airy release, a faint rising shimmer and the room's air opening up, gentle and calm. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "case3",
+  "where": "the rite: the heaviness lifting"
+ },
+ {
+  "name": "u5lid",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "The padded lid of a hard case closed firmly by hand, a muffled thump and the clasps clicking shut.",
+  "family": "case3",
+  "where": "ending B: the case's lid shut by his own hand"
+ },
+ {
+  "name": "u5foam",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Small objects pressed one by one into soft foam padding inside a case, soft squeaks and pushes of foam, close.",
+  "family": "case3",
+  "where": "ending C: pieces fitted back into the foam"
+ },
+ {
+  "name": "u5count",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Fingertips tapping on a wooden table one after another as someone counts, soft quick taps, close.",
+  "family": "case3",
+  "where": "ending D: fingers counting on the table"
+ },
+ {
+  "name": "u5slide",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A padded hard case pushed across a cloth covered table, a soft sliding rasp, close.",
+  "family": "case3",
+  "where": "endings A and B: the case pushed across the cloth"
+ },
+ {
+  "name": "u5curtain",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Heavy curtains drawn back along a metal rail, the rings sliding with a soft rattle and the fabric swishing.",
+  "family": "household",
+  "where": "the bag tied film: Mr Koh draws his curtains back"
+ },
+ {
+  "name": "u5window",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A sliding glass window opened, a metal track rumble and the night air and crickets coming in.",
+  "family": "household",
+  "where": "the bag tied film: the windows opened"
+ },
+ {
+  "name": "u5flicker",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A lamp flickering once, an electrical crackle and buzz, then holding steady with a faint hum.",
+  "family": "household",
+  "where": "the bag tied film: the fourth lamp flickers once and holds"
+ },
+ {
+  "name": "u5gate",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small metal garden gate swung open on its hinges, a latch click and a soft squeak, close.",
+  "family": "household",
+  "where": "the devotee: the court's gate"
+ },
+ {
+  "name": "u5doors",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A pair of glass and wooden house doors opened, a handle turning, a soft creak and the doors swinging.",
+  "family": "household",
+  "where": "the devotee: Mr Koh opens his doors"
+ },
+ {
+  "name": "u5chair",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A heavy man sitting down into an old upholstered armchair, the springs creaking and the cushion sighing.",
+  "family": "household",
+  "where": "Mr Koh's chair"
+ },
+ {
+  "name": "u5kettle",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "An electric kettle in a kitchen nearby reaching the boil, its rumble rising and the switch clicking off.",
+  "family": "household",
+  "where": "the kettle he forgot"
+ },
+ {
+  "name": "u5unwrap",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A long wooden staff unwrapped from thick cloth, the fabric slid and pulled away, soft rustling, close.",
+  "family": "household",
+  "where": "the preparation: Ton unwraps the Naga stick"
+ },
+ {
+  "name": "u5bagdown",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A folded black cloth bag laid down on stone paving, a soft fabric flap, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "household",
+  "where": "the preparation: Jun lays the bag down"
+ },
+ {
+  "name": "u5unwind",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "White cotton thread unwound from a small reel and drawn across a doorway, a faint spinning rattle of the reel and a soft thread rasp, close.",
+  "family": "household",
+  "where": "the preparation: Jun draws the thread across the doorway"
+ },
+ {
+  "name": "u5lampsink",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Electric lamps dimming down slowly, a falling electrical hum and a soft fading buzz into near darkness.",
+  "family": "household",
+  "where": "the preparation: the lamps sink"
+ }
+]
