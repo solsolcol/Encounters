@@ -70,6 +70,10 @@ await toPlay(p, 1500000);
 say('play');
 await p.waitForFunction(() => { try { return window.__enc.stage.ready() && window.__enc.stage.info().applied; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 say('ready');
+/* (SPEED=k: on a box that draws a frame in seconds, the fight's rules stepped k times a frame: the lab's speed, inert in
+   play; the taps and the stick stay real) */
+const SPEED = +(process.env.SPEED || 1);
+if (SPEED > 1) say('SPEED', await p.evaluate((k) => window.__enc.stage.snap().story.fight.lab.speed(k), SPEED));
 await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 120000, polling: 250 });
 await sleep(1500); await pic('brief');
