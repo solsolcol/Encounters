@@ -674,7 +674,12 @@
     }
     /* (on only once proved: until tools/probes/e4c5ground.mjs has measured his feet over each window and photographed him,
        the gold and the bag stand as before and the fire keeps its build-time grounding; a probe turns it on: lab.groundOn) */
-    const FS_GROUND_ON = false;
+    /* (PROVED, 21 Nov, tools/probes/e4c5ground.mjs over each act's window at 13 moments, his own skin: the planted soles
+       0.15 to 0.47 cm into the paving (GROUND_SOLE's 0.3), a lifted foot up to 5.6 cm in the throw's step and 5.2 in the
+       bag's; the gold's crouch lays his robe's hem on the paving (its lowest 6 cm into it, read in the pictures as cloth
+       pooled on the floor); his front and side photographed at the gold's crouch and top, the bag's draw, the throw and its
+       held hand) */
+    const FS_GROUND_ON = true;
     if (FS_GROUND_ON) whenReady(cast.pho, fsGroundActs);
     const fsActOn = (kind) => kind === 'phoFire' || FS_GROUND_ON || FS5.groundOn;
     function fsPhoAct(kind, up) {
