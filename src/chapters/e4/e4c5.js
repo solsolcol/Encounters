@@ -90,12 +90,12 @@
     'ph5w1': 5.69, 'ph5w2': 5.53, 'ph5w3': 2.81, 'ph5w4': 1.69, 'ph5w5': 8.23, 'ph5w6': 1.2, 'ph5w7': 3.44,
     'ph5d1': 1.56, 'ph5d2': 7.53, 'ph5h1': 1.37, 'ph5h2': 2.17, 'ph5h3': 7.29, 'ph5h4': 4.89, 'ph5h5': 1.37,
     'ph5h6': 1.69, 'ph5h7': 1.27, 'ph5v1': 5.05, 'ph5v2': 3.56, 'ph5p1': 4.57, 'ph5p2': 6.09, 'ph5f0': 3.53,
-    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f3': 3.53, 'ph5f4': 1.37, 'ph5f5': 2.73, 'ph5f6': 2.49, 'ph5f7': 3.69,
+    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f3': 3.53, 'ph5f4': 0.72, 'ph5f5': 2.73, 'ph5f6': 1.53, 'ph5f7': 3.69,
     'ph5f8': 3.07, 'ph5f9': 4.16, 'ph5f10': 5.13, 'ph5fa': 4.65, 'ph5fc': 3.95, 'ph5fd': 4.75, 'ph5fe': 5.13,
     'ph5fg': 3.69, 'ph5fi': 7.44, 'ph5fj': 3.65, 'ph5fh': 6.13, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21,
-    'ph5nb1': 3.28, 'ph5nb2': 2.57, 'ph5nc2': 2.57, 'ph5nc3': 1.85, 'ph5nd1': 3.37, 'ph5nd2': 2.65, 'ph5nd3': 1.37,
+    'ph5nb1': 3.28, 'ph5nb2': 2.57, 'ph5nc2': 2.57, 'ph5nc3': 1.85, 'ph5nd1': 3.37, 'ph5nd2': 2.65, 'ph5nd3': 0.83,
     'ph5ne1': 4.33, 'ph5nf2': 2.49, 'ph5nf3': 1.2, 'ph5ng1': 2.33, 'ph5ng2': 1.85, 'ph5nh1': 3.49, 'ph5nh2': 0.97,
-    'ph5ni1': 2.89, 'ph5ni2': 1.81, 'ph5nj1': 2.28, 'ph5nj2': 1.93, 'ph5nk1': 3.05, 'ph5nk2': 3.04, 'ph5nl1': 2.97,
+    'ph5ni1': 2.25, 'ph5ni2': 1.53, 'ph5nj1': 2.28, 'ph5nj2': 1.93, 'ph5nk1': 3.05, 'ph5nk2': 3.04, 'ph5nl1': 2.97,
     'ph5nl2': 1.85, 'ph5nl3': 2.73, 'ph5nm1': 3.13, 'ph5nn1': 3.53, 'ph5nn2': 3.21, 'ph5no1': 1.53, 'ph5no2': 1.79,
     'ph5np1': 1.61, 'ph5nq1': 2.27, 'ph5nr1': 4.49, 'ph5nr2': 3.21, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 4.22,
     'ph5nt2': 2.33, 'ph5nu1': 3.05, 'ph5nu2': 2.01, 'ph5nv1': 2.13, 'ph5nv2': 3.59, 'ph5nv3': 0.68, 'ph5nw1': 3.45,
@@ -171,7 +171,7 @@
     'ph5f3': ['pho', 'fight', "Only Zavier can find it. Switch to Zavier."],
     'ph5f4': ['pho', 'fight', "BIND."],
     'ph5f5': ['pho', 'fight', "It is bound. Now switch to me."],
-    'ph5f6': ['pho', 'fight', "FIRE. Then the BAG."],
+    'ph5f6': ['pho', 'fight', "FIRE. Then BAG it."],
     'ph5f7': ['pho', 'fight', "It is hiding. SMELL."],
     'ph5f8': ['pho', 'fight', "There. BIND it, before it sinks again."],
     'ph5f9': ['pho', 'fight', "The golden shockwave is ready. Lend me your cage first."],
@@ -193,7 +193,7 @@
     'ph5nc3': ['pho', 'fight', "To me. FIRE."],
     'ph5nd1': ['pho', 'fight', "It is tired. Go to it, and BAG it."],
     'ph5nd2': ['pho', 'fight', "BAG the tired Prai before it rises."],
-    'ph5nd3': ['pho', 'fight', "BAG."],
+    'ph5nd3': ['pho', 'fight', "BAG it."],
     'ph5ne1': ['pho', 'fight', "The Prai rise again. Bag them while they are tired."],
     'ph5nf2': ['pho', 'fight', "SMELL, Zavier. Find the Prai."],
     'ph5nf3': ['pho', 'fight', "SMELL."],
@@ -201,8 +201,8 @@
     'ph5ng2': ['pho', 'fight', "BIND the Prai that comes."],
     'ph5nh1': ['pho', 'fight', "The golden shockwave is ready. SHOCKWAVE."],
     'ph5nh2': ['pho', 'fight', "SHOCKWAVE."],
-    'ph5ni1': ['pho', 'fight', "Switch to me. BAG."],
-    'ph5ni2': ['pho', 'fight', "To me. BAG."],
+    'ph5ni1': ['pho', 'fight', "Switch to me. BAG it."],
+    'ph5ni2': ['pho', 'fight', "To me. BAG it."],
     'ph5nj1': ['pho', 'fight', "It is at Zavier. FIRE."],
     'ph5nj2': ['pho', 'fight', "Chase it off him. FIRE."],
     'ph5nk1': ['pho', 'fight', "It slips the fire. Switch to Zavier."],
@@ -424,7 +424,12 @@
        declaration, so the preparation's film ends on exactly the mode's first picture */
     tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
            camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
-           radius: 0.45, speed: 1.2, turn: 9, eye: 1.62, keys: { switch: 'KeyF' } },
+           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
+           /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
+              it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
+              so a thumb's easy push runs; and turns to its walk at 16 a second, where 9 took 0.26 s for 90 %. The
+              engine's seam 60 reads ease and reach; one without them walks as before) */
+           ease: 18, reach: 0.7 },
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
        seam, with this chapter's own sounds: another chapter's sound named here would leave that chapter's pack), SMELL (a
@@ -6190,7 +6195,10 @@
         entryAt: [[-1.55, -2.45], [1.55, -2.45], [0, -2.5], [-1.75, -1.25], [1.75, -1.25], [-1.1, -2.5], [1.1, -2.5], [0.6, -2.5]],
         entryJitter: 0.25,
         // THE TWO OF THEM
-        phoWalk: 1.2, zavWalk: 0.6,           // his own Walking's travel (v26.0); his student is a man led
+        phoWalk: 2.3, zavWalk: 1.4,           // (R25, 21 Nov: "the characters walking speed feels sluggish, make it faster")
+                                              // his own Running's pace at full stick (2.31 m/s, measured from his file; his
+                                              // Walking plays below about 1.8); his student's one take, Walking, at 1.14
+                                              // its rate (he had walked at 0.6: his take in slow motion). Was 1.2 and 0.6
         apart: 1.45,                          // Grandmaster Pho never stands inside his student's cage (its bars 1.0, and himself)
         switchLock: 0.8,                      // nothing pressed inside it is spent by the one who arrives
         aiFar: 3.0, aiHome: [1.15, 1.3],      // the unplayed Grandmaster Pho walks back beside his student once this far
@@ -7801,7 +7809,34 @@
     }
 
     /* ---------------------------------------------------------------- THE TWO OF THEM: their takes, their faces */
-    const fsTake = { pho: { walking: false, t: 0, pace: 0 }, zav: { walking: false, t: 0, pace: 0 } };
+    const fsTake = { pho: { walking: false, t: 0, pace: 0, gait: 'Walking' }, zav: { walking: false, t: 0, pace: 0, gait: 'Walking' } };
+    /* THEIR WALK AND HIS RUN, by the ground each covers (R25: "the characters walking speed feels sluggish, make it faster
+       and more responsive"; "Fireball, shockwave, walking and bagging can all be different animations"): Grandmaster Pho
+       WALKS (his file's Walking, 1.42 m a second of its own) below 1.7 m a second and RUNS (his file's Running, 2.31 of
+       its own) above 1.9, keeping the one he has between; each played at the rate the ground asks of it (its own pace,
+       read from his file the way c_cast.js `pace` reads it: the planted foot's way back), so a planted foot stays planted
+       at every pace. A change between the two is a crossfade of a fifth of a second IN STEP: the new take begins where
+       the old one's feet are, the run's phase the walk's less a tenth (each foot's stance in his run, 0.88 to 0.05 and
+       0.35 to 0.52 of it, lies inside its stance in his walk, 0.90 to 0.25 and 0.43 to 0.65, shifted so: read from his
+       file at a hundredth of each take). His student has only his Walking (1.23 of its own). The rates are held between
+       0.35 and 1.5 of a take's own (a slower walk is a stroll, never a frozen leg) */
+    const FS_RUN = { on: 1.9, off: 1.7, shift: -0.10, fade: 0.2 };
+    function fsGait(P, who, pace) {
+      if (who !== 'pho' || !P.acts.Running) return 'Walking';
+      return fsTake[who].gait === 'Running' && fsTake[who].walking ? (pace < FS_RUN.off ? 'Walking' : 'Running') : (pace > FS_RUN.on ? 'Running' : 'Walking');
+    }
+    const fsGaitRate = (P, name, pace) => Math.max(0.35, Math.min(1.5, pace / ((P.pace && P.pace[name]) || (name === 'Running' ? 2.31 : 1.29))));
+    /* into the walk or the run this pace asks for: from his rest (eased in over 0.15 s), or from the other one, in step */
+    function fsGaitTo(P, who, g, fade) {
+      const T = fsTake[who], from = T.walking && T.gait !== g ? T.gait : null;
+      T.walking = true; T.t = 0; T.gait = g;
+      if (P.win) delete P.win[g];
+      take(P, g, from ? FS_RUN.fade : fade);
+      if (from && P.acts[from] && P.acts[g]) {
+        const A0 = P.acts[from], A1 = P.acts[g], d0 = A0.getClip().duration || 1, d1 = A1.getClip().duration || 1;
+        const u0 = (((A0.time % d0) + d0) % d0) / d0, u1 = (((u0 + (g === 'Running' ? FS_RUN.shift : -FS_RUN.shift)) % 1) + 1) % 1;
+        A1.time = u1 * d1; }
+    }
     /* HIS ACTS IN HIS OWN BODY: three of Grandmaster Pho's own file's takes (none was made for the fight), each played
        between two of its own moments (span) on the frame the rules begin the act, with every posture law of his as it
        stands (none is keyed to these three, so each plays as his file has it). Read from his file through its bones
@@ -7874,7 +7909,7 @@
     function fsPhoBack(fade = 0.3) {
       const P = cast.pho; FS5.act = null; if (!P) return;
       const T = fsTake.pho;
-      if (T.pace > 0.08) { T.walking = true; T.t = 0; if (P.win) delete P.win.Walking; take(P, 'Walking', fade); if (P.acts.Walking) P.acts.Walking.timeScale = 1; }
+      if (T.pace > 0.08) { T.walking = false; fsGaitTo(P, 'pho', fsGait(P, 'pho', T.pace), fade); fsGaitRates(P, T.pace); }
       else { T.walking = false; T.t = 0; rest(P, fade); }
     }
     /* the act's held top let go (the wave gone out, the Prai in the bag), or the act broken off (the gold broken) */
@@ -7887,30 +7922,39 @@
       const T = fsTake[who]; T.pace = pace;
       if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
       const moving = pace > 0.08;
-      if (moving) { T.t = 0; if (!T.walking) { T.walking = true; if (P.win) delete P.win.Walking; take(P, 'Walking', 0.25); if (P.acts.Walking) P.acts.Walking.timeScale = 1; } }
-      else if (T.walking) { T.t += wdt; if (T.t > 0.25) { T.walking = false;
-        if (who === 'zav') { const rt = zavRest(); if (rt) rest(P, 0.35); else hold(P, 'Walking', ZAV_STAND5, 0.001, 0.35); } else rest(P, 0.35); } }
-      const wp = (P.pace && P.pace.Walking) || 1.29;
-      P.rate = moving ? Math.max(0.3, Math.min(1.6, pace / wp)) : 1;
+      if (moving) { T.t = 0; const g = fsGait(P, who, pace); if (!T.walking || g !== T.gait) fsGaitTo(P, who, g, 0.15); }
+      else if (T.walking) { T.t += wdt; if (T.t > 0.12) { T.walking = false;           // (stopped: his rest within 0.12 s, eased 0.25)
+        if (who === 'zav') { const rt = zavRest(); if (rt) rest(P, 0.25); else hold(P, 'Walking', ZAV_STAND5, 0.001, 0.25); } else rest(P, 0.25); } }
+      fsGaitRates(P, moving ? pace : 0);
+    }
+    /* each walking take at the rate its own pace asks (the one fading out too, so its feet keep step as it goes); his
+       whole body at its own rate (P.rate, which his rest and every other take of his run on) */
+    function fsGaitRates(P, pace) {
+      P.rate = 1;
+      for (const nm of ['Walking', 'Running']) { const A = P.acts[nm];
+        if (!A || (P.span && P.span.name === nm) || (P.win && P.win[nm])) continue;
+        A.timeScale = pace > 0.08 ? fsGaitRate(P, nm, pace) : 1; }
     }
     /* THEIR FOOTFALLS on the paving (the engine's steps are the first person's, and he does not walk in the mode): each
        body's walk struck where its own take sets a foot down, read from each file through its bones (M8's takeread: his
        teacher's Walking at 0.37 and 0.85 of its 1.03 s, his own at 0.28 and 0.78), at the manifest's gain */
-    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85], run: [0.30, 0.86] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    /* (his run's own strikes, the same way: each foot within 3.5 cm of its lowest, at 0.30 and 0.86 of its 0.63 s) */
     function fsSteps() {
       for (const who of ['pho', 'zav']) {
         const P = who === 'pho' ? cast.pho : cast.zav, S = FS_STEP[who], T = fsTake[who];
-        if (!P || !P.ready || !P.acts.Walking || !P.group.visible) continue;
-        const A = P.acts.Walking, d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepU;
-        T.stepU = u;
-        if (last == null || !T.walking || (P.w.Walking || 0) < 0.5) continue;
-        for (const a of S.at) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
+        const g = T.gait === 'Running' && S.run && P && P.acts && P.acts.Running ? 'Running' : 'Walking';
+        if (!P || !P.ready || !P.acts[g] || !P.group.visible) continue;
+        const A = P.acts[g], d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepG === g ? T.stepU : null;
+        T.stepU = u; T.stepG = g;
+        if (last == null || !T.walking || (P.w[g] || 0) < 0.5) continue;
+        for (const a of (g === 'Running' ? S.run : S.at)) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
           const k = Math.min(1, (T.pace || 0) / (who === 'pho' ? (FN5.phoWalk || 1.2) : (FN5.zavWalk || 0.6)));
           fsFx(S.name, 0.4 * (0.75 + 0.25 * k), P.group.position.x, P.group.position.z); }
       }
     }
     function fsStand(P, who) {
-      if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0;
+      if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0; fsTake[who].gait = 'Walking';
       whenReady(P, (Q) => { Q.rate = 1; if (who === 'zav') { const rt = zavRest(); if (rt) rest(Q, 0); else hold(Q, 'Walking', ZAV_STAND5, 0.001, 0); } else rest(Q, 0); });
     }
 
@@ -8204,8 +8248,12 @@
       for (const who of ['pho', 'zavier']) {
         const B = who === 'pho' ? phoB : zavB, R2 = who === 'pho' ? st.pho : st.zav, k2 = who === 'pho' ? 'pho' : 'zav'; if (!B) continue;
         const w = fsW(R2.x, R2.z), off = Math.hypot(w.x - B.x, w.z - B.z);
-        if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z); }
+        /* (the played one kept in by the rules keeps walking along what kept him (R25): only the push into it is lost) */
+        if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z, { keep: true }); }
         else { if (off > 0.004) kit.tagPlace(who, w.x, w.z); if (who === 'pho') FS5.aiPace.pho = dt > 0 ? off / dt : 0; }
+        /* (the ground each really covered this frame, where the rules have him: what his walk's rate follows. The engine's
+           own reading counts a push the rules then took back, and his legs walked on the spot against the court's edge) */
+        const L0 = FS5.last[k2]; FS5.cov[k2] = L0 && dt > 0 ? Math.hypot(R2.x - L0.x, R2.z - L0.z) / dt : 0;
         FS5.last[k2] = { x: R2.x, z: R2.z };
       }
       /* (a held act let go when the rules let it go, whatever ended it: the gold out or broken, the bag's draw done or
@@ -8248,8 +8296,8 @@
        pools and the gold at his shoulders, the nine, the effects, the souring of the picture when he is reached */
     function fsLookFrame(wdt, played, phoB, zavB) {
       const st = FS5.st, ft = st.t;
-      fsBodyTake(cast.pho, 'pho', played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), wdt);
-      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (zavB ? zavB.v : 0) : 0, wdt);
+      fsBodyTake(cast.pho, 'pho', FS5.cov.pho || 0, wdt);
+      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (FS5.cov.zav || 0) : 0, wdt);
       fsSteps();
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
@@ -8288,7 +8336,7 @@
     /* THE FIGHT'S LOOPS, aimed each frame: the cage, the murmur, each Prai's voice where it is, each bubble's note, the
        shape, M7's stems (the one played leads: the manifest's levels), M10 for the last three */
     const FS_M7 = 1;                                                        // (M7 at the manifest's own gains, each stem's note: the sound helper's measured mix)
-    FS5.aiPace = { pho: 0 };
+    FS5.aiPace = { pho: 0 }; FS5.cov = { pho: 0, zav: 0 };
     function fsSoundFrame(wdt, played) {
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
       const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = (FS5.live || FS5.brief) && st.stage !== 'lost';
@@ -8344,6 +8392,16 @@
       pose(name, t) { FS5.labPose = name && cast.pho && cast.pho.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labPose || !name; },
       ground() { const P = cast.pho; return P && P.groundRep ? JSON.parse(JSON.stringify(P.groundRep)) : null; },
       groundOn() { FS5.groundOn = true; fsGroundActs(cast.pho); return this.ground(); },
+      /* (a probe's walk measured from a clear start: one of the two set down at a place of the court in the rules' own frame,
+         the rules and the engine both, standing still; and the switch shown, as the lesson shows it once it needs it) */
+      place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
+        R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
+      swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
+        out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
+          w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
+          ts: Object.fromEntries(['Walking', 'Running'].filter(k => P.acts[k]).map(k => [k, +P.acts[k].timeScale.toFixed(3)])) }; }
+        return out; },
       clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
@@ -8384,7 +8442,7 @@
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
         swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
-      FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
+      FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
@@ -8807,8 +8865,9 @@
         const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i === 0) sh.moveTo(x, z); else sh.lineTo(x, z); }
       return sh;
     }
-    function stainMesh(seed, x, z, rx, rz, ry = 0, y = 0.012) {
-      const g = new THREE.ShapeGeometry(spillShape(seed, rx, rz), 2); g.rotateX(Math.PI / 2);
+    function stainMesh(seed, x, z, rx, rz, ry = 0, y = 0.03) {
+      /* (laid flat facing UP: turned the other way it faced the floor, and from above it was culled and never drawn) */
+      const g = new THREE.ShapeGeometry(spillShape(seed, rx, rz), 2); g.rotateX(-Math.PI / 2);
       const m = new THREE.Mesh(g, matProxy); m.position.set(x, y, z); m.rotation.y = ry; world.add(m); return m;
     }
     function stainsBuild() {
@@ -8821,27 +8880,16 @@
       const r = rng(28714);
       for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
       grp.visible = false;
-      /* (seen as DARK through his sight: the vision draws the world as its negative, and a spirit's glow laid on its white
-         floor did not show at all (photographed on a phone, the hunt's first run). So each patch is drawn in the world's
-         own layer as a pale film, which the negative turns to a dark spill, shown only where his sight's wave has reached
-         and only while it is out; with his sight shut it is not drawn) */
-      const mat = new THREE.MeshBasicMaterial({ color: 0xf4f2e6, transparent: true, opacity: 0, depthWrite: false, fog: false,
-                                                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-      mats.push(mat);
-      grp.traverse(o => { if (o.isMesh) o.material = mat; });
-      return { grp, mat, fx: null };
+      /* seen only through his sight, LAID ON its white negative by its own strength (vision.js: never added), so a dark
+         colour reads as a dark spill, with a slow sheen (its flicker) moving on it; 3 cm over the floor, so the pass's
+         depth test does not hide it in the floor */
+      const fx = ctx.spirit ? ctx.spirit(grp, STAIN_LOOK) : null;
+      return { grp, fx };
     }
+    const STAIN_LOOK = { color: 0x1c2410, fill: 0.88, rim: 0.35, flicker: 0.3, power: 1.6, xray: 0 };
     const stains5 = stainsBuild();
-    /* the patches' strength: his sight's wave out past them (its radius from the lens), with a slow sheen moving on them */
-    function stainsTick(st) {
-      const v = (phase === 'hunt' && st !== 'cine' && kit && kit.vision) ? kit.vision() : null;
-      if (!v || !(v.r > 0.05)) { stains5.mat.opacity = 0; stains5.grp.visible = false; return; }
-      camera.getWorldPosition(_pv5);
-      const d = Math.min(distTo(HUNT5.s1.x, HUNT5.s1.z), distTo(HUNT5.s2.x, HUNT5.s2.z), distTo(HUNT5.s3.x, HUNT5.s3.z));
-      const k = Math.max(0, Math.min(1, (v.r - d) / 1.2));
-      stains5.grp.visible = k > 0.01;
-      stains5.mat.opacity = k * (0.78 + 0.12 * Math.sin(wallClock.t * 1.7));
-    }
+    /* (drawn only in the hunt; the vision draws it only where his sight's wave has reached) */
+    function stainsTick(st) { stains5.grp.visible = phase === 'hunt' && st !== 'cine'; }
     /* THE NINE, in the court from the moment he arrives (4.3): still, heads bowed, all facing the doors of the house,
        standing between where he has been walking: the chapter's cast puts them at their places (c_cast.js PRAI5.home),
        the play bows their heads */
@@ -9612,6 +9660,57 @@
        (the fight's boom, the snapshot a phase begins in). Between two keys of the same kind the eye, the aim and the lens
        ease; between an aimed key and a turned one the turn and the pitch ease */
     const keysBad5 = new Set();
+    /* A SHOT SOLVED FOR THE SCREEN IT IS DRAWN ON (R25, Chad: "The framing needs to be fixed so that both desktop and mobile
+       looks perfect at the same time"; CLAUDE.md v21.8: each shot names the points that must be in frame and solves its
+       distance for this screen's aspect). A key may name what it must HOLD (`hold`: [[x, y, z, r], ...], or a function
+       answering that: each a place and how far round it must be inside the frame, a head its middle and 0.16), and how far
+       its eye may come back for it (`back`, metres, 1.2 unless said). Once the eye, the aim and the lens are eased, the eye
+       is drawn straight back along its own line of sight until every held place and its round fit inside 0.86 of the
+       half-width and 0.88 of the half-height of THIS screen: the aim stays, the subject keeps its place in the picture, and
+       only the distance answers the screen's shape (a portrait phone sees a third of a desk's width). A desk whose frame
+       already holds them is not moved at all, and a key with no `hold` is exactly as before. The pull is eased between two
+       keys as everything else is (each key's own pull, mixed by the same ease), so it is a smooth function of the clock.
+       It never goes back through a solid (the place's own, `solids`): it stops 0.3 m short, and the lens widens for the
+       rest, to the key's `fmax` (78 degrees unless said) */
+    const _fhE = new THREE.Vector3(), _fhR = new THREE.Ray(), _fhH = new THREE.Vector3();
+    let solidBoxes5 = null;
+    function fmPullOf(K) {
+      const H = K && K.hold ? (typeof K.hold === 'function' ? K.hold() : K.hold) : null; if (!H || !H.length) return 0;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_fhE);
+      const e = camera.matrixWorld.elements, th = Math.tan(camera.fov * Math.PI / 360), tw = th * camera.aspect;
+      let d = 0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * 0.88) - z); }
+      return Math.min(K.back != null ? K.back : 1.2, Math.max(0, d));
+    }
+    function fmHold(A, B, u) {
+      if (!(A && A.hold) && !(B && B.hold)) return;
+      const d = B ? lp(fmPullOf(A), fmPullOf(B), u) : fmPullOf(A); if (!(d > 1e-4)) return;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_fhE);
+      const e = camera.matrixWorld.elements; _fhR.origin.copy(_fhE); _fhR.direction.set(e[8], e[9], e[10]).normalize();      // (backward: +z)
+      if (!solidBoxes5) { solidBoxes5 = []; for (const s of solids) { s.updateWorldMatrix(true, false); solidBoxes5.push(new THREE.Box3().setFromObject(s)); } }
+      let dd = d;
+      for (const bb of solidBoxes5) { if (bb.containsPoint(_fhE)) continue; const hit = _fhR.intersectBox(bb, _fhH); if (hit) dd = Math.min(dd, Math.max(0, _fhE.distanceTo(hit) - 0.3)); }
+      yaw.position.addScaledVector(_fhR.direction, dd);
+      camera.updateMatrixWorld(true);
+      if (dd < d - 1e-3) {
+        /* (the rest of the fit by the lens, from where the eye stopped: each key's need, mixed by the same ease) */
+        const th = B ? lp(fmNeedTh(A), fmNeedTh(B), u) : fmNeedTh(A), fmax = (B ? lp(A.fmax || 78, B.fmax || 78, u) : A.fmax || 78);
+        const f = Math.min(fmax, 2 * Math.atan(th) * 180 / Math.PI); if (f > camera.fov) { fmLens(f); camera.updateMatrixWorld(true); }
+      }
+    }
+    /* the lens's half-height (its tangent) that holds a key's places from where the eye stands now (the lens as it is, if more) */
+    function fmNeedTh(K) {
+      const th0 = Math.tan(camera.fov * Math.PI / 360), H = K && K.hold ? (typeof K.hold === 'function' ? K.hold() : K.hold) : null; if (!H || !H.length) return th0;
+      camera.getWorldPosition(_fhE); const e = camera.matrixWorld.elements; let th = th0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * 0.88)); }
+      return th;
+    }
     function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
       const p = v3_5(K.eye), q = v3_5(K.at), dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2]; return [Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz))]; }
     function fmTrack(t, K) {
@@ -9623,6 +9722,7 @@
         fmLens(nar ? A.fp : A.fd);
         if (A.yaw != null || !A.at) { const p = v3_5(A.eye), [yw, pt] = fmKeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
         else fmAim(v3_5(A.eye), v3_5(A.at), A.roll || 0);
+        fmHold(A, null, 1);
         FM5.shot = A.name || ''; fmLevels(); return;
       }
       const u = smo(c01((t - A.t) / Math.max(1e-3, B.t - A.t)));
@@ -9631,6 +9731,7 @@
       if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = fmKeyYP(A), [yb, pb] = fmKeyYP(B);
         yaw.position.set(pe[0], pe[1], pe[2]); yaw.rotation.y = ya + angTo(ya, yb) * u; pitch.rotation.x = lp(pa, pb, u); camera.rotation.z = lp(A.roll || 0, B.roll || 0, u); }
       else fmAim(pe, lp3(v3_5(A.at), v3_5(B.at), u), lp(A.roll || 0, B.roll || 0, u));
+      fmHold(A, B, u);
       FM5.shot = (A.name || '') + '>' + (B.name || ''); fmLevels();
     }
     /* the view a phase begins in (the snapshot the engine will restore at the film's end), as a key */
@@ -9693,6 +9794,55 @@
                     koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false] };
     const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], 0.25, 6), R[3]]; };
     function fmRest(P, who, t) { if (!P || !P.ready) return; const r = restOf5(who, t); pose(P, r[0], r[1], r[2]); }
+    /* A PERSON'S TALKING OVER ALL HIS LINES IN A FILM (R25, Chad: "jerky character motions"): `lines` [[t0, secs, take], ...]
+       each plays its talking take from the line's own start, eased in over 0.35 s and out over the half second after its
+       last word, the rest of the time his rest; lines closer than a second run as ONE talk (the take's own time unbroken
+       from the first), and where the next line's take is another the two are crossfaded over half a second round its start.
+       fmTalk called per line by windows cut 0.1 s after each line dropped the third of the talking pose its fade still
+       held in one frame, and a line begun inside the last one's fade began from the rest: both snaps, measured
+       (tools/probes/e4c5filmread.py, JERK) */
+    function fmSpeak(P, who, t, lines) {
+      if (!P || !P.ready) return;
+      const r = restOf5(who, t), S = [];
+      for (const [t0, secs, take0] of lines.slice().sort((a, b) => a[0] - b[0])) { const tk = take0 || P.talkTake; if (!tk || !P.acts[tk]) continue;
+        const last = S[S.length - 1];
+        if (last && t0 - last.t1 < 1.0) { last.t1 = Math.max(last.t1, t0 + secs); if (last.seg[last.seg.length - 1].tk !== tk) last.seg.push({ tk, t0 }); }
+        else S.push({ t0, t1: t0 + secs, seg: [{ tk, t0 }] }); }
+      /* ONE TAKE FOR HIS REST AND HIS TALK (the collector has one seated take, Sitting_Answering_Questions): a take cannot be
+         mixed with itself at two moments (pose() gave the one action the rest's moment and the mix's weight, so every
+         line began and ended with his body sagging toward its bind pose: JUMP and JERK at each of his lines). So it PLAYS:
+         slowly while he is quiet, at its own pace while he talks, its time the sum of both (each line's weight summed over
+         the clock, in closed form: smoothstep's integral), a pure function of the clock with no step */
+      if (S.length && S.every(q => q.seg.every(g => g.tk === r[0]))) {
+        const Sm = (x) => x * x * x - 0.5 * x * x * x * x;
+        let I = 0;
+        for (const q of S) { if (t <= q.t0) break;
+          I += 0.35 * Sm(c01((t - q.t0) / 0.35)) + Math.max(0, Math.min(t, q.t1 - 0.1) - (q.t0 + 0.35));
+          const x = c01((t - q.t1 + 0.1) / 0.5); I += 0.5 * (x - Sm(x)); }
+        pose(P, r[0], REST5[who][1] + 0.3 * t + 0.7 * I, true); return;
+      }
+      const s = S.find(q => t >= q.t0 && t < q.t1 + 0.45);
+      if (!s) { pose(P, r[0], r[1], r[2]); return; }
+      const W = smo(c01((t - s.t0) / 0.35)) * (1 - smo(c01((t - s.t1 + 0.1) / 0.5)));
+      let i = 0; while (i < s.seg.length - 1 && t >= s.seg[i + 1].t0) i++;
+      const tt = (g) => { const d = P.acts[g.tk].getClip().duration; return ((t - s.t0) % d + d) % d; };
+      const A = s.seg[i], pv = s.seg[i - 1], nx = s.seg[i + 1];
+      if (pv && t < A.t0 + 0.25) { pose(P, A.tk, tt(A), true, pv.tk, 1 - smo(c01((t - A.t0 + 0.25) / 0.5)), tt(pv)); return; }
+      if (nx && t > nx.t0 - 0.25) { pose(P, A.tk, tt(A), true, nx.tk, smo(c01((t - nx.t0 + 0.25) / 0.5)), tt(nx)); return; }
+      pose(P, A.tk, tt(A), true, r[0], 1 - W, r[1]);
+    }
+    /* A LOOK THAT MOVES FROM ONE THING TO THE NEXT (R25): `list` [[t, target], ...] (a point, a function of one, or 'lens'),
+       each target from its own time, the head carried from the last one to it over `ease` s. A look handed a new target
+       in one frame turned the head there in that frame (lookNow lays a look on at once: v6.4), a snap of up to 60 degrees */
+    const _gzA = new THREE.Vector3();
+    function fmGaze(P, t, list, k = 0.8, reach = 0.75, down = 0.03, ease = 0.5) {
+      if (!P || !P.ready || !list.length) return;
+      const at = (q) => { const g = typeof q === 'function' ? q() : q; if (g === 'lens') { camera.getWorldPosition(_gzA); return [_gzA.x, _gzA.y, _gzA.z]; } return g; };
+      let i = 0; while (i < list.length - 1 && t >= list[i + 1][0]) i++;
+      const A = list[i], B = list[i - 1], u = B ? smo(c01((t - A[0]) / ease)) : 1;
+      const tg = u >= 1 ? at(A[1]) : lp3(at(B[1]), at(A[1]), u);
+      if (tg) lookNow(P, tg, k, reach, down);
+    }
     /* a person who speaks plays his talking take from the line's own start to its end, and is back in his rest after (v11.4) */
     function fmTalk(P, who, t, t0, secs, take) {
       if (!P || !P.ready) return;

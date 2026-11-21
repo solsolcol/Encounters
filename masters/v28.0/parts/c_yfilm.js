@@ -31,6 +31,57 @@
        (the fight's boom, the snapshot a phase begins in). Between two keys of the same kind the eye, the aim and the lens
        ease; between an aimed key and a turned one the turn and the pitch ease */
     const keysBad5 = new Set();
+    /* A SHOT SOLVED FOR THE SCREEN IT IS DRAWN ON (R25, Chad: "The framing needs to be fixed so that both desktop and mobile
+       looks perfect at the same time"; CLAUDE.md v21.8: each shot names the points that must be in frame and solves its
+       distance for this screen's aspect). A key may name what it must HOLD (`hold`: [[x, y, z, r], ...], or a function
+       answering that: each a place and how far round it must be inside the frame, a head its middle and 0.16), and how far
+       its eye may come back for it (`back`, metres, 1.2 unless said). Once the eye, the aim and the lens are eased, the eye
+       is drawn straight back along its own line of sight until every held place and its round fit inside 0.86 of the
+       half-width and 0.88 of the half-height of THIS screen: the aim stays, the subject keeps its place in the picture, and
+       only the distance answers the screen's shape (a portrait phone sees a third of a desk's width). A desk whose frame
+       already holds them is not moved at all, and a key with no `hold` is exactly as before. The pull is eased between two
+       keys as everything else is (each key's own pull, mixed by the same ease), so it is a smooth function of the clock.
+       It never goes back through a solid (the place's own, `solids`): it stops 0.3 m short, and the lens widens for the
+       rest, to the key's `fmax` (78 degrees unless said) */
+    const _fhE = new THREE.Vector3(), _fhR = new THREE.Ray(), _fhH = new THREE.Vector3();
+    let solidBoxes5 = null;
+    function fmPullOf(K) {
+      const H = K && K.hold ? (typeof K.hold === 'function' ? K.hold() : K.hold) : null; if (!H || !H.length) return 0;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_fhE);
+      const e = camera.matrixWorld.elements, th = Math.tan(camera.fov * Math.PI / 360), tw = th * camera.aspect;
+      let d = 0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * 0.88) - z); }
+      return Math.min(K.back != null ? K.back : 1.2, Math.max(0, d));
+    }
+    function fmHold(A, B, u) {
+      if (!(A && A.hold) && !(B && B.hold)) return;
+      const d = B ? lp(fmPullOf(A), fmPullOf(B), u) : fmPullOf(A); if (!(d > 1e-4)) return;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_fhE);
+      const e = camera.matrixWorld.elements; _fhR.origin.copy(_fhE); _fhR.direction.set(e[8], e[9], e[10]).normalize();      // (backward: +z)
+      if (!solidBoxes5) { solidBoxes5 = []; for (const s of solids) { s.updateWorldMatrix(true, false); solidBoxes5.push(new THREE.Box3().setFromObject(s)); } }
+      let dd = d;
+      for (const bb of solidBoxes5) { if (bb.containsPoint(_fhE)) continue; const hit = _fhR.intersectBox(bb, _fhH); if (hit) dd = Math.min(dd, Math.max(0, _fhE.distanceTo(hit) - 0.3)); }
+      yaw.position.addScaledVector(_fhR.direction, dd);
+      camera.updateMatrixWorld(true);
+      if (dd < d - 1e-3) {
+        /* (the rest of the fit by the lens, from where the eye stopped: each key's need, mixed by the same ease) */
+        const th = B ? lp(fmNeedTh(A), fmNeedTh(B), u) : fmNeedTh(A), fmax = (B ? lp(A.fmax || 78, B.fmax || 78, u) : A.fmax || 78);
+        const f = Math.min(fmax, 2 * Math.atan(th) * 180 / Math.PI); if (f > camera.fov) { fmLens(f); camera.updateMatrixWorld(true); }
+      }
+    }
+    /* the lens's half-height (its tangent) that holds a key's places from where the eye stands now (the lens as it is, if more) */
+    function fmNeedTh(K) {
+      const th0 = Math.tan(camera.fov * Math.PI / 360), H = K && K.hold ? (typeof K.hold === 'function' ? K.hold() : K.hold) : null; if (!H || !H.length) return th0;
+      camera.getWorldPosition(_fhE); const e = camera.matrixWorld.elements; let th = th0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * 0.88)); }
+      return th;
+    }
     function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
       const p = v3_5(K.eye), q = v3_5(K.at), dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2]; return [Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz))]; }
     function fmTrack(t, K) {
@@ -42,6 +93,7 @@
         fmLens(nar ? A.fp : A.fd);
         if (A.yaw != null || !A.at) { const p = v3_5(A.eye), [yw, pt] = fmKeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
         else fmAim(v3_5(A.eye), v3_5(A.at), A.roll || 0);
+        fmHold(A, null, 1);
         FM5.shot = A.name || ''; fmLevels(); return;
       }
       const u = smo(c01((t - A.t) / Math.max(1e-3, B.t - A.t)));
@@ -50,6 +102,7 @@
       if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = fmKeyYP(A), [yb, pb] = fmKeyYP(B);
         yaw.position.set(pe[0], pe[1], pe[2]); yaw.rotation.y = ya + angTo(ya, yb) * u; pitch.rotation.x = lp(pa, pb, u); camera.rotation.z = lp(A.roll || 0, B.roll || 0, u); }
       else fmAim(pe, lp3(v3_5(A.at), v3_5(B.at), u), lp(A.roll || 0, B.roll || 0, u));
+      fmHold(A, B, u);
       FM5.shot = (A.name || '') + '>' + (B.name || ''); fmLevels();
     }
     /* the view a phase begins in (the snapshot the engine will restore at the film's end), as a key */
@@ -112,6 +165,55 @@
                     koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false] };
     const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], 0.25, 6), R[3]]; };
     function fmRest(P, who, t) { if (!P || !P.ready) return; const r = restOf5(who, t); pose(P, r[0], r[1], r[2]); }
+    /* A PERSON'S TALKING OVER ALL HIS LINES IN A FILM (R25, Chad: "jerky character motions"): `lines` [[t0, secs, take], ...]
+       each plays its talking take from the line's own start, eased in over 0.35 s and out over the half second after its
+       last word, the rest of the time his rest; lines closer than a second run as ONE talk (the take's own time unbroken
+       from the first), and where the next line's take is another the two are crossfaded over half a second round its start.
+       fmTalk called per line by windows cut 0.1 s after each line dropped the third of the talking pose its fade still
+       held in one frame, and a line begun inside the last one's fade began from the rest: both snaps, measured
+       (tools/probes/e4c5filmread.py, JERK) */
+    function fmSpeak(P, who, t, lines) {
+      if (!P || !P.ready) return;
+      const r = restOf5(who, t), S = [];
+      for (const [t0, secs, take0] of lines.slice().sort((a, b) => a[0] - b[0])) { const tk = take0 || P.talkTake; if (!tk || !P.acts[tk]) continue;
+        const last = S[S.length - 1];
+        if (last && t0 - last.t1 < 1.0) { last.t1 = Math.max(last.t1, t0 + secs); if (last.seg[last.seg.length - 1].tk !== tk) last.seg.push({ tk, t0 }); }
+        else S.push({ t0, t1: t0 + secs, seg: [{ tk, t0 }] }); }
+      /* ONE TAKE FOR HIS REST AND HIS TALK (the collector has one seated take, Sitting_Answering_Questions): a take cannot be
+         mixed with itself at two moments (pose() gave the one action the rest's moment and the mix's weight, so every
+         line began and ended with his body sagging toward its bind pose: JUMP and JERK at each of his lines). So it PLAYS:
+         slowly while he is quiet, at its own pace while he talks, its time the sum of both (each line's weight summed over
+         the clock, in closed form: smoothstep's integral), a pure function of the clock with no step */
+      if (S.length && S.every(q => q.seg.every(g => g.tk === r[0]))) {
+        const Sm = (x) => x * x * x - 0.5 * x * x * x * x;
+        let I = 0;
+        for (const q of S) { if (t <= q.t0) break;
+          I += 0.35 * Sm(c01((t - q.t0) / 0.35)) + Math.max(0, Math.min(t, q.t1 - 0.1) - (q.t0 + 0.35));
+          const x = c01((t - q.t1 + 0.1) / 0.5); I += 0.5 * (x - Sm(x)); }
+        pose(P, r[0], REST5[who][1] + 0.3 * t + 0.7 * I, true); return;
+      }
+      const s = S.find(q => t >= q.t0 && t < q.t1 + 0.45);
+      if (!s) { pose(P, r[0], r[1], r[2]); return; }
+      const W = smo(c01((t - s.t0) / 0.35)) * (1 - smo(c01((t - s.t1 + 0.1) / 0.5)));
+      let i = 0; while (i < s.seg.length - 1 && t >= s.seg[i + 1].t0) i++;
+      const tt = (g) => { const d = P.acts[g.tk].getClip().duration; return ((t - s.t0) % d + d) % d; };
+      const A = s.seg[i], pv = s.seg[i - 1], nx = s.seg[i + 1];
+      if (pv && t < A.t0 + 0.25) { pose(P, A.tk, tt(A), true, pv.tk, 1 - smo(c01((t - A.t0 + 0.25) / 0.5)), tt(pv)); return; }
+      if (nx && t > nx.t0 - 0.25) { pose(P, A.tk, tt(A), true, nx.tk, smo(c01((t - nx.t0 + 0.25) / 0.5)), tt(nx)); return; }
+      pose(P, A.tk, tt(A), true, r[0], 1 - W, r[1]);
+    }
+    /* A LOOK THAT MOVES FROM ONE THING TO THE NEXT (R25): `list` [[t, target], ...] (a point, a function of one, or 'lens'),
+       each target from its own time, the head carried from the last one to it over `ease` s. A look handed a new target
+       in one frame turned the head there in that frame (lookNow lays a look on at once: v6.4), a snap of up to 60 degrees */
+    const _gzA = new THREE.Vector3();
+    function fmGaze(P, t, list, k = 0.8, reach = 0.75, down = 0.03, ease = 0.5) {
+      if (!P || !P.ready || !list.length) return;
+      const at = (q) => { const g = typeof q === 'function' ? q() : q; if (g === 'lens') { camera.getWorldPosition(_gzA); return [_gzA.x, _gzA.y, _gzA.z]; } return g; };
+      let i = 0; while (i < list.length - 1 && t >= list[i + 1][0]) i++;
+      const A = list[i], B = list[i - 1], u = B ? smo(c01((t - A[0]) / ease)) : 1;
+      const tg = u >= 1 ? at(A[1]) : lp3(at(B[1]), at(A[1]), u);
+      if (tg) lookNow(P, tg, k, reach, down);
+    }
     /* a person who speaks plays his talking take from the line's own start to its end, and is back in his rest after (v11.4) */
     function fmTalk(P, who, t, t0, secs, take) {
       if (!P || !P.ready) return;

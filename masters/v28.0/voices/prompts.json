@@ -333,7 +333,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] BIND."
+  "prompt": "[firm] Bind."
  },
  {
   "key": "ph5f5",
@@ -347,7 +347,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] FIRE. Then the BAG."
+  "prompt": "[firm] Fire. Then bag it."
  },
  {
   "key": "ph5f7",
@@ -501,7 +501,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] BAG."
+  "prompt": "[firm] Bag it."
  },
  {
   "key": "ph5ne1",
@@ -550,14 +550,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Switch to me. BAG."
+  "prompt": "[firm] Switch to me. Bag it."
  },
  {
   "key": "ph5ni2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] To me. BAG."
+  "prompt": "[firm] To me. Bag it."
  },
  {
   "key": "ph5nj1",

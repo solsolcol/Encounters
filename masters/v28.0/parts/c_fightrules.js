@@ -56,7 +56,10 @@
         entryAt: [[-1.55, -2.45], [1.55, -2.45], [0, -2.5], [-1.75, -1.25], [1.75, -1.25], [-1.1, -2.5], [1.1, -2.5], [0.6, -2.5]],
         entryJitter: 0.25,
         // THE TWO OF THEM
-        phoWalk: 1.2, zavWalk: 0.6,           // his own Walking's travel (v26.0); his student is a man led
+        phoWalk: 2.3, zavWalk: 1.4,           // (R25, 21 Nov: "the characters walking speed feels sluggish, make it faster")
+                                              // his own Running's pace at full stick (2.31 m/s, measured from his file; his
+                                              // Walking plays below about 1.8); his student's one take, Walking, at 1.14
+                                              // its rate (he had walked at 0.6: his take in slow motion). Was 1.2 and 0.6
         apart: 1.45,                          // Grandmaster Pho never stands inside his student's cage (its bars 1.0, and himself)
         switchLock: 0.8,                      // nothing pressed inside it is spent by the one who arrives
         aiFar: 3.0, aiHome: [1.15, 1.3],      // the unplayed Grandmaster Pho walks back beside his student once this far

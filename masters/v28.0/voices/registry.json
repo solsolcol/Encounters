@@ -418,8 +418,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: the short wording of every BIND need",
-   "text": "[firm] BIND.",
-   "secs": 1.37
+   "text": "[firm] Bind.",
+   "secs": 0.72
   },
   {
    "id": "ph5f5",
@@ -434,8 +434,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need bound, Grandmaster Pho played: first wording (said in the lesson)",
-   "text": "[firm] FIRE. Then the BAG.",
-   "secs": 2.49
+   "text": "[firm] Fire. Then bag it.",
+   "secs": 1.53
   },
   {
    "id": "ph5f7",
@@ -610,8 +610,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need tired: the short one; and the last three",
-   "text": "[firm] BAG.",
-   "secs": 1.37
+   "text": "[firm] Bag it.",
+   "secs": 0.83
   },
   {
    "id": "ph5ne1",
@@ -674,16 +674,16 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need tired, Master Zavier played: first wording",
-   "text": "[firm] Switch to me. BAG.",
-   "secs": 2.89
+   "text": "[firm] Switch to me. Bag it.",
+   "secs": 2.25
   },
   {
    "id": "ph5ni2",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need tired, Master Zavier played: second wording and the short one",
-   "text": "[firm] To me. BAG.",
-   "secs": 1.81
+   "text": "[firm] To me. Bag it.",
+   "secs": 1.53
   },
   {
    "id": "ph5nj1",

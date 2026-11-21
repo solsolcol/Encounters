@@ -8116,6 +8116,8 @@ const TAG_DEFAULTS = {
   radius: 0.42,                                // each body's disc: the two never stand closer than both together
   speed: 1.2,                                  // a body's pace, metres a second, unless it names its own
   turn: 9,                                     // how fast a body turns to face where it walks
+  ease: 7.6,                                   // v28.0 (R25): how fast a body comes to the stick's pace (a second's rate)
+  reach: 1,                                    // v28.0 (R25): the share of the stick's travel that is full pace (1: all of it)
   eye: 1.62,                                   // the pivot's height over his feet: "where he is" for every distance
   keys: { switch: 'KeyF' }
 };
@@ -8249,12 +8251,14 @@ function tagBodyStep(A, wdt, drive) {
     if (keys.KeyD || keys.ArrowRight) s += 1;
     f -= stickVec.y; s += stickVec.x;
     if (A.root || kitRooted) { f = 0; s = 0; }
-    const len = Math.hypot(f, s);
+    let len = Math.hypot(f, s);
+    /* (v28.0, R25: "the characters walking speed feels sluggish") full pace at `reach` of the stick's travel; 1 is as before */
+    if (c.reach > 0 && c.reach < 1 && len > 0) { const m = Math.min(1, len / c.reach) / len; f *= m; s *= m; len *= m; }
     if (len > 1) { f /= len; s /= len; }
     /* by the SCREEN: (s, -f) turned by the court's heading, as the walk turns by the look's */
     const h = c.heading, ch = Math.cos(h), sh = Math.sin(h), sp = A.speed;
     const tx = (s * ch - f * sh) * sp, tz = (-s * sh - f * ch) * sp;
-    const k = 1 - Math.exp(-7.6 * wdt);        // the walk's own ease (0.0005 a second), on the mode's clock
+    const k = 1 - Math.exp(-(c.ease > 0 ? c.ease : 7.6) * wdt);   // the walk's own ease (`ease`, 7.6 unless declared), on the mode's clock
     A.vx += (tx - A.vx) * k; A.vz += (tz - A.vz) * k;
     if (!f && !s && Math.hypot(A.vx, A.vz) < 0.01) A.vx = A.vz = 0;
     const nx = o.x + A.vx * wdt, nz = o.z + A.vz * wdt;
@@ -8459,6 +8463,7 @@ function tagOpen(o) {
   tag.cfg = { ...d, heading: num(o.heading, d.heading), fov: num(o.fov, d.fov), camBox: o.camBox !== undefined ? o.camBox : d.camBox,
               soft: num(o.soft, d.soft), glide: num(o.glide, d.glide), lock: num(o.lock, d.lock), radius: num(o.radius, d.radius),
               speed: num(o.speed, d.speed), turn: num(o.turn, d.turn), eye: num(o.eye, d.eye),
+              ease: num(o.ease, d.ease), reach: num(o.reach, d.reach),
               boom: { ...d.boom, ...(o.boom || {}) }, portrait: o.portrait ? { ...d.boom, ...(o.boom || {}), ...o.portrait } : d.portrait,
               keys: { ...d.keys, ...(o.keys || {}) } };
   for (const B of bodies) {
@@ -8558,10 +8563,14 @@ function kitTagPlace(id, x, z, o = {}) {
   const B = tag.on ? tag.bodies.find(b => b.id === id) : null;
   if (!B || !Number.isFinite(+x) || !Number.isFinite(+z) || collideFrom(+x, +z, +x, +z)) return false;
   const p = B.obj.position, secs = Math.max(0, +o.secs || 0);
+  const kx = +x - p.x, kz = +z - p.z;          // (the correction's way, read before he is moved)
   if (secs === 0) { p.x = +x; p.z = +z; B.place = null; B.gy = NaN; }
   else B.place = { x0: p.x, z0: p.z, x1: +x, z1: +z, t0: tag.t, secs };
   if (Number.isFinite(+o.ry)) { B.face = +o.ry; if (secs === 0) B.obj.rotation.y = +o.ry; }
-  B.vx = B.vz = 0;
+  /* (v28.0, R25) `keep`: a correction that keeps him walking: only the push into the bound is taken off his pace, the
+     slide along it is kept (zeroed, he crawled along an edge at a fifth of his pace); without it, as before */
+  const kl = Math.hypot(kx, kz), vn = kl > 1e-9 ? (B.vx * kx + B.vz * kz) / kl : 0;
+  if (o.keep && secs === 0) { if (vn < 0) { B.vx -= vn * kx / kl; B.vz -= vn * kz / kl; } } else B.vx = B.vz = 0;
   return true;
 }
 /* the run held again, as it stands now (the place a Continue lands is still where the mode opened): a chapter whose fight's

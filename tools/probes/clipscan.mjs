@@ -37,7 +37,9 @@ await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForFunction(() => { try { return window.__enc.stage.dayClock.t > 0.5; } catch { return false; } }, null, { timeout: 600000, polling: 500 });
 /* THE MEASURE ITSELF, run in the page on whatever stands there now (play, or a film sought to a moment) */
-const ANALYSE = ([VOX, R, FLAT]) => {
+/* (v28.0) [VOX, R, FLAT, CX, CZ]: the range is R m round (CX, CZ), the origin unless given (tools/probes/e4c5films.mjs
+   centres it on the lens of each film moment it measures: episode 4 chapter 5's receiving room stands 240 m out) */
+const ANALYSE = ([VOX, R, FLAT, CX = 0, CZ = 0]) => {
   const E = window.__enc, scene = E.scene, V3 = scene.position.constructor;
   scene.updateMatrixWorld(true);
   const objs = [];                    // { label, at, size }
@@ -51,7 +53,7 @@ const ANALYSE = ([VOX, R, FLAT]) => {
   const va = new V3(), vb = new V3(), vc = new V3(), m4 = scene.matrixWorld.clone(), mi = scene.matrixWorld.clone();
   const ck = (ix, iy, iz) => ((ix + 2000) * 4001 + (iz + 2000)) * 1000 + (iy + 100);
   const cellOf = (x, y, z) => ck(Math.floor(x / VOX), Math.floor(y / VOX), Math.floor(z / VOX));
-  const inRange = (x, y, z) => Math.abs(x) <= R && Math.abs(z) <= R && y >= -0.5 && y <= 40;
+  const inRange = (x, y, z) => Math.abs(x - CX) <= R && Math.abs(z - CZ) <= R && y >= -0.5 && y <= 40;
   const labelOf = (o, root) => {
     const mat = Array.isArray(o.material) ? o.material[0] : o.material;
     const names = []; root.traverse(q => { if (q.isMesh && q.name && names.length < 2 && !names.includes(q.name)) names.push(q.name); });
