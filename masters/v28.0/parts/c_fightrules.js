@@ -159,6 +159,8 @@
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
         tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
       };
+      /* the needs that cost him while they stand: their prompt is said at once, ahead of praise and colour */
+      const URGENT = { athimF: 1, athimS: 1, athimB: 1, athimSw: 1, beneath: 1, cage: 1, press: 1, waveGo: 1 };
       /* (said straight away, never queued: the card has opened and the fight's clock stands still under it) */
       const ONLOSS = 'ph5l1';
       const LINES_SAID = (() => {

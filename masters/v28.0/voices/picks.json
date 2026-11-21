@@ -3862,5 +3862,44 @@
     "heard": "I sorted his collection by a smell. I would have sent him home with seventeen things neither of us understood."
    }
   }
+ },
+ "co5D1": {
+  "who": "collector",
+  "text": "[excited] Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 7.15,
+  "takes": {
+   "a": {
+    "len": 7.44,
+    "first": 0.0,
+    "last": 7.2,
+    "e_first": 0.08,
+    "e_last": 7.42,
+    "tail_db": -29.3,
+    "tail_rel": -17.4,
+    "hole": 0.64,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.32,
+    "heard": "Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday."
+   },
+   "b": {
+    "len": 7.04,
+    "first": 0.0,
+    "last": 6.84,
+    "e_first": 0.06,
+    "e_last": 7.02,
+    "tail_db": -25.2,
+    "tail_rel": -12.5,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.44,
+    "heard": "Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday."
+   }
+  }
  }
 }
