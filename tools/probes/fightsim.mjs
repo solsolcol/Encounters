@@ -378,7 +378,7 @@ if (!isMainThread) {
 /* ------------------------------------------------------------------ the report */
 function median(a) { if (!a.length) return NaN; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; }
 function pct(a, b) { return b ? (100 * a / b) : 0; }
-const mmss = (s) => Number.isFinite(s) ? Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0') : '-';
+function mmss(s) { if (!Number.isFinite(s)) return '-'; const m = Math.floor(s / 60), r = Math.round(s - m * 60); return r === 60 ? (m + 1) + ':00' : m + ':' + String(r).padStart(2, '0'); }
 async function main() {
   const args = process.argv.slice(2), arg = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
   const N = +arg('--n', 10000), W = Math.max(1, +arg('--workers', 4)), SAN = +arg('--sanity', 40);
