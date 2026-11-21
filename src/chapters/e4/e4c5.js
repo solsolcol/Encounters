@@ -6113,6 +6113,12 @@
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
+        // AN ACT SPENT ON NOTHING (Chad's R21: "A button masher should not win so easily"): each costs something he can see
+        smellCost: 0,                         // his sanity, for a SMELL opened with nothing hidden (they feel him open)
+        fireSpent: 0,                         // the fire's wait after a ball that found nothing (an empty landing, a slip, a stale cloud)
+        idleLock: 0,                          // the switch's lock when the one played did nothing at all since he arrived
+        lendLapse: -1,                        // the cage's strength when a lend runs out with the gold never loosed under it
+        lockLongest: 0.8,                     // the longest lock (the ordinary one, or the idle one)
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
         drawSecs: 3.0, drawPace: 2.5, drawWear: 3.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
@@ -6163,7 +6169,7 @@
       /* the fight's own stages (the plan's 5.5: the lesson, the fight, the surge, the Naga, the last three); and the
          fight's own timed things, each with the number that bounds it */
       const STAGES = ['brief', 'learn', 'fight', 'surge', 'naga', 'last', 'lost', 'won'];
-      const TIMED = { wind: 'windSecs', lend: 'lendLongest', lock: 'switchLock', fill: 'togetherSecs', naga: 'filmGuard' };
+      const TIMED = { wind: 'windSecs', lend: 'lendLongest', lock: 'lockLongest', fill: 'togetherSecs', naga: 'filmGuard' };
 
       /* ------------------------------------------------------------------ THE WORDS SAID (keys of masters/v28.0/script/
          lines.json; the words are there, never here). A NEED's three wordings by who is played: the first, other words,
@@ -6251,7 +6257,9 @@
         const n = Object.assign({}, NUM, o.num || {});
         const s0 = Number.isFinite(o.sanity) ? Math.max(0, Math.min(100, o.sanity)) : 100;
         const st = {
-          v: 2, n, stage: 'brief', t: 0, stageT: 0, who: 'pho', lock: 0, lockUntil: 0, drawT: 0,
+          v: 2, n, stage: 'brief', t: 0, stageT: 0, who: 'pho', lock: 0, lockUntil: 0, lockLen: 0, drawT: 0,
+          owe: 0, acted: true, lendGold: false,   // a one-off cost to his sanity; whether the one played has done anything since he
+                                                  // arrived; whether the gold was loosed under the cage lent
           left: 9, losses: 0, lead: false,
           sanity: s0, open: s0, raised: false, preSurge: 0, guard: Math.max(0, Math.min(0.9, +o.guard || 0)),
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, wind: 0, ring: null, draw: 0 },
@@ -6263,7 +6271,8 @@
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
           stats: { fires: 0, chased: 0, slipped: 0, binds: 0, smells: 0, lends: 0, waves: 0, broken: 0, bags: 0, byWave: 0,
-                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0 },
+                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0,
+                   emptySmell: 0, spent: 0, idle: 0, lapses: 0 },
           ev: []
         };
         st.prai.push(fresh(1, 'come'));
@@ -6457,22 +6466,23 @@
       /* ------------------------------------------------------------------ the acts */
       function doAct(st, act, input) {
         const w = why(st, act);
-        if (w) {
-          refuse(st, act, w);
-          if (w === 'full' && st.stage === 'fight') sayOnce(st, 'ph5fj');   // the first BIND his hands cannot make is told, once
-          return;
-        }
+        if (w) { refuse(st, act, w); return; }                    // (the game's buttons never send such a press: v21.28)
         const n = st.n, ph = st.pho, z = st.zav;
+        if (PHO_ACTS[act] || ZAV_ACTS[act]) st.acted = true;
         switch (act) {
           case 'START': begin(st); return;
           case 'RETRY': case 'LEAD': beginFight(st, act === 'LEAD'); return;
           case 'FILMDONE': layThree(st); return;
           case 'TOGETHER': st.together = n.togetherSecs; st.ev.push({ e: 'together' }); return;
-          case 'SWITCH':
-            st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
+          case 'SWITCH': {
+            // a switch away from one who did nothing at all since he arrived is a switch spent on nothing: a longer lock
+            const lk = !st.acted && n.idleLock > 0 && st.stage === 'fight' ? n.idleLock : n.switchLock;
+            if (lk > n.switchLock) { st.stats.idle++; sayOnce(st, 'ph5fk'); }
+            st.who = isP(st) ? 'zavier' : 'pho'; st.lock = lk; st.lockLen = lk; st.lockUntil = st.t + lk; st.stats.switches++; st.acted = false;
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
-            st.ev.push({ e: 'switch', to: st.who });
+            st.ev.push({ e: 'switch', to: st.who, lock: lk });
             return;
+          }
           case 'FIRE': {
             ph.fireWait = n.fireWait; st.stats.fires++;
             let target = null, cloud = 0;
@@ -6495,6 +6505,7 @@
           }
           case 'SHOCKWAVE':
             ph.wind = n.windSecs; st.stats.waves++;
+            if (st.cage.lent > 0) st.lendGold = true;
             if (st.cage.lent > 0) st.cage.lent = Math.max(st.cage.lent, n.windSecs + n.ringMax / n.ringSpeed + n.lendAfter);   // it stands until the gold is out
             st.ev.push({ e: 'windup' });
             for (const p of st.prai) if (seenFree(p)) { p.was = p.st; p.stop = 0; setSt(st, p, 'rushing', 'the gold gathers'); }
@@ -6510,6 +6521,7 @@
             p.stop = 0; p.bub = n.bubbleSecs; p.stood = 0;
             setSt(st, p, p.st === 'tired' ? 'held' : 'bound', 'bind');
             p.hold = st.stage === 'learn' ? 'keep' : st.lesson.wave === 'pending' ? 'grace' : '';
+            if (st.stage === 'fight' && bubbles(st) >= n.bubbleMax) sayOnce(st, 'ph5fj');   // his hands are full: told once, as they fill
             if (lessonShown) sayOnce(st, 'ph5g4');
             st.ev.push({ e: 'bind', id: p.id });
             if (st.stats.binds === 1) sayOnce(st, 'q5c5');
@@ -6525,12 +6537,13 @@
             st.ev.push({ e: 'smell', found: k });
             if (!k && st.stage === 'fight') {                       // opened for nothing, he draws them on: faster and harder, a while
               st.drawT = n.drawSecs; st.ev.push({ e: 'drawn', secs: n.drawSecs });
+              if (n.smellCost > 0) { st.owe += n.smellCost; st.stats.emptySmell++; }   // and they felt him open: it costs him
               sayOnce(st, 'ph5fg');                                 // "Do not open yourself for nothing. They feel it."
             }
             return;
           }
           case 'LEND':
-            st.cage.lent = n.lendSecs; st.stats.lends++;
+            st.cage.lent = n.lendSecs; st.stats.lends++; st.lendGold = false;
             for (const p of st.prai) if (p.st === 'pressing') { p.gath = n.gather; p.at = 2; setSt(st, p, 'through', 'the cage is lent'); }
             st.ev.push({ e: 'lend' });
             return;
@@ -6558,7 +6571,8 @@
         for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
         st.left = 8; st.lead = !!lead;
         st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0;
-        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1;   // (a breath taken for nothing in the lost fight is not carried into the next)
+        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1;
+        st.owe = 0; st.acted = true; st.lendGold = false;   // (a breath taken for nothing in the lost fight is not carried into the next)
         const ph = st.pho, z = st.zav;
         ph.wind = 0; ph.ring = null; ph.draw = 0; ph.fireWait = 0; ph.aiWait = n.aiFireWait;
         ph.waveWait = n.waveWait; z.bindWait = 0; z.smellWait = 0;
@@ -6722,7 +6736,7 @@
       }
       function land(st, f) {
         const n = st.n;
-        if (f.cloud) { st.stats.stale++; st.ev.push({ e: 'land', id: 0, result: 'stale', x: f.x, z: f.z }); sayOnce(st, 'q5c3'); return; }
+        if (f.cloud) { st.stats.stale++; spentFire(st, f); st.ev.push({ e: 'land', id: 0, result: 'stale', x: f.x, z: f.z }); sayOnce(st, 'q5c3'); return; }
         const p = f.id ? st.prai[f.id - 1] : null;
         let result = 'empty';
         if (p && f.ai) {
@@ -6739,7 +6753,13 @@
             if (st.stage === 'learn') sayOnce(st, 'ph5f2');
           }
         }
+        if (result === 'empty' || result === 'slipped') spentFire(st, f);
         st.ev.push({ e: 'land', id: f.id, result, x: f.x, z: f.z });
+      }
+      function spentFire(st, f) {                                // a ball that found nothing: the fire is slower to gather again
+        const n = st.n;
+        if (f.ai || !(n.fireSpent > 0) || st.stage !== 'fight') return;
+        st.pho.fireWait = Math.max(st.pho.fireWait, n.fireSpent); st.stats.spent++;
       }
       function flightsTick(st, dt) {
         let w = 0;
@@ -6955,7 +6975,13 @@
         if (c.lent > 0) {
           timed(st, 'lend', n.lendSecs - c.lent + dt);
           c.lent -= dt;
-          if (c.lent <= 0) { c.lent = 0; st.ev.push({ e: 'lendEnd' }); }
+          if (c.lent <= 0) {
+            c.lent = 0; st.ev.push({ e: 'lendEnd' });
+            if (!st.lendGold && n.lendLapse >= 0 && c.str > n.lendLapse && st.stage === 'fight') {   // lent for nothing: it comes back thin
+              c.str = n.lendLapse; st.stats.lapses++; st.ev.push({ e: 'lendLapse', to: c.str });
+              if (c.str <= 0) { c.str = 0; c.broken = true; st.stats.breaks++; st.ev.push({ e: 'cageBreak' }); }
+            }
+          }
           return;                                                 // round his teacher it is neither worn nor mended
         }
         let pressing = 0, busy = false;
@@ -6975,11 +7001,12 @@
       }
       function sanityTick(st, dt) {
         const n = st.n;
-        if (st.stage !== 'fight') return;
+        if (st.stage !== 'fight') { st.owe = 0; return; }
         let k = 0;
         for (const p of st.prai) if (atHim(p) && p.gath <= 0) k++;
-        if (!k) return;
-        const amt = n.drain * k * dt * (1 - st.guard);
+        const owe = st.owe; st.owe = 0;
+        if (!k && !owe) return;
+        const amt = (n.drain * k * dt + owe) * (1 - st.guard);
         st.sanity -= amt; st.stats.drained += amt;
         st.ev.push({ e: 'drain', amt });
         if (st.sanity <= n.lostAt) lose(st);
@@ -7126,7 +7153,7 @@
         st.t += dt; st.stageT += dt;
         // the waits run on whoever is played (the switch is rewarded: what one began goes on while the other works)
         const ph = st.pho, z = st.zav;
-        if (st.lock > 0) { st.lock = st.lockUntil - st.t; if (!(st.lock > 1e-9)) st.lock = 0; timed(st, 'lock', n.switchLock - st.lock); }
+        if (st.lock > 0) { st.lock = st.lockUntil - st.t; if (!(st.lock > 1e-9)) st.lock = 0; timed(st, 'lock', st.lockLen - st.lock); }
         if (st.drawT > 0) st.drawT = Math.max(0, st.drawT - dt);
         if (ph.fireWait > 0) ph.fireWait = Math.max(0, ph.fireWait - dt);
         if (z.bindWait > 0) z.bindWait = Math.max(0, z.bindWait - dt);
@@ -7183,7 +7210,7 @@
           second: btn('second', s.second, st.stage === 'fight' ? (P ? st.seen.shock : st.seen.smell) : (st.stage === 'learn' && !P && st.seen.smell)),
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
-                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },
+                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lockLen > 0 ? Math.min(1, st.lock / st.lockLen) : 0, pulse: !!(nd && nd.act === 'SWITCH') },
           together: { shown: st.stage === 'surge', live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
           retry: { shown: st.stage === 'lost', lead: st.stage === 'lost' && st.losses >= 3 },
           bubbles: bubbles(st)
@@ -7240,7 +7267,7 @@
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
-                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0 };
+                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
     const fsCanvas = (n) => { const c = document.createElement('canvas'); c.width = c.height = n; return [c, c.getContext('2d')]; };
@@ -7418,7 +7445,10 @@
 
     /* ---------------------------------------------------------------- THE WORDS (DATA.words: the sheet's) */
     const fsWords = () => DATA.words;
-    function fsWhy(why) { const w = fsWords(); return ({ none: w.whyNone, gold: w.whyGold, lendFirst: w.whyLendFirst, bindFirst: w.whyBindFirst })[why] || null; }
+    /* (any why the rules answer is said by its own word on the sheet, `why` and its name: whyNone, whyGold, whyLendFirst,
+       whyBindFirst, and whatever the rules come to answer; one with no word is not blocked here, so its press reaches
+       the rules, which refuse it themselves) */
+    function fsWhy(why) { const w = fsWords(); if (!why) return null; const k = 'why' + why[0].toUpperCase() + why.slice(1); return w[k] || null; }
     /* a line of the rules: said (its take), and captioned above the thumbs whether or not the sound is (the plan's 7.1) */
     function fsSay(key) {
       const L = LINES[key]; if (!L) return;
@@ -7666,6 +7696,22 @@
       const wp = (P.pace && P.pace.Walking) || 1.29;
       P.rate = moving ? Math.max(0.3, Math.min(1.6, pace / wp)) : 1;
     }
+    /* THEIR FOOTFALLS on the paving (the engine's steps are the first person's, and he does not walk in the mode): each
+       body's walk struck where its own take sets a foot down, read from each file through its bones (M8's takeread: his
+       teacher's Walking at 0.37 and 0.85 of its 1.03 s, his own at 0.28 and 0.78), at the manifest's gain */
+    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    function fsSteps() {
+      for (const who of ['pho', 'zav']) {
+        const P = who === 'pho' ? cast.pho : cast.zav, S = FS_STEP[who], T = fsTake[who];
+        if (!P || !P.ready || !P.acts.Walking || !P.group.visible) continue;
+        const A = P.acts.Walking, d = A.getClip().duration || 1, u = ((A.time % d) + d) % d / d, last = T.stepU;
+        T.stepU = u;
+        if (last == null || !T.walking || (P.w.Walking || 0) < 0.5) continue;
+        for (const a of S.at) if (last <= u ? (last < a && u >= a) : (last < a || u >= a)) {
+          const k = Math.min(1, (T.pace || 0) / (who === 'pho' ? (FN5.phoWalk || 1.2) : (FN5.zavWalk || 0.6)));
+          fsFx(S.name, 0.4 * (0.75 + 0.25 * k), P.group.position.x, P.group.position.z); }
+      }
+    }
     function fsStand(P, who) {
       if (!P) return; fsTake[who].walking = false; fsTake[who].t = 0;
       whenReady(P, (Q) => { Q.rate = 1; if (who === 'zav') { const rt = zavRest(); if (rt) rest(Q, 0); else hold(Q, 'Walking', ZAV_STAND5, 0.001, 0); } else rest(Q, 0); });
@@ -7704,6 +7750,10 @@
           continue;
         }
         const o = fsActState(H[slot]);
+        /* (a button come ready after a wait of its own of 2.4 s or more: the manifest's u5ready; the gold has its own) */
+        const Wt = FS5.waits[id] || (FS5.waits[id] = { on: false, at: 0 });
+        if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
+        else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
         kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, label: o.label || base, icon: FS_ICON[id] });
       }
@@ -7784,16 +7834,19 @@
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null); break; }
           case 'lendEnd': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5lendback', 0.8, zw ? zw.x : null, zw ? zw.z : null); break; }
           case 'waveReady': fsFx('u5waveready', 0.8, null); break;
-          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.6, pw ? pw.x : null, pw ? pw.z : null);
+          case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
             fsPhoAct('wave', FN5.windSecs || 1.5); break; }
           case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave'); break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
-          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave'); fsFx(fsDeal('drawn'), 0.8, null);
-            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }
+          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
+            /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
+               drawing was heard at its press) */
+            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); } else fsFx(fsDeal('drawn'), 0.8, null);
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
-          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoAct('bag'); break; }
+          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null);
+            { const w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); } fsPhoAct('bag'); break; }
           case 'enter': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; if (w) fsFx(fsDeal('rise'), 0.8, w.x, w.z); break; }
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
@@ -7986,6 +8039,7 @@
       const st = FS5.st, ft = st.t;
       fsBodyTake(cast.pho, 'pho', played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), wdt);
       fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (zavB ? zavB.v : 0) : 0, wdt);
+      fsSteps();
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
       const c = st.cage, at = c.lent > 0 ? pw : zw;
@@ -8022,7 +8076,7 @@
     }
     /* THE FIGHT'S LOOPS, aimed each frame: the cage, the murmur, each Prai's voice where it is, each bubble's note, the
        shape, M7's stems (the one played leads: the manifest's levels), M10 for the last three */
-    const FS_M7 = 0.55;                                                     // (M7's mix sits where the chapter's other play music does: the music loops' cue volume)
+    const FS_M7 = 1;                                                        // (M7 at the manifest's own gains, each stem's note: the sound helper's measured mix)
     FS5.aiPace = { pho: 0 };
     function fsSoundFrame(wdt, played) {
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
@@ -8086,8 +8140,9 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0 });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {} });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
+      fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
     }

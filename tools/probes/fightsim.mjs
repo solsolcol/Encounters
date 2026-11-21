@@ -44,7 +44,7 @@ import { Worker, isMainThread, parentPort, workerData } from 'node:worker_thread
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
-const PART = path.join(ROOT, 'masters/v28.0/parts/c_fightrules.js');
+const PART = process.env.FIGHT_RULES ? path.resolve(process.env.FIGHT_RULES) : path.join(ROOT, 'masters/v28.0/parts/c_fightrules.js');   // FIGHT_RULES=<file>: another copy, to compare
 const SCRIPT = path.join(ROOT, 'masters/v28.0/script/lines.json');
 const SPEC = path.join(ROOT, 'docs/V28.0-FIGHT.md');
 
@@ -133,6 +133,15 @@ function follower(prof) {
     if (nd.act === 'START' || nd.act === 'RETRY' || nd.act === 'TOGETHER') return { act: nd.act };
     return { slot: slotOf(st, nd.act) };
   };
+}
+/* THE GAME'S INPUT PATH (seam 60): the engine sends the rules a press only on a button that is LIVE; a press on one whose
+   wait ring is filling, or that is blocked, is dropped before the rules see it. Every player's presses go through it */
+function livePress(F, st, inp) {
+  if (!inp || !(inp.act || inp.slot)) return inp;
+  const act = inp.act || (inp.slot === 'swap' ? 'SWITCH' : inp.slot === 'together' ? 'TOGETHER' : F.SLOT[st.who === 'pho' ? 'pho' : 'zav'][inp.slot]);
+  if (act && !F.why(st, act)) return inp;
+  const out = { ...inp }; delete out.act; delete out.slot; delete out.pick; delete out.pickCloud; out.dropped = true;
+  return out;
 }
 function keepMoving(st, mem) { const b = st.who === 'pho' ? st.pho : st.zav; const m = towards(b, mem.moving.x, mem.moving.z); if (!m) mem.moving = null; return m || {}; }
 
@@ -279,14 +288,15 @@ function campaign(F, L, who, seed, opts) {
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
   const res = { who, seed, won: false, firstWin: false, tries: 1, length: 0, firstLength: 0, losses: 0, sanity: 0, stalled: '',
-                bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0, where: [] };
-  let heard = null, prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99;
+                bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0, where: [], dropped: 0 };
+  let heard = null, prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99, lastLock = 0;
   const fuzz = who === 'fuzz';
   const bad = (what) => { if (res.bad.length < 8) res.bad.push(what + ' @' + st.t.toFixed(1) + ' ' + st.stage); };
   while (st.stage !== 'won') {
     if (++guard > 400000) { res.stalled = 'steps'; break; }
     if (st.t > MAX_CLOCK) { res.stalled = st.stage + (st.stage === 'learn' ? ':' + st.prai[0].st : ''); break; }
-    const inp = play(st, mem, r, heard) || {};
+    const inp = livePress(F, st, play(st, mem, r, heard) || {});
+    if (inp.dropped) res.dropped++;
     const dt = fuzz ? 0.004 + r() * 0.246 : 0.1;
     const stageBefore = st.stage, lockBefore = st.lock;
     const ev = F.step(st, inp, dt, io);
@@ -298,7 +308,7 @@ function campaign(F, L, who, seed, opts) {
       else if (e.e === 'stage') { const k = stageBefore + '>' + e.to; if (!STAGE_MOVES.has(k)) bad('stage move ' + k); }
       else if (e.e === 'lost') { res.losses++; lostAt.push(st.t); res.where.push((st.hold ? 'in hold ' + st.hold : st.left + ' left') + (res.losses === 1 ? ' (1st)' : ' (2nd+)')); }
       if (ACTED.has(e.e) || (e.e === 'fireball' && !e.ai)) acts++;
-      if (e.e === 'switch') { if (st.t - lastSwitch < st.n.switchLock - 1e-6) bad('a switch inside the lock'); lastSwitch = st.t; }
+      if (e.e === 'switch') { if (st.t - lastSwitch < lastLock - 1e-6) bad('a switch inside the lock'); lastSwitch = st.t; lastLock = e.lock || st.n.switchLock; }
     }
     if (acts > 1) bad('two acts in one step');
     // THE INVARIANTS (the plan's 14.1)
@@ -325,7 +335,7 @@ function campaign(F, L, who, seed, opts) {
     if (bub > n.bubbleMax) bad('more bubbles than ' + n.bubbleMax);
     if (Math.hypot(st.pho.x - st.zav.x, st.pho.z - st.zav.z) < n.apart - 1e-3) bad('Grandmaster Pho inside the cage');
     if (Math.abs(st.pho.x) > n.bodyX + 1e-6 || Math.abs(st.zav.x) > n.bodyX + 1e-6) bad('a body outside the court');
-    for (const [w, max] of [[st.pho.fireWait, n.fireWait], [st.zav.bindWait, n.bindWait], [st.zav.smellWait, n.smellWait], [st.pho.waveWait, n.waveWait], [st.lock, n.switchLock]])
+    for (const [w, max] of [[st.pho.fireWait, Math.max(n.fireWait, n.fireSpent || 0)], [st.zav.bindWait, n.bindWait], [st.zav.smellWait, n.smellWait], [st.pho.waveWait, n.waveWait], [st.lock, Math.max(n.switchLock, n.idleLock || 0)]])
       if (!(w >= 0 && w <= max + 1e-9)) bad('a wait out of its range');
     prevLock = st.lock;
     if (st.stage === 'lost' && stageBefore !== 'lost') {
@@ -489,7 +499,7 @@ async function main() {
   // WHAT WAS DONE, a fight on average (the careful player's and the optimal one's)
   for (const who of ['careful', 'optimal', 'masher'].filter(w => T[w])) {
     const s = T[who].statsSum, k = T[who].n;
-    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines'].map(q => q + ' ' + (s[q] / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}`);
+    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines', 'emptySmell', 'spent', 'idle', 'lapses'].map(q => q + ' ' + ((s[q] || 0) / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}`);
   }
   if (T.careful) {
     const heardKeys = Object.keys(T.careful.said).sort((a, b) => T.careful.said[b] - T.careful.said[a]);
@@ -538,7 +548,7 @@ function trace(F, L, who, seed, opts) {
   mem.lesson = follower(PROF.careful);
   let heard = null, g = 0;
   while (st.stage !== 'won' && g++ < 40000) {
-    const inp = play(st, mem, r, heard) || {};
+    const inp = livePress(F, st, play(st, mem, r, heard) || {});
     const ev = F.step(st, inp, 0.1, io);
     heard = null;
     for (const e of ev) {
