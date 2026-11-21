@@ -3955,5 +3955,332 @@
     "heard": "Twenty more things you do not understand, in the same case."
    }
   }
+ },
+ "ph5D2": {
+  "who": "pho",
+  "text": "[serious] It is not the kind. A blessed piece kept as he kept these is kept the same way.",
+  "pick": "a",
+  "why": "the unhurried read",
+  "med": 5.58,
+  "takes": {
+   "a": {
+    "len": 6.16,
+    "first": 0.0,
+    "last": 6.06,
+    "e_first": 0.1,
+    "e_last": 6.14,
+    "tail_db": -32.0,
+    "tail_rel": -17.5,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.98,
+    "heard": "It is not the kind. A blessed piece kept as he kept these is kept the same way."
+   },
+   "b": {
+    "len": 5.6,
+    "first": 0.0,
+    "last": 5.5,
+    "e_first": 0.0,
+    "e_last": 5.58,
+    "tail_db": -30.7,
+    "tail_rel": -15.2,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.23,
+    "heard": "It is not the kind. A blessed piece kept as he kept these is kept the same way."
+   },
+   "c": {
+    "len": 5.76,
+    "first": 0.0,
+    "last": 5.38,
+    "e_first": 0.2,
+    "e_last": 5.52,
+    "tail_db": -82.5,
+    "tail_rel": -67.6,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.38,
+    "heard": "It is not the kind. A blessed piece kept as he kept these is kept the same way."
+   }
+  }
+ },
+ "q5D1": {
+  "who": "he",
+  "text": "[regretful] I gave him a rule about objects. The trouble was never the objects.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 5.220000000000001,
+  "takes": {
+   "a": {
+    "len": 4.8,
+    "first": 0.0,
+    "last": 4.48,
+    "e_first": 0.0,
+    "e_last": 4.78,
+    "tail_db": -21.1,
+    "tail_rel": -8.6,
+    "hole": 1.04,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.72,
+    "heard": "I gave him a rule about objects. The trouble was never the objects."
+   },
+   "b": {
+    "len": 5.68,
+    "first": 0.0,
+    "last": 5.32,
+    "e_first": 0.0,
+    "e_last": 5.66,
+    "tail_db": -23.1,
+    "tail_rel": -12.4,
+    "hole": 1.1,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.3,
+    "heard": "I gave him a rule about objects. The trouble was never the objects."
+   }
+  }
+ },
+ "co5z1": {
+  "who": "collector",
+  "text": "[relieved] I feel lighter. My head is quieter.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 2.48,
+  "takes": {
+   "a": {
+    "len": 2.64,
+    "first": 0.0,
+    "last": 2.36,
+    "e_first": 0.1,
+    "e_last": 2.62,
+    "tail_db": -23.4,
+    "tail_rel": -7.7,
+    "hole": 0.72,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.78,
+    "heard": "I feel lighter. My head is quieter."
+   },
+   "b": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.32,
+    "e_first": 0.1,
+    "e_last": 2.54,
+    "tail_db": -26.8,
+    "tail_rel": -13.1,
+    "hole": 0.5,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.87,
+    "heard": "I feel lighter. My head is quieter."
+   }
+  }
+ },
+ "q5z1": {
+  "who": "he",
+  "text": "[reflective] Understanding first. Then possession.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 3.3,
+  "takes": {
+   "a": {
+    "len": 3.12,
+    "first": 0.0,
+    "last": 2.88,
+    "e_first": 0.0,
+    "e_last": 3.1,
+    "tail_db": -36.3,
+    "tail_rel": -22.4,
+    "hole": 1.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.29,
+    "heard": "Understanding first. Then possession."
+   },
+   "b": {
+    "len": 3.52,
+    "first": 0.0,
+    "last": 3.22,
+    "e_first": 0.0,
+    "e_last": 3.5,
+    "tail_db": -47.2,
+    "tail_rel": -32.5,
+    "hole": 1.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.14,
+    "heard": "Understanding first. Then possession."
+   }
+  }
+ },
+ "q5A": {
+  "who": "he",
+  "text": "[reflective] I told him to let them all go. He did, and did not know why.",
+  "pick": "a",
+  "why": "the only clean and whole take",
+  "med": 5.720000000000001,
+  "takes": {
+   "a": {
+    "len": 6.0,
+    "first": 0.0,
+    "last": 5.84,
+    "e_first": 0.06,
+    "e_last": 5.98,
+    "tail_db": -33.0,
+    "tail_rel": -19.1,
+    "hole": 1.1,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.53,
+    "heard": "I told him to let them all go. He did, and did not know why."
+   },
+   "b": {
+    "len": 5.68,
+    "first": 0.0,
+    "last": 5.58,
+    "e_first": 0.14,
+    "e_last": 5.66,
+    "tail_db": -22.9,
+    "tail_rel": -9.5,
+    "hole": 1.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.72,
+    "heard": "I told him to let them all go. He did, and did not know why."
+   }
+  }
+ },
+ "q5B": {
+  "who": "he",
+  "text": "[quiet] I asked him what each one was. He found he did not know.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 4.970000000000001,
+  "takes": {
+   "a": {
+    "len": 5.12,
+    "first": 0.0,
+    "last": 5.0,
+    "e_first": 0.06,
+    "e_last": 5.1,
+    "tail_db": -34.1,
+    "tail_rel": -18.1,
+    "hole": 1.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.58,
+    "heard": "I asked him what each one was. He found he did not know."
+   },
+   "b": {
+    "len": 4.96,
+    "first": 0.0,
+    "last": 4.8,
+    "e_first": 0.04,
+    "e_last": 4.94,
+    "tail_db": -28.0,
+    "tail_rel": -12.3,
+    "hole": 1.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.65,
+    "heard": "I asked him what each one was. He found he did not know."
+   }
+  }
+ },
+ "q5C": {
+  "who": "he",
+  "text": "[ashamed] I sorted his pieces by a smell. My nose is not a certificate.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 5.02,
+  "takes": {
+   "a": {
+    "len": 4.96,
+    "first": 0.0,
+    "last": 4.66,
+    "e_first": 0.0,
+    "e_last": 4.94,
+    "tail_db": -31.9,
+    "tail_rel": -19.1,
+    "hole": 1.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.63,
+    "heard": "I sorted his pieces by a smell. My nose is not a certificate."
+   },
+   "b": {
+    "len": 5.12,
+    "first": 0.0,
+    "last": 4.78,
+    "e_first": 0.0,
+    "e_last": 5.1,
+    "tail_db": -32.3,
+    "tail_rel": -16.3,
+    "hole": 1.22,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.55,
+    "heard": "I sorted his pieces by a smell. My nose is not a certificate."
+   }
+  }
+ },
+ "q5D": {
+  "who": "he",
+  "text": "[regretful] I gave him a rule about kinds. It was never the kind.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 4.45,
+  "takes": {
+   "a": {
+    "len": 4.32,
+    "first": 0.0,
+    "last": 4.08,
+    "e_first": 0.0,
+    "e_last": 4.3,
+    "tail_db": -23.4,
+    "tail_rel": -11.2,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.79,
+    "heard": "I gave him a rule about kinds. It was never the kind."
+   },
+   "b": {
+    "len": 4.64,
+    "first": 0.0,
+    "last": 4.38,
+    "e_first": 0.02,
+    "e_last": 4.62,
+    "tail_db": -24.2,
+    "tail_rel": -13.2,
+    "hole": 0.8,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.61,
+    "heard": "I gave him a rule about kinds. It was never the kind."
+   }
+  }
  }
 }

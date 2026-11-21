@@ -98,3 +98,28 @@ read (the unhurried one for Grandmaster Pho); every pick transcribed here, and i
 registry.py (refused if they differ). The chain (chain.py, chapter 4's): his lines high-passed and peak-matched for his
 bus; the cast by RMS to -16 dBFS; silent tails and leads trimmed; the last 0.12 s faded; mp3 128 kbps 44.1 kHz and
 Opus 64 kbps 48 kHz, each from its own source, metadata stripped. Every line's row: CHAIN.txt.
+
+Every pick came out clean by the house rule (pick.py: "needing a look: []"): every end clean, no odd hole, none rushed,
+no tag spoken, every word heard. registry.py held every transcript against the script: two differed only in the
+transcriber's writing (q5o1 "quarreling", ju5b1 "o 'clock"), folded in registry.py's norm, nothing else.
+
+## 3 · The cost (the account's own balance, read before and after: v22.4)
+
+| | used of 298,182 characters | left |
+|---|---|---|
+| before anything (21 Nov) | 145,272 | 152,910 |
+| after the 27 audition takes | 146,170 | 152,012 |
+| after the 222 line takes | 151,694 | **146,488** |
+
+6,422 characters in all (the account bills eleven_v3 under its prompt length: spend.log counts 14,426 characters of
+prompts in 246 calls). Nothing failed, so nothing was said twice.
+
+## 4 · Into the game (install.py: held until the engine is free)
+
+The 99 lines' files are in assets/audio and assets/audio-opus (9.8 MB, both encodings), their measured lengths in
+lines.json (`secs`: assemble.py then writes them into the chapter's SECS). What is NOT yet in: their rows. src/main.js
+is the engine helper's while M4 runs, and chaptertest fails a jamesAdult row in src/voicelines.js that ADULT_TAKES
+lacks, so BOTH files' rows are held in registry.json and written together by install.py (ADULT_TAKES 26, CAST_TAKES
+73, STING_SAMPLE 99, the three speakers, 99 registry rows, the chapter's name on the sheet), each between markers of
+its own after chapter 4's; proved on a scratch copy of both files: a second run changes nothing. Until it runs, a cue
+of these lines plays nothing (the M11 release gate counts this).
