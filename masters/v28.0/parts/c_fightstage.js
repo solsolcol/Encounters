@@ -1033,6 +1033,14 @@
       /* (the rules and the engine must agree on who is played: a switch the engine made inside the rules' last instant of
          lock is told to the rules again on the next frame) */
       if (st.stage === 'learn' || st.stage === 'fight') { const rw = st.who === 'pho' ? 'pho' : 'zavier'; if (rw !== played && !FS5.swNeed) FS5.swNeed = true; }
+      /* 3b. THE ONE NOT PLAYED KEEPS OUT OF THE LENS'S LINE (the lead's word on R25, measured on the after-pictures: with
+         Master Zavier played, Grandmaster Pho stood between the lens and him and filled a third of a phone's screen; never
+         a fade, which reads as R25's "disappearing and reappearing characters"). The lens stands 4.0 m behind the played one
+         down the court (the boom; the court's frame, the lens's box at most 5.2) and 3.1 m up: whoever stands in that strip
+         (his disc and the played one's half against the line, 0.3 m to spare) steps aside to the nearer side at his walk,
+         inside the court and never inside the other's cage ring, and holds his place there; nothing while he gathers the
+         gold or draws the bag, nor under the brief, a loss or the win */
+      fsLensClear(dt);
       /* 4. where the rules stopped him, he stops: the played one set back to the rules' place; the other moved by the rules */
       const playedNow = kit.tagState().played === 'zavier' ? 'zavier' : 'pho';
       for (const who of ['pho', 'zavier']) {
@@ -1061,6 +1069,21 @@
       fsLookFrame(wdt, playedNow, phoB, zavB);
       fsSoundFrame(wdt, playedNow);
     }
+    function fsLensClear(dt) {
+      const st = FS5.st; if (!st || !(dt > 0) || !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last')) return;
+      const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
+      if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
+      const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
+      if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
+      const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
+      const bx = n.bodyX || 1.6, room = (sg) => sg > 0 ? bx - (played.x + half) : (played.x - half) + bx;
+      let sg = dx !== 0 ? Math.sign(dx) : (played.x <= 0 ? 1 : -1);
+      if (room(sg) < 0.05 && room(-sg) > room(sg)) sg = -sg;                        // (the near side is the court's wall: the other)
+      const want = played.x + sg * (half + 0.05), sp = otherIsPho ? (n.phoWalk || 1.2) : (n.zavWalk || 0.6);
+      const nx = other.x + Math.sign(want - other.x) * Math.min(Math.abs(want - other.x), sp * dt), cx = Math.max(-bx, Math.min(bx, nx));
+      if (Math.hypot(cx - played.x, other.z - played.z) < (n.apart || 1.45) - 1e-6) return;   // (never into the cage's ring)
+      other.x = cx;
+    }
     /* who faces where: the one played turns to his walk (the engine), and to what he acts on for a moment; the one not
        played faces what comes for his student (his teacher), or what has hidden from him (his head) */
     function fsFaces(wdt, played) {
@@ -1087,7 +1110,7 @@
     function fsLookFrame(wdt, played, phoB, zavB) {
       const st = FS5.st, ft = st.t;
       fsBodyTake(cast.pho, 'pho', FS5.cov.pho || 0, wdt);
-      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (FS5.cov.zav || 0) : 0, wdt);
+      fsBodyTake(cast.zav, 'zav', FS5.cov.zav || 0, wdt);                       // (unplayed too: he walks when he steps out of the lens's line)
       fsSteps();
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
