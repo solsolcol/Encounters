@@ -63,7 +63,15 @@ def same_tris(ix, vm, ref):
     return got.shape == ref.shape and bool((got == ref).all())
 
 # ---- 2. cut afresh
-at = xatlas.Atlas(); at.add_mesh(W, LI)
+# (v28.0, Master Zavier's full body, 21 Nov 2026: XSCALE. xatlas takes a triangle with an edge under a ten-thousandth of
+#  its unit, or of almost no area, for no triangle at all, and leaves all three of its corners at the sheet's own corner
+#  (0, 0). In METRES that is every edge under a tenth of a millimetre: 12,807 of his 312,932 triangles, 16.7 cm2 of him,
+#  each drawn in whatever the sheet's corner texel holds (dark specks on his skin and along every edge of the cardigan,
+#  pink ones on the knit and the tee), and the charts they had held together came back torn (8,036 slivers mended).
+#  XSCALE=1000 hands xatlas the body in millimetres; nothing else here changes its unit. Unset (1), the cut is what it
+#  always was, bit for bit.)
+XSCALE = float(os.environ.get('XSCALE', '1'))
+at = xatlas.Atlas(); at.add_mesh(W if XSCALE == 1 else (W.astype(np.float64) * XSCALE).astype(np.float32), LI)
 co = xatlas.ChartOptions(); po = xatlas.PackOptions(); po.resolution = PX; po.padding = int(round(PAD)); po.bilinear = True; po.rotate_charts = True
 at.generate(co, po)
 vm, ix, uv = at[0]
@@ -107,8 +115,22 @@ cu = np.asarray(uvp, dtype=np.float64)[ix2]                    # each corner, in
 cu[..., 0] *= a2.width / side; cu[..., 1] *= a2.height / side    # a square that is not quite square keeps its shape
 off = (cu < -1e-6) | (cu > 1 + 1e-6)
 def uvsum(u): return float(0.5 * np.abs((u[:, 1, 0] - u[:, 0, 0]) * (u[:, 2, 1] - u[:, 0, 1]) - (u[:, 2, 0] - u[:, 0, 0]) * (u[:, 1, 1] - u[:, 0, 1])).sum())
-if not off.any() and uvsum(cu) > 0.98:
-    off[:] = True; log(f'the second packing covers {100 * uvsum(cu):.0f}% of the square in sum: charts lie over one another')
+# (v28.0, Master Zavier's second and third bodies: the sum that tests for charts lying over one another counted 214
+#  SLIVERS, each a fifth of a square millimetre of the body, that the second packing had torn: a chart held together
+#  only through a triangle of no width comes back as two charts, and that triangle then reaches from one to the other,
+#  up to half the sheet each. Their areas summed to 36 squares, "charts lie over one another", and the whole second
+#  packing was thrown away with the face's larger share: 2,015 texels a metre down to 983. They are exactly the
+#  triangles the mend below takes (a sheet edge over 6 texels and over 8 times what its body edge asks), so where
+#  MENDOUT is set they are left out of this sum. Unset, the test is what it always was.)
+def torn_of(c):
+    d3_ = np.linalg.norm(W[LI] - W[np.roll(LI, -1, axis=1)], axis=2); duv_ = np.linalg.norm(c - np.roll(c, -1, axis=1), axis=2) * PX
+    ok_ = d3_ > 1e-6; med_ = float(np.median(duv_[ok_] / d3_[ok_])) if ok_.any() else 0.0
+    return ((duv_ > 6) & ((~ok_) | (duv_ > 8 * med_ * np.maximum(d3_, 1e-9)))).any(axis=1)
+sound = ~torn_of(cu) if int(os.environ.get('MENDOUT', '0')) else np.ones(len(cu), bool)
+if not off.any() and uvsum(cu) > 0.98 and uvsum(cu[sound]) <= 0.98:
+    log(f'the second packing covers {100 * uvsum(cu):.0f}% of the square in sum, {100 * uvsum(cu[sound]):.0f}% without {int((~sound).sum())} torn slivers: kept, the slivers mended below (MENDOUT)')
+if not off.any() and uvsum(cu[sound]) > 0.98:
+    off[:] = True; log(f'the second packing covers {100 * uvsum(cu[sound]):.0f}% of the square in sum: charts lie over one another')
 # (v28.0, Master Zavier's full body, 20 Nov 2026: ONE triangle of 312,640 left outside the square threw the whole second
 #  packing away, and with it the face's larger share: his face fell from 2,100 texels a metre to 1,008 on the body made
 #  for close shots. Where MENDOUT is set and no more triangles than that lie outside, the second packing is KEPT and
@@ -146,6 +168,9 @@ okE = d3 > 1e-6
 medR = float(np.median(duv[okE] / d3[okE])) if okE.any() else 0.0
 badT = ((duv > 6) & ((~okE) | (duv > 8 * medR * np.maximum(d3, 1e-9)))).any(axis=1)
 if outT is not None: badT = badT | outT                                              # (v28.0: the ones left outside the square)
+if XSCALE != 1:                                                                    # (v28.0: and, with XSCALE, any triangle xatlas still left whole at one point of the sheet)
+    lostT = (duv.max(axis=1) < 1e-6) & (A3 > 1e-14); badT = badT | lostT
+    if lostT.any(): log(f'{int(lostT.sum())} triangles were left whole at one point of the sheet ({A3[lostT].sum() * 1e6:.2f} mm2 of the body): mended with the rest')
 nBad = int(badT.sum())
 if nBad:
     good = np.nonzero(~badT)[0]

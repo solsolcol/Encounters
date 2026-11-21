@@ -52,6 +52,29 @@ for (const mat of root.listMaterials()) {
 }
 await doc.transform(dedup(), weld());
 
+/* v28.0 · FINS=1 (Master Zavier's near body: a dark facet nine millimetres across on his left cheek, painted skin and
+   still dark): THE HANGING TRIANGLES TAKEN OUT. A remesh can leave a triangle lying on the body, joined to it by ONE
+   edge (its other two edges belong to no other triangle): the surface under it is whole, and the leftover faces the
+   wrong way, so with both sides drawn it is shaded from behind, dark over what it lies on, whatever is painted on it.
+   Each is taken out, and the body is as closed as it was (tools/probes/fins.mjs lists them and owns the test: sixteen
+   on his near body, the largest 30 mm2; twelve on his full one, none over 2.6 mm2). Places are joined first (a seam in
+   the sheet splits a point in two). Unset, nothing here runs. */
+if (process.env.FINS) {
+  const { finsOf } = await import('./probes/fins.mjs');
+  for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
+    const P = p.getAttribute('POSITION').getArray(); let took = 0, area = 0, big = 0, open = 0;
+    for (let pass = 0; pass < 4; pass++) {          // a fin under a fin is found once the one over it has gone
+      const I0 = p.getIndices().getArray(), r = finsOf(P, I0); open = r.open; if (!r.fins.length) break;
+      const drop = new Set(r.fins), I2 = new I0.constructor(I0.length - 3 * drop.size); let w = 0;
+      for (const t of r.fins) { const a = I0[3 * t] * 3, b = I0[3 * t + 1] * 3, c = I0[3 * t + 2] * 3, u = [P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], v = [P[c] - P[a], P[c + 1] - P[a + 1], P[c + 2] - P[a + 2]];
+        const ar = Math.hypot(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]) / 2; area += ar; big = Math.max(big, ar); }
+      for (let t = 0; t < I0.length / 3; t++) if (!drop.has(t)) { I2[w++] = I0[3 * t]; I2[w++] = I0[3 * t + 1]; I2[w++] = I0[3 * t + 2]; }
+      p.getIndices().setArray(I2); took += drop.size;
+    }
+    console.log(`  fins: ${took} triangles hanging from the body by one edge taken out (${(area * 1e6).toFixed(1)} mm2 in all, the largest ${(big * 1e6).toFixed(1)} mm2, if the file is in metres); edges of one triangle left: ${open}`);
+  }
+}
+
 /* ---- THE SKIN WEIGHTS (Chad: "when he starts animating, there are rough
    edges under his arms"). Rendered mid-take, the robe down both flanks and
    under the arms breaks into a SAW-TOOTH staircase: the auto-rig's weights

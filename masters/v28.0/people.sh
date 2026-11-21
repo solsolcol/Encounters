@@ -32,28 +32,29 @@ prep() { # prep <in> <out> <sheet px> <log> [keep]
   # (v28.0: where a person has a spec for it, the ragged painted edges between two materials are drawn clean after the
   #  repaint: tools/edgeclean.py, masters/v28.0/people/edgeclean-<name>.json)
   ec=masters/v28.0/people/edgeclean-$n.json; [ -f $ec ] && [ -n "$rp" ] || ec=
-  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} REPAINT=$rp MENDOUT=${MENDOUT:-12} ${ec:+EDGECLEAN=$ec} BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
+  # (FINS=1 on a body's line: the triangles a remesh left hanging from the body by one edge are taken out first, tools/prepmonk.mjs)
+  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} ${FINS:+FINS=1} REPAINT=$rp MENDOUT=${MENDOUT:-12} ${ec:+EDGECLEAN=$ec} BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
       FACE=3 HEADK=2 HANDK=1.5 PAD=$( [ $3 -ge 2048 ] && echo 3 || echo 2 ) node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
-one() {  # one <name> <near triangles> <near sheet px> <take args...>
-  n=$1; near=$2; px=$3; shift 3; log=$SRC/$n-people.log; : > $log
+one() {  # one <name> <near triangles> <near sheet px> <take args...>     (OUTN=<x>: the game's files are p5<x>*.glb)
+  n=$1; near=$2; px=$3; shift 3; log=$SRC/$n-people.log; : > $log; o=${OUTN:-$n}
   [ -f $SRC/body-$n-$near.glb ] || { echo "$n: no body at $near yet (sh masters/v28.0/bodies.sh $n $near)"; return; }
   node tools/mergetakes.mjs merge $SRC/body-$n-$near.glb $SRC/merged-$n.glb "$@" >> $log 2>&1 || { echo "$n: merge failed (see $log)"; return; }
   node tools/calmarms.mjs $SRC/merged-$n.glb $SRC/merged-$n.glb $CALM >> $log 2>&1 || { echo "$n: calmarms failed (see $log)"; return; }
-  if prep $SRC/merged-$n.glb assets/p5$n.glb $px $log; then rm $SRC/merged-$n.glb; else echo "$n: prep failed (see $log)"; return; fi
-  made="near $(node tools/tricount.mjs --n assets/p5$n.glb)"
+  if prep $SRC/merged-$n.glb assets/p5$o.glb $px $log; then rm $SRC/merged-$n.glb; else echo "$n: prep failed (see $log)"; return; fi
+  made="near $(node tools/tricount.mjs --n assets/p5$o.glb)"
   if [ "${LEVELS:-}" != none ]; then
     for lv in ${LEVELS:-m:8000:1024}; do s=${lv%%:*}; r=${lv#*:}; c=${r%%:*}; p=${r#*:}
-      if [ -f $SRC/body-$n-$c.glb ]; then prep $SRC/body-$n-$c.glb assets/p5$n$s.glb $p $log && made="$made, $s $(node tools/tricount.mjs --n assets/p5$n$s.glb)"
+      if [ -f $SRC/body-$n-$c.glb ]; then prep $SRC/body-$n-$c.glb assets/p5$o$s.glb $p $log && made="$made, $s $(node tools/tricount.mjs --n assets/p5$o$s.glb)"
       else made="$made, $s NOT YET (no body at $c)"; fi
     done
   fi
   # (v28.0: a hero's full body is repainted too where HEROKEEP is set empty: Master Zavier's marled knit, whose thin charts
   #  CHARTFIX painted one flat grey each, grey shards all over the cardigan when looked at close)
-  case " $HERO " in *" $n "*) prep $SRC/rigged-$n.glb assets/p5${n}h.glb ${HEROPX:-2048} $log ${HEROKEEP-keep} && made="$made, h $(node tools/tricount.mjs --n assets/p5${n}h.glb)";; esac
-  echo "$n -> assets/p5$n.glb ($made triangles)"
+  case " $HERO " in *" $n "*) prep $SRC/rigged-$n.glb assets/p5${o}h.glb ${HEROPX:-2048} $log ${HEROKEEP-keep} && made="$made, h $(node tools/tricount.mjs --n assets/p5${o}h.glb)";; esac
+  echo "$n -> assets/p5$o.glb ($made triangles)"
 }
-HERO="zavier zavier2"
+HERO="zavier zavier2 zavier3 zavier4"
 # THE ARMS BROUGHT IN (tools/calmarms.mjs, v26.0): the library's stands and walks hold both upper arms fifteen to
 # nineteen degrees out from the body, a doll's A pose; each standing or walking take's mean angle out is set here.
 CALM="Idle_3=6,0.6 Stand_and_Chat=7 Listening_Gesture=7 Walking=7,0.5,0.7"
@@ -61,9 +62,18 @@ WANT="$*"; all=0; [ -z "$WANT" ] && all=1
 go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 0; done; return 1; }
 # MASTER ZAVIER (Chad, 20 Nov 2026, R5): the player's own body, seen in the third-person fight. For now the rig's own
 # walk only (the takes of the fight are laid on once the plan names them). His full body is repainted (HEROKEEP empty).
-go zavier && HEROKEEP= one zavier 40000 2048 $(T zavier walking Walking)
+go zavier && HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking)
 # HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
 # them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
 # (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.
 go zavier2 && HEROKEEP= one zavier2 40000 2048 $(T zavier2 walking Walking)
+# HIS THIRD (the same reference again): the second came with both eyes painted looking aside and a lump on the back of
+# its left hand; this one has neither, and every finger its own. The body that goes on (masters/v28.0/make.sh 4).
+go zavier3 && HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking)
+# HIS FOURTH (the same reference a third time), THE BODY THE GAME DRAWS (assets/p5zavier.glb, p5zavierh.glb): the third's
+# rig came back with no finger bones, twice (Meshy rigs no fingers on hands it has left palm-forward); this one has all
+# sixty-six joints, every finger its own, the eyes ahead, and a watch that reads as a watch.
+# FINS=1: his near body came from the remesh with a leftover triangle 9 mm across lying on his left cheek, drawn dark
+# whatever was painted on it (tools/probes/fins.mjs: 16 such on the near body, 12 on the full one, each hanging by one edge).
+go zavier4 && FINS=1 HEROKEEP= OUTN=zavier one zavier4 40000 2048 $(T zavier4 walking Walking)
 echo PEOPLE DONE

@@ -140,10 +140,11 @@ cent = W[I].mean(axis=1)
 TN = np.cross(W[I[:, 1]] - W[I[:, 0]], W[I[:, 2]] - W[I[:, 0]]); _l = np.linalg.norm(TN, axis=1); _l[_l == 0] = 1; TN /= _l[:, None]
 SNAP = float(SPEC.get('snap', 0.012))
 def unit(v): v = np.array(v, float); return v / np.linalg.norm(v)
-def fits(lab_, rule):
+def fits(lab_, rule, sd=None):
     Lc = lab_[:, 0]; C = np.hypot(lab_[:, 1], lab_[:, 2]); h = np.degrees(np.arctan2(lab_[:, 2], lab_[:, 1])) % 360
     ok = (Lc >= rule['L'][0]) & (Lc < rule['L'][1]) & (C >= rule['C'][0]) & (C < rule['C'][1])
     if 'h' in rule: ok &= (h >= rule['h'][0]) & (h < rule['h'][1])
+    if 'sd' in rule and sd is not None: ok &= (sd >= rule['sd'][0]) & (sd < rule['sd'][1])
     return ok
 for R in SPEC['regions']:
     name = R['name']; b0 = np.array(R['box'][0], float); b1 = np.array(R['box'][1], float)
@@ -159,6 +160,9 @@ for R in SPEC['regions']:
     r, c, t, p = raster(tris)
     if len(r) == 0: log(f'{name}: no texel in the box'); continue
     inside = ((p >= b0) & (p <= b1)).all(axis=1)
+    if 'slab' in R:                                             # (a box cut by two planes across a slanted limb: a watch, and not the cuff above it)
+        sl = R['slab']; ta = (p - np.array(sl['origin'], float)) @ unit(sl['axis'])
+        inside &= (ta >= float(sl['from'])) & (ta <= float(sl['to']))
     col = OUT[r, c]; L = lin(col)                                 # (the sheet as it now is: a later box sees an earlier one's work)
     shape = tuple(np.ceil((g1 - g0) / VOX).astype(int) + 1)
     gi = grid_of(p, g0, shape)
@@ -167,8 +171,18 @@ for R in SPEC['regions']:
     wq = np.maximum(wb[gi[:, 0], gi[:, 1], gi[:, 2]], 1e-9)
     Lb = cb[gi[:, 0], gi[:, 1], gi[:, 2]] / wq[:, None]
     lab = srgb2lab(unlin(Lb)); Lr = srgb2lab(col)
+    # (v28.0, Master Zavier's fourth body: a class may ask for a WEAVE, `sd`: the spread of lightness round a texel, over
+    #  SDS on the body. A marled knit has about twelve; the flat grey a generator lays where it could not see, under an
+    #  arm, has under two: the same colour by every other test.)
+    sdq = None
+    if any('sd' in rl for rl in rules):
+        SDS = float(R.get('sds', SPEC.get('sds', 0.0015))); Lraw = Lr[:, :1].astype(np.float32)
+        s1, w1 = blur_at(Lraw, gi, shape, SDS); s2, _ = blur_at(Lraw * Lraw, gi, shape, SDS)
+        w1q = np.maximum(w1[gi[:, 0], gi[:, 1], gi[:, 2]], 1e-9)
+        m1_ = s1[gi[:, 0], gi[:, 1], gi[:, 2], 0] / w1q; m2_ = s2[gi[:, 0], gi[:, 1], gi[:, 2], 0] / w1q
+        sdq = np.sqrt(np.maximum(m2_ - m1_ * m1_, 0)); del s1, s2, w1
     c0 = np.full(len(r), -1)
-    for k in range(K): c0[(c0 < 0) & fits(lab, rules[k])] = k
+    for k in range(K): c0[(c0 < 0) & fits(lab, rules[k], sdq)] = k
     # 3. each material's presence smoothed over the body; each texel takes the strongest
     ind = np.zeros((len(r), K), np.float32); ok0 = c0 >= 0; ind[np.nonzero(ok0)[0], c0[ok0]] = 1
     mb, _ = blur_at(ind, gi, shape, SMOOTH)
@@ -176,6 +190,7 @@ for R in SPEC['regions']:
     c1 = np.where(tot > 1e-6, m.argmax(axis=1), -1)
     # 4. islands: the voxels of each material, joined where they touch (a voxel's gap bridged), measured in mm2
     vmm = (VOX * 1000) ** 2; protect = np.zeros(len(r), bool); nd = 0; nk = 0
+    DIS_ = float(R.get('dissolve', DISSOLVE)); MAIN_ = float(R.get('main', MAIN))    # (a region's own: `main` 0 keeps and dissolves no island)
     occ = np.full(shape, -1, np.int8); occ[gi[:, 0], gi[:, 1], gi[:, 2]] = c1
     for k in range(K):
         mk = ndimage.binary_dilation(occ == k, iterations=1)
@@ -184,9 +199,9 @@ for R in SPEC['regions']:
         mine = np.nonzero(c1 == k)[0]; lq = lbl[gi[mine, 0], gi[mine, 1], gi[mine, 2]]
         area = np.bincount(lbl[occ == k], minlength=nl + 1) * vmm         # (occupied voxels of the island: about its surface in mm2)
         for q in range(1, nl + 1):
-            if area[q] >= MAIN or area[q] == 0: continue
+            if area[q] >= MAIN_ or area[q] == 0: continue
             sel = mine[lq == q]
-            if area[q] < DISSOLVE:
+            if area[q] < DIS_:
                 m2 = m[sel].copy(); m2[:, k] = -1; alt = m2.argmax(axis=1)
                 c1[sel] = np.where(m2.max(axis=1) > 1e-6, alt, k); nd += 1
             else:
@@ -235,6 +250,10 @@ for R in SPEC['regions']:
             moved = int((c1 != moved0).sum())
             stepnote = f'; the edge found in {nf} of {nb} slices ({np.nanmin(e):.3f} to {np.nanmax(e):.3f} along the walk), {moved} texels changed sides'
         else: stepnote = f'; no edge found on the body ({nf} of {nb} slices): the paint\'s own smoothed edge is used'
+    turned = np.zeros(len(r), bool)
+    if 'turn' in R:                                              # (one class painted as another wherever it lies: flat grey as the knit beside it)
+        for a_, b_ in R['turn'].items():
+            sel = c1 == names.index(a_); c1[sel] = names.index(b_); turned |= sel
     occ[:] = -1; occ[gi[:, 0], gi[:, 1], gi[:, 2]] = c1
     if protect.any():                                            # (and a margin round a kept island)
         pm = np.zeros(shape, bool); pm[gi[protect, 0], gi[protect, 1], gi[protect, 2]] = True
@@ -255,9 +274,13 @@ for R in SPEC['regions']:
     smoothk = np.array([rules[k].get('fill', 'smooth') != 'mirror' for k in range(K)] + [False])
     # (a box of ONE material, `everywhere`: hair with flecks of skin's colour in its creases. There is no edge to be
     #  near, so whatever in the box is not the material's own colour is painted, wherever it lies)
-    reachq = (dist < REACH) | bool(R.get('everywhere'))
+    reachq = (dist < REACH) | bool(R.get('everywhere')) | turned
     paint = inside & (c1 >= 0) & ~protect & ((((c0 != c1) | rawbad) & reachq) | ((dist < BAND) & smoothk[c1]))
     pure = inside & (c0 == c1) & (c1 >= 0) & ~paint & ~rawbad & (dist > BAND + 0.001) & ~protect    # (clean texels are taken from inside the box only)
+    if turned.any():                                             # (and not from the rim of what was turned: its texels are half the other colour)
+        tm = np.zeros(shape, bool); tm[gi[turned, 0], gi[turned, 1], gi[turned, 2]] = True
+        dT = ndimage.distance_transform_edt(~tm) * VOX; pure &= dT[gi[:, 0], gi[:, 1], gi[:, 2]] > BAND
+        del tm, dT
     newL = L.copy(); stats = {}
     for k in range(K):
         q = np.nonzero(paint & (c1 == k))[0]; src = np.nonzero(pure & (c1 == k))[0]
@@ -297,7 +320,7 @@ for R in SPEC['regions']:
     report['regions'].append(stats)
     log(f'{name}: {len(tris)} triangles, {len(r)} texels ({int(inside.sum())} in the box); ' +
         ', '.join(f"{n} {stats[n]['texels']} (painted {stats[n]['painted']})" for n in names) +
-        f'; islands gone {nd}, kept {nk}{stepnote}; {len(sel)} texels painted again')
+        f'; islands gone {nd}, kept {nk}{stepnote}' + (f'; {int((turned & inside).sum())} texels turned' if turned.any() else '') + f'; {len(sel)} texels painted again')
 
 # ---- 6. the margin round each chart, where its nearest covered texel changed
 npad = 0
