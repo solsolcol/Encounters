@@ -5740,5 +5740,59 @@
     "heard": "It is tired. Go to it and BAG it."
    }
   }
+ },
+ "ph5nd2": {
+  "who": "pho",
+  "text": "[firm] BAG the tired Prai before it rises.",
+  "pick": "a",
+  "why": "equal by every measure: the first",
+  "med": 2.52,
+  "takes": {
+   "a": {
+    "len": 2.64,
+    "first": 0.0,
+    "last": 2.36,
+    "e_first": 0.1,
+    "e_last": 2.62,
+    "tail_db": -30.8,
+    "tail_rel": -18.1,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.78,
+    "heard": "BAG the tired Prai before it rises."
+   },
+   "b": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.34,
+    "e_first": 0.02,
+    "e_last": 2.54,
+    "tail_db": -32.4,
+    "tail_rel": -20.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.78,
+    "heard": "BAG the tired Prai before it rises."
+   },
+   "c": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.34,
+    "e_first": 0.08,
+    "e_last": 2.54,
+    "tail_db": -32.5,
+    "tail_rel": -20.4,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.85,
+    "heard": "BAG the tired Prai before it rises."
+   }
+  }
  }
 }
