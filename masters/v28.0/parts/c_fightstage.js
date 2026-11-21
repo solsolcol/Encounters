@@ -1349,22 +1349,26 @@
        holding it"; R26, his pick: "Finger bones (Recommended)"). His file has no finger bones; this chapter's copy of it
        (p5pho, tools/fingergraft.mjs: fifteen of the library's, and their ends, grafted onto his right hand from its own
        geometry, masters/v28.0/pho5) has, and at rest draws exactly as his. Here his hand is CLOSED ROUND THE SHAFT:
-       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.12 m up its middle
-         stands 8.2 cm along its own x and its radius is 3.3 to 3.7 cm (3.6 taken); his hand closes at 1.10 m up it, just
-         under the Naga's head (which begins at 1.15 m), as a staff is held;
+       THE SHAFT, from the stick's file (w5nagastaff, read across its length, every 4 cm): 1.40 m; from 0.96 to 1.12 m up
+         its middle stands 8.2 cm along its own x and its radius is 3.2 to 3.9 cm (3.6 taken; below 0.92 the Naga's coils
+         are 5 to 8 cm, above 1.12 its head flares): his hand closes round the middle of that straight neck, as a staff is
+         held, his little finger at its foot and his first finger under the head;
        ACROSS HIS PALM, in his hand's own frame (armsOf: the fingers' line, the palm's facing; across toward his thumb): its
-         middle 1.8 cm short of his middle finger's knuckle along his hand and pressed into his palm (the palm 1.2 cm off
-         the bone's line, measured from his hand's own skin there: 1.1 to 1.7 cm, a grip's press taken off), the shaft's
-         line sloped 18 degrees from straight across, its upper end toward his fingers (a power grip: the shaft runs from
-         the heel of the little finger's side to the first finger's knuckle), the Naga's head up past his thumb, facing
-         where his knuckles face;
+         middle 2.5 cm short of his middle finger's knuckle along his hand, so the fingers close round its far side from
+         the knuckles (the shaft deeper in the palm: 1.8 cm left the fingers hooked on its near side, drawn down the shaft
+         with no browser by tools/probes/gripsolve.mjs and gripdraw.py), pressed into his palm 1.6 cm off the bone's line
+         (his palm's skin there 1.1 to 1.7 cm: the thick pads at its heel no more than a grip's press into the shaft),
+         straight across it (sloped toward the fingers, as a power grip's oblique line, it turned his wrist toward his
+         thumb by as much again: 18 degrees took it past a real wrist's 25), the Naga's head up past his thumb;
        EACH FINGER CLOSED ROUND IT, solved from its own three bones' lengths in its own plane (MCP, PIP and DIP turning
          about the axis square to the finger and to the palm's facing): its first bone turned until its middle joint meets a
          circle round the shaft's line at the shaft's radius and the finger's (0.8 cm, pressed), then the middle and end
-         bones laid as chords round that circle; THE THUMB the other way round it, from the heel of the hand, its
-         metacarpal turned at its base until its knuckle meets the thumb's circle above the shaft, its two bones as chords
-         round it toward the fingertips; each joint held inside a hand's own range (MCP 90, PIP 110, DIP 85 degrees; the
-         thumb's 60, 60, 80), measured after (tools/probes/jointscan.mjs);
+         bones laid as chords round that circle (a hand of his size closes about a third of the way round a shaft this
+         thick: the fingertips on its far side, not under it); THE THUMB the other way round it, from the heel of the hand,
+         its metacarpal turned at its base until its knuckle meets the thumb's circle (its radius 1.2 cm, a thumb's) above
+         the shaft on his wrist's side, the root its metacarpal turns least to reach (its other, beneath, swung the thumb
+         round under the shaft), its two bones as chords round it toward the fingertips; each joint held inside a hand's
+         own range (MCP 90, PIP 110, DIP 85 degrees; the thumb's 60, 60, 80), measured after (tools/probes/jointscan.mjs);
        LAID at the very start of each drawing of the world, after every take, film and lay of his (a first child of the
          world whose matrix update runs before his: his bones' matrices are made from it), and taken off before his mixer
          runs again (armsBack, as every laid pose: v11.5); eased over 0.3 s as the stick comes into his hand or leaves it.
@@ -1375,7 +1379,7 @@
          on through the fight's lab, gripOn) */
       let GRIP_ON = false;
       const STICK_R = 0.036, STICK_C = [0.082, -0.003], FING_R = 0.008, GAP = 0.003;
-      let TILT = 18 * Math.PI / 180, STICK_Y = 1.10, THUMB_R = 0.009, BACK = 0.018, PALM = 0.012;   // (a probe may try others: tune)
+      let TILT = 0, STICK_Y = 1.05, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
