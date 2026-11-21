@@ -9,7 +9,7 @@ take it is. Written from sound/picks.json:   python3 -I masters/v28.0/sound/mani
 import json, os, re
 R = os.path.dirname(os.path.abspath(__file__))
 P = json.load(open(os.path.join(R, 'picks.json')))
-KIND = {'fx': 'one-shot', 'loop': 'loop', 'bed': 'bed', 'music': 'music', 'mbed': 'music-loop', 'stem': 'stem', 'note': 'one-shot', 'copy': None}
+KIND = {'source': 'source', 'fx': 'one-shot', 'loop': 'loop', 'bed': 'bed', 'music': 'music', 'mbed': 'music-loop', 'stem': 'stem', 'note': 'one-shot', 'copy': None}
 COPYKIND = {'u5vison': 'one-shot', 'u5visoff': 'one-shot', 'u5heart': 'one-shot', 'u5visbed': 'bed', 'u5vismus': 'music-loop'}
 # the fight's events (c_fightrules.js) and the sounds each one cues: the wiring's map
 EVENT = {

@@ -755,11 +755,11 @@
   "why": "b: 100 % where a phone plays, loudest 50 ms -11.8 dBFS (others, phone/loudest: a 1.00/-14.7)"
  },
  "u5bowl": {
-  "kind": "fx",
+  "kind": "source",
   "take": "u5bowl_a",
   "family": "screen",
   "where": "the count's notes: the source the nine notes are made from (sound/notes.py)",
-  "why": "a: 100 % where a phone plays, loudest 50 ms -3.7 dBFS (others, phone/loudest: b 1.00/-11.6)"
+  "why": "a: 100 % where a phone plays, loudest 50 ms -3.7 dBFS (others, phone/loudest: b 1.00/-11.6); the SOURCE of the count's nine notes (notes.py): not a file of the game"
  },
  "u5start": {
   "kind": "fx",

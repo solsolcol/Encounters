@@ -49,6 +49,7 @@ for o in SFX:
     if kind == 'fx' and m['first'] > 0.12:
         e['af'] = 'atrim=start=%.2f,asetpts=PTS-STARTPTS,afade=t=in:d=0.02' % max(0, m['first'] - 0.03); e['why'] += '; its %.2f s silent head cut' % m['first']
     P[n] = e
+P['u5bowl']['kind'] = 'source'; P['u5bowl']['why'] += "; the SOURCE of the count's nine notes (notes.py): not a file of the game"
 # Spirit Vision: chapter 4's own five, byte for byte under this chapter's names (v7.1)
 for n, f in (('u5vison', 'u4vison'), ('u5visoff', 'u4visoff'), ('u5heart', 'u4heart'), ('u5visbed', 'u4visbed'), ('u5vismus', 'u4vismus')):
     P[n] = dict(kind='copy', **{'from': f}, family='vision', where='Spirit Vision (the fiftieth seam, as chapter 4 declares it)',

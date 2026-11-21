@@ -6,7 +6,7 @@ silence between them; the takes as they came, uncut. M7's reel: the teacher's mi
 voices: one reel a kind, its four takes. Written to sound/previews/<name>.mp3 (192 kbps).
     python3 -I masters/v28.0/sound/previews.py      (MADE=<the folder stems.py wrote> for M7's reel)"""
 import json, os, re, subprocess, tempfile
-R = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.join(R, 'previews'); os.makedirs(OUT, exist_ok=True)
+R = os.path.dirname(os.path.abspath(__file__)); OUT = os.environ.get('OUT') or os.path.join(R, 'previews'); os.makedirs(OUT, exist_ok=True)   # OUT: a scratch folder, moved in with its save
 T = tempfile.mkdtemp(prefix='u5rev_', dir=os.environ.get('TMPDIR', '/tmp'))
 def lufs(p):
     e = subprocess.run(['ffmpeg', '-hide_banner', '-nostats', '-i', p, '-af', 'ebur128', '-f', 'null', '-'], capture_output=True, text=True).stderr
