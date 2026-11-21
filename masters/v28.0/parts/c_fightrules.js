@@ -20,7 +20,8 @@
             only once Master Zavier has BOUND it in a bubble (bound, it cannot move, slip, hide or rise again). Only
             Master Zavier SMELLS out the hidden; only Grandmaster Pho BAGS the tired. So every Prai is the pair's work.
          4. The golden SHOCKWAVE gathers every bound Prai at once; while it is gathered they rush to break it, so Master
-            Zavier LENDS his teacher his cage for those seconds, and stands with nothing round him.
+            Zavier LENDS his teacher his cage for those seconds, and stands with nothing round him. Twice (six left, and
+            four) the Prai cling to the house: the bag is shut, and only the gold can take them.
          5. Losing begins the FIGHT again (Chad's R14: "Fight restarts"); nothing is ever played for him.
 
        HOW THE CHAPTER USES IT (c_story.js, when the fight is built: the tracker's M8):

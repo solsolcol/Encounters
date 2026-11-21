@@ -8,6 +8,10 @@
      node tools/probes/fightsim.mjs --n 2000        fewer fights
      node tools/probes/fightsim.mjs --players careful,optimal --sanity 70 --workers 2
      node tools/probes/fightsim.mjs --trace careful --seed 7     one fight, every line said and every stage, printed
+     node tools/probes/fightsim.mjs --trace careful --seed 7 --verbose    and every bubble, smell and landing, and the
+                                                    court and the need every two seconds
+     node tools/probes/fightsim.mjs --set 'holdSecs=35;wear=5'  try numbers without changing the table (said so on top)
+   (about 40 minutes for every player on four workers in a container without a GPU: run it in the background)
 
    THE PLAYERS (each takes the lesson the way it plays; a lesson waits for its press, so a player who never presses its
    act would wait there for ever: those who play only one of the two, or nothing, are taken through the lesson as the

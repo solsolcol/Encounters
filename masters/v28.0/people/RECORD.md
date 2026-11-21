@@ -158,6 +158,11 @@ the change: sha1 8380984448ef... and 131c7a26a1ee...). FOUND ON THE WAY: retarge
 carried his rest's lean (his spine leans back 11 degrees at rest where Jun's leans 5): the stand leant him back 17 degrees
 and put his upper arms into his sides. With --align (each bone's rest first swung onto the source's) every limb's line
 is the source's at the moment (the upper arm, forearm, spine and thigh at the stand's middle, the talk's and the sit's).
+AND THE COLLAR BONES HELD AT HIS REST (--skip, new and opt-in in tools/retarget.mjs; held under the spine as it moves, so
+each arm still takes the source's line): photographed, the library's talk dropped both collar bones 24 degrees (a coat
+hanger's shoulders on a narrow man, his collar standing off a long bare neck) and its sit raised them 12 to 24 (a shrug
+that flared his collar open). Runs without --skip write the same bytes as before (granny's walk 8380984448ef..., the
+collector's sit by `same` 8b6ffd4d57a7..., before and after the change).
 
 **Prepared**: ONE LEVEL, assets/p5collector.glb, his full body (314,540 triangles, no fins), repainted at 2048 (face
 2,224 texels a metre, head 1,645, hands 1,048, body 836; 2,029 charts; 2 unplaced corners mended), with the four takes;
@@ -168,19 +173,20 @@ walks to the door in two endings, where a lighter body would be drawn if there w
 **Measured** (tools/probes/filejoints.mjs, new: jointscan's own measure, read out of jointscan.mjs at run time, on the
 file's skeleton posed in Node at 12 moments of each take; tools/probes/armside.mjs, new: an arm inside the body's side,
 every 1/30 s, in the body's own frame; head travel and turn over each take):
-- the sit: both collar bones raised, the left 21 to 24 degrees and the right 12 to 14 over his neutral, in every moment:
-  THE LIBRARY TAKE'S OWN SHRUG (the hermit's file holds 18 to 32 in the same take). The chapter's cast lets a take's
-  shrug down at run time (chapter 4's c_scast `shoulders`): it must be asked for Sitting_Answering_Questions on him.
-  His head travels 16 cm side to side and 21 cm fore and aft at up to 23 cm a second, and turns up to 57 degrees to his
+- the sit: no flag (before the collar bones were held at rest: both raised 12 to 24 degrees in every moment, the library
+  take's own shrug, which the hermit's file holds at 18 to 32). His head travels 16 cm side to side and 21 cm fore and aft at up to 23 cm a second, and turns up to 57 degrees to his
   right of his chest (the hermit's: 57; Grandmaster Pho's 54 to 61 were "too extreme", v26.3): the chapter's head damping
   must be asked for this take too, and a lens that looks at his face measured as it plays (filmlive).
-- the stand: no flag. The talk: one moment (0.50 s) of his left elbow 5 cm behind his shoulder with the hand 11 cm before
-  it; his head travels 19 cm side to side at up to 29 cm a second (a shot that follows his face will sway). The walk: no
+- the stand: no flag. The talk: one moment (0.50 s) of his left elbow 3.9 cm behind his shoulder with the hand 13 cm
+  before it; his head travels 19 cm side to side at up to 29 cm a second (a shot that follows his face will sway). The walk: no
   flag.
-- his arms against his sides (armside): the sit's right forearm up to 3.6 cm into his side; the stand 1.5 / 2.3 cm; the
-  talk 3.1 / 7.4 cm; his own walk 3.8 / 3.9 cm (the elbow brushing his
+- his arms against his sides (armside): the sit up to 1.8 / 4.4 cm; the stand 1.9 / 2.1 cm; the talk 1.6 / 5.1 cm; his own
+  walk 3.8 / 3.9 cm (the elbow brushing his
   hip, with the house's arms brought in to 7 degrees). The probe reads Jun's prepared stand at 4.7 / 3.2 cm, so a few
   centimetres there is the loose shirt; the pictures (section 3c) say what shows.
+- feet (each foot's lowest skin against the floor, in Node): the sit's left foot 1.7 cm under the floor and the right on it
+  (the chapter sets a body on its lowest contact); the stand's two feet 2.5 cm apart in height, as Jun's own stand (1.9):
+  the library stand's; his walk's feet on the floor in turn.
 - hands: rigid, as made, fingers spread and straight (he lays twenty pieces out with them: in a close shot they cannot
   close on a piece). Way D (his rig made here from Jun's 66 joints) is the only free way to fingers; not tried, as agreed.
 
@@ -188,8 +194,11 @@ every 1/30 s, in the body's own frame; head travel and turn over each take):
 - The collector's near and mid bodies (section 3b): each a remesh at Meshy, 5 credits; his yes first.
 - No take of the fight's (the nine's strain, stagger, lying tired and rising; Master Zavier's; Grandmaster Pho's): they
   wait for docs/V28.0-FIGHT.md.
-- No take was measured as a motion yet (headturn, gait, jointscan, feetscan, clipscan): the house rule asks it before a
-  take is cast, and the faults above in the takes were seen in single frames only.
+- Measured as motions since (CAST-2, sections 3b, 5, 7): the collector's four takes (jointscan's own measure by
+  tools/probes/filejoints.mjs, arms against sides, feet, head travel and turn), Mr Koh's stand, talk and walk (stretch,
+  waist), the heavy Prai's stand and walk (arms against sides, jointscan). NOT YET: Mr Koh's and Jun's takes by jointscan,
+  feet and head travel; the two other kinds of the nine; clipscan and headturn in the chapter itself (no chapter casts
+  these bodies yet).
 - Nothing was generated a second time; no rig or remesh was sent again.
 
 ## 5 · MR KOH: the shoulder spike and the shirt drawn in under his arms, mended in the prep (CAST-2, 21 Nov 2026)
@@ -235,3 +244,30 @@ of 12 moments (the library's stand; the chapter's cast lets a stand's shrug down
 close at 0.3 and 0.75 of the walk, before and after, opened full size): before, her right arm met her hip with a notch at
 the waist and hugged it on the back-swing; after, a clear gap between arm and body on both sides; the forward swing
 carries her left hand in front of her belly, as before.
+
+## 6 · JUN: the tee's white fringe and the puffed sleeves, measured, tried, NOT mended (CAST-2, 21 Nov 2026)
+
+**The fringe, measured**: the tee's hem is a ledge on his body 1.5 cm deep (scratch profile probe: the tee's outer skin at
+13.8 cm in front of his middle down to 0.822 m, the trousers' at 12.3 cm below it; 0.83 to 0.84 m at the sides, 0.85
+behind), and the paint changes from the tee's white to the trousers' navy at the same height (white above 0.825, navy
+below 0.815, both read from the generator's 8192 sheet through the body's own coordinates); the fringe is a few millimetres
+of torn white on the trousers just under the ledge. **Tried, three ways, each with tools/edgeclean.py on a scratch prep
+of his near body and photographed at the hem, front, side and back, each opened full size**: (1) a STEP taken from the
+ledge (the walk up from the trousers to the ledge's underside: found in 82 to 132 of 152 to 167 slices): it painted a hard
+white band, stepped at the sheet's texels, two to three centimetres down the trousers, and white round the drawstring;
+(2) the materials' presence smoothed with no step: the same band, a little narrower; (3) each face of the body taken
+alone (`normal`), so the ledge's underside could not be smoothed onto the trousers: the same band again. Each is worse
+than the fringe as made. REFUSED; people/edgeclean-jun.json withdrawn (prep() applies a person's spec whenever the file
+exists), and his files were never prepared with it: assets/p5jun*.glb are as CAST made them. What would mend it: paint
+the trousers' strip under the ledge by hand in the sheet, or a box that keeps texels of the trousers' own colour (its
+`raw` test) from ever turning white; not done.
+**The sleeves, measured**: his A pose holds his arms 41 degrees out (the widest of the chapter's bodies: Master Zavier's
+32, the collector's 22), and his stand brings them to 6 (calmarms); the sleeve is cut round the raised arm, 2 cm off it
+all round (7.9 cm from the arm's line at the shoulder against the arm's 5.7). His sleeve's weights match Master Zavier's
+pattern bin for bin along the arm (the shoulder 0.71 to 0.03 from the cap to mid-arm, the arm 0.28 to 0.99), so the rig
+is not at fault: the sleeve is a cone made for an arm held out, standing off an arm brought down. **Tried**: the weights
+spread (prepmonk WSMOOTH 8): creases down the chest and the shoulders' strain up (99th percentile 1.365 -> 1.498);
+his stand's arms at 10 degrees (not 6): the shoulders a little rounder, the arms further out. Neither clearly better;
+NOT ADOPTED, his line as it was. What would mend it: the sleeves reshaped round a lowered arm (Blender), or the arms
+held further out in his takes; his to say.
+
