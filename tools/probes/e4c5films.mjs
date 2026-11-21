@@ -74,13 +74,15 @@ const INSTALL = () => {
       const vis = seen(g) ? 1 : 0; g.updateWorldMatrix(true, true);
       const hip = Q.hips ? Q.hips.getWorldPosition(v).toArray().map(q => +q.toFixed(3)) : null;
       const head = Q.head ? Q.head.getWorldPosition(v).toArray().map(q => +q.toFixed(3)) : null;
+      if (!Q.__hands) { Q.__hands = [null, null]; for (const q in (Q.bone || {})) { if (/^(mixamorig:?)?LeftHand$/.test(q)) Q.__hands[0] = Q.bone[q]; if (/^(mixamorig:?)?RightHand$/.test(q)) Q.__hands[1] = Q.bone[q]; } }
+      const hands = Q.__hands.map(h => h ? h.getWorldPosition(v).toArray().map(q => +q.toFixed(3)) : null);
       let ext = null;
       if (vis) { let a = [9, -9, 9, -9], any = false;
         g.traverse(m => { if (!m.isSkinnedMesh || !seen(m)) return; if (m.skeleton) m.skeleton.update(); const N = m.geometry.attributes.position.count;
           for (let i = 0; i < N; i += 9) { m.getVertexPosition(i, v); m.localToWorld(v); n.copy(v).project(cam); if (n.z >= 1 || n.z <= -1) continue; any = true;
             if (n.x < a[0]) a[0] = n.x; if (n.x > a[1]) a[1] = n.x; if (n.y < a[2]) a[2] = n.y; if (n.y > a[3]) a[3] = n.y; } });
         if (any) ext = a.map(q => +q.toFixed(3)); }
-      return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9]; });
+      return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9, hands[0], hands[1]]; });
     const T = {};
     for (const o of things()) { const vis = seen(o) ? 1 : 0; o.getWorldPosition(v); const k = o.name + '|' + o.uuid.slice(0, 4);
       const s = [vis, +v.x.toFixed(2), +v.y.toFixed(2), +v.z.toFixed(2)], was = last.get(k);

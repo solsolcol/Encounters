@@ -81,15 +81,17 @@ for k, lab in enumerate(labels):
         t = rows[i]['L'][0]
         if a[0] != b[0]: Pp.append(t)
         if a[0] and b[0]:
-            for j in (3, 4):
-                if a[j] and b[j] and math.dist(a[j], b[j]) / dt > 2.5: J.append(t); break
+            # (hips and head: 2.5 m/s and a change of 1.2 m/s in a step; the hands, when measured: 3.5 and 2.5)
+            LIM = [(3, 2.5, 1.2), (4, 2.5, 1.2), (7, 3.5, 2.5), (8, 3.5, 2.5)]
+            for j, vj, _ in LIM:
+                if len(a) > j and len(b) > j and a[j] and b[j] and math.dist(a[j], b[j]) / dt > vj: J.append(t); break
             if i + 1 < len(rows) and not near_cut(i + 1):
                 c = rows[i + 1]['P'][k]
                 if c and c[0]:
-                    for j in (3, 4):
-                        if a[j] and b[j] and c[j]:
+                    for j, _, aj in LIM:
+                        if len(c) > j and a[j] and b[j] and c[j]:
                             acc = math.sqrt(sum((c[j][q] - 2 * b[j][q] + a[j][q]) ** 2 for q in range(3))) / dt
-                            if acc > 1.2: K.append(t); break
+                            if acc > aj: K.append(t); break
     if J or K or Pp:
         print('  %-16s JUMP %s | JERK %s | POP %s' % (lab, ' '.join(spans(J)) or '-', ' '.join(spans(K)) or '-', ' '.join(spans(Pp)) or '-'))
 # things shown or hidden or moved on screen with no cut
