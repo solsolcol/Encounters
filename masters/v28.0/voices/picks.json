@@ -8938,5 +8938,161 @@
     "heard": "Did you feel that? Like a door slammed."
    }
   }
+ },
+ "tn5c2": {
+  "who": "ton",
+  "text": "[afraid] Master. Brother is shaking.",
+  "pick": "a",
+  "why": "equal by every measure: the first",
+  "med": 2.06,
+  "takes": {
+   "a": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 1.76,
+    "e_first": 0.0,
+    "e_last": 2.06,
+    "tail_db": -28.6,
+    "tail_rel": -18.3,
+    "hole": 0.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.94,
+    "heard": "Master. Brother is shaking."
+   },
+   "b": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 1.74,
+    "e_first": 0.0,
+    "e_last": 2.06,
+    "tail_db": -20.2,
+    "tail_rel": -9.4,
+    "hole": 0.5,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.94,
+    "heard": "Master. Brother is shaking."
+   }
+  }
+ },
+ "ju5c2": {
+  "who": "jun",
+  "text": "[afraid] The lamps. Master, the lamps.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.49,
+  "takes": {
+   "a": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.18,
+    "e_first": 0.1,
+    "e_last": 2.46,
+    "tail_db": -27.2,
+    "tail_rel": -14.0,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.12,
+    "heard": "The lamps. Master, the lamps."
+   },
+   "b": {
+    "len": 3.36,
+    "first": 0.0,
+    "last": 2.38,
+    "e_first": 0.1,
+    "e_last": 2.72,
+    "tail_db": -51.9,
+    "tail_rel": -36.9,
+    "hole": 0.86,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.91,
+    "heard": "The lamps. Master, the lamps."
+   }
+  }
+ },
+ "ko5c2": {
+  "who": "koh",
+  "text": "[awed] It is... warm. Why is it warm?",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 4.01,
+  "takes": {
+   "a": {
+    "len": 4.16,
+    "first": 0.0,
+    "last": 3.76,
+    "e_first": 0.08,
+    "e_last": 4.14,
+    "tail_db": -45.4,
+    "tail_rel": -34.4,
+    "hole": 0.86,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.72,
+    "heard": "It is... warm. Why is it warm?"
+   },
+   "b": {
+    "len": 4.08,
+    "first": 0.0,
+    "last": 3.72,
+    "e_first": 0.0,
+    "e_last": 3.96,
+    "tail_db": -85.2,
+    "tail_rel": -72.3,
+    "hole": 0.96,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.77,
+    "heard": "It is... warm. Why is it warm?"
+   }
+  }
+ },
+ "tn5c3": {
+  "who": "ton",
+  "text": "[concerned] Stay there, brother.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 1.17,
+  "takes": {
+   "a": {
+    "len": 1.2,
+    "first": 0.0,
+    "last": 0.86,
+    "e_first": 0.0,
+    "e_last": 1.18,
+    "tail_db": -29.2,
+    "tail_rel": -19.9,
+    "hole": 0.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.54,
+    "heard": "Stay there, brother."
+   },
+   "b": {
+    "len": 1.2,
+    "first": 0.0,
+    "last": 0.86,
+    "e_first": 0.02,
+    "e_last": 1.18,
+    "tail_db": -26.5,
+    "tail_rel": -16.6,
+    "hole": 0.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.59,
+    "heard": "Stay there, brother."
+   }
+  }
  }
 }
