@@ -1504,6 +1504,7 @@ a7425f4b02fc51996fba5b0b0a8e51f91fe050a8924b8989717d89cb5d00f526  masters/v28.0/
 27c6021119ddc5fe2ce0098a787e0419b1be0a0a44b2014d8da26b87c3f00e18  masters/v28.0/src/original-praiheavy.glb
 7b402ac1e99a6cae59016267f54a5e5f7920b2d3a3039003b1bf55652cc6b358  masters/v28.0/src/original-praihide.glb
 90b6b1d2a526fbfa50582500df76c74556c75f0e1d613c8d78199dd8c841363b  masters/v28.0/src/original-rail.glb
+ae7ad1abf54e5f52a294b8cf2e73920d8b1208323b5e27bb523479b395475184  masters/v28.0/src/original-rakyom.glb
 cc29e8b498d8abf2d7ab4099cf781682efaec7f5d4e35f161be56f3016faabef  masters/v28.0/src/original-shoecab.glb
 a8df9f91dd86e25dbfe70f2fa78ec12e7f6680f3f57efcf25c7a180b84448b98  masters/v28.0/src/original-sideboard.glb
 bef3583cb3df9ce6cc35f99342142a61cf7e9e6359eaee203322d6cf20939bef  masters/v28.0/src/original-slippers.glb
@@ -1516,14 +1517,16 @@ a6e2cfb9e07ba6001908179218f41bd37c7331ec36b2401a1f6cccd846e02554  masters/v28.0/
 c06c8481467db07b454529158b424fcb315243835a0804e809874d58a7be0d08  masters/v28.0/src/original-walklight.glb
 746a57ed3d25244aa263f8bd96d16359cacb31ebf654491e9228bcf301615d6c  masters/v28.0/src/original-wallclock.glb
 9c32240e668a946e78343bc67003dab94b32c9552a5a526053e70979e45abd9f  masters/v28.0/src/original-walllamp.glb
+0dd7bfcdf4124ef93371102f1b74f8ae400008a01db2e314e880ad4a8163fa42  masters/v28.0/src/original-wuathanu.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
+b1659b398d9c47fc1e38016639b0abae15bca0dbbf69b51ceed2af8fd1b37b81  masters/v28.0/src/pieces-p6.log
 d45cff57cdbdf9ed9bc79603a454e76536a6620dc53616048962fad962882fc3  masters/v28.0/src/praicome-bodies.log
 e63997ebe82080e6f070b543c59c4b0cf5d3021b597115aeaff43d2f79e616d5  masters/v28.0/src/praicome-people.log
 055155b5e07aa013baf0b0aa59b1ae98a8ed88a0a03fb8cc6fe98afe5c73abf8  masters/v28.0/src/praicome-rig.log
 7bf49befb9bdaf27951cbabef98936aece05e483c740f1eaf917de192be80da4  masters/v28.0/src/praicome-takes.log
 229e5cbf1ffeb62068fe3373a4616f7997b21c3e979ae48dad77be54bf46c952  masters/v28.0/src/praiheavy-bodies.log
-1901d5e272b242ad55b37e484c03719fbb102936dc428bfe80dcdbe712bc5af1  masters/v28.0/src/praiheavy-people.log
+792d3af73856314f2d364ee7be7fc466e622f9aff1251044a18f4d38aca83853  masters/v28.0/src/praiheavy-people.log
 c2ebac3a2aa58301498c156436d18c1684d0e1372e055f6a1cc1e772047c5a5b  masters/v28.0/src/praiheavy-rig.log
 beff8d0524dc4234650915c20f6501dd11aba470c64694421bc381bc3de75374  masters/v28.0/src/praiheavy-takes.log
 448f72e580022f17a5553f8856edc690969d9f582c1c7fe7e8e0cec23e5ab60e  masters/v28.0/src/praihide-bodies.log
@@ -1538,7 +1541,7 @@ f1bea9e8f3d253026f85b127676480816759b8483577d820d0e7ec44a49521be  masters/v28.0/
 04a9e0235237ee02b1be1e5594a61e3fe690464593307ad436229c550b2f7896  masters/v28.0/src/preremesh-praihide.glb
 1047915f3740de26778949faaedc209be48304d15a2b981f188b46b137c95672  masters/v28.0/src/preremesh-zavier.glb
 553953a9a668b520f8155d2d51fb88264a2b41881f476abd9eb69752bbd18961  masters/v28.0/src/preremesh-zavier4.glb
-16b9f6a5c42da519da754e466a2fbc77b6a911f73b6521c2ecc4af0b2367de64  masters/v28.0/src/props.log
+dc5e6c3c312eb9a418b8055a8a77162acc84c9bbc3b2feaa3932d8a88d59be66  masters/v28.0/src/props.log
 04addce429c1b21364bd2dcca0b16e18e557ca72292e354c9ba9ac592dd097d6  masters/v28.0/src/rigged-collector.glb
 7d41a04399b2857a26275fe69acc7b7763e9f9ebc1184a2fa2dd3454e33d7ba5  masters/v28.0/src/rigged-jun.glb
 44314ee9b09280966b5d1dac8e32051a5a29b93a2f17813910df116732d42289  masters/v28.0/src/rigged-koh.glb
@@ -1547,6 +1550,7 @@ be94193e60d9ec70accabbe2a9341f41e9ed054effa333f327c863ae6f0f086f  masters/v28.0/
 57ac907aaf04108b1b7997031ddba53338ade6eeddcfbcd5a86c54c9f997cefc  masters/v28.0/src/rigged-praihide.glb
 8d776a94c70c2d849e7e39fd92a7dfa7dc6c050545908fae2e4e6b1ba4255af9  masters/v28.0/src/rigged-zavier.glb
 15dd431447d653a473dcebddce5e75b61e9b15460d2fa92775a81075af127140  masters/v28.0/src/rigged-zavier4.glb
+c606d0d09afe6da26b01b78c29820422f0ba7bb81d846b55c8e962a4c4b333cf  masters/v28.0/src/takes-collector-mended.glb
 b5ab1ea302b2d9191fc3b3ca3304a20c34e787f8e170911d17b982028f901b92  masters/v28.0/src/takes-collector-walking.glb
 663eee25d21c1dafd1f74396799eaea713b7d9f77740e66b51a0c224b0bfd77a  masters/v28.0/src/takes-jun-lib.glb
 5a84a02fa4eac3c960b9bb6ab60d5c2603c6d846f55d3ae063a45ced7efd5600  masters/v28.0/src/takes-jun-walking.glb
@@ -1628,6 +1632,10 @@ d3826fc3ebc39a09fad4ea159ffb2c6273b23b2b47dccb385d7aec4e16843a8d  masters/v28.0/
 d5aa685db691ae71bc9098e3a64a471612a41191557d4820152de7eecba869ac  masters/v28.0/src/thumb-grating-front.png
 b98c5ecefdaad2da5344f7b05623843440437af8b881aa024a8ee8676dd0e5d4  masters/v28.0/src/thumb-grating-left.png
 a1d1969e155b801c2a3bd3b7da7b361edde99dbb4ee91c5c5a0554be93b132cd  masters/v28.0/src/thumb-grating-right.png
+b2628d48593fa6a35042536454fd715f19f1dbd7eb272e32c111f6a78ef8314e  masters/v28.0/src/thumb-hunphayon-back.png
+d02397b5e676c4b31be5cba565d027f2e45ba9df26b8f7b00b6455f29b1de037  masters/v28.0/src/thumb-hunphayon-front.png
+dee72a742122f557c897c263012b45817b82523c97512b6da388ca16de53b80c  masters/v28.0/src/thumb-hunphayon-left.png
+bf255c1c76f5ce2bd51bf856969696d7fdfdde1cf2aa9b08cc1327b47a2f7e9c  masters/v28.0/src/thumb-hunphayon-right.png
 9c7dffee25514dc7cb19b3c4f29c19bb57a793f4d9dd97ceccad1b2273846c74  masters/v28.0/src/thumb-jun-back.png
 bd2066a9d1199fac25e522295b8413cdffc78dc3f3f7e961d863db24d3b1ad6d  masters/v28.0/src/thumb-jun-front.png
 e4cf4d9b36530a86484f1b85e699c234f879edd82edf1fdb47490a11e1b64a26  masters/v28.0/src/thumb-jun-left.png
@@ -1688,6 +1696,10 @@ c87d691811a9fc0f38863f9ec08e62a95bf8b67052239abf9ce6540564ced255  masters/v28.0/
 3e3ad5d44714832d7176786337973dbabd39e8b75f81623cf839fb29611004c1  masters/v28.0/src/thumb-rail-front.png
 3946aea3685bef827f04cbd2eba0f6b842649e46bd3b66be998a4a0b44d101eb  masters/v28.0/src/thumb-rail-left.png
 3fd703f838e44ec995996f79f0ea40ab2893a4d56b498a69ea38240c9e49dcb3  masters/v28.0/src/thumb-rail-right.png
+69a770aed0b2d1f8741dfef2b914a312bbc2b1a074e12a466a6764a86a7b5e73  masters/v28.0/src/thumb-rakyom-back.png
+49e26f113de1b608b838738302a6392f667b6349da3ab924f016aa7c97a80950  masters/v28.0/src/thumb-rakyom-front.png
+d9029644d2f84a3eedd86b8479935c0d2829ebd06553ab70013e98f5c2498a69  masters/v28.0/src/thumb-rakyom-left.png
+45e0662b1f675635da46f43126f39915b7206ab76500e62349b84864def65300  masters/v28.0/src/thumb-rakyom-right.png
 bd81271cc8fa8071d734aab96fa45b2934d95017137b0fe6002e749636d0653b  masters/v28.0/src/thumb-shoecab-back.png
 cdaa1860d61c28bfc800a9e7a849cbb240cc54b741eb38f7e489571938729252  masters/v28.0/src/thumb-shoecab-front.png
 2ab7882d08eae655fb773d20146793be4b065fded0a4cab1cca9dc20e2b036c3  masters/v28.0/src/thumb-shoecab-left.png
@@ -1736,6 +1748,10 @@ bc3ab7bc3a29d0da79f49111e7111234fb4d5cb0cd05f20d1d97d80490dbcfe0  masters/v28.0/
 70dbe77ca4d25fa56eb83fb2839d843ee418e933a0cdb0c1544035c26fb03966  masters/v28.0/src/thumb-walllamp-front.png
 b687bb7bc08e6f1cc662b04c3b87adfc3878f733aba19599b34a74795a068ea8  masters/v28.0/src/thumb-walllamp-left.png
 98008f8c279e5091f3d4cef040af12c12c9d99c0f36fd8dfe2b09a86bb1ddbb1  masters/v28.0/src/thumb-walllamp-right.png
+a88ed87f5e0b904ad65ac0d4ef9acf75e186dc76c5c9675670f717fc08039843  masters/v28.0/src/thumb-wuathanu-back.png
+24c7fe572b20a5a26e11984da9614edd901deaf016d35a2491b45995be2dcf09  masters/v28.0/src/thumb-wuathanu-front.png
+3f12249bd7e4f59122f826f689a65944f28cf9be2a6463bd677ac887a351b903  masters/v28.0/src/thumb-wuathanu-left.png
+8d964bb31d0ed41e873188dbe4d5f9606cfc7c6d259dd20487c06d1c111ae087  masters/v28.0/src/thumb-wuathanu-right.png
 2f5490f39b9df4f893e73acaa2fe85cb92e6ba101edf0ce99debdf7b28daa795  masters/v28.0/src/thumb-zavier-back.png
 3d6145a00caab678b8785b15058d89200e8adfdfa81280bfeec4ab71270762fc  masters/v28.0/src/thumb-zavier-front.png
 cbb994d9e1100bd1794e48a1970ddcd91f6f4bd2ec79ca054bcd44b39af3f84e  masters/v28.0/src/thumb-zavier-left.png

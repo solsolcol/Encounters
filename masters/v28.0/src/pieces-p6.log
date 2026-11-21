@@ -1,0 +1,17 @@
+started image-to-3d wuathanu 01a1fcd1-c686-7314-8e26-8a7404a11f3b
+started image-to-3d rakyom 01a1fcd1-d43a-7360-b0dc-0fe995d262d4
+started image-to-3d hunphayon 01a1fcd1-e34d-7109-b7f7-234234c3c8c4
+  wuathanu IN_PROGRESS 1%
+  wuathanu IN_PROGRESS 25%
+  wuathanu IN_PROGRESS 29%
+  wuathanu IN_PROGRESS 33%
+  wuathanu IN_PROGRESS 45%
+  wuathanu IN_PROGRESS 58%
+  wuathanu IN_PROGRESS 67%
+  wuathanu IN_PROGRESS 99%
+  wuathanu SUCCEEDED 100%
+done wuathanu {'glb': 66874780} credits 40
+  rakyom SUCCEEDED 100%
+done rakyom {'glb': 51747852} credits 40
+  hunphayon SUCCEEDED 100%
+done hunphayon {'glb': 53604604} credits 40

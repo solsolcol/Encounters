@@ -1411,3 +1411,125 @@ prepmeshy w5ceilfan.glb: 12238 -> 12238 triangles; 62.7 MB -> 765 KB
 (static) {"box":[[-0.65,0,-0.65],[0.65,0.52,0.65]],"size":[1.3,0.52,1.299]}
 errs []
 ceilfan -> assets/w5ceilfan.glb 782912 bytes
+  remesh wuathanu 20000 IN_PROGRESS 1%
+  remesh wuathanu 20000 IN_PROGRESS 35%
+  remesh wuathanu 20000 IN_PROGRESS 60%
+  remesh wuathanu 20000 IN_PROGRESS 89%
+  remesh wuathanu 20000 IN_PROGRESS 90%
+  remesh wuathanu 20000 SUCCEEDED 100%
+remesh done wuathanu 20000 101127640
+  CONTRACT: w 0.021  h 0.033  l 0.054 m (x -0.011..0.011, z -0.027..0.027)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5wuathanu.glb: 20750 -> 20750 triangles; 96.4 MB -> 2292 KB
+{
+ "info": {
+  "size": [
+   0.021274026248413173,
+   0.03292373509883015,
+   0.05400000140070915
+  ],
+  "min": [
+   -0.010637013124206587,
+   2.442961974519209e-7,
+   -0.027000000700354576
+  ],
+  "max": [
+   0.010637013124206587,
+   0.0329239793950276,
+   0.027000000700354576
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20750
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.011,0,-0.027],[0.011,0.033,0.027]],"size":[0.021,0.033,0.054]}
+errs []
+wuathanu -> assets/w5wuathanu.glb 2347472 bytes
+  remesh rakyom 20000 IN_PROGRESS 1%
+  remesh rakyom 20000 IN_PROGRESS 35%
+  remesh rakyom 20000 IN_PROGRESS 60%
+  remesh rakyom 20000 IN_PROGRESS 89%
+  remesh rakyom 20000 IN_PROGRESS 90%
+  remesh rakyom 20000 SUCCEEDED 100%
+remesh done rakyom 20000 77510988
+  CONTRACT: w 0.027  h 0.060  l 0.028 m (x -0.013..0.013, z -0.014..0.014)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5rakyom.glb: 20370 -> 20370 triangles; 73.9 MB -> 1750 KB
+{
+ "info": {
+  "size": [
+   0.02674336925605544,
+   0.05999999865889549,
+   0.028164311025497345
+  ],
+  "min": [
+   -0.01337168462802772,
+   0,
+   -0.014082155512748672
+  ],
+  "max": [
+   0.01337168462802772,
+   0.05999999865889549,
+   0.014082155512748672
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20370
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.013,0,-0.014],[0.013,0.06,0.014]],"size":[0.027,0.06,0.028]}
+errs []
+rakyom -> assets/w5rakyom.glb 1791612 bytes
+  remesh hunphayon 20000: the job is in the ledger (01a1fcf3-2769-7375-8e16-1dde8563bd90): waited for, not started again
+  remesh hunphayon 20000 SUCCEEDED 100%
+remesh done hunphayon 20000 79777092
+  CONTRACT: w 0.063  h 0.100  l 0.024 m (x -0.032..0.032, z -0.012..0.012)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5hunphayon.glb: 20936 -> 20936 triangles; 76.1 MB -> 2067 KB
+{
+ "info": {
+  "size": [
+   0.06338694512618524,
+   0.10000000149011612,
+   0.023609119282434716
+  ],
+  "min": [
+   -0.03169347256309262,
+   0,
+   -0.011804559641217358
+  ],
+  "max": [
+   0.03169347256309262,
+   0.10000000149011612,
+   0.011804559641217358
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20936
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.032,0,-0.012],[0.032,0.1,0.012]],"size":[0.063,0.1,0.024]}
+errs []
+hunphayon -> assets/w5hunphayon.glb 2116900 bytes (shot again by hand: the first shot was cut by the run's time limit)
