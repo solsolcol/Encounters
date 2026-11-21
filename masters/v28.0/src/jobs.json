@@ -176,6 +176,8 @@
   }
  },
  "curtain": {
+  "credits": 40,
+  "expires_at": 1795498175675,
   "image": "masters/v28.0/props/refs/curtain-2k.png",
   "image_to_3d": "01a1fc8f-0760-75f5-89b9-37cfcf3bf52d",
   "settings": {
@@ -195,6 +197,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 57310564
   }
  },
  "cushion": {
@@ -225,6 +230,8 @@
   }
  },
  "dinchair": {
+  "credits": 40,
+  "expires_at": 1795498120079,
   "image": "masters/v28.0/props/refs/dinchair-2k.png",
   "image_to_3d": "01a1fc8f-1445-7069-9053-bdb02674cfba",
   "settings": {
@@ -244,6 +251,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 60653568
   }
  },
  "dintable": {
@@ -301,6 +311,8 @@
   }
  },
  "floorlamp": {
+  "credits": 40,
+  "expires_at": 1795498079455,
   "image": "masters/v28.0/props/refs/floorlamp-2k.png",
   "image_to_3d": "01a1fc8e-eb3e-7421-8eeb-75c3217d5ed3",
   "settings": {
@@ -320,6 +332,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 48735308
   }
  },
  "frame": {
@@ -350,6 +365,8 @@
   }
  },
  "frontdoor": {
+  "credits": 40,
+  "expires_at": 1795498080949,
   "image": "masters/v28.0/props/refs/frontdoor-2k.png",
   "image_to_3d": "01a1fc8f-1cf1-770b-a7da-6899f9b03622",
   "settings": {
@@ -369,6 +386,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 62777444
   }
  },
  "gate": {
@@ -516,7 +536,8 @@
   "image": "/tmp/claude-0/-home-user-Encounters/f1062235-ca86-59a9-b000-61422c281293/scratchpad/e4c5/cast/refs/koh-a-2k.png",
   "image_to_3d": "01a1fc8b-7fb4-75e8-b4db-bf32625994af",
   "remesh": {
-   "40000": "01a1fc93-af6f-75e0-abc0-9206ace73e34"
+   "40000": "01a1fc93-af6f-75e0-abc0-9206ace73e34",
+   "8000": "01a1fc98-6359-708e-b7c7-65abe8d1c59a"
   },
   "rig": "01a1fc91-038b-732f-988e-0de7cd66b890",
   "rig_credits": 5,
@@ -561,6 +582,8 @@
      56,
      313
     ],
+    "credits": 12,
+    "size": 64979392,
     "task": "01a1fc93-af77-7317-9f28-1f1823d5a39d"
    }
   }
@@ -732,6 +755,8 @@
   }
  },
  "pendant": {
+  "credits": 40,
+  "expires_at": 1795498193468,
   "image": "masters/v28.0/props/refs/pendant-2k.png",
   "image_to_3d": "01a1fc8e-fd2b-75c1-aeab-74f705aad981",
   "settings": {
@@ -751,6 +776,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 43437228
   }
  },
  "planter": {
@@ -1159,6 +1187,8 @@
   }
  },
  "tablelamp": {
+  "credits": 40,
+  "expires_at": 1795498149925,
   "image": "masters/v28.0/props/refs/tablelamp-2k.png",
   "image_to_3d": "01a1fc8e-f321-728c-8d68-01c1e6e54568",
   "settings": {
@@ -1178,6 +1208,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 60182784
   }
  },
  "threadreel": {
