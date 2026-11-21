@@ -981,7 +981,8 @@
         const L = st.prai[0], w = fsW(L.x, L.z);
         if (name === 'labBall') fsBallStart({ x: L.x, z: L.z, id: L.id }, 0);
         else if (name === 'labLand') fsEvents([{ e: 'land', result: 'chased', id: L.id, x: L.x, z: L.z }]);
-        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
+        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
+          fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
         else if (name === 'labBind') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
         else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
         else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
