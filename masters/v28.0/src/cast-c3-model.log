@@ -1,0 +1,11 @@
+started image-to-3d naga 01a1fc90-b6dc-70c1-9c1c-ad305f4c94e0
+  naga IN_PROGRESS 1%
+  naga IN_PROGRESS 9%
+  naga IN_PROGRESS 28%
+  naga IN_PROGRESS 45%
+  naga IN_PROGRESS 58%
+  naga IN_PROGRESS 67%
+  naga IN_PROGRESS 80%
+  naga IN_PROGRESS 99%
+  naga SUCCEEDED 100%
+done naga {'glb': 83541016} credits 40

@@ -1,0 +1,18 @@
+started image-to-3d praiheavy 01a1fc8b-80bc-723b-8505-e3d007aa632d
+started image-to-3d praihide 01a1fc8b-8ca7-764e-8370-fe37005134b2
+started image-to-3d collector 01a1fc8b-97ee-769f-8405-f6fe1b075529
+  praiheavy IN_PROGRESS 1%
+  praiheavy IN_PROGRESS 9%
+  praiheavy IN_PROGRESS 27%
+  praiheavy IN_PROGRESS 31%
+  praiheavy IN_PROGRESS 45%
+  praiheavy IN_PROGRESS 53%
+  praiheavy IN_PROGRESS 58%
+  praiheavy IN_PROGRESS 80%
+  praiheavy IN_PROGRESS 99%
+  praiheavy SUCCEEDED 100%
+done praiheavy {'glb': 24524200, 'pre': 4385984} credits 40
+  praihide SUCCEEDED 100%
+done praihide {'glb': 27353500, 'pre': 6234228} credits 40
+  collector SUCCEEDED 100%
+done collector {'glb': 56828976, 'pre': 8123508} credits 40

@@ -1,0 +1,10 @@
+started rig koh 01a1fc91-038b-732f-988e-0de7cd66b890
+  rig koh IN_PROGRESS 0%
+  rig koh IN_PROGRESS 42%
+  rig koh IN_PROGRESS 84%
+  rig koh IN_PROGRESS 90%
+  rig koh SUCCEEDED 100%
+rig done koh {'rigged': 61436248, 'walk': 61677716}
+body identical to masters/v28.0/src/rigged-koh.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v28.0/src/takes-koh-walking.glb 98488 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

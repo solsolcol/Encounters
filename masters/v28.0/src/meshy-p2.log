@@ -1,0 +1,39 @@
+started image-to-3d bagtied 01a1fc89-c7f1-746c-817f-082c609a9841
+started image-to-3d padcase 01a1fc89-dc17-76d9-b5ec-da3652162588
+started image-to-3d shoecab 01a1fc89-f63c-7281-a400-846b00e3b4a0
+started image-to-3d oldchair 01a1fc8a-0d6c-7574-bd32-ec61b717f48a
+started image-to-3d grating 01a1fc8a-22ff-7105-9fa2-0f7d0cd2f89f
+started image-to-3d gate 01a1fc8a-39e9-73b2-ab66-ced6f82d92d5
+started image-to-3d planter 01a1fc8a-497a-74b8-beb8-9b277b68b44d
+  bagtied IN_PROGRESS 28%
+  bagtied IN_PROGRESS 32%
+  bagtied IN_PROGRESS 36%
+  bagtied IN_PROGRESS 40%
+  bagtied IN_PROGRESS 44%
+  bagtied IN_PROGRESS 45%
+  bagtied IN_PROGRESS 58%
+  bagtied IN_PROGRESS 80%
+  bagtied IN_PROGRESS 99%
+  bagtied SUCCEEDED 100%
+done bagtied {'glb': 62826856} credits 40
+  padcase IN_PROGRESS 53%
+  padcase IN_PROGRESS 58%
+  padcase IN_PROGRESS 80%
+  padcase IN_PROGRESS 99%
+  padcase SUCCEEDED 100%
+done padcase {'glb': 79752616} credits 40
+  shoecab SUCCEEDED 100%
+done shoecab {'glb': 69824984} credits 40
+  oldchair SUCCEEDED 100%
+done oldchair {'glb': 70660192} credits 40
+  grating SUCCEEDED 100%
+done grating {'glb': 80793428} credits 40
+  gate SUCCEEDED 100%
+done gate {'glb': 74846828} credits 40
+  planter IN_PROGRESS 45%
+  planter IN_PROGRESS 58%
+  planter IN_PROGRESS 67%
+  planter IN_PROGRESS 80%
+  planter IN_PROGRESS 99%
+  planter SUCCEEDED 100%
+done planter {'glb': 97730048} credits 40

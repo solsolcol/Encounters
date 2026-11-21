@@ -1,0 +1,14 @@
+started animation koh lib 01a1fc93-af77-7317-9f28-1f1823d5a39d
+  anim koh lib IN_PROGRESS 1%
+  anim koh lib IN_PROGRESS 81%
+  anim koh lib IN_PROGRESS 84%
+  anim koh lib IN_PROGRESS 88%
+  anim koh lib IN_PROGRESS 92%
+  anim koh lib IN_PROGRESS 95%
+  anim koh lib SUCCEEDED 100%
+animation done koh lib 64979392
+a re-export of masters/v28.0/src/rigged-koh.glb: 66 bones at the same rest pose in the world, 312947 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v28.0/src/takes-koh-lib.glb 903788 bytes ["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Hands_Open (198 ch, 3.97 s)"]
+koh lib strip exit 0
+koh lib done

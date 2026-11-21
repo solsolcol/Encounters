@@ -1,0 +1,57 @@
+masters/v28.0/src/takes-koh-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v28.0/src/merged-koh.glb 21294136 bytes
+["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Hands_Open (198 ch, 3.97 s)","Walking (132 ch, 1.03 s)"]
+calmarms masters/v28.0/src/merged-koh.glb: the body's left 1.00,0.00,0.00, its face -0.00,0.00,1.00
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 8.5..14.1; swing -5.8..3.9 -> -5.8..3.9 | Right out 12.6..22.0 (mean 17.4) -> 9.1..14.8; swing -5.3..2.8 -> -5.3..2.8
+  Stand_and_Chat: Left out 4.1..24.5 (mean 16.1) -> 0.0..20.4; swing -9.4..34.1 -> -9.4..34.1 | Right out 3.6..22.6 (mean 12.9) -> 2.7..21.7; swing -25.6..-1.0 -> -25.6..-1.0
+  Listening_Gesture: Left out 7.7..27.5 (mean 14.8) -> 4.9..24.7; swing -18.8..18.5 -> -18.8..18.5 | Right out 4.4..18.4 (mean 11.5) -> 4.9..19.0; swing -16.4..3.4 -> -16.4..3.4
+  Walking: Left out 7.1..25.1 (mean 16.1) -> 7.5..16.5; swing -25.4..30.0 -> -17.8..21.0 | Right out 8.9..30.5 (mean 19.2) -> 6.9..17.7; swing -23.8..28.1 -> -16.6..19.7
+wrote masters/v28.0/src/merged-koh.glb
+  fins: 7 triangles hanging from the body by one edge taken out (7.5 mm2 in all, the largest 2.2 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1), Accessor (8)
+  33227 vertices in 20720 positions; 10099 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 33227 points joined into 20720 places; 41426 triangles
+  repaint [   0.0s] the face 2787 triangles, the rest of the head 3003, the hands 4170, the body 31466 (looking [0.0, 0.0, 1.0])
+  repaint [   4.1s] xatlas: 761 charts, 70% of the square used
+  repaint [   6.2s] packed again: 761 charts in a 3456x3464 square drawn at 2048 (71% used), a margin of 3.5 pixels at 2048
+  repaint [   7.1s] 2 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (2, 0 of them laid back whole in the chart round them, 2 at one point); together 20.2 mm2 of the body, the largest 13.348 mm2 with an edge of 6.34 mm
+  repaint [   7.1s] texels a metre at 2048, before -> now: face 1247 -> 2071, head 1090 -> 1557, hands 1677 -> 989, body 947 -> 772; 761 charts, margin 3.5 px; 2 unplaced corners mended
+  repaint [   7.2s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  12.1s] baked
+  repaint [  12.1s] written
+  repaint: 33227 points -> 39116 (5889 copied along the new seams), 41426 triangles; texels a metre at 2048, before -> now: face 1247 -> 2071, head 1090 -> 1557, hands 1677 -> 989, body 947 -> 772; 761 charts, margin 3.5 px; 2 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5koh.glb: tris 41433 -> 41426, 5 takes, 1915 KB
+  fins: 4 triangles hanging from the body by one edge taken out (61.5 mm2 in all, the largest 39.8 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1)
+  10599 vertices in 4168 positions; 6378 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 10599 points joined into 4168 places; 8328 triangles
+  repaint [   0.0s] the face 580 triangles, the rest of the head 570, the hands 850, the body 6328 (looking [0.0, 0.0, 1.0])
+  repaint [   0.5s] xatlas: 268 charts, 69% of the square used
+  repaint [   0.9s] packed again: 268 charts in a 1732x1701 square drawn at 1024 (73% used), a margin of 2.4 pixels at 1024
+  repaint [   0.9s] texels a metre at 1024, before -> now: face 606 -> 1032, head 550 -> 781, hands 811 -> 504, body 455 -> 389; 268 charts, margin 2.4 px
+  repaint [   0.9s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.8s] baked
+  repaint [   7.8s] written
+  repaint: 10599 points -> 11735 (1136 copied along the new seams), 8328 triangles; texels a metre at 1024, before -> now: face 606 -> 1032, head 550 -> 781, hands 811 -> 504, body 455 -> 389; 268 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5kohm.glb: tris 8332 -> 8328, 0 takes, 402 KB
+  fins: 6 triangles hanging from the body by one edge taken out (4.0 mm2 in all, the largest 3.7 mm2, if the file is in metres); edges of one triangle left: 4
+prune: Removed types... Texture (2), Accessor (1)
+  189699 vertices in 156473 positions; 24046 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.1s] 189699 points joined into 156473 places; 312941 triangles
+  repaint [   0.4s] the face 18509 triangles, the rest of the head 21281, the hands 29499, the body 243652 (looking [0.0, 0.0, 1.0])
+  repaint [ 122.7s] xatlas: 2201 charts, 70% of the square used
+  repaint [ 127.7s] packed again: 2201 charts in a 3576x3506 square drawn at 2048 (74% used), a margin of 3.4 pixels at 2048
+  repaint [ 134.6s] 5 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (5, 0 of them laid back whole in the chart round them, 5 at one point); together 4.9 mm2 of the body, the largest 2.059 mm2 with an edge of 3.05 mm
+  repaint [ 134.7s] texels a metre at 2048, before -> now: face 1215 -> 2050, head 1210 -> 1489, hands 1673 -> 959, body 968 -> 746; 2201 charts, margin 3.4 px; 5 unplaced corners mended
+  repaint [ 135.1s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 146.1s] baked
+  repaint [ 146.1s] written
+  repaint: 189699 points -> 219671 (29972 copied along the new seams), 312941 triangles; texels a metre at 2048, before -> now: face 1215 -> 2050, head 1210 -> 1489, hands 1673 -> 959, body 968 -> 746; 2201 charts, margin 3.4 px; 5 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5kohh.glb: tris 312947 -> 312941, 0 takes, 4083 KB

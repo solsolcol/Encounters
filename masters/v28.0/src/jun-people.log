@@ -1,0 +1,55 @@
+masters/v28.0/src/takes-jun-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v28.0/src/merged-jun.glb 12418156 bytes
+["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Right_Hand_Open (198 ch, 3.73 s)","Walking (132 ch, 1.03 s)"]
+calmarms masters/v28.0/src/merged-jun.glb: the body's left 1.00,0.00,0.00, its face -0.00,0.00,1.00
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 2.5..8.1; swing -5.7..4.0 -> -5.7..4.0 | Right out 12.6..21.9 (mean 17.4) -> 3.1..8.7; swing -5.2..2.9 -> -5.2..2.9
+  Stand_and_Chat: Left out 3.9..24.4 (mean 15.9) -> -5.0..15.5; swing -9.3..34.5 -> -9.3..34.5 | Right out 3.6..22.8 (mean 13.0) -> -2.4..16.8; swing -25.4..-0.6 -> -25.4..-0.6
+  Listening_Gesture: Left out 7.8..27.5 (mean 14.8) -> 0.0..19.7; swing -18.6..18.9 -> -18.6..18.9 | Right out 4.5..18.5 (mean 11.5) -> 0.0..14.0; swing -16.2..4.0 -> -16.2..4.0
+  Walking: Left out 7.1..24.6 (mean 15.9) -> 2.6..11.3; swing -25.3..30.2 -> -17.7..21.2 | Right out 8.9..30.2 (mean 19.0) -> 1.9..12.6; swing -23.6..28.4 -> -16.5..19.9
+wrote masters/v28.0/src/merged-jun.glb
+  fins: 1 triangles hanging from the body by one edge taken out (39.2 mm2 in all, the largest 39.2 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1), Accessor (8)
+  29373 vertices in 20805 positions; 5882 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 29373 points joined into 20805 places; 41604 triangles
+  repaint [   0.0s] the face 2004 triangles, the rest of the head 3226, the hands 4286, the body 32088 (looking [0.0, 0.0, 1.0])
+  repaint [   5.6s] xatlas: 441 charts, 68% of the square used
+  repaint [   7.6s] packed again: 441 charts in a 3347x3403 square drawn at 2048 (70% used), a margin of 3.6 pixels at 2048
+  repaint [   7.6s] texels a metre at 2048, before -> now: face 1339 -> 2222, head 1208 -> 1757, hands 2127 -> 1058, body 979 -> 839; 441 charts, margin 3.6 px
+  repaint [   7.7s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  15.3s] baked
+  repaint [  15.3s] written
+  repaint: 29373 points -> 33970 (4597 copied along the new seams), 41604 triangles; texels a metre at 2048, before -> now: face 1339 -> 2222, head 1208 -> 1757, hands 2127 -> 1058, body 979 -> 839; 441 charts, margin 3.6 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5jun.glb: tris 41605 -> 41604, 5 takes, 1567 KB
+  fins: 0 triangles hanging from the body by one edge taken out (0.0 mm2 in all, the largest 0.0 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1)
+  9384 vertices in 4163 positions; 4618 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 9384 points joined into 4163 places; 8322 triangles
+  repaint [   0.0s] the face 439 triangles, the rest of the head 571, the hands 984, the body 6328 (looking [0.0, 0.0, 1.0])
+  repaint [   0.5s] xatlas: 197 charts, 69% of the square used
+  repaint [   0.9s] packed again: 197 charts in a 1709x1718 square drawn at 1024 (70% used), a margin of 2.4 pixels at 1024
+  repaint [   1.0s] texels a metre at 1024, before -> now: face 651 -> 1091, head 615 -> 876, hands 1047 -> 533, body 468 -> 417; 197 charts, margin 2.4 px
+  repaint [   1.0s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.3s] baked
+  repaint [   7.3s] written
+  repaint: 9384 points -> 10511 (1127 copied along the new seams), 8322 triangles; texels a metre at 1024, before -> now: face 651 -> 1091, head 615 -> 876, hands 1047 -> 533, body 468 -> 417; 197 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5junm.glb: tris 8322 -> 8322, 0 takes, 336 KB
+  fins: 0 triangles hanging from the body by one edge taken out (0.0 mm2 in all, the largest 0.0 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (2), Accessor (1)
+  167519 vertices in 149192 positions; 10078 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.1s] 167519 points joined into 149192 places; 298380 triangles
+  repaint [   0.2s] the face 8611 triangles, the rest of the head 15977, the hands 11878, the body 261914 (looking [0.0, 0.0, 1.0])
+  repaint [ 187.2s] xatlas: 243 charts, 63% of the square used
+  repaint [ 191.0s] packed again: 243 charts in a 3415x3373 square drawn at 2048 (67% used), a margin of 3.6 pixels at 2048
+  repaint [ 191.4s] texels a metre at 2048, before -> now: face 1036 -> 2213, head 1069 -> 1737, hands 927 -> 993, body 1095 -> 839; 243 charts, margin 3.6 px
+  repaint [ 191.8s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 201.7s] baked
+  repaint [ 201.7s] written
+  repaint: 167519 points -> 177705 (10186 copied along the new seams), 298380 triangles; texels a metre at 2048, before -> now: face 1036 -> 2213, head 1069 -> 1737, hands 927 -> 993, body 1095 -> 839; 243 charts, margin 3.6 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5junh.glb: tris 298380 -> 298380, 0 takes, 2944 KB

@@ -1,0 +1,51 @@
+started image-to-3d liftpanel 01a1fc8f-7547-71d6-92b4-6cdd0f381399
+started image-to-3d dintable 01a1fc8f-7f2c-7147-af36-f8e71cc1fa79
+started image-to-3d sideboard 01a1fc8f-8a5b-70fe-92f7-370f4514c0d2
+started image-to-3d wallclock 01a1fc8f-94a8-70a2-bc72-7f404131a74d
+started image-to-3d frame 01a1fc8f-9fdb-7622-8644-77cc8e05076b
+started image-to-3d walllamp 01a1fc8f-a91e-74f8-abea-abad76c9052f
+started image-to-3d rail 01a1fc8f-b301-7536-99db-1e36dc235a0e
+started image-to-3d walklight 01a1fc8f-bc76-7340-87e0-6ee8f8b44183
+started image-to-3d slippers 01a1fc8f-cb81-71be-81af-0df7f3e51c92
+started image-to-3d duffel 01a1fc8f-db83-72c9-8c04-eacd23282d1d
+started image-to-3d cushion 01a1fc8f-e962-7679-bb2b-881f3d7f8754
+started image-to-3d altarshelf 01a1fc8f-f65f-7658-a87f-514606c11985
+started image-to-3d ceilfan 01a1fc8f-ff04-7239-ba54-a8f2507eee11
+  liftpanel IN_PROGRESS 30%
+  liftpanel IN_PROGRESS 45%
+  liftpanel IN_PROGRESS 58%
+  liftpanel IN_PROGRESS 67%
+  liftpanel IN_PROGRESS 80%
+  liftpanel IN_PROGRESS 99%
+  liftpanel SUCCEEDED 100%
+done liftpanel {'glb': 77138268} credits 40
+  dintable IN_PROGRESS 67%
+  dintable IN_PROGRESS 80%
+  dintable IN_PROGRESS 99%
+  dintable SUCCEEDED 100%
+done dintable {'glb': 67847008} credits 40
+  sideboard SUCCEEDED 100%
+done sideboard {'glb': 67502600} credits 40
+  wallclock SUCCEEDED 100%
+done wallclock {'glb': 70277588} credits 40
+  frame SUCCEEDED 100%
+done frame {'glb': 49483868} credits 40
+  walllamp SUCCEEDED 100%
+done walllamp {'glb': 64724664} credits 40
+  rail SUCCEEDED 100%
+done rail {'glb': 55683000} credits 40
+  walklight IN_PROGRESS 67%
+  walklight IN_PROGRESS 80%
+  walklight IN_PROGRESS 99%
+  walklight SUCCEEDED 100%
+done walklight {'glb': 62578772} credits 40
+  slippers SUCCEEDED 100%
+done slippers {'glb': 71662048} credits 40
+  duffel SUCCEEDED 100%
+done duffel {'glb': 79289244} credits 40
+  cushion SUCCEEDED 100%
+done cushion {'glb': 56328144} credits 40
+  altarshelf SUCCEEDED 100%
+done altarshelf {'glb': 64773272} credits 40
+  ceilfan SUCCEEDED 100%
+done ceilfan {'glb': 48341364} credits 40

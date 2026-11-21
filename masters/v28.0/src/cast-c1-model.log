@@ -1,0 +1,19 @@
+started image-to-3d koh 01a1fc8b-7fb4-75e8-b4db-bf32625994af
+started image-to-3d jun 01a1fc8b-89a7-7246-932c-a12ea04027dc
+started image-to-3d praicome 01a1fc8b-912f-7473-931f-b7f924bcdf7f
+  koh IN_PROGRESS 1%
+  koh IN_PROGRESS 9%
+  koh IN_PROGRESS 26%
+  koh IN_PROGRESS 30%
+  koh IN_PROGRESS 45%
+  koh IN_PROGRESS 53%
+  koh IN_PROGRESS 58%
+  koh IN_PROGRESS 80%
+  koh IN_PROGRESS 99%
+  koh SUCCEEDED 100%
+done koh {'glb': 57616492, 'pre': 9566388} credits 40
+  jun IN_PROGRESS 99%
+  jun SUCCEEDED 100%
+done jun {'glb': 29867764, 'pre': 7105664} credits 40
+  praicome SUCCEEDED 100%
+done praicome {'glb': 26985156, 'pre': 5956980} credits 40

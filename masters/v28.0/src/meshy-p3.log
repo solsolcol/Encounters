@@ -1,0 +1,35 @@
+started image-to-3d bagopen 01a1fc8b-a603-7275-a9bc-5b288672cca1
+started image-to-3d threadreel 01a1fc8b-b3d2-70bf-b00b-0f94f2758f47
+started image-to-3d staffwrap 01a1fc8b-c0a0-7150-b834-c3120da16ad5
+started image-to-3d clothtable 01a1fc8b-cca2-7791-8ba6-78fd709f814c
+started image-to-3d gatepost 01a1fc8b-d569-702c-95b8-b136f04c3b06
+started image-to-3d sofa 01a1fc8b-dea5-7450-9a41-841626d1c37b
+started image-to-3d lowtable 01a1fc8b-e85c-70cb-951a-33e9ad65511c
+  bagopen IN_PROGRESS 9%
+  bagopen IN_PROGRESS 25%
+  bagopen IN_PROGRESS 29%
+  bagopen IN_PROGRESS 33%
+  bagopen IN_PROGRESS 36%
+  bagopen IN_PROGRESS 40%
+  bagopen IN_PROGRESS 44%
+  bagopen IN_PROGRESS 45%
+  bagopen IN_PROGRESS 53%
+  bagopen IN_PROGRESS 58%
+  bagopen IN_PROGRESS 67%
+  bagopen IN_PROGRESS 80%
+  bagopen IN_PROGRESS 99%
+  bagopen SUCCEEDED 100%
+done bagopen {'glb': 63568872} credits 40
+  threadreel IN_PROGRESS 99%
+  threadreel SUCCEEDED 100%
+done threadreel {'glb': 75782124} credits 40
+  staffwrap SUCCEEDED 100%
+done staffwrap {'glb': 46064552} credits 40
+  clothtable SUCCEEDED 100%
+done clothtable {'glb': 29194684} credits 40
+  gatepost SUCCEEDED 100%
+done gatepost {'glb': 58961496} credits 40
+  sofa SUCCEEDED 100%
+done sofa {'glb': 47866864} credits 40
+  lowtable SUCCEEDED 100%
+done lowtable {'glb': 71135200} credits 40

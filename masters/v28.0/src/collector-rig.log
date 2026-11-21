@@ -1,0 +1,10 @@
+started rig collector 01a1fc91-02bc-75e4-be62-e33736ce19b7
+  rig collector IN_PROGRESS 0%
+  rig collector IN_PROGRESS 47%
+  rig collector IN_PROGRESS 84%
+  rig collector IN_PROGRESS 90%
+  rig collector SUCCEEDED 100%
+rig done collector {'rigged': 60407052, 'walk': 60559968}
+body identical to masters/v28.0/src/rigged-collector.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (106)
+wrote masters/v28.0/src/takes-collector-walking.glb 76640 bytes ["Armature|walking_man|baselayer (104 ch, 1.03 s)"]

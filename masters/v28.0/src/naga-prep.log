@@ -1,0 +1,42 @@
+  remesh naga 60000 IN_PROGRESS 1%
+  remesh naga 60000 IN_PROGRESS 35%
+  remesh naga 60000 IN_PROGRESS 60%
+  remesh naga 60000 IN_PROGRESS 89%
+  remesh naga 60000 IN_PROGRESS 90%
+  remesh naga 60000 SUCCEEDED 100%
+remesh done naga 60000 110795736
+  CONTRACT: w 0.776  h 3.600  l 8.414 m (x -0.388..0.388, z -4.207..4.207)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy p5naga.glb: 62393 -> 62393 triangles; 105.7 MB -> 4657 KB
+{
+ "info": {
+  "size": [
+   0.7764876377274403,
+   3.600242449926072,
+   8.41374683380127
+  ],
+  "min": [
+   -0.38824381886372017,
+   -0.00012127264675187988,
+   -4.206873416900635
+  ],
+  "max": [
+   0.38824381886372017,
+   3.6001211772793202,
+   4.206873416900635
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 62393
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.388,0,-4.207],[0.388,3.6,4.207]],"size":[0.776,3.6,8.414]}
+errs []
+naga -> assets/p5naga.glb 4768840 bytes

@@ -1,0 +1,10 @@
+started rig jun 01a1fc91-039a-7060-84fa-95970f4620d2
+  rig jun IN_PROGRESS 0%
+  rig jun IN_PROGRESS 47%
+  rig jun IN_PROGRESS 84%
+  rig jun IN_PROGRESS 90%
+  rig jun SUCCEEDED 100%
+rig done jun {'rigged': 33257956, 'walk': 33499540}
+body identical to masters/v28.0/src/rigged-jun.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v28.0/src/takes-jun-walking.glb 98200 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

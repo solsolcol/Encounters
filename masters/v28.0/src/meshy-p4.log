@@ -1,0 +1,43 @@
+started image-to-3d staffcloth 01a1fc8e-c8c1-7269-b2ba-c2438a0031f6
+started image-to-3d planter2 01a1fc8e-d1d5-7726-8260-108a043ef304
+started image-to-3d tvconsole 01a1fc8e-e1a4-73f3-82d4-82b736c77302
+started image-to-3d floorlamp 01a1fc8e-eb3e-7421-8eeb-75c3217d5ed3
+started image-to-3d tablelamp 01a1fc8e-f321-728c-8d68-01c1e6e54568
+started image-to-3d pendant 01a1fc8e-fd2b-75c1-aeab-74f705aad981
+started image-to-3d curtain 01a1fc8f-0760-75f5-89b9-37cfcf3bf52d
+started image-to-3d dinchair 01a1fc8f-1445-7069-9053-bdb02674cfba
+started image-to-3d frontdoor 01a1fc8f-1cf1-770b-a7da-6899f9b03622
+  staffcloth IN_PROGRESS 25%
+  staffcloth IN_PROGRESS 29%
+  staffcloth IN_PROGRESS 33%
+  staffcloth IN_PROGRESS 36%
+  staffcloth IN_PROGRESS 40%
+  staffcloth IN_PROGRESS 44%
+  staffcloth IN_PROGRESS 45%
+  staffcloth IN_PROGRESS 53%
+  staffcloth IN_PROGRESS 58%
+  staffcloth IN_PROGRESS 67%
+  staffcloth IN_PROGRESS 99%
+  staffcloth SUCCEEDED 100%
+done staffcloth {'glb': 56968900} credits 40
+  planter2 IN_PROGRESS 45%
+  planter2 IN_PROGRESS 53%
+  planter2 IN_PROGRESS 58%
+  planter2 IN_PROGRESS 80%
+  planter2 IN_PROGRESS 99%
+  planter2 SUCCEEDED 100%
+done planter2 {'glb': 99723424} credits 40
+  tvconsole SUCCEEDED 100%
+done tvconsole {'glb': 50554292} credits 40
+  floorlamp SUCCEEDED 100%
+done floorlamp {'glb': 48735308} credits 40
+  tablelamp SUCCEEDED 100%
+done tablelamp {'glb': 60182784} credits 40
+  pendant SUCCEEDED 100%
+done pendant {'glb': 43437228} credits 40
+  curtain SUCCEEDED 100%
+done curtain {'glb': 57310564} credits 40
+  dinchair SUCCEEDED 100%
+done dinchair {'glb': 60653568} credits 40
+  frontdoor SUCCEEDED 100%
+done frontdoor {'glb': 62777444} credits 40

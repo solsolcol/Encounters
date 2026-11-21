@@ -1,0 +1,15 @@
+started animation jun lib 01a1fc93-23db-763b-be8e-f71d88f8f87a
+  anim jun lib IN_PROGRESS 1%
+  anim jun lib IN_PROGRESS 45%
+  anim jun lib IN_PROGRESS 83%
+  anim jun lib IN_PROGRESS 86%
+  anim jun lib IN_PROGRESS 90%
+  anim jun lib IN_PROGRESS 94%
+  anim jun lib IN_PROGRESS 95%
+  anim jun lib SUCCEEDED 100%
+animation done jun lib 36019176
+a re-export of masters/v28.0/src/rigged-jun.glb: 66 bones at the same rest pose in the world, 298380 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v28.0/src/takes-jun-lib.glb 892476 bytes ["Idle_3 (198 ch, 9.97 s)","Listening_Gesture (198 ch, 9.33 s)","Stand_and_Chat (198 ch, 5.17 s)","Talk_with_Right_Hand_Open (198 ch, 3.73 s)"]
+jun lib strip exit 0
+jun lib done
