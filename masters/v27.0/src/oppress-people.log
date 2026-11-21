@@ -1,0 +1,24 @@
+wrote masters/v27.0/src/merged-oppress.glb 30525108 bytes
+["cling (132 ch, 7.97 s)","oturn (132 ch, 4.97 s)","claw (132 ch, 4.97 s)","cry (132 ch, 4.97 s)","torn (132 ch, 2.97 s)"]
+calmarms masters/v27.0/src/merged-oppress.glb: the body's left 1.00,0.00,-0.01, its face 0.01,0.00,1.00
+  Idle_3: not in this file (left out)
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+wrote masters/v27.0/src/merged-oppress.glb
+  skin weights: 39356 vertices in 15392 positions over 65 joints, 24 diffusion passes; 6992 vertices' main weight moved
+prune: Removed types... Texture (1)
+  39356 vertices in 15392 positions; 23124 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 39356 points joined into 15392 places; 30975 triangles
+  repaint [   0.0s] the face 976 triangles, the rest of the head 960, the hands 2002, the body 27037 (looking [-0.0, 0.0, 1.0])
+  repaint [   3.6s] xatlas: 1300 charts, 74% of the square used
+  repaint [   4.2s] packed again: 1300 charts in a 1239x1238 square drawn at 1024 (78% used), a margin of 2.5 pixels at 1024
+  repaint [   4.2s] 4 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (4)
+  repaint [   4.2s] texels a metre at 1024, before -> now: face 495 -> 911, head 446 -> 726, hands 551 -> 472, body 444 -> 346; 1300 charts, margin 2.5 px; 4 unplaced corners mended
+  repaint [   4.3s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.7s] baked
+  repaint [   7.7s] written
+  repaint: 39356 points -> 43332 (3976 copied along the new seams), 30975 triangles; texels a metre at 1024, before -> now: face 495 -> 911, head 446 -> 726, hands 551 -> 472, body 444 -> 346; 1300 charts, margin 2.5 px; 4 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4oppress.glb: tris 30975 -> 30975, 5 takes, 1402 KB

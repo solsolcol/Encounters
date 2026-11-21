@@ -1,0 +1,148 @@
+  motion oppress torn IN_PROGRESS 1%
+  motion oppress claw IN_PROGRESS 1%
+  motion oppress cling IN_PROGRESS 1%
+  motion oppress oturn IN_PROGRESS 1%
+  motion oppress cry IN_PROGRESS 1%
+  motion oppress torn IN_PROGRESS 36%
+  motion oppress claw IN_PROGRESS 42%
+  motion oppress cling IN_PROGRESS 42%
+  motion oppress oturn IN_PROGRESS 42%
+  motion oppress cry IN_PROGRESS 42%
+  motion oppress claw IN_PROGRESS 84%
+  motion oppress torn IN_PROGRESS 79%
+  motion oppress cling IN_PROGRESS 84%
+  motion oppress oturn IN_PROGRESS 84%
+  motion oppress cry IN_PROGRESS 84%
+  motion oppress claw SUCCEEDED 100%
+  motion oppress torn IN_PROGRESS 90%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion oppress oturn SUCCEEDED 100%
+  motion oppress cling IN_PROGRESS 95%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion oppress cry IN_PROGRESS 90%
+  motion oppress torn SUCCEEDED 100%
+  motion oppress cling SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion oppress cry SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+oppress t2m done
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'cling'
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'oturn'
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'claw'
+refetched oppress cry 79341136
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-cry.glb 318632 bytes ["retarget_clip (132 ch, 4.97 s)"]
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'torn'
+  motion oppress cling IN_PROGRESS 1%
+  motion oppress oturn IN_PROGRESS 1%
+  motion oppress claw IN_PROGRESS 1%
+  motion oppress torn IN_PROGRESS 1%
+  motion oppress oturn IN_PROGRESS 42%
+  motion oppress cling IN_PROGRESS 47%
+  motion oppress claw IN_PROGRESS 42%
+  motion oppress torn IN_PROGRESS 42%
+  motion oppress claw IN_PROGRESS 84%
+  motion oppress cling IN_PROGRESS 84%
+  motion oppress torn IN_PROGRESS 84%
+  motion oppress oturn IN_PROGRESS 84%
+  motion oppress claw SUCCEEDED 100%
+  motion oppress cling IN_PROGRESS 90%
+  motion oppress torn SUCCEEDED 100%
+  motion oppress oturn SUCCEEDED 100%
+motion done oppress claw 79341168
+motion done oppress oturn 79341132
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-claw.glb 318632 bytes ["retarget_clip (132 ch, 4.97 s)"]
+oppress claw strip exit 0
+motion done oppress torn 79075060
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-oturn.glb 318632 bytes ["retarget_clip (132 ch, 4.97 s)"]
+oppress oturn strip exit 0
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-torn.glb 206528 bytes ["retarget_clip (132 ch, 2.97 s)"]
+oppress torn strip exit 0
+  motion oppress cling SUCCEEDED 100%
+motion done oppress cling 79739852
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-cling.glb 486556 bytes ["retarget_clip (132 ch, 7.97 s)"]
+oppress cling strip exit 0
+oppress t2m done

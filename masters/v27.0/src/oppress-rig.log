@@ -1,0 +1,10 @@
+started rig oppress 01a1eb75-4ce2-70c7-99b3-58a83b928a50
+  rig oppress IN_PROGRESS 0%
+  rig oppress IN_PROGRESS 47%
+  rig oppress IN_PROGRESS 84%
+  rig oppress IN_PROGRESS 90%
+  rig oppress SUCCEEDED 100%
+rig done oppress {'rigged': 78576744, 'walk': 78817884}
+body identical to masters/v27.0/src/rigged-oppress.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-oppress-walking.glb 98248 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

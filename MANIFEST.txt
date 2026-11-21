@@ -1103,3 +1103,12 @@ cded4a284a39f3ab66362002b24a2c099545b26fbfccb1dbc48c3f2557d9f9d3  masters/v27.0/
 af4374852733e5d197e76de3a4786e4439e411d6fc3c17e607b601097a3d977d  masters/v27.0/src/motion-rush.fbx
 101e370af001bc515e01b519d19ae51a136646dfd2018d25719c5dc44a34d8a5  masters/v27.0/src/motion-scream.fbx
 a79a313d619efdb733e753865ae5263c37a8c175c78eda5fd751909f279de1f4  masters/v27.0/src/motion-steps.fbx
+b6fc25eafca9665b13d8042577846f34a7da855d36221e8bfcba489a4bf3cde8  masters/v27.0/src/motion-struggle.fbx
+0ff139ea551415c195553ec6db7e8ecfe9c168769774c715a0c7eaf62f147e4d  masters/v27.0/src/motion-torn.fbx
+ccfbdc93ecfb2cf525d19b3febc1ca035b7f1231734e924b18cf023590d4f82a  masters/v27.0/src/motion-trance.fbx
+c5cd563a10e232a76ae3432abc5eef7a9a74552dd8244ccfe59a4128c6b6ba93  masters/v27.0/src/motion-wsit.fbx
+6ec3c96e3bc782819abf63eb35fce12a04a0d7e25711194178ceb60a0c997adc  masters/v27.0/src/motion-wturn.fbx
+9ec3e711ce157c8e34523facb2b354038b4e155707e8b1ed21abcba96d4ca1e7  masters/v27.0/src/oppress-bodies.log
+47ab1c96e85eba64ad3e971718058a8acdc743fb5976fbb099bdff444160ddd2  masters/v27.0/src/oppress-people.log
+0d4250d373cbf6b90ae6c8caf4040bf11e14d7eaf0768760bc0496b6c8460f51  masters/v27.0/src/oppress-rig.log
+b58a235dd22a8f7d33852e99f22d755ef721581bcb1b9ffeb9cb484243a1a43b  masters/v27.0/src/oppress-takes.log
