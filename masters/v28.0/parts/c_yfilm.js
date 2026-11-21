@@ -285,9 +285,9 @@
          the glow stand aside, so a dim Naga hides nothing drawn after it), uNT its clock */
       const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
-                  uNDeep: { value: new THREE.Color(0x48040f) }, uNCol: { value: new THREE.Color(0xc2102e) }, uNRim: { value: new THREE.Color(0xff5c74) },
-                  uNGlowC: { value: new THREE.Color(0xff1e3c) }, uNGold: { value: new THREE.Color(0xffc860) },
-                  uNLook: { value: new THREE.Vector4(0.74, 2.4, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
+                  uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
+                  uNGlowC: { value: new THREE.Color(0xff1030) }, uNGold: { value: new THREE.Color(0xffc860) },
+                  uNLook: { value: new THREE.Vector4(0.82, 2.6, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
       /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
          so the nearest surface and the body are the same depths to the bit */
@@ -330,14 +330,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   nCol = mix(nCol, uNRim, nFr);
   /* his light: gold on the faces turned to his shoulders, near him, and nowhere else */
   vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
-  float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.6, 2.6, nDl));
-  nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.6));
+  float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.5, 2.0, nDl));
+  nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.3));
   gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`;
       /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
       SH5.glow = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nK = clamp(-dot(nN, nV), 0.0, 1.0);
   vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
-  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.45 * nGk, 0.0, 0.45)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.25 * nGk, 0.0, 0.25)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
       function nagaMat(kind) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
           depthWrite: kind === 'depth', colorWrite: kind !== 'depth',

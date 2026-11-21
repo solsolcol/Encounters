@@ -4242,11 +4242,26 @@ function weaponSetup(decl) {
 /* v27.0: the fire button's icon carries the water's colour (Chad's gold): the page reads --sp, and the ring takes it */
 function sprayHudSync() {
   const fb = $('fireBtn'); if (!fb) return;
-  if (sprayCol == null) { fb.style.removeProperty('--sp'); fb.style.removeProperty('border-color'); fb.style.removeProperty('box-shadow'); return; }
+  if (sprayCol == null) { fb.style.removeProperty('--sp'); fb.style.removeProperty('--wg'); fb.style.removeProperty('border-color'); fb.style.removeProperty('box-shadow'); return; }
   const c = new THREE.Color(sprayCol), r = Math.round(c.r * 255), g = Math.round(c.g * 255), b = Math.round(c.b * 255);
   fb.style.setProperty('--sp', `rgb(${r},${g},${b})`);
+  fb.style.setProperty('--wg', `${r},${g},${b}`);           // (seam 67: the glow round the button takes the water's colour)
   fb.style.setProperty('border-color', `rgba(${r},${g},${b},.8)`);
   fb.style.setProperty('box-shadow', `0 0 24px rgba(${r},${g},${b},.42),0 2px 14px rgba(0,0,0,.5)`);
+}
+/* v27.0 · THE SIXTY-SEVENTH SEAM: THE FIRE BUTTON GLOWS AND BREATHES (kit.weaponGlow). Chad, 21 Nov 2026 (R140): "make the
+   spray water button more obvious, add a glow and a slight expand and contract breathing effect to the spray water
+   button". kit.weaponGlow(true) asks for it while the chapter says (episode 4 chapter 4: its fight), kit.weaponGlow(false)
+   takes it off, and so do kitReset and the weapon's teardown. The page draws it (shell.html body.wpnGlow): a soft light
+   round the button, in the water's colour (the gold in the gold: --wg), and the button a little larger and back, slowly,
+   only while it is drawn and can be pressed (never refused, never under a window or a film). Refused with no weapon.
+   Never asked, the button is exactly as it was (episode 2's rifle never asks) */
+let wpnGlowOn = false;
+function kitWeaponGlow(on) {
+  if (on && !weaponDecl) return false;
+  wpnGlowOn = !!on;
+  document.body.classList.toggle('wpnGlow', wpnGlowOn);
+  return true;
 }
 function weaponTeardown() {
   /* v27.0: his own hands given back and the bowl let go FIRST, while the declaration still says which pose was the
@@ -4260,6 +4275,7 @@ function weaponTeardown() {
   weaponPropDrop();
   ownObj = null; ownHold = {}; ownFor = null; ownAnim = null; ownSprayDrop(); weaponWordsSet(null);
   document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo', 'wpnNoAim', 'wpnNoReload', ...WPN_ICONS.map(k => 'wpnIco-' + k));
+  kitWeaponGlow(false);                 // (seam 67: no weapon, no glow)
   weaponAvailSync();
 }
 function weaponPropLoad(key) {
@@ -7960,6 +7976,8 @@ function kitReset() {
   tagReset();                            // v28.0 (seam 60): no tag mode left open, its boom exactly zero, its declaration re-read
   cbtnReset();                           // v28.0 (seam 61): no button of the last chapter's own
   retryClose();                          // v28.0 (seam 65): nor a retry card
+  losePt = null; loseAgain = null;       // v27.0 (seam 66): nor a held point: a fight is held again only when this run reaches it
+  kitWeaponGlow(false);                  // v27.0 (seam 67): nor the water's button glowing
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
   kitHold(null);                         // v21.0: nor with something still in his hand
@@ -8942,6 +8960,8 @@ const KIT = {
       if (own.core) own.core.material.size = own.pts.material.size * 1.15; }
     sprayHudSync(); return true; },                // v27.0: the water's colour (Chad's gold) and its drops' size; null gives them back
   lose: (o) => { if (state !== 'play' || fainting || cine) return false; lose(o && typeof o === 'object' ? o : {}); return true; },   // v27.0: the fifty-third seam — the chapter loses the run itself
+  losePoint: kitLosePoint,         // v27.0: the sixty-sixth seam — the run held where a loss begins again (kit.lose({ resume: true })); null lets it go
+  weaponGlow: kitWeaponGlow,       // v27.0: the sixty-seventh seam — the fire button glowing and breathing while the chapter says (its fight)
   /* v27.0: a stat READ, never a write (kit.award writes): a chapter whose price must stop short of a floor (the holy-water
      fight takes his nerve, never his consciousness) reads where it stands. Unknown names answer null */
   stat: k => (Object.prototype.hasOwnProperty.call(stats, k) ? stats[k] : null),
@@ -12357,6 +12377,28 @@ const SAVE_KEY = 'mz.encounters.checkpoint';
 
 const SAVE_V = 2;                  // v1 (v3.5) still loads: no `at`, no `done`
 
+/* ══ v27.0 · THE SIXTY-SIXTH SEAM: A LOSS THAT BEGINS AGAIN AT THE CHAPTER'S HELD POINT (kit.losePoint) ══════════════════
+   Chad, 21 Nov 2026 (R139): "if the player loses the holy water fight, instead of restarting the entire chapter again,
+   have it restart at the start of the holy water fight"; and (R144) never a start skipped, never a player stuck there.
+   kit.losePoint() HOLDS THE RUN as it stands now (a deep copy of worldState() and where he stands, for this chapter only),
+   and while it is held every save writes it (the autosave too: a tab closed in the middle of the fight comes back at the
+   fight's start, with its start's stats and earnings; the tag mode's hold is older and comes first, a minigame's younger
+   and comes after). A loss that asks for it, kit.lose({ resume: true }), keeps it as the save and lets the card's Retry
+   begin there (restartHeld: everything restart() puts back, then the held run, as a reload's Continue lays it on), with a
+   second button beside it, Restart chapter, that begins the chapter from its start as Retry always did.
+   kit.losePoint(null) lets it go and saves the live run at once; kitReset (a restart, a Continue, New game, the selector,
+   any change of chapter) and finish() let it go too, so it never outlives the run that reached it, and a fresh build
+   never has one. Never asked, every save, loss and card is as it was */
+let losePt = null, loseAgain = null;
+function kitLosePoint(o) {
+  if (o === null || o === false) { const had = !!losePt; losePt = null; if (had) autosave(true); return true; }
+  if (state !== 'play' || cine || fainting) return false;
+  losePt = { ch: CH_KEY, st: JSON.parse(JSON.stringify(worldState())),
+             at: { x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y } };
+  autosave(true);                  // (the save is the held run from its first moment)
+  return true;
+}
+
 /* `extra` carries what worldState() has no business knowing — where the
    player was standing, whether the chapter is sealed — and can override the
    stats, which the faint path needs (it writes the chapter's STARTING stats,
@@ -12381,8 +12423,11 @@ function checkpointData(extra) {
     /* v28.0 (seam 60): THE TAG MODE HOLDS THE SAVE as the run stood when it opened, until it is left — its hold is older
        than any minigame opened inside it, so it comes first */
     const heldT = !!tag.save0 && !(extra && 'at' in extra);
-    const held = !heldT && ev && ev.save0 && !(extra && 'at' in extra);      // v24.0 (CP13): a minigame open is saved as it opened
-    const from = heldT ? tag.save0 : held ? ev.save0 : null;
+    /* v27.0 (seam 66): THE CHAPTER'S HELD POINT, while it holds one (its fight's start), after the tag mode's and before a
+       minigame's: a minigame opened inside the held fight would come back at the fight's start too */
+    const heldL = !heldT && !!losePt && losePt.ch === CH_KEY && !(extra && 'at' in extra);
+    const held = !heldT && !heldL && ev && ev.save0 && !(extra && 'at' in extra);      // v24.0 (CP13): a minigame open is saved as it opened
+    const from = heldT ? tag.save0 : heldL ? losePt : held ? ev.save0 : null;
     const at = (extra && 'at' in extra) ? extra.at : from ? { ...from.at } : {
       x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y
     };
@@ -15775,7 +15820,7 @@ creditsLayer?.addEventListener('click', e => {
 // every plain button answers with the same soft click (the mute button stays
 // silent — a click under a button that just silenced everything is a bug)
 for (const id of ['startBtn', 'creditsLink', 'credClose', 'stepBack',
-                  'nextBtn', 'againBtn', 'retryBtn', 'cineSkip']) {
+                  'nextBtn', 'againBtn', 'retryBtn', 'restartChBtn', 'cineSkip']) {   // (v27.0, seam 66: and the loss card's Restart chapter)
   $(id)?.addEventListener('click', () => snd('uiclick', 0.5));
 }
 
@@ -18149,7 +18194,34 @@ paintTitle();
   titleVideo = { el: vid, play: go };
 })();
 $('stepBack').onclick = () => dismissDecision();
-$('retryBtn').onclick = () => restart();
+/* v27.0 (seam 66): Retry begins again where the chapter held its fight (restartHeld), or the chapter from its start, as it
+   always did; the card's second button, Restart chapter, is always the start. Each only while the card is up and ready: a
+   second tap of the same press finds play and does nothing (it never falls through to the chapter's start), and a press
+   before the card's words are all there is no press */
+const overReady = b => state === 'lost' && !!b && !b.classList.contains('waiting') && !b.classList.contains('hide');
+$('retryBtn').onclick = () => {
+  if (!overReady($('retryBtn'))) return;
+  const h = loseAgain; loseAgain = null;
+  if (h) restartHeld(h); else restart();
+};
+$('restartChBtn') && ($('restartChBtn').onclick = () => {
+  if (!overReady($('restartChBtn'))) return;
+  loseAgain = null; restart();
+});
+/* v27.0 (seam 66): Retry after a loss of the chapter's held fight — everything restart() puts back, then the run as the
+   chapter held it (its stats, the bag, the phase, what play had earned, the worn piece's charge, where he stood), which is
+   the save again; the chapter reads its phase on its next frame, as it does after a reload's Continue. Up from black over
+   0.6 s, so nothing of the world the loss left is seen again */
+function restartHeld(h) {
+  restart();
+  applyState(JSON.parse(JSON.stringify(h.st)));
+  const at = h.at;
+  yaw.position.set(at.x, at.y, at.z); yaw.rotation.y = at.ry;
+  pitch.rotation.x = 0; camera.rotation.z = 0;
+  syncBars();
+  cineFadeEl.style.opacity = '1'; kitFadeNow = 1; kitFade = { from: 1, to: 0, t: 0, secs: 0.6 };
+  autosave(true);
+}
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 /* Continue on the sealed card. With a next chapter it ADVANCES — which is
    the same move finish() already recorded in the save, so the button and
@@ -18689,7 +18761,11 @@ function lose(o) {
      Retry does. Leaving the last autosave in place would instead drop the
      player back three seconds before it with two sanity left: both a cheat
      and a trap.                                                          */
-  saveCheckpoint({ at: null, stats: STATS_AT_START,
+  /* v27.0 (seam 66): a loss of the fight the chapter holds, when the loss asks for it, keeps the held run as the save (its
+     Retry begins there, and so does a Continue after a reload); every other loss puts the save at the chapter's start */
+  loseAgain = own && o.resume && losePt && losePt.ch === CH_KEY ? losePt : null;
+  if (loseAgain) saveCheckpoint();
+  else saveCheckpoint({ at: null, stats: STATS_AT_START,
                    ward: { charge: ward.enter, ep: ward.ep, enter: ward.enter } });   // v14.7: and the amulet's charge to what it held when the chapter began
   // the line goes down WITH him — cut anything mid-sentence first
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
@@ -18722,12 +18798,18 @@ function lose(o) {
     teach.closest('.teachbox').classList.add('veiled');
     const escT = v => String(v).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
     const teachHTML = own && o.teaching != null ? escT(o.teaching) : T('lost.teaching', teach.innerHTML);
-    runCardSequence([], teach, teachHTML, loseSpeech, $('retryBtn'));
+    /* v27.0 (seam 66): beside Retry, on a loss that begins again at the chapter's held point, the whole chapter again
+       (Restart chapter): shown with Retry, once the card is ready, and on no other loss */
+    const rc = $('restartChBtn');
+    if (rc) { rc.classList.toggle('hide', !loseAgain); rc.classList.add('waiting'); }
+    runCardSequence([], teach, teachHTML, loseSpeech, $('retryBtn')).then(() => {
+      if (rc && !$('retryBtn').classList.contains('waiting')) rc.classList.remove('waiting'); });
     document.exitPointerLock?.();
   });
 }
 
 function finish() {
+  losePt = null; loseAgain = null;          // v27.0 (seam 66): a finished chapter holds no fight to begin again
   const score = (Math.max(0, Math.min(100, stats.sanity)) * 0.3
     + Math.max(0, Math.min(100, stats.awareness)) * 0.3
     + Math.max(0, Math.min(100, stats.wisdom)) * 0.4);
@@ -19821,6 +19903,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  tagSave0: () => (tag.save0 ? JSON.parse(JSON.stringify(tag.save0)) : null),
                  vmPasses: () => vmPassN,
                  checkpointData: (extra) => checkpointData(extra),
+                 /* v27.0 (seams 66, 67): the chapter's held point and the card's pending Retry, and the fire button's glow, for probes */
+                 loseHold: () => (losePt ? { ch: losePt.ch, st: JSON.parse(JSON.stringify(losePt.st)), at: { ...losePt.at } } : null),
+                 loseAgainHeld: () => !!loseAgain, weaponGlowOn: () => wpnGlowOn,
                  buttons: () => [...cbtn.values()].map(b => ({ id: b.id, made: !!b.el, presses: b.presses, gone: b.gone,
                                                             shown: !!b.el && getComputedStyle(b.el).display !== 'none', top: b.el ? b.el.style.top : null })),
                  retryState: () => ({ open: rty.open, presses: rty.presses, state }),

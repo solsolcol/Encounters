@@ -1524,11 +1524,11 @@
          Each key [moment, out, up, on, tip, lean, shape]: 'strike' a fall into the paving under a take his act plays eased
          (the span slows to its top: the rest of the fall is sped to meet it), 'drive' a fall on a film's even clock */
       const MOVES = {
-        mage_soell_cast_7: { follow: 1, keys: [[0.45, -0.10, 0, 0, 0, 5], [0.66, -0.12, 0.05, 0.02, 0, 6], [0.95, -0.04, 0.15, 0.16, 20, 0], [1.30, -0.04, 0.14, 0.14, 18, 0], [2.00, -0.08, 0.04, 0.02, 0, 4], [2.20, -0.08, 0.04, 0, 0, 4]] },
-        Charged_Spell_Cast: { follow: 0, keys: [[0.50, 0, 0, 0, 0, 0], [0.80, -0.14, 0.10, 0.16, 0, 6], [1.55, -0.16, 0.12, 0.18, 0, 8], [1.88, -0.14, 0.26, 0.16, 0, 6],
-                                                [2.00, -0.12, 0, 0.14, 0, 0, 'strike'], [2.20, -0.12, 0, 0.14, 0, 0], [2.42, -0.06, 0.05, 0.07, 0, 0], [2.60, 0, 0, 0, 0, 0]] },
-        Charged_Spell_Cast_1: { follow: 0, plant: true, keys: null },
-        mage_soell_cast_8: { follow: 0, keys: [[0, 0, 0, 0, 0, 0]] }
+        mage_soell_cast_7: { follow: [1, 1, 1], keys: [[0.45, -0.10, 0.03, 0, 0, 5], [0.66, -0.12, 0.06, 0, 0, 6], [0.95, -0.04, 0.15, 0.10, 20, 0], [1.30, -0.04, 0.14, 0.08, 18, 0], [2.00, -0.08, 0.04, 0, 0, 4], [2.20, -0.08, 0.04, 0, 0, 4]] },
+        Charged_Spell_Cast: { follow: null, keys: [[0.50, -0.20, 0.04, 0.10, 0, 6], [0.80, -0.28, 0, 0.14, 0, 4], [1.55, -0.28, 0, 0.14, 0, 4], [1.88, -0.20, 0.24, 0.14, 0, 6],
+                                                [2.00, -0.16, 0, 0.14, 0, 0, 'strike'], [2.20, -0.16, 0, 0.14, 0, 0], [2.42, -0.08, 0.05, 0.07, 0, 0], [2.60, 0, 0, 0, 0, 0]] },
+        Charged_Spell_Cast_1: { follow: null, plant: true, keys: null },
+        mage_soell_cast_8: { follow: null, keys: [[0, 0, 0, 0, 0, 0]] }
       };
       /* where the Naga's film stands the stick: 0.42 m before him and 0.18 to his right (c_yfilm.js TOGETHER, its own two
          numbers), the stick's own origin there; his fist brings its shaft down onto that place, the stick turned as his hand
@@ -1553,6 +1553,9 @@
           for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-3, d * i / N); P.mixer.update(0); P.group.updateMatrixWorld(true);
             hb.getWorldPosition(v); P.group.worldToLocal(v); xs.push(v.x); ys.push(v.y); zs.push(v.z); }
           HIPS[name] = { d, N, xs, ys, zs }; }
+        /* (and where it stands at his standing rest, the place every act's follow is measured from) */
+        const R0 = P.acts.Sit_to_Stand_Transition_M; if (R0) { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Sit_to_Stand_Transition_M' ? 1 : 0);
+          R0.time = Math.min(R0.getClip().duration - 1e-3, 5.85); P.mixer.update(0); P.group.updateMatrixWorld(true); hb.getWorldPosition(v); P.group.worldToLocal(v); HIPS.rest = [v.x, v.y, v.z]; }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
         P.mixer.update(0); personSettle(P);
       });
@@ -1572,7 +1575,8 @@
         const f = b[6] === 'strike' ? 1 - Math.sqrt(1 - s) : b[6] === 'drive' ? s * s : s * s * (3 - 2 * s);
         const at = (j) => (a[j] + (b[j] - a[j]) * f) * bw;
         MV.x = at(1); MV.y = at(2); MV.z = at(3); MV.tip = at(4) * D2R; MV.lean = at(5) * D2R; MV.take = best; MV.u = u; MV.w = bw;
-        if (M.follow) { hipsAt(best, u, _h1); hipsAt(best, K[0][0], _h0); for (let j = 0; j < 3; j++) _h1[j] = (_h1[j] - _h0[j]) * M.follow * bw;
+        if (M.follow && HIPS[best] && HIPS.rest) { hipsAt(best, u, _h1); const F = M.follow;
+          for (let j = 0; j < 3; j++) _h1[j] = (_h1[j] - HIPS.rest[j]) * F[j] * bw;
           MV.x += _h1[0]; MV.y += _h1[1]; MV.z += _h1[2]; }
         return MV;
       }
@@ -1585,7 +1589,7 @@
          (CLEAR, metres between the lines), and its upper third no nearer his face than CLEAR.face; where any comes nearer,
          the fist is moved out along the paving, straight away from it, by what is missing (three passes: one way out of one
          can lead into another), by the act's own weight (his rest, walk and run were clear without it and stay as they were) */
-      const CLEAR = { trunk: 0.25, head: 0.20, thigh: 0.25, shin: 0.22, face: 0.55 };
+      const CLEAR = { trunk: 0.25, head: 0.20, thigh: 0.25, shin: 0.22, face: 0.45, reach: 0.50 };
       const _ka = V(), _kb = V(), _kc = V(), _kd = V(), _kn = V(), _kp = V(), _kq = V(), _k0 = V(), _kw = [V(), V(), V(), V(), V(), V(), V()];
       let kBones = null;
       function segClosest(a0, a1, b0, b1, p, q) {
@@ -1614,6 +1618,11 @@
             const d = segClosest(_ka, _kb, a0, a1, _kp, _kq); if (d >= r) continue;
             const dx = _kp.x - _kq.x, dz = _kp.z - _kq.z, h = Math.hypot(dx, dz); if (h < 1e-6) continue;
             Ct.x += dx / h * (r - d); Ct.z += dz / h * (r - d); } }
+        /* (never past his reach: his fist kept within CLEAR.reach of his shoulder, along the paving, so his elbow never locks) */
+        { const a = armsOf(P) && armsOf(P).R;
+          if (a) { a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(_kq); const dx = Ct.x - _kq.x, dy = Ct.y - _kq.y, dz = Ct.z - _kq.z;
+            if (Math.hypot(dx, dy, dz) > CLEAR.reach) { const hz = Math.hypot(dx, dz), need = Math.sqrt(Math.max(0, CLEAR.reach * CLEAR.reach - dy * dy));
+              if (hz > need && hz > 1e-6) { Ct.x = _kq.x + dx / hz * need; Ct.z = _kq.z + dz / hz * need; } } } }
         /* (moved, it is carried, never dragged over the paving: lifted a third of the way it goes) */
         Ct.y += 0.33 * Math.hypot(Ct.x - _k0.x, Ct.z - _k0.z);
         if (w < 0.999) Ct.lerpVectors(_k0, Ct, w);

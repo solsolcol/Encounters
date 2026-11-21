@@ -3348,13 +3348,88 @@ K.loseOwn = await until(() => window.__enc.getState() === 'play', 120000).then(a
   console.log('loseOwn', JSON.stringify({ took, lost, L }));
   return took === true && lost && L.say === 'Her life ran out.' && /See first\./.test(L.teach) && L.san > 0;
 }, () => false);
+/* (v27.0, seam 66: the card's buttons answer only once it is ready, as a player's finger only finds them then: the harness
+   waits for that, where it had pressed the instant the card opened) */
+const lostReady = (id = 'retryBtn') => p.waitForFunction((id) => { const b = document.getElementById(id);
+  return window.__enc.getState() === 'lost' && !!b && !b.classList.contains('waiting') && !b.classList.contains('hide'); }, id, { timeout: 120000 }).then(() => true, () => false);
+await lostReady();
 await p.evaluate(() => document.getElementById('retryBtn').click());
 K.loseRetry = await until(() => window.__enc.getState() === 'play', 120000).then(() => true, () => false);
 K.loseSheetLines = K.loseRetry && await p.evaluate(() => window.__enc.kit.lose({})) === true
   && await until(() => window.__enc.getState() === 'lost', 120000).then(() => true, () => false)
   && await p.evaluate(() => { const s = document.getElementById('overSay').textContent; return s.length > 0 && s !== 'Her life ran out.'; });
+await lostReady();
 await p.evaluate(() => document.getElementById('retryBtn').click());
 await until(() => window.__enc.getState() === 'play', 120000).catch(() => {});
+
+/* v27.0 (the sixty-sixth seam): A LOSS THAT BEGINS AGAIN AT THE CHAPTER'S HELD POINT (Chad, R139, R144). Held in play, the
+   save IS the held run while the run moves on; a loss that asks for it keeps it, its card offers Restart chapter under
+   Retry, a press before the card is ready is no press, and Retry pressed twice at once (a double tap) lands ONCE, at the
+   held phase, stats, earnings and place (never the chapter's start), up from black, with the point let go; Restart
+   chapter is the chapter's start; a loss that does not ask, or asks with nothing held, is the chapter's start with no
+   second button; refused outside play; null lets the point go and the save follows the run; kitReset lets it go */
+{
+  const R = {}, FILM = { film: 'probe', say: 'Her life ran out.', teaching: 'See first.' };
+  const holdAt = () => p.evaluate(() => { const E = window.__enc, k = E.kit;
+    E.stats.sanity = 66; k.setPhase('held:1'); k.conduct({ note: 'Held note.' });
+    E.yaw.position.set(1.25, 1.62, 2.5); E.yaw.rotation.y = 0.4;
+    return k.losePoint() === true; });
+  const moveOn = () => p.evaluate(() => { const E = window.__enc, k = E.kit;
+    E.stats.sanity = 41; k.setPhase('after'); k.conduct({ note: 'After note.' }); E.yaw.position.set(3, 1.62, 4); });
+  const lostBy = async (o) => await p.evaluate((o) => window.__enc.kit.lose(o), o) === true && await until(() => window.__enc.getState() === 'lost', 120000).then(() => true, () => false);
+  R.held = await holdAt();
+  await moveOn();
+  R.saveIsHeld = await p.evaluate(() => { const E = window.__enc, h = E.loseHold(), cd = E.checkpointData();
+    return !!h && h.ch === 'chtest' && h.st.phase === 'held:1' && h.st.stats.sanity === 66 && h.at.x === 1.25
+      && cd.phase === 'held:1' && cd.stats.sanity === 66 && cd.at.x === 1.25 && cd.at.z === 2.5
+      && cd.conduct.notes.includes('Held note.') && !cd.conduct.notes.includes('After note.')
+      && E.checkpointData({ at: null }).phase === null; });                  // (a save that names its place is never the held one)
+  R.lostHeld = await lostBy({ ...FILM, resume: true });
+  R.refusedOutsidePlay = await p.evaluate(() => window.__enc.kit.losePoint() === false && window.__enc.loseAgainHeld() === true);
+  R.earlyPressIgnored = await p.evaluate(() => { const b = document.getElementById('retryBtn');
+    if (!b.classList.contains('waiting')) return null;                         // (the card was ready already: nothing to try)
+    b.click(); return window.__enc.getState() === 'lost'; });
+  R.cardReady = await lostReady() && await lostReady('restartChBtn');
+  R.secondButton = await p.evaluate(() => { const b = document.getElementById('restartChBtn');
+    return getComputedStyle(b).display !== 'none' && b.textContent.trim().length > 0; });
+  R.retryOnce = await p.evaluate(() => { const E = window.__enc, b = document.getElementById('retryBtn');
+    b.click(); b.click();                                                      // a double tap: the second finds play
+    const k = E.kit, at = E.yaw.position;
+    return E.getState() === 'play' && k.getPhase() === 'held:1' && E.stats.sanity === 66
+      && Math.abs(at.x - 1.25) < 1e-6 && Math.abs(at.z - 2.5) < 1e-6 && Math.abs(E.yaw.rotation.y - 0.4) < 1e-6
+      && k.getConduct().notes.includes('Held note.') && !k.getConduct().notes.includes('After note.')
+      && E.loseHold() === null && E.loseAgainHeld() === false && k.getFade() > 0.9; });
+  R.upFromBlack = await until(() => window.__enc.kit.getFade() === 0, 120000).then(() => true, () => false);
+  R.stillHeldPhase = await p.evaluate(() => window.__enc.kit.getPhase() === 'held:1');
+  /* Restart chapter: the chapter's start */
+  R.held2 = await holdAt(); await moveOn();
+  R.lostHeld2 = await lostBy({ ...FILM, resume: true });
+  R.restartReady = await lostReady('restartChBtn');
+  R.restartIsStart = await p.evaluate(() => { const E = window.__enc;
+    document.getElementById('restartChBtn').click();
+    return E.getState() === 'play' && E.kit.getPhase() === null && E.stats.sanity === 100 && E.loseHold() === null && E.loseAgainHeld() === false; });
+  /* a loss that does not ask: the chapter's start, no second button, though a point is held */
+  R.held3 = await holdAt();
+  R.lostPlain = await lostBy({ ...FILM });
+  R.plainCard = await lostReady() && await p.evaluate(() => window.__enc.loseAgainHeld() === false
+    && getComputedStyle(document.getElementById('restartChBtn')).display === 'none');
+  R.plainRetryIsStart = await p.evaluate(() => { const E = window.__enc; document.getElementById('retryBtn').click();
+    return E.getState() === 'play' && E.kit.getPhase() === null && E.loseHold() === null; });
+  /* a loss that asks with nothing held: the same */
+  R.lostNothingHeld = await lostBy({ ...FILM, resume: true });
+  R.nothingHeldCard = await lostReady() && await p.evaluate(() => window.__enc.loseAgainHeld() === false
+    && getComputedStyle(document.getElementById('restartChBtn')).display === 'none');
+  R.nothingHeldRetryIsStart = await p.evaluate(() => { const E = window.__enc; document.getElementById('retryBtn').click();
+    return E.getState() === 'play' && E.kit.getPhase() === null; });
+  /* let go by null (the save follows the run again) and by kitReset */
+  R.nullLetsGo = await holdAt() && await p.evaluate(() => { const E = window.__enc, k = E.kit;
+    k.setPhase('moved'); const heldSave = E.checkpointData().phase === 'held:1';
+    k.losePoint(null); return heldSave && E.loseHold() === null && E.checkpointData().phase === 'moved'; });
+  R.resetLetsGo = await holdAt() && await p.evaluate(() => { const E = window.__enc; E.kitReset(); return E.loseHold() === null; });
+  await p.evaluate(() => { const E = window.__enc; E.kit.setPhase(null); E.stats.sanity = 100; });
+  console.log('losePointSeam', JSON.stringify(R));
+  K.losePointSeam = Object.entries(R).every(([k, v]) => v === true || (k === 'earlyPressIgnored' && v === null));
+}
 
 /* v28.0 (seams 60, 61, 65): kitReset takes an open tag mode down (no boom, no class, the rig left to whoever resets: a
    restart, a Continue, a change of chapter), with every button of the chapter's own and a retry card; and a chapter that

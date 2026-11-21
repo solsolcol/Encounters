@@ -400,6 +400,8 @@ Object.assign(window.__TEXT__, {
   'lost.teachingLabel':  'Master Z’s teaching',
   'lost.teaching':       'Fear is not the danger. Facing what terrifies you...and doing nothing—is.',
   'lost.retry':          'Retry',
+  // v27.0 (seam 66, R144): beside Retry when the loss begins again where the chapter held its fight: the whole chapter again
+  'lost.restartChapter': 'Restart chapter',
 
   'newgame.heading':     'Start a new game?',
   'newgame.body':        'Your saved progress will be erased and you will begin again from the first chapter.',
