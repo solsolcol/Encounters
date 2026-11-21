@@ -411,6 +411,17 @@ that fits it, with the version it came from.
 - For a device-specific rendering report, ask him for the ?diag screenshot. (v15.2)
 - A new sheet's diff against the last one is exactly the cells changed. (v14.2)
 - A picture is judged by a reader who does not know what was meant. The end check hands every changed shot (phone crop and desktop) to an independent reviewer with only the pictures and the question of what looks fake, blank, floating, doubled or wrong, because the author sees what he intended. v24.33's bus-stop advert panel, lit and blank, passed every check as 'an advert' and read as a white block. (v24.35)
+  WHAT A BLIND READER FINDS IS ONLY A LEAD, AND THE JUDGEMENT IS MINE, WITH THE DESIGN IN HAND ("Your helpers and
+  independent reviewers all suck and they have no understanding of the prior context or how things were designed, and
+  what was intended"; and "the white line across the door was always intended , how can you not know that?": Jun's thread,
+  the plan's own beat, which a reviewer called a stray line and I sent to be removed; and "you didnt even see the biggest
+  issues with those images": I led with the reviewer's ranking, a robe's white, over the body's own faults, the brown
+  flecks on it and the stick through his wrist). Every point of a reviewer's list is read against the chapter's plan and
+  tracker before it is passed on or acted on, and a designed thing is struck from it, never "fixed"; every picture of a
+  body is read for the body first (clips, joints, flecks, held things: measured by the probes), and the ranking is mine.
+  A helper is briefed with the design and the intent of every part it touches (the plan's sections named, what is
+  intended said plainly) and asks before changing anything the plan designed. The words in quotes are his; the rule's
+  wording is mine, drawn from them. (v28.0, R28 and R30)
 - A pose or a motion of a body is judged FULL SIZE, one picture at a time: from in front of the body, from beside it, and
   through the film's own lens at a phone's shape (tools/probes/poselab.mjs keeps the game open for it). Never on a
   contact sheet, and never reported to him as natural without those pictures and the list of what still looks wrong
