@@ -15,7 +15,6 @@
        people stand at that phase's stations. */
     const FM5 = { once: new Set(), shot: '', lit: '', vis: false, s: null };
     const PLAYFOV5 = 72;
-    const _fv5 = new THREE.Vector3(), _fw5 = new THREE.Vector3();
     function fmLook(name, secs = 0) { if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
     function fmLens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
     /* the rig at an eye, aimed at a point (yaw turns, pitch tilts: a turn of 0 looks toward -z) */
@@ -57,7 +56,11 @@
     const fmSnapKey = (t, name = 'play') => { const s = FM5.s; return s ? { t, name, eye: [s.yawPos.x, s.yawPos.y, s.yawPos.z], yaw: s.yawRot, pitch: s.pitchX, fp: PLAYFOV5, fd: PLAYFOV5 } : null; };
     const fmRun = (t, t0, t1, a, b) => lp(a, b, smo(c01((t - t0) / (t1 - t0))));
     const fmPing = (t, from, len, secs) => from + len * (0.5 - 0.5 * Math.cos(Math.PI * 2 * t / secs));
-    function fmHead(P, fb) { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_fv5); return [_fv5.x, _fv5.y, _fv5.z]; } return fb; }
+    /* WHERE A PERSON'S HEAD IS, FOR A SHOT OR A LOOK: the place the film stands him (his group, set by the film's own
+       clock) at the height his fallback names, never his LIVING head. A shot whose aim rides a talking head sways with his
+       take (v25.5: a talk's head travels 19 cm at up to 29 cm a second, and the whole picture behind him goes with it),
+       and a seek freezes the take, so framecheck could never see it: the face moves inside a steady frame instead */
+    function fmHead(P, fb) { if (P && P.ready && P.group.visible) { const g = P.group.position; return [g.x, fb ? fb[1] : 1.55, g.z]; } return fb; }
     const fmShow = (P, on) => { if (!P) return; P.hidden = !on; if (P.ready) P.group.visible = on; };
     /* SPIRIT VISION held by a film's clock (the engine's own curve, out from his eyes over `secs` from `t0`, full until
        `t1`, home over `back`); held only round the moments it is open (R51: a held radius of 0 draws every frame through
