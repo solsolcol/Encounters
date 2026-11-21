@@ -41,6 +41,8 @@ const ALL = {
   windowout:  ['hunt', -8.2, -7.6, Math.PI, -0.02],
   windowin:   ['hunt', -10.3, -4.2, 0, -0.05],
   fightcam:   ['fight', -8.5, -14.0, Math.PI, -0.454, 3.1 - 1.62],
+  boomH:      ['hunt', -8.5, -14.0, Math.PI, -0.454, 3.1 - 1.62],     // (the fight's boom with no brief over it)
+  doorthru:   ['hunt', -8.5, -6.2, Math.PI, -0.05],                    // (in at the open doorway from the step)
   room:       ['table', 0, 239.4, Math.PI, -0.3],
   roomwide:   ['table', -1.6, 237.9, Math.PI + 0.64, -0.2],
   roomseat:   ['table', 0, 239.2, Math.PI, -0.62, -0.47],

@@ -1693,8 +1693,24 @@
     function matte(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) { if (!mt) continue;
       if ('metalness' in mt) { mt.metalness = 0; mt.metalnessMap = null; } if ('roughness' in mt) { mt.roughness = 0.92; mt.roughnessMap = null; } mt.needsUpdate = true; } }); }
     /* a model stood and SCALED on its own axes (a table to its plan's size), then mended */
+    /* THE ROOMS DRAWN ONLY WHERE THEY CAN BE SEEN (R23: "Why is the courtyard so heavy when it looks so simple visually?"):
+       from the court, three's lens cut drew every thing in his two rooms behind the front wall (the sofa 30.9k, the armchair
+       30.8k, the sideboard, the shoe cabinet, the tables, the lamps: about 157k triangles a frame) although the wall hides
+       all but what the doorway and the two windows frame. Each thing placed in the rooms stands in a holder of its own
+       (INSIDE), and before every draw of the scene (its onBeforeRender: the first person, the fight's boom and a film's lens
+       alike, each draw for its own lens) a holder is shown only if its bounding sphere meets the frustum from the lens
+       through one of the three openings. It is exact for the court: a ray from the court into the rooms either meets a
+       court side wall (to the block's roof, z -14 to -5.6, its window backed) or crosses the front wall's outer face
+       (z -5.8) inside the court's width, where the wall is solid but for the door and the windows, and the storeys over it
+       are each backed behind their glass. The test is CONSERVATIVE (the outer face's opening, wider than what the wall's
+       depth lets through), so nothing a phone draws can change. Anywhere else (the walkway, the doorway's depth, the rooms
+       themselves, case three's room) every holder is shown. */
+    const INSIDE = [];
+    const inHouse = (x, z) => x > LIVING.x0 - 0.01 && x < LIVING.x1 + 0.01 && z > HOUSE.face && z < DINING.z1 + 0.3;
+    function cullHold(name) { const h = new THREE.Group(); h.name = 'inside:' + name; world.add(h); INSIDE.push({ h, n: -1, c: new THREE.Vector3(), r: -1 }); return h; }
     function place(key, x, y, z, ry, o = {}) {
-      const g = stand(key, x, y, z, ry, { done: (m) => { if (o.wood) rosewood(m); if (o.matte) matte(m); if (o.done) o.done(m); } });
+      const g = stand(key, x, y, z, ry, { parent: inHouse(x, z) ? cullHold(o.name || key) : undefined,
+        done: (m) => { if (o.wood) rosewood(m); if (o.matte) matte(m); if (o.done) o.done(m); } });
       if (o.sx || o.sy || o.sz) g.scale.set(o.sx || 1, o.sy || 1, o.sz || 1);
       if (o.name) g.name = o.name;
       return g;
@@ -1830,7 +1846,7 @@
     }
     function framed(x, y, z, ry, seed) {
       place('w5frame', x, y, z, ry, { wood: false });
-      const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; world.add(g);
+      const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; (inHouse(x, z) ? cullHold('picture') : world).add(g);
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.33), inkLandscape(seed)); m.position.set(0, 0.2305, 0.0255); g.add(m); owned.push(m.geometry);
     }
     framed(ARM.x, 1.45, LIVING.z1 - 0.06 - 0.024, Math.PI, 28561);
@@ -1878,6 +1894,35 @@
     lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 });
     const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI }),
                     lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI })];
+    /* (the rooms' holders, tested before each draw: see INSIDE) */
+    { const PZ = HOUSE.face - 0.2, PORTS = [WIN_A, { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, sill: 0, head: DOOR_FRONT.h }, WIN_B];
+      const N = PORTS.map(() => [0, 1, 2, 3].map(() => new THREE.Vector3()));
+      const e = new THREE.Vector3(), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), bx = new THREE.Box3(), bs = new THREE.Sphere();
+      function insideCull(cam) {
+        e.setFromMatrixPosition(cam.matrixWorld);
+        const out = e.x > COURT.x0 && e.x < COURT.x1 && e.z > COURT.z0 && e.z < PZ - 0.01 && e.y > 0 && e.y < COURT.wallTop;
+        if (out) PORTS.forEach((P, i) => { const cr = [[P.x0, P.sill], [P.x1, P.sill], [P.x1, P.head], [P.x0, P.head]];
+          c.set((P.x0 + P.x1) / 2, (P.sill + P.head) / 2, PZ).sub(e);
+          for (let k = 0; k < 4; k++) { const p0 = cr[k], p1 = cr[(k + 1) % 4];
+            a.set(p0[0], p0[1], PZ).sub(e); b.set(p1[0], p1[1], PZ).sub(e);
+            const n = N[i][k].crossVectors(a, b).normalize(); if (n.dot(c) < 0) n.negate(); } });
+        for (const T of INSIDE) {
+          let cnt = 0; T.h.traverse(q => { if (q.isMesh) cnt++; });
+          if (cnt !== T.n) { T.n = cnt; T.h.updateWorldMatrix(true, true); bx.setFromObject(T.h);
+            if (bx.isEmpty()) T.r = -1; else { bx.getBoundingSphere(bs); T.c.copy(bs.center); T.r = bs.radius; } }
+          if (!out || T.r < 0) { T.h.visible = true; continue; }
+          a.copy(T.c).sub(e); let seen = false;
+          for (let i = 0; i < PORTS.length && !seen; i++) { seen = true; for (let k = 0; k < 4; k++) if (N[i][k].dot(a) < -T.r) { seen = false; break; } }
+          T.h.visible = seen;
+        }
+      }
+      const prevBR = scene.onBeforeRender;
+      const onBR = function (r, sc, cam, rt) {
+        if (!alive) { if (scene.onBeforeRender === onBR) scene.onBeforeRender = prevBR; }
+        else if (cam && cam.isCamera) insideCull(cam);
+        return prevBR.call(this, r, sc, cam, rt);
+      };
+      scene.onBeforeRender = onBR; }
     function lamp(i, k) { const L = lights[i]; if (!L) return; L.k = k; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
     function courtLamps(k) { for (const L of courtL) { L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; } }
 
@@ -8192,7 +8237,8 @@
         const L = st.prai[0], w = fsW(L.x, L.z);
         if (name === 'labBall') fsBallStart({ x: L.x, z: L.z, id: L.id }, 0);
         else if (name === 'labLand') fsEvents([{ e: 'land', result: 'chased', id: L.id, x: L.x, z: L.z }]);
-        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
+        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
+          fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
         else if (name === 'labBind') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
         else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
         else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
@@ -10034,9 +10080,12 @@
           }
         }));
         PRAI5.look(turned ? 'trance' : 'vision'); PRAI5.tick(0.016);
-        /* his sight, opened without his asking (the wave out from him), held until the violet */
+        /* his sight, opened without his asking (the wave out from him), held until the violet; under the violet his OWN sight
+           is shut (kit.vision(false)), or a sight he had open in the hunt came back the moment the hold let go, and the
+           third person of the turn was drawn in the vision's negative (prepare-00047, 21 Nov) */
         fmVision(t, T.open, 2.2, turned ? T.violet + 0.4 : Infinity, 0.01);
         if (turned) fmVisionOff();
+        if (t >= T.violet + 0.6 && !FM5.once.has('sightShut')) { FM5.once.add('sightShut'); if (kit && kit.vision) kit.vision(false); }
         /* THE SOUR, hard, as they come */
         if (kit && kit.chill) { const k = turned ? 0 : smo(c01((t - T.come) / 2.4)) * 0.95;
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
