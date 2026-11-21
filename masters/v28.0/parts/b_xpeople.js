@@ -59,7 +59,7 @@
       const shut = p === 'walk' || p === 'fight';
       gateOpen(shut ? 0 : 1); blockOn(gateShut, shut); blockOn(gateOpenLeaf, !shut);
       doorOpen(p === 'walk' ? 0 : 1);
-      courtLamps(p === 'fight' ? 1 : 0);
+      courtLamps(p === 'hunt' || p === 'fight' ? 1 : 0);                 // (lit from the evening of the hunt on)
       liftDoors(0);
       standAt(cast.koh, st.koh); standAt(cast.jun, st.jun);
       if (place && st.at && p !== 'ask') { yaw.position.set(st.at.x, EYE, st.at.z); yaw.rotation.y = st.at.ry; pitch.rotation.x = -0.04; }

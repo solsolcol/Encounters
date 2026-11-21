@@ -1,0 +1,1330 @@
+{
+ "u5sniff1": {
+  "kind": "fx",
+  "take": "u5sniff1_a",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)",
+  "why": "a: 89 % where a phone plays, loudest 50 ms -33.5 dBFS (others, phone/loudest: b 0.92/-41.2)"
+ },
+ "u5sniff2": {
+  "kind": "fx",
+  "take": "u5sniff2_b",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -22.2 dBFS (others, phone/loudest: a 1.00/-24.4); its 0.40 s silent head cut",
+  "af": "atrim=start=0.37,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5sniff3": {
+  "kind": "fx",
+  "take": "u5sniff3_b",
+  "family": "nose",
+  "where": "SMELL: the breath in (dealt in turn)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -35.2 dBFS (others, phone/loudest: a 1.00/-35.6)"
+ },
+ "u5sniffout": {
+  "kind": "fx",
+  "take": "u5sniffout_a",
+  "family": "nose",
+  "where": "SMELL: the breath out, 2.5 s before the next",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -30.3 dBFS (others, phone/loudest: b 1.00/-39.0)"
+ },
+ "u5sour": {
+  "kind": "bed",
+  "take": "u5sour_b",
+  "family": "nose",
+  "where": "the smell: a bed keyed to the source (louder as he nears it)",
+  "why": "b: 96 % where a phone plays, loudest 50 ms -22.6 dBFS, swing 13.6 dB, 60 % in the voice band (others, phone/loudest: a 0.98/-20.0)"
+ },
+ "u5souring": {
+  "kind": "fx",
+  "take": "u5souring_b",
+  "family": "nose",
+  "where": "the opening film: the lift opens and the picture sours",
+  "why": "b: 38 % where a phone plays, loudest 50 ms -13.8 dBFS (others, phone/loudest: a 0.02/-10.6); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5threads": {
+  "kind": "loop",
+  "take": "u5threads_b",
+  "family": "nose",
+  "where": "the threads drifting while SMELL shows them",
+  "why": "b: 97 % where a phone plays, loudest 50 ms -47.2 dBFS, swing 7.2 dB, 1 % in the voice band (others, phone/loudest: a 0.99/-45.7)"
+ },
+ "u5flies": {
+  "kind": "loop",
+  "take": "u5flies_b",
+  "family": "nose",
+  "where": "the decoy: the drain's grating",
+  "why": "b: 92 % where a phone plays, loudest 50 ms -22.2 dBFS, swing 13.6 dB, 31 % in the voice band (others, phone/loudest: a 0.79/-18.6)"
+ },
+ "u5weaker": {
+  "kind": "fx",
+  "take": "u5weaker_a",
+  "family": "nose",
+  "where": "\"Weaker here.\" (going back toward the lift)",
+  "why": "a: 98 % where a phone plays, loudest 50 ms -31.9 dBFS; refused: b the transcriber writes \"Phew\"; its 0.35 s silent head cut",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5sournote": {
+  "kind": "fx",
+  "take": "u5sournote_b",
+  "family": "nose",
+  "where": "the fight: SMELL (with the breath in)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -13.5 dBFS (others, phone/loudest: a 0.01/-7.0)"
+ },
+ "u5ripple": {
+  "kind": "fx",
+  "take": "u5ripple_b",
+  "family": "nose",
+  "where": "the fight: SMELL's ripple out along the paving",
+  "why": "b: 40 % where a phone plays, loudest 50 ms -12.0 dBFS (others, phone/loudest: a 0.30/-19.7); its 0.35 s silent head cut",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5lifthum": {
+  "kind": "bed",
+  "take": "u5lifthum_a",
+  "family": "places",
+  "where": "the opening film: inside the lift car (a bed)",
+  "why": "a: 3 % where a phone plays, loudest 50 ms -13.0 dBFS, swing 16.0 dB, 1 % in the voice band (others, phone/loudest: b 0.03/-14.8); HARMONISED (a phone plays 3 %)",
+  "harm": true
+ },
+ "u5cable": {
+  "kind": "fx",
+  "take": "u5cable_a",
+  "family": "places",
+  "where": "the opening film: the cable",
+  "why": "a: 88 % where a phone plays, loudest 50 ms -33.4 dBFS (others, phone/loudest: b 0.25/-27.9)"
+ },
+ "u5chime": {
+  "kind": "fx",
+  "take": "u5chime_b",
+  "family": "places",
+  "where": "the opening film: the chime",
+  "why": "b: 99 % where a phone plays, loudest 50 ms -8.2 dBFS (others, phone/loudest: a 0.97/-10.8)"
+ },
+ "u5liftopen": {
+  "kind": "fx",
+  "take": "u5liftopen_b",
+  "family": "places",
+  "where": "the opening film: the doors open",
+  "why": "b: 76 % where a phone plays, loudest 50 ms -14.5 dBFS (others, phone/loudest: a 0.67/-24.6)"
+ },
+ "u5liftshut": {
+  "kind": "fx",
+  "take": "u5liftshut_a",
+  "family": "places",
+  "where": "the bag tied film: the doors close on black",
+  "why": "a: 86 % where a phone plays, loudest 50 ms -15.4 dBFS (others, phone/loudest: b 0.55/-16.8); its 0.35 s silent head cut",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5walkbed": {
+  "kind": "bed",
+  "take": "u5walkbed_b",
+  "family": "places",
+  "where": "the walkway at dusk (a bed)",
+  "why": "b: 60 % where a phone plays, loudest 50 ms -34.3 dBFS, swing 4.4 dB, 38 % in the voice band (others, phone/loudest: a 0.63/-29.9)"
+ },
+ "u5playground": {
+  "kind": "fx",
+  "take": "u5playground_a",
+  "family": "places",
+  "where": "the walkway: the last voices of a playground (one-shot)",
+  "why": "a: 78 % where a phone plays, loudest 50 ms -33.0 dBFS (others, phone/loudest: b 0.63/-36.2, c 0.74/-33.3, d 0.82/-34.4)"
+ },
+ "u5tvwall": {
+  "kind": "fx",
+  "take": "u5tvwall_a",
+  "family": "places",
+  "where": "the walkway: a television through a wall (one-shot)",
+  "why": "a: 95 % where a phone plays, loudest 50 ms -28.7 dBFS (others, phone/loudest: b 0.77/-30.7, c 0.94/-32.1, d 0.97/-33.4)"
+ },
+ "u5mynah": {
+  "kind": "fx",
+  "take": "u5mynah_b",
+  "family": "places",
+  "where": "the walkway: mynahs settling (one-shot)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -22.2 dBFS (others, phone/loudest: a 1.00/-22.4)"
+ },
+ "u5courtbed": {
+  "kind": "bed",
+  "take": "u5courtbed_b",
+  "family": "places",
+  "where": "the court after dark (a bed)",
+  "why": "b: 51 % where a phone plays, loudest 50 ms -32.5 dBFS, swing 3.2 dB, 21 % in the voice band (others, phone/loudest: a 0.55/-30.0)"
+ },
+ "u5lampbuzz": {
+  "kind": "loop",
+  "take": "u5lampbuzz_a",
+  "family": "places",
+  "where": "the court: a wall lamp's buzz (a bed at its lamp)",
+  "why": "a: 94 % where a phone plays, loudest 50 ms -43.8 dBFS, swing 0.9 dB, 16 % in the voice band (others, phone/loudest: b 0.22/-34.4)"
+ },
+ "u5roombed": {
+  "kind": "bed",
+  "take": "u5roombed_a",
+  "family": "places",
+  "where": "his living room (a bed)",
+  "why": "a: 82 % where a phone plays, loudest 50 ms -32.7 dBFS, swing 1.8 dB, 47 % in the voice band (others, phone/loudest: b 0.61/-32.2)"
+ },
+ "u5clock": {
+  "kind": "loop",
+  "take": "u5clock_a",
+  "family": "places",
+  "where": "his living room: the wall clock (a bed at the clock)",
+  "why": "a: 75 % where a phone plays, loudest 50 ms -40.7 dBFS, swing 2.4 dB, 46 % in the voice band (others, phone/loudest: b 0.83/-36.4)"
+ },
+ "u5lamptick": {
+  "kind": "fx",
+  "take": "u5lamptick_b",
+  "family": "places",
+  "where": "his living room: the fourth lamp's flicker",
+  "why": "b: 79 % where a phone plays, loudest 50 ms -23.2 dBFS (others, phone/loudest: a 0.77/-26.4)"
+ },
+ "u5fanroom": {
+  "kind": "bed",
+  "take": "u5fanroom_a",
+  "family": "places",
+  "where": "the receiving room in the afternoon (a bed)",
+  "why": "a: 67 % where a phone plays, loudest 50 ms -35.3 dBFS, swing 3.3 dB, 26 % in the voice band (others, phone/loudest: b 0.66/-36.6)"
+ },
+ "u5shutter": {
+  "kind": "fx",
+  "take": "u5shutter_a",
+  "family": "places",
+  "where": "the receiving room: a shutter somewhere (one-shot)",
+  "why": "a: 93 % where a phone plays, loudest 50 ms -29.5 dBFS (others, phone/loudest: b 0.94/-32.3)"
+ },
+ "u5farchime": {
+  "kind": "fx",
+  "take": "u5farchime_a",
+  "family": "places",
+  "where": "the receiving room: a far chime (one-shot)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -38.1 dBFS (others, phone/loudest: b 0.99/-41.1)"
+ },
+ "u5os1": {
+  "kind": "fx",
+  "take": "u5os1_a",
+  "family": "places",
+  "where": "the court at night: far noises (a seeded stream)",
+  "why": "a: 53 % where a phone plays, loudest 50 ms -31.5 dBFS (others, phone/loudest: b 0.47/-33.6)"
+ },
+ "u5os2": {
+  "kind": "fx",
+  "take": "u5os2_b",
+  "family": "places",
+  "where": "the court at night: far noises",
+  "why": "b: 98 % where a phone plays, loudest 50 ms -12.8 dBFS (others, phone/loudest: a 0.98/-14.3)"
+ },
+ "u5os3": {
+  "kind": "fx",
+  "take": "u5os3_b",
+  "family": "places",
+  "where": "the court at night: far noises",
+  "why": "b: 94 % where a phone plays, loudest 50 ms -20.5 dBFS (others, phone/loudest: a 0.91/-20.8)"
+ },
+ "u5os4": {
+  "kind": "fx",
+  "take": "u5os4_b",
+  "family": "places",
+  "where": "the walkway and the court: far noises",
+  "why": "b: 49 % where a phone plays, loudest 50 ms -21.6 dBFS (others, phone/loudest: a 0.42/-30.1)"
+ },
+ "u5step1": {
+  "kind": "fx",
+  "take": "u5step1_b",
+  "family": "places",
+  "where": "his steps on the walkway and the court (dealt in turn)",
+  "why": "b: 99 % where a phone plays, loudest 50 ms -19.7 dBFS (others, phone/loudest: a 0.97/-23.5)",
+  "level": -16
+ },
+ "u5step2": {
+  "kind": "fx",
+  "take": "u5step2_b",
+  "family": "places",
+  "where": "his steps on the walkway and the court (dealt in turn)",
+  "why": "b: 79 % where a phone plays, loudest 50 ms -22.2 dBFS (others, phone/loudest: a 0.66/-17.5)",
+  "level": -16
+ },
+ "u5tile1": {
+  "kind": "fx",
+  "take": "u5tile1_a",
+  "family": "places",
+  "where": "his bare steps inside the house (dealt in turn)",
+  "why": "a: 96 % where a phone plays, loudest 50 ms -26.6 dBFS (others, phone/loudest: b 0.92/-32.6)",
+  "level": -16
+ },
+ "u5phostep": {
+  "kind": "fx",
+  "take": "u5phostep_a",
+  "family": "places",
+  "where": "Grandmaster Pho's steps on the paving (the fight, the films)",
+  "why": "a: 16 % where a phone plays, loudest 50 ms -22.9 dBFS (others, phone/loudest: b 0.23/-23.0); HARMONISED (a phone plays 16 %)",
+  "level": -16,
+  "harm": true
+ },
+ "u5ncome": {
+  "kind": "loop",
+  "take": "u5ncome_d",
+  "family": "nine",
+  "where": "a Prai that COMES: its own voice while it stands or comes on (a loop, panned)",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -12.6 dBFS, swing 20.7 dB, 100 % in the voice band (others, phone/loudest: a 1.00/-8.5, b 1.00/-9.0, c 1.00/-12.7)"
+ },
+ "u5nslip": {
+  "kind": "loop",
+  "take": "u5nslip_c",
+  "family": "nine",
+  "where": "a Prai that SLIPS: its own voice while it weaves in (a loop)",
+  "why": "c: 97 % where a phone plays, loudest 50 ms -31.3 dBFS, swing 2.5 dB, 76 % in the voice band (others, phone/loudest: a 0.99/-31.9, b 0.83/-34.0, d 0.93/-34.9)"
+ },
+ "u5nhide": {
+  "kind": "loop",
+  "take": "u5nhide_d",
+  "family": "nine",
+  "where": "a Prai that HIDES: its own sound while it stands or comes on (a loop)",
+  "why": "d: 96 % where a phone plays, loudest 50 ms -15.6 dBFS, swing 28.3 dB, 93 % in the voice band (others, phone/loudest: a 0.94/-12.7, b 0.02/-9.1, c 0.87/-18.8)"
+ },
+ "u5rise1": {
+  "kind": "fx",
+  "take": "u5rise1_a",
+  "family": "nine",
+  "where": "enter: a Prai rises (dealt in turn)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -17.0 dBFS (others, phone/loudest: b 1.00/-18.3, c 1.00/-18.3, d 1.00/-21.6); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5rise2": {
+  "kind": "fx",
+  "take": "u5rise2_a",
+  "family": "nine",
+  "where": "enter: a Prai rises (dealt in turn)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -16.8 dBFS (others, phone/loudest: b 1.00/-27.7, c 1.00/-26.5, d 1.00/-22.4)"
+ },
+ "u5gather1": {
+  "kind": "fx",
+  "take": "u5gather1_b",
+  "family": "nine",
+  "where": "reach: a Prai at him gathers itself (2 s before it costs)",
+  "why": "b: 95 % where a phone plays, loudest 50 ms -16.3 dBFS (others, phone/loudest: a 0.93/-17.8, c 0.94/-18.3, d 0.96/-18.4)"
+ },
+ "u5gather2": {
+  "kind": "fx",
+  "take": "u5gather2_a",
+  "family": "nine",
+  "where": "reach: (dealt in turn)",
+  "why": "a: 90 % where a phone plays, loudest 50 ms -19.1 dBFS (others, phone/loudest: b 0.95/-29.9, c 0.98/-22.2, d 0.96/-31.5)"
+ },
+ "u5strain1": {
+  "kind": "fx",
+  "take": "u5strain1_d",
+  "family": "nine",
+  "where": "a Prai pressing the cage's bars (dealt in turn)",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -22.4 dBFS (others, phone/loudest: c 1.00/-31.2); refused: a the transcriber writes \"Whoa\"; b the transcriber writes \"Whoa!\""
+ },
+ "u5strain2": {
+  "kind": "fx",
+  "take": "u5strain2_b",
+  "family": "nine",
+  "where": "pressing (dealt in turn)",
+  "why": "b: 98 % where a phone plays, loudest 50 ms -15.9 dBFS (others, phone/loudest: a 0.90/-16.2); refused: c the transcriber writes \"Rrrrrrrrrrrrrrrrrr\"; d the transcriber writes \"Whaaaaaat?\""
+ },
+ "u5strain3": {
+  "kind": "fx",
+  "take": "u5strain3_a",
+  "family": "nine",
+  "where": "pressing (dealt in turn)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -19.6 dBFS (others, phone/loudest: b 0.99/-25.1, c 1.00/-28.3, d 1.00/-24.9)"
+ },
+ "u5hitc": {
+  "kind": "fx",
+  "take": "u5hitc_a",
+  "family": "nine",
+  "where": "land: a Prai that comes is chased (and the lesson's)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -13.2 dBFS (others, phone/loudest: d 1.00/-13.3); refused: b the transcriber writes \"BAH!\"; c the transcriber writes \"Gah!\""
+ },
+ "u5hits": {
+  "kind": "fx",
+  "take": "u5hits_c",
+  "family": "nine",
+  "where": "land: (dealt with u5hitc)",
+  "why": "c: 97 % where a phone plays, loudest 50 ms -11.4 dBFS (others, phone/loudest: a 0.99/-12.6, b 0.98/-19.5, d 1.00/-12.3)"
+ },
+ "u5hith": {
+  "kind": "fx",
+  "take": "u5hith_b",
+  "family": "nine",
+  "where": "land: a Prai that hides is chased",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -12.7 dBFS (others, phone/loudest: a 1.00/-14.4, c 1.00/-15.1, d 1.00/-16.6)"
+ },
+ "u5slipthru": {
+  "kind": "fx",
+  "take": "u5slipthru_a",
+  "family": "nine",
+  "where": "land \"slipped\": the fire passes through one that slips",
+  "why": "a: 96 % where a phone plays, loudest 50 ms -21.4 dBFS (others, phone/loudest: b 0.18/-9.4)"
+ },
+ "u5tired1": {
+  "kind": "fx",
+  "take": "u5tired1_b",
+  "family": "nine",
+  "where": "land \"tired\": the fire on a bound one (dealt in turn)",
+  "why": "b: 99 % where a phone plays, loudest 50 ms -22.1 dBFS (others, phone/loudest: c 0.99/-28.5, d 1.00/-23.6); refused: a the transcriber writes \"ahh\""
+ },
+ "u5tired2": {
+  "kind": "fx",
+  "take": "u5tired2_c",
+  "family": "nine",
+  "where": "land \"tired\" (dealt in turn)",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -24.4 dBFS (others, phone/loudest: a 1.00/-25.8, b 1.00/-25.1, d 1.00/-26.3); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5sink": {
+  "kind": "fx",
+  "take": "u5sink_c",
+  "family": "nine",
+  "where": "state to hidden: a Prai sinks into the paving",
+  "why": "c: 76 % where a phone plays, loudest 50 ms -18.8 dBFS (others, phone/loudest: a 0.04/-12.4, b 0.01/-12.1, d 0.08/-15.0)"
+ },
+ "u5shown": {
+  "kind": "fx",
+  "take": "u5shown_d",
+  "family": "nine",
+  "where": "smell found / state to shown: a hidden one stands up into sight",
+  "why": "d: 99 % where a phone plays, loudest 50 ms -11.3 dBFS (others, phone/loudest: a 0.96/-20.4, b 1.00/-12.5, c 0.95/-12.3); its 0.20 s silent head cut",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5unrise": {
+  "kind": "fx",
+  "take": "u5unrise_a",
+  "family": "nine",
+  "where": "rise: a tired one's ring has closed and it rises again",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -17.7 dBFS (others, phone/loudest: c 0.97/-24.0, d 0.90/-21.2); refused: b the transcriber writes \"You\""
+ },
+ "u5drawn1": {
+  "kind": "fx",
+  "take": "u5drawn1_b",
+  "family": "nine",
+  "where": "drawn / gathered: a Prai drawn into the bag (dealt in turn)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -13.2 dBFS (others, phone/loudest: a 1.00/-13.8, c 1.00/-16.1, d 1.00/-19.2)"
+ },
+ "u5drawn2": {
+  "kind": "fx",
+  "take": "u5drawn2_d",
+  "family": "nine",
+  "where": "drawn (dealt in turn)",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -27.0 dBFS (others, phone/loudest: a 1.00/-32.9, b 1.00/-30.4, c 1.00/-29.5); its 0.20 s silent head cut",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5shape": {
+  "kind": "fx",
+  "take": "u5shape_a",
+  "family": "nine",
+  "where": "surge: the last three draw together into one tall shape",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -25.0 dBFS (others, phone/loudest: c 0.99/-29.1, d 0.82/-19.8); refused: b the transcriber writes \"Ugh.\"; its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5shapeloop": {
+  "kind": "loop",
+  "take": "u5shapeloop_c",
+  "family": "nine",
+  "where": "surge and the Naga film: the tall shape stands (a loop)",
+  "why": "c: 98 % where a phone plays, loudest 50 ms -28.8 dBFS, swing 12.6 dB, 73 % in the voice band (others, phone/loudest: a 0.91/-29.3, b 0.96/-28.9, d 1.00/-25.2)"
+ },
+ "u5laid": {
+  "kind": "fx",
+  "take": "u5laid_b",
+  "family": "nine",
+  "where": "the Naga film: the three laid low, at rest",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -17.6 dBFS (others, phone/loudest: a 1.00/-25.3)"
+ },
+ "u5swing1": {
+  "kind": "fx",
+  "take": "u5swing1_b",
+  "family": "pho",
+  "where": "FIRE: the Naga stick swung up (dealt in turn)",
+  "why": "b: 85 % where a phone plays, loudest 50 ms -9.9 dBFS (others, phone/loudest: a 0.59/-9.3)"
+ },
+ "u5swing2": {
+  "kind": "fx",
+  "take": "u5swing2_b",
+  "family": "pho",
+  "where": "FIRE: (dealt in turn)",
+  "why": "b: 95 % where a phone plays, loudest 50 ms -14.2 dBFS (others, phone/loudest: a 0.99/-33.0)"
+ },
+ "u5fire1": {
+  "kind": "fx",
+  "take": "u5fire1_b",
+  "family": "pho",
+  "where": "fireball: the ball leaving the Naga's mouth (dealt in turn)",
+  "why": "b: 29 % where a phone plays, loudest 50 ms -9.6 dBFS (others, phone/loudest: a 0.05/-10.4); HARMONISED (a phone plays 29 %)",
+  "harm": true
+ },
+ "u5fire2": {
+  "kind": "fx",
+  "take": "u5fire2_b",
+  "family": "pho",
+  "where": "fireball: (dealt in turn)",
+  "why": "b: 84 % where a phone plays, loudest 50 ms -16.0 dBFS (others, phone/loudest: a 0.89/-17.4)"
+ },
+ "u5fire3": {
+  "kind": "fx",
+  "take": "u5fire3_a",
+  "family": "pho",
+  "where": "fireball: (dealt in turn)",
+  "why": "a: 38 % where a phone plays, loudest 50 ms -19.7 dBFS (others, phone/loudest: b 0.24/-23.4)"
+ },
+ "u5flight": {
+  "kind": "fx",
+  "take": "u5flight_b",
+  "family": "pho",
+  "where": "fireball: its flight (0.7 s in the air)",
+  "why": "b: 41 % where a phone plays, loudest 50 ms -7.7 dBFS (others, phone/loudest: a 0.34/-16.5)"
+ },
+ "u5land1": {
+  "kind": "fx",
+  "take": "u5land1_b",
+  "family": "pho",
+  "where": "land: on the open paving, or \"chased\" (dealt in turn)",
+  "why": "b: 9 % where a phone plays, loudest 50 ms -9.1 dBFS (others, phone/loudest: a 0.14/-9.3); HARMONISED (a phone plays 9 %)",
+  "harm": true
+ },
+ "u5land2": {
+  "kind": "fx",
+  "take": "u5land2_b",
+  "family": "pho",
+  "where": "land: (dealt in turn)",
+  "why": "b: 84 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: a 0.80/-9.7)"
+ },
+ "u5ruby": {
+  "kind": "fx",
+  "take": "u5ruby_a",
+  "family": "pho",
+  "where": "land \"tired\": the bubble flashes ruby",
+  "why": "a: 26 % where a phone plays, loudest 50 ms -9.0 dBFS (others, phone/loudest: b 0.20/-14.7); HARMONISED (a phone plays 26 %)",
+  "harm": true
+ },
+ "u5stale": {
+  "kind": "fx",
+  "take": "u5stale_b",
+  "family": "pho",
+  "where": "land \"stale\": fire at a stale cloud, it finds nothing",
+  "why": "b: 7 % where a phone plays, loudest 50 ms -7.3 dBFS (others, phone/loudest: a 0.10/-7.5); HARMONISED (a phone plays 7 %)",
+  "harm": true
+ },
+ "u5plant": {
+  "kind": "fx",
+  "take": "u5plant_b",
+  "family": "pho",
+  "where": "the preparation: the stick set upright; the fight's stage turns",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -13.8 dBFS (others, phone/loudest: a 1.00/-20.4)"
+ },
+ "u5waveready": {
+  "kind": "fx",
+  "take": "u5waveready_a",
+  "family": "pho",
+  "where": "waveReady: the golden shockwave comes ready",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -25.8 dBFS (others, phone/loudest: b 1.00/-31.5)"
+ },
+ "u5windup": {
+  "kind": "fx",
+  "take": "u5windup_d",
+  "family": "pho",
+  "where": "windup: the gold gathers (1.5 s)",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -15.7 dBFS (others, phone/loudest: a 1.00/-17.7, b 1.00/-17.1, c 0.89/-17.0); its 0.20 s silent head cut",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5wave": {
+  "kind": "fx",
+  "take": "u5wave_d",
+  "family": "pho",
+  "where": "wave: the golden shockwave goes out",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -11.2 dBFS; refused: a the transcriber writes \"AHHH\"; b the transcriber writes \"DOLA\"; c the transcriber writes \"AHHH!\""
+ },
+ "u5lampflare": {
+  "kind": "fx",
+  "take": "u5lampflare_b",
+  "family": "pho",
+  "where": "the ring passing each lamp",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -20.9 dBFS (others, phone/loudest: a 0.97/-26.9)"
+ },
+ "u5wavebreak": {
+  "kind": "fx",
+  "take": "u5wavebreak_c",
+  "family": "pho",
+  "where": "broken: the gold breaks",
+  "why": "c: 92 % where a phone plays, loudest 50 ms -10.5 dBFS (others, phone/loudest: a 1.00/-11.6, b 1.00/-18.2, d 0.69/-12.2)"
+ },
+ "u5baginhale": {
+  "kind": "fx",
+  "take": "u5baginhale_a",
+  "family": "pho",
+  "where": "BAG: the long indrawn breath grown huge",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -17.5 dBFS (others, phone/loudest: b 0.99/-33.2, c 1.00/-28.1, d 1.00/-33.4)"
+ },
+ "u5bagblow": {
+  "kind": "fx",
+  "take": "u5bagblow_b",
+  "family": "pho",
+  "where": "the bag tied film: the breath blown into the bag (three rooms)",
+  "why": "b: 87 % where a phone plays, loudest 50 ms -32.7 dBFS; refused: a the transcriber writes \"Wow\""
+ },
+ "u5bagsnap": {
+  "kind": "fx",
+  "take": "u5bagsnap_b",
+  "family": "pho",
+  "where": "gathered (by the bag): the cloth snapped shut",
+  "why": "b: 41 % where a phone plays, loudest 50 ms -14.7 dBFS (others, phone/loudest: a 0.49/-16.9)"
+ },
+ "u5bagtie": {
+  "kind": "fx",
+  "take": "u5bagtie_b",
+  "family": "pho",
+  "where": "the bag tied film: the knot",
+  "why": "b: 52 % where a phone plays, loudest 50 ms -31.1 dBFS (others, phone/loudest: a 0.30/-24.3)"
+ },
+ "u5robe": {
+  "kind": "fx",
+  "take": "u5robe_a",
+  "family": "pho",
+  "where": "his robe (films; the gold's raised hand)",
+  "why": "a: 52 % where a phone plays, loudest 50 ms -38.1 dBFS (others, phone/loudest: b 0.26/-36.0)"
+ },
+ "u5murmur1": {
+  "kind": "loop",
+  "take": "u5murmur1_d",
+  "family": "zavier",
+  "where": "the trance: his murmur (a loop; the shortest of three)",
+  "why": "d: 54 % where a phone plays, loudest 50 ms -29.1 dBFS, swing 20.4 dB, 1 % in the voice band (others, phone/loudest: b 0.08/-21.0); refused: a the transcriber writes \"Hmmm...\"; c the transcriber writes \"Hmmm.\""
+ },
+ "u5murmur2": {
+  "kind": "bed",
+  "take": "u5murmur2_d",
+  "family": "zavier",
+  "where": "the trance: his murmur (the second length)",
+  "why": "d: 37 % where a phone plays, loudest 50 ms -31.8 dBFS, swing 27.2 dB, 2 % in the voice band (others, phone/loudest: b 0.23/-32.9); refused: a the transcriber writes \"hmm\"; c the transcriber writes \"Hmmm...\""
+ },
+ "u5murmur3": {
+  "kind": "bed",
+  "take": "u5murmur3_a",
+  "family": "zavier",
+  "where": "the trance: his murmur (the longest)",
+  "why": "a: 91 % where a phone plays, loudest 50 ms -33.1 dBFS, swing 11.3 dB, 86 % in the voice band (others, phone/loudest: b 0.13/-27.6, c 0.97/-40.9, d 0.15/-25.4)"
+ },
+ "u5cagehum": {
+  "kind": "loop",
+  "take": "u5cagehum_a",
+  "family": "zavier",
+  "where": "the cage, whole (a loop; its gain is the cage's strength)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -22.5 dBFS, swing 19.8 dB, 78 % in the voice band (others, phone/loudest: b 0.99/-41.7)"
+ },
+ "u5cagethin": {
+  "kind": "loop",
+  "take": "u5cagethin_b",
+  "family": "zavier",
+  "where": "the cage, worn (a loop crossfaded under u5cagehum as it wears)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -7.1 dBFS, swing 18.2 dB, 1 % in the voice band (others, phone/loudest: a 0.02/-8.8)"
+ },
+ "u5barring1": {
+  "kind": "fx",
+  "take": "u5barring1_a",
+  "family": "zavier",
+  "where": "a Prai at the bars: they ring (dealt in turn)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -8.0 dBFS (others, phone/loudest: b 1.00/-10.5)"
+ },
+ "u5barring2": {
+  "kind": "fx",
+  "take": "u5barring2_a",
+  "family": "zavier",
+  "where": "the bars ring (dealt in turn)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -18.8 dBFS (others, phone/loudest: b 1.00/-21.7)"
+ },
+ "u5cagecrack": {
+  "kind": "fx",
+  "take": "u5cagecrack_a",
+  "family": "zavier",
+  "where": "cageBreak: the cage breaks; the surge: it cracks",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -10.4 dBFS (others, phone/loudest: b 1.00/-12.3, c 1.00/-11.8, d 1.00/-12.5)"
+ },
+ "u5cagewhole": {
+  "kind": "fx",
+  "take": "u5cagewhole_b",
+  "family": "zavier",
+  "where": "cageWhole: the cage whole again",
+  "why": "b: 98 % where a phone plays, loudest 50 ms -17.7 dBFS (others, phone/loudest: a 1.00/-28.0)"
+ },
+ "u5bind1": {
+  "kind": "fx",
+  "take": "u5bind1_a",
+  "family": "zavier",
+  "where": "bind: the bubble closes (dealt in turn)",
+  "why": "a: 98 % where a phone plays, loudest 50 ms -10.6 dBFS (others, phone/loudest: c 0.87/-5.9, d 0.98/-12.9); refused: b the transcriber writes \"Go!\""
+ },
+ "u5bind2": {
+  "kind": "fx",
+  "take": "u5bind2_a",
+  "family": "zavier",
+  "where": "bind: (dealt in turn)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -19.8 dBFS (others, phone/loudest: b 1.00/-20.2, c 1.00/-24.5, d 1.00/-20.6)"
+ },
+ "u5bindhold": {
+  "kind": "loop",
+  "take": "u5bindhold_b",
+  "family": "zavier",
+  "where": "a bound Prai: its bubble's held, shaking note (a loop at the bubble)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -5.2 dBFS, swing 0.9 dB, 100 % in the voice band (others, phone/loudest: a 1.00/-13.2)"
+ },
+ "u5bindpop": {
+  "kind": "fx",
+  "take": "u5bindpop_a",
+  "family": "zavier",
+  "where": "unbind: a bubble ends",
+  "why": "a: 95 % where a phone plays, loudest 50 ms -12.2 dBFS (others, phone/loudest: b 0.93/-12.2)"
+ },
+ "u5bindstale": {
+  "kind": "fx",
+  "take": "u5bindstale_a",
+  "family": "zavier",
+  "where": "bind stale: a bubble closed on a stale cloud",
+  "why": "a: 97 % where a phone plays, loudest 50 ms -16.0 dBFS (others, phone/loudest: b 0.98/-17.9)"
+ },
+ "u5lend": {
+  "kind": "fx",
+  "take": "u5lend_c",
+  "family": "zavier",
+  "where": "lend: the cage leaves him and stands round his teacher",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -12.8 dBFS (others, phone/loudest: a 1.00/-16.4, b 1.00/-13.4, d 1.00/-17.9); its 0.30 s silent head cut",
+  "af": "atrim=start=0.27,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5lendback": {
+  "kind": "fx",
+  "take": "u5lendback_a",
+  "family": "zavier",
+  "where": "lendEnd: the cage comes back to him",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -10.4 dBFS (others, phone/loudest: b 1.00/-12.2); its 0.25 s silent head cut",
+  "af": "atrim=start=0.22,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5zbreath": {
+  "kind": "fx",
+  "take": "u5zbreath_b",
+  "family": "zavier",
+  "where": "drain / reach: he is reached (with the engine's pulse)",
+  "why": "b: 97 % where a phone plays, loudest 50 ms -8.1 dBFS (others, phone/loudest: a 1.00/-12.4, c 0.98/-29.3, d 1.00/-23.9)"
+ },
+ "u5stagger": {
+  "kind": "fx",
+  "take": "u5stagger_a",
+  "family": "zavier",
+  "where": "his stagger, when the cage breaks",
+  "why": "a: 70 % where a phone plays, loudest 50 ms -24.1 dBFS (others, phone/loudest: b 0.66/-24.9)"
+ },
+ "u5zstep": {
+  "kind": "fx",
+  "take": "u5zstep_b",
+  "family": "zavier",
+  "where": "his slow steps in the fight",
+  "why": "b: 32 % where a phone plays, loudest 50 ms -22.0 dBFS (others, phone/loudest: a 0.32/-24.5); HARMONISED (a phone plays 32 %)",
+  "level": -16,
+  "harm": true
+ },
+ "u5turn": {
+  "kind": "fx",
+  "take": "u5turn_a",
+  "family": "zavier",
+  "where": "the turn: the picture floods with violet and the camera leaves his eyes",
+  "why": "a: 8 % where a phone plays, loudest 50 ms -12.6 dBFS (others, phone/loudest: b 0.02/-14.3); HARMONISED (a phone plays 8 %); its 0.50 s silent head cut",
+  "harm": true,
+  "af": "atrim=start=0.47,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5swpho": {
+  "kind": "fx",
+  "take": "u5swpho_b",
+  "family": "screen",
+  "where": "switch: to Grandmaster Pho",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -17.4 dBFS (others, phone/loudest: a 0.99/-24.5)"
+ },
+ "u5swzav": {
+  "kind": "fx",
+  "take": "u5swzav_a",
+  "family": "screen",
+  "where": "switch: to Master Zavier",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -11.7 dBFS (others, phone/loudest: b 1.00/-19.2)"
+ },
+ "u5ready": {
+  "kind": "fx",
+  "take": "u5ready_b",
+  "family": "screen",
+  "where": "a button come ready",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -11.8 dBFS (others, phone/loudest: a 1.00/-14.7)"
+ },
+ "u5bowl": {
+  "kind": "fx",
+  "take": "u5bowl_a",
+  "family": "screen",
+  "where": "the count's notes: the source the nine notes are made from (sound/notes.py)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -3.7 dBFS (others, phone/loudest: b 1.00/-11.6)"
+ },
+ "u5start": {
+  "kind": "fx",
+  "take": "u5start_b",
+  "family": "screen",
+  "where": "the brief's START",
+  "why": "b: 42 % where a phone plays, loudest 50 ms -11.2 dBFS (others, phone/loudest: a 0.21/-14.1)"
+ },
+ "u5broken": {
+  "kind": "fx",
+  "take": "u5broken_a",
+  "family": "screen",
+  "where": "lost: the cleansing broken",
+  "why": "a: 0 % where a phone plays, loudest 50 ms -7.8 dBFS (others, phone/loudest: b 0.00/-9.7); HARMONISED (a phone plays 0 %)",
+  "harm": true
+ },
+ "u5done": {
+  "kind": "fx",
+  "take": "u5done_b",
+  "family": "screen",
+  "where": "won: the cleansing done",
+  "why": "b: 99 % where a phone plays, loudest 50 ms -5.6 dBFS; refused: a the transcriber writes \"Thanks for watching!\""
+ },
+ "u5nagarise": {
+  "kind": "fx",
+  "take": "u5nagarise_c",
+  "family": "together",
+  "where": "together / naga: the Naga rising",
+  "why": "c: 30 % where a phone plays, loudest 50 ms -8.4 dBFS (others, phone/loudest: a 0.09/-5.6, b 0.12/-6.9, d 0.08/-6.4); HARMONISED (a phone plays 30 %); its 0.15 s silent head cut",
+  "harm": true,
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5nagacoil": {
+  "kind": "fx",
+  "take": "u5nagacoil_a",
+  "family": "together",
+  "where": "the Naga film: its body laid round the court",
+  "why": "a: 60 % where a phone plays, loudest 50 ms -25.7 dBFS (others, phone/loudest: b 0.65/-31.2)"
+ },
+ "u5nagabreath": {
+  "kind": "loop",
+  "take": "u5nagabreath_a",
+  "family": "together",
+  "where": "the Naga film: its breath (a loop)",
+  "why": "a: 23 % where a phone plays, loudest 50 ms -11.3 dBFS, swing 9.9 dB, 16 % in the voice band (others, phone/loudest: b 0.20/-13.3); HARMONISED (a phone plays 23 %)",
+  "harm": true
+ },
+ "u5shapebreak": {
+  "kind": "fx",
+  "take": "u5shapebreak_a",
+  "family": "together",
+  "where": "the Naga film: the tall shape comes apart into its three",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -18.1 dBFS (others, phone/loudest: b 1.00/-26.9, c 1.00/-20.6, d 1.00/-27.5)"
+ },
+ "u5togfill": {
+  "kind": "fx",
+  "take": "u5togfill_b",
+  "family": "together",
+  "where": "TOGETHER: the button filling (1.2 s)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -32.6 dBFS (others, phone/loudest: a 0.98/-41.7)"
+ },
+ "u5embers": {
+  "kind": "loop",
+  "take": "u5embers_a",
+  "family": "together",
+  "where": "the Naga film: embers rising (a loop)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -29.3 dBFS, swing 13.3 dB, 11 % in the voice band (others, phone/loudest: b 0.98/-25.3)"
+ },
+ "u5clasp": {
+  "kind": "fx",
+  "take": "u5clasp_a",
+  "family": "case3",
+  "where": "the film in: the case's clasps",
+  "why": "a: 81 % where a phone plays, loudest 50 ms -15.1 dBFS (others, phone/loudest: b 0.66/-22.2)"
+ },
+ "u5lay1": {
+  "kind": "fx",
+  "take": "u5lay1_b",
+  "family": "case3",
+  "where": "pieces laid on the cloth (dealt in turn)",
+  "why": "b: 61 % where a phone plays, loudest 50 ms -14.7 dBFS (others, phone/loudest: a 0.59/-20.7)"
+ },
+ "u5lay2": {
+  "kind": "fx",
+  "take": "u5lay2_a",
+  "family": "case3",
+  "where": "pieces laid (dealt in turn)",
+  "why": "a: 66 % where a phone plays, loudest 50 ms -13.7 dBFS (others, phone/loudest: b 0.62/-15.3)"
+ },
+ "u5lay3": {
+  "kind": "fx",
+  "take": "u5lay3_a",
+  "family": "case3",
+  "where": "pieces laid in a row",
+  "why": "a: 59 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: b 0.65/-19.1); its 0.20 s silent head cut",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5whisk1": {
+  "kind": "fx",
+  "take": "u5whisk1_b",
+  "family": "case3",
+  "where": "the rite: the fan's whisk and the water (dealt in turn)",
+  "why": "b: 53 % where a phone plays, loudest 50 ms -42.5 dBFS (others, phone/loudest: a 0.26/-43.2)"
+ },
+ "u5whisk2": {
+  "kind": "fx",
+  "take": "u5whisk2_a",
+  "family": "case3",
+  "where": "the rite: (dealt in turn)",
+  "why": "a: 46 % where a phone plays, loudest 50 ms -29.7 dBFS (others, phone/loudest: b 0.05/-34.0)"
+ },
+ "u5drops": {
+  "kind": "fx",
+  "take": "u5drops_a",
+  "family": "case3",
+  "where": "the rite: the water falls on the pieces",
+  "why": "a: 51 % where a phone plays, loudest 50 ms -39.2 dBFS; refused: b near silent (its loudest 50 ms -50.0 dBFS); its 0.25 s silent head cut",
+  "af": "atrim=start=0.22,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5pcangry": {
+  "kind": "fx",
+  "take": "u5pcangry_d",
+  "family": "case3",
+  "where": "the ANGRY presence: looked at, and as it comes away",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -29.3 dBFS (others, phone/loudest: a 1.00/-32.0, b 0.99/-31.0, c 1.00/-31.8)"
+ },
+ "u5pchungry": {
+  "kind": "fx",
+  "take": "u5pchungry_a",
+  "family": "case3",
+  "where": "the HUNGRY presence: looked at, and as it comes away",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -24.4 dBFS (others, phone/loudest: b 1.00/-24.6, c 1.00/-24.9, d 1.00/-24.4)"
+ },
+ "u5pcwarm": {
+  "kind": "fx",
+  "take": "u5pcwarm_b",
+  "family": "case3",
+  "where": "the one LOOKING FOR ENERGY: looked at, and as it comes away",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -24.1 dBFS; refused: a the transcriber writes \"Oh...\"; c the transcriber writes \"Huh?\"; d the transcriber writes \"Aww...\""
+ },
+ "u5pcry1": {
+  "kind": "fx",
+  "take": "u5pcry1_b",
+  "family": "case3",
+  "where": "the rite: the presences crying out as they come away (dealt in turn)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -14.5 dBFS (others, phone/loudest: a 1.00/-24.4, c 1.00/-28.4, d 1.00/-24.3)"
+ },
+ "u5pcry2": {
+  "kind": "fx",
+  "take": "u5pcry2_c",
+  "family": "case3",
+  "where": "the rite: (dealt in turn)",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -17.9 dBFS (others, phone/loudest: a 1.00/-22.5, b 1.00/-23.9, d 1.00/-22.4)"
+ },
+ "u5pgather": {
+  "kind": "fx",
+  "take": "u5pgather_b",
+  "family": "case3",
+  "where": "the rite: the pieces gathered into the bag",
+  "why": "b: 81 % where a phone plays, loudest 50 ms -28.9 dBFS (others, phone/loudest: a 0.76/-35.8)"
+ },
+ "u5string": {
+  "kind": "fx",
+  "take": "u5string_a",
+  "family": "case3",
+  "where": "the rite: the sacred string wound and knotted",
+  "why": "a: 90 % where a phone plays, loudest 50 ms -29.9 dBFS (others, phone/loudest: b 0.86/-34.8); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5lighter": {
+  "kind": "fx",
+  "take": "u5lighter_b",
+  "family": "case3",
+  "where": "the rite: the heaviness lifting",
+  "why": "b: 97 % where a phone plays, loudest 50 ms -40.6 dBFS (others, phone/loudest: a 0.98/-43.2)"
+ },
+ "u5lid": {
+  "kind": "fx",
+  "take": "u5lid_b",
+  "family": "case3",
+  "where": "ending B: the case's lid shut by his own hand",
+  "why": "b: 84 % where a phone plays, loudest 50 ms -17.7 dBFS (others, phone/loudest: a 0.75/-16.0); its 0.35 s silent head cut",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5foam": {
+  "kind": "fx",
+  "take": "u5foam_b",
+  "family": "case3",
+  "where": "ending C: pieces fitted back into the foam",
+  "why": "b: 96 % where a phone plays, loudest 50 ms -25.5 dBFS (others, phone/loudest: a 0.96/-26.0); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5count": {
+  "kind": "fx",
+  "take": "u5count_b",
+  "family": "case3",
+  "where": "ending D: fingers counting on the table",
+  "why": "b: 58 % where a phone plays, loudest 50 ms -29.8 dBFS (others, phone/loudest: a 0.42/-31.2)"
+ },
+ "u5slide": {
+  "kind": "fx",
+  "take": "u5slide_b",
+  "family": "case3",
+  "where": "endings A and B: the case pushed across the cloth",
+  "why": "b: 93 % where a phone plays, loudest 50 ms -40.8 dBFS (others, phone/loudest: a 0.25/-26.1)"
+ },
+ "u5curtain": {
+  "kind": "fx",
+  "take": "u5curtain_a",
+  "family": "household",
+  "where": "the bag tied film: Mr Koh draws his curtains back",
+  "why": "a: 98 % where a phone plays, loudest 50 ms -29.0 dBFS (others, phone/loudest: b 1.00/-32.9)"
+ },
+ "u5window": {
+  "kind": "fx",
+  "take": "u5window_b",
+  "family": "household",
+  "where": "the bag tied film: the windows opened",
+  "why": "b: 50 % where a phone plays, loudest 50 ms -32.5 dBFS (others, phone/loudest: a 0.41/-25.6)"
+ },
+ "u5flicker": {
+  "kind": "fx",
+  "take": "u5flicker_a",
+  "family": "household",
+  "where": "the bag tied film: the fourth lamp flickers once and holds",
+  "why": "a: 52 % where a phone plays, loudest 50 ms -28.2 dBFS (others, phone/loudest: b 0.29/-40.7)"
+ },
+ "u5gate": {
+  "kind": "fx",
+  "take": "u5gate_a",
+  "family": "household",
+  "where": "the devotee: the court's gate",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -11.6 dBFS (others, phone/loudest: b 1.00/-16.1)"
+ },
+ "u5doors": {
+  "kind": "fx",
+  "take": "u5doors_a",
+  "family": "household",
+  "where": "the devotee: Mr Koh opens his doors",
+  "why": "a: 36 % where a phone plays, loudest 50 ms -23.6 dBFS (others, phone/loudest: b 0.17/-17.3); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5chair": {
+  "kind": "fx",
+  "take": "u5chair_a",
+  "family": "household",
+  "where": "Mr Koh's chair",
+  "why": "a: 46 % where a phone plays, loudest 50 ms -25.9 dBFS; refused: b the transcriber writes \"Thanks for watching!\"; its 0.20 s silent head cut",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5kettle": {
+  "kind": "fx",
+  "take": "u5kettle_a",
+  "family": "household",
+  "where": "the kettle he forgot",
+  "why": "a: 81 % where a phone plays, loudest 50 ms -38.1 dBFS (others, phone/loudest: b 0.72/-44.0)"
+ },
+ "u5unwrap": {
+  "kind": "fx",
+  "take": "u5unwrap_a",
+  "family": "household",
+  "where": "the preparation: Ton unwraps the Naga stick",
+  "why": "a: 90 % where a phone plays, loudest 50 ms -34.1 dBFS (others, phone/loudest: b 0.90/-34.4)"
+ },
+ "u5bagdown": {
+  "kind": "fx",
+  "take": "u5bagdown_a",
+  "family": "household",
+  "where": "the preparation: Jun lays the bag down",
+  "why": "a: 74 % where a phone plays, loudest 50 ms -17.4 dBFS (others, phone/loudest: b 0.65/-17.3)"
+ },
+ "u5unwind": {
+  "kind": "fx",
+  "take": "u5unwind_a",
+  "family": "household",
+  "where": "the preparation: Jun draws the thread across the doorway",
+  "why": "a: 97 % where a phone plays, loudest 50 ms -46.0 dBFS (others, phone/loudest: b 0.50/-46.4)"
+ },
+ "u5lampsink": {
+  "kind": "fx",
+  "take": "u5lampsink_b",
+  "family": "household",
+  "where": "the preparation: the lamps sink",
+  "why": "b: 91 % where a phone plays, loudest 50 ms -35.5 dBFS (others, phone/loudest: a 0.51/-38.6)"
+ },
+ "u5vison": {
+  "kind": "copy",
+  "from": "u4vison",
+  "family": "vision",
+  "where": "Spirit Vision (the fiftieth seam, as chapter 4 declares it)",
+  "why": "chapter 4's u4vison byte for byte: the plan's 10.1, 'the engine's own, as chapter 4'"
+ },
+ "u5visoff": {
+  "kind": "copy",
+  "from": "u4visoff",
+  "family": "vision",
+  "where": "Spirit Vision (the fiftieth seam, as chapter 4 declares it)",
+  "why": "chapter 4's u4visoff byte for byte: the plan's 10.1, 'the engine's own, as chapter 4'"
+ },
+ "u5heart": {
+  "kind": "copy",
+  "from": "u4heart",
+  "family": "vision",
+  "where": "Spirit Vision (the fiftieth seam, as chapter 4 declares it)",
+  "why": "chapter 4's u4heart byte for byte: the plan's 10.1, 'the engine's own, as chapter 4'"
+ },
+ "u5visbed": {
+  "kind": "copy",
+  "from": "u4visbed",
+  "family": "vision",
+  "where": "Spirit Vision (the fiftieth seam, as chapter 4 declares it)",
+  "why": "chapter 4's u4visbed byte for byte: the plan's 10.1, 'the engine's own, as chapter 4'"
+ },
+ "u5vismus": {
+  "kind": "copy",
+  "from": "u4vismus",
+  "family": "vision",
+  "where": "Spirit Vision (the fiftieth seam, as chapter 4 declares it)",
+  "why": "chapter 4's u4vismus byte for byte: the plan's 10.1, 'the engine's own, as chapter 4'"
+ },
+ "u5note1": {
+  "kind": "note",
+  "wav": "notes/u5note1.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 8 (the first note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note2": {
+  "kind": "note",
+  "wav": "notes/u5note2.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 7 (the second note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note3": {
+  "kind": "note",
+  "wav": "notes/u5note3.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 6 (the third note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note4": {
+  "kind": "note",
+  "wav": "notes/u5note4.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 5 (the fourth note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note5": {
+  "kind": "note",
+  "wav": "notes/u5note5.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 4 (the fifth note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note6": {
+  "kind": "note",
+  "wav": "notes/u5note6.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 3 (the sixth note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note7": {
+  "kind": "note",
+  "wav": "notes/u5note7.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 2 (the seventh note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note8": {
+  "kind": "note",
+  "wav": "notes/u5note8.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 1 (the eighth note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5note9": {
+  "kind": "note",
+  "wav": "notes/u5note9.wav",
+  "family": "screen",
+  "where": "gathered: the count falls to 0 (the ninth note of the rising ladder)",
+  "why": "MADE from u5bowl's pick (u5bowl_a), resampled onto D minor pentatonic from D5 (sound/notes.py)"
+ },
+ "u5m1open": {
+  "kind": "music",
+  "take": "u5m1open_a",
+  "af": "atrim=start=3.90,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M1: the opening film (the lift, the doors, the sour), about 65 s",
+  "why": "a: 1 holes in its body, 57 % where a phone plays, swing 58.2 dB, 22 % in the voice band (others, phone/holes: b 88 %/7 holes, c 37 %/2 holes); its 3.95 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m2walk": {
+  "kind": "mbed",
+  "take": "u5m2walk_b",
+  "secs": 52,
+  "start": 3,
+  "family": "music",
+  "where": "M2: the walkway (play, a loop)",
+  "why": "b: no hole in its body, 54 % where a phone plays, swing 25.0 dB, 3 % in the voice band (others, phone/holes: a 17 %/0 holes). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m3room": {
+  "kind": "music",
+  "take": "u5m3room_b",
+  "af": "afade=t=in:d=0.5",
+  "family": "music",
+  "where": "M3: Mr Koh's room (the devotee film)",
+  "why": "b: no hole in its body, 49 % where a phone plays, swing 70.1 dB, 2 % in the voice band (others, phone/holes: a 26 %/0 holes); it begins on signal, faded in. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m4hunt": {
+  "kind": "mbed",
+  "take": "u5m4hunt_b",
+  "secs": 52,
+  "start": 3,
+  "family": "music",
+  "where": "M4: the hunt (play, a loop; the chapter lifts it a step at each stain)",
+  "why": "b: no hole in its body, 89 % where a phone plays, swing 43.9 dB, 32 % in the voice band (others, phone/holes: a 30 %/0 holes). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m5nine": {
+  "kind": "music",
+  "take": "u5m5nine_b",
+  "af": "atrim=start=0.65,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M5: the nine seen (one sung chord, then nothing)",
+  "why": "b: no hole in its body, 99 % where a phone plays, swing 37.5 dB, 62 % in the voice band (others, phone/holes: a 100 %/0 holes); its 0.70 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m6prep": {
+  "kind": "music",
+  "take": "u5m6prep2_b",
+  "af": "afade=t=in:d=0.5",
+  "family": "music",
+  "where": "M6: the preparation, and the turn",
+  "why": "b: 2 holes in its body, 82 % where a phone plays, swing 71.9 dB, 33 % in the voice band (others, phone/holes: a 100 %/4 holes); it begins on signal, faded in; MADE AGAIN as u5m6prep2 (music4.json): the first two takes a phone played 22 and 6 % of. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m8surge": {
+  "kind": "music",
+  "take": "u5m8surge_b",
+  "af": "atrim=start=0.35,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M8: the surge (every stem down to one held note and his heart)",
+  "why": "b: no hole in its body, 72 % where a phone plays, swing 28.7 dB, 40 % in the voice band (others, phone/holes: a 27 %/0 holes); its 0.40 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m9naga": {
+  "kind": "music",
+  "take": "u5m9naga_a",
+  "af": "atrim=start=1.35,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M9: TOGETHER (the Naga film: both themes at once, the only time)",
+  "why": "a: no hole in its body, 90 % where a phone plays, swing 121.7 dB, 64 % in the voice band (others, phone/holes: b 75 %/0 holes); its 1.40 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m10last": {
+  "kind": "mbed",
+  "take": "u5m10last_a",
+  "secs": 30,
+  "start": 2,
+  "family": "music",
+  "where": "M10: the last three (a struck bowl for each, and room; a loop)",
+  "why": "a: no hole in its body, 100 % where a phone plays, swing 10.1 dB, 57 % in the voice band (others, phone/holes: b 23 %/0 holes). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m11light": {
+  "kind": "music",
+  "take": "u5m11light_b",
+  "af": "atrim=start=0.75,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M11: the house lighter (the bag tied film)",
+  "why": "b: no hole in its body, 77 % where a phone plays, swing 19.1 dB, 14 % in the voice band (others, phone/holes: a 63 %/0 holes); its 0.80 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m12lift": {
+  "kind": "music",
+  "take": "u5m12lift_b",
+  "af": "atrim=start=1.25,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M12: at the lift, his teacher's lesson",
+  "why": "b: no hole in its body, 99 % where a phone plays, swing 39.0 dB, 68 % in the voice band (others, phone/holes: a 88 %/0 holes); its 1.30 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m13shop": {
+  "kind": "mbed",
+  "take": "u5m13shop_a",
+  "secs": 52,
+  "start": 3,
+  "family": "music",
+  "where": "M13: the receiving room in the afternoon (play, a loop)",
+  "why": "a: no hole in its body, 92 % where a phone plays, swing 5.7 dB, 20 % in the voice band (others, phone/holes: b 76 %/0 holes). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m14sight": {
+  "kind": "mbed",
+  "take": "u5m14sight_b",
+  "secs": 34,
+  "start": 2,
+  "family": "music",
+  "where": "M14: the pieces, his sight open (a loop)",
+  "why": "b: no hole in its body, 100 % where a phone plays, swing 24.7 dB, 43 % in the voice band (others, phone/holes: a 56 %/0 holes). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m15endA": {
+  "kind": "music",
+  "take": "u5m15endA_a",
+  "af": "atrim=start=0.80,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M15: ending A",
+  "why": "a: 2 holes in its body, 71 % where a phone plays, swing 52.4 dB, 29 % in the voice band (others, phone/holes: b 66 %/2 holes); its 0.85 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m16endB": {
+  "kind": "music",
+  "take": "u5m16endB_b",
+  "af": "atrim=start=0.35,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M16: ending B",
+  "why": "b: no hole in its body, 99 % where a phone plays, swing 52.9 dB, 29 % in the voice band (others, phone/holes: a 81 %/0 holes); its 0.40 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m17endC": {
+  "kind": "music",
+  "take": "u5m17endC_a",
+  "af": "afade=t=in:d=0.5",
+  "family": "music",
+  "where": "M17: ending C",
+  "why": "a: no hole in its body, 48 % where a phone plays, swing 66.7 dB, 14 % in the voice band (others, phone/holes: b 35 %/0 holes); it begins on signal, faded in; refused: b (the transcriber writes \"Thanks for watching!\"). THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m18endD": {
+  "kind": "music",
+  "take": "u5m18endD_b",
+  "af": "atrim=start=0.50,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M18: ending D",
+  "why": "b: no hole in its body, 56 % where a phone plays, swing 87.1 dB, 30 % in the voice band (others, phone/holes: a 56 %/5 holes); its 0.55 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m19card": {
+  "kind": "music",
+  "take": "u5m19card_b",
+  "af": "atrim=start=0.25,asetpts=PTS-STARTPTS,afade=t=in:d=0.04",
+  "family": "music",
+  "where": "M19: the last picture and the card",
+  "why": "b: no hole in its body, 100 % where a phone plays, swing 36.7 dB, 26 % in the voice band (others, phone/holes: a 100 %/0 holes); its 0.30 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+ },
+ "u5m7low": {
+  "kind": "stem",
+  "wav": "m7/u5m7low.wav",
+  "family": "music",
+  "where": "M7, the fight: the floor: the drums' body and the low strings (always up)",
+  "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ },
+ "u5m7drum": {
+  "kind": "stem",
+  "wav": "m7/u5m7drum.wav",
+  "family": "music",
+  "where": "M7, the fight: the teacher's: the drums' skins and the gongs' strike",
+  "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ },
+ "u5m7line": {
+  "kind": "stem",
+  "wav": "m7/u5m7line.wav",
+  "family": "music",
+  "where": "M7, the fight: the teacher's: the struck line, piano and xylophone",
+  "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ },
+ "u5m7flute": {
+  "kind": "stem",
+  "wav": "m7/u5m7flute.wav",
+  "family": "music",
+  "where": "M7, the fight: the student's: the flute and the small bell",
+  "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ },
+ "u5m7voice": {
+  "kind": "stem",
+  "wav": "m7/u5m7voice.wav",
+  "family": "music",
+  "where": "M7, the fight: the student's: the wordless choir (beatless, its own piece)",
+  "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ }
+}

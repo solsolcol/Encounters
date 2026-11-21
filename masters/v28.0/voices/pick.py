@@ -89,8 +89,19 @@ def measure(model, path, text):
                 hole=round(max(gaps), 3) if gaps else 0.0, sim=round(sim, 3), tag_said=bool(tag_said),
                 clean_end=clean, wps=round(len(want) / max(0.25, e1 - e0), 2), heard=heard)
 
+# takes REFUSED BY THEIR WORDS (heard and read here): sim counts the script's words heard, so a word said twice passes it
+REFUSED = {'ph5na2': {'a': 'says "FIRE. FIRE." (a word twice)'},
+           'ph5c1': {'a': 'says "Pai" for "Prai"'}}
+
+# PICKS MADE BY READING THE MEASURES, where every take of a line fails the same test the same way (the voice's own read,
+# not a fault of one take): the take that fails it least, and why (RECORD.md, the fight)
+CHOSEN = {'ph5f7': ('c', 'every take drags (0.97-1.16 w/s: the pause before SMELL is the read); the least, and its end the cleanest'),
+          'ph5l1': ('b', 'every take drags (1.03-1.29 w/s: three sentences, each let land); the least'),
+          'ph5fc': ('c', 'every take ends on its release (-13 to -21 dB under the voice, a breath rising in its last 40 ms); c the unhurried read, the chain\'s fade over that breath'),
+          'q5c4': ('a', 'both whole takes hold 1.80 s between the sentences (his limit 1.7; c cut, d dropped the first sentence); the tighter')}
+
 def score(t, who, nwords, med=None):
-    ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8
+    ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8 and not t.get('refused')
     # (a hole: 1.4 s for a spoken reply; 1.7 for him, whose narration stops between two sentences, the pause its
     #  [reflective] read is asked for; 1.9 for Grandmaster Pho, who lets a sentence land before the next)
     hole = t['hole'] > (1.9 if who in ('pho', 'amma') else 1.7 if who == 'he' else 1.4)
@@ -133,9 +144,12 @@ def main():
                     model = WhisperModel('small.en', device='cpu', compute_type='int8')
                 takes[k] = measure(model, p, RESAY[lid]['prompt'] if (lid in RESAY and k in 'cdef' and who != 'pho') else text)
         if not takes: print(lid, 'NO TAKES'); continue
+        for k, why_r in REFUSED.get(lid, {}).items():
+            if k in takes: takes[k]['refused'] = why_r
         n = len(norm(text)); med = float(np.median([t['e_last'] - t['e_first'] for t in takes.values()])) if len(takes) > 1 else None
         sc = {k: score(t, who, n, med) for k, t in takes.items()}
         pick = min(sc, key=lambda k: sc[k]); rest = [k for k in sc if k != pick]
+        if lid in CHOSEN and CHOSEN[lid][0] in takes: pick, rest = CHOSEN[lid][0], [k for k in sc if k != CHOSEN[lid][0]]
         why = ''
         if rest:
             best = min(rest, key=lambda k: sc[k])
@@ -143,6 +157,7 @@ def main():
                 if sc[pick][i] < sc[best][i]:
                     why = WHY[i] or ('the unhurried read' if who in ('pho', 'amma') else 'the tighter read'); break
             else: why = 'equal by every measure: the first'
+        if lid in CHOSEN and CHOSEN[lid][0] == pick: why = CHOSEN[lid][1]
         t = takes[pick]
         res[lid] = dict(who=who, text=text, pick=pick, why=why, med=med, takes=takes)
         flag = '' if sc[pick][0] == 0 and sc[pick][1] == 0 and sc[pick][2] == 0 else '  <-- CHECK'

@@ -64,7 +64,7 @@ for o in ROWS:
             s = np.array([db(np.sqrt(np.mean(x[j:j + SR] ** 2))) for j in range(0, len(x) - SR + 1, SR)])
             med = float(np.median(s)); m['median'] = round(med, 1); m['swing'] = round(float(s.max() - s.min()), 1)
             m['holes'] = [int(j) for j in np.where(s < med - 14)[0]]
-            if table == 'music': m['secs'] = [round(float(v), 1) for v in s]
+            if table.startswith('music'): m['secs'] = [round(float(v), 1) for v in s]
         if n == 'u5m7fight':
             m['tempo'] = [tempo(x[j:j + SR * 16]) for j in range(0, len(x) - SR * 16 + 1, SR * 8)]
         m['words'] = words(p)

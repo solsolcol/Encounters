@@ -1,0 +1,1012 @@
+
+    /* ================================================================ THE FILMS' PICTURES (M9: masters/v28.0/parts/c_yfilm.js)
+       Every film of the plan's 4 (the opening, the devotee, the preparation and the turn, the bag tied, the collector's
+       film in, the four endings with the rite and the last picture) and the Naga's film inside the fight (5.5, stage 5).
+       Their CLOCKS are the chapter's own (z_tail.js: built by tl() from SECS, so a measured take moves everything after it,
+       v5.15); here is what each frame of each shows, a pure function of the film's clock (v6.4: people POSED at the moment
+       the clock asks for, a look laid on at once, every place a function), so a seek, a skip and a slow phone land on one
+       picture. Every shot is HIS EYES (the lens stands where he stands, turns and narrows, and never moves through the
+       people), except from the turn of the preparation to the bag tied: there, and only there, Master Zavier is seen
+       (Chad's R3 and R5: the climax in third person). A shot is a track of keys: each key's eye, its aim (or its turn and
+       its pitch) and its lens for a phone and a desk; between two keys the lens eases (a smooth function of the clock,
+       v25.5); a key marked `cut` is jumped to. A phone's frame is a third of a desk's width, so a group a desk holds is a
+       phone's pan from one face to the next. Each film ENDS where play keeps things (v5.25): its last key is the view the
+       phase it hands to begins in (the snapshot the engine restores: the phase was booked before the film began), and the
+       people stand at that phase's stations. */
+    const FM5 = { once: new Set(), shot: '', lit: '', vis: false, s: null };
+    const PLAYFOV5 = 72;
+    const _fv5 = new THREE.Vector3(), _fw5 = new THREE.Vector3();
+    function fmLook(name, secs = 0) { if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
+    function fmLens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
+    /* the rig at an eye, aimed at a point (yaw turns, pitch tilts: a turn of 0 looks toward -z) */
+    function fmAim(p, q, roll = 0) {
+      yaw.position.set(p[0], p[1], p[2]);
+      const dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2];
+      yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz)); camera.rotation.z = roll;
+    }
+    /* (the levels of the people and the things for THIS frame's lens, never the last one's: v24.22; the world's frame
+       chooses them only in play) */
+    function fmLevels() { camera.updateMatrixWorld(true); stockLod(); peopleLevels(); }
+    const v3_5 = (o) => (typeof o === 'function' ? o() : o);
+    /* a key: { t, name, eye, at, fp, fd, roll, cut } or, for a turn held as a rig holds it, { t, eye, yaw, pitch, fp, fd }
+       (the fight's boom, the snapshot a phase begins in). Between two keys of the same kind the eye, the aim and the lens
+       ease; between an aimed key and a turned one the turn and the pitch ease */
+    const keysBad5 = new Set();
+    function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
+      const p = v3_5(K.eye), q = v3_5(K.at), dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2]; return [Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz))]; }
+    function fmTrack(t, K) {
+      for (let j = 1; j < K.length; j++) if (K[j].t < K[j - 1].t) { const w = (K[j - 1].name || '') + '@' + K[j - 1].t.toFixed(2) + ' > ' + (K[j].name || '') + '@' + K[j].t.toFixed(2);
+        if (!keysBad5.has(w)) { keysBad5.add(w); console.error('e4c5: a film\'s camera keys run backwards in time: ' + w); } }
+      let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
+      const A = K[i], B = K[i + 1], nar = isNarrow();
+      if (!B || B.cut) {
+        fmLens(nar ? A.fp : A.fd);
+        if (A.yaw != null || !A.at) { const p = v3_5(A.eye), [yw, pt] = fmKeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
+        else fmAim(v3_5(A.eye), v3_5(A.at), A.roll || 0);
+        FM5.shot = A.name || ''; fmLevels(); return;
+      }
+      const u = smo(c01((t - A.t) / Math.max(1e-3, B.t - A.t)));
+      fmLens(lp(nar ? A.fp : A.fd, nar ? B.fp : B.fd, u));
+      const pe = lp3(v3_5(A.eye), v3_5(B.eye), u);
+      if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = fmKeyYP(A), [yb, pb] = fmKeyYP(B);
+        yaw.position.set(pe[0], pe[1], pe[2]); yaw.rotation.y = ya + angTo(ya, yb) * u; pitch.rotation.x = lp(pa, pb, u); camera.rotation.z = lp(A.roll || 0, B.roll || 0, u); }
+      else fmAim(pe, lp3(v3_5(A.at), v3_5(B.at), u), lp(A.roll || 0, B.roll || 0, u));
+      FM5.shot = (A.name || '') + '>' + (B.name || ''); fmLevels();
+    }
+    /* the view a phase begins in (the snapshot the engine will restore at the film's end), as a key */
+    const fmSnapKey = (t, name = 'play') => { const s = FM5.s; return s ? { t, name, eye: [s.yawPos.x, s.yawPos.y, s.yawPos.z], yaw: s.yawRot, pitch: s.pitchX, fp: PLAYFOV5, fd: PLAYFOV5 } : null; };
+    const fmRun = (t, t0, t1, a, b) => lp(a, b, smo(c01((t - t0) / (t1 - t0))));
+    const fmPing = (t, from, len, secs) => from + len * (0.5 - 0.5 * Math.cos(Math.PI * 2 * t / secs));
+    function fmHead(P, fb) { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_fv5); return [_fv5.x, _fv5.y, _fv5.z]; } return fb; }
+    const fmShow = (P, on) => { if (!P) return; P.hidden = !on; if (P.ready) P.group.visible = on; };
+    /* SPIRIT VISION held by a film's clock (the engine's own curve, out from his eyes over `secs` from `t0`, full until
+       `t1`, home over `back`); held only round the moments it is open (R51: a held radius of 0 draws every frame through
+       the vision's pass for nothing) */
+    const VR5 = 70, visCurve5 = (u) => 0.30 * u + 0.70 * u * u * u;
+    function fmVision(t, t0, secs = 2.2, t1 = Infinity, back = 1.6) {
+      if (!kit || !kit.vision) return;
+      let r = 0, mv = false;
+      if (t >= t0 && t < t0 + secs) { r = VR5 * visCurve5((t - t0) / secs); mv = true; }
+      else if (t >= t0 + secs && t < t1) r = VR5;
+      else if (t >= t1 && t < t1 + back) { r = VR5 * visCurve5(1 - (t - t1) / back); mv = true; }
+      if (r > 0.001 || mv) { kit.vision({ r, moving: mv }); FM5.vis = true; }
+      else if (FM5.vis) { kit.vision(null); FM5.vis = false; }
+    }
+    function fmVisionOff() { if (FM5.vis && kit && kit.vision) kit.vision(null); FM5.vis = false; }
+    /* A WALK ALONG A PATH (pts: [[x, z], ...]) from `t0` at `v` metres a second, the walking take's time read from the ground
+       covered (P.pace: the take's own travel, v26.0; the library walk's 1.29 m a second where a body has none), eased out
+       of its rest and into it again at the end over `ease` seconds of the walk; turned along the path and, at its end, to
+       `ryEnd`. `rest` is the take and moment it stands in before and after. Answers whether it is walking */
+    function fmPathLen(pts) { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; }
+    function fmPathAt(pts, s) { for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], l = Math.hypot(b[0] - a[0], b[1] - a[1]); if (s <= l || i === pts.length - 1) { const u = l > 1e-6 ? Math.min(1, s / l) : 1; return [lp(a[0], b[0], u), lp(a[1], b[1], u), Math.atan2(b[0] - a[0], b[1] - a[1])]; } s -= l; } return [pts[0][0], pts[0][1], 0]; }
+    function fmWalk(P, t, t0, pts, v, rest, ryEnd, o = {}) {
+      if (!P || !P.ready) return false;
+      const L = fmPathLen(pts), T = L / Math.max(0.1, v), tw = t - t0, pace = (P.pace && P.pace.Walking) || 1.29, ease = o.ease || 0.45;
+      const restT = (q) => (rest[1] != null ? rest[1] : 0) + (rest[2] ? q * rest[2] : 0);
+      if (tw <= 0) { const a = pts[0]; put(P, a[0], a[1], o.ry0 != null ? o.ry0 : fmPathAt(pts, 0)[2]); pose(P, rest[0], restT(t), !!rest[3]); return false; }
+      if (tw >= T) { const b = pts[pts.length - 1]; const turnK = smo(c01((tw - T) / 0.6)), h = fmPathAt(pts, L)[2];
+        put(P, b[0], b[1], ryEnd != null ? h + angTo(h, ryEnd) * turnK : h); pose(P, rest[0], restT(t), !!rest[3]); return false; }
+      /* (eased along the path: slow away, slow to a stop, the take read from the ground covered) */
+      const s = L * (tw < ease ? 0.5 * v * tw * tw / ease / L : tw > T - ease ? 1 - 0.5 * v * (T - tw) * (T - tw) / ease / L : (v * tw - 0.5 * v * ease) / L);
+      const sc = Math.max(0, Math.min(L, s)), at = fmPathAt(pts, sc), r0 = o.ry0 != null ? o.ry0 : at[2];
+      put(P, at[0], at[1], r0 + angTo(r0, at[2]) * smo(c01(tw / 0.35)));
+      const into = smo(c01(tw / 0.35)), outOf = smo(c01((tw - T + 0.35) / 0.35));
+      if (outOf <= 0) pose(P, 'Walking', sc / pace, true, rest[0], 1 - into, restT(t));
+      else pose(P, rest[0], restT(t), !!rest[3], 'Walking', 1 - outOf, sc / pace);
+      return true;
+    }
+    /* a person turned from one heading to another over [t0, t1], standing in his rest */
+    const fmTurn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
+    /* the rests each body stands in (its take, its moment, how far its moment breathes, and whether it wraps) */
+    const REST5 = { pho: ['Sit_to_Stand_Transition_M', 5.85, 0.04, false], ton: ['Idle_3', 2.0, 0.35, true], jun: ['Idle_3', 3.0, 0.35, true],
+                    koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false] };
+    const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], 0.25, 6), R[3]]; };
+    function fmRest(P, who, t) { if (!P || !P.ready) return; const r = restOf5(who, t); pose(P, r[0], r[1], r[2]); }
+    /* a person who speaks plays his talking take from the line's own start to its end, and is back in his rest after (v11.4) */
+    function fmTalk(P, who, t, t0, secs, take) {
+      if (!P || !P.ready) return;
+      const tk = take || (P.talkTake || null), into = smo(c01((t - t0) / 0.35)), outOf = smo(c01((t - t0 - secs + 0.1) / 0.5));
+      const r = restOf5(who, t);
+      if (!tk || !P.acts[tk] || t < t0 || outOf >= 1) { pose(P, r[0], r[1], r[2]); return; }
+      const d = P.acts[tk].getClip().duration, tt = ((t - t0) % d + d) % d;
+      pose(P, tk, tt, true, r[0], Math.max(1 - into, outOf), r[1]);
+    }
+
+    /* ---------------------------------------------------------------- THE OPENING'S OWN SET: the lift car's floor
+       display, inside over its doors (amber digits on black, as such a car's are: 1, 2, 3, the third the walkway's storey,
+       the hall's own plate says 3), seen only in the opening film; each number its own uploaded picture, swapped by
+       visibility (nothing is uploaded on screen: the curtain warms the hidden, v14.15) */
+    const LIFTNUM5 = (() => {
+      const g = new THREE.Group(); g.visible = false; world.add(g);
+      const box0 = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.13), M({ color: 0x202224, roughness: 0.5, metalness: 0.3 })); owned.push(box0.geometry);
+      box0.position.set(0, 2.20, LIFT.z0 + 0.012); g.add(box0);
+      const nums = [];
+      for (const n of ['1', '2', '3']) {
+        const [c, x] = canvas(256, 128); x.fillStyle = '#0a0a0a'; x.fillRect(0, 0, 256, 128);
+        x.fillStyle = '#ff8a2a'; x.font = 'bold 104px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(n, 96, 68);
+        x.beginPath(); x.moveTo(196, 82); x.lineTo(226, 82); x.lineTo(211, 46); x.closePath(); x.fill();      // the car going up
+        const m = B({ map: tex(done(THREE, c, false)) }), q = new THREE.Mesh(new THREE.PlaneGeometry(0.19, 0.095), m); owned.push(q.geometry);
+        q.position.set(0, 2.20, LIFT.z0 + 0.016); g.add(q); nums.push(q);
+      }
+      return { g, set(i) { g.visible = i >= 0; nums.forEach((q, j) => { q.visible = j === i; }); } };
+    })();
+    /* the lift car's own places (LIFT: x -0.8..0.8, z 1.35..2.85; its doors at z 1.26, in the walkway's end wall) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.70], ton: [-0.44, 2.10], jun: [0.45, 2.16] };
+
+    /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
+       draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
+       the door's west jamb to Jun's hand, made here (the reel is the world's, w5threadreel) */
+    const THREAD5 = (() => {
+      const m = new THREE.MeshBasicMaterial({ color: 0xf2efe6, fog: false }); mats.push(m);
+      const geo = new THREE.CylinderGeometry(0.0022, 0.0022, 1, 6, 1, true); geo.rotateZ(Math.PI / 2); geo.translate(0.5, 0, 0); owned.push(geo);
+      const me = new THREE.Mesh(geo, m); me.visible = false; world.add(me);
+      return { set(on, a, b) { me.visible = !!on; if (!on) return; const dx = b[0] - a[0], dy = b[1] - a[1], dz = b[2] - a[2], L = Math.hypot(dx, dy, dz);
+        me.position.set(a[0], a[1], a[2]); me.scale.set(L, 1, 1); me.rotation.set(0, Math.atan2(-dz, dx), Math.atan2(dy, Math.hypot(dx, dz)), 'YZX'); } };
+    })();
+
+    /* ---------------------------------------------------------------- THE NAGA OF THE FIGHT'S FILM (the plan's 5.5 stage 5,
+       9.3, 11): "ruby and vast", rising from the stick's head and laying its long body ONCE round the court's edge, between
+       the nine and everyone in the court and at its door; not Mucalinda's seven coils and spread hood (the canon gives
+       those to the Buddha alone: §0.3, 12). Drawn as ruby LIGHT (its model, people/naga.sh, is faithful to its reference
+       and crumpled close: at the film's distance it is light and scale): a glowing skin of the model laid along a path by
+       its own length, its head leading. The path: up from the stick's head, over, and round the court a little inside its
+       walls, a rounded loop; `k` how far along the path the head has come (0 .. 1), `a` its light */
+    const NAGA5 = (() => {
+      const g = new THREE.Group(); g.visible = false; world.add(g);
+      const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNCol: { value: new THREE.Color(0xff2a4a) }, uNGold: { value: new THREE.Color(0xffc860) } };
+      const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null };
+      /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
+         corner and round it a little inside the walls, back to where it rose */
+      function pathFor(sx, sz) {
+        const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32;
+        const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, (z0 + z1) / 2 + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
+        /* round the court's edge, once, a rounded rectangle from the house's west corner: west side, gate end, east side,
+           house end, closing past where it began */
+        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, z1 - r], [x1 - r, y, z1], [x0 + r + 0.2, y, z1], [x0, y, z1 - r - 0.1]];
+        return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
+      }
+      function make() {
+        if (st.ready || !have('p5naga')) return;
+        parseOnce('p5naga').then(({ scene: src }) => {
+          if (!alive) return;
+          src.updateMatrixWorld(true);
+          let geo = null, bb = new THREE.Box3();
+          src.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); } });
+          if (!geo) return; owned.push(geo);
+          /* (a quantized file: the positions made plain floats so the shader can read them as metres) */
+          if (geo.attributes.position.normalized || !(geo.attributes.position.array instanceof Float32Array)) {
+            const p = geo.attributes.position, a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { a[i * 3] = p.getX(i); a[i * 3 + 1] = p.getY(i); a[i * 3 + 2] = p.getZ(i); }
+            geo.setAttribute('position', new THREE.BufferAttribute(a, 3)); }
+          geo.computeBoundingBox(); bb.copy(geo.boundingBox);
+          /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
+          const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
+          st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
+          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
+          const ALONG = along === 'z' ? 'position.z' : 'position.x', ACROSS = along === 'z' ? 'position.x' : 'position.z';
+          m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+            sh.vertexShader = 'uniform float uNK, uNT, uNLen; uniform sampler2D uNPath; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
+              .replace('#include <begin_vertex>', `#include <begin_vertex>
+                /* along the body: 0 at the tail, 1 at the head (the head leads along the path) */
+                float nf = (${ALONG} - ${st.minX.toFixed(4)}) / ${(st.maxX - st.minX).toFixed(4)};
+                vNf = nf; vNn = normal;
+                transformed = vec3(0.0);`);
+            sh.fragmentShader = 'uniform float uNA, uNT, uNK; uniform vec3 uNCol, uNGold; varying float vNf; varying vec3 vNn;\n' + sh.fragmentShader
+              .replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
+                float scl = 0.55 + 0.45 * sin(vNf * 180.0 - uNT * 3.0) * sin(vNf * 37.0 + uNT * 1.7);
+                float edge = 0.35 + 0.65 * pow(1.0 - abs(normalize(vNn).y), 2.0);
+                vec3 nc = mix(uNCol, uNGold, 0.18 * smoothstep(0.85, 1.0, vNf));
+                vec4 diffuseColor = vec4(nc * (0.55 + 0.45 * scl) * edge, uNA * (0.42 + 0.3 * scl));`);
+          };
+          m.customProgramCacheKey = () => 'e4c5naga';
+          /* (the body is laid on the CPU, not in the shader: its points moved once a frame the film draws it, along the
+             path by their place along the body, a cross-section kept round the path's own frame) */
+          const base = geo.attributes.position.array.slice(0);
+          st.base = base; st.along = along; st.geo = geo;
+          const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.renderOrder = 3; g.add(mesh); st.mesh = mesh; st.mat = m;
+          st.ready = true;
+        }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
+      }
+      make();
+      const _np = new THREE.Vector3(), _nt = new THREE.Vector3(), _nn = new THREE.Vector3(), _nb = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
+      let laidFor = '';
+      return {
+        g, U,
+        /* k: the head's place along the path (0 .. 1); a: its light; t: the scales' clock; (sx, sz): the stick's head; s:
+           the body's thickness (the model's 0.78 m is laid at s of it) */
+        set(k, a, t, sx, sz, s = 0.9) {
+          if (!st.ready || !(a > 0.001)) { g.visible = false; return; }
+          g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
+          const key = sx.toFixed(2) + ',' + sz.toFixed(2);
+          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; }
+          /* the body as long as the path the head has come, up to its own length times 3 (its straight length repeated by
+             the path: one long body round the court) */
+          const P0 = st.path, Lb = Math.min(st.len, Math.max(0.5, k * st.len)), arr = st.geo.attributes.position.array, base = st.base, n = arr.length / 3;
+          const span = st.maxX - st.minX, alZ = st.along === 'z';
+          for (let i = 0; i < n; i++) {
+            const ax = alZ ? base[i * 3 + 2] : base[i * 3], cx = alZ ? base[i * 3] : base[i * 3 + 2], cy = base[i * 3 + 1];
+            const f = (ax - st.minX) / span;                                       // 0 tail .. 1 head
+            const u = Math.max(0, Math.min(1, (k * st.len - (1 - f) * Lb) / st.len));
+            P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
+            _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
+            const yy = cy * s * (f > 0.86 ? 1.0 : 0.55), xx = cx * s * (f > 0.86 ? 1.0 : 0.62);
+            arr[i * 3] = _np.x + _nb.x * xx + _nn.x * yy; arr[i * 3 + 1] = _np.y + _nb.y * xx + _nn.y * yy; arr[i * 3 + 2] = _np.z + _nb.z * xx + _nn.z * yy;
+          }
+          st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
+        },
+        ready: () => st.ready
+      };
+    })();
+
+    /* ---------------------------------------------------------------- THE RITE'S THINGS (case three, every ending: the
+       plan's 4.9). The holy water in chapter 4's bowl on the cloth, the fan (chapter 3's, declared) in Grandmaster Pho's
+       hand, the drops it throws (painted light: a fixed set, the same every run), the black bag and its white string */
+    const RITE5 = (() => {
+      const R = ROOM, top = 0.345;
+      const bowl = place('w4waterbowl', R.cx + 0.34, top, R.cz + 0.26, 0, { name: 'riteBowl' }); bowl.visible = false;
+      const fan = place('w3fan', 0, 0, 0, 0, { name: 'riteFan' }); fan.visible = false;
+      /* the drops: a fixed set of soft points, each flying its own arc from the fan to the cloth (v6.15: seeded) */
+      const soft = (() => { const [c, x] = canvas(64, 64); const gr = x.createRadialGradient(32, 32, 1, 32, 32, 31);
+        gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(220,235,255,0.5)'); gr.addColorStop(1, 'rgba(200,220,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+      const drops = [], r = rng(28640);
+      for (let i = 0; i < 26; i++) { const m = new THREE.SpriteMaterial({ map: soft, color: 0xdfefff, transparent: true, opacity: 0, depthWrite: false }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.scale.setScalar(0.012 + r() * 0.01); sp.visible = false; world.add(sp);
+        drops.push({ sp, m, dx: (r() - 0.5) * 0.9, dz: (r() - 0.5) * 0.55, up: 0.05 + r() * 0.12, lag: r() * 0.18, life: 0.55 + r() * 0.25 }); }
+      /* the white sacred string round the bag's neck (the case file: "sealed tightly with sacred string"): a ring of cord */
+      const mStr = new THREE.MeshStandardMaterial({ color: 0xf4f0e4, roughness: 0.8 }); mats.push(mStr);
+      const gStr = new THREE.TorusGeometry(0.034, 0.0035, 6, 28); gStr.rotateX(Math.PI / 2); owned.push(gStr);
+      const strRing = new THREE.Group(); for (let i = 0; i < 3; i++) { const me = new THREE.Mesh(gStr, mStr); me.position.y = i * 0.0065; strRing.add(me); } strRing.visible = false; world.add(strRing);
+      return {
+        bowl, fan, drops, strRing,
+        /* one throw of the fan: the drops leave the fan's head at `t0` toward the pieces (cx, cz) and fall on the cloth */
+        throwAt(t, t0, from, cx, cz) {
+          for (const d of drops) { const u = (t - t0 - d.lag) / d.life;
+            if (u < 0 || u > 1) { d.sp.visible = false; continue; }
+            d.sp.visible = true; d.m.opacity = 0.85 * (1 - u * u);
+            d.sp.position.set(lp(from[0], cx + d.dx, u), lp(from[1], top + 0.01, u) + d.up * 4 * u * (1 - u), lp(from[2], cz + d.dz, u)); } },
+        dropsOff() { for (const d of drops) d.sp.visible = false; },
+        /* the string round the tied bag's neck, by k (0 none: the bag as it came) */
+        string(k, bag) { strRing.visible = k > 0.01 && !!bag && bag.visible; if (!strRing.visible) return; strRing.position.set(bag.position.x, bag.position.y + 0.205, bag.position.z); strRing.scale.setScalar(0.92 + 0.08 * k); }
+      };
+    })();
+
+    /* ---------------------------------------------------------------- THE COLLECTOR'S PIECES ON THE CLOTH (the plan's
+       4.7 and 9.4: "about twenty, in rows"): the three made for this case where the play's presences sit on them
+       (c_play.js TABLE5: the angry knot's bull, the hungry one's bottle, the effigy), and beside them in rows the seven
+       Yin pieces of chapter 1 as other men's pieces of the same kinds (declared): twenty on the cloth, and the case's foam
+       beside them. Laid out by the film in (they are not on the table before it), and gathered into the bag in the rite */
+    const PIECES5 = (() => {
+      const R = ROOM, top = 0.345, keys = ['e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'];
+      const list = [];
+      /* three rows across the table's front half (the cloth's x -0.55 .. 0.55), the presences' three where the play
+         puts them (TABLE5.P) and the rest about them, a little apart, each turned to him */
+      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
+      let n = 0; const r = rng(28650);
+      for (let j = 0; j < 3 && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
+        const x = xs[i] + (j % 2) * 0.05, z = rowsZ[j];
+        const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.09);
+        if (clash || x > 0.56 || x < -0.56) continue;
+        const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); g.visible = false; list.push({ g, x, z }); n++;
+      }
+      return { list, set(on) { for (const p of list) p.g.visible = on; for (const k of ['w5wuathanu', 'w5rakyom', 'w5hunphayon']) if (things[k]) things[k].visible = on; } };
+    })();
+
+    const FILMS5 = {};
+
+    /* ================================================================ THE OPENING (the plan's 4.0; its clock OP5, z_tail.js)
+       Black, a lift's hum, his voice: the case. INSIDE A LIFT CAR, through his eyes (no chapter has stood the player in
+       one): the floor's number over the doors climbing, Grandmaster Pho in white before him watching it, Ton at his left
+       with the long thing wrapped in cloth upright at his side, Jun at his right with the duffel; Jun's line, then Ton's,
+       each turning his head back to him. The chime; the doors open on the walkway in orange evening light; his teacher
+       out first, then the two; his step out, and the picture SOURS from its edges (the sixty-second seam's sour tint), his
+       breath stopping; his thought. Black: the title over it. Play begins where the film left him, a step outside */
+    FILMS5.open = {
+      begin(api, s) {
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
+        liftDoors(0); LIFTNUM5.set(0);
+        fmShow(cast.pho, true); fmShow(cast.ton, true); fmShow(cast.zav, false);
+        whenReady(cast.jun, (P) => fmShow(P, true));
+        STICK5.to('tonWrap');
+        DUFFEL5.to('jun');
+      },
+      frame(t) {
+        const T = OP5;
+        fmLook('DUSK');
+        /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
+        LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
+        liftDoors(smo(c01((t - T.open) / 1.5)));
+        /* his teacher: before him, facing the doors, his eyes on the number; out first, down the walkway to where he waits */
+        whenReady(cast.pho, (P) => { const walked = fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry);
+          if (!walked && t < T.out) lookNow(P, [0, 2.2, LIFT.z0], 0.55, 0.6); });
+        /* Ton, at his left, the wrapped staff upright in his right hand: his line turned back over his shoulder; out after
+           his teacher, single file through the doors, turning back to him on the walkway as he stops */
+        whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
+          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI); fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
+            lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85); }
+          else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry);
+            if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
+          STICK5.carry(P); });
+        /* Jun, at his right, the duffel in his hand: his line, then out last before him */
+        whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
+          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI); fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
+            lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85); }
+          else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry);
+            if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
+          DUFFEL5.carry(P); });
+        /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held */
+        if (kit && kit.chill) { const k = smo(c01((t - T.sour) / 2.4)) * 0.85 * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
+          if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
+        /* THE LENS (his eyes): the number, close; the car, wide (a cramped room gets a wider lens on a phone: v24.21);
+           Jun's line, Ton's; the doors; his step out, a breath of a bob; the walkway, where play begins (its snapshot) */
+        const D = [0, 2.2, LIFT.z0], W = [0, 1.45, -8.0];
+        fmTrack(t, [
+          { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
+          { t: T.num3 - 1.2, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
+          { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
+          { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
+          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
+          { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
+          { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
+          { t: T.chime, name: 'doors', eye: CAR5.eye, at: [0.03, 1.45, 0.6], fp: 70, fd: 60 },
+          { t: T.step, name: 'doors', eye: CAR5.eye, at: [0.02, 1.48, -2.0], fp: 70, fd: 60 },
+          { t: T.step + 1.2, name: 'step', eye: [0.02, EYE - 0.03, 1.2], at: [0.0, 1.5, -6.0], fp: 68, fd: 60 },
+          { t: T.sour, name: 'out', eye: [0.0, EYE, 0.3], at: W, fp: 66, fd: 60 },
+          { t: T.q5o2, name: 'out', eye: [0.0, EYE, 0.27], at: [0.0, 1.5, -9.0], fp: 64, fd: 60 },
+          fmSnapKey(T.end - 0.3, 'play') || { t: T.end - 0.3, name: 'play', eye: [0, EYE, 0.25], yaw: 0, pitch: -0.04, fp: PLAYFOV5, fd: PLAYFOV5 }
+        ]);
+        /* (a step's own small bob of the eye, as a man's walk carries it: two steps, 0.6 s each) */
+        if (t > T.step && t < T.step + 2.2) yaw.position.y += -0.018 * Math.abs(Math.sin((t - T.step) * Math.PI / 0.6));
+      },
+      end() { fmLens(PLAYFOV5); LIFTNUM5.set(-1); liftDoors(0); if (kit && kit.chill && FM5.sour) kit.chill(0, { tint: 'sour' }); FM5.sour = false;
+        endPhase5('walk'); }
+    };
+
+    /* ---------------------------------------------------------------- THE DUFFEL IN JUN'S HAND (w5duffel, the world's,
+       stage.things): carried by its handles from his left hand, laid there from his standing rest once and carried by the
+       hand bone after; set down where the story puts it (the rite's things at the doorway: RITE) */
+    const DUFFEL5 = {
+      who: 'away', off: null,
+      to(who) { this.who = who; const g = things.duffel; if (!g) return; if (who !== 'jun' && g.parent !== world) world.attach(g); g.visible = who !== 'away'; },
+      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2 }); }
+    };
+    /* A THING CARRIED IN ONE HAND (Ton's wrapped staff, Jun's duffel): its offset from the hand bone made ONCE, from the
+       body's standing rest (its handles or its shaft at the palm's middle), and the thing carried by the hand bone from
+       then on, so it goes where the hand goes in every take. `hang`: how far below the palm its top is (a bag) or, with
+       `upright`, its foot over the floor (a staff carried) */
+    const _hhA = new THREE.Vector3(), _hhM = new THREE.Matrix4(), _hhQ = new THREE.Quaternion(), _hhS = new THREE.Vector3(1, 1, 1);
+    function handHold5(P, sd, g, off, o = {}) {
+      const hb = boneOf(P, sd + 'Hand'); if (!hb || !g) return off;
+      if (!off) {
+        const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
+        const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;
+        pose(P, 'Idle_3', 2.0, true); P.group.updateWorldMatrix(true, true);
+        const pm = palmOf(P, sd, _hhA);
+        let pos, q;
+        if (o.upright) { pos = new THREE.Vector3(pm.x, o.foot != null ? o.foot : 0.04, pm.z); q = _hhQ.setFromEuler(new THREE.Euler(0, gr + (o.ry || 0), Math.PI / 2, 'YXZ')); }
+        else { g.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(g, true), hgt = bb.max.y - bb.min.y;
+          pos = new THREE.Vector3(pm.x, pm.y - (o.hang || 0) - hgt, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
+        _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
+        off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM);
+        for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.w[k] = keep[k][1]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+        P.cur = cur; P.filmT = ft; P.group.position.copy(gp); P.group.rotation.y = gr; P.mixer.update(0);
+      }
+      if (g.parent !== hb) hb.add(g);
+      off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
+      return off;
+    }
+
+    /* where a film that hands to a phase leaves the people: the play's own placing for that phase (c_play.js castPhase), and
+       the cast's things as that phase keeps them */
+    function endPhase5(p) {
+      if (typeof castPhase === 'function') castPhase(p);
+      fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0);
+      if (p === 'walk' || p === 'hunt') { STICK5.to('tonWrap'); DUFFEL5.to(p === 'walk' ? 'jun' : 'away'); }
+      if (p === 'table' || p === 'ask') { STICK5.to('away'); DUFFEL5.to('away'); }
+      fmVisionOff(); THREAD5.set(false); NAGA5.set(0, 0, 0, 0, 0);
+      if (kit && kit.captions) kit.captions(null);
+    }
+
+    /* ================================================================ THE DEVOTEE (the plan's 4.2; its clock DV5)
+       From the walkway at his gate: through the gate's bars his front doors open before they reach them, and Mr Koh comes
+       down his court to them; on a cut, the gate open and Mr Koh in it, his head bowed to Grandmaster Pho, awkward and
+       meant: his line. Walking in behind them: the paved path between the two planters, ordinary shrubs in both (nothing
+       in the court looks wrong, and to an ordinary eye never will); at his doors the slippers. His living room: the
+       curtains drawn, three lamps on, the fourth flickering; what has been happening to him, and that he has quarrelled
+       with people (he says nothing of who, and nobody asks); "We will look first."; his teacher's order, turned to him.
+       Ton and Jun stay in the court (the hunt's stations). It ends on the view the hunt begins in */
+    const DV5AT = { gateEye: [-8.18, EYE, -15.05], phoGate: [-8.92, -14.52], tonW: [-7.58, -15.3], junW: [-9.75, -15.35],
+                    kohDoor: [-8.52, -5.95], kohGate: [-7.82, -13.32], phoIn: [-9.15, -4.55], eyeIn: [-8.35, EYE, -5.12], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
+    FILMS5.devotee = {
+      begin(api, s) {
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
+        fmShow(cast.pho, true); fmShow(cast.ton, true); whenReady(cast.jun, (P) => fmShow(P, true)); whenReady(cast.koh, (P) => fmShow(P, true));
+        STICK5.to('tonWrap'); DUFFEL5.to('jun');
+      },
+      frame(t) {
+        const T = DV5, A = DV5AT, inside = t >= T.room;
+        fmLook('DUSK');
+        /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
+        gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
+        /* the fourth lamp, by the armchair, flickering (an ordinary fault: the electrician came three times, 4.0) */
+        lamp(1, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
+        whenReady(cast.koh, (P) => {
+          if (t < T.walk) { put(P, A.kohDoor[0], A.kohDoor[1], Math.PI); fmRest(P, 'koh', t); }
+          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2);
+          else if (t < T.in) { put(P, A.kohGate[0], A.kohGate[1], faceTo(A.kohGate[0], A.kohGate[1], A.phoGate[0], A.phoGate[1]));
+            fmTalk(P, 'koh', t, T.ko5d1, SECS.ko5d1, 'Talk_with_Hands_Open');
+            /* his head bowed to Grandmaster Pho as he greets him (the wai's own take is wanted: the plan's 4.2) */
+            lookNow(P, [A.phoGate[0], 0.95, A.phoGate[1]], smo(c01((t - T.ko5d1 + 0.2) / 0.5)) * (1 - 0.6 * smo(c01((t - T.ko5d1 - 1.5) / 0.8))), 0.6); }
+          else if (!inside) fmWalk(P, t, T.in - 0.6, [[-8.45, -12.4], [-8.5, -7.0], [-8.55, -5.2]], 1.4, restOf5('koh', t), Math.PI);
+          else { put(P, A.kohRoom[0], A.kohRoom[1], STATION.hunt.koh.ry);
+            const tk = t < T.ko5d3 ? 'Talk_with_Hands_Open' : t < T.ko5d4 ? 'Listening_Gesture' : 'Talk_with_Hands_Open';
+            if (t < T.ko5d2 + SECS.ko5d2 + 0.1) fmTalk(P, 'koh', t, T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open');
+            else if (t < T.ko5d3 + SECS.ko5d3 + 0.1) fmTalk(P, 'koh', t, T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open');
+            else if (t < T.ko5d4 + SECS.ko5d4 + 0.1) fmTalk(P, 'koh', t, T.ko5d4, SECS.ko5d4, 'Listening_Gesture');
+            else fmRest(P, 'koh', t);
+            void tk;
+            /* his eyes on the master, and down for "I know I have a mouth" */
+            const low = smo(c01((t - T.ko5d4) / 0.6)) * (1 - smo(c01((t - T.ko5d4 - SECS.ko5d4) / 0.8)));
+            lookNow(P, t < T.ph5d1 ? (low > 0.01 ? [A.kohRoom[0] + 0.4, 0.6, A.kohRoom[1] - 1.0] : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]])) : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]), 0.8, 0.75); }
+        });
+        /* his teacher: at the gate; in behind Mr Koh; in the room, listening, then his two lines: to Mr Koh, and turned to
+           his student. At the end turned back toward the room (the hunt's station) */
+        whenReady(cast.pho, (P) => {
+          if (t < T.in) { put(P, A.phoGate[0], A.phoGate[1], 0); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.koh, [-8.5, 1.55, -9]), 0.8, 0.7); }
+          else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, -12.6], [-8.5, -6.4], [-8.7, -5.3], A.phoIn], 1.55, restOf5('pho', t), faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]));
+          else { const toKoh = faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]), toMe = faceTo(A.phoIn[0], A.phoIn[1], A.eyeIn[0], A.eyeIn[2]);
+            const ry = t < T.ph5d2 - 0.2 ? toKoh : t < T.turn ? fmTurn(t, T.ph5d2 - 0.2, T.ph5d2 + 0.6, toKoh, toMe) : fmTurn(t, T.turn, T.end - 0.2, toMe, STATION.hunt.pho.ry);
+            put(P, A.phoIn[0], A.phoIn[1], ry);
+            if (t < T.ph5d1 + SECS.ph5d1 + 0.1) fmTalk(P, 'pho', t, T.ph5d1, SECS.ph5d1, 'Talk_with_Hands_Open');
+            else fmTalk(P, 'pho', t, T.ph5d2, SECS.ph5d2, 'Talk_with_Hands_Open');
+            lookNow(P, t < T.ph5d2 - 0.2 ? fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]) : 'lens', 0.85, 0.7); }
+        });
+        /* Ton and Jun: behind at the gate; into the court, where the hunt keeps them */
+        whenReady(cast.ton, (P) => { if (t < T.in + 0.4) { put(P, A.tonW[0], A.tonW[1], 0); fmRest(P, 'ton', t); }
+          else fmWalk(P, t, T.in + 0.4, [A.tonW, [-7.9, -14.3], [STATION.hunt.ton.x, STATION.hunt.ton.z]], 1.0, restOf5('ton', t), STATION.hunt.ton.ry);
+          STICK5.carry(P); });
+        whenReady(cast.jun, (P) => { if (t < T.in + 0.9) { put(P, A.junW[0], A.junW[1], 0.1); fmRest(P, 'jun', t); }
+          else fmWalk(P, t, T.in + 0.9, [A.junW, [-8.9, -14.3], [-9.2, -11.0], [STATION.hunt.jun.x, STATION.hunt.jun.z]], 1.05, restOf5('jun', t), STATION.hunt.jun.ry);
+          DUFFEL5.carry(P); });
+        /* THE LENS: through the gate's bars to his doors, as they open and he comes; on the cut, him in the open gate, his
+           greeting; walking in behind them, past the planters; his doors, the slippers; the room: him by his dining room,
+           his three lines; his teacher's two; and the room the hunt begins in (its snapshot) */
+        const KOH = () => fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]), PHO = () => fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]);
+        fmTrack(t, [
+          { t: 0, name: 'gate', eye: A.gateEye, at: [-8.55, 1.25, -5.8], fp: 46, fd: 40 },
+          { t: T.walk + 1.0, name: 'gate', eye: A.gateEye, at: [-8.5, 1.35, -8.5], fp: 52, fd: 44 },
+          { t: T.cut1 - 0.05, name: 'gate', eye: [-8.2, EYE, -14.95], at: () => fmHead(cast.koh, [-7.82, 1.55, -13.32]), fp: 56, fd: 48 },
+          { t: T.cut1, name: 'greet', eye: [-8.32, EYE, -14.78], at: () => lp3(fmHead(cast.koh, [-7.82, 1.55, -13.32]), [A.phoGate[0], 1.55, A.phoGate[1]], 0.35), fp: 60, fd: 50, cut: true },
+          { t: T.in - 0.1, name: 'greet', eye: [-8.32, EYE, -14.78], at: () => lp3(fmHead(cast.koh, [-7.82, 1.55, -13.32]), [A.phoGate[0], 1.55, A.phoGate[1]], 0.3), fp: 60, fd: 50 },
+          { t: T.in + 0.7, name: 'court', eye: [-8.4, EYE, -14.55], at: [-8.5, 1.3, -6.5], fp: 66, fd: 58 },
+          { t: T.slip - 0.05, name: 'court', eye: [-8.45, EYE, -11.9], at: [-8.5, 1.25, -5.8], fp: 66, fd: 58 },
+          { t: T.slip, name: 'slippers', eye: [-8.6, EYE, -6.75], at: [-9.02, 0.1, -6.1], fp: 60, fd: 52, cut: true },
+          { t: T.room - 0.05, name: 'slippers', eye: [-8.55, EYE, -6.55], at: [-8.7, 0.5, -5.4], fp: 62, fd: 54 },
+          { t: T.room, name: 'room', eye: A.eyeIn, at: [-9.4, 1.3, -1.9], fp: 62, fd: 54, cut: true },
+          { t: T.ko5d2 + 1.2, name: 'koh', eye: A.eyeIn, at: KOH, fp: 46, fd: 40 },
+          { t: T.ko5d4 + SECS.ko5d4 - 0.5, name: 'koh', eye: [-8.4, EYE, -4.95], at: KOH, fp: 40, fd: 36 },
+          { t: T.ph5d1 + 0.2, name: 'pho', eye: A.eyeIn, at: PHO, fp: 48, fd: 42 },
+          { t: T.ph5d2 + 0.6, name: 'pho', eye: A.eyeIn, at: PHO, fp: 44, fd: 40 },
+          { t: T.turn, name: 'pho', eye: A.eyeIn, at: PHO, fp: 46, fd: 42 },
+          fmSnapKey(T.end - 0.1, 'hunt') || { t: T.end - 0.1, name: 'hunt', eye: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], yaw: STATION.hunt.at.ry, pitch: -0.04, fp: PLAYFOV5, fd: PLAYFOV5 }
+        ]);
+        if (t > T.in && t < T.slip) yaw.position.y += -0.016 * Math.abs(Math.sin((t - T.in) * Math.PI / 0.55));
+      },
+      end() { fmLens(PLAYFOV5); lamp(1, 1); endPhase5('hunt'); }
+    };
+
+    /* ================================================================ THE PREPARATION, AND THE TURN (the plan's 4.4; PR5)
+       Night now: the sky over the court deep blue, its two wall lamps lit. Ton unwraps the Naga stick and holds it out in
+       both hands; on the cut, Grandmaster Pho has it upright in his right hand. Jun has laid the black bag and the reel on
+       the paving before the doorway and drawn the white thread across it; the household behind it. "Stay behind the
+       thread." "What will I hear?" He does not answer that. "Stand with me." The stick upright, a breath; the lamps sink;
+       his Spirit Vision opens without his asking, the wave out across the court: the nine where they stood all evening,
+       heads bowed; they lift their heads; they turn, toward the one whose senses are open; they come; his breath, the
+       picture sours hard, his hands come up before his face, and the picture goes to one flat colour, his protection's
+       (the forty-third seam's fade in a colour): "And then I was not alone in my body." THE CAMERA LEAVES HIS EYES: back
+       and up through the violet, and for the first time Master Zavier is SEEN (Chad's R3 and R5), standing in his cage of
+       light, his teacher beside him with the stick and gold at his shoulders, the nine drawn back to the far end of the
+       court, facing him; the picture comes to rest exactly where the fight's camera stands (its boom: boomAt), so the film
+       hands to the fight with no cut. The nine's marks and count are the mode's and come with it */
+    const PR5AT = { tonU: [-8.05, -7.35], phoU: [-8.7, -7.75], eye1: [-9.75, EYE, -9.9], eyeU: [-8.6, 1.5, -8.6] };
+    const NINE5 = () => (typeof NINE_AT !== 'undefined' ? NINE_AT : PRAI_STAND.map(a => { const w = courtWorld(a[0], a[1]); return [w.x, w.z]; }));
+    FILMS5.prepare = {
+      begin(api, s) {
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
+        fmShow(cast.pho, true); fmShow(cast.ton, true); fmShow(cast.zav, false); whenReady(cast.jun, (P) => fmShow(P, true)); whenReady(cast.koh, (P) => fmShow(P, true));
+        STICK5.to('tonWrap'); DUFFEL5.to('away');
+        const N = NINE5(); PRAI5.list.forEach((P, i) => { const a = N[i % N.length]; P.hidden = false; put(P, a[0], a[1], faceTo(a[0], a[1], a[0], HOUSE.face)); if (P.ready) P.group.visible = true; });
+        PRAI5.look('vision');
+        if (things.staffCloth) things.staffCloth.visible = false;
+      },
+      frame(t, api) {
+        const T = PR5, F = fightStart(), N = NINE5();
+        const turned = t >= T.leave;                                            // from the violet on: the trance, third person
+        fmLook(turned ? 'TRANCE' : 'NIGHT');
+        courtLamps(turned ? 0.15 : 1 - 0.75 * smo(c01((t - T.sink) / 1.4)));
+        /* the rite's things before the doorway: the bag laid open, the reel beside it, the thread across the door from
+           its west jamb to Jun's hand */
+        setDown('bagOpen', RITE.bag, 0.3); setDown('threadReel', RITE.reel);
+        THREAD5.set(t >= T.thread - 0.1, [DOOR_FRONT.x0 + 0.05, 0.52, HOUSE.face - 0.12], [STATION.fight.jun.x - 0.18, 0.86, STATION.fight.jun.z - 0.25]);
+        /* the household behind the thread, in the doorway: Mr Koh's question; Ton and Jun either side */
+        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry);
+          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Talk_with_Hands_Open'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+        whenReady(cast.jun, (P) => { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, turned ? fmHead(cast.zav, [F.zav.x, 1.6, F.zav.z]) : fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); });
+        /* Ton: the wrapped stick at his side; unwrapped and held out on both palms ('give'); back to the doorway */
+        whenReady(cast.ton, (P) => {
+          if (t < T.unwrap) { put(P, PR5AT.tonU[0], PR5AT.tonU[1], faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1])); fmRest(P, 'ton', t); STICK5.to('tonWrap'); STICK5.carry(P); }
+          else if (t < T.take + 0.6) { put(P, PR5AT.tonU[0], PR5AT.tonU[1], faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1]));
+            pose(P, 'give', fmRun(t, T.unwrap, T.unwrap + 1.6, 0.18, 2.6) + (t > T.unwrap + 1.6 ? 0.08 * Math.sin((t - T.unwrap) * 0.8) : 0));
+            if (STICK5.who !== 'ton') STICK5.to('ton');
+            STICK5.onPalms(P, 'stick');
+            if (things.staffCloth) { things.staffCloth.visible = true; things.staffCloth.position.set(PR5AT.tonU[0] + 0.32, 0.01, PR5AT.tonU[1] + 0.18); things.staffCloth.rotation.set(0, 0.6, 0); }
+            lookNow(P, [PR5AT.tonU[0] + 0.1, 0.9, PR5AT.tonU[1] - 0.5], 0.8, 0.8); }
+          else { fmWalk(P, t, T.take + 0.6, [PR5AT.tonU, [STATION.fight.ton.x, STATION.fight.ton.z]], 0.9, restOf5('ton', t), STATION.fight.ton.ry); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); }
+        });
+        /* his teacher: by the doorway as the stick is unwrapped; on the cut it is in his hand; his word to the household;
+           his word to his student, at the court's middle; the stick set upright; from the turn at the fight's own place */
+        whenReady(cast.pho, (P) => {
+          if (t >= T.take && STICK5.who !== 'pho') STICK5.to('pho');
+          if (t < T.thread) { put(P, PR5AT.phoU[0], PR5AT.phoU[1], faceTo(PR5AT.phoU[0], PR5AT.phoU[1], PR5AT.tonU[0], PR5AT.tonU[1])); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.ton, [-8.05, 1.5, -7.35]), 0.7, 0.8); }
+          else if (t < T.teacher) { const ry = faceTo(PR5AT.phoU[0], PR5AT.phoU[1], STATION.fight.koh.x, STATION.fight.koh.z); put(P, PR5AT.phoU[0], PR5AT.phoU[1], ry);
+            fmTalk(P, 'pho', t, T.ph5p1, SECS.ph5p1, 'Talk_with_Hands_Open'); lookNow(P, t < T.noans + 0.5 ? fmHead(cast.koh, [-8.5, 1.55, -4.7]) : [F.zav.x, 1.5, F.zav.z], 0.85, 0.7); }
+          else if (!turned) { const walked = fmWalk(P, t, T.teacher - 0.9, [PR5AT.phoU, [F.pho.x, F.pho.z]], 1.0, restOf5('pho', t), faceTo(F.pho.x, F.pho.z, F.zav.x, F.zav.z));
+            if (!walked) { if (t < T.ph5p2 + SECS.ph5p2 + 0.1) fmTalk(P, 'pho', t, T.ph5p2, SECS.ph5p2, 'Talk_with_Hands_Open'); lookNow(P, 'lens', 0.85, 0.7); } }
+          else { put(P, F.pho.x, F.pho.z, COURT5.heading + Math.PI); fmRest(P, 'pho', t); lookNow(P, [F.lesson.x, 1.3, F.lesson.z], 0.6, 0.7); }
+        });
+        /* THE NINE: where they stood all evening, heads bowed toward the house; they lift their heads, turn to him, and
+           come; in the violet they are drawn back to the far end of the court, where the fight finds them */
+        const me = [F.zav.x, F.zav.z];
+        PRAI5.list.forEach((P, i) => whenReady(P, () => {
+          const a = N[i % N.length];
+          if (!turned) {
+            const toHouse = 0, toMe = faceTo(a[0], a[1], me[0], me[1]), kT = smo(c01((t - T.turn - i * 0.07) / 1.3));
+            const kC = smo(c01((t - T.come - i * 0.06) / 2.6)), d = Math.hypot(me[0] - a[0], me[1] - a[1]), reach = Math.max(0, d - 1.15) * kC * kC;
+            const x = a[0] + (me[0] - a[0]) / (d || 1) * reach, z = a[1] + (me[1] - a[1]) / (d || 1) * reach;
+            put(P, x, z, toHouse + angTo(toHouse, toMe) * kT); pose(P, 'Idle_3', 1.5 + 0.11 * i + t * 0.3, true);
+            /* the head: bowed, then lifted (a neck's reach: v6.9) */
+            const lift = smo(c01((t - T.heads - i * 0.05) / 1.2));
+            lookNow(P, lift < 0.999 ? lp3([x + Math.sin(P.group.rotation.y) * 1.0, 0.0, z + Math.cos(P.group.rotation.y) * 1.0], [me[0], 1.6, me[1]], lift) : [me[0], 1.6, me[1]], 1, 0.9, 0);
+            /* their lean as they come (a body that is pulled, not one that walks) */
+            P.group.rotation.x = 0.12 * kC;
+          } else {
+            const at = i === 0 ? F.lesson : (F.entry[(i - 1) % Math.max(1, F.entry.length)] || F.lesson);
+            put(P, at.x, at.z, faceTo(at.x, at.z, me[0], me[1])); P.group.rotation.x = 0; pose(P, 'Idle_3', 1.5 + 0.11 * i + t * 0.3, true); lookNow(P, [me[0], 1.5, me[1]], 0.6, 0.8);
+          }
+        }));
+        PRAI5.look(turned ? 'trance' : 'vision'); PRAI5.tick(0.016);
+        /* his sight, opened without his asking (the wave out from him), held until the violet */
+        fmVision(t, T.open, 2.2, turned ? T.violet + 0.4 : Infinity, 0.01);
+        if (turned) fmVisionOff();
+        /* THE SOUR, hard, as they come */
+        if (kit && kit.chill) { const k = turned ? 0 : smo(c01((t - T.come) / 2.4)) * 0.95;
+          if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
+        /* his hands up before his face (the library's palms before the eyes, the fingers apart: he looks through them) */
+        if (api && api.handPose) { const kh = turned ? 0 : smo(c01((t - T.hands) / 1.0)) * 0.85;
+          if (api.handsRoot) api.handsRoot.visible = kh > 0.01; api.handPose('peek', kh); }
+        /* MASTER ZAVIER, SEEN: standing where the fight puts him, eyes half shut, lips moving (his trance's take is CAST's
+           to make: until it lands he stands in his rest), in his cage; his teacher's gold; the trance's look */
+        if (turned) { whenReady(cast.zav, (P) => { fmShow(P, true); put(P, F.zav.x, F.zav.z, COURT5.heading + Math.PI);
+            const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); lookNow(P, [F.lesson.x, 1.4, F.lesson.z], 0.5, 0.7); });
+          CAGE5.set({ k: smo(c01((t - T.leave) / 1.2)), x: F.zav.x, z: F.zav.z, t });
+          TRANCE5.set(1, t); TRANCE5.pools(F.zav, F.pho, 1, 1); TRANCE5.gold(smo(c01((t - T.leave - 0.5) / 1.5))); }
+        else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
+        /* THE LENS. Through his eyes: the night court from its west side; the unwrapping, close; the stick in his teacher's
+           hand; the doorway, the thread, the household; his teacher to him; the court as the lamps sink and his sight opens,
+           the nine; closer as they come; the violet. Then out of his eyes: from his head back and up to the boom */
+        const B = boomAt({ x: F.pho.x, z: F.pho.z }), ZH = [F.zav.x, 1.6, F.zav.z];
+        const RISE = [ZH[0] + 0.1, 2.3, ZH[2] - 1.7];
+        fmTrack(t, [
+          { t: 0, name: 'night', eye: PR5AT.eye1, at: [-8.3, 1.3, -6.6], fp: 54, fd: 46 },
+          { t: T.unwrap - 0.3, name: 'night', eye: PR5AT.eye1, at: () => lp3(fmHead(cast.ton, [-8.05, 1.55, -7.35]), fmHead(cast.pho, [-8.7, 1.6, -7.75]), 0.5), fp: 50, fd: 44 },
+          { t: T.unwrap, name: 'unwrap', eye: [-8.35, 1.42, -8.55], at: [PR5AT.tonU[0] + 0.02, 0.98, PR5AT.tonU[1] - 0.05], fp: 34, fd: 30, cut: true },
+          { t: T.take - 0.1, name: 'unwrap', eye: [-8.38, 1.44, -8.6], at: [PR5AT.tonU[0] + 0.02, 1.02, PR5AT.tonU[1] - 0.06], fp: 30, fd: 27 },
+          { t: T.take, name: 'stick', eye: [-8.4, EYE, -9.3], at: () => fmHead(cast.pho, [-8.7, 1.6, -7.75]), fp: 46, fd: 40, cut: true },
+          { t: T.thread - 0.05, name: 'stick', eye: [-8.4, EYE, -9.25], at: () => lp3(fmHead(cast.pho, [-8.7, 1.6, -7.75]), [-8.7, 0.9, -7.75], 0.45), fp: 48, fd: 42 },
+          { t: T.thread, name: 'doorway', eye: [-8.15, EYE, -8.6], at: [-8.5, 1.15, -5.3], fp: 50, fd: 44, cut: true },
+          { t: T.ko5p1 + SECS.ko5p1, name: 'doorway', eye: [-8.15, EYE, -8.6], at: () => lp3([-8.5, 1.35, -5.2], fmHead(cast.koh, [-8.5, 1.55, -4.7]), 0.5), fp: 46, fd: 40 },
+          { t: T.noans + 0.6, name: 'nonanswer', eye: [-8.15, EYE, -8.6], at: () => fmHead(cast.pho, [-8.7, 1.6, -7.75]), fp: 44, fd: 38 },
+          { t: T.teacher, name: 'teacher', eye: [F.zav.x, EYE, F.zav.z], at: () => fmHead(cast.pho, [F.pho.x, 1.6, F.pho.z]), fp: 50, fd: 44, cut: true },
+          { t: T.plant + 0.4, name: 'teacher', eye: [F.zav.x, EYE, F.zav.z], at: () => fmHead(cast.pho, [F.pho.x, 1.6, F.pho.z]), fp: 46, fd: 42 },
+          { t: T.open - 0.2, name: 'court', eye: [F.zav.x, EYE, F.zav.z], at: [F.zav.x + 0.2, 1.2, F.zav.z + 4.0], fp: 62, fd: 56 },
+          { t: T.heads + 0.6, name: 'nine', eye: [F.zav.x, EYE, F.zav.z], at: [F.zav.x + 0.1, 1.3, F.zav.z + 3.2], fp: 58, fd: 52 },
+          { t: T.come + 1.6, name: 'come', eye: [F.zav.x, EYE - 0.02, F.zav.z - 0.05], at: [F.zav.x, 1.45, F.zav.z + 2.0], fp: 64, fd: 58 },
+          { t: T.leave, name: 'violet', eye: [F.zav.x, EYE, F.zav.z - 0.05], at: [F.zav.x, 1.5, F.zav.z + 2.0], fp: 64, fd: 58 },
+          { t: T.leave + 0.05, name: 'leave', eye: [ZH[0], 1.68, ZH[2] - 0.35], at: [ZH[0], 1.45, ZH[2] + 3.0], fp: 60, fd: 54, cut: true },
+          { t: T.leave + 2.6, name: 'leave', eye: RISE, at: [ZH[0], 1.0, ZH[2] + 2.2], fp: 58, fd: 54 },
+          { t: T.rest, name: 'boom', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov },
+          { t: T.end, name: 'boom', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov }
+        ]);
+      },
+      end() { fmLens(PLAYFOV5); if (FM5.sour && kit && kit.chill) kit.chill(0, { tint: 'sour' }); FM5.sour = false; fmVisionOff();
+        if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0);
+        /* the court as the fight finds it: the two of them at their places, the cage, the trance, the nine at theirs */
+        const F = fightStart();
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, F.zav.x, F.zav.z, COURT5.heading + Math.PI); });
+        whenReady(cast.pho, (P) => { put(P, F.pho.x, F.pho.z, COURT5.heading + Math.PI); rest(P, 0); });
+        CAGE5.set({ k: 1, x: F.zav.x, z: F.zav.z, t: 0 }); TRANCE5.set(1, 0); TRANCE5.pools(F.zav, F.pho, 1, 1); TRANCE5.gold(1); PRAI5.look('trance');
+        if (kit && kit.captions) kit.captions(null); }
+    };
+
+    /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock NG5): the
+       ONE film inside the fight, which cannot be skipped the first time (the forty-first seam: the fight plays it with
+       kit.film('together', { noSkip: !ctx.sealedBefore(...) })). It begins on the fight's own picture (the boom behind the
+       one played: the engine zeroes the boom under a film, so the first frame sets the same view from the rig), the tall
+       dark shape over his student. Grandmaster Pho plants the Naga stick (his Charged_Spell_Cast_1: the plan's 9.1); THE
+       NAGA rises from its head, ruby and vast, and lays its long body once round the court's edge, between the nine and
+       everyone in the court and at its door; the tall shape cannot hold: it comes apart into its three, and they sink low
+       and lie tired where the fight's last stage finds them (FIGHT.NUM laidAt). "The Naga guards. It always has." Mr Koh
+       at the door, behind the thread: "It is... warm. Why is it warm?" (what he feels, never what it was). It ends on the
+       boom behind Grandmaster Pho, played, the Naga lying round the court (the fight's last stage dims it) */
+    FILMS5.together = {
+      three: null,                                                             // the last three (the fight says which: indices into PRAI5.list)
+      begin(api, s) {
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        const L = this.three && this.three.length === 3 ? this.three : PRAI5.list.map((P, i) => i).filter(i => PRAI5.list[i].group.visible).slice(-3);
+        this.L = L.length === 3 ? L : [6, 7, 8];
+        /* where the two stand as the film begins (the fight's last frame) */
+        this.pho = cast.pho ? { x: cast.pho.group.position.x, z: cast.pho.group.position.z, ry: cast.pho.group.rotation.y } : null;
+        this.zav = cast.zav ? { x: cast.zav.group.position.x, z: cast.zav.group.position.z } : null;
+        PRAI5.look('trance');
+      },
+      frame(t) {
+        const T = NG5, F = fightStart(), pz = this.pho || { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zz = this.zav || F.zav;
+        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((t - T.rise) / 2)));
+        /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
+        const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
+        whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
+          if (t < T.plant + 4.2) { pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant)); if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry); }
+          else { fmRest(P, 'pho', t); STICK5.plant(sx, sz, pz.ry); }
+          lookNow(P, t < T.lay ? [sx, 3.8, sz + 0.6] : [zz.x, 1.5, zz.z], 0.6, 0.7); });
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); });
+        /* the cage: cracked under the shape, whole again as the Naga closes round them */
+        const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
+        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart });
+        TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
+        /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls */
+        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3)));
+        NAGA5.set(kN, aN, t, sx, sz);
+        /* the tall shape: the last three drawn together over him, leaning in; it comes apart into its three, and they sink
+           low and lie where the fight's last stage finds them */
+        const lay = F.laid.length === 3 ? F.laid : [courtWorld(-1.15, -0.8), courtWorld(0, -1.35), courtWorld(1.15, -0.8)];
+        this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P) return; whenReady(P, () => { fmShow(P, true);
+          const kA = smo(c01((t - T.apart - j * 0.15) / 2.2)), kL = smo(c01((t - T.low - j * 0.1) / 1.4));
+          const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j];
+          const x = lp(zz.x + ox, lay[j].x, kA), z = lp(zz.z + oz, lay[j].z, kA), sc = lp(1.55, 1.0, kA);
+          put(P, x, z, faceTo(x, z, zz.x, zz.z)); P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
+          pose(P, 'Idle_3', 2 + j * 0.7 + t * 0.4, true); PRAI5.alpha(P, 1 - 0.35 * kL); }); });
+        PRAI5.tick(0.016);
+        /* Mr Koh, at the doorway behind the thread, at its end */
+        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', t, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
+        /* THE LENS: the fight's picture; down low beside him as the Naga rises (the sky above the court, its head over
+           them); high over the court as its body closes round it; the shape coming apart; the doorway; the boom again */
+        const B0 = boomAt({ x: pz.x, z: pz.z });
+        fmTrack(t, [
+          { t: 0, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
+          { t: T.plant + 0.8, name: 'boom', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
+          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: [sx, 3.6, sz + 0.8], fp: 70, fd: 62 },
+          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: [sx - 0.2, 4.6, sz + 1.6], fp: 72, fd: 64 },
+          { t: T.lay + 2.2, name: 'high', eye: [COURT5.x + 0.4, 7.6, COURT.z0 + 1.3], at: [COURT5.x, 0.2, (COURT.z0 + HOUSE.face) / 2 + 0.6], fp: 66, fd: 58 },
+          { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.2, 6.8, COURT.z0 + 1.6], at: [zz.x, 0.6, zz.z + 0.6], fp: 62, fd: 54 },
+          { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },
+          { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
+          { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
+          { t: T.back, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
+          { t: T.end, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
+        ]);
+      },
+      end() { fmLens(PLAYFOV5);
+        /* what the last stage finds: the three laid at its places, small and dim, the Naga lying round the court */
+        const F = fightStart(), lay = F.laid.length === 3 ? F.laid : [];
+        this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !lay[j]) return; put(P, lay[j].x, lay[j].z, P.group.rotation.y); });
+        if (kit && kit.captions) kit.captions(null); }
+    };
+
+    /* ================================================================ THE BAG TIED (the plan's 4.6; BT5)
+       The last of the nine is in the bag. The cage thins, the murmur stops in the middle of a breath, and the camera goes
+       back INTO his eyes, the turn in reverse (the violet again, and out of it his own sight); the court's lamps come
+       back, one, then the other. "He moved through every part of the house doing this": three pictures through his eyes,
+       the bag still open in Grandmaster Pho's hand (seen from behind him, his breath drawn and blown into it, what is left
+       in each room's air drawn in): the living room, the dining room, the terrace door; behind him Ton carries the Naga
+       stick in both hands and keeps looking down at it. ONLY THEN the knot (the bag's own cord, "tightly"; no string and no
+       chant: both are case three's): heard over the open bag, and seen on a cut, the bag tied. Ton's line; his own. Mr
+       Koh has drawn his curtains back and opened a window: night air; the fourth lamp flickers once and holds, and nobody
+       says which; "lighter... or is it me"; "Both can be true."; his head bowed to Grandmaster Pho, deeper than the
+       first; his teacher's two lines to him. At the lift, the bag in his teacher's hand: "Was it real?" and the case
+       file's second lesson; as the doors open, the next case seeded; in, and the doors close on black */
+    const BT5AT = { live: [-8.1, -3.9], dine: [-10.3, -0.9], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.0, EYE, -2.9], eyeTerr: [-9.8, EYE, -4.6],
+                    tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-8.2, EYE, -3.3], tonKoh: [-8.9, -3.2],
+                    liftPho: [0.35, 0.05], liftTon: [-0.45, -0.55], liftJun: [0.55, -0.9], liftEye: [-0.1, EYE, -1.55] };
+    FILMS5.bagtied = {
+      begin(api, s) {
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        this.F0 = fightStart();
+        this.zav = cast.zav && cast.zav.group.visible ? { x: cast.zav.group.position.x, z: cast.zav.group.position.z } : this.F0.zav;
+        this.pho = cast.pho ? { x: cast.pho.group.position.x, z: cast.pho.group.position.z } : this.F0.pho;
+        whenReady(cast.koh, (P) => fmShow(P, true)); whenReady(cast.jun, (P) => fmShow(P, true)); fmShow(cast.ton, true); fmShow(cast.pho, true);
+        PRAI5.list.forEach((P) => fmShow(P, false));
+        if (things.bagTied) things.bagTied.visible = false;
+      },
+      frame(t, api) {
+        const T = BT5, A = BT5AT, zz = this.zav, pz = this.pho, inEyes = t >= T.eyes, atLift = t >= T.lift;
+        fmLook(!inEyes ? 'TRANCE' : 'NIGHT');
+        /* the court's lamps come back, one, then the other */
+        if (!atLift) { if (!inEyes) courtLamps(0.15); else for (const [i, L] of [[0, T.lamp1], [1, T.lamp2]]) void i, void L; }
+        if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
+        /* the cage thins; Master Zavier seen until the violet */
+        const kc = 1 - smo(c01((t - T.thin) / 1.4));
+        if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.violet + 0.45); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); });
+          CAGE5.set({ k: kc, x: zz.x, z: zz.z, t }); TRANCE5.set(1 - smo(c01((t - T.thin) / 2.0)), t); TRANCE5.pools(zz, pz, kc, kc); TRANCE5.gold(kc); }
+        else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
+        /* his own hands before him, shaking, as his sight comes home to them */
+        if (api && api.handPose) { const kh = inEyes && t < T.room1 - 0.3 ? smo(c01((t - T.eyes) / 0.6)) * (1 - smo(c01((t - T.room1 + 1.0) / 0.7))) : 0;
+          if (api.handsRoot) api.handsRoot.visible = kh > 0.01; api.handPose('reach', kh * 0.8, { p: 0 }); if (kh > 0.01 && api.handsRoot) { api.handsRoot.position.x = 0.004 * Math.sin(t * 31); api.handsRoot.position.y = 0.004 * Math.sin(t * 27 + 1); } }
+        /* the open bag in his teacher's hand, room by room (seen from behind him: the bag before him, out of the picture);
+           the knot; the tied bag on the low table, then in his left hand at the lift */
+        const bagT = things.bagTied, bagO = things.bagOpen;
+        if (bagO) bagO.visible = t >= T.knot - 0.1 && t < T.tied;
+        if (bagO && bagO.visible) { bagO.position.set(A.tie[0], 0.36, A.tie[1]); bagO.rotation.set(0, 0.4, 0); }
+        if (bagT) { bagT.visible = t >= T.tied && t < T.end;
+          if (bagT.visible && !atLift) { if (bagT.parent !== world) world.attach(bagT); bagT.position.set(A.tie[0], 0.36, A.tie[1]); bagT.rotation.set(0, 0.4, 0); }
+          if (bagT.visible && atLift) whenReady(cast.pho, (P) => { FM5.bagOff = handHold5(P, 'Left', bagT, FM5.bagOff, { hang: 0.0, ry: 0.3 }); }); }
+        /* where his teacher is: the court; the three rooms; by Mr Koh; at the lift */
+        whenReady(cast.pho, (P) => {
+          STICK5.to(t < T.eyes ? 'pho' : 'ton');
+          if (!inEyes) { put(P, pz.x, pz.z, COURT5.heading + Math.PI); fmRest(P, 'pho', t); }
+          else if (t < T.room1) { put(P, -8.6, -7.4, Math.PI * 0.95); fmRest(P, 'pho', t); }
+          else if (t < T.room2) { put(P, A.live[0], A.live[1], faceTo(A.live[0], A.live[1], -6.0, -2.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room1 + 0.4, T.room1 + 3.2, 0.2, 2.9)); }
+          else if (t < T.room3) { put(P, A.dine[0], A.dine[1], faceTo(A.dine[0], A.dine[1], -11.6, 0.9)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room2 + 0.3, T.room2 + 3.0, 0.2, 2.9)); }
+          else if (t < T.knot) { put(P, A.terr[0], A.terr[1], faceTo(A.terr[0], A.terr[1], -12.4, -3.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room3 + 0.3, T.room3 + 3.0, 0.2, 2.9)); }
+          else if (!atLift) { put(P, A.phoKoh[0], A.phoKoh[1], faceTo(A.phoKoh[0], A.phoKoh[1], A.kohWin[0], A.kohWin[1]));
+            if (t > T.ph5b1 - 0.1 && t < T.ph5b1 + SECS.ph5b1 + 0.1) fmTalk(P, 'pho', t, T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open');
+            else if (t > T.ph5b2 - 0.1 && t < T.ph5b2 + SECS.ph5b2 + 0.1) fmTalk(P, 'pho', t, T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open');
+            else fmTalk(P, 'pho', t, T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open');
+            lookNow(P, fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), 0.8, 0.7); }
+          else { put(P, A.liftPho[0], A.liftPho[1], faceTo(A.liftPho[0], A.liftPho[1], A.liftEye[0], A.liftEye[2]));
+            if (t < T.ph5b5 - 0.1) fmTalk(P, 'pho', t, T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open');
+            else if (t < T.ph5b6 - 0.1) fmTalk(P, 'pho', t, T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open');
+            else fmTalk(P, 'pho', t, T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open');
+            lookNow(P, t > T.ju5b1 - 0.2 && t < T.ph5b6 ? fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]) : 'lens', 0.8, 0.7); }
+        });
+        /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
+        whenReady(cast.ton, (P) => {
+          if (!inEyes) { const s0 = STATION.fight.ton; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'ton', t); }
+          else if (t < T.knot) { const at = t < T.room2 ? [A.live[0] + 0.9, A.live[1] - 0.8] : t < T.room3 ? [A.dine[0] + 1.1, A.dine[1] - 0.7] : [A.terr[0] + 1.2, A.terr[1] - 0.3];
+            put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
+            lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
+          else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
+            lookNow(P, t > T.tn5b1 + 0.6 && t < T.tn5b1 + SECS.tn5b1 ? 'lens' : [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4], 0.85, 0.8); }
+          else { put(P, A.liftTon[0], A.liftTon[1], faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
+            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI); }
+        });
+        /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
+        whenReady(cast.koh, (P) => {
+          if (!inEyes) { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'koh', t); }
+          else if (atLift) fmShow(P, false);
+          else if (t < T.knot) { put(P, -9.85, -2.25, STATION.hunt.koh.ry); fmRest(P, 'koh', t); }
+          else { fmShow(P, true); put(P, A.kohWin[0], A.kohWin[1], faceTo(A.kohWin[0], A.kohWin[1], A.phoKoh[0], A.phoKoh[1]));
+            fmTalk(P, 'koh', t, T.ko5b1, SECS.ko5b1, 'Talk_with_Hands_Open');
+            const bow = smo(c01((t - T.wai) / 0.6)) * (1 - smo(c01((t - T.wai - 1.4) / 0.8)));
+            lookNow(P, bow > 0.01 ? [A.phoKoh[0], 0.6, A.phoKoh[1]] : fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), 0.85, 0.85); }
+        });
+        whenReady(cast.jun, (P) => {
+          if (!inEyes) { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); }
+          else if (!atLift) { put(P, -9.9, -4.2, faceTo(-9.9, -4.2, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
+          else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
+            if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
+        });
+        /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the fourth lamp
+           flickers once, and holds */
+        CURTAINS5.set(t >= T.knot ? 1 : 0);
+        lamp(1, t > T.window + 0.6 && t < T.window + 1.0 ? 0.25 : 1);
+        /* what is drawn out of each room's air into the bag: dark threads gathering to the bag's mouth before him */
+        WISPS5.set(t, [[T.room1 + 0.6, A.live], [T.room2 + 0.5, A.dine], [T.room3 + 0.5, A.terr]]);
+        /* the lift: the doors at the end */
+        liftDoors(atLift ? smo(c01((t - T.doors) / 1.4)) * (1 - smo(c01((t - T.close) / 1.3))) : 0);
+        /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
+        const B0 = boomAt({ x: pz.x, z: pz.z }), ZH = [zz.x, 1.66, zz.z];
+        fmTrack(t, [
+          { t: 0, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
+          { t: T.violet + 0.3, name: 'into', eye: [ZH[0], ZH[1] + 0.35, ZH[2] - 0.9], at: [ZH[0], 1.4, ZH[2] + 2.5], fp: 60, fd: 54 },
+          { t: T.eyes, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [ZH[0], 1.05, ZH[2] + 1.6], fp: 62, fd: 56, cut: true },
+          { t: T.room1 - 0.3, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [-8.6, 1.4, -7.0], fp: 60, fd: 54 },
+          { t: T.room1, name: 'living', eye: A.eyeLive, at: [A.live[0] - 0.4, 1.5, A.live[1] + 1.4], fp: 56, fd: 50, cut: true },
+          { t: T.room2 - 0.05, name: 'living', eye: [A.eyeLive[0] - 0.1, EYE, A.eyeLive[2] + 0.1], at: [A.live[0] - 0.6, 1.45, A.live[1] + 1.6], fp: 54, fd: 48 },
+          { t: T.room2, name: 'dining', eye: A.eyeDine, at: [A.dine[0] - 0.5, 1.45, A.dine[1] + 1.4], fp: 56, fd: 50, cut: true },
+          { t: T.room3 - 0.05, name: 'dining', eye: [A.eyeDine[0], EYE, A.eyeDine[2] + 0.1], at: [A.dine[0] - 0.7, 1.45, A.dine[1] + 1.6], fp: 54, fd: 48 },
+          { t: T.room3, name: 'terrace', eye: A.eyeTerr, at: [A.terr[0] - 1.2, 1.45, A.terr[1]], fp: 56, fd: 50, cut: true },
+          { t: T.knot - 0.05, name: 'terrace', eye: [A.eyeTerr[0] - 0.1, EYE, A.eyeTerr[2]], at: [A.terr[0] - 1.3, 1.45, A.terr[1]], fp: 54, fd: 48 },
+          { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.55, 1.05, A.tie[1] - 0.6], at: [A.tie[0], 0.48, A.tie[1]], fp: 30, fd: 26, cut: true },
+          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.5, 1.02, A.tie[1] - 0.58], at: [A.tie[0], 0.5, A.tie[1]], fp: 28, fd: 24 },
+          { t: T.tn5b1, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 46, fd: 40, cut: true },
+          { t: T.window - 0.05, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 44, fd: 38 },
+          { t: T.window, name: 'window', eye: A.eyeKoh, at: () => lp3(fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), [A.kohWin[0] - 0.3, 1.5, A.kohWin[1] - 0.5], 0.3), fp: 52, fd: 46, cut: true },
+          { t: T.ph5b1 + 0.4, name: 'koh', eye: A.eyeKoh, at: () => fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), fp: 44, fd: 38 },
+          { t: T.ph5b2 + 0.5, name: 'pho', eye: A.eyeKoh, at: () => fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), fp: 46, fd: 40 },
+          { t: T.lift - 0.05, name: 'pho', eye: A.eyeKoh, at: () => fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), fp: 46, fd: 40 },
+          { t: T.lift, name: 'lift', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 50, fd: 44, cut: true },
+          { t: T.ju5b1 - 0.1, name: 'lift', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 46, fd: 42 },
+          { t: T.ju5b1 + 0.6, name: 'jun', eye: A.liftEye, at: () => fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]), fp: 50, fd: 44 },
+          { t: T.in, name: 'doors', eye: A.liftEye, at: [0.0, 1.45, 1.6], fp: 62, fd: 54 },
+          { t: T.close + 0.4, name: 'in', eye: [0.0, EYE, 0.9], at: [0.0, 1.4, 1.6], fp: 66, fd: 58 },
+          { t: T.end, name: 'in', eye: [0.0, EYE, 1.0], at: [0.0, 1.4, 1.8], fp: 66, fd: 58 }
+        ]);
+      },
+      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(1, 1);
+        if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
+        if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (FM5.api && FM5.api.handsRoot) FM5.api.handsRoot.position.set(0, 0, 0);
+        endPhase5('table'); }
+    };
+    /* (the bag tied: his front curtains drawn back by Mr Koh's own hand, on a cut: each slid along its rail toward the
+       window's sides; the night through the glass) */
+    /* (found by the places the world gave them, b_world.js: each front window's two, at the window's middle less and more
+       4 cm, 0.10 and 0.32 m inside the front wall; slid to either side of the window) */
+    const CURTAINS5 = (() => {
+      let found = null;
+      const find = () => { found = [];
+        for (const Wn of [WIN_A, WIN_B]) { const xm = (Wn.x0 + Wn.x1) / 2;
+          for (const o of world.children) if (o.isGroup && o.userData.model !== undefined && Math.abs(o.position.z - (LIVING.z0 + 0.10)) < 0.005 && Math.abs(o.position.x - (xm - 0.04)) < 0.005) found.push({ o, x0: o.position.x, side: -1 });
+          for (const o of world.children) if (o.isGroup && o.userData.model !== undefined && Math.abs(o.position.z - (LIVING.z0 + 0.32)) < 0.005 && Math.abs(o.position.x - (xm + 0.04)) < 0.005) found.push({ o, x0: o.position.x, side: 1 }); } };
+      return { set(k) { if (!found || found.length < 4) find(); for (const C of found) C.o.position.x = C.x0 + C.side * 0.42 * k; } };
+    })();
+    /* what is drawn from each room's air into the bag's mouth before him: a few dark threads gathering to a point in front
+       of his face, for two and a half seconds after each breath (painted: a fixed set, v6.15) */
+    const WISPS5 = (() => {
+      const soft = (() => { const [c, x] = canvas(64, 64); const gr = x.createRadialGradient(32, 32, 1, 32, 32, 31);
+        gr.addColorStop(0, 'rgba(20,18,26,0.9)'); gr.addColorStop(1, 'rgba(20,18,26,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+      const L = [], r = rng(28660);
+      for (let i = 0; i < 40; i++) { const m = new THREE.SpriteMaterial({ map: soft, color: 0x2a2632, transparent: true, opacity: 0, depthWrite: false }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.scale.setScalar(0.08 + r() * 0.08); sp.visible = false; world.add(sp);
+        L.push({ sp, m, a: r() * 6.28, rr: 1.0 + r() * 1.6, y: 0.5 + r() * 1.6, lag: r() * 0.9 }); }
+      return {
+        set(t, list) { let any = false;
+          for (const [t0, at] of list) { const u0 = (t - t0) / 2.6; if (u0 < 0 || u0 > 1.2) continue; any = true;
+            const fx = at[0], fz = at[1];
+            for (const W of L) { const u = c01((t - t0 - W.lag) / 1.9); W.sp.visible = u > 0 && u < 1; if (!W.sp.visible) continue;
+              const k = u * u * (3 - 2 * u), rr = W.rr * (1 - k);
+              W.sp.position.set(fx + Math.cos(W.a + u * 1.4) * rr, lp(W.y, 1.45, k), fz + 0.45 + Math.sin(W.a + u * 1.4) * rr); W.m.opacity = 0.5 * Math.sin(Math.PI * u); } }
+          if (!any) this.off(); },
+        off() { for (const W of L) W.sp.visible = false; }
+      };
+    })();
+
+    /* ================================================================ THE COLLECTOR, THE FILM IN (the plan's 4.7; CO5)
+       The card on black, "The next afternoon." Daylight in the room where Grandmaster Pho receives people: the low table
+       under its white cloth, his teacher seated cross-legged behind it, the ceiling fan turning, the afternoon in the
+       window; a man in his thirties at the table's end with a padded case: on a cut its pieces are laid out on the cloth,
+       about twenty, in rows (quickly, the way a man gets rid of something: heard, laid one after another, as the shot
+       finds them); his first words over them, his small laugh, the rest. It ends on the view the table begins in */
+    FILMS5.collector = {
+      begin(api, s) {
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        fmShow(cast.pho, false); fmShow(cast.ton, false); whenReady(cast.koh, (P) => fmShow(P, false));
+        fmShow(cast.phoS, true); fmShow(cast.col, true); whenReady(cast.jun, (P) => fmShow(P, true));
+        PIECES5.set(false);
+      },
+      frame(t) {
+        const T = CO5, R = ROOM, me = FM5.s ? [FM5.s.yawPos.x, FM5.s.yawPos.y, FM5.s.yawPos.z] : [0, 1.05, 239.2];
+        fmLook('DAY');
+        if (things.fan) things.fan.rotation.y = t * 2.6;
+        /* the card, on the black (W.cardNext: the sheet's words; drawn by the captions, the screen's own words) */
+        if (kit && kit.captions && !FM5.once.has('card') && t >= T.card) { FM5.once.add('card'); kit.captions([{ at: 0, end: 2.4, text: W.cardNext, sub: '' }]); }
+        /* the pieces: laid out on the cut, the three of the presences among them */
+        PIECES5.set(t >= T.laid);
+        whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP); fmRest(P, 'pho', t); pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6));
+          lookNow(P, t < T.co5t1 ? [R.cx, 0.4, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), 0.7, 0.7); });
+        whenReady(cast.col, (P) => { const s0 = STATION.table.collector; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
+          fmTalk(P, 'col', t, t < T.co5t2 ? T.co5t1 : T.co5t2, t < T.co5t2 ? SECS.co5t1 : SECS.co5t2, 'Sitting_Answering_Questions');
+          lookNow(P, t < T.co5t1 ? [R.cx - 0.1, 0.35, R.cz - 0.1] : t < T.co5t2 + 3.0 ? fmHead(cast.phoS, [0, 0.95, 240.78]) : 'lens', 0.8, 0.7); });
+        whenReady(cast.jun, (P) => { const s0 = STATION.table.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, [R.cx, 0.4, R.cz], 0.5, 0.7); });
+        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]);
+        fmTrack(t, [
+          { t: 0, name: 'room', eye: [R.x1 - 0.35, 1.5, R.z0 + 0.45], at: [R.cx - 0.2, 0.55, R.cz + 0.4], fp: 62, fd: 54 },
+          { t: T.case, name: 'room', eye: [R.x1 - 0.4, 1.45, R.z0 + 0.5], at: [R.cx - 0.3, 0.5, R.cz + 0.2], fp: 58, fd: 50 },
+          { t: T.case + 0.05, name: 'case', eye: [me[0] - 0.25, me[1], me[2] + 0.05], at: COL, fp: 50, fd: 44, cut: true },
+          { t: T.laid - 0.05, name: 'case', eye: [me[0] - 0.25, me[1], me[2] + 0.05], at: () => lp3(COL(), [R.cx - 0.36, 0.4, R.cz - 0.05], 0.5), fp: 48, fd: 42 },
+          { t: T.laid, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx, 0.35, R.cz - 0.12], fp: 40, fd: 34, cut: true },
+          { t: T.co5t1 + SECS.co5t1, name: 'cloth', eye: [me[0], me[1] - 0.05, me[2] + 0.05], at: [R.cx - 0.1, 0.36, R.cz - 0.15], fp: 44, fd: 38 },
+          { t: T.co5t2 + 0.6, name: 'col', eye: me, at: COL, fp: 46, fd: 40 },
+          { t: T.co5t2 + SECS.co5t2 - 1.2, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+          fmSnapKey(T.end, 'table') || { t: T.end, name: 'table', eye: me, yaw: Math.PI, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
+        ]);
+      },
+      end() { fmLens(PLAYFOV5); PIECES5.set(true); endPhase5('table'); }
+    };
+
+    /* ================================================================ THE FOUR ENDINGS (the plan's 4.9), each a whole story,
+       each that afternoon, and in each THE RITE, seen (the case file's own): Grandmaster Pho chants low and sprinkles holy
+       water over the pieces with the fan; the film holds his Spirit Vision open for the rite's length; as the water
+       touches them the presences cry out and come away from the pieces, each lifting off its piece and leaving the light
+       of the table, thin and far (none is shown destroyed); the pieces gathered into the black bag (on a cut), sealed
+       with white sacred string and chanted over "so that nothing could escape"; the smell goes: "I feel lighter. My head
+       is quieter." THE LAST PICTURE, in every ending: the black bag on the white cloth, the string round its neck,
+       Grandmaster Pho's hand resting on it, the empty case open beside it: "Understanding first. Then possession."
+       Their clocks: EN5[k] (each ending's own beats, its rite at EN5[k].rite, its close after); the rite's own beats RT5,
+       the close's CL5. Each ends on its black: the card lies over it */
+    const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.05], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
+    const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
+    FILMS5.ending = {
+      begin(k, api, s) {
+        FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        fmShow(cast.phoS, true); fmShow(cast.col, true); PIECES5.set(true);
+        RITE5.bowl.visible = true;
+        if (things.bagTied) { if (things.bagTied.parent !== world) world.attach(things.bagTied); things.bagTied.visible = false; }
+      },
+      frame(k, t, api) {
+        const E = EN5[k], R = ROOM, r0 = E.rite, RT = RT5, CL = CL5, c0 = E.close, me = FM5.s ? [FM5.s.yawPos.x, FM5.s.yawPos.y, FM5.s.yawPos.z] : [0, 1.05, 239.2];
+        const tr = t - r0, tc = t - c0;
+        fmLook('DAY');
+        if (things.fan) things.fan.rotation.y = t * 2.6;
+        /* THE PIECES: on the cloth until the rite gathers them (on a cut, into the bag), the case beside */
+        const gathered = tr >= RT.bag;
+        PIECES5.set(!gathered);
+        const bag = things.bagTied;
+        if (bag) { bag.visible = gathered; if (gathered) { bag.position.set(RITE_AT.bag[0], 0.345, RITE_AT.bag[1]); bag.rotation.set(0, 0.5, 0); } }
+        RITE5.string(gathered ? smo(c01((tr - RT.string) / 0.6)) : 0, bag);
+        /* the presences (the play's own, c_play.js pres): crying out and coming away as the water reaches them, each
+           lifting off its piece and leaving the table's light */
+        const P5 = presOf5();
+        if (P5) for (const [nm, i] of [['angry', 0], ['hungry', 1], ['energy', 2]]) { const q = P5[nm]; if (!q) continue;
+          const u = smo(c01((tr - RT.away - i * 0.7) / 3.0));
+          q.grp.visible = tr < RT.away + 3.6 + i * 0.7 && u < 0.999;
+          if (q.grp.visible) { q.grp.position.set(q.home.x + (q.home.x - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, q.home.z + 0.9 * u);
+            if (q.fx) q.fx.set('uAlpha', 1 - u); } }
+        /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it) */
+        fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
+        /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
+           fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
+        whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
+          const flick = tr > RT.dip && tr < RT.end ? ((tr - RT.dip) % 2.2) : -1;
+          if (flick >= 0) { pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + flick * 0.85); FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { hang: -0.15, ry: 0 }); }
+          else { pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6)); RITE5.fan.visible = false; }
+          const speak = E.pho && E.pho.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
+          if (speak && flick < 0) fmTalk(P, 'pho', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions');
+          lookNow(P, speak && speak[2] === 'me' ? 'lens' : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z])), 0.7, 0.7); });
+        if (tr > RT.dip && tr < RT.end) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
+        /* the collector: his own story first; still through the rite; lighter after it; standing at the door, and gone */
+        whenReady(cast.col, (P) => { const s0 = STATION.table.collector;
+          const gone = E.gone != null && t >= E.gone;
+          if (gone) { fmShow(P, false); return; }
+          fmShow(P, true);
+          if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2])); fmRest(P, 'koh', t); pose(P, 'Idle_3', 2 + t * 0.35, true); }
+          else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
+            const speak = E.col && E.col.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
+            if (speak) fmTalk(P, 'col', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions'); else fmRest(P, 'col', t); }
+          lookNow(P, ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
+        /* the ending's own things (the case pushed across, the lid, the three) */
+        const X = ENDS5[k];
+        if (X.things) X.things(t, E, me);
+        /* THE LENS: the ending's own shots, the rite's, the close's */
+        const COL = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
+        const keys = X.shots(me, COL, PHO, E).concat([
+          { t: r0, name: 'rite', eye: [me[0] + 0.2, me[1] + 0.05, me[2] - 0.1], at: () => lp3(PHO(), [R.cx, 0.4, R.cz], 0.55), fp: 52, fd: 46 },
+          { t: r0 + RT.see + 1.2, name: 'rite', eye: [me[0] + 0.1, me[1], me[2]], at: [R.cx, 0.42, R.cz - 0.05], fp: 46, fd: 40 },
+          { t: r0 + RT.away + 2.6, name: 'away', eye: [me[0], me[1] + 0.05, me[2] - 0.05], at: [R.cx + 0.1, 0.9, R.cz + 0.1], fp: 58, fd: 50 },
+          { t: r0 + RT.bag, name: 'bag', eye: [me[0] + 0.15, me[1] - 0.1, me[2] + 0.15], at: [RITE_AT.bag[0], 0.45, RITE_AT.bag[1]], fp: 34, fd: 30, cut: true },
+          { t: r0 + RT.end, name: 'bag', eye: [me[0] + 0.12, me[1] - 0.1, me[2] + 0.12], at: [RITE_AT.bag[0], 0.48, RITE_AT.bag[1]], fp: 32, fd: 28 },
+          { t: r0 + RT.end + 0.05, name: 'lighter', eye: me, at: COL, fp: 46, fd: 40, cut: true }
+        ]).concat(X.after(me, COL, PHO, E)).concat([
+          { t: c0, name: 'last', eye: [RITE_AT.bag[0] + 0.62, 0.78, RITE_AT.bag[1] - 0.55], at: [RITE_AT.bag[0] - 0.05, 0.42, RITE_AT.bag[1] + 0.05], fp: 36, fd: 32, cut: true },
+          { t: c0 + CL.end, name: 'last', eye: [RITE_AT.bag[0] + 0.55, 0.74, RITE_AT.bag[1] - 0.5], at: [RITE_AT.bag[0] - 0.04, 0.42, RITE_AT.bag[1] + 0.05], fp: 32, fd: 28 }
+        ]);
+        keys.sort((a, b) => a.t - b.t);
+        fmTrack(t, keys);
+        /* the case: on the cloth until it is pushed across (each ending's own), open and empty in the last picture */
+        if (things.padcase && tc >= 0) { things.padcase.position.set(RITE_AT.bag[0] - 0.34, 0.34, RITE_AT.bag[1] + 0.02); things.padcase.rotation.set(0, 0.3, 0); }
+      },
+      end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null); }
+    };
+
+    /* what a scene reaches of the films (stage.films): each film's three hands */
+    const FILMS5API = {
+      open: FILMS5.open, devotee: FILMS5.devotee, prepare: FILMS5.prepare, together: FILMS5.together,
+      bagtied: FILMS5.bagtied, collector: FILMS5.collector,
+      ending: { begin: (k, api, s) => FILMS5.ending.begin(k, api, s), frame: (k, t, api) => FILMS5.ending.frame(k, t, api), end: () => FILMS5.ending.end() },
+      /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
+      fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5
+    };

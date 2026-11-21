@@ -95,7 +95,7 @@
           for (let s = 0; s < 6; s++) { px += (r() - 0.3) * 60; py += (r() - 0.5) * 50; x.lineTo(Math.max(i * 256 + 2, Math.min(i * 256 + 254, px)), Math.max(j * 256 + 2, Math.min(j * 256 + 254, py))); }
           x.stroke(); } }
       return M({ map: pic(c, 1.2, 1.2), roughness: 0.32 }); })();
-    const mWallIn = M({ map: pic(paint('#e3d9c6', 28507), 1.4, 1.4), roughness: 0.92 });
+    const mWallIn = M({ map: pic(paint('#e3d9c6', 28507), 1.4, 1.4), roughness: 0.92, emissive: 0x2a2014 });   // (lamp-lit: painted light, v9.4)
     const mCeil = M({ color: 0xe8e4da, roughness: 0.95, emissive: 0x262420 });
     const mSkirt = M({ color: 0x5a4636, roughness: 0.6 });
     const mVeneer = (() => { const [c, x] = canvas(128, 256), r = rng(28508);
@@ -104,8 +104,17 @@
         const xx = r() * 128; x.beginPath(); x.moveTo(xx, 0); x.bezierCurveTo(xx + r() * 8 - 4, 80, xx + r() * 8 - 4, 170, xx + r() * 6 - 3, 256); x.stroke(); }
       return M({ map: pic(c, 0.9, 2.1), roughness: 0.55 }); })();
     const mAlu = M({ color: 0xb9bcbd, roughness: 0.4, metalness: 0.5 });
-    const mGlass = M({ color: 0x9aa6b4, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.16, depthWrite: false });
-    const mGlassDay = M({ color: 0xcfe0ee, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.18, depthWrite: false });
+    /* GLASS: see-through, with the sky's faint reflection laid on it (a picture: brighter at its head, a soft diagonal
+       sheen, nearly clear at its foot), so a pane reads as glass from any side and what is behind it reads as behind it */
+    const reflTex = (() => { const [c, x] = canvas(128, 256);
+      const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, 'rgba(235,240,250,0.95)'); g.addColorStop(0.45, 'rgba(210,220,236,0.42)'); g.addColorStop(1, 'rgba(190,200,215,0.18)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 256);
+      x.globalCompositeOperation = 'lighter';
+      const s2 = x.createLinearGradient(0, 40, 128, 150); s2.addColorStop(0, 'rgba(255,255,255,0)'); s2.addColorStop(0.5, 'rgba(255,255,255,0.22)'); s2.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = s2; x.beginPath(); x.moveTo(20, 0); x.lineTo(70, 0); x.lineTo(128, 120); x.lineTo(128, 200); x.closePath(); x.fill();
+      return tex(done(THREE, c, false)); })();
+    const mGlass = M({ color: 0xb4c2d2, map: reflTex, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.30, depthWrite: false });
+    const mGlassDay = M({ color: 0xdce8f2, map: reflTex, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.22, depthWrite: false });
     /* the lift: brushed steel, its floor a grey rubber, its ceiling a lit panel (painted light) */
     const mSteel = (() => { const [c, x] = canvas(256, 256), r = rng(28509);
       x.fillStyle = '#9da2a6'; x.fillRect(0, 0, 256, 256);
@@ -116,9 +125,13 @@
     /* the receiving room: pale grey vinyl planks, white walls, a white ceiling */
     const mRoomFloor = (() => { const [c, x] = canvas(512, 512), r = rng(28511);
       x.fillStyle = '#7a776f'; x.fillRect(0, 0, 512, 512);
-      for (let j = 0; j < 8; j++) { let px = -r() * 300; while (px < 512) { const L = 180 + r() * 260, k = 0.93 + r() * 0.1;
-        x.fillStyle = `rgb(${(188 * k) | 0},${(182 * k) | 0},${(170 * k) | 0})`; x.fillRect(px + 1, j * 64 + 1, L - 2, 62);
-        for (let s = 0; s < 6; s++) { x.strokeStyle = `rgba(120,112,100,${0.08 + r() * 0.08})`; x.beginPath(); const yy = j * 64 + 6 + r() * 52; x.moveTo(px + 2, yy); x.lineTo(px + L - 2, yy + (r() - 0.5) * 4); x.stroke(); }
+      /* (each row of planks is laid round the picture's width and drawn again one width over, so the picture repeats
+         with no seam: the first floor's rows ended at its edge, a line down the room's middle) */
+      for (let j = 0; j < 8; j++) { const px0 = -r() * 300; let px = px0; while (px < px0 + 512) { const L = Math.min(180 + r() * 260, px0 + 512 - px), k = 0.93 + r() * 0.1;
+        const col = `rgb(${(188 * k) | 0},${(182 * k) | 0},${(170 * k) | 0})`, grain = [];
+        for (let s = 0; s < 6; s++) grain.push([`rgba(120,112,100,${0.08 + r() * 0.08})`, j * 64 + 6 + r() * 52, (r() - 0.5) * 4]);
+        for (const off of [0, 512, -512]) { const qx = px + off; x.fillStyle = col; x.fillRect(qx + 1, j * 64 + 1, L - 2, 62);
+          for (const [st, yy, dy] of grain) { x.strokeStyle = st; x.beginPath(); x.moveTo(qx + 2, yy); x.lineTo(qx + L - 2, yy + dy); x.stroke(); } }
         px += L; } }
       return M({ map: pic(c, 1.6, 1.6), roughness: 0.6 }); })();
     const mRoomWall = M({ map: pic(paint('#ecebe5', 28512), 1.4, 1.4), roughness: 0.93 });
@@ -157,6 +170,43 @@
       box(mAlu, xc, (o.sill + o.head) / 2, zm, d * 0.5, h, 0.035);
       glass.push({ mat, a: [xc, o.sill, o.z1], b: [xc, o.sill, o.z0], c: [xc, o.head, o.z0], d: [xc, o.head, o.z1] });
     }
+
+    /* A HOME'S WINDOW SEEN FROM OUTSIDE (the storeys over his home, the court's side walls): in the wall's opening its
+       aluminium frame and mullion, its glass (the sky's reflection), a ledge under it, and the room behind: a curtain
+       drawn 0.32 m in, lit warm, lit by a television, or dark (ROOMS, four kinds dealt by a seeded stream). `axis` 'x':
+       a wall along x whose outer face is at z = face, `n` the way it faces (+1 / -1 in z); 'z': along z, face at x. */
+    const ROOMS = (() => { const [c, x] = canvas(512, 512), r = rng(28525);
+      const kinds = [['#efc68a', '#f8dcae', 0.95], ['#9fb2d8', '#c9d6ee', 0.75], ['#3a3632', '#4c4640', 0.0], ['#e8d2a8', '#fbe8c4', 0.85]];
+      kinds.forEach(([a, b2, glow], k) => { const ox = (k % 2) * 256, oy = ((k / 2) | 0) * 256;
+        const g = x.createLinearGradient(ox, oy, ox + 256, oy); for (let i = 0; i <= 12; i++) g.addColorStop(i / 12, i % 2 ? a : b2);
+        x.fillStyle = g; x.fillRect(ox, oy, 256, 256);
+        for (let i = 0; i < 26; i++) { x.fillStyle = `rgba(0,0,0,${0.03 + r() * 0.05})`; x.fillRect(ox + r() * 256, oy, 2 + r() * 6, 256); }
+        if (glow) { const rg = x.createRadialGradient(ox + 128, oy + 60, 10, ox + 128, oy + 60, 200); rg.addColorStop(0, `rgba(255,248,230,${0.35 * glow})`); rg.addColorStop(1, 'rgba(0,0,0,0.18)'); x.fillStyle = rg; x.fillRect(ox, oy, 256, 256); }
+        x.fillStyle = 'rgba(0,0,0,0.25)'; x.fillRect(ox, oy, 256, 10); });
+      const t = tex(done(THREE, c, false)); t.anisotropy = 4; return B({ map: t }); })();
+    function quadSub(mat, a, b, c, d, u0, v0, u1, v1) { const Bt = batchOf(mat); let nx = (b[1] - a[1]) * (d[2] - a[2]) - (b[2] - a[2]) * (d[1] - a[1]), ny = (b[2] - a[2]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[2] - a[2]), nz = (b[0] - a[0]) * (d[1] - a[1]) - (b[1] - a[1]) * (d[0] - a[0]);
+      const nl = Math.hypot(nx, ny, nz) || 1, P = [a, b, c, a, c, d], U = [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]];
+      for (let i = 0; i < 6; i++) { Bt.p.push(P[i][0], P[i][1], P[i][2]); Bt.n.push(nx / nl, ny / nl, nz / nl); Bt.u.push(U[i][0], U[i][1]); } }
+    const roomRng = rng(28526);
+    function homeWin(axis, face, n, a0, a1, sill, head, kind = -1) {
+      const w = a1 - a0, h = head - sill, fr = 0.05, am = (a0 + a1) / 2, k = kind >= 0 ? kind : Math.floor(roomRng() * 4);
+      const u0 = (k % 2) * 0.5, v1 = 1 - ((k / 2) | 0) * 0.5, v0 = v1 - 0.5;
+      /* a point at `a` along the wall, height y, `d` outward from the face */
+      const P = (a, y, d) => axis === 'x' ? [a, y, face + n * d] : [face + n * d, y, a];
+      const bx = (a, y, d, la, ly, ld, mat) => { const c = P(a, y, d); if (axis === 'x') box(mat, c[0], c[1], c[2], la, ly, ld); else box(mat, c[0], c[1], c[2], ld, ly, la); };
+      bx(am, sill + fr / 2, -0.06, w, fr, 0.07, mAlu); bx(am, head - fr / 2, -0.06, w, fr, 0.07, mAlu);
+      bx(a0 + fr / 2, (sill + head) / 2, -0.06, fr, h, 0.07, mAlu); bx(a1 - fr / 2, (sill + head) / 2, -0.06, fr, h, 0.07, mAlu);
+      bx(am, (sill + head) / 2, -0.06, 0.04, h, 0.06, mAlu);
+      bx(am, sill - 0.035, 0.04, w + 0.14, 0.07, 0.14, mBand);                                  // the ledge under it
+      /* (the order of the corners makes each quad face out: a from the far end along the wall to b) */
+      const flip = (axis === 'x') === (n < 0);
+      const [aa, ab] = flip ? [a1, a0] : [a0, a1];
+      glass.push({ mat: mGlass, a: P(aa, sill, -0.07), b: P(ab, sill, -0.07), c: P(ab, head, -0.07), d: P(aa, head, -0.07) });
+      quadSub(ROOMS, P(aa, sill - 0.05, -0.32), P(ab, sill - 0.05, -0.32), P(ab, head + 0.05, -0.32), P(aa, head + 0.05, -0.32), u0, v0, u0 + 0.5, v1);
+    }
+    const mPipe = M({ color: 0xbdb8ac, roughness: 0.6 });
+    /* a downpipe from the ground to the roof, its brackets at every storey */
+    function downpipe(x, z, top) { bar(mPipe, [x, 0, z], [x, top, z], 0.045, 8); for (let y = 0.4; y < top; y += STOREY) box(mPipe, x, y + 1.6, z, 0.12, 0.05, 0.12); }
 
     /* ================================================================ THE WALKWAY (the plan's 4.1 and 8.1)
        An open walkway along the block's face, 1.9 m wide, covered by the storey above's slab (its soffit 2.75 m), open
@@ -234,6 +284,23 @@
         box(mBand, (W.endX + W.edge) / 2, y + 1.1, W.z0 - 0.07, W.edge - W.endX, 0.06, 0.16);
         if (st < 3) { box(mFace, W.edge + 0.06, y + STOREY - 0.1, (W.z0 + W.z1) / 2, 0.12, 0.4, W.z1 - W.z0);
           box(mFace, (W.endX + W.edge) / 2, y + STOREY - 0.1, W.z0 - 0.06, W.edge - W.endX, 0.4, 0.12); } }
+      /* THE WALKWAYS ABOVE, as built: each storey's slab over both runs (its underside the soffit of the walkway below
+         it), and where the walkway passes his court a balustrade on the court's side too (it runs there as a bridge
+         between the court and the outside); the homes' walls along their inner side. From his court, between the
+         storeys, the eye meets railings, slabs and soffits, and past them the estate */
+      const mSlabTop = M({ color: 0xa69e90, roughness: 0.8 });
+      for (let st = 1; st <= 3; st++) { const y = st * STOREY;
+        box(mSoffit, (W.x0 - 0.2 + W.edge + 0.12) / 2, y - 0.095, (W.z0 + W.z1) / 2 - 0.06, W.edge + 0.32 - W.x0, 0.19, W.z1 - W.z0 + 0.12, 0, mSlabTop, st === 1);
+        box(mSoffit, (W.endX + W.x0 - 0.2) / 2, y - 0.095, (W.z0 + W.turnZ) / 2 - 0.06, W.x0 - 0.2 - W.endX, 0.19, W.turnZ - W.z0 + 0.12, 0, mSlabTop, st === 1);
+        if (st < 3) {
+          wallZ(mFace, W.x0 - 0.1, 0.2, W.turnZ, W.z1, [], y, y + STOREY - 0.2, false);
+          wallX(mFace, W.turnZ + 0.1, 0.2, COURT.x1 + 0.1, W.x0 - 0.2, [], y, y + STOREY - 0.2, false);
+          wallX(mFace, W.turnZ + 0.1, 0.2, W.endX - 0.2, COURT.x0 - 0.1, [], y, y + STOREY - 0.2, false);
+          box(mBand, (COURT.x0 + COURT.x1) / 2, y + STOREY - 0.32, W.turnZ - 0.06, COURT.x1 - COURT.x0, 0.24, 0.12);   // the slab's edge over the court
+        } }
+      { const R2 = [], n = 3, L = (COURT.x1 - COURT.x0) / n;
+        for (let st = 1; st <= 2; st++) for (let i = 0; i < n; i++) R2.push({ x: COURT.x0 + (i + 0.5) * L, y: st * STOREY, z: W.turnZ - 0.09, ry: 0, sx: L / 2.0 });
+        manyX('w5rail', R2, 3); }
     }
 
     /* ================================================================ HIS COURT AND HIS HOUSE (the plan's 4.2, 4.3, 8.1) */
@@ -242,22 +309,47 @@
       /* the paving, and its path from the gate to the door (300 mm pavers, a shade darker) */
       floor(mPave, C.x0, C.z0, C.x1, C.z1);
       floor(mPath, GATE.x - 0.6, C.z0 + 0.05, GATE.x + 0.6, C.z1 - 0.05, 0.004);
-      /* the court's side walls, his and his neighbour's, up to the block's roof: the court is open to the sky */
-      wallZ(mCourtWall, C.x0 - 0.1, 0.2, C.z0, H.face, [], 0, C.wallTop);
-      wallZ(mCourtWall, C.x1 + 0.1, 0.2, C.z0, H.face, [], 0, C.wallTop);
-      /* the storeys over the house: its face continues up from the front wall to the roof, with the upper homes' windows
-         (their glass dark, a curtain behind; painted) */
-      const upWin = (() => { const [c, x] = canvas(256, 256), r = rng(28520);
-        x.fillStyle = '#ddd5c4'; x.fillRect(0, 0, 256, 256);
-        x.fillStyle = '#8f8a82'; x.fillRect(0, 232, 256, 24);
-        x.fillStyle = '#c9c1b0'; x.fillRect(40, 64, 176, 124);
-        x.fillStyle = '#2a2f38'; x.fillRect(46, 70, 164, 112);
-        x.fillStyle = r() < 0.5 ? 'rgba(236,196,128,0.55)' : 'rgba(150,170,200,0.25)'; x.fillRect(50, 74, 76, 104);
-        x.fillStyle = '#b9bcbd'; x.fillRect(126, 70, 4, 112);
-        return B({ map: pic(c, C.x1 - C.x0, STOREY, 4) }); })();
+      /* THE COURT'S SIDE WALLS, his (west: his bedroom wing) and his neighbour's (east), to the block's roof (the court is
+         open to the sky): the block's paint over a tiled dado, a slab band at every storey, and the homes' windows that
+         look into the court (his bedroom's at the ground storey behind its grille; two a storey above) */
+      const SW = [{ z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];
+      const sideOpens = (ground) => { const o = []; if (ground) o.push({ z0: -9.1, z1: -7.7, y0: 1.0, y1: 2.15 });
+        for (let st = 1; st <= 2; st++) for (const q of SW) o.push({ z0: q.z0, z1: q.z1, y0: st * STOREY + 0.9, y1: st * STOREY + 2.1 }); return o; };
+      wallZ(mCourtWall, C.x0 - 0.1, 0.2, C.z0, H.face, sideOpens(true), 0, C.wallTop);
+      wallZ(mCourtWall, C.x1 + 0.1, 0.2, C.z0, H.face, sideOpens(false), 0, C.wallTop);
+      homeWin('z', C.x0, 1, -9.1, -7.7, 1.0, 2.15, 0);
+      for (let gz = -9.06; gz < -7.72; gz += 0.11) bar(M({ color: 0xe6e6e0, roughness: 0.5 }), [C.x0 + 0.05, 1.0, gz], [C.x0 + 0.05, 2.15, gz], 0.008, 5);
+      for (let st = 1; st <= 2; st++) for (const q of SW) { homeWin('z', C.x0, 1, q.z0, q.z1, st * STOREY + 0.9, st * STOREY + 2.1); homeWin('z', C.x1, -1, q.z0, q.z1, st * STOREY + 0.9, st * STOREY + 2.1); }
       for (let st = 1; st <= 2; st++) { const y = st * STOREY;
-        quad(upWin, [C.x1, y, H.face - 0.21], [C.x0, y, H.face - 0.21], [C.x0, y + STOREY, H.face - 0.21], [C.x1, y + STOREY, H.face - 0.21], 0, y); }
-      box(mBand, (C.x0 + C.x1) / 2, STOREY - 0.13, H.face - 0.12, C.x1 - C.x0, 0.26, 0.08);
+        box(mBand, C.x0 + 0.03, y - 0.02, (C.z0 + H.face) / 2, 0.06, 0.22, H.face - C.z0 - 0.05);
+        box(mBand, C.x1 - 0.03, y - 0.02, (C.z0 + H.face) / 2, 0.06, 0.22, H.face - C.z0 - 0.05); }
+      /* THE STOREYS OVER HIS HOME: the block's face over his front wall, to the roof, built as it stands: two windows a
+         storey, each with its frame, glass and ledge and a home behind it, the air-conditioner's ledge between them behind
+         its louvred screen, the slab band at each floor, the downpipes at the court's corners, the roof's parapet */
+      const FZ = H.face - 0.2;
+      const UW = [{ x0: -10.45, x1: -9.25 }, { x0: -7.75, x1: -6.55 }];
+      for (let st = 1; st <= 2; st++) { const y = st * STOREY;
+        wallX(mCourtWall, H.face - 0.1, 0.2, C.x0, C.x1, UW.map(q => ({ x0: q.x0, x1: q.x1, y0: y + 0.9, y1: y + 2.1 })), y, y + STOREY, false);
+        for (const q of UW) homeWin('x', FZ, -1, q.x0, q.x1, y + 0.9, y + 2.1);
+        box(mBand, (C.x0 + C.x1) / 2, y - 0.02, FZ - 0.03, C.x1 - C.x0, 0.22, 0.06);
+        /* the air-conditioner's ledge: a concrete shelf, its two cheeks and its screen of aluminium louvres */
+        const ax = (UW[0].x1 + UW[1].x0) / 2;
+        box(mFace, ax, y + 0.32, FZ - 0.3, 0.92, 0.08, 0.6, 0, mFace, false);
+        for (const sx of [-0.45, 0.45]) box(mFace, ax + sx, y + 0.8, FZ - 0.3, 0.04, 0.96, 0.6);
+        for (let k = 0; k < 8; k++) box(mAlu, ax, y + 0.44 + k * 0.105, FZ - 0.58, 0.88, 0.022, 0.07); }
+      downpipe(C.x0 + 0.12, FZ - 0.07, C.wallTop); downpipe(C.x1 - 0.12, FZ - 0.07, C.wallTop);
+      /* the roof's parapet over his home's face */
+      box(mFace, (C.x0 + C.x1) / 2, C.wallTop + 0.45, FZ + 0.05, C.x1 - C.x0, 0.9, 0.2);
+      /* THE DADO: 150 mm ceramic tiles to 0.8 m round the court (its walls, his front wall either side of the door, the
+         low front wall's inside), over the plinth, 4 mm proud */
+      const mDado = M({ map: pic(tiles(256, 4, [176, 168, 152], '#7c7468', 28527, 0.06, 60), 0.6, 0.6), roughness: 0.35 });
+      const dy0 = 0.15, dy1 = 0.8;
+      quad(mDado, [C.x0 + 0.004, dy0, H.face], [C.x0 + 0.004, dy0, C.z0 + 0.2], [C.x0 + 0.004, dy1, C.z0 + 0.2], [C.x0 + 0.004, dy1, H.face], 0, dy0);
+      quad(mDado, [C.x1 - 0.004, dy0, C.z0 + 0.2], [C.x1 - 0.004, dy0, H.face], [C.x1 - 0.004, dy1, H.face], [C.x1 - 0.004, dy1, C.z0 + 0.2], 0, dy0);
+      quad(mDado, [DOOR_FRONT.x0 - 0.06, dy0, FZ - 0.004], [C.x0, dy0, FZ - 0.004], [C.x0, dy1, FZ - 0.004], [DOOR_FRONT.x0 - 0.06, dy1, FZ - 0.004], 0, dy0);
+      quad(mDado, [C.x1, dy0, FZ - 0.004], [DOOR_FRONT.x1 + 0.06, dy0, FZ - 0.004], [DOOR_FRONT.x1 + 0.06, dy1, FZ - 0.004], [C.x1, dy1, FZ - 0.004], 0, dy0);
+      quad(mDado, [C.x0, dy0, C.z0 + 0.204], [GATE.x - 0.84 - 0.21, dy0, C.z0 + 0.204], [GATE.x - 0.84 - 0.21, dy1, C.z0 + 0.204], [C.x0, dy1, C.z0 + 0.204], 0, dy0);
+      quad(mDado, [GATE.x + 0.84 + 0.21, dy0, C.z0 + 0.204], [C.x1, dy0, C.z0 + 0.204], [C.x1, dy1, C.z0 + 0.204], [GATE.x + 0.84 + 0.21, dy1, C.z0 + 0.204], 0, dy0);
       /* the roof's coping round the court's top, against the sky */
       box(mBand, C.x0 - 0.1, C.wallTop + 0.1, (C.z0 + H.face) / 2, 0.3, 0.2, H.face - C.z0);
       box(mBand, C.x1 + 0.1, C.wallTop + 0.1, (C.z0 + H.face) / 2, 0.3, 0.2, H.face - C.z0);
@@ -268,23 +360,19 @@
         { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, y0: 0, y1: DOOR_FRONT.h },
         { x0: WIN_B.x0, x1: WIN_B.x1, y0: WIN_B.sill, y1: WIN_B.head }], 0, STOREY);
       windowX(WIN_A, H.face - 0.1, 0.2); windowX(WIN_B, H.face - 0.1, 0.2);
+      /* the lamps' light through the drawn curtains: a soft warm glow between the glass and the cloth (seen from the court
+         it is the cloth lit from behind; from the room it is behind the cloth and hidden) */
+      { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 48, 4, 64, 64, 80); g.addColorStop(0, 'rgba(255,226,170,0.9)'); g.addColorStop(0.6, 'rgba(255,206,140,0.35)'); g.addColorStop(1, 'rgba(255,200,130,0.05)');
+        x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+        const mBack = new THREE.MeshBasicMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.45 }); mats.push(mBack);
+        for (const Wn of [WIN_A, WIN_B]) quadUV(mBack, [Wn.x1, Wn.sill, H.face + 0.02], [Wn.x0, Wn.sill, H.face + 0.02], [Wn.x0, Wn.head, H.face + 0.02], [Wn.x1, Wn.head, H.face + 0.02]); }
       /* the walls' feet: a grey plinth 15 cm high round the court (a builder's waterproof band), standing 1 cm proud */
       box(mBand, C.x0 + 0.005, 0.075, (C.z0 + H.face) / 2, 0.03, 0.15, H.face - C.z0 - 0.2);
       box(mBand, C.x1 - 0.005, 0.075, (C.z0 + H.face) / 2, 0.03, 0.15, H.face - C.z0 - 0.2);
       box(mBand, (C.x0 + DOOR_FRONT.x0) / 2, 0.075, H.face - 0.205, DOOR_FRONT.x0 - C.x0, 0.15, 0.03);
       box(mBand, (DOOR_FRONT.x1 + C.x1) / 2, 0.075, H.face - 0.205, C.x1 - DOOR_FRONT.x1, 0.15, 0.03);
       box(mBand, (C.x0 + C.x1) / 2, 0.075, C.z0 + 0.205, C.x1 - C.x0, 0.15, 0.03);
-      /* on his side wall (the west, his bedroom wing) its window, its grille and its curtain drawn behind the glass; on his
-         neighbour's (the east) a high louvred vent: painted, as their faces are seen across the court and never reached */
-      const winCard = (() => { const [c, x] = canvas(256, 256);
-        x.fillStyle = '#b9bcbd'; x.fillRect(0, 0, 256, 256); x.fillStyle = '#4a4438'; x.fillRect(10, 10, 236, 236);
-        const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, 'rgba(232,206,160,0.9)'); g.addColorStop(1, 'rgba(196,168,124,0.9)'); x.fillStyle = g; x.fillRect(14, 14, 228, 228);
-        x.strokeStyle = 'rgba(120,96,70,0.35)'; for (let i = 0; i < 18; i++) { x.beginPath(); x.moveTo(20 + i * 12.5, 14); x.lineTo(20 + i * 12.5, 242); x.stroke(); }
-        x.fillStyle = '#b9bcbd'; x.fillRect(124, 10, 8, 236);
-        x.fillStyle = '#e6e6e0'; for (let i = 0; i < 9; i++) x.fillRect(20 + i * 27, 6, 5, 244); x.fillRect(6, 120, 244, 6);
-        return B({ map: tex(done(THREE, c, false)) }); })();
-      quadUV(winCard, [C.x0 + 0.012, 1.0, -7.7], [C.x0 + 0.012, 1.0, -9.1], [C.x0 + 0.012, 2.15, -9.1], [C.x0 + 0.012, 2.15, -7.7]);
-      box(mBand, C.x0 + 0.04, 0.98, -8.4, 0.06, 0.04, 1.5);
+      /* on his neighbour's wall (the east) at the ground storey, a high louvred vent (painted: seen across the court) */
       const vent = (() => { const [c, x] = canvas(128, 64); x.fillStyle = '#9e978a'; x.fillRect(0, 0, 128, 64);
         for (let j = 0; j < 7; j++) { x.fillStyle = '#3a3630'; x.fillRect(6, 6 + j * 8, 116, 4); x.fillStyle = '#c9c2b2'; x.fillRect(6, 10 + j * 8, 116, 2); }
         return B({ map: tex(done(THREE, c, false)) }); })();
@@ -387,6 +475,11 @@
           const PP = [a, b, c, a, c, d], U = [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]];
           for (let q = 0; q < 6; q++) { Bt.p.push(PP[q][0], PP[q][1], PP[q][2]); Bt.n.push(-az, 0, ax); Bt.u.push(U[q][0], U[q][1]); } }
         const top = G + storeys * STOREY, dp = 12;
+        /* (the face's depth: each storey's balcony slab standing 0.5 m out of it, and a fin between every second pair of
+           homes, ground to roof: seen across the estate a real block's ledges and shadows, not a picture of one) */
+        const along = Math.abs(ax) > 0.5, bxAt = (u, y, w, la, h, ld) => { const c = P(u, y, w); box(mBand, c[0], c[1], c[2], along ? la : ld, h, along ? ld : la); };
+        for (let st = 1; st < storeys; st++) bxAt(L / 2, G + st * STOREY + 0.05, -0.25, L, 0.16, 0.5);
+        for (let i = 0; i <= nb; i += 2) bxAt(Math.min(L - 0.1, Math.max(0.1, i * bw)), G + (top - G) / 2, -0.25, 0.22, top - G, 0.5);
         const e0 = P(0, 0), e1 = P(L, 0), b0 = P(0, 0, dp), b1 = P(L, 0, dp);
         quad(mFaceD, [b0[0], G, b0[2]], [e0[0], G, e0[2]], [e0[0], top, e0[2]], [b0[0], top, b0[2]]);
         quad(mFaceD, [e1[0], G, e1[2]], [b1[0], G, b1[2]], [b1[0], top, b1[2]], [e1[0], top, e1[2]]);
@@ -453,6 +546,19 @@
       const sk = (a, b) => wall(mSkirt, a[0], a[1], b[0], b[1], 0, 0.08);
       sk([R.x0 + 0.006, R.z1 - 0.006], [R.x0 + 0.006, R.z0 + 0.006]); sk([R.x1 - 0.006, R.z0 + 0.006], [R.x1 - 0.006, R.z1 - 0.006]);
       sk([R.x1 - 0.006, R.z1 - 0.006], [R.x0 + 0.006, R.z1 - 0.006]);
+      sk([R.x0 + 0.006, R.z0 + 0.006], [-1.6, R.z0 + 0.006]); sk([-0.75, R.z0 + 0.006], [R.x1 - 0.006, R.z0 + 0.006]);
+      /* a plaster cornice round the ceiling, the door's casing, the window's inside sill, and the afternoon's light on the
+         floor under the window (painted: v9.4) */
+      const mCorn = M({ color: 0xf0eee8, roughness: 0.9 });
+      box(mCorn, R.x0 + 0.03, h - 0.04, (R.z0 + R.z1) / 2, 0.06, 0.08, R.z1 - R.z0); box(mCorn, R.x1 - 0.03, h - 0.04, (R.z0 + R.z1) / 2, 0.06, 0.08, R.z1 - R.z0);
+      box(mCorn, (R.x0 + R.x1) / 2, h - 0.04, R.z0 + 0.03, R.x1 - R.x0, 0.08, 0.06); box(mCorn, (R.x0 + R.x1) / 2, h - 0.04, R.z1 - 0.03, R.x1 - R.x0, 0.08, 0.06);
+      const mCase = M({ color: 0x6a4c34, roughness: 0.6 });
+      box(mCase, -1.63, 1.07, R.z0 + 0.012, 0.07, 2.14, 0.025); box(mCase, -0.72, 1.07, R.z0 + 0.012, 0.07, 2.14, 0.025); box(mCase, -1.175, 2.14, R.z0 + 0.012, 0.98, 0.07, 0.025);
+      box(mCorn, R.x1 - 0.06, WIN.sill - 0.02, (WIN.z0 + WIN.z1) / 2, 0.14, 0.04, WIN.z1 - WIN.z0 + 0.1);
+      { const [c, x] = canvas(256, 128); const g = x.createLinearGradient(256, 0, 0, 0); g.addColorStop(0, 'rgba(255,246,222,0.5)'); g.addColorStop(1, 'rgba(255,246,222,0)');
+        x.fillStyle = g; x.beginPath(); x.moveTo(256, 18); x.lineTo(0, 0); x.lineTo(0, 128); x.lineTo(256, 110); x.closePath(); x.fill();
+        const mSun = new THREE.MeshBasicMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mSun);
+        quadUV(mSun, [R.x1 - 1.9, 0.003, WIN.z1 + 0.35], [R.x1 - 0.02, 0.003, WIN.z1 + 0.05], [R.x1 - 0.02, 0.003, WIN.z0 - 0.05], [R.x1 - 1.9, 0.003, WIN.z0 - 0.35]); }
       /* the afternoon in the window: a row of shophouses across the street, 14 m off, and the sky over them (geometry
          with perspective, never a painted sheet on the glass: v8.9) */
       const shop = (() => { const [c, x] = canvas(1024, 512), r = rng(28550);
@@ -472,7 +578,7 @@
     }
 
     /* the glass of every window, drawn last (see-through: after the opaque) */
-    function buildGlass() { for (const g of glass) quad(g.mat, g.a, g.b, g.c, g.d); }
+    function buildGlass() { for (const g of glass) quadUV(g.mat, g.a, g.b, g.c, g.d); }
 
     buildWalkway();
     buildCourt();

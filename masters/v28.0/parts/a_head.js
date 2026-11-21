@@ -55,6 +55,15 @@
     hemi: [0x7f8cc0, 0x2a2420, 0.5], key: [0xffc890, 0.6, 1.5, 2.2, 1.0], fill: [0x6070a8, 0.2],
     stars: 0.3, moon: 0,
     vmHemi: [0x7f8cc0, 0x2a2420, 0.55], vmKey: [0xffc890, 0.45] });
+  /* (the world's: the plan's 8.1 hours, set from photographs, docs/V28.0-WORLD.md 7) THE HOME IN THE EVENING, for the
+     hunt: the sun gone, the last of its warmth low in the west, the sky's blue deepening overhead, the court's lamps lit
+     and the homes' windows lit; the light flatter and dimmer than the walkway's dusk */
+  const EVENING = sky({
+    stops: [[0.00, '#c98a6a'], [0.10, '#9a6f78'], [0.30, '#5a5a82'], [0.60, '#333c68'], [1.00, '#1c2448']],
+    bg: 0x3a3a58, fog: [0x4c4860, 0.005],
+    hemi: [0xb4b4d4, 0x4a4038, 0.62], key: [0xff9c62, 0.5, -3.0, 0.9, 2.0], fill: [0x7080b8, 0.22],
+    stars: 0.06, moon: 0,
+    vmHemi: [0xb4b4d4, 0x4a4038, 0.62], vmKey: [0xffa870, 0.42] });
   /* THE RECEIVING ROOM IN THE AFTERNOON, for case three: daylight through one window */
   const DAY = sky({
     stops: [[0.00, '#dfe8f2'], [0.20, '#bcd2ea'], [0.50, '#8fb4de'], [0.80, '#6a98d0'], [1.00, '#5486c4']],
@@ -62,7 +71,7 @@
     hemi: [0xf4f8ff, 0xb8a890, 0.95], key: [0xfff2dc, 0.9, 2.0, 3.0, -1.0], fill: [0xb8c8e0, 0.25],
     stars: 0, moon: 0,
     vmHemi: [0xf4f8ff, 0xb8a890, 0.9], vmKey: [0xfff2dc, 0.6] });
-  const PRESETS = { DUSK, NIGHT, DAY };
+  const PRESETS = { DUSK, EVENING, NIGHT, DAY };
 
 //@@LINES
 

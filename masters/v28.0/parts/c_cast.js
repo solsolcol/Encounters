@@ -108,22 +108,8 @@
         headDamp: { Sitting_Answering_Questions: [0.35, 'Sitting_Answering_Questions'] } });
       cast.col.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
 
-    /* EACH PHASE'S PLACES FOR THEM (the world's STATION, b_world.js): where play stands them and where every film that
-       hands to that phase leaves them (v5.25: a film ends with its props where play keeps them). `castAt(p)` is called
-       by the world's phase hook; a film calls it in its end() */
-    function castAt(p) {
-      const st = STATION[p] || STATION.walk;
-      const put0 = (P, s) => { if (!P) return; if (!s) { P.hidden = true; P.group.visible = false; return; } P.hidden = false; put(P, s.x, s.z, s.ry, s.y || 0); if (P.ready) P.group.visible = true; };
-      const seated = p === 'table' || p === 'ask';
-      put0(cast.pho, seated ? null : st.pho);
-      put0(cast.phoS, seated ? { x: st.pho.x, z: st.pho.z, ry: st.pho.ry, y: CUSHION_TOP } : null);
-      put0(cast.ton, st.ton || null);
-      put0(cast.col, seated ? st.collector : null);
-      if (cast.zav) { cast.zav.hidden = true; cast.zav.group.visible = false; }
-      if (cast.pho && cast.pho.ready) rest(cast.pho, 0); if (cast.ton && cast.ton.ready) rest(cast.ton, 0);
-      STICK5.to(p === 'fight' ? 'pho' : 'away');
-      PRAI5.home(p); CAGE5.set(null); TRANCE5.set(0);
-    }
+    /* (each phase's places for them are the play's: c_play.js castPhase, from the world's STATION; a film that hands to a
+       phase leaves them there: c_yfilm.js endPhase5) */
 
     /* ---------------------------------------------------------------- THE NAGA STICK IN A HAND (w5nagastaff, made from
        Chad's photograph: R2; 1.40 m on its own foot, its head at the top). It is ONE thing (the world's, stage.things),
@@ -179,8 +165,15 @@
           g.translateY(-STICK_LEN * 0.5); }
         g.visible = true; return true; },
       /* stood upright by itself at a point (the Naga's film: planted, "the stick stands by itself once planted") */
-      plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; }
+      plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; },
+      /* the wrapped stick carried upright in Ton's right hand, its foot a hand over the floor (laid from his standing rest
+         once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */
+      wrapOff: null,
+      carry(P) { if (this.who !== 'tonWrap' || !P || !P.ready || !things.staffWrap) return;
+        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2 }); }
     };
+    /* the nine as the play reaches them (c_play.js praiOf: cast.prai) */
+    Object.defineProperty(cast, 'prai', { get: () => PRAI5.list, enumerable: false });
 
     /* ---------------------------------------------------------------- THE NINE (the plan's 9.2; people/RECORD.md)
        "Seen as a woman's standing shape, faceless, of black oil with a pale sheen moving over it", each with "a thin pale

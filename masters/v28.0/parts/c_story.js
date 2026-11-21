@@ -48,7 +48,7 @@
 
     /* ---------------------------------------------------------------- the light of each phase (the chapter's own
        presets; TODO-WORLD: the dusk going to night over the court is a tween of the film before the fight) */
-    const LOOK_OF = { walk: 'DUSK', hunt: 'DUSK', fight: 'NIGHT', table: 'DAY', ask: 'DAY' };
+    const LOOK_OF = { walk: 'DUSK', hunt: 'EVENING', fight: 'NIGHT', table: 'DAY', ask: 'DAY' };   // (the world's: the plan's 8.1 hours; EVENING is a_head.js's)
     function lookAt0(name, secs = 0) { lookName = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); }
 
     /* ---------------------------------------------------------------- the chapter's clock and its one voice at a time
@@ -193,7 +193,7 @@
     }
     function askOne(c, P, lines) {
       if (phase !== 'walk' || play.busy || play.found.has(c)) return false;
-      play.busy = true; if (kit) kit.objective(null, { complete: false });
+      play.busy = true;
       if (P) { P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, myX(), myZ()); gaze(P, 'lens', { secs: 0.6, reach: 0.75 }); }
       for (const L of lines) { if (typeof L === 'number') queueGap(L); else say(L); }
       andThen(() => { play.busy = false; got(c);

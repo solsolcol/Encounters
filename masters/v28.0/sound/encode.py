@@ -44,8 +44,8 @@ def fx(n, src, lv, af=None, fc=None, loop=False):
     if loop:
         p = os.path.join(TMP, n + '_p.wav'); run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), l, p); l = p; ch = 2
     return flat(n, l, ch, '96k')
-def bed(n, src, t=-30, c=-12):
-    w = pre(src, n, 'highpass=f=60:poles=2'); l = os.path.join(TMP, n + '_l.wav'); p = os.path.join(TMP, n + '_p.wav')
+def bed(n, src, t=-30, c=-12, fc=None):
+    w = pre(src, n, None if fc else 'highpass=f=60:poles=2', fc + ',highpass=f=60:poles=2' if fc else None); l = os.path.join(TMP, n + '_l.wav'); p = os.path.join(TMP, n + '_p.wav')
     run('python3', '-I', os.path.join(M, 'v21.12/level_rms.py'), w, l, str(t), str(c))
     run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), l, p)
     return flat(n, p, 2, '96k')
@@ -76,7 +76,7 @@ for n, o in PICKS.items():
         shutil.copyfile(os.path.join(O, o['from'] + '.ogg'), os.path.join(O, n + '.ogg')); print(f'{n:14s} copy of {o["from"]}')
     elif k == 'fx': fx(n, src, o.get('level', -14), af, fc)
     elif k == 'loop': fx(n, src, o.get('level', -14), af, fc, loop=True)
-    elif k == 'bed': bed(n, src)
+    elif k == 'bed': bed(n, src, fc=fc)
     elif k == 'music': mus(n, src, af or 'anull')
     elif k == 'mbed': mbed(n, src, o['secs'], o['start'], af or 'anull')
     elif k in ('stem', 'note'): flat(n, os.path.join(os.environ.get('MADE', ''), o['wav']), 2 if k == 'stem' else 1, '128k' if k == 'stem' else '96k')
