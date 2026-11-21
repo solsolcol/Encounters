@@ -1123,3 +1123,5 @@ bd6830e27b95df33ba27b593c3466ac97f2f4b203df8c994232908652dfc99d3  masters/v27.0/
 907d6f48e39c473e6be39ff98c5edefac1ea34a538fce31f7337ce039908bb59  masters/v27.0/src/original-bicycle.glb
 dfb8be09ab2373e7bacfc9bdd17e0568b36de6ef748107fda9293851fa62b96b  masters/v27.0/src/original-bigbowl.glb
 a7c4a03fa69bf8bb4cb0a75cc3e9ee9d059ad2b126f512a78d7823b79e22e4c3  masters/v27.0/src/original-bougain.glb
+d7566c4442ff837cf578247f4bf2834c005596eda6d16e78be741326819d4d9a  masters/v27.0/src/original-cabinet.glb
+18f6f71cc0a48e200910356729a35f4fb1439535166c0ed1c4488680f6a6c1f5  masters/v27.0/src/original-clock.glb
