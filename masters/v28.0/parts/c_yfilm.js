@@ -274,13 +274,13 @@
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null };
       /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
          corner and round it a little inside the walls: west side, gate end, east side, where its head turns in toward the
-         court and rears over it, facing what it guards them from */
+         court and rears, facing the house */
       /* (R25: laid round the whole court, its reared head 2 m long ended on the loop's own start, where the dive from the
          arch also lands: the head is the model's own now, rigid, and needs room of its own) */
       function pathFor(sx, sz) {
         const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;
         const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.9], [x1 - 0.3, 0.75, zm - 0.05], [x1 - 0.85, 1.15, zm + 0.12]];
+        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
@@ -299,7 +299,9 @@
           /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
-          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
+          /* (its light normal-blended, never added: added, every layer of its body over another summed to white, a white
+             blot with pink edges where the Naga should be ruby, together-phone 5.8 on deploy 10; the standing rule's) */
+          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.NormalBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
           /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
              on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
              shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga
@@ -331,7 +333,26 @@
             for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2];
               const b0 = Math.min(NB - 1, Math.max(0, Math.floor((ax - st.minX) / sp * NB))); bin[i] = b0; cx[b0] += c; cy[b0] += base[i * 3 + 1]; cn[b0]++; }
             let lx = 0, ly = 0; for (let b0 = 0; b0 < NB; b0++) { if (cn[b0] > 0) { cx[b0] /= cn[b0]; cy[b0] /= cn[b0]; lx = cx[b0]; ly = cy[b0]; } else { cx[b0] = lx; cy[b0] = ly; } }
-            st.cl = { cx, cy, bin }; }
+            st.cl = { cx, cy, bin };
+            /* ITS HEAD AND ITS TAIL ARE ITS OWN (R25). The file's serpent lies on the ground for its middle (every slice of
+               it 0.7 m tall) and rears at both ends: its tail curls up 2.3 m and its head stands 3.6 m, a column from the
+               ground with the hood and the face on it. Laid slice by slice round the path, each reared slice came out a
+               flat sheet up to 2.6 m tall, and the head's 22 % of the body, stretched along the path, a 7 m wall of red
+               planes across the court and through the people in it: together-phone 5.8, 12.8, 15.2 and 19.9 on deploy 16
+               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is laid WHOLE, the
+               model's own shape, at the path's head in the path's own frame (its neck meets the body's last slice); the
+               tail folds into the stick's head it rises from. The middle: the longest run of slices under 0.85 m tall */
+            const ylo = new Float32Array(NB).fill(1e9), yhi = new Float32Array(NB).fill(-1e9);
+            for (let i = 0; i < n; i++) { const b0 = bin[i], y = base[i * 3 + 1]; if (y < ylo[b0]) ylo[b0] = y; if (y > yhi[b0]) yhi[b0] = y; }
+            const tall = (b0) => yhi[b0] - ylo[b0] > 0.85 && yhi[b0] > ylo[b0];
+            let bT = NB >> 1, bH = NB >> 1; while (bT > 0 && !tall(bT - 1)) bT--; while (bH < NB - 1 && !tall(bH + 1)) bH++;
+            const ZT = st.minX + bT * sp / NB, ZH = st.minX + (bH + 1) * sp / NB;
+            const reg = new Uint8Array(n), off = new Float32Array(n * 3);
+            for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2], y = base[i * 3 + 1], b0 = bin[i];
+              if (b0 > bH) { reg[i] = 2; off[i * 3] = c - cx[bH]; off[i * 3 + 1] = y - cy[bH]; off[i * 3 + 2] = ax - ZH; }
+              else if (b0 < bT) { reg[i] = 0; off[i * 3] = c - cx[bT]; off[i * 3 + 1] = y - cy[bT]; off[i * 3 + 2] = 0; }
+              else { reg[i] = 1; off[i * 3] = c - cx[b0]; off[i * 3 + 1] = y - cy[b0]; off[i * 3 + 2] = (ax - ZT) / Math.max(1e-3, ZH - ZT); } }
+            st.reg = reg; st.off = off; st.parts = { ZT, ZH, bT, bH }; }
           const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.renderOrder = 3; g.add(mesh); st.mesh = mesh; st.mat = m;
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
@@ -339,6 +360,23 @@
       make();
       const _np = new THREE.Vector3(), _nt = new THREE.Vector3(), _nn = new THREE.Vector3(), _nb = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
       let laidFor = '';
+      /* THE PATH AS A TABLE (R25): its place and its frame (along, across, up from it) at TABN + 1 even steps of its
+         length, made once a path, read by a straight blend between two steps (3 cm apart on its ~30 m): every point of
+         the body had asked the curve for its place and its turn every frame, 87,610 points twice */
+      const TABN = 1024;
+      function tabFor(P0) {
+        const T = new Float32Array((TABN + 1) * 12);
+        for (let j = 0; j <= TABN; j++) { const u = j / TABN; P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
+          _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
+          T.set([_np.x, _np.y, _np.z, _nt.x, _nt.y, _nt.z, _nb.x, _nb.y, _nb.z, _nn.x, _nn.y, _nn.z], j * 12); }
+        st.tab = T;
+      }
+      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12);
+      function frameAt(u, out) {
+        const T = st.tab, x = Math.max(0, Math.min(1, u)) * TABN, j = Math.min(TABN - 1, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
+        for (let q = 0; q < 12; q++) out[q] = T[a + q] + (T[b + q] - T[a + q]) * w;
+        return out;
+      }
       return {
         g, U,
         /* k: the head's place along the path (0 .. 1); a: its light; t: the scales' clock; (sx, sz): the stick's head; s:
@@ -347,19 +385,20 @@
           if (!st.ready || !(a > 0.001)) { g.visible = false; return; }
           g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
-          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; }
-          /* the body as long as the path the head has come, up to its own length times 3 (its straight length repeated by
-             the path: one long body round the court) */
-          const P0 = st.path, Lb = Math.min(st.len, Math.max(0.5, k * st.len)), arr = st.geo.attributes.position.array, base = st.base, n = arr.length / 3;
-          const span = st.maxX - st.minX, alZ = st.along === 'z';
+          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
+          /* the lying middle stretched from the stick's head to where the head has come (k); the head whole at k, in the
+             path's frame there; the tail folded small into the stick's head. All of it grows out of the stick over the
+             first quarter of the way (it rises from it) */
+          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), arr = st.geo.attributes.position.array, n = arr.length / 3, R = st.reg, O = st.off;
+          const H = frameAt(kk, FRH), T0 = frameAt(0, FRT), F = FR;
           for (let i = 0; i < n; i++) {
-            const ax = alZ ? base[i * 3 + 2] : base[i * 3], cx = alZ ? base[i * 3] : base[i * 3 + 2], cy = base[i * 3 + 1];
-            const f = (ax - st.minX) / span;                                       // 0 tail .. 1 head
-            const u = Math.max(0, Math.min(1, (k * st.len - (1 - f) * Lb) / st.len));
-            P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
-            _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
-            const bn = st.cl.bin[i], yy = (cy - st.cl.cy[bn]) * s, xx = (cx - st.cl.cx[bn]) * s;
-            arr[i * 3] = _np.x + _nb.x * xx + _nn.x * yy; arr[i * 3 + 1] = _np.y + _nb.y * xx + _nn.y * yy; arr[i * 3 + 2] = _np.z + _nb.z * xx + _nn.z * yy;
+            const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
+            if (r === 1) { frameAt(o2 * kk, F); const xx = o0 * gr, yy = o1 * gr;
+              arr[i * 3] = F[0] + F[6] * xx + F[9] * yy; arr[i * 3 + 1] = F[1] + F[7] * xx + F[10] * yy; arr[i * 3 + 2] = F[2] + F[8] * xx + F[11] * yy; }
+            else if (r === 2) { const xx = o0 * gr, yy = o1 * gr, zz = o2 * gr;
+              arr[i * 3] = H[0] + H[3] * zz + H[6] * xx + H[9] * yy; arr[i * 3 + 1] = H[1] + H[4] * zz + H[7] * xx + H[10] * yy; arr[i * 3 + 2] = H[2] + H[5] * zz + H[8] * xx + H[11] * yy; }
+            else { const xx = o0 * gr * 0.25, yy = Math.max(-0.3, Math.min(0.3, o1)) * gr * 0.25;
+              arr[i * 3] = T0[0] + T0[6] * xx + T0[9] * yy; arr[i * 3 + 1] = T0[1] + T0[7] * xx + T0[10] * yy; arr[i * 3 + 2] = T0[2] + T0[8] * xx + T0[11] * yy; }
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
         },
