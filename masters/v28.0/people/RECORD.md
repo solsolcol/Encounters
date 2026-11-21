@@ -132,9 +132,60 @@ as he lays pieces down is the one thing B cannot give; D can, at no credits, and
 ask for it. A is not worth its credits on the evidence (an identical skeleton twice), and E throws away a good face for a
 rig that is still a gamble.
 
+## 3b · THE COLLECTOR, WAY B: his rig mended here, at no credits (CAST-2, 21 Nov 2026; Chad's default, R19)
+
+**The mend** (tools/rigmend.mjs, new; people/rigmend-collector.json; people.sh `collectorrig`). Where each stray bone's
+points lie was measured first (each point's main bone, the box it fills, the nearest real bone's segment), and how Meshy
+weights the same regions on the three rigs of this chapter that came back whole (Jun, Mr Koh, Master Zavier: the upper
+chest held 0.56 to 0.68 by the shoulder, the side under the arm 0.31 to 0.68 by the arm, the waist about half the hips
+and a third the thigh, a shoe 0.91 its foot). The eighteen stray bones are a second arm chain on each side (Bone_029 / 028
+/ 027 beside RightShoulder / RightArm / RightForeArm, and 034 / 033 / 032 on the left), a belt (002, 015, 016), a head
+cap (017), heel and toe bones (035 to 041), and two that carry nothing (043, 044). Each gives its share to the bone it
+stands in for: the chains to the shoulder, arm and forearm, the belt to the hips, the cap to the head, the shoe bones to
+the foot. Both finger chains (one middle finger a hand) go into the hand, so each hand is ONE rigid piece; his two toe
+bones stay in the skeleton carrying nothing (his left toe joint stands mid-shoe: a bend there would crease the shoe).
+52 joints -> 26, 177,969 points, every point's four shares summing to one within 5e-8. After it, the same regions read:
+upper chest 0.91 shoulder, the side 0.66 arm and 0.20 spine, the waist 0.65 hips and 0.35 thigh (Jun's 0.50 / 0.33).
+
+**His takes, at no credits** (tools/retarget.mjs map `same`, new and opt-in; the `meshy` map is for a Mixamo-named source
+and pairs a Meshy source's top spine bone with the target's lowest). Meshy's library takes are one motion laid on each
+rig, so they were taken from files already here: Sitting_Answering_Questions (307) from the seated hermit's file
+(assets/e4hermita.glb), Idle_3 from Jun's library file, Talk_with_Hands_Open from Mr Koh's, his own walk from his own
+rig. PROOFS: his own walk retargeted onto his mended rig is his rig's walk to 0.0000 degrees, every bone at every key;
+Mr Koh's talk retargeted onto Mr Koh's own body is his file's talk exactly (every limb's line the same to two places);
+the old maps write the same bytes as before (granny's v25.5 walk, and a `meshy` run on the collector, before and after
+the change: sha1 8380984448ef... and 131c7a26a1ee...). FOUND ON THE WAY: retargeted from his own rest, the library takes
+carried his rest's lean (his spine leans back 11 degrees at rest where Jun's leans 5): the stand leant him back 17 degrees
+and put his upper arms into his sides. With --align (each bone's rest first swung onto the source's) every limb's line
+is the source's at the moment (the upper arm, forearm, spine and thigh at the stand's middle, the talk's and the sit's).
+
+**Prepared**: ONE LEVEL, assets/p5collector.glb, his full body (314,540 triangles, no fins), repainted at 2048 (face
+2,224 texels a metre, head 1,645, hands 1,048, body 836; 2,029 charts; 2 unplaced corners mended), with the four takes;
+4.1 MB. A near (40,000) and a mid (8,000) body are each a remesh at Meshy (5 credits each): NOT MADE (no generation in
+this pass; his yes first). He sits across the table inside 2.2 m, where an important person is drawn whole (v26.5), and
+walks to the door in two endings, where a lighter body would be drawn if there were one.
+
+**Measured** (tools/probes/filejoints.mjs, new: jointscan's own measure, read out of jointscan.mjs at run time, on the
+file's skeleton posed in Node at 12 moments of each take; tools/probes/armside.mjs, new: an arm inside the body's side,
+every 1/30 s, in the body's own frame; head travel and turn over each take):
+- the sit: both collar bones raised, the left 21 to 24 degrees and the right 12 to 14 over his neutral, in every moment:
+  THE LIBRARY TAKE'S OWN SHRUG (the hermit's file holds 18 to 32 in the same take). The chapter's cast lets a take's
+  shrug down at run time (chapter 4's c_scast `shoulders`): it must be asked for Sitting_Answering_Questions on him.
+  His head travels 16 cm side to side and 21 cm fore and aft at up to 23 cm a second, and turns up to 57 degrees to his
+  right of his chest (the hermit's: 57; Grandmaster Pho's 54 to 61 were "too extreme", v26.3): the chapter's head damping
+  must be asked for this take too, and a lens that looks at his face measured as it plays (filmlive).
+- the stand: no flag. The talk: one moment (0.50 s) of his left elbow 5 cm behind his shoulder with the hand 11 cm before
+  it; his head travels 19 cm side to side at up to 29 cm a second (a shot that follows his face will sway). The walk: no
+  flag.
+- his arms against his sides (armside): the sit's right forearm up to 3.6 cm into his side; the stand 1.5 / 2.3 cm; the
+  talk 3.1 / 7.4 cm; his own walk 3.8 / 3.9 cm (the elbow brushing his
+  hip, with the house's arms brought in to 7 degrees). The probe reads Jun's prepared stand at 4.7 / 3.2 cm, so a few
+  centimetres there is the loose shirt; the pictures (section 3c) say what shows.
+- hands: rigid, as made, fingers spread and straight (he lays twenty pieces out with them: in a close shot they cannot
+  close on a piece). Way D (his rig made here from Jun's 66 joints) is the only free way to fingers; not tried, as agreed.
+
 ## 4 · Not made, and why
-- The collector's game files (`p5collector*`): stopped at his rig by the rule (section 3). His line in people.sh is
-  written and commented out, ready for the take list once he picks.
+- The collector's near and mid bodies (section 3b): each a remesh at Meshy, 5 credits; his yes first.
 - No take of the fight's (the nine's strain, stagger, lying tired and rising; Master Zavier's; Grandmaster Pho's): they
   wait for docs/V28.0-FIGHT.md.
 - No take was measured as a motion yet (headturn, gait, jointscan, feetscan, clipscan): the house rule asks it before a

@@ -13,7 +13,9 @@
    act would wait there for ever: those who play only one of the two, or nothing, are taken through the lesson as the
    careful player would be, and play their own way from stage 3, which is where "neither can win alone" is tested):
      careful   a careful first-timer: follows the prompts, waits to HEAR a new instruction (or reads the pulsing button
-               after 4.5 s), 0.9 to 1.7 s to answer a new need, 0.7 to 1.3 s once it is known; 4% wrong presses
+               after 4.5 s), 0.9 to 1.7 s to answer a new need, 0.7 to 1.3 s once it is known; 4% wrong presses. Each
+               campaign is its own person: those numbers are scaled by 0.75 to 1.35, the pause after a line by 0.5 to
+               1.5, the reading by 0.8 to 1.2 and the wrong presses by 0.5 to 1.5 (person())
      slow      a slow human: 400 ms to answer what the screen asks, 15% wrong presses
      optimal   knows the rules: answers in 150 ms, never wrong, binds several before the golden shockwave, keeps
                Grandmaster Pho where he can reach the court
@@ -129,6 +131,17 @@ function follower(prof) {
 }
 function keepMoving(st, mem) { const b = st.who === 'pho' ? st.pho : st.zav; const m = towards(b, mem.moving.x, mem.moving.z); if (!m) mem.moving = null; return m || {}; }
 
+/* A CAREFUL FIRST-TIMER IS A PERSON, NOT A CLOCK: each campaign draws its own (how quick, how long a pause to think,
+   how soon the pulsing button is read without a word, how often a thumb lands wrong), so 10,000 careful fights are
+   10,000 people and not one person's fight 10,000 times (with one set of numbers, every careful fight reached the
+   fight's first second at the same instant and met the same moment: a win rate that jumped from 94% to 30% when the
+   gold's wait moved three seconds measured that one person, not the fight) */
+function person(base, r) {
+  const k = 0.75 + 0.6 * r();                                   // 0.75 to 1.35 times the base's pace
+  const sc = (a) => [a[0] * k, a[1] * k];
+  return { ...base, fresh: sc(base.fresh), known: sc(base.known), again: base.again * k, gap: base.gap * (0.85 + 0.3 * r()),
+           think: base.think * (0.5 + r()), read: base.read * (0.8 + 0.4 * r()), wrong: base.wrong * (0.5 + r()) };
+}
 const PROF = {
   fast:    { brief: 3, card: 1, lead: true, listen: false, read: 0, fresh: [0.15, 0.15], known: [0.15, 0.15], again: 0.15, gap: 0.15, wrong: 0 },
   careful: { brief: 9, card: 3, lead: true, listen: true, read: 4.5, think: 0.5, fresh: [0.9, 1.7], known: [0.7, 1.3], again: 0.5, gap: 0.45, wrong: 0.04 },
@@ -229,7 +242,7 @@ function afterLesson(own) {
   };
 }
 const PLAYERS = {
-  careful: () => follower(PROF.careful),
+  careful: (r) => follower(person(PROF.careful, r)),
   slow: () => follower(PROF.slow),
   late: () => follower(PROF.late),
   optimal: () => optimal(''),
@@ -257,7 +270,7 @@ function campaign(F, L, who, seed, opts) {
   const r = stream(seed * 2 + 1), rf = stream(seed * 2 + 2);
   const io = { rand: rf, secs: (k) => L.secs[k] || 2.5 };
   const st = F.create({ sanity: opts.sanity, guard: 0, num: opts.num });
-  const play = PLAYERS[who]();
+  const play = PLAYERS[who](r);
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
   const res = { who, seed, won: false, firstWin: false, tries: 1, length: 0, firstLength: 0, losses: 0, sanity: 0, stalled: '',
@@ -514,7 +527,7 @@ function trace(F, L, who, seed, opts) {
   const r = stream(seed * 2 + 1), rf = stream(seed * 2 + 2);
   const io = { rand: rf, secs: (k) => L.secs[k] || 2.5 };
   const st = F.create({ sanity: opts.sanity, num: opts.num });
-  const play = PLAYERS[who]();
+  const play = PLAYERS[who](r);
   const mem = { known: {}, key: '', since: 0, react: 0, lastPress: -9, moving: null, F, wait: 0 };
   mem.lesson = follower(PROF.careful);
   let heard = null, g = 0;

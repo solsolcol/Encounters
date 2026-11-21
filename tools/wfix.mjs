@@ -5,12 +5,17 @@
  * runs, and no earlier body's bytes can change). Positions and joints are read in the file's bind space (metres, for a
  * body from tools/riglod.mjs or Meshy's own rig). Every point's four shares are summed to one again afterwards.
  *
- *   "leak":   [{ "bone": "Head", "below": "Head", "from": 0.10, "to": 0.14 }]
+ *   "leak":   [{ "bone": "Head", "below": "Head", "from": 0.10, "to": 0.14 }]   (tried on Mr Koh and refused: see "outlier")
  *       A bone's share where it does not belong: on a point lower than the joint `below` and further SIDEWAYS (along x,
  *       the body's left and right) from the `bone`'s joint than `from` metres, the share is eased out, gone by `to`
  *       (smoothstep). What it held goes to the point's other bones in their own proportions (to `else`, else the bone's
  *       parent, if it had none). Mr Koh's spike: one point of his left shoulder, 15 cm out from his head's line, three
- *       quarters on his Head bone: it went with every turn of his head.
+ *       quarters on his Head bone: it went with every turn of his head. (On his full body this rule opened 35 new
+ *       stretched triangles at the collar, which rises with his neck: the narrower rule below is the one used.)
+ *   "outlier": [{ "bone": "Head", "over": 0.3, "within": 0.3 }]
+ *       A point holding more than `over` of a bone above the mean of the points joined to it, within `within` metres of
+ *       the bone's joint, is brought down to that mean. Mr Koh's spike was exactly one such point (0.74 of the Head among
+ *       neighbours at 0.10 and 0.18); his mid and full bodies have none and pass through as they were.
  *   "relief": [{ "side": "Left", "keep": 0.3, "from": 1.0, "to": 1.8, "tfrom": 0.15, "tto": 0.45, "passes": 6,
  *                "spine": ["Spine02", "Spine01", "Spine"] }]
  *       The ARM's share taken off the TORSO under it. In the A pose a body is made in, the upper arm hangs clear of its
@@ -19,7 +24,8 @@
  *       the INNER half further from the line than `from` times that radius keeps only `keep` of its arm and forearm share
  *       by `to` times it (smoothstep); what it gave goes to the spine bones round its height (shared between the two
  *       whose joints bracket it). His stand and walk bring the arms in (tools/calmarms.mjs), and a side held 0.5 to 0.66
- *       on the arm went in with them: an hourglass above his belly.
+ *       on the arm went in with them: an hourglass above his belly. `tfrom`/`tto` ease it in along the arm (in shares of
+ *       the upper arm from the shoulder joint), and the amount each point takes is spread `passes` times over the surface.
  *
  *   node tools/wfix.mjs <in.glb> <out.glb> <spec.json>      (the same rules on a file, for measuring them alone)
  */
@@ -51,6 +57,30 @@ export function wfix(doc, spec, log = console.log) {
           if (rs > 1e-6) for (const [j, w] of rest) share[i].set(j, w + take * w / rs); else share[i].set(fall, (share[i].get(fall) || 0) + take);
           pts++; gone += take; touched[i] = 1; }
         log(`  wfix leak: ${L.bone} eased out ${L.from}-${L.to} m to the side below ${L.below || L.bone}: ${pts} points, ${gone.toFixed(1)} of share given to their other bones`);
+      }
+      /* "outlier": [{ "bone": "Head", "over": 0.3, "within": 0.3 }]: a point that holds far more of a bone than the points
+         joined to it (by more than `over`) is brought down to its neighbours' mean, what it gives going to its other
+         bones in their own proportions; only within `within` metres of the bone's joint. One stray point on the Head is a
+         spike every turn of the head pulls out of the body; a gradient (a collar that rises with the neck) is left as it is.
+         Places are joined first (a seam in the sheet splits a point in two). */
+      if ((spec.outlier || []).length) {
+        const gid = new Int32Array(n), gm = new Map(); let G = 0;
+        for (let i = 0; i < n; i++) { const k = Math.round(pos[3 * i] * 1e5) + ',' + Math.round(pos[3 * i + 1] * 1e5) + ',' + Math.round(pos[3 * i + 2] * 1e5); let g = gm.get(k); if (g === undefined) gm.set(k, g = G++); gid[i] = g; }
+        const I = p.getIndices().getArray(), nb = Array.from({ length: G }, () => new Set());
+        for (let t = 0; t < I.length; t += 3) for (let k = 0; k < 3; k++) { const a = gid[I[t + k]], c = gid[I[t + (k + 1) % 3]]; if (a !== c) { nb[a].add(c); nb[c].add(a); } }
+        for (const O of spec.outlier) {
+          const b = idx(O.bone), B = jp(O.bone), sg = new Float64Array(G), cg = new Float64Array(G);
+          for (let i = 0; i < n; i++) { sg[gid[i]] += share[i].get(b) || 0; cg[gid[i]]++; } for (let g = 0; g < G; g++) sg[g] /= cg[g];
+          let pts = 0, gone = 0;
+          for (let i = 0; i < n; i++) { const s = share[i].get(b); if (!s) continue; if (Math.hypot(pos[3 * i] - B.x, pos[3 * i + 1] - B.y, pos[3 * i + 2] - B.z) > (O.within ?? 0.3)) continue;
+            const m = nb[gid[i]]; if (!m.size) continue; let mean = 0; for (const q of m) mean += sg[q]; mean /= m.size;
+            if (s - mean <= O.over) continue;
+            const take = s - mean, rest = [...share[i]].filter(([j]) => j !== b), rs = rest.reduce((a, [, w]) => a + w, 0); if (rs < 1e-6) continue;
+            share[i].set(b, mean); if (mean < 1e-6) share[i].delete(b);
+            for (const [j, w] of rest) share[i].set(j, w + take * w / rs);
+            pts++; gone += take; touched[i] = 1; }
+          log(`  wfix outlier: ${O.bone}: ${pts} points held more than ${O.over} over the points joined to them, brought down (${gone.toFixed(2)} of share given to their other bones)`);
+        }
       }
       for (const R of spec.relief || []) {
         const sg = R.side === 'Left' ? 1 : -1, arm = [idx(R.side + 'Arm'), idx(R.side + 'ForeArm')], S = jp(R.side + 'Arm'), E = jp(R.side + 'ForeArm');

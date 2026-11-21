@@ -86,13 +86,14 @@
         kinds3: ['come', 'slip', 'hide', 'come', 'slip', 'hide', 'slip', 'hide'],
         due3: [0, 12, 26, 42, 58, 74, 90, 106], entryGap: 1.5, leadMax: 1, breather: 8,
         freeAt: [[0, 1], [24, 2], [58, 3], [90, 4]],   // how many may be free on the court at once, rising as the fight goes on
-        holdAt: [6, 4], holdSecs: 25, holdRetry: 12, holdPace: 1.0,   // holdPace: how fast they move while the gold is gathered   // HOLD THE LINE, twice: at six left and at four the bag no longer takes
+        holdAt: [6, 4], holdSecs: 25, holdRetry: 12, holdPace: 1.0, goldGrace: 8,   // holdPace: how fast they move while the
+                                              // gold is gathered; goldGrace: in a hold, how long a bubble waits for the gold   // HOLD THE LINE, twice: at six left and at four the bag no longer takes
                                               // them, the gold gathers itself anew (holdSecs), and only it can take them; after a wave
                                               // that took none, holdRetry. The first hold ends when the gold has gathered; the last, at three
         // STAGES 4 TO 6
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
-        needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0,
+        needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0, holdLate: 30.0,
         // THE FRAME: no step moves the fight more than this (a slow phone gets a slower fight, never a jump)
         dtMax: 0.1
       };
@@ -219,7 +220,7 @@
           zav: { x: n.zavAt[0], z: n.zavAt[1], bindWait: 0, smellWait: 0, look: 0 },
           cage: { str: n.cageMax, broken: false, lent: 0 },
           prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, film: 0,
-          firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, seen: { swap: false, bind: false, smell: false, shock: false },
+          firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
@@ -277,17 +278,20 @@
         let best = -1;
         for (let i = 0; i < v.q.length; i++) if (best < 0 || v.q[i].prio > v.q[best].prio) best = i;
         // the order: a need that costs him while it stands (said at once, ahead of everything, so the words always come
-        // before the cost: the plan's 7.1); then a lesson's line; then praise; then any other need; then the colour of the
-        // court, which never begins while something urgent stands
+        // before the cost: the plan's 7.1; and while it stands nothing else begins); then a lesson's line; then praise;
+        // then any other need; then the colour of the court
         const urgent = !!(id && (URGENT[id] || (st.hold > 0 && (id === 'waveLend' || id === 'waveSafe'))));   // in a hold the gold is the way out
         const due = !!id && st.t - v.needSince >= (urgent ? n.urgentAfter : n.needAfter) && st.t - v.needSaid >= n.needEvery &&
                     (urgent || st.t - v.last >= n.needCap);
         const qp = best >= 0 ? v.q[best].prio : -1;
         let key = '', fromNeed = false;
-        if (urgent && due) {
+        if (urgent) {
+          // while something costs him, nothing else is begun: only the words that answer it, when they are due (a lesson's
+          // line waits for the moment to pass; it was a long line begun in such a moment that kept the next order unsaid)
+          if (!due) return;
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
-        } else if (qp >= 2 || (qp >= 0 && !due && !(urgent && qp < 1))) { key = v.q[best].key; v.q.splice(best, 1); }
+        } else if (qp >= 2 || (qp >= 0 && !due)) { key = v.q[best].key; v.q.splice(best, 1); }
         else if (due) {
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
@@ -581,7 +585,7 @@
             st.hold = st.holdsDone + 1; st.seen.shock = true;
             if (!(ph0(st).wind > 0) && !ph0(st).ring) ph0(st).waveWait = n.holdSecs;
             st.ev.push({ e: 'hold', n: st.hold, secs: ph0(st).waveWait });
-            sayOnce(st, st.hold === n.holdAt.length ? 'ph5fh' : 'ph5fi');   // the last hold, or the first
+            sayOnce(st, st.hold === n.holdAt.length ? 'ph5fh' : 'ph5fi', n.holdLate);   // the last hold, or the first
           }
           // the golden shockwave is taught the first time it is ready (in the first hold, or its own wait run out)
           if (!st.firsts.wave && !st.lesson.wave && st.pho.waveWait <= 0) {
@@ -788,9 +792,12 @@
       }
       function praiTick(st, dt) {
         const n = st.n, z = st.zav, cage = st.cage, lent = cage.lent > 0, holds = !cage.broken && !lent;
-        // a bubble does not run down while the cage is lent, nor, in a hold, from the moment the gold is ready until the
-        // gold has gone out (what is bound waits for the gold: a bubble never ends in the instant the gold is asked for)
-        const still = lent || (st.hold > 0 && (st.pho.waveWait <= 0 || st.pho.wind > 0 || !!st.pho.ring));
+        // a bubble does not run down while the cage is lent, nor, in a hold, for goldGrace seconds from the moment the gold
+        // is ready, nor while the gold is gathered and goes out (a bubble never ends in the instant the gold is asked for;
+        // the grace is a number, so a bubble is still a timed thing with a longest stand: bubbleLongest)
+        const ph = st.pho, goldNow = st.hold > 0 && ph.waveWait <= 0 && !(ph.wind > 0) && !ph.ring;
+        if (!goldNow) st.goldAt = -1; else if (!(st.goldAt >= 0)) st.goldAt = st.t;
+        const still = lent || (st.hold > 0 && ((goldNow && st.t - st.goldAt < n.goldGrace) || ph.wind > 0 || !!ph.ring));
         const drawn = (st.drawT > 0 ? n.drawPace : 1) * (st.hold ? n.holdPace : 1);   // his senses opened wide draw them on; the gathering gold weighs on them
         let pressing = 0;
         for (const p of st.prai) if (p.st === 'pressing') pressing++;
