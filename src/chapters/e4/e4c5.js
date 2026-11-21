@@ -6235,7 +6235,12 @@
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
                                               // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
         laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
-        entryAt: [[-1.55, -2.45], [1.55, -2.45], [0, -2.5], [-1.75, -1.25], [1.75, -1.25], [-1.1, -2.5], [1.1, -2.5], [0.6, -2.5]],
+        entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3], [0.86, -2.09], [-0.51, -2.6]],
+                                              // (R25, 21 Nov: spread so no two touch: each body's own ground at every 20 cm
+                                              // of height (tools/probes/footprint.mjs), turned to face him, 12 cm apart or
+                                              // more, clear of the slippers, the bag, the reel, the cloth and the wall lamps,
+                                              // one only before the doorway; the two heavies had stood 0.46 m into each
+                                              // other and a hide on the slippers, FILMS' clipscan of the turn: FIGHT-IN)
         entryJitter: 0.25,
         // THE TWO OF THEM
         phoWalk: 2.3, zavWalk: 1.4,           // (R25, 21 Nov: "the characters walking speed feels sluggish, make it faster")
@@ -11430,8 +11435,10 @@
              { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
-             { t: E.ph5B1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
-             { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
+             /* (to his teacher on the cut BEFORE the collector goes, so he goes out of shot: on the door until his teacher's
+                word, he vanished from the doorway in the shot at 40.0 s, e4c5filmread POP on deploy 12) */
+             { t: E.gone - 0.15, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
+             { t: E.gone - 0.1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              /* (held on him to his line's last word: eased to the table from his first, the look left him all through it) */
              { t: E.ph5B1 + SECS.ph5B1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5B2 + 0.6, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],

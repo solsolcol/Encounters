@@ -73,6 +73,28 @@ print('== %s: %.2f s, %d people (%s), rows phone %s desktop %s' % (JOB, base['du
 rows = base['rows']; C = cuts(rows); dt = base.get('step', 0.1)
 print('CUTS at', ' '.join('%.1f' % rows[i]['L'][0] for i in sorted(C)))
 near_cut = lambda i: i in C or (i + 1) in C
+# THE LENS THAT BOUNCES (framebounce.py's law, read on the lens's angle AND its aim, on both views; cuts left out): a step of
+# 0.6 degrees or more against both neighbours' direction, or more than four times both neighbours' changes; and a lens that
+# goes out and comes back by 3 degrees or more inside 1.5 s
+for v in ('phone', 'desktop'):
+    rr = R[v]['rows'] if R[v] else []
+    if len(rr) < 4: continue
+    Cv = cuts(rr); out = []
+    for q, nm in ((1, 'lens'), (6, 'yaw'), (7, 'pitch')):
+        dd = [((b['L'][q] - a['L'][q] + 180) % 360 - 180) if q == 6 else b['L'][q] - a['L'][q] for a, b in zip(rr, rr[1:])]
+        for i in range(1, len(dd) - 1):
+            x, p, n = dd[i], dd[i - 1], dd[i + 1]
+            if abs(x) < 0.6 or (i + 1) in Cv or i in Cv or (i + 2) in Cv: continue
+            against = (x > 0) != (p > 0) and (x > 0) != (n > 0) and abs(p) > 0.02 and abs(n) > 0.02
+            leap = abs(x) > 4 * max(abs(p), 0.05) and abs(x) > 4 * max(abs(n), 0.05)
+            if against or leap: out.append('%s t=%.1f %+.2f' % (nm, rr[i + 1]['L'][0], x))
+    tl = []
+    for i in range(0, len(rr) - 15):
+        seg = rr[i:i + 16]
+        if any(j in Cv for j in range(i + 1, i + 16)): continue
+        f = [r['L'][1] for r in seg]; hi = max(f); j = f.index(hi); lo = min(f); k = f.index(lo)
+        if (0 < j < 15 and hi - f[0] > 3 and hi - f[-1] > 3) or (0 < k < 15 and f[0] - lo > 3 and f[-1] - lo > 3): tl.append(round(seg[j if 0 < j < 15 else k]['L'][0]))
+    print('BOUNCE %-7s %s' % (v, '; '.join(out) or 'none') + ('   | lens out-and-back near t=%s' % sorted(set(tl)) if tl else ''))
 # jumps, jerks, pops of people (on either view's screen)
 for k, lab in enumerate(labels):
     J, K, Pp = [], [], []

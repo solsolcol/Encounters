@@ -482,7 +482,9 @@
         fmTrack(t, [
           { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
-          { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
+          /* (the car wide at the lens Jun's shot keeps: at 74 and 62 the lens went out and came back 6 and 10 degrees inside
+             1.1 s as the look came round to him, a breathing lens, e4c5filmread BOUNCE) */
+          { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 68, fd: 52 },
           { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 68, fd: 52 },
           /* (a phone's lens for each of the two in the car 68 degrees (a cramped room's wider lens, v24.21): at 60 a talking
              head swung to the frame's edge, e4c5filmread FRAME, deploy 12)

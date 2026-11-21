@@ -15,6 +15,8 @@ const POSES = (process.env.POSES || 'rest@0,Running@0.3,mage_soell_cast_7@0.95,C
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [], logs = [];
+/* (CHFILE=<file.js>: the chapter served from that file, as e4c5films.mjs: a change to the chapter alone photographed with no build) */
+if (process.env.CHFILE) { const src = fs.readFileSync(process.env.CHFILE, 'utf8'); await p.route(new RegExp('/assets/e4c5\\.[0-9a-f]+\\.js$'), (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: src })); }
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
 p.on('console', m => { const t = m.text(); if (/PHOGRIP5|threw|has no take/i.test(t) || m.type() === 'error') logs.push(m.type() + ' ' + t.slice(0, 400)); });
 const T0 = Date.now(), say = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);
@@ -29,6 +31,8 @@ await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
 await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; if (L.gripOn) L.gripOn(); });   // (the grip is held off until it passes)
+/* (TUNE='{"tilt":5,...}': one of the settings e4c5gripfit.mjs tried, photographed before it is written in) */
+if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));
 await frames(12);
 const grip = await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.grip ? L.grip() : null; });
 say('grip', JSON.stringify(grip)); say('page', JSON.stringify(logs));
