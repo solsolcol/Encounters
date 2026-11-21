@@ -1,0 +1,108 @@
+{
+ "_about": "v28.0 · the three new speakers' auditions: three library voices each (none yet heard in the game), each saying two of the part's own lines once, eleven_v3; judged by measure (audition.py) and kept for Chad's ear (reel-<who>.mp3, loudness-matched). A person in the plan's 9.1 and masters/v28.0/people/PROMPTS.txt.",
+ "who": {
+  "jun": "Jun, the second follower: a Singaporean Chinese man of about twenty-seven, stocky, a round friendly open face; easy, a little joking",
+  "koh": "Mr Koh, the devotee: a Singaporean Chinese man of about fifty-six, heavy-set, tired, short-tempered from three weeks without sleep, frightened and asking for help",
+  "collector": "the collector: a Singaporean Chinese man of about thirty-five, lean, tired; curious, not a fool; a small laugh at himself"
+ },
+ "candidates": {
+  "jun-james": {
+   "who": "jun",
+   "voice_id": "aSXZu6bgEOS8MXVRzjPi",
+   "name": "James - Playful, Relatable and Fun",
+   "library": "male, young, Singaporean English"
+  },
+  "jun-jake": {
+   "who": "jun",
+   "voice_id": "BHyvQU4czkhWdOZH4Rdq",
+   "name": "Jake - Inspiring, Calm, and Natural",
+   "library": "male, young, Singaporean English"
+  },
+  "jun-darryl": {
+   "who": "jun",
+   "voice_id": "O8ykjWKd0RjX6e5EyDuE",
+   "name": "Darryl Lim - Your Malaysian AI Voice",
+   "library": "male, young, Malaysian (Chinese) English"
+  },
+  "koh-lazarus": {
+   "who": "koh",
+   "voice_id": "yEgon8WYkQ5wZh49byZr",
+   "name": "Lazarus Liew - Southeast Asian English",
+   "library": "male, middle-aged, 'a normal person next door, completely unpolished'"
+  },
+  "koh-louis": {
+   "who": "koh",
+   "voice_id": "rOVKXrU0YcQMzmTNwaDq",
+   "name": "Louis - Asian, Conversation & Casual",
+   "library": "male, middle-aged, Singaporean accent"
+  },
+  "koh-david": {
+   "who": "koh",
+   "voice_id": "76X7rrvQajZEHM3u9zcd",
+   "name": "Mr David - Malaysian Chinese",
+   "library": "male, middle-aged, Malaysian Chinese English"
+  },
+  "col-mun": {
+   "who": "collector",
+   "voice_id": "owsLoyJNU4K7ctU6NF7F",
+   "name": "Mun - Friendly, Clear, and Polished",
+   "library": "male, middle-aged (young-sounding), neutral Singapore accent"
+  },
+  "col-shawn": {
+   "who": "collector",
+   "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+   "name": "Shawn Ng - Business Content",
+   "library": "male, young, Malaysian Chinese English"
+  },
+  "col-ivan": {
+   "who": "collector",
+   "voice_id": "HDVDearvsECwhyI3Y21m",
+   "name": "Ivan - Professional",
+   "library": "male, young, Singaporean accent"
+  },
+  "jun-sam": {
+   "who": "jun",
+   "voice_id": "c86brOBXdSSYxT5FqIUS",
+   "name": "Sam - Confident Voice",
+   "library": "male, young, Singaporean English",
+   "round": 2
+  },
+  "jun-jack": {
+   "who": "jun",
+   "voice_id": "yJ83gnYhwi5mhFPAai2P",
+   "name": "Jack - Composed News Reporter",
+   "library": "male, young, South East Asian, calm",
+   "round": 2
+  },
+  "jun-cedric": {
+   "who": "jun",
+   "voice_id": "43txzXEL1HzTzsHDGXpl",
+   "name": "Cedric Xu - Calm Social Media Narrator",
+   "library": "male, young, Chinese-accented English",
+   "round": 2
+  }
+ },
+ "lines": {
+  "ju5o1": "[casual] Mr Koh says the lights keep going off. Electrician came three times already.",
+  "ju5w1": "[amused] Somebody frying fish? No? Then nothing.",
+  "ko5d1": "[anxious] Grandmaster. You came. I did not know who else to ask.",
+  "ko5d3": "[exasperated] Three weeks. My workers say I am short-tempered. I say I am not sleeping!",
+  "co5t2": "[tired] Lately nothing goes right. I am tired all the time. And there is a smell. At home, in the car. I clean, it comes back. You will think I am mad.",
+  "co5t6": "[hopeful] You. You can tell. Which ones can I keep?"
+ },
+ "plan": {
+  "jun": [
+   "ju5o1",
+   "ju5w1"
+  ],
+  "koh": [
+   "ko5d1",
+   "ko5d3"
+  ],
+  "collector": [
+   "co5t2",
+   "co5t6"
+  ]
+ },
+ "_round2": "Jun's first three all came back with a floor 26 to 37 dB under the voice (hiss or room under every word, where the other speakers' takes are 60 to 78 dB under): none clean, so a second three, screened first on the library's own previews (their floor 53, 54 and 69 dB under)."
+}

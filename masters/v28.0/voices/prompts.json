@@ -1,0 +1,674 @@
+[
+ {
+  "key": "q5o1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] Case two. A devotee's home. He had been quarrelling with people outside, and at home he could not rest."
+ },
+ {
+  "key": "ju5o1",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[casual] Mr Koh says the lights keep going off. Electrician came three times already."
+ },
+ {
+  "key": "tn5o1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[amused] He also says he fights with everybody. His own words."
+ },
+ {
+  "key": "q5o2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] The doors opened, and it hit me."
+ },
+ {
+  "key": "q5w1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] Do you smell that?"
+ },
+ {
+  "key": "tn5w1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[puzzled] Smell what?"
+ },
+ {
+  "key": "tn5w2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[casual] Nothing, brother."
+ },
+ {
+  "key": "ju5w1",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[amused] Somebody frying fish? No? Then nothing."
+ },
+ {
+  "key": "ph5w1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Your nose has opened. They cannot smell it. You can."
+ },
+ {
+  "key": "ph5w2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Do not say what it is yet. Follow it. SMELL."
+ },
+ {
+  "key": "ph5w3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Not yet. First your nose."
+ },
+ {
+  "key": "q5w2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[relieved] A drain. That one I understand."
+ },
+ {
+  "key": "ju5w2",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[amused] That one even I can smell."
+ },
+ {
+  "key": "ph5w4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Good. Now the other one."
+ },
+ {
+  "key": "ph5w5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The spiritual sense of your nose is already open. That is why it reached you, and not them."
+ },
+ {
+  "key": "q5w3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] We were not even at his door."
+ },
+ {
+  "key": "tn5w3",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[concerned] Brother? You all right?"
+ },
+ {
+  "key": "ph5w6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] SMELL."
+ },
+ {
+  "key": "ph5w7",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Breathe in. SMELL."
+ },
+ {
+  "key": "tn5w4",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[casual] Mr Koh's is the one at the end, brother."
+ },
+ {
+  "key": "q5w4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Weaker here."
+ },
+ {
+  "key": "ko5d1",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[anxious] Grandmaster. You came. I did not know who else to ask."
+ },
+ {
+  "key": "ko5d2",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[weary] At night somebody knocks. Inside the house. I check: nobody. My things move. I lie down, I feel a weight, here."
+ },
+ {
+  "key": "ko5d3",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[exasperated] Three weeks. My workers say I am short-tempered. I say I am not sleeping!"
+ },
+ {
+  "key": "ko5d4",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[ashamed] I know I have a mouth. I have quarrelled with people. More than a few."
+ },
+ {
+  "key": "ph5d1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] We will look first."
+ },
+ {
+  "key": "ph5d2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Use your nose. Then your Spirit Vision. Tell me what you find, not what you think it is."
+ },
+ {
+  "key": "q5h1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] Here, under this. It is dark to me, and the smell is thick."
+ },
+ {
+  "key": "q5h2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[serious] The same thing. All along here."
+ },
+ {
+  "key": "q5h3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[serious] Here it is strongest. It runs from the gate to his door."
+ },
+ {
+  "key": "ph5h1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Nine Prai."
+ },
+ {
+  "key": "q5h4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] They were already there."
+ },
+ {
+  "key": "ph5h2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Now find where it was poured."
+ },
+ {
+  "key": "ph5h3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] I believe somebody poured this here: the oil of nine Prai. I believe it was people who are angry with him."
+ },
+ {
+  "key": "ph5h4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Nothing is there now. A smell stays after what made it has gone."
+ },
+ {
+  "key": "q5h5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[doubtful] My nose was sure."
+ },
+ {
+  "key": "ph5h5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Try the court."
+ },
+ {
+  "key": "ph5h6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Try by the door."
+ },
+ {
+  "key": "ph5h7",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Try the gate."
+ },
+ {
+  "key": "ph5p1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Stay behind the thread. Whatever you hear, do not come out."
+ },
+ {
+  "key": "ko5p1",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[afraid] What will I hear?"
+ },
+ {
+  "key": "ph5p2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Stand with me. Do not open to them. Whatever comes, stand."
+ },
+ {
+  "key": "q5p1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[awed] And then I was not alone in my body."
+ },
+ {
+  "key": "tn5b1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[shaken] Brother. Before he took it from me. It was shaking. In my hands. Like it was spitting fireballs."
+ },
+ {
+  "key": "q5b1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[gentle] I believe you felt it."
+ },
+ {
+  "key": "ko5b1",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[hopeful] It is... lighter. Is it lighter? Or is it me."
+ },
+ {
+  "key": "ph5b1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Both can be true."
+ },
+ {
+  "key": "ph5b2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Mend what you can with the people you quarrelled with. Not because of tonight. Because it is right."
+ },
+ {
+  "key": "ph5b3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] And if you still do not sleep, see a doctor. And let the electrician come a fourth time."
+ },
+ {
+  "key": "q5b2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[curious] Grandmaster. The smell. Was it real?"
+ },
+ {
+  "key": "ph5b4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] You smelled it. They did not. That is a fact about you. It is not yet a fact about that house."
+ },
+ {
+  "key": "ph5b5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Your nose is open. Last time it was your sight. An open door is not a skill."
+ },
+ {
+  "key": "ju5b1",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[casual] Master, the man with the collection. He called again. Tomorrow, three o'clock?"
+ },
+ {
+  "key": "ph5b6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Tomorrow."
+ },
+ {
+  "key": "co5t1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[nervous] Twenty. Twenty-one, with this one. I started with one."
+ },
+ {
+  "key": "co5t2",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[tired] Lately nothing goes right. I am tired all the time. And there is a smell. At home, in the car. I clean, it comes back. You will think I am mad."
+ },
+ {
+  "key": "q5t1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I caught it too. It was not coming from anywhere in the room. It was coming from them."
+ },
+ {
+  "key": "ph5t1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Angry."
+ },
+ {
+  "key": "ph5t2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Hungry."
+ },
+ {
+  "key": "ph5t3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] This only wants warmth. It does not know where it is."
+ },
+ {
+  "key": "co5t3",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[worried] Is it these? Is this why I am sick?"
+ },
+ {
+  "key": "ph5t4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Your health: see a doctor. That comes first, whatever we find on this table. Both can be true."
+ },
+ {
+  "key": "co5t4",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[sheepish] My wife says the same."
+ },
+ {
+  "key": "co5t5",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[defensive] All right. But some of these must be fine. I chose them one by one."
+ },
+ {
+  "key": "co5t6",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[hopeful] You. You can tell. Which ones can I keep?"
+ },
+ {
+  "key": "ph5t6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Look, so that you know what you are answering."
+ },
+ {
+  "key": "co5t7",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[gentle] Take your time. I am not going anywhere."
+ },
+ {
+  "key": "co5A1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[surprised] All? Even the ones that did nothing?"
+ },
+ {
+  "key": "q5A1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[firm] All."
+ },
+ {
+  "key": "co5A2",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[eager] So where do I buy good ones? You have a shop, right?"
+ },
+ {
+  "key": "ph5A1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] First learn what you are asking for. Then ask."
+ },
+ {
+  "key": "ph5A2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] He gave them up because you said so. You were right. He does not yet know why."
+ },
+ {
+  "key": "q5A2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[regretful] He will buy again. I gave him an answer, and no question."
+ },
+ {
+  "key": "co5B1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[proud] This one a dealer in Bangkok sold me. He said it was strong."
+ },
+ {
+  "key": "co5B2",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[embarrassed] This... came in a lot of five. I never asked."
+ },
+ {
+  "key": "co5B3",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[confused] I do not know what this is."
+ },
+ {
+  "key": "co5B4",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[thoughtful] I do not know what half of them are."
+ },
+ {
+  "key": "co5B5",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[thoughtful] If I ever buy another..."
+ },
+ {
+  "key": "q5B1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[gentle] Ask it those two questions first."
+ },
+ {
+  "key": "ph5B1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] You did not tell him what they were. You let him find out that he did not know. That is the only way it stays learned."
+ },
+ {
+  "key": "q5B2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] He put them down himself."
+ },
+ {
+  "key": "co5C1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[disappointed] Three! Only three."
+ },
+ {
+  "key": "ph5C1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] This one. What is it?"
+ },
+ {
+  "key": "co5C2",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[embarrassed] I... do not know."
+ },
+ {
+  "key": "ph5C2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Nor does he. Your nose is not a certificate."
+ },
+ {
+  "key": "q5C1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I sorted his collection by a smell. I would have sent him home with seventeen things neither of us understood."
+ },
+ {
+  "key": "co5D1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[excited] Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday."
+ },
+ {
+  "key": "ph5D1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Twenty more things you do not understand, in the same case."
+ },
+ {
+  "key": "ph5D2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] It is not the kind. A blessed piece kept as he kept these is kept the same way."
+ },
+ {
+  "key": "q5D1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[regretful] I gave him a rule about objects. The trouble was never the objects."
+ },
+ {
+  "key": "co5z1",
+  "speaker": "collector",
+  "voice_id": "eWKcOFrcmRNtJMcUZYOm",
+  "takes": 2,
+  "prompt": "[relieved] I feel lighter. My head is quieter."
+ },
+ {
+  "key": "q5z1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] Understanding first. Then possession."
+ },
+ {
+  "key": "q5A",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I told him to let them all go. He did, and did not know why."
+ },
+ {
+  "key": "q5B",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] I asked him what each one was. He found he did not know."
+ },
+ {
+  "key": "q5C",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I sorted his pieces by a smell. My nose is not a certificate."
+ },
+ {
+  "key": "q5D",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[regretful] I gave him a rule about kinds. It was never the kind."
+ }
+]
