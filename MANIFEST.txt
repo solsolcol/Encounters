@@ -1130,3 +1130,5 @@ d7566c4442ff837cf578247f4bf2834c005596eda6d16e78be741326819d4d9a  masters/v27.0/
 efba8a1ae7cc8e4e4003bed6c019cc54853eca1e1cbe45c6be561e7477b90feb  masters/v27.0/src/original-commode.glb
 9a6447365d3ead0112567bebc770c59dc1f5edcb6bd28b9f70b86d10223fa92a  masters/v27.0/src/original-corrpots.glb
 13befb6a5c01f37df2173cecb0ce6c776b2acb11a5d02324906fbba819683c91  masters/v27.0/src/original-dinechair.glb
+5c2c508d84025fbdbd4319d85a46b38c847508b94c3bd35d6ddc4704fae60f5c  masters/v27.0/src/original-diningtable.glb
+60739943a56c955239824114f99e1a40a414c6b146981ea9176a14bd41b6bce0  masters/v27.0/src/original-door.glb
