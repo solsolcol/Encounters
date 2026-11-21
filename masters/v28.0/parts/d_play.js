@@ -101,6 +101,7 @@
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       /* (a probe's handle on the script as the chapter holds it) */
       script: { SECS, LINES, SAID },
+      films: FILMS5API,                                          // (the films' pictures and the cast's handles: c_yfilm.js, c_cast.js)
       hotspots: worldHotspots(hotspots),                         // (the world's: each tagged with the ground the walk test tries it in)
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
