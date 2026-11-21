@@ -1142,3 +1142,4 @@ d6190e51b838101bd4e594de59fa57dc26a402b9278f9cfdb82cbd0f9f692e2b  masters/v27.0/
 c7245f1829429ab7407994d3f48b456d3544740eb0f0299ed590e9461cd3a81f  masters/v27.0/src/original-gate.glb
 e3ad23907e8f4243a0c32c46b4230f31ffaa57c8849d8db0648722ab58ff025b  masters/v27.0/src/original-hugger.glb
 4666de3c5d4121ddf9ba796728b499f4b253489419db0f4e9580f6cdac0d2a32  masters/v27.0/src/original-large.glb
+e7b090e0236feedc63615252ebe5137a01ec517bab21f2d8957c60d677be2b62  masters/v27.0/src/original-mala.glb
