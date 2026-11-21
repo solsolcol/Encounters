@@ -1202,7 +1202,7 @@
           { t: T.co5t2 + SECS.co5t2 - 0.35, name: 'col', eye: me, at: COL, fp: 50, fd: 44 },   // (on him to his line's end: from 1.2 s before it a phone lost him, e4c5filmread FRAME)
           /* (it ends on his seat's own view and KEEPS it (z_tail.js: keep.view), where the table's play seats him (c_story.js
              seatHim): the view it began in was the court's, where the bag tied film left the rig) */
-          { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
+          { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: SIT5.pitch, fp: PLAYFOV5, fd: PLAYFOV5 }   // (the seat's own look, PLAY's SIT5: no turn as play takes over)
         ]);
       },
       end() { fmLens(PLAYFOV5); PIECES5.set(true); endPhase5('table'); }
