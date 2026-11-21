@@ -49,7 +49,9 @@
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
         bodyX: 1.6, bodyZ0: -2.3, bodyZ1: 2.6, // where the two of them may stand
         zavAt: [0, 0.7], phoAt: [1.15, 2.0],
-        lessonAt: [0, -1.5],                  // where the lesson's Prai stands and strains toward him
+        lessonAt: [0.6, -1.6],                // where the lesson's Prai stands and strains toward him (0.6 to the side, 21 Nov:
+                                              // at [0, -1.5] it stood straight behind his student from the first lens, the
+                                              // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
         laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
         entryAt: [[-1.55, -2.45], [1.55, -2.45], [0, -2.5], [-1.75, -1.25], [1.75, -1.25], [-1.1, -2.5], [1.1, -2.5], [0.6, -2.5]],
         entryJitter: 0.25,

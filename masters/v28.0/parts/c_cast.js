@@ -37,7 +37,7 @@
        is not yet declared): Grandmaster Pho played first, his student before him, the lesson's Prai in the court's middle,
        the other eight at the far end where each will enter from */
     function fightStart() {
-      const N = (typeof FIGHT !== 'undefined' && FIGHT && FIGHT.NUM) || { phoAt: [1.15, 2.0], zavAt: [0, 0.7], lessonAt: [0, -1.5], entryAt: [] };
+      const N = (typeof FIGHT !== 'undefined' && FIGHT && FIGHT.NUM) || { phoAt: [1.15, 2.0], zavAt: [0, 0.7], lessonAt: [0.6, -1.6], entryAt: [] };
       return { pho: courtWorld(N.phoAt[0], N.phoAt[1]), zav: courtWorld(N.zavAt[0], N.zavAt[1]), lesson: courtWorld(N.lessonAt[0], N.lessonAt[1]),
                entry: (N.entryAt || []).map(a => courtWorld(a[0], a[1])), laid: (N.laidAt || []).map(a => courtWorld(a[0], a[1])) };
     }
