@@ -796,6 +796,16 @@ ASSETS = {
     # white, masters/v27.0/props/refs/waterbowl-1024.jpg, as the object; the master at 1024, masters/v27.0/icons)
     'iconwater':    ('assets/iconwater.jpg', True, False),     # the holy water's icon (384 px, q88, from masters/v27.0/icons/iconwater-1k.jpg)
     # <<< e4c4 keys: the rows end <<<
+    # >>> e4c5 keys: written by masters/v28.0/keys.py from its table (edit the table, not these rows) >>>
+    # e4c5 v28.0 (episode 4 chapter 5, the house with nine Prai): MASTER ZAVIER (R5), made from Chad's photograph and
+    # rigged; HIS PICK, the first of the four bodies made (R10). The near body with his walk, and `h` every triangle of him
+    # for within 2.2 m and the films (v26.5). masters/v28.0/make.sh sections 1 and 4, people.sh
+    'p5zavier':     ('assets/p5zavier.glb', True, False),     # Master Zavier: a grey shawl-collar cardigan over a black T-shirt, dark jeans, grey socks
+    'p5zavierh':    ('assets/p5zavierh.glb', True, False),
+    # e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its
+    # own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)
+    'w5nagastaff':  ('assets/w5nagastaff.glb', True, False),     # Grandmaster Pho's Naga stick, light brown, 1.40 m
+    # <<< e4c5 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -956,6 +966,9 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4streetlamp', 'w4bougain', 'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha',
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
+           # >>> e4c5 keys (masters/v28.0/keys.py) >>>
+           'p5zavier', 'p5zavierh', 'w5nagastaff',
+           # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 

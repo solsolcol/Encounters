@@ -146,10 +146,11 @@
        until it is played, so no button stands on the screen with nothing behind it. */
 
     assets: [
-      /* >>> this chapter's own keys (the same three lists as chapter 4's keys.py keeps: this list, build.py's rows, its
-         hosted-only set). Master Zavier's body, Chad's pick, the first of the four made (R10): the lighter body with his
-         walk, and every triangle of him for within 2.2 m and the films (v26.5); the Naga stick, from his photograph >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff'
+      /* the people and the things made for this chapter (masters/v28.0/make.sh): Master Zavier's body, Chad's pick, the
+         first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
+         films (v26.5); the Naga stick, from his photograph */
+      /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
+      'p5zavier', 'p5zavierh', 'w5nagastaff',
       /* <<< this chapter's own keys <<< */
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
