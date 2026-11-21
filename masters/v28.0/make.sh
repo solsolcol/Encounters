@@ -216,5 +216,8 @@
 # masters/v28.0/src's fourth body and the Naga stick (22 files), and with them chapter 4's whole folder
 # (masters/v27.0/src, 381 files), went up in chunks 26 to 78 of claude/model-sources:
 #   SRCBACKUP_GIT=<scratch> SRCBACKUP_LABEL=v28.0 SRCBACKUP_CHUNK_MB=120 python3 -I tools/srcbackup.py pushnew
-# GitHub's tip read back as the last commit pushed (9d232f735583). The three refused bodies stay on this machine only
-# (tools/srcbackup.py SKIP). A source made after this goes up with the same command.
+# GitHub's tip read back as the last commit pushed (9d232f735583). A source made after this goes up with the same command.
+# THE FIRST BODY'S SOURCES went up the same day, after Chad's R8 ("the first one already looked the best"): its fourteen
+# files (original, rigged, the remesh before and after riglod, the walk, four thumbnails, five logs; scanned first: no
+# link, no key, no address), 193 MiB in chunks 79 and 80, GitHub's tip 4588c25c8b83 read back. Until then they were on
+# this machine only. The second and third bodies still are, and stay so (tools/srcbackup.py SKIP: zavier2, zavier3).

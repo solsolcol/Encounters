@@ -268,7 +268,10 @@ that fits it, with the version it came from.
   credits each, the first refused by me for its joined fingers and never shown to him). When a model comes back with a
   fault, he is shown it as it is, the fault said plainly, with what another would cost in credits, and he picks: keep
   it, mend it here at no credits, or pay for another. A job that failed outright (nothing usable came back) is still
-  re-run unchanged (v24.3). The words in quotes are his; the rule's wording is mine, drawn from them. (v28.0)
+  re-run unchanged (v24.3). And once he has said which one he wants, it is used at once, with no further options put to
+  him and no work on the others ("Stop wasting effort and just use the first model unless there is a very strong reason
+  to use the 4th model": he had said twice that the first looked best and was still handed three choices). The words in
+  quotes are his; the rule's wording is mine, drawn from them. (v28.0)
 
 ### How the work is done and checked
 
