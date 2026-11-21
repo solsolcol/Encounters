@@ -35,6 +35,7 @@ const ALL = {
   doorout:    ['hunt', -8.5, -4.4, 0, -0.06],
   fight:      ['fight', -8.5, -10.6, Math.PI, -0.08],
   courtup:    ['hunt', -8.5, -11.5, Math.PI, 0.45],
+  doorfight:  ['fight', -8.45, -8.2, Math.PI, -0.05],
   gateup:     ['hunt', -8.5, -7.0, 0, 0.42],
   sideW:      ['hunt', -7.0, -10.0, Math.PI / 2 + 0.25, 0.2],
   windowout:  ['hunt', -8.2, -7.6, Math.PI, -0.02],

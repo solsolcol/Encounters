@@ -69,9 +69,12 @@
     function paint(hex, seed) {
       const [c, x] = canvas(256, 256), r = rng(seed);
       x.fillStyle = hex; x.fillRect(0, 0, 256, 256);
-      for (let s = 0; s < 110; s++) { const cx = r() * 256, cy = r() * 256, q = 8 + r() * 26, dark = r() < 0.5;
-        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.008)' : 'rgba(255,255,255,0.01)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-        x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); }
+      /* (each spot drawn again one picture over in each direction, so the picture repeats with no line at its edges) */
+      for (let s = 0; s < 110; s++) { const cx0 = r() * 256, cy0 = r() * 256, q = 8 + r() * 26, dark = r() < 0.5;
+        for (const ox of [-256, 0, 256]) for (const oy of [-256, 0, 256]) { const cx = cx0 + ox, cy = cy0 + oy;
+          if (cx + q < 0 || cx - q > 256 || cy + q < 0 || cy - q > 256) continue;
+          const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.008)' : 'rgba(255,255,255,0.01)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+          x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); } }
       return c;
     }
     /* the walkway's floor: 300 mm homogeneous tiles, a warm grey, speckled (a 1980s condominium's common corridor) */
@@ -136,12 +139,25 @@
       return M({ map: pic(c, 1.6, 1.6), roughness: 0.6 }); })();
     const mRoomWall = M({ map: pic(paint('#ecebe5', 28512), 1.4, 1.4), roughness: 0.93 });
 
+    /* A WALL'S PIECE with its picture laid by the world's own metres on every face (box() starts each face's picture at
+       its own corner, so where two pieces of one wall met round an opening the paint jumped: the thin vertical lines
+       up the house's front and the court's walls). u runs along the face as the next piece's does, v is the height */
+    function boxW(mat, cx, cy, cz, w, h, d) {
+      const hw = w / 2, hh = h / 2, hd = d / 2, y0 = cy - hh, y1 = cy + hh;
+      const P = (x, y, z) => [x, y, z];
+      quad(mat, P(cx - hw, y0, cz + hd), P(cx + hw, y0, cz + hd), P(cx + hw, y1, cz + hd), P(cx - hw, y1, cz + hd), cx - hw, y0);        // +z face
+      quad(mat, P(cx + hw, y0, cz - hd), P(cx - hw, y0, cz - hd), P(cx - hw, y1, cz - hd), P(cx + hw, y1, cz - hd), -(cx + hw), y0);     // -z face
+      quad(mat, P(cx + hw, y0, cz + hd), P(cx + hw, y0, cz - hd), P(cx + hw, y1, cz - hd), P(cx + hw, y1, cz + hd), -(cz + hd), y0);     // +x face
+      quad(mat, P(cx - hw, y0, cz - hd), P(cx - hw, y0, cz + hd), P(cx - hw, y1, cz + hd), P(cx - hw, y1, cz - hd), cz - hd, y0);        // -x face
+      quad(mat, P(cx - hw, y1, cz + hd), P(cx + hw, y1, cz + hd), P(cx + hw, y1, cz - hd), P(cx - hw, y1, cz - hd), cx - hw, -(cz + hd)); // top
+      quad(mat, P(cx - hw, y0, cz - hd), P(cx + hw, y0, cz - hd), P(cx + hw, y0, cz + hd), P(cx - hw, y0, cz + hd), cx - hw, cz - hd);    // bottom
+    }
     /* ---------------------------------------------- walls with their openings (chapter 4's wallX / wallZ: a wall's
        thickness drawn, so an opening shows its reveal; each piece a solid where it stands on walkable floor) */
     function wallX(mat, zc, d, x0, x1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.x0 - b.x0); let at = x0;
       const piece = (a, b, ya, yb, sol) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        box(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a, yb - ya, d, 0, mat, false);
+        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a, yb - ya, d);
         if (sol && solid) solidBox(b - a, Math.max(1.2, yb - ya), d, (a + b) / 2, Math.max(0.6, (ya + yb) / 2), zc); };
       for (const o of cuts) { piece(at, o.x0, y0, y1, true); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6); piece(o.x0, o.x1, o.y1, y1, false); at = o.x1; }
       piece(at, x1, y0, y1, true);
@@ -149,7 +165,7 @@
     function wallZ(mat, xc, d, z0, z1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.z0 - b.z0); let at = z0;
       const piece = (a, b, ya, yb, sol) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        box(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a, 0, mat, false);
+        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a);
         if (sol && solid) solidBox(d, Math.max(1.2, yb - ya), b - a, xc, Math.max(0.6, (ya + yb) / 2), (a + b) / 2); };
       for (const o of cuts) { piece(at, o.z0, y0, y1, true); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6); piece(o.z0, o.z1, o.y1, y1, false); at = o.z1; }
       piece(at, z1, y0, y1, true);
@@ -809,8 +825,10 @@
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
       /* the cleansing: he in the court (the fight's own start is the fight's), the three in the doorway behind the thread */
       fight: { at: { x: -8.5, z: -10.6, ry: Math.PI },
-               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -9.12, z: -4.95, ry: Math.PI }, jun: { x: -7.88, z: -4.95, ry: Math.PI },
-               koh: { x: -8.5, z: -4.7, ry: Math.PI } },
+               /* (the FILMS builder's measure: Ton at x -9.12 stood behind the open door's leaf, x -8.95 to -8.83, and was hidden
+                  from the court; he stands in the doorway's west half now, Mr Koh a step behind between the two) */
+               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.58, z: -4.95, ry: Math.PI }, jun: { x: -7.88, z: -4.95, ry: Math.PI },
+               koh: { x: -8.25, z: -4.45, ry: Math.PI } },
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },
                pho: { x: SEAT.pho.x, z: SEAT.pho.z, ry: Math.PI }, collector: { x: SEAT.collector.x, z: SEAT.collector.z, ry: Math.PI / 2 },
