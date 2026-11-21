@@ -3901,5 +3901,59 @@
     "heard": "Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday."
    }
   }
+ },
+ "ph5D1": {
+  "who": "pho",
+  "text": "[calm] Twenty more things you do not understand, in the same case.",
+  "pick": "b",
+  "why": "the unhurried read",
+  "med": 3.7,
+  "takes": {
+   "a": {
+    "len": 3.44,
+    "first": 0.0,
+    "last": 3.28,
+    "e_first": 0.0,
+    "e_last": 3.42,
+    "tail_db": -33.9,
+    "tail_rel": -19.7,
+    "hole": 0.34,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.22,
+    "heard": "Twenty more things you do not understand, in the same case."
+   },
+   "b": {
+    "len": 4.08,
+    "first": 0.0,
+    "last": 3.88,
+    "e_first": 0.0,
+    "e_last": 4.06,
+    "tail_db": -32.2,
+    "tail_rel": -17.7,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.71,
+    "heard": "Twenty more things you do not understand, in the same case."
+   },
+   "c": {
+    "len": 3.76,
+    "first": 0.0,
+    "last": 3.6,
+    "e_first": 0.04,
+    "e_last": 3.74,
+    "tail_db": -34.8,
+    "tail_rel": -20.2,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.97,
+    "heard": "Twenty more things you do not understand, in the same case."
+   }
+  }
  }
 }
