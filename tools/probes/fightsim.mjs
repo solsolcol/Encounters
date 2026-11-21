@@ -499,7 +499,7 @@ async function main() {
   // WHAT WAS DONE, a fight on average (the careful player's and the optimal one's)
   for (const who of ['careful', 'optimal', 'masher'].filter(w => T[w])) {
     const s = T[who].statsSum, k = T[who].n;
-    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines', 'emptySmell', 'spent', 'idle', 'lapses'].map(q => q + ' ' + ((s[q] || 0) / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}`);
+    console.log(`\n${who}, a fight on average: ` + ['switches', 'fires', 'chased', 'slipped', 'binds', 'smells', 'lends', 'waves', 'broken', 'byWave', 'bags', 'rose', 'breaks', 'lines', 'emptySmell'].map(q => q + ' ' + ((s[q] || 0) / k).toFixed(1)).join(', ') + `, sanity lost ${(s.drained / k).toFixed(1)}`);
   }
   if (T.careful) {
     const heardKeys = Object.keys(T.careful.said).sort((a, b) => T.careful.said[b] - T.careful.said[a]);

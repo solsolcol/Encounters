@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c5fight';
 fs.mkdirSync(OUT, { recursive: true });
-const DESK = process.env.VIEW === 'desk', LOSE = process.env.LOSE === '1';
+const DESK = process.env.VIEW === 'desk', LOSE = process.env.LOSE !== '0';   // (by default it loses once first, then wins: both in one run; LOSE=0 only wins)
 const W = DESK ? 1280 : 390, H = DESK ? 720 : 844, DSF = +(process.env.DSF || (DESK ? 1 : 2));
 const MAXMS = (+(process.env.MAXMIN || 70)) * 60000;
 const b = await chromium.launch(LAUNCH);
