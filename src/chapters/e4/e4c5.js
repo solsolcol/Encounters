@@ -7762,7 +7762,9 @@
     /* (SHOCKWAVE and BAG are left standing, measured: his Charged_Spell_Cast lifts both feet 6 cm off the paving in its
        crouch, mage_soell_cast_8 sinks his left foot 2 cm into it; their takes are listed wanted. The gold's and the bag's
        own pictures carry those acts. fsPhoAct answers 0 for a kind with no row, so their calls stand ready) */
-    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 1.30, up: 0.12, down: 0.42, hold: false } };
+    /* (the fire's coming down ends at 0.90 of his take and hands him back from there: at 1.0 his right foot stands 1.3 cm
+       into the paving, measured in the game (e4c5takes' feet), at 0.71 both feet 6 to 7 mm over it) */
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 0.90, up: 0.12, down: 0.3, hold: false } };
     function fsPhoAct(kind, up) {
       const P = cast.pho, A = FS_PHO_TAKE[kind];
       if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
