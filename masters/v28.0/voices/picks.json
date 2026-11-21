@@ -5794,5 +5794,59 @@
     "heard": "BAG the tired Prai before it rises."
    }
   }
+ },
+ "ph5nd3": {
+  "who": "pho",
+  "text": "[firm] BAG.",
+  "pick": "b",
+  "why": "the unhurried read",
+  "med": 1.28,
+  "takes": {
+   "a": {
+    "len": 1.36,
+    "first": 0.0,
+    "last": 1.0,
+    "e_first": 0.06,
+    "e_last": 1.34,
+    "tail_db": -22.1,
+    "tail_rel": -8.6,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 0.78,
+    "heard": "BAG."
+   },
+   "b": {
+    "len": 1.36,
+    "first": 0.0,
+    "last": 1.02,
+    "e_first": 0.02,
+    "e_last": 1.34,
+    "tail_db": -28.7,
+    "tail_rel": -14.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 0.76,
+    "heard": "BAG."
+   },
+   "c": {
+    "len": 1.28,
+    "first": 0.0,
+    "last": 1.08,
+    "e_first": 0.0,
+    "e_last": 1.26,
+    "tail_db": -23.0,
+    "tail_rel": -9.2,
+    "hole": 0.0,
+    "sim": 0.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 0.79,
+    "heard": "B -A -G."
+   }
+  }
  }
 }
