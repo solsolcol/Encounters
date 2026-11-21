@@ -95,9 +95,11 @@
       '  float d = q.y >= 0.0 || uRound > 0.5 ? length(q) / 0.62 : (q.y < -tl ? 9.0 : abs(q.x) / w + 0.3 * al);',
       /* (the flames flow back along the flight: the noise drawn along it on the clock; a finer one flickers the heat) */
       '  float n = fbm(vec2(q.x * 1.7 + uSeed, q.y * 1.15 + uT * uFlow)), n2 = fbm(vec2(q.x * 3.6 - uT * 1.1, q.y * 2.6 + uT * uFlow * 1.7) + uSeed * 1.9);',
-      '  float shape = 1.0 - smoothstep(0.5, 1.12, d + (n - 0.5) * 1.05);',
-      '  float heat = shape * (1.0 - 0.6 * al) * (0.72 + 0.56 * n2);',
-      '  float core = uRound > 0.5 ? 0.0 : exp(-dot(q, q) * 7.0);',
+      /* (tongues: a finer noise across the flame, drawn back along it, tearing its edge the more the further back) */
+      '  float n3 = vn(vec2(q.x * 6.0 + uSeed * 3.1, q.y * 2.0 + uT * uFlow * 2.3));',
+      '  float shape = 1.0 - smoothstep(0.45, 1.1, d + (n - 0.5) * 1.45 + (n3 - 0.5) * (0.25 + 0.6 * al));',
+      '  float heat = shape * (1.0 - 0.6 * al) * (0.55 + 0.9 * n2);',
+      '  float core = uRound > 0.5 ? 0.0 : exp(-dot(q, q) * 11.0);',
       '  vec3 c = mix(vec3(0.62, 0.05, 0.03), vec3(1.0, 0.30, 0.04), smoothstep(0.08, 0.42, heat));',
       '  c = mix(c, vec3(1.0, 0.62, 0.10), smoothstep(0.42, 0.72, heat));',
       '  c = mix(c, vec3(1.0, 0.94, 0.74), clamp(smoothstep(0.72, 1.0, heat) + core * 0.85, 0.0, 1.0));',
@@ -467,11 +469,11 @@
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
         B.d.subVectors(B.b, B.a); B.d.y += H * 4 * (1 - 2 * u); if (B.d.lengthSq() > 1e-8) B.d.normalize(); else B.d.set(0, 0, 1);   // (its way now: the path's own)
         const sz = B.ai ? 0.72 : 1, fl = 0.9 + 0.07 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67 + B.seed);
-        fsFlameLay(B.flame, _fsA, B.d, 0.5 * sz * fl, 1.25 * sz);
+        fsFlameLay(B.flame, _fsA, B.d, 0.5 * sz * fl, Math.min(1.25 * sz, 1.1 * _fsA.distanceTo(B.a)));   // (its tail never longer than the way it has come)
         const U = B.flame.material.uniforms; U.uT.value = ft; U.uA.value = 1; U.uSeed.value = B.seed;
         B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = true;
         B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
-        B.core.scale.setScalar(0.2 * sz * fl); B.glow.scale.setScalar(0.7 * sz * fl); B.halo.scale.setScalar(1.6 * sz * (0.92 + 0.08 * fl));
+        B.core.scale.setScalar(0.15 * sz * fl); B.glow.scale.setScalar(0.6 * sz * fl); B.halo.scale.setScalar(1.6 * sz * (0.92 + 0.08 * fl));
         B.core.material.opacity = 0.95; B.glow.material.opacity = 0.5; B.halo.material.opacity = 0.26;
         /* (its embers: shed behind it, most rising as hot things rise, the brightest falling, a few of the stick's ruby;
            and a puff of thin smoke left in the air every 45 ms) */
@@ -504,9 +506,9 @@
         /* (fire's: the white flash, 0.16 s, and the ball of fire swelling and thinning as it rises, 0.5 s) */
         if (L.fire) { const ub = c01(L.t / 0.5), uf = c01(L.t / 0.16);
           L.ball.visible = ub < 1; L.flash.visible = uf < 1;
-          L.ball.position.y = L.y + 0.25 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.35 + 1.25 * Math.sqrt(ub)) * L.k, 0);
-          const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.4);
-          L.flash.scale.setScalar((0.5 + 1.1 * uf) * L.k); L.flash.material.opacity = 1 - uf; }
+          L.ball.position.y = L.y + 0.3 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.5 + 1.7 * Math.sqrt(ub)) * L.k, 0);
+          const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.2);
+          L.flash.scale.setScalar((0.7 + 1.5 * uf) * L.k); L.flash.material.opacity = 1 - uf; }
         else { L.ball.visible = L.flash.visible = false; }
         if (u >= 1) L.on = false;
       }
@@ -846,7 +848,7 @@
               fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, 8, { sp: 2.4, up: 0.3, life: 0.7, s0: 0.1, col: FS_COL.ruby, grav: -3 }); }
             else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_FIRE.orange, e.result === 'setback' ? 0.7 : 1, true, y0); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
-              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.12, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.35, grav: -4 });
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 16 : 34, { sp: 3.0, up: 0.2, life: 0.7, s0: 0.12, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, e.result === 'setback' ? 4 : 7, { sp: 2, up: 0.3, life: 0.6, s0: 0.09, col: FS_COL.ruby, grav: -3 }); }
             else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_FIRE.orange, 0.5, true, 0.6); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.3, grav: -4 }); }
             else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); fsBurst(w.x, 0.5, w.z, 8, { sp: 0.9, up: 0.5, life: 0.7, s0: 0.06, col: FS_COL.sour, grav: 0.3, a: 0.5 }); }
@@ -1189,6 +1191,7 @@
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
       /* (his closed hand on the stick: the grip's solve, each joint's turn in degrees, and how far it is closed) */
       grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
+      gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -1317,9 +1320,9 @@
        holding it"; R26, his pick: "Finger bones (Recommended)"). His file has no finger bones; this chapter's copy of it
        (p5pho, tools/fingergraft.mjs: fifteen of the library's, and their ends, grafted onto his right hand from its own
        geometry, masters/v28.0/pho5) has, and at rest draws exactly as his. Here his hand is CLOSED ROUND THE SHAFT:
-       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.10 m up its middle
-         stands 8.4 cm along its own x and its radius is 3.3 to 3.6 cm (3.6 taken); his hand closes at 1.00 m up it, under
-         the Naga's head (which begins at 1.15 m);
+       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.12 m up its middle
+         stands 8.2 cm along its own x and its radius is 3.3 to 3.7 cm (3.6 taken); his hand closes at 1.10 m up it, just
+         under the Naga's head (which begins at 1.15 m), as a staff is held;
        ACROSS HIS PALM, in his hand's own frame (armsOf: the fingers' line, the palm's facing; across toward his thumb): its
          middle 1.8 cm short of his middle finger's knuckle along his hand and pressed into his palm (the palm 1.2 cm off
          the bone's line, measured from his hand's own skin there: 1.1 to 1.7 cm, a grip's press taken off), the shaft's
@@ -1338,7 +1341,11 @@
          runs again (armsBack, as every laid pose: v11.5); eased over 0.3 s as the stick comes into his hand or leaves it.
        The stick is laid in this hand at that place (STICK5.inHand asks PHOGRIP5 for it), and goes where the hand goes */
     const PHOGRIP5 = (() => {
-      const STICK_R = 0.036, STICK_Y = 1.0, STICK_C = [0.084, -0.005], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
+      const STAFF_ON = true;
+      /* (held OFF until photographed and measured: the stick stands as it did, and his hand is his file's; a probe turns it
+         on through the fight's lab, gripOn) */
+      let GRIP_ON = false;
+      const STICK_R = 0.036, STICK_Y = 1.10, STICK_C = [0.082, -0.003], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -1413,7 +1420,8 @@
         const off = new THREE.Matrix4().compose(V(), new THREE.Quaternion().setFromRotationMatrix(R), new THREE.Vector3(sc, sc, sc));
         const at = new THREE.Vector3(STICK_C[0], STICK_Y, STICK_C[1]).applyMatrix4(off);
         off.setPosition(C.clone().sub(at));
-        out.off = off; out.C = C; out.A = A;
+        out.off = off; out.C = C; out.A = A; out.F = xA.clone().negate();
+        out.foreAxis = a.hand.position.clone().normalize();                         // (the forearm's own line, in its frame)
         G = out; console.log('PHOGRIP5: his grip solved: ' + JSON.stringify(out.report)); return G;
       }
       /* the closed hand laid on, by k (0 his file's hand .. 1 closed), from wherever the take left the fingers (they have none
@@ -1429,6 +1437,49 @@
         wroteQ = a.fing.map(F => F.b.quaternion.clone());
         for (const nm of NAMES) G.chains[nm][0].updateMatrixWorld(true);
       }
+      /* HIS ARM HOLDING IT UPRIGHT while he rests, walks and runs (his takes' arms hang and swing: a stick through a hanging
+         fist would lie across his path). His right arm solved as an arm (armHinge: the elbow on its pole's side, its hinge
+         the one ALL his takes bend about, (0.805, 0, 0.593) in his upper arm's frame, read from ten of them), the fist where
+         a man stands holding a staff (in his own frame 0.30 m out to his right, 1.10 m up, 0.36 m before him: the forearm a
+         little under level, the elbow near a right angle), turned thumb-up so the stick stands upright with its Naga's head
+         toward where he faces, turned 15 degrees out; the hand's turn along the forearm carried by the forearm (thumb-up is
+         a forearm's middle), the wrist bent only toward the little finger by the shaft's slope across the palm; lifted 6 cm
+         as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). By those takes' weights: in an
+         act (the throw, the gold, the bag) his own take's arm carries the stick */
+      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593] };
+      const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
+            _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
+      let wroteArm = null;
+      function staffLay(P, kk) {
+        const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
+        const w = P.w || {}, rt = P.rest && P.rest.take;
+        let share = 0; for (const nm of [rt, 'Walking', 'Running']) if (nm && w[nm]) share += w[nm];
+        share = Math.min(1, share) * kk; if (!(share > 0.001)) return;
+        if (a.wrote && wroteArm && a.up.quaternion.equals(wroteArm[0]) && a.fore.quaternion.equals(wroteArm[1]) && a.hand.quaternion.equals(wroteArm[2])) return;   // (laid already in this frame)
+        if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+        _keep[0].copy(a.up.quaternion); _keep[1].copy(a.fore.quaternion); _keep[2].copy(a.hand.quaternion);
+        hingeOf(a, -1, STAFF.hm);
+        P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_sq);
+        const walk = Math.min(1, (w.Walking || 0) + (w.Running || 0));
+        const Ct = _sa.set(STAFF.fist[0], STAFF.fist[1] + STAFF.lift * walk, STAFF.fist[2]); P.group.localToWorld(Ct);
+        const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out)).applyQuaternion(_sq).normalize();
+        /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
+        _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
+        _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
+        /* the wrist, where the fist's middle comes onto its place */
+        const Wr = _sf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_sq2).negate().add(Ct);
+        const pole = _sd.set(STAFF.pole[0], STAFF.pole[1], STAFF.pole[2]).normalize().applyQuaternion(_sq);
+        armHinge(a, Wr, pole);
+        /* the forearm turned along its own line by the hand's turn about it (swing and twist: the twist to the forearm) */
+        a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
+        const rel = _sq3.clone().invert().multiply(_sq2), ax = G.foreAxis, dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
+        const tw = new THREE.Quaternion(ax.x * dd, ax.y * dd, ax.z * dd, rel.w); if (tw.lengthSq() > 1e-12) { tw.normalize(); a.fore.quaternion.multiply(tw); a.fore.updateWorldMatrix(false, true); }
+        a.fore.getWorldQuaternion(_sq3); a.hand.quaternion.copy(_sq3.invert().multiply(_sq2)); a.hand.updateWorldMatrix(false, true);
+        if (share < 0.999) { _sq.copy(a.up.quaternion); a.up.quaternion.copy(_keep[0]).slerp(_sq, share);
+          _sq.copy(a.fore.quaternion); a.fore.quaternion.copy(_keep[1]).slerp(_sq, share);
+          _sq.copy(a.hand.quaternion); a.hand.quaternion.copy(_keep[2]).slerp(_sq, share); a.up.updateWorldMatrix(false, true); }
+        wroteArm = [a.up.quaternion.clone(), a.fore.quaternion.clone(), a.hand.quaternion.clone()];
+      }
       const hook = new THREE.Object3D(); hook.name = 'his grip on the Naga stick';
       hook.updateMatrixWorld = function (force) {
         const P = cast.pho;
@@ -1437,14 +1488,15 @@
           if (now - lastNow > 1) { lastNow = now;
             const holding = !!(P && P.ready && typeof STICK5 === 'object' && STICK5.who === 'pho' && things.nagaStaff && things.nagaStaff.visible && P.group.visible);
             k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
-          if (P && P.ready && k > 0 && solve(P)) lay(P, k);
+          if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
         THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
       };
       world.children.unshift(hook); hook.parent = world;
       return {
         /* the stick's place in his right hand, in that hand's frame (null: his hand has no fingers, and the stick stands as before) */
-        offset(P) { const g = solve(P); return g ? g.off : null; },
+        offset(P) { if (!GRIP_ON) return null; const g = solve(P); return g ? g.off : null; },
+        on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; }
       };

@@ -28,6 +28,7 @@ await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 300000, polling: 500 });
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
+await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; if (L.gripOn) L.gripOn(); });   // (the grip is held off until it passes)
 await frames(12);
 const grip = await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.grip ? L.grip() : null; });
 say('grip', JSON.stringify(grip)); say('page', JSON.stringify(logs));

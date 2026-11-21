@@ -81,7 +81,7 @@
        seat, its numbers (CROSS) and its cloth, on this room's cushion (w5cushion: its top 0.12 m) */
     const CUSHION_TOP = 0.12;
     { const S0 = at0('table', 'pho');
-      cast.phoS = mkPerson('p5pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
+      cast.phoS = mkPerson('pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.phoS.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
@@ -317,6 +317,18 @@
       for (const B of bars) { const a = Math.atan2(B.b.position.x, B.b.position.z), gw = new THREE.CylinderGeometry(R, R, H * 0.94, 12, 1, true, a - WAKE, WAKE); owned.push(gw);
         const mw = new THREE.MeshBasicMaterial({ map: wakeTex, color: COL, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(mw);
         const w = add(new THREE.Mesh(gw, mw)); w.position.y = H / 2 + 0.02; w.visible = false; spin.add(w); B.w = w; B.mw = mw; }
+      /* (and on the paving, turning with them, a swirl: each bar's arc of light along the circle at its foot, bright at the
+         bar and gone a third of the way to the next: seen from above, where the bars' wakes stand edge-on, the turn reads) */
+      const swirlTex = (() => { const n = 512, [c, x] = canvas(n, n); x.translate(n / 2, n / 2); x.lineCap = 'round';
+        for (const B of bars) { const a0 = Math.atan2(B.b.position.x, B.b.position.z);
+          for (let i = 0; i < 48; i++) { const u = i / 48, t0 = a0 - u * 1.1, t1 = a0 - (u + 1 / 48) * 1.1, al = Math.pow(1 - u, 1.6);
+            /* (the canvas's x is the plane's x and its y the plane's z once laid flat: the bar at angle a stands at (sin a, cos a)) */
+            x.strokeStyle = 'rgba(255,255,255,' + al.toFixed(3) + ')'; x.lineWidth = 14 * (1 - 0.6 * u);
+            x.beginPath(); x.moveTo(Math.sin(t0) * n * 0.4, Math.cos(t0) * n * 0.4); x.lineTo(Math.sin(t1) * n * 0.4, Math.cos(t1) * n * 0.4); x.stroke(); } }
+        return tex(done(THREE, c, false)); })();
+      const mSwirl = new THREE.MeshBasicMaterial({ map: swirlTex, color: COL, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }); mats.push(mSwirl);
+      const gSwirl = new THREE.PlaneGeometry(2.5 * R, 2.5 * R); gSwirl.rotateX(-Math.PI / 2); owned.push(gSwirl);
+      const swirl = add(new THREE.Mesh(gSwirl, mSwirl)); swirl.position.y = 0.014; swirl.visible = false; spin.add(swirl);
       let ang = 0, rate = 0, lastT = null;
       const _cv = new THREE.Vector3(), _cl = new THREE.Vector3();
       return {
@@ -339,8 +351,9 @@
             const cr = o.crack ? 0.55 + 0.45 * Math.sin((o.t || 0) * 37 + B.b.position.x * 9) : 1;
             B.mb.opacity = 0.85 * o.k * front * cr; B.mg.opacity = 0.22 * o.k * front * cr;
             B.b.scale.set(0.7 + 0.6 * o.k, 1, 0.7 + 0.6 * o.k);
-            B.w.visible = wk > 0.01; B.mw.opacity = 0.3 * wk * o.k * front * cr; }
+            B.w.visible = wk > 0.01; B.mw.opacity = 0.5 * wk * o.k * front * cr; }
           mRing.opacity = 0.7 * o.k;
+          swirl.visible = wk > 0.01; mSwirl.opacity = 0.75 * wk * o.k * (o.crack ? 0.6 : 1);
         }
       };
     })();
