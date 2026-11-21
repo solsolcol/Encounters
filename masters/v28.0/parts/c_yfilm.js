@@ -1307,7 +1307,9 @@
           { t: r0 + RT.away + 2.6, name: 'away', eye: [me[0], me[1] + 0.05, me[2] - 0.05], at: [R.cx + 0.1, 0.9, R.cz + 0.1], fp: 58, fd: 50 },
           { t: r0 + RT.bag, name: 'bag', eye: [me[0] + 0.15, me[1] - 0.1, me[2] + 0.15], at: [RITE_AT.bag[0], 0.45, RITE_AT.bag[1]], fp: 34, fd: 30, cut: true },
           { t: r0 + RT.end, name: 'bag', eye: [me[0] + 0.12, me[1] - 0.1, me[2] + 0.12], at: [RITE_AT.bag[0], 0.48, RITE_AT.bag[1]], fp: 32, fd: 28 },
-          { t: r0 + RT.end + 0.05, name: 'lighter', eye: me, at: COL, fp: 46, fd: 40, cut: true }
+          { t: r0 + RT.end + 0.05, name: 'lighter', eye: me, at: COL, fp: 46, fd: 40, cut: true },
+          /* (on him to "My head is quieter."'s last word: in C and D the lens eased to the table from the cut, through it) */
+          { t: E.co5z1 + SECS.co5z1 - 0.1, name: 'lighter', eye: me, at: COL, fp: 45, fd: 39 }
         ]).concat(X.after(me, COL, PHO, E)).concat([
           /* (the bag, its string, his teacher's hand on it and the empty case beside it, all in the picture: at 0.9 m on a 36
              degree lens the bag alone filled the phone, the hand at its edge: endA-00050, 21 Nov) */
@@ -1366,7 +1368,10 @@
                 swung 138 degrees in half a second: endA lens, three steps read as cuts) */
              { t: E.ph5A1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.ph5A2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
-             { t: E.q5A2 + 0.4, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
+             /* (on him to his line's last word, then down to the table: eased from 35.7 s to 43.2 s, the look left him in
+                the middle of his line and he was off a phone's and a desktop's frame from 40.9 s, e4c5filmread FRAME) */
+             { t: E.ph5A2 + SECS.ph5A2 - 0.1, name: 'pho', eye: me, at: PHO, fp: 43, fd: 37 },
+             { t: E.q5A2 + 1.0, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
       /* B · "Tell me what each one is, and where it came from." (best): he starts confidently at the first row; the second;
          the third he turns over twice; he stops with his hand on the fourth, looks along the rows, and is quiet. He closes
@@ -1384,7 +1389,9 @@
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
              { t: E.ph5B1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
              { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
-             { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
+             /* (held on him to his line's last word: eased to the table from his first, the look left him all through it) */
+             { t: E.ph5B1 + SECS.ph5B1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.q5B2 + 0.6, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
            colLooks: (E) => [[0, [-0.2, 0.36, 239.8]], [E.co5B4, [0.2, 0.36, 239.85]], [E.lid, 'lens']] },
       /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
@@ -1393,13 +1400,19 @@
          "This one. What is it?" "I... do not know." "Nor does he. Your nose is not a certificate." All twenty go across;
          the rite; his own thought */
       C: { shots: (me, COL, PHO, E) => [
+             /* (each speaker HELD to his line's last word, the look carried to the next in the gap between: keyed only at
+                each line's first word, the lens eased from one man to the other all through every line, R25 framing) */
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
-             { t: E.three, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.1, 0.37, 239.95], fp: 42, fd: 36 },
+             { t: E.co5C1 + SECS.co5C1 - 0.1, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.1, 0.37, 239.95], fp: 42, fd: 36 },
              { t: E.pack, name: 'pack', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.34, 0.4, 239.95], fp: 40, fd: 34, cut: true },
              { t: E.see + 1.2, name: 'small', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.33, 0.45, 239.93], fp: 32, fd: 28 },
              { t: E.ph5C1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
-             { t: E.co5C2, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
-             { t: E.ph5C2, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.ph5C1 + SECS.ph5C1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 45, fd: 39 },
+             { t: E.co5C2 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.co5C2 + SECS.co5C2 - 0.1, name: 'col', eye: me, at: COL, fp: 43, fd: 37 },
+             { t: E.ph5C2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.ph5C2 + SECS.ph5C2 - 0.1, name: 'pho', eye: me, at: PHO, fp: 43, fd: 37 },
              { t: E.across, name: 'across', eye: [me[0], me[1] - 0.04, me[2]], at: [0.0, 0.38, 240.05], fp: 46, fd: 40 },
              { t: E.rite - 0.05, name: 'across', eye: [me[0], me[1] - 0.04, me[2]], at: [0.0, 0.38, 240.1], fp: 46, fd: 40 } ],
            after: (me, COL, PHO, E) => [
@@ -1412,9 +1425,13 @@
          Friday, already counting on his fingers; his teacher does not laugh, quite: to him, then to the student; the
          collector's hand comes down from his counting; the rite; his own thought */
       D: { shots: (me, COL, PHO, E) => [
+             /* (each speaker held to his line's last word: keyed only at their first, the lens eased off the collector
+                through his seven seconds and off his teacher through his six, R25 framing) */
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
+             { t: E.co5D1 + SECS.co5D1 - 0.1, name: 'col', eye: me, at: COL, fp: 43, fd: 37 },
              { t: E.ph5D1 + 0.3, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
              { t: E.ph5D2 + 0.3, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
+             { t: E.ph5D2 + SECS.ph5D2 - 0.1, name: 'pho', eye: me, at: PHO, fp: 43, fd: 37 },
              { t: E.down, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.rite - 0.05, name: 'col', eye: me, at: COL, fp: 44, fd: 38 } ],
            after: (me, COL, PHO, E) => [
