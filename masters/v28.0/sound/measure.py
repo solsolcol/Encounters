@@ -46,6 +46,7 @@ for o in ROWS:
     if only and n not in only: continue
     for i in range(o['takes']):
         k = '%s_%s' % (n, 'abcdef'[i]); p = os.path.join(HERE, 'raw', k + '.mp3')
+        if not os.path.exists(p): p = os.path.join(os.environ.get('RAW', '/nonexistent'), k + '.mp3')
         if not os.path.exists(p): print(k, 'MISSING'); continue
         if k in res and not only: continue
         x = dec(p); L = len(x) / SR; w = int(SR * 0.05)

@@ -5848,5 +5848,383 @@
     "heard": "B -A -G."
    }
   }
+ },
+ "ph5ne1": {
+  "who": "pho",
+  "text": "[serious] The Prai rise again. Bag them while they are tired.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 4.04,
+  "takes": {
+   "a": {
+    "len": 4.8,
+    "first": 0.0,
+    "last": 4.0,
+    "e_first": 0.08,
+    "e_last": 4.12,
+    "tail_db": -85.8,
+    "tail_rel": -72.3,
+    "hole": 0.52,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.48,
+    "heard": "The Prai rise again. Bag them while they are tired."
+   },
+   "b": {
+    "len": 4.32,
+    "first": 0.0,
+    "last": 3.9,
+    "e_first": 0.1,
+    "e_last": 4.04,
+    "tail_db": -82.7,
+    "tail_rel": -69.9,
+    "hole": 0.52,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.54,
+    "heard": "The Prai rise again. Bag them while they are tired."
+   },
+   "c": {
+    "len": 4.32,
+    "first": 0.0,
+    "last": 4.16,
+    "e_first": 0.02,
+    "e_last": 4.3,
+    "tail_db": -30.0,
+    "tail_rel": -18.3,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.34,
+    "heard": "The Prai rise again. Bag them while they are tired."
+   }
+  }
+ },
+ "ph5nf2": {
+  "who": "pho",
+  "text": "[firm] SMELL, Zavier. Find the Prai.",
+  "pick": "b",
+  "why": "the unhurried read",
+  "med": 2.44,
+  "takes": {
+   "a": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.46,
+    "e_first": 0.02,
+    "e_last": 2.46,
+    "tail_db": -27.8,
+    "tail_rel": -16.8,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.05,
+    "heard": "SMELL, Zavier. Find the Prai."
+   },
+   "b": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.46,
+    "e_first": 0.0,
+    "e_last": 2.46,
+    "tail_db": -42.5,
+    "tail_rel": -31.5,
+    "hole": 0.4,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.03,
+    "heard": "SMELL, Zavier. Find the Prai."
+   },
+   "c": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.3,
+    "e_first": 0.0,
+    "e_last": 2.3,
+    "tail_db": -29.5,
+    "tail_rel": -17.4,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.17,
+    "heard": "SMELL, Zavier. Find the Prai."
+   }
+  }
+ },
+ "ph5ng1": {
+  "who": "pho",
+  "text": "[urgent] BIND it before it reaches you.",
+  "pick": "a",
+  "why": "the only clean and whole take",
+  "med": 2.06,
+  "takes": {
+   "a": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.2,
+    "e_first": 0.04,
+    "e_last": 2.3,
+    "tail_db": -35.5,
+    "tail_rel": -24.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.65,
+    "heard": "BIND it before it reaches you."
+   },
+   "b": {
+    "len": 1.92,
+    "first": 0.0,
+    "last": 1.8,
+    "e_first": 0.0,
+    "e_last": 1.9,
+    "tail_db": -25.5,
+    "tail_rel": -14.9,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 3.16,
+    "heard": "BIND it before it reaches you."
+   },
+   "c": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 1.98,
+    "e_first": 0.0,
+    "e_last": 2.06,
+    "tail_db": -20.5,
+    "tail_rel": -8.2,
+    "hole": 0.0,
+    "sim": 0.833,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.91,
+    "heard": "Buy it before it reaches you."
+   }
+  }
+ },
+ "ph5ng2": {
+  "who": "pho",
+  "text": "[firm] BIND the Prai that comes.",
+  "pick": "b",
+  "why": "equal by every measure: the first",
+  "med": 1.82,
+  "takes": {
+   "a": {
+    "len": 1.68,
+    "first": 0.0,
+    "last": 1.46,
+    "e_first": 0.0,
+    "e_last": 1.66,
+    "tail_db": -25.8,
+    "tail_rel": -14.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.01,
+    "heard": "BIND the Prai that comes."
+   },
+   "b": {
+    "len": 1.84,
+    "first": 0.0,
+    "last": 1.5,
+    "e_first": 0.0,
+    "e_last": 1.82,
+    "tail_db": -34.1,
+    "tail_rel": -21.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.75,
+    "heard": "BIND the Prai that comes."
+   },
+   "c": {
+    "len": 1.84,
+    "first": 0.0,
+    "last": 1.54,
+    "e_first": 0.0,
+    "e_last": 1.82,
+    "tail_db": -22.9,
+    "tail_rel": -9.4,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.75,
+    "heard": "BIND the Prai that comes."
+   }
+  }
+ },
+ "ph5nh1": {
+  "who": "pho",
+  "text": "[serious] The golden shockwave is ready. SHOCKWAVE.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 3.12,
+  "takes": {
+   "a": {
+    "len": 3.04,
+    "first": 0.0,
+    "last": 2.86,
+    "e_first": 0.08,
+    "e_last": 2.84,
+    "tail_db": -85.4,
+    "tail_rel": -72.7,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.17,
+    "heard": "The golden shockwave is ready. SHOCKWAVE."
+   },
+   "b": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 3.16,
+    "e_first": 0.04,
+    "e_last": 3.16,
+    "tail_db": -47.9,
+    "tail_rel": -35.8,
+    "hole": 0.48,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.92,
+    "heard": "The golden shockwave is ready. SHOCKWAVE."
+   },
+   "c": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 3.4,
+    "e_first": 0.14,
+    "e_last": 3.42,
+    "tail_db": -43.1,
+    "tail_rel": -31.5,
+    "hole": 0.52,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.83,
+    "heard": "The golden shockwave is ready. SHOCKWAVE."
+   }
+  }
+ },
+ "ph5nh2": {
+  "who": "pho",
+  "text": "[firm] SHOCKWAVE.",
+  "pick": "a",
+  "why": "the unhurried read",
+  "med": 0.6799999999999999,
+  "takes": {
+   "a": {
+    "len": 1.44,
+    "first": 0.0,
+    "last": 0.76,
+    "e_first": 0.02,
+    "e_last": 0.82,
+    "tail_db": -86.8,
+    "tail_rel": -73.5,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.25,
+    "heard": "SHOCKWAVE."
+   },
+   "b": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 0.72,
+    "e_first": 0.02,
+    "e_last": 0.7,
+    "tail_db": -57.3,
+    "tail_rel": -41.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.47,
+    "heard": "SHOCKWAVE."
+   },
+   "c": {
+    "len": 0.96,
+    "first": 0.0,
+    "last": 0.78,
+    "e_first": 0.06,
+    "e_last": 0.74,
+    "tail_db": -69.9,
+    "tail_rel": -57.8,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.47,
+    "heard": "SHOCKWAVE."
+   }
+  }
+ },
+ "ph5ni1": {
+  "who": "pho",
+  "text": "[firm] Switch to me. BAG.",
+  "pick": "b",
+  "why": "the unhurried read",
+  "med": 2.52,
+  "takes": {
+   "a": {
+    "len": 2.4,
+    "first": 0.0,
+    "last": 2.06,
+    "e_first": 0.0,
+    "e_last": 2.38,
+    "tail_db": -27.0,
+    "tail_rel": -12.2,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.68,
+    "heard": "Switch to me. BAG."
+   },
+   "b": {
+    "len": 2.88,
+    "first": 0.0,
+    "last": 2.6,
+    "e_first": 0.02,
+    "e_last": 2.86,
+    "tail_db": -26.0,
+    "tail_rel": -11.4,
+    "hole": 0.82,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.41,
+    "heard": "Switch to me. BAG."
+   },
+   "c": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.24,
+    "e_first": 0.02,
+    "e_last": 2.54,
+    "tail_db": -25.5,
+    "tail_rel": -11.8,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.59,
+    "heard": "Switch to me. BAG."
+   }
+  }
  }
 }

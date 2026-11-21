@@ -25,7 +25,7 @@ def balance():
 
 def log(what, cost, secs):
     with LOCK:
-        open(os.path.join(HERE, 'spend.log'), 'a').write('%s %s %s %s\n' % (time.strftime('%H:%M:%S'), what, cost, secs))
+        open(os.path.join(os.path.dirname(RAW), 'spend.log'), 'a').write('%s %s %s %s\n' % (time.strftime('%H:%M:%S'), what, cost, secs))
 
 def post(url, body, out, what, secs, timeout):
     req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={**H, 'Content-Type': 'application/json'})
