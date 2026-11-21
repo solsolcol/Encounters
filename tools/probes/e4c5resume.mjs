@@ -51,7 +51,10 @@ for (const mark of MARKS) {
   const ph = mark.split(':')[0];
   const save = JSON.parse(JSON.stringify(base));
   save.ch = 'e4c5'; save.phase = mark;
-  save.at = null;
+  /* (a save with no `at` is one written at a chapter's boundary: resumeRun lands it at the opening. A save of play
+     carries where he stood; the chapter puts him at his phase's start itself) */
+  const AT = { walk: [0, 0.25, 0], hunt: [-7.9, -5.05, Math.PI + 0.2], fight: [-8.5, -10.6, Math.PI], table: [0, 239.2, Math.PI], ask: [0, 239.2, Math.PI] }[ph];
+  save.at = { x: AT[0], y: 1.62, z: AT[1], ry: AT[2] };
   const btn = await continueFrom(save);
   const r1 = await read();
   log('MARK', mark, 'button', JSON.stringify(btn), JSON.stringify(r1));

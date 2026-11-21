@@ -28,7 +28,9 @@ const boot = async () => { await p.goto(PAGE, { waitUntil: 'load', timeout: 2400
 const W = (l) => ({ x: -8.5 - l.x, z: -8.7 - l.z });                      // (the court's frame: c_cast.js courtWorld)
 const F = () => p.evaluate(() => window.__enc.stage.snap().story.fight);
 const TS = () => p.evaluate(() => window.__enc.kit.tagState());
-const briefUp = () => p.waitForFunction(() => { const E = window.__enc; try { return E.kit.eventActive() && E.kit.tagState().on && E.stage.snap().story.fight.stage === 'brief'; } catch { return false; } }, null, { timeout: 300000, polling: 250 });
+const briefUp = async () => { try { await p.waitForFunction(() => { const E = window.__enc; try { return E.kit.eventActive() && E.kit.tagState().on && E.stage.snap().story.fight.stage === 'brief'; } catch { return false; } }, null, { timeout: 300000, polling: 250 }); }
+  catch (e) { const d = await p.evaluate(() => { const E = window.__enc; let f = null; try { f = E.stage.snap().story.fight; } catch (x) { } return { state: E.getState(), info: E.stage.info(), ev: E.kit.eventActive(), tag: E.kit.tagState(), f }; });
+    say('NO BRIEF', JSON.stringify(d).slice(0, 900)); await p.screenshot({ path: OUT + '/no-brief.png' }); throw e; } };
 const tapEl = async (id) => { const r = await p.evaluate((id) => { const e = document.getElementById(id); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }, id); if (r) await p.touchscreen.tap(r.x, r.y); return !!r; };
 const start = async () => { await sleep(900); await tapEl('evBtn'); await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 90000, polling: 200 }); };
 async function continueFrom(save) {
@@ -62,7 +64,9 @@ await p.evaluate(() => window.__enc.saveCheckpoint && window.__enc.saveCheckpoin
 const base = await p.evaluate(() => window.__enc.loadCheckpoint());
 say('base save', JSON.stringify(base).slice(0, 160));
 /* 1 · a Continue into the fight */
-const s1 = JSON.parse(JSON.stringify(base)); s1.ch = 'e4c5'; s1.phase = 'fight:'; s1.at = null; s1.stats.sanity = 83;
+/* (a save with no `at` is one written at a chapter's boundary: resumeRun drops its phase and plays the opening film. A run
+   in progress has one; the chapter places him itself for the fight) */
+const s1 = JSON.parse(JSON.stringify(base)); s1.ch = 'e4c5'; s1.phase = 'fight:'; s1.at = { x: -8.5, y: 1.6, z: -10.6, ry: Math.PI }; s1.stats.sanity = 83;
 await continueFrom(s1);
 const A = await briefRead('continue');
 ok('continue: his sanity as saved', Math.abs(A.san - 83) < 0.01, A.san);
