@@ -64,11 +64,17 @@ for (const name of pick) {
   await frames(6);
   await p.evaluate(([x, z, ry, pt, up]) => { const E = window.__enc; E.yaw.position.set(x, 1.62 + (up || 0), z); E.yaw.rotation.y = ry; E.pitch.rotation.x = pt; }, [x, z, ry, pt, up || 0]);
   await frames(4);
-  const n = await p.evaluate(() => { const E = window.__enc, THREE = E.THREE || null, cam = E.camera; cam.updateMatrixWorld();
+  const n = await p.evaluate(() => { const E = window.__enc, cam = E.camera; cam.updateMatrixWorld();
+    const m = cam.projectionMatrix.clone().multiply(cam.matrixWorldInverse), e = m.elements, P = [];
+    const pl = (a, b2, c, d) => { const l = Math.hypot(a, b2, c); P.push([a / l, b2 / l, c / l, d / l]); };
+    pl(e[3] - e[0], e[7] - e[4], e[11] - e[8], e[15] - e[12]); pl(e[3] + e[0], e[7] + e[4], e[11] + e[8], e[15] + e[12]);
+    pl(e[3] + e[1], e[7] + e[5], e[11] + e[9], e[15] + e[13]); pl(e[3] - e[1], e[7] - e[5], e[11] - e[9], e[15] - e[13]);
+    pl(e[3] - e[2], e[7] - e[6], e[11] - e[10], e[15] - e[14]); pl(e[3] + e[2], e[7] + e[6], e[11] + e[10], e[15] + e[14]);
     let tris = 0, draws = 0;
-    const fr = new cam.frustum.constructor(); const m = cam.projectionMatrix.clone().multiply(cam.matrixWorldInverse); fr.setFromProjectionMatrix(m);
-    E.scene.traverseVisible(o => { if (!o.isMesh || !o.geometry) return; if (o.frustumCulled !== false) { if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
-        const s = o.geometry.boundingSphere.clone().applyMatrix4(o.matrixWorld); if (o.isInstancedMesh && o.boundingSphere) s.copy(o.boundingSphere).applyMatrix4(o.matrixWorld); if (!fr.intersectsSphere(s)) return; }
+    E.scene.traverseVisible(o => { if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
+      const bs = (o.isInstancedMesh && o.boundingSphere) || (o.geometry.boundingSphere || (o.geometry.computeBoundingSphere(), o.geometry.boundingSphere));
+      if (bs && o.frustumCulled !== false) { const c = bs.center.clone().applyMatrix4(o.matrixWorld), r = bs.radius * o.matrixWorld.getMaxScaleOnAxis();
+        for (const q of P) if (q[0] * c.x + q[1] * c.y + q[2] * c.z + q[3] < -r) return; }
       const g = o.geometry, t = (g.index ? g.index.count : g.attributes.position.count) / 3; tris += t * (o.isInstancedMesh ? o.count : 1); draws++; });
     return { tris: Math.round(tris), draws }; }).catch(e => ({ err: String(e) }));
   try { await p.screenshot({ path: `${OUT}/${name}.png`, timeout: 240000 }); } catch { log('  (no picture)'); }
