@@ -357,10 +357,13 @@
     const lookedN = () => ['k1', 'k2', 'k3'].filter(c => play.found.has(c)).length;
     /* seated on his cushion across the table from his teacher: the eye at a seated man's height, the look free about the
        table, his feet still (kit.pose 'lying' is the engine's way to hold the eye low; kit.root keeps him there) */
-    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5 };
+    /* (pitch: he looks down at the pieces on the cloth as play begins, what the play needs first in his line of sight, v12.3;
+       a film that hands to the table ends on this look) */
+    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, pitch: -0.5 };
     function seatHim() {
       if (!kit) return;
       yaw.position.set(STATION.table.at.x, yaw.position.y, STATION.table.at.z);
+      yaw.rotation.y = STATION.table.at.ry; pitch.rotation.x = SIT5.pitch;
       if (kit.pose) kit.pose('lying', { y: SIT5.y, yaw: STATION.table.at.ry, span: SIT5.span, pitchLo: SIT5.lo, pitchHi: SIT5.hi, secs: 0.05 });
       if (kit.root) kit.root(true);
     }
@@ -436,9 +439,9 @@
        tries it in (v26.18: GROUNDS, b_xpeople.js) */
     const G_WALK = undefined, G_HUNT = GROUNDS[0].what, G_TABLE = GROUNDS[2].what;
     const headOf = (n, y = 1.62) => () => { const P = castOf(n); const g = P ? P.group.position : { x: 0, z: 0 }; return { x: g.x, y, z: g.z }; };
-    const hsTon = { id: 'ton', pos: { x: STATION.walk.ton.x, y: 1.55, z: STATION.walk.ton.z }, radius: 2.3, prompt: W.hotTon, markY: 0.3, hits: markHit5(headOf('ton', 1.55), 0.12),
+    const hsTon = { id: 'ton', pos: { x: STATION.walk.ton.x, y: 1.55, z: STATION.walk.ton.z }, radius: 3.0, prompt: W.hotTon, markY: 0.3, hits: markHit5(headOf('ton', 1.55), 0.12),
       enabled: () => phase === 'walk' && !play.busy && !play.found.has('t'), onInteract() { return askOne('t', castOf('ton'), ['q5w1', 'tn5w1', 0.7, 'tn5w2']); } };
-    const hsJun = { id: 'jun', pos: { x: STATION.walk.jun.x, y: 1.55, z: STATION.walk.jun.z }, radius: 2.3, prompt: W.hotJun, markY: 0.3, hits: markHit5(headOf('jun', 1.55), 0.12),
+    const hsJun = { id: 'jun', pos: { x: STATION.walk.jun.x, y: 1.55, z: STATION.walk.jun.z }, radius: 3.0, prompt: W.hotJun, markY: 0.3, hits: markHit5(headOf('jun', 1.55), 0.12),
       enabled: () => phase === 'walk' && !play.busy && !play.found.has('j'), onInteract() { return askOne('j', castOf('jun'), ['q5w1', 'ju5w1']); } };
     const stainSpot = (c, at, y) => ({ id: 'stain' + c.slice(1), pos: { x: at.x, y, z: at.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT,
       hits: markHit5(() => ({ x: at.x, y: 0.1, z: at.z }), 0.1),
