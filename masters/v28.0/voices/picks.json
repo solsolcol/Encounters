@@ -6226,5 +6226,59 @@
     "heard": "Switch to me. BAG."
    }
   }
+ },
+ "ph5ni2": {
+  "who": "pho",
+  "text": "[firm] To me. BAG.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 1.64,
+  "takes": {
+   "a": {
+    "len": 1.68,
+    "first": 0.0,
+    "last": 1.36,
+    "e_first": 0.1,
+    "e_last": 1.66,
+    "tail_db": -29.4,
+    "tail_rel": -14.0,
+    "hole": 0.4,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.92,
+    "heard": "To me. BAG."
+   },
+   "b": {
+    "len": 1.76,
+    "first": 0.0,
+    "last": 1.36,
+    "e_first": 0.1,
+    "e_last": 1.74,
+    "tail_db": -32.7,
+    "tail_rel": -19.4,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.83,
+    "heard": "To me. BAG."
+   },
+   "c": {
+    "len": 1.84,
+    "first": 0.0,
+    "last": 1.54,
+    "e_first": 0.1,
+    "e_last": 1.82,
+    "tail_db": -28.7,
+    "tail_rel": -14.9,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.74,
+    "heard": "To me. BAG."
+   }
+  }
  }
 }
