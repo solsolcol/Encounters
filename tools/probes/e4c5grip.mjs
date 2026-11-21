@@ -39,6 +39,33 @@ const res = { grip, poses: [] };
 for (const [name, t] of POSES) {
   await p.evaluate(([n, t]) => window.__enc.stage.snap().story.fight.lab.pose(n === 'rest' ? null : n, t), [name, t]);
   await frames(4);
+  /* HIS SKIN ON THE SHAFT, measured: every point of his skin whose heaviest bone is his right hand's (its palm, or a finger:
+     the family named), skinned as drawn (the grip is laid in each drawing and stands between drawings), taken into the
+     stick's own frame and set against the shaft's line (its middle 8.2 cm along x, 0.3 cm along -z, radius 3.6 cm; its own
+     radius there 3.3 to 3.7) from 0.85 to 1.35 m up it: how many points stand INSIDE it (more than 3 mm in), how deep the
+     deepest, how near each family comes (its gap: under 0 is in), and how many points lie on it (within 1 cm) */
+  const contact = await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g = E.stage.things && E.stage.things.nagaStaff;
+    if (!g) return { err: 'no stick' };
+    const V = P.group.position.constructor, M4 = g.matrixWorld.constructor;
+    P.group.updateWorldMatrix(true, true); g.updateWorldMatrix(true, false);
+    const inv = new M4().copy(g.matrixWorld).invert(), ws = new V().setFromMatrixColumn(g.matrixWorld, 0).length();
+    const R = 0.036, CX = 0.082, CZ = -0.003, per = {}; let n = 0, inside = 0, deep = 0;
+    P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return;
+      const sk = o.skeleton, A = o.geometry.attributes, si = A.skinIndex, sw = A.skinWeight, cnt = A.position.count;
+      const fam = sk.bones.map(b => { const m = /RightHand(Thumb|Index|Middle|Ring|Pinky)?\d*$/.exec(b.name); return m ? (m[1] || 'Palm') : null; });
+      if (!fam.some(Boolean)) return;
+      const v = new V();
+      for (let i = 0; i < cnt; i++) { let best = -1, bw = 0; for (let q = 0; q < 4; q++) { const w = sw.getComponent(i, q); if (w > bw) { bw = w; best = si.getComponent(i, q); } }
+        const f = best >= 0 ? fam[best] : null; if (!f) continue;
+        o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld).applyMatrix4(inv);
+        if (v.y < 0.85 || v.y > 1.35) { const F = per[f] || (per[f] = { n: 0, out: 0, inside: 0, deep: 0, gap: 1, on: 0 }); F.out++; continue; }
+        const d = (Math.hypot(v.x - CX, v.z - CZ) - R) * ws;
+        const F = per[f] || (per[f] = { n: 0, out: 0, inside: 0, deep: 0, gap: 1, on: 0 });
+        F.n++; n++; if (d < -0.003) { F.inside++; inside++; } if (-d > F.deep) F.deep = -d; if (-d > deep) deep = -d; if (d < F.gap) F.gap = d; if (Math.abs(d) < 0.01) F.on++; } });
+    for (const f in per) { const F = per[f]; F.deep = +(F.deep * 100).toFixed(2); F.gap = +(F.gap * 100).toFixed(2); }
+    return { ws: +ws.toFixed(4), n, inside, deepCm: +(deep * 100).toFixed(2), per }; });
+  say('contact', name, t, JSON.stringify(contact));
+  res.poses.push({ name, t, contact });
   for (const view of ['front', 'side', 'hand', 'handout']) {
     const at = await p.evaluate(([view]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor;
       P.group.updateWorldMatrix(true, true);
