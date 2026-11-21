@@ -1387,7 +1387,8 @@
       /* (held OFF until photographed and measured: the stick stands as it did, and his hand is his file's; a probe turns it
          on through the fight's lab, gripOn) */
       let GRIP_ON = false;
-      const STICK_R = 0.036, STICK_C = [0.082, -0.003], FING_R = 0.008, GAP = 0.003;
+      const STICK_C = [0.082, -0.003];
+      let STICK_R = 0.036, FING_R = 0.008, GAP = 0.003;
       let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
@@ -1534,9 +1535,14 @@
       const MOVES = {
         mage_soell_cast_7: { follow: [1, 1, 1], keys: [[0.45, -0.10, 0.03, 0, 0, 5], [0.66, -0.12, 0.06, 0.02, 0, 6], [0.95, -0.04, 0.15, 0.16, 20, 0], [1.30, -0.04, 0.14, 0.14, 18, 0], [2.00, -0.08, 0.04, 0.02, 0, 4], [2.20, -0.08, 0.04, 0, 0, 4]] },
         Charged_Spell_Cast: { follow: null, keys: [[0.50, -0.20, 0.04, 0.10, 0, 6], [0.80, -0.28, 0, 0.14, 0, 4], [1.55, -0.28, 0, 0.14, 0, 4], [1.88, -0.20, 0.24, 0.14, 0, 6],
-                                                [2.00, -0.16, 0, 0.14, 0, 0, 'strike'], [2.20, -0.16, 0, 0.14, 0, 0], [2.42, -0.08, 0.05, 0.07, 0, 0], [2.60, 0, 0, 0, 0, 0]] },
+                                                [2.00, -0.16, -0.004, 0.14, 5, 0, 'strike'], [2.20, -0.16, -0.004, 0.14, 5, 0], [2.42, -0.15, 0.03, 0.13, 3, 2], [2.60, -0.14, 0.04, 0.12, 2, 2]] },
         Charged_Spell_Cast_1: { follow: null, plant: true, keys: null },
-        mage_soell_cast_8: { follow: null, keys: [[0, 0, 0, 0, 0, 0]] }
+        mage_soell_cast_8: { follow: null, keys: [[0, 0, 0, 0, 0, 0]] },
+        /* (his walk and run: his fist carried where his shoulder goes from where it stands at his rest, along the paving, so
+           his arm holds the stick as at rest through every step; nothing else of the acts: his collarbone his take's, and no
+           guard) */
+        Walking: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] },
+        Running: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] }
       };
       /* where the Naga's film stands the stick: 0.38 m before him and 0.40 to his right (c_yfilm.js TOGETHER's own two numbers,
          sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
@@ -1571,22 +1577,26 @@
       const hipsAt = (name, u, o) => { const H = HIPS[name]; if (!H) { o[0] = 0; o[1] = 0; o[2] = 0; return o; }
         const f = Math.max(0, Math.min(H.N, u / H.d * H.N)), i = Math.min(H.N - 1, Math.floor(f)), s = f - i;
         o[0] = H.xs[i] + (H.xs[i + 1] - H.xs[i]) * s; o[1] = H.ys[i] + (H.ys[i + 1] - H.ys[i]) * s; o[2] = H.zs[i] + (H.zs[i + 1] - H.zs[i]) * s; return o; };
-      const MV = { x: 0, y: 0, z: 0, tip: 0, lean: 0, take: null, u: 0, w: 0 }, _h0 = [0, 0, 0], _h1 = [0, 0, 0];
+      const MV = { x: 0, y: 0, z: 0, tip: 0, lean: 0, take: null, u: 0, w: 0, clear: 0, clav: 0 }, _h0 = [0, 0, 0], _h1 = [0, 0, 0];
+      /* (every take of his that has a weight gives its move by that weight, so one handing over to another never jumps: his
+         walk into an act, an act back to his walk; the heaviest names the moment. clear and clav: how much of the guard and
+         of his collarbone's lay the moment asks) */
       function moveOf(P) {
-        MV.x = MV.y = MV.z = MV.tip = MV.lean = 0; MV.take = null; MV.w = 0;
-        const w = P.w || {}; let best = null, bw = 0;
-        for (const nm in MOVES) { const k = w[nm] || 0; if (k > bw && P.acts[nm] && MOVES[nm].keys) { bw = k; best = nm; } }
-        if (!best || !(bw > 0.001)) return MV;
-        const M = MOVES[best], K = M.keys, u = P.acts[best].time;
-        let i = 0; while (i < K.length - 1 && u >= K[i + 1][0]) i++;
-        const a = K[i], b = K[Math.min(K.length - 1, i + 1)];
-        const s = b[0] > a[0] ? Math.max(0, Math.min(1, (u - a[0]) / (b[0] - a[0]))) : 0;
-        const f = b[6] === 'strike' ? 1 - Math.sqrt(1 - s) : b[6] === 'drive' ? s * s : s * s * (3 - 2 * s);
-        const at = (j) => (a[j] + (b[j] - a[j]) * f) * bw;
-        MV.x = at(1); MV.y = at(2); MV.z = at(3); MV.tip = at(4) * D2R; MV.lean = at(5) * D2R; MV.take = best; MV.u = u; MV.w = bw;
-        if (M.follow && HIPS[best]) { hipsAt(best, u, _h1); hipsAt(best, K[0][0], _h0); const F = M.follow;
-          for (let j = 0; j < 3; j++) _h1[j] = (_h1[j] - _h0[j]) * F[j] * bw;
-          MV.x += _h1[0]; MV.y += _h1[1]; MV.z += _h1[2]; }
+        MV.x = MV.y = MV.z = MV.tip = MV.lean = 0; MV.take = null; MV.w = 0; MV.u = 0; MV.clear = 0; MV.clav = 0;
+        const w = P.w || {};
+        for (const nm in MOVES) { const bw = w[nm] || 0, M = MOVES[nm]; if (!(bw > 0.001) || !P.acts[nm] || !M.keys) continue;
+          const K = M.keys, u = P.acts[nm].time;
+          let i = 0; while (i < K.length - 1 && u >= K[i + 1][0]) i++;
+          const a = K[i], b = K[Math.min(K.length - 1, i + 1)];
+          const s = b[0] > a[0] ? Math.max(0, Math.min(1, (u - a[0]) / (b[0] - a[0]))) : 0;
+          const f = b[6] === 'strike' ? 1 - Math.sqrt(1 - s) : b[6] === 'drive' ? s * s : s * s * (3 - 2 * s);
+          const at = (j) => (a[j] + (b[j] - a[j]) * f) * bw;
+          MV.x += at(1); MV.y += at(2); MV.z += at(3); MV.tip += at(4) * D2R; MV.lean += at(5) * D2R;
+          if (M.follow && HIPS[nm]) { hipsAt(nm, u, _h1); const h0 = M.from === 'rest' && HIPS.rest ? HIPS.rest : hipsAt(nm, K[0][0], _h0), F = M.follow;
+            MV.x += (_h1[0] - h0[0]) * F[0] * bw; MV.y += (_h1[1] - h0[1]) * F[1] * bw; MV.z += (_h1[2] - h0[2]) * F[2] * bw; }
+          MV.clear += bw * (M.clear == null ? 1 : M.clear) * (M.plant ? 1 - Math.max(0, Math.min(1, (u - 1.5) / 0.2)) : 1);
+          MV.clav += bw * (M.clav === false ? 0 : 1);
+          if (bw > MV.w) { MV.take = nm; MV.u = u; MV.w = bw; } }
         return MV;
       }
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
@@ -1665,7 +1675,7 @@
         /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear;
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
-        clavLay(P, m.w * share);
+        clavLay(P, Math.min(1, m.clav) * share);
         const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
@@ -1683,7 +1693,7 @@
         if (m.tip) { const c = Math.cos(m.tip), s = Math.sin(m.tip);
           for (const v of [up, front]) v.set(v.x, v.y * c - v.z * s, v.y * s + v.z * c); }
         up.applyQuaternion(_sq).normalize(); front.applyQuaternion(_sq).normalize();
-        keepClear(P, Ct, up, m.w * (MOVES[m.take] && MOVES[m.take].plant ? 1 - Math.max(0, Math.min(1, (m.u - 1.5) / 0.2)) : 1), m.y > 0.01); }
+        keepClear(P, Ct, up, Math.min(1, m.clear), m.y > 0.01); }
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
@@ -1744,13 +1754,15 @@
         tune(o = {}) { if (o.tilt != null) TILT = o.tilt * D2R; if (o.fist) STAFF.fist = o.fist.slice(); if (o.pole) STAFF.pole = o.pole.slice(); if (o.lean != null) STAFF.lean = o.lean * D2R;
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
           if (o.out != null) STAFF.out = o.out * D2R;
+          if (o.stickR != null) STICK_R = +o.stickR; if (o.fingR != null) FING_R = +o.fingR; if (o.gap != null) GAP = +o.gap;
           /* (an act's keys tried: { take: [[moment, out, up, on, tip, lean, shape], ...] }) */
           if (o.moves) for (const nm in o.moves) if (MOVES[nm]) MOVES[nm].keys = o.moves[nm];
           if (o.plantAt) PLANT_AT.splice(0, 2, +o.plantAt[0], +o.plantAt[1]);
           if (o.fist || o.out != null || o.plantAt) plantKeys();
           G = null; failed = false; wroteQ = null; wroteArm = null;
           if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
-          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1) }; }
+          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1),
+                   stickR: STICK_R, fingR: FING_R, gap: GAP }; }
       };
     })();
     if (typeof STICK5 === 'object') { STICK5.grip = PHOGRIP5;

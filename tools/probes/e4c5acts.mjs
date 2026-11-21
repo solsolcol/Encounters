@@ -28,6 +28,11 @@ const JS = fs.readFileSync(new URL('./jointscan.mjs', import.meta.url), 'utf8');
 const j0 = JS.indexOf('\nconst MEASURE = '), j1 = JS.indexOf('\n};\n', j0);
 if (j0 < 0 || j1 < 0) throw new Error('e4c5acts: jointscan.mjs no longer has its MEASURE where this reads it');
 const MEASURE_SRC = JS.slice(j0 + '\nconst MEASURE = '.length, j1 + 2);
+/* clipscan's own measure (its ANALYSE, read from clipscan.mjs so the two never differ), over the stick and the bodies within
+   2.5 m of it: every other surface hidden for the measure and given back, so only those pairs are tested (CLIP) */
+const CSRC = fs.readFileSync(new URL('./clipscan.mjs', import.meta.url), 'utf8'), c0 = CSRC.indexOf('const ANALYSE = '), c1 = CSRC.indexOf('\n};\n', c0);
+if (c0 < 0 || c1 < 0) throw new Error('e4c5acts: clipscan.mjs no longer has its ANALYSE where this reads it');
+const ANALYSE_SRC = CSRC.slice(c0 + 'const ANALYSE = '.length, c1 + 2);
 /* each act's moments, as a phone draws them: [take, moment] at 1/FPS s of the act's own wall time */
 const smo = (u) => u * u * (3 - 2 * u);
 const spanAt = (t0, t1, secs) => { const out = []; for (let i = 0, n = Math.ceil(secs * FPS); i <= n; i++) out.push(+(t0 + (t1 - t0) * smo(Math.min(1, i / n))).toFixed(4)); return out; };
@@ -101,8 +106,12 @@ if (process.env.PLANTSCAN === '1' || process.env.PLANTSCAN === '2') {
   say('plantscan best within reach', JSON.stringify(best));
   fs.writeFileSync(OUT + '/plantscan.json', JSON.stringify({ sh17, shs, cand }, null, 0));
   /* (PLACE=auto: the clearest place within his reach, to his right, is the one the planting is then measured at) */
-  if (process.env.PLACE === 'auto') { const pick = cand.filter(c => c.reach != null && c.reach <= 0.55 && c.at[0] <= -0.3).sort((a, b) => b.clear - a.clear)[0];
-    if (pick) { process.env.PLACE = (pick.at[1]).toFixed(2) + ',' + (-pick.at[0]).toFixed(2); say('plantscan picks', JSON.stringify(pick), 'PLACE', process.env.PLACE); } }
+  if (process.env.PLACE === 'auto') { const ok = cand.filter(c => c.reach != null && c.reach <= 0.55 && c.at[0] <= -0.3 && (!c.held || (c.held[0] >= 0.25 && c.held[1] <= 0.56))).sort((a, b) => b.clear - a.clear);
+    say('plantscan within his reach and held, clearest first', JSON.stringify(ok.slice(0, 10)));
+    const pick = ok[0];
+    if (pick) { process.env.PLACE = (pick.at[1]).toFixed(2) + ',' + (-pick.at[0]).toFixed(2); say('plantscan picks', JSON.stringify(pick), 'PLACE', process.env.PLACE);
+      /* (and the planting's strike aimed there: the act's keys made again for that place) */
+      say('plant keys aimed', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), { plantAt: [pick.at[0], pick.at[1]] }))); } }
   await pose(null, 0); }
 if (process.env.GRIP !== '0') say('grip on', await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.gripOn ? L.gripOn() : 'no gripOn'; }));
 if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));
@@ -128,16 +137,16 @@ const STICK = () => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g
   let head = null, hb = null; for (const n in P.bone) { if (/^(mixamorig:?)?Head$/.test(n)) hb = P.bone[n]; }
   const hp = new V(); hb.getWorldPosition(hp); const fw = new V().setFromMatrixColumn(hb.matrixWorld, 2).normalize(), face = hp.clone().addScaledVector(fw, 0.09);
   /* the stick's nearest points to his face and head (every 7th of its points, in the world) */
-  let dFace = 9, dHead = 9, low = 9; const w = new V();
+  let dFace = 9, dHead = 9, low = 9, faceY = null; const w = new V();
   for (let i = 0; i < S.n; i += 7) { w.set(S.pts[3 * i], S.pts[3 * i + 1], S.pts[3 * i + 2]).applyMatrix4(g.matrixWorld);
-    dFace = Math.min(dFace, w.distanceTo(face)); dHead = Math.min(dHead, w.distanceTo(hp)); low = Math.min(low, w.y); }
+    const df = w.distanceTo(face); if (df < dFace) { dFace = df; faceY = S.pts[3 * i + 1] * ws; } dHead = Math.min(dHead, w.distanceTo(hp)); low = Math.min(low, w.y); }
   const foot = new V(0.083, 0, -0.005).applyMatrix4(g.matrixWorld), topL = new V(0.083, 1.40, -0.005).applyMatrix4(g.matrixWorld);
   /* (and from his face to the stick's own line, its shaft's middle from foot to top: the guard's measure) */
   const ab = topL.clone().sub(foot), tt = Math.max(0, Math.min(1, face.clone().sub(foot).dot(ab) / ab.lengthSq())), faceLine = face.distanceTo(foot.clone().addScaledVector(ab, tt));
   /* his skin in the stick: each point within the stick's box and 3 cm of its surface, inside by the facing there */
   const fam = (nm) => { if (/RightHand/.test(nm)) return 'grip'; if (/Right(Fore)?Arm/.test(nm)) return 'rightArm'; if (/Left/.test(nm)) return 'left';
     if (/Leg|Foot|Toe|UpLeg/.test(nm)) return 'legs'; if (/Spine|Hips|Neck|Head|Shoulder/.test(nm)) return 'body'; return 'other'; };
-  const per = {}, v = new V(); let feetLo = { L: 9, R: 9 }, skinLo = 9;
+  const per = {}, byBone = {}, v = new V(); let feetLo = { L: 9, R: 9 }, skinLo = 9;
   P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return; let vis = true; for (let q = o; q; q = q.parent) if (!q.visible) vis = false; if (!vis) return;
     const sk = o.skeleton, A = o.geometry.attributes, si = A.skinIndex, sw = A.skinWeight, cnt = A.position.count;
     const fams = sk.bones.map(b => fam(b.name.replace(/^mixamorig:?/, ''))), side = sk.bones.map(b => /Left(Foot|ToeBase|Toe)/.test(b.name) ? 'L' : /Right(Foot|ToeBase|Toe)/.test(b.name) ? 'R' : null);
@@ -152,9 +161,18 @@ const STICK = () => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g
       if (bj < 0) continue;
       const into = -((v.x - S.pts[3 * bj]) * S.nrm[3 * bj] + (v.y - S.pts[3 * bj + 1]) * S.nrm[3 * bj + 1] + (v.z - S.pts[3 * bj + 2]) * S.nrm[3 * bj + 2]) * ws;
       const f = best >= 0 ? fams[best] : 'other', F = per[f] || (per[f] = { near: 0, inside: 0, deep: 0, at: null });
-      F.near++; if (into > 0.003) { F.inside++; if (into > F.deep) { F.deep = into; F.at = +(v.y * ws).toFixed(2); } } } });
+      F.near++; if (into > 0.001) F.in1 = (F.in1 || 0) + 1; if (into > 0.003) { F.inside++; if (into > F.deep) { F.deep = into; F.at = +(v.y * ws).toFixed(2); } }
+      if (f === 'grip' && best >= 0) { const nm = sk.bones[best].name.replace(/^mixamorig:?/, '').replace(/^RightHand/, ''), B = byBone[nm] || (byBone[nm] = { n: 0, in1: 0, deep: 0 });
+        B.n++; if (into > 0.001) B.in1++; if (into > B.deep) B.deep = into; } } });
   for (const f in per) per[f].deep = +(per[f].deep * 100).toFixed(2);
-  return { face: +dFace.toFixed(3), faceLine: +faceLine.toFixed(3), head: +dHead.toFixed(3), foot: foot.toArray().map(x => +x.toFixed(3)), low: +low.toFixed(3), skin: per,
+  for (const nm in byBone) byBone[nm].deep = +(byBone[nm].deep * 100).toFixed(2);
+  const gp = new V(), gq = P.group.quaternion.clone(); P.group.getWorldPosition(gp); P.group.getWorldQuaternion(gq); gq.invert();
+  const Lc = (q) => { const r = q.clone().sub(gp).applyQuaternion(gq); return [+(r.x * 100).toFixed(1), +(r.y * 100).toFixed(1), +(r.z * 100).toFixed(1)]; };
+  const Bn = (re) => { for (const n in P.bone) if (re.test(n)) { const q = new V(); P.bone[n].getWorldPosition(q); return Lc(q); } return null; };
+  const geo = { face: Lc(face), head: Lc(hp), neck: Bn(/^(mixamorig:?)?Neck$/), sh: Bn(/^(mixamorig:?)?RightArm$/), hips: Bn(/^(mixamorig:?)?Hips$/),
+    knee: Bn(/^(mixamorig:?)?RightLeg$/), rfoot: Bn(/^(mixamorig:?)?RightFoot$/), lknee: Bn(/^(mixamorig:?)?LeftLeg$/),
+    grip: Lc(new V(0.083, 1.07, -0.005).applyMatrix4(g.matrixWorld)), top: Lc(topL), sfoot: Lc(foot), faceY: faceY != null ? +faceY.toFixed(2) : null };
+  return { geo, byBone, face: +dFace.toFixed(3), faceLine: +faceLine.toFixed(3), head: +dHead.toFixed(3), foot: foot.toArray().map(x => +x.toFixed(3)), low: +low.toFixed(3), skin: per,
            feet: { L: +feetLo.L.toFixed(3), R: +feetLo.R.toFixed(3) }, skinLo: +skinLo.toFixed(3) }; };
 const measure = async (tag) => {
   const st = await p.evaluate(STICK);
@@ -166,28 +184,45 @@ const measure = async (tag) => {
 };
 const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
 const res = { rest: null, acts: {}, pics: [] };
+const CLIP = () => p.evaluate(([src]) => {
+  const E = window.__enc, scene = E.scene, g = E.stage.things && E.stage.things.nagaStaff; if (!g || !g.visible) return { err: 'no stick' };
+  const V = g.position.constructor, at = new V(); g.updateWorldMatrix(true, true); at.set(0.083, 0.7, -0.005).applyMatrix4(g.matrixWorld);
+  const layer = (q) => q === scene || (q.children && q.children.length > 25);
+  const rootOf = (o) => { let q = o; while (q.parent && !layer(q.parent)) { if (q.userData && q.userData.model) return q; q = q.parent; } return q; };
+  let gm = null; g.traverse(o => { if (!gm && o.isMesh) gm = o; });
+  const keep = new Set([g]); if (gm) keep.add(rootOf(gm));
+  scene.traverse(o => { if (!o.isSkinnedMesh) return; const r = rootOf(o), q = new V(); r.getWorldPosition(q); if (Math.hypot(q.x - at.x, q.z - at.z) < 2.5) keep.add(r); });
+  const under = (o) => { for (let q = o; q; q = q.parent) if (keep.has(q)) return true; return false; };
+  const hid = []; scene.traverse(o => { if ((o.isMesh || o.isLine || o.isPoints || o.isSprite) && o.visible && !under(o)) { o.visible = false; hid.push(o); } });
+  let r; try { r = (0, eval)('(' + src + ')')([0.1, 4, 0.05, at.x, at.z]); } finally { for (const o of hid) o.visible = true; }
+  return { objects: r.objects, pairs: r.pairs.map(q => ({ hits: q.hits, rest: q.rest, at: q.at, a: q.a.label.slice(0, 48), b: q.b.label.slice(0, 48) })) };
+}, [ANALYSE_SRC]);
+const clipSay = (c) => c.err ? c.err : c.pairs.length ? c.pairs.map(q => `${q.a} x ${q.b}: ${q.hits} at ${JSON.stringify(q.at)}`).join(' | ') : 'none';
 /* HIS REST, the stick's distances to beat (his standing rest's own moment, Sit_to_Stand_Transition_M at 5.85 s, as the fight
    stands him: held by the lab, so a take posed before it cannot linger) */
 const REST = ['Sit_to_Stand_Transition_M', 5.85];
 /* (TRIES='[{...},...]': other settings of the grip tried at his rest first, each measured, then the run's own put back) */
 if (process.env.TRIES) { for (const T of JSON.parse(process.env.TRIES)) { await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), T);
-    await pose(REST[0], REST[1]); await frames(4); const r = await measure('try'); say('try', JSON.stringify(T), JSON.stringify(r.flags), JSON.stringify(r.R), 'face', r.st.face, 'grip', JSON.stringify(r.st.skin.grip)); }
+    await pose(REST[0], REST[1]); await frames(4); const r = await measure('try'); const c = await CLIP();
+    say('try', JSON.stringify(T), JSON.stringify(r.flags), JSON.stringify(r.R), 'face', r.st.face, 'line', r.st.faceLine, 'grip', JSON.stringify(r.st.skin.grip), 'bones', JSON.stringify(r.st.byBone), 'clips', clipSay(c)); }
   await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), process.env.TUNE ? JSON.parse(process.env.TUNE) : {}); }
 /* HIS REST, the stick's distances to beat */
 await pose(REST[0], REST[1]); await frames(4);
-res.rest = await measure('rest'); say('rest', JSON.stringify(res.rest));
+res.rest = await measure('rest'); res.rest.clip = await CLIP(); say('rest', JSON.stringify(res.rest), 'clips', clipSay(res.rest.clip));
 const restFace = res.rest.st.face, restHead = res.rest.st.head, restLine = res.rest.st.faceLine;
 /* EVERY FRAME OF EACH ACT */
 for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = [];
   for (const u of A.us) { await pose(A.take, u); const r = await measure(act + '@' + u); rows.push(r);
+    if (process.env.CLIPACTS === '1') r.clip = await CLIP();
     const s = r.st, bad = [];
+    if (r.clip && r.clip.pairs && r.clip.pairs.length) bad.push('clips ' + clipSay(r.clip));
     if (r.flags && r.flags.length) bad.push('joints ' + JSON.stringify(r.flags));
     for (const f in s.skin) if (f !== 'grip' && s.skin[f].inside) bad.push(`skin ${f} ${s.skin[f].inside} in, ${s.skin[f].deep} cm at ${s.skin[f].at} m`);
     if (s.skin.grip && s.skin.grip.deep > 0.6) bad.push(`grip ${s.skin.grip.deep} cm`);
     if (s.faceLine < restLine - 0.005) bad.push(`face line ${s.faceLine} < rest ${restLine} (nearest point ${s.face}, at rest ${restFace})`);
     if (s.low < -0.005) bad.push(`stick ${s.low} under the paving`);
     if (s.feet.L < -0.01 || s.feet.R < -0.01) bad.push(`feet ${s.feet.L} ${s.feet.R}`);
-    say(act, u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s.face, 'foot', s.foot[1], JSON.stringify(r.mv), JSON.stringify(r.R)); }
+    say(act, u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s.face, 'foot', s.foot[1], JSON.stringify(r.mv), JSON.stringify(r.R), 'geo', JSON.stringify(s.geo)); }
   res.acts[act] = rows;
   if (act === 'plant' && process.env.PLANTED === '1') {
     await pose(A.take, 1.70);
@@ -199,8 +234,10 @@ for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = []
       return { moved: +p0.distanceTo(p1).toFixed(4), turned: +(2 * Math.acos(Math.min(1, Math.abs(q0.dot(q1)))) * 180 / Math.PI).toFixed(2), who: S5.who }; }, PLACE());
     say('planted: the stick as it leaves his hand', JSON.stringify(jump)); res.plantJump = jump;
     const held = [];
-    for (const u of [1.70, 1.75, 1.80, 1.85, 1.90]) { await pose(A.take, u); await frames(2); const r = await measure('planted@' + u); held.push(r);
+    for (const u of [1.70, 1.74, 1.78, 1.82, 1.86]) { await pose(A.take, u); await frames(2); const r = await measure('planted@' + u); held.push(r);
+      if (process.env.CLIPACTS === '1') r.clip = await CLIP();
       const s2 = r.st, bad = [];
+      if (r.clip && r.clip.pairs && r.clip.pairs.length) bad.push('clips ' + clipSay(r.clip));
       if (r.flags && r.flags.length) bad.push('joints ' + JSON.stringify(r.flags));
       for (const f in s2.skin) if (f !== 'grip' && s2.skin[f].inside) bad.push(`skin ${f} ${s2.skin[f].inside} in, ${s2.skin[f].deep} cm at ${s2.skin[f].at} m`);
       if (s2.faceLine < restLine - 0.005) bad.push(`face line ${s2.faceLine} < rest ${restLine} (nearest point ${s2.face})`);
