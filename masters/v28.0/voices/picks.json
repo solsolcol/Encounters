@@ -5686,5 +5686,59 @@
     "heard": "To me. FIRE."
    }
   }
+ },
+ "ph5nd1": {
+  "who": "pho",
+  "text": "[calm] It is tired. Go to it, and BAG it.",
+  "pick": "a",
+  "why": "the unhurried read",
+  "med": 3.18,
+  "takes": {
+   "a": {
+    "len": 3.36,
+    "first": 0.0,
+    "last": 3.3,
+    "e_first": 0.04,
+    "e_last": 3.34,
+    "tail_db": -38.9,
+    "tail_rel": -24.0,
+    "hole": 0.68,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.73,
+    "heard": "It is tired. Go to it, and BAG it."
+   },
+   "b": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 3.26,
+    "e_first": 0.14,
+    "e_last": 3.22,
+    "tail_db": -41.1,
+    "tail_rel": -26.2,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.92,
+    "heard": "It is tired. Go to it, and BAG it."
+   },
+   "c": {
+    "len": 3.2,
+    "first": 0.0,
+    "last": 3.18,
+    "e_first": 0.0,
+    "e_last": 3.18,
+    "tail_db": -38.6,
+    "tail_rel": -25.1,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.83,
+    "heard": "It is tired. Go to it and BAG it."
+   }
+  }
  }
 }
