@@ -3152,30 +3152,40 @@ if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
    phone's 390 x 844 and a low phone's 360 x 780 below) */
 const TAG_HUD_MINE = ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire'];
 const TAG_HUD_ALL = TAG_HUD_MINE.concat(['#stats', '#mute', '#menuBtn', '#volWrap', '#objective .obox']);
-/* (`risen`: measured from inside the page in the very task the refusal's words and the caption are up, each where it stands
-   risen — their rise (0.3 s from nothing, from the frame after) set aside for the measure and given back: the words stand
-   2.2 s, and on a slow page the round trips between a press and a measure, or a frame landing inside the risen part of
-   that, outlasted them) */
-const tagOverlaps = (pg, risen) => pg.evaluate(async ([mine, all, risen]) => {
-  const on = id => { const el = document.getElementById(id); return !!el && el.classList.contains('on'); };
-  let waited = 0; const nf = document.getElementById('nofire'), cp = document.getElementById('caption'), keep = [nf.style.animation, cp.style.transition, cp.style.animation];
-  if (risen) { const t0 = performance.now();
-    while (!(on('nofire') && on('caption')) && performance.now() - t0 < 8000) await new Promise(r => setTimeout(r, 10));
-    waited = Math.round(performance.now() - t0);
-    nf.style.animation = 'none'; cp.style.transition = 'none'; cp.style.animation = 'none'; void nf.offsetWidth; void cp.offsetWidth; }
-  const up = { caption: on('caption'), nofire: on('nofire'), take: !document.getElementById('tagA2').classList.contains('hide'),
-               mate: document.getElementById('tagMate').classList.contains('on'), waited };
-  const shown = el => { for (let a = el; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; } return true; };
-  const box = s => { const el = document.querySelector(s); if (!el || !shown(el)) return null; const r = el.getBoundingClientRect(); return r.width >= 1 && r.height >= 1 ? { s, x: r.left, y: r.top, w: r.width, h: r.height } : null; };
-  const B = all.map(box).filter(Boolean), bad = [], off = [];
-  for (const a of B) if (a.x < -0.5 || a.y < -0.5 || a.x + a.w > innerWidth + 0.5 || a.y + a.h > innerHeight + 0.5) off.push(a.s);
-  for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
-    const a = B[i], b = B[j]; if (!mine.includes(a.s) && !mine.includes(b.s)) continue;
-    if (a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5) bad.push(a.s + ' x ' + b.s);
-  }
-  if (risen) { nf.style.animation = keep[0]; cp.style.transition = keep[1]; cp.style.animation = keep[2]; }
-  return { measured: B.map(b => b.s), bad, off, boxes: B, up };
-}, [TAG_HUD_MINE, TAG_HUD_ALL, !!risen]);
+/* (the measure is ARMED before the press that says the refusal's words, and taken by the page itself in the very task the
+   words go up (a watcher on their class), each thing where it stands risen: their rise (0.3 s from nothing, from the frame
+   after) and the caption's set aside for the measure and given back. On a slow page the round trips between a touch, its
+   acknowledgement and a measure from out here outlasted the words' 2.2 s) */
+const tagArm = (pg) => pg.evaluate(([mine, all]) => {
+  window.__tagOv = null;
+  const nf = document.getElementById('nofire'), cp = document.getElementById('caption');
+  const measure = (how) => {
+    const on = id => { const el = document.getElementById(id); return !!el && el.classList.contains('on'); };
+    const keep = [nf.style.animation, cp.style.transition, cp.style.animation];
+    nf.style.animation = 'none'; cp.style.transition = 'none'; cp.style.animation = 'none'; void nf.offsetWidth; void cp.offsetWidth;
+    const up = { caption: on('caption'), nofire: on('nofire'), words: nf.textContent, take: !document.getElementById('tagA2').classList.contains('hide'),
+                 mate: document.getElementById('tagMate').classList.contains('on'), how };
+    const shown = el => { for (let a = el; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; } return true; };
+    const box = s => { const el = document.querySelector(s); if (!el || !shown(el)) return null; const r = el.getBoundingClientRect(); return r.width >= 1 && r.height >= 1 ? { s, x: r.left, y: r.top, w: r.width, h: r.height } : null; };
+    const B = all.map(box).filter(Boolean), bad = [], off = [];
+    for (const a of B) if (a.x < -0.5 || a.y < -0.5 || a.x + a.w > innerWidth + 0.5 || a.y + a.h > innerHeight + 0.5) off.push(a.s);
+    for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
+      const a = B[i], b = B[j]; if (!mine.includes(a.s) && !mine.includes(b.s)) continue;
+      if (a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5) bad.push(a.s + ' x ' + b.s);
+    }
+    nf.style.animation = keep[0]; cp.style.transition = keep[1]; cp.style.animation = keep[2];
+    window.__tagOv = { measured: B.map(b => b.s), bad, off, boxes: B, up };
+  };
+  if (window.__tagOvMo) window.__tagOvMo.disconnect();
+  const mo = window.__tagOvMo = new MutationObserver(() => {
+    if (!window.__tagOv && nf.classList.contains('on') && cp.classList.contains('on')) { mo.disconnect(); measure('as the words went up'); }
+  });
+  mo.observe(nf, { attributes: true, attributeFilter: ['class'] });
+  return true;
+}, [TAG_HUD_MINE, TAG_HUD_ALL]);
+const tagRead = (pg) => pg.waitForFunction(() => !!window.__tagOv, null, { timeout: 20000, polling: 100 })
+  .then(() => pg.evaluate(() => window.__tagOv), () => pg.evaluate(() => { if (window.__tagOvMo) window.__tagOvMo.disconnect();
+    return { measured: [], bad: ['the refusal\'s words never went up'], off: [], up: { nofire: document.getElementById('nofire').className } }; }));
 await p.waitForTimeout(950);
 /* (everything the mode can put up at once: the caption, TAKE beside a tired one, the other one's mark at the edge while he
    is behind the lens, the count, and a refusal's words, the refusal last so its words are measured standing) */
@@ -3186,11 +3196,14 @@ await tagEval(`
   kit.tagAct('zap', { blocked: 'Not now.' });
   await poll(() => document.getElementById('caption').classList.contains('on') && !document.getElementById('tagA2').classList.contains('hide')
     && document.getElementById('tagMate').classList.contains('on'), 20000);
+  return true;`);
+await tagArm(p);
+await tagEval(`
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
   await frames(2);
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
   return true;`);
-const ovD = await tagOverlaps(p, true);
+const ovD = await tagRead(p);
 K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagMate', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
 console.log('tag HUD 900x600:', JSON.stringify({ bad: ovD.bad, off: ovD.off, measured: ovD.measured, up: ovD.up }));
 await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', st.fightHome.b[0], st.fightHome.b[1], {}); await frames(2); return true;`);
@@ -3492,8 +3505,9 @@ K.tagGoneWithChapter = await p.evaluate(() => {
         && !document.getElementById('tagA2').classList.contains('hide') && document.getElementById('tagMate').classList.contains('on');`, 30000);
       await new Promise(r => setTimeout(r, 950));
       const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
+      await tagArm(pp);
       await tap(r0.x, r0.y, 6);
-      const ov = await tagOverlaps(pp, true);
+      const ov = await tagRead(pp);
       console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured, up: ov.up }));
       return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s));
     };
