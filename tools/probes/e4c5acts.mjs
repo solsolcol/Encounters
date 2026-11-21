@@ -55,6 +55,36 @@ await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 300000, polling: 500 });
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
+/* PLANTSCAN=1: WHERE THE NAGA'S FILM CAN STAND THE STICK. With the grip off (his own take's arms, as they are once he has let
+   go), his planting take (Charged_Spell_Cast_1) posed from 1.5 s to its end every 0.1 s, and every tenth point of his skin
+   between 2 cm and 1.45 m up laid on a 2 cm grid of the paving in his own frame; for each place on a 5 cm grid, how near his
+   body comes to the stick's line standing there (its shaft's middle 8 cm behind it, as the grip holds it), and how far his
+   right shoulder is at 1.7 s from where his fist would be to strike it down there */
+if (process.env.PLANTSCAN === '1') {
+  const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
+  const occ = new Set(); let sh17 = null;
+  for (let u = 1.5; u <= 4.301; u += 0.1) { await pose('Charged_Spell_Cast_1', +u.toFixed(2));
+    const r = await p.evaluate((u) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor; P.group.updateWorldMatrix(true, true);
+      const cells = new Set(), v = new V();
+      P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return; let vis = true; for (let q = o; q; q = q.parent) if (!q.visible) vis = false; if (!vis) return;
+        const n = o.geometry.attributes.position.count; for (let i = 0; i < n; i += 10) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); P.group.worldToLocal(v);
+          if (v.y < 0.02 || v.y > 1.45) continue; cells.add(Math.round(v.x / 0.02) + ',' + Math.round(v.z / 0.02)); } });
+      let sh = null; if (Math.abs(u - 1.7) < 0.01) { for (const n in P.bone) if (/^(mixamorig:?)?RightArm$/.test(n)) { sh = P.bone[n].getWorldPosition(new V()); P.group.worldToLocal(sh); sh = sh.toArray(); } }
+      return { cells: [...cells], sh }; }, +u.toFixed(2));
+    for (const c of r.cells) occ.add(c); if (r.sh) sh17 = r.sh; }
+  const pts = [...occ].map(c => c.split(',').map(n => +n * 0.02));
+  const out = Math.PI / 2 - 15 * Math.PI / 180, cx = 0.082 * Math.cos(out) - 0.003 * Math.sin(out), cz = -0.082 * Math.sin(out) - 0.003 * Math.cos(out);
+  const cand = [];
+  for (let x = -0.95; x <= 0.5; x += 0.05) for (let z = -0.3; z <= 1.4; z += 0.05) {
+    const sx = x + cx, sz = z + cz; let d = 9; for (const [px, pz] of pts) { const e = Math.hypot(px - sx, pz - sz); if (e < d) d = e; }
+    const reach = sh17 ? Math.hypot(sx - sh17[0], 1.074 - sh17[1], sz - sh17[2]) : null;
+    cand.push({ at: [+x.toFixed(2), +z.toFixed(2)], clear: +d.toFixed(3), reach: reach != null ? +reach.toFixed(3) : null }); }
+  const film = cand.find(c => Math.abs(c.at[0] + 0.2) < 0.03 && Math.abs(c.at[1] - 0.4) < 0.03);
+  const best = cand.filter(c => c.reach != null && c.reach <= 0.52).sort((a, b) => b.clear - a.clear).slice(0, 15);
+  say('plantscan shoulder@1.7', JSON.stringify(sh17), 'the film\'s place (-0.18, 0.42) near:', JSON.stringify(film));
+  say('plantscan best within reach', JSON.stringify(best));
+  fs.writeFileSync(OUT + '/plantscan.json', JSON.stringify({ sh17, cand }, null, 0));
+  await pose(null, 0); }
 if (process.env.GRIP !== '0') say('grip on', await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; return L.gripOn ? L.gripOn() : 'no gripOn'; }));
 if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));
 await frames(10);
@@ -82,7 +112,9 @@ const STICK = () => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g
   let dFace = 9, dHead = 9, low = 9; const w = new V();
   for (let i = 0; i < S.n; i += 7) { w.set(S.pts[3 * i], S.pts[3 * i + 1], S.pts[3 * i + 2]).applyMatrix4(g.matrixWorld);
     dFace = Math.min(dFace, w.distanceTo(face)); dHead = Math.min(dHead, w.distanceTo(hp)); low = Math.min(low, w.y); }
-  const foot = new V(0.083, 0, -0.005).applyMatrix4(g.matrixWorld);
+  const foot = new V(0.083, 0, -0.005).applyMatrix4(g.matrixWorld), topL = new V(0.083, 1.40, -0.005).applyMatrix4(g.matrixWorld);
+  /* (and from his face to the stick's own line, its shaft's middle from foot to top: the guard's measure) */
+  const ab = topL.clone().sub(foot), tt = Math.max(0, Math.min(1, face.clone().sub(foot).dot(ab) / ab.lengthSq())), faceLine = face.distanceTo(foot.clone().addScaledVector(ab, tt));
   /* his skin in the stick: each point within the stick's box and 3 cm of its surface, inside by the facing there */
   const fam = (nm) => { if (/RightHand/.test(nm)) return 'grip'; if (/Right(Fore)?Arm/.test(nm)) return 'rightArm'; if (/Left/.test(nm)) return 'left';
     if (/Leg|Foot|Toe|UpLeg/.test(nm)) return 'legs'; if (/Spine|Hips|Neck|Head|Shoulder/.test(nm)) return 'body'; return 'other'; };
@@ -103,7 +135,7 @@ const STICK = () => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, g
       const f = best >= 0 ? fams[best] : 'other', F = per[f] || (per[f] = { near: 0, inside: 0, deep: 0, at: null });
       F.near++; if (into > 0.003) { F.inside++; if (into > F.deep) { F.deep = into; F.at = +(v.y * ws).toFixed(2); } } } });
   for (const f in per) per[f].deep = +(per[f].deep * 100).toFixed(2);
-  return { face: +dFace.toFixed(3), head: +dHead.toFixed(3), foot: foot.toArray().map(x => +x.toFixed(3)), low: +low.toFixed(3), skin: per,
+  return { face: +dFace.toFixed(3), faceLine: +faceLine.toFixed(3), head: +dHead.toFixed(3), foot: foot.toArray().map(x => +x.toFixed(3)), low: +low.toFixed(3), skin: per,
            feet: { L: +feetLo.L.toFixed(3), R: +feetLo.R.toFixed(3) }, skinLo: +skinLo.toFixed(3) }; };
 const measure = async (tag) => {
   const st = await p.evaluate(STICK);
@@ -115,6 +147,10 @@ const measure = async (tag) => {
 };
 const pose = async (name, u) => { await p.evaluate(([n, u]) => window.__enc.stage.snap().story.fight.lab.pose(n, u), [name, u]); await frames(3); };
 const res = { rest: null, acts: {}, pics: [] };
+/* (TRIES='[{...},...]': other settings of the grip tried at his rest first, each measured, then the run's own put back) */
+if (process.env.TRIES) { for (const T of JSON.parse(process.env.TRIES)) { await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), T);
+    await pose(null, 0); await frames(4); const r = await measure('try'); say('try', JSON.stringify(T), JSON.stringify(r.flags), JSON.stringify(r.R), 'face', r.st.face, 'grip', JSON.stringify(r.st.skin.grip)); }
+  await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), process.env.TUNE ? JSON.parse(process.env.TUNE) : {}); }
 /* HIS REST, the stick's distances to beat */
 await pose(null, 0); await frames(4);
 res.rest = await measure('rest'); say('rest', JSON.stringify(res.rest));

@@ -1513,17 +1513,20 @@
            travel of his right shoulder added: follow), his fist out and up, the stick tipped forward so the Naga's head goes toward
            what he fires at and the ball leaves its mouth at the top; held as the ball goes, then home with his step, its
            foot set down on the paving.
-         THE GOLD (Charged_Spell_Cast): planted through his gather (his arm folds as he sinks), lifted as he rises, its head
-           leaned out away from his face, and STRUCK down onto the paving at the top, where the wheel goes out from (the
-           strike: driven into the ground, never eased onto it); planted while the wheel goes out.
+         THE GOLD (Charged_Spell_Cast): lifted off the paving as he sinks into his gather and held out before him and to his
+           right, clear of his bowed trunk and face (planted, his trunk came over it: the first pass), lifted higher as he
+           rises, its head leaned out away from his face, and STRUCK down onto the paving at the top, where the wheel goes
+           out from (the strike: driven into the ground, never eased onto it); planted while the wheel goes out, then set
+           back where it stood.
          THE PLANTING (the Naga's film, Charged_Spell_Cast_1): lifted, carried over the place the film stands it (PLANT_AT)
            and struck down there at 1.7 s, where the film lets it stand.
          THE BAG (mage_soell_cast_8): planted; his other hand draws.
          Each key [moment, out, up, on, tip, lean, shape]: 'strike' a fall into the paving under a take his act plays eased
          (the span slows to its top: the rest of the fall is sped to meet it), 'drive' a fall on a film's even clock */
       const MOVES = {
-        mage_soell_cast_7: { follow: 1, keys: [[0.45, 0, 0, 0, 0, 0], [0.66, -0.03, 0.04, 0, 0, 0], [0.95, 0, 0.15, 0.24, 20, 0], [1.30, 0, 0.14, 0.22, 18, 0], [2.00, 0, 0, 0, 0, 0]] },
-        Charged_Spell_Cast: { follow: 0, keys: [[0.50, 0, 0, 0, 0, 0], [1.55, 0, 0, 0, 0, 0], [1.88, -0.06, 0.18, 0.02, 0, 8], [2.00, 0, 0, 0, 0, 0, 'strike']] },
+        mage_soell_cast_7: { follow: 1, keys: [[0.45, -0.10, 0, 0, 0, 5], [0.66, -0.12, 0.05, 0.02, 0, 6], [0.95, -0.04, 0.15, 0.16, 20, 0], [1.30, -0.04, 0.14, 0.14, 18, 0], [2.00, -0.08, 0.04, 0.02, 0, 4], [2.20, -0.08, 0.04, 0, 0, 4]] },
+        Charged_Spell_Cast: { follow: 0, keys: [[0.50, 0, 0, 0, 0, 0], [0.80, -0.14, 0.10, 0.16, 0, 6], [1.55, -0.16, 0.12, 0.18, 0, 8], [1.88, -0.14, 0.26, 0.16, 0, 6],
+                                                [2.00, -0.12, 0, 0.14, 0, 0, 'strike'], [2.20, -0.12, 0, 0.14, 0, 0], [2.42, -0.06, 0.05, 0.07, 0, 0], [2.60, 0, 0, 0, 0, 0]] },
         Charged_Spell_Cast_1: { follow: 0, plant: true, keys: null },
         mage_soell_cast_8: { follow: 0, keys: [[0, 0, 0, 0, 0, 0]] }
       };
@@ -1576,6 +1579,45 @@
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       let wroteArm = null;
+      /* THE STICK KEPT CLEAR OF HIM IN HIS ACTS, whatever his take does (the first pass measured it: the gold's gather bent
+         his trunk over the place the stick stood, his face 2 cm from it; the throw's step brought his right leg and its robe
+         across its foot): its line held off the line of his trunk, of his head, of his right thigh and shin in their robe
+         (CLEAR, metres between the lines), and its upper third no nearer his face than CLEAR.face; where any comes nearer,
+         the fist is moved out along the paving, straight away from it, by what is missing (three passes: one way out of one
+         can lead into another), by the act's own weight (his rest, walk and run were clear without it and stay as they were) */
+      const CLEAR = { trunk: 0.25, head: 0.20, thigh: 0.25, shin: 0.22, face: 0.55 };
+      const _ka = V(), _kb = V(), _kc = V(), _kd = V(), _kn = V(), _kp = V(), _kq = V(), _k0 = V(), _kw = [V(), V(), V(), V(), V(), V(), V()];
+      let kBones = null;
+      function segClosest(a0, a1, b0, b1, p, q) {
+        const d1 = _kc.subVectors(a1, a0), d2 = _kd.subVectors(b1, b0), r = _kn.subVectors(a0, b0);
+        const a = d1.dot(d1), e = d2.dot(d2), f = d2.dot(r); let s = 0, t = 0;
+        if (a <= 1e-9 && e <= 1e-9) { s = 0; t = 0; }
+        else if (a <= 1e-9) { t = Math.max(0, Math.min(1, f / e)); }
+        else { const c = d1.dot(r); if (e <= 1e-9) { s = Math.max(0, Math.min(1, -c / a)); }
+          else { const b = d1.dot(d2), den = a * e - b * b; s = den > 1e-12 ? Math.max(0, Math.min(1, (b * f - c * e) / den)) : 0; t = (b * s + f) / e;
+            if (t < 0) { t = 0; s = Math.max(0, Math.min(1, -c / a)); } else if (t > 1) { t = 1; s = Math.max(0, Math.min(1, (b - c) / a)); } } }
+        p.copy(a0).addScaledVector(d1, s); q.copy(b0).addScaledVector(d2, t); return p.distanceTo(q);
+      }
+      function keepClear(P, Ct, up, w) {
+        if (!(w > 0.001)) return;
+        if (!kBones) { kBones = {}; for (const nm of ['Hips', 'Neck', 'Head', 'RightUpLeg', 'RightLeg', 'RightFoot']) kBones[nm] = boneOf(P, nm); }
+        const B = kBones; if (!B.Hips || !B.Neck || !B.Head || !B.RightUpLeg || !B.RightLeg || !B.RightFoot) return;
+        B.Head.updateWorldMatrix(true, false); B.RightFoot.updateWorldMatrix(true, false);
+        const hp = B.Hips.getWorldPosition(_kw[0]), nk = B.Neck.getWorldPosition(_kw[1]), hd = B.Head.getWorldPosition(_kw[2]),
+              th = B.RightUpLeg.getWorldPosition(_kw[3]), kn = B.RightLeg.getWorldPosition(_kw[4]), ft = B.RightFoot.getWorldPosition(_kw[5]);
+        const face = _kw[6].setFromMatrixColumn(B.Head.matrixWorld, 2).normalize().multiplyScalar(0.09).add(hd);
+        const caps = [[hp, nk, CLEAR.trunk], [nk, hd, CLEAR.head], [th, kn, CLEAR.thigh], [kn, ft, CLEAR.shin], [face, face, CLEAR.face, true]];
+        _k0.copy(Ct);
+        for (let it = 0; it < 3; it++) {
+          for (const [a0, a1, r, upper] of caps) {
+            _ka.copy(Ct).addScaledVector(up, upper ? 0 : -STICK_Y); _kb.copy(Ct).addScaledVector(up, 1.40 - STICK_Y);
+            const d = segClosest(_ka, _kb, a0, a1, _kp, _kq); if (d >= r) continue;
+            const dx = _kp.x - _kq.x, dz = _kp.z - _kq.z, h = Math.hypot(dx, dz); if (h < 1e-6) continue;
+            Ct.x += dx / h * (r - d); Ct.z += dz / h * (r - d); } }
+        /* (moved, it is carried, never dragged over the paving: lifted a third of the way it goes) */
+        Ct.y += 0.33 * Math.hypot(Ct.x - _k0.x, Ct.z - _k0.z);
+        if (w < 0.999) Ct.lerpVectors(_k0, Ct, w);
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -1603,6 +1645,7 @@
         if (m.tip) { const c = Math.cos(m.tip), s = Math.sin(m.tip);
           for (const v of [up, front]) v.set(v.x, v.y * c - v.z * s, v.y * s + v.z * c); }
         up.applyQuaternion(_sq).normalize(); front.applyQuaternion(_sq).normalize();
+        keepClear(P, Ct, up, m.w);
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);

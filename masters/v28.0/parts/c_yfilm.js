@@ -291,11 +291,12 @@
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
       /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
          so the nearest surface and the body are the same depths to the bit */
-      const NAGA_VS_HEAD = `attribute float aNf; attribute float aReg; attribute float aO2; attribute vec2 aCS; attribute float aW;
+      const SH5 = {};
+      SH5.vsHead = `attribute float aNf; attribute float aReg; attribute float aO2; attribute vec2 aCS; attribute float aW;
 uniform float uNKK, uNLen, uNGR, uNGW;
 varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
 `;
-      const NAGA_VS_BODY = `#include <begin_vertex>
+      SH5.vsBody = `#include <begin_vertex>
   #ifdef NAGA_GLOW
     transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0));
   #endif
@@ -304,15 +305,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   vNS = aReg < 0.5 ? 0.0 : (aReg < 1.5 ? aO2 * uNKK * uNLen : uNKK * uNLen + aO2 * uNGR);
   vNCS = aCS; vNReg = aReg; vNNf = aNf;
 `;
-      const NAGA_FS_HEAD = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
+      SH5.fsHead = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
 varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
 `;
-      const NAGA_FS = {
-        /* the nearest surface: depth only (and none at all while it is dim: a dim Naga hides nothing behind it) */
-        depth: `if (uNA < 0.5) discard;
-  gl_FragColor = vec4(0.0);`,
-        /* the body */
-        body: `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
+      /* the nearest surface: depth only (and none at all while it is dim: a dim Naga hides nothing behind it) */
+      SH5.depth = `if (uNA < 0.5) discard;
+  gl_FragColor = vec4(0.0);`;
+      /* the body */
+      SH5.body = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nFr = pow(1.0 - clamp(abs(dot(nN, nV)), 0.0, 1.0), uNLook.y);
   /* the scales: sixteen round the body, 0.17 m long, rows offset by half, each row over the one behind it (its free edge
      toward the tail), flowing slowly toward the head; drawn only on the lying body, and faded where they would be finer
@@ -332,13 +332,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
   float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.6, 3.0, nDl));
   nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.85));
-  gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`,
-        /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
-        glow: `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
+  gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`;
+      /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
+      SH5.glow = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nK = clamp(-dot(nN, nV), 0.0, 1.0);
   vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
-  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.7 * nGk, 0.0, 0.7)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`
-      };
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.7 * nGk, 0.0, 0.7)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
       function nagaMat(kind) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
           depthWrite: kind === 'depth', colorWrite: kind !== 'depth',
@@ -346,11 +345,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           side: kind === 'glow' ? THREE.BackSide : THREE.FrontSide }); mats.push(m);
         if (kind === 'glow') m.defines = { NAGA_GLOW: 1 };
         m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
-          sh.vertexShader = NAGA_VS_HEAD + sh.vertexShader.replace('#include <begin_vertex>', NAGA_VS_BODY);
-          const out = sh.fragmentShader.replace('#include <opaque_fragment>', NAGA_FS[kind]);
+          sh.vertexShader = SH5.vsHead + sh.vertexShader.replace('#include <begin_vertex>', SH5.vsBody);
+          const out = sh.fragmentShader.replace('#include <opaque_fragment>', SH5[kind]);
           if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s light found no line to write (three changed?)');
-          sh.fragmentShader = NAGA_FS_HEAD + out; };
-        m.customProgramCacheKey = () => 'e4c5naga2-' + kind;
+          sh.fragmentShader = SH5.fsHead + out; };
+        /* (a probe's lab may write SH5 and bump SH5.v: each draw is compiled again) */
+        m.customProgramCacheKey = () => 'e4c5naga2-' + kind + (SH5.v || '');
         return m;
       }
       /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
@@ -373,12 +373,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (!alive) return;
           src.updateMatrixWorld(true);
           let geo = null, bb = new THREE.Box3();
-          src.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); } });
+          /* (a quantized file: its points made plain floats FIRST, then placed by its node. Placed first, as written until
+             FILMS-2, every coordinate past one metre was written back into the file's 16-bit integers and WRAPPED (three's
+             setXYZ rounds and stores, and an Int16Array keeps the low 16 bits): the 8.4 m serpent was folded four times
+             into two metres and its 3.6 m head into garbage, and that was laid along the path: the "red sheets of glass".
+             Measured: the file's points span z -4.21 .. 4.21 and y 0 .. 3.6; the folded copy spanned -1 .. 1) */
+          src.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry.clone();
+            for (const nm of ['position', 'normal']) { const p = geo.attributes[nm]; if (!p || (!p.normalized && p.array instanceof Float32Array)) continue;
+              const a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { a[i * 3] = p.getX(i); a[i * 3 + 1] = p.getY(i); a[i * 3 + 2] = p.getZ(i); }
+              geo.setAttribute(nm, new THREE.BufferAttribute(a, 3)); }
+            geo.applyMatrix4(o.matrixWorld); } });
           if (!geo) return; owned.push(geo);
-          /* (a quantized file: the positions made plain floats so the shader can read them as metres) */
-          if (geo.attributes.position.normalized || !(geo.attributes.position.array instanceof Float32Array)) {
-            const p = geo.attributes.position, a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { a[i * 3] = p.getX(i); a[i * 3 + 1] = p.getY(i); a[i * 3 + 2] = p.getZ(i); }
-            geo.setAttribute('position', new THREE.BufferAttribute(a, 3)); }
           geo.computeBoundingBox(); bb.copy(geo.boundingBox);
           /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
@@ -529,22 +534,38 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              of the way): no point of it in a wall or under the ground; a head carried whole round the path stood in the
              west wall at its turns, up to 1.3 m (its hood leans with the path) */
           const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), hr = smo(c01((kk - 0.88) / 0.12)), arr = st.geo.attributes.position.array, n = arr.length / 3;
+          U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr;
+          /* (laid again only when its laying moves: once it lies whole, a frame changes its light and clock alone) */
+          const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5) + '|' + hr.toFixed(5);
+          if (st.laid === lk) return;
+          st.laid = lk;
           const R = st.reg, O = st.off, B = st.base, cl = st.cl, LEN = st.len, alZ = st.along === 'z', T0 = frameAt(0, FRT), F = FR;
+          /* (its normals turned with it: the model's (across, up, along) onto the path's (B, N, T), the along part scaled by
+             the cross-section's scale over the middle's stretch along the path, as a stretched skin's normals are) */
+          const NR = st.geo.attributes.normal.array, BN = st.bn, str = Math.max(0.05, kk * LEN / Math.max(1e-3, st.parts.ZH - st.parts.ZT));
           for (let i = 0; i < n; i++) {
             const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
-            let px, py, pz;
-            if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp;
-              px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy; }
+            const bx = BN ? BN[i * 3] : 0, by = BN ? BN[i * 3 + 1] : 1, ba = BN ? BN[i * 3 + 2] : 0;
+            let px, py, pz, ex, ey, ez;
+            if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp, na = ba * Math.max(0.02, gr * tp) / str;
+              px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy;
+              ex = F[3] * na + F[6] * bx + F[9] * by; ey = F[4] * na + F[7] * bx + F[10] * by; ez = F[5] * na + F[8] * bx + F[11] * by; }
             else if (r === 2) { const b0 = cl.bin[i], c = alZ ? B[i * 3] : B[i * 3 + 2], fx = (c - cl.cx[b0]) * gr, fy = Math.max(-0.32, Math.min(0.32, B[i * 3 + 1] - cl.cy[b0])) * gr;
-              const xx = fx + (o0 * gr - fx) * hr, yy = fy + (o1 * gr - fy) * hr, uv = kk + o2 * gr / LEN, ex = uv > 1 ? (uv - 1) * LEN : 0;
+              const xx = fx + (o0 * gr - fx) * hr, yy = fy + (o1 * gr - fy) * hr, uv = kk + o2 * gr / LEN, xa = uv > 1 ? (uv - 1) * LEN : 0;
               frameAt(Math.min(1, uv), F);
-              px = F[0] + F[3] * ex + F[6] * xx + F[9] * yy; py = F[1] + F[4] * ex + F[7] * xx + F[10] * yy; pz = F[2] + F[5] * ex + F[8] * xx + F[11] * yy; }
-            else { px = T0[0]; py = T0[1]; pz = T0[2]; }
+              px = F[0] + F[3] * xa + F[6] * xx + F[9] * yy; py = F[1] + F[4] * xa + F[7] * xx + F[10] * yy; pz = F[2] + F[5] * xa + F[8] * xx + F[11] * yy;
+              ex = F[3] * ba + F[6] * bx + F[9] * by; ey = F[4] * ba + F[7] * bx + F[10] * by; ez = F[5] * ba + F[8] * bx + F[11] * by; }
+            else { px = T0[0]; py = T0[1]; pz = T0[2]; ex = T0[3]; ey = T0[4]; ez = T0[5]; }
             arr[i * 3] = px; arr[i * 3 + 1] = Math.max(0.01, py); arr[i * 3 + 2] = pz;
+            const el = Math.hypot(ex, ey, ez) || 1; NR[i * 3] = ex / el; NR[i * 3 + 1] = ey / el; NR[i * 3 + 2] = ez / el;
           }
-          st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
+          st.geo.attributes.position.needsUpdate = true; st.geo.attributes.normal.needsUpdate = true; st.geo.computeBoundingSphere();
         },
+        /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none); the faces turned to it go gold */
+        light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
         ready: () => st.ready,
+        /* (a probe's lab: its state, its draws; tools/probes/e4c5nagalab.mjs) */
+        lab: () => Object.assign(st, { SH: SH5, U }),
         /* a place on its path `d` metres from the stick's head, where the films aim (the same path set() lays) */
         pointAtDist(sx, sz, d) {
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
@@ -1109,7 +1130,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
         /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls */
         const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3)));
-        NAGA5.set(kN, aN, t, sx, sz);
+        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.set(kN, aN, t, sx, sz);
         /* the tall shape: the last three drawn together over him, leaning in; it comes apart into its three, and they sink
            low and lie where the fight's last stage finds them */
         const lay = F.laid.length === 3 ? F.laid : [courtWorld(-1.15, -0.8), courtWorld(0, -1.35), courtWorld(1.15, -0.8)];
