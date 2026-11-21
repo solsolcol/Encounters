@@ -701,6 +701,9 @@
   "expires_at": 1795498221616,
   "image": "/tmp/claude-0/-home-user-Encounters/f1062235-ca86-59a9-b000-61422c281293/scratchpad/e4c5/cast/refs/naga-a-2k.png",
   "image_to_3d": "01a1fc90-b6dc-70c1-9c1c-ad305f4c94e0",
+  "remesh": {
+   "60000": "01a1fca2-b855-7499-8718-a4d05c1c2b8b"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
