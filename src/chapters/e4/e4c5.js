@@ -9680,11 +9680,6 @@
 
     /* where a film that hands to a phase leaves the people: the play's own placing for that phase (c_play.js castPhase), and
        the cast's things as that phase keeps them */
-    /* HIS HAND BACK IN PLAY after a film that keeps its own last view (the devotee's and the collector's: c.keep.view). The
-       engine keeps the walking hand off after such a film (restoreWorld: armR, for the outcome card a scene ends under),
-       and a film from play brings back only handsRoot; so on the first frame of play after it, his right hand is put back
-       (the chapter's own clock: c_story.js after). Its class fix is the engine's (kitFilm's end), put to the lead */
-    function armBack5() { const A = FM5.api && FM5.api.armR; if (A) after(0, () => { A.visible = true; }); }
     function endPhase5(p) {
       if (typeof castPhase === 'function') castPhase(p);
       fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0);
@@ -9800,7 +9795,7 @@
         ]);
         if (t > T.in && t < T.slip) yaw.position.y += -0.016 * Math.abs(Math.sin((t - T.in) * Math.PI / 0.55));
       },
-      end() { fmLens(PLAYFOV5); lamp(1, 1); endPhase5('hunt'); armBack5(); }
+      end() { fmLens(PLAYFOV5); lamp(1, 1); endPhase5('hunt'); }
     };
 
     /* ================================================================ THE PREPARATION, AND THE TURN (the plan's 4.4; PR5)
@@ -10247,7 +10242,7 @@
           { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
         ]);
       },
-      end() { fmLens(PLAYFOV5); PIECES5.set(true); endPhase5('table'); armBack5(); }
+      end() { fmLens(PLAYFOV5); PIECES5.set(true); endPhase5('table'); }
     };
 
     /* ================================================================ THE FOUR ENDINGS (the plan's 4.9), each a whole story,

@@ -75,8 +75,12 @@ await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit
 await sleep(1500); await pic('brief');
 let s = await snap();
 log.briefText = s.f;
-await tap(s.btn.start, 'START');
-await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 60000, polling: 200 });
+for (let i = 0; ; i++) {                                     // (START by a tap on it; again if a tap was not taken, each written)
+  s = await snap(); say('  START at', JSON.stringify(s.btn.start), 'ev', s.ev, 'state', s.state);
+  await tap(s.btn.start, 'START');
+  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 20000, polling: 200 }); break; }
+  catch (e) { await pic('start-missed-' + i); if (i >= 2) throw e; }
+}
 await sleep(800); await pic('learn-start');
 
 /* ---- the fight, played by the screen */

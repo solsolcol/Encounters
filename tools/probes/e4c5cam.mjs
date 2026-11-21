@@ -27,9 +27,14 @@ await p.waitForFunction(() => { try { return window.__enc.stage.ready(); } catch
 await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 120000, polling: 250 });
 await sleep(1200);
-const r0 = await p.evaluate(() => { const r = document.getElementById('evBtn').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
-await p.touchscreen.tap(r0.x, r0.y);
-await p.waitForFunction(() => window.__enc.kit.tagState().live, null, { timeout: 60000, polling: 200 });
+/* START, by a tap on it (and again if a tap was not taken: what the button and the event said each time is written) */
+for (let i = 0; ; i++) {
+  const r0 = await p.evaluate(() => { const e = document.getElementById('evBtn'), r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, w: r.width, h: r.height, txt: e.textContent, cls: e.className, ev: window.__enc.evState ? JSON.stringify(window.__enc.evState()).slice(0, 200) : '' }; });
+  say('START at', JSON.stringify(r0));
+  await p.touchscreen.tap(r0.x, r0.y);
+  try { await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn' && window.__enc.kit.tagState().live; }, null, { timeout: 20000, polling: 200 }); break; }
+  catch (e) { await p.screenshot({ path: `${OUT}/start-missed-${i}.png` }); if (i >= 2) throw e; }
+}
 say('live');
 /* the recorder: every drawn frame, in the page */
 await p.evaluate(() => {

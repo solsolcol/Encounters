@@ -44,28 +44,60 @@ const table = await p.evaluate(() => {
 });
 fs.writeFileSync(OUT + '/takes.json', JSON.stringify(table, null, 1));
 for (const [n, r] of Object.entries(table.out)) say(n.padEnd(30), 'd', r.d, '| right hand up', r.rhUp, 'fwd', r.rhFwd, '| left hand up', r.lhUp, 'fwd', r.lhFwd, '| head up', r.headUp, '| hips travel', r.hipsTravel, 'head travel', r.headTravel);
-/* the chosen moments photographed: from the fight's camera behind and above him, and from his right side */
+/* the chosen moments photographed (VIEWS=take@t@boom+side+front,...: the fight's camera behind and above him, his right
+   side, his front), and his FEET measured in each: the lowest of the skin that rides each foot (half its weight or more
+   on that side's foot or toe bones) against the court's floor (0), and the lowest of all his skin (the robe's hem) */
 const VIEWS = (process.env.VIEWS || '').split(',').filter(Boolean);
+const feet = [];
 if (VIEWS.length) {
-  for (const vw of VIEWS) {
-    const [name, ts] = vw.split('@'), t = +ts;
-    await p.evaluate(() => window.__enc.stage.setPhase('fight'));
-    await p.waitForFunction(() => window.__enc.kit.tagState().on && window.__enc.kit.eventActive(), null, { timeout: 60000, polling: 250 });
-    await p.evaluate(() => document.getElementById('evBtn').click());       // (START: the mode live behind him)
-    await new Promise(r => setTimeout(r, 2500));
-    for (const side of ['boom', 'side', 'front']) {
-      await p.evaluate(([name, t, side]) => {
+  await p.evaluate(() => window.__enc.stage.setPhase('fight'));
+  await p.waitForFunction(() => window.__enc.kit.tagState().on && window.__enc.kit.eventActive(), null, { timeout: 120000, polling: 250 });
+  await p.evaluate(() => document.getElementById('evBtn').click());       // (START: the mode live behind him)
+  await p.waitForFunction(() => window.__enc.kit.tagState().live, null, { timeout: 60000, polling: 250 }).catch(() => say('(the mode not live)'));
+  await new Promise(r => setTimeout(r, 2500));
+  /* (every boom picture first, while the mode stands; then his side and front, the mode left for the first-person lens) */
+  const jobs = [];
+  for (const vw of VIEWS) { const [name, ts, sd] = vw.split('@'); for (const side of (sd || 'boom').split('+')) jobs.push({ vw, name, t: +ts, side, first: false }); }
+  jobs.sort((a, b) => (a.side === 'boom' ? 0 : 1) - (b.side === 'boom' ? 0 : 1));
+  const measured = new Set(); for (const j of jobs) if (!measured.has(j.vw)) { measured.add(j.vw); j.first = true; }
+  for (const J of jobs) {
+    const { vw, name, t, side } = J, sides = [side];
+    {
+      const ft = await p.evaluate(([name, t, side]) => {
         const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, k = E.kit;
-        for (const q in P.acts) P.acts[q].setEffectiveWeight(q === name ? 1 : 0); P.acts[name].time = t; P.acts[name].timeScale = 0; P.cur = name; P.mixer.update(0);
-        const g = P.group.position;
-        if (side !== 'boom') { k.tag(null, null); const yaw = E.yaw, pitch = E.pitch;
-          if (side === 'side') { yaw.position.set(g.x - 3.0, 1.3, g.z); yaw.rotation.y = -Math.PI / 2; } else { yaw.position.set(g.x, 1.35, g.z + 3.2); yaw.rotation.y = 0; }
+        if (!P.acts[name]) return { err: 'no take ' + name };
+        P.span = null; if (P.win) delete P.win[name];
+        for (const q in P.acts) { P.w[q] = q === name ? 1 : 0; P.acts[q].setEffectiveWeight(P.w[q]); }
+        P.acts[name].time = t; P.acts[name].timeScale = 0; P.cur = name; P.fade = 0; P.mixer.update(0);
+        const g = P.group.position, ry = P.group.rotation.y;
+        if (side !== 'boom') { if (k.tag().on) k.tag(null, null); const yaw = E.yaw, pitch = E.pitch;
+          /* (his right side: 3 m off his right hand; his front: 3.2 m before him; the lens at his chest's height) */
+          const fx = Math.sin(ry), fz = Math.cos(ry), rx = -fz, rz = fx;
+          if (side === 'side') { yaw.position.set(g.x + rx * 3.0, 1.3, g.z + rz * 3.0); yaw.rotation.y = Math.atan2(rx, rz); }
+          else { yaw.position.set(g.x + fx * 3.2, 1.35, g.z + fz * 3.2); yaw.rotation.y = Math.atan2(fx, fz); }
           pitch.rotation.x = -0.05; }
+        return { ok: true };
       }, [name, t, side]);
-      await p.evaluate(() => new Promise(r => { let n = 0; const f = () => (++n >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
+      if (ft && ft.err) { say(ft.err); continue; }
+      await p.evaluate(() => new Promise(r => { let n = 0; const f = () => (++n >= 4 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
       const f = `${OUT}/${name}-${t}-${side}.png`; await p.screenshot({ path: f }); say('pic', f);
+      if (J.first) {
+        const m = await p.evaluate(() => {
+          const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor, v = new V(), out = { L: 9, R: 9, all: 9, n: 0 };
+          P.group.updateWorldMatrix(true, true);
+          const vis = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+          P.group.traverse(o => { if (!o.isSkinnedMesh || !vis(o)) return; const G = o.geometry, sk = o.skeleton, si = G.attributes.skinIndex, sw = G.attributes.skinWeight, pos = G.attributes.position;
+            const side = sk.bones.map(bn => { const r = /^(?:mixamorig:?)?(Left|Right)(Foot|Toe\w*)$/.exec(bn.name); return r ? r[1][0] : null; });
+            for (let i = 0; i < pos.count; i++) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); out.n++; if (v.y < out.all) out.all = v.y;
+              let wl = 0, wr = 0; for (let j = 0; j < 4; j++) { const sd = side[si.getComponent(i, j)], w = sw.getComponent(i, j); if (sd === 'L') wl += w; else if (sd === 'R') wr += w; }
+              if (wl >= 0.5 && v.y < out.L) out.L = v.y; if (wr >= 0.5 && v.y < out.R) out.R = v.y; } });
+          for (const k in out) if (k !== 'n') out[k] = +out[k].toFixed(3);
+          return out; });
+        feet.push({ view: vw, ...m }); say('feet', vw, JSON.stringify(m));
+      }
     }
   }
 }
+fs.writeFileSync(OUT + '/feet.json', JSON.stringify(feet, null, 1));
 for (const e of errs.slice(0, 10)) say(e);
 await b.close();
