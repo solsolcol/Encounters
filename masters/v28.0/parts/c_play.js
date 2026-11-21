@@ -63,6 +63,7 @@
       smell.t = 0; smell.presses++;
       if (smell.pulse) smellButton(true, { pulse: false });
       if (kit && kit.chill) kit.chill(0.3, { secs: 0.5, tint: 'sour' });
+      sniffIn();
       threadsSpawn();
       if (smell.onPress) smell.onPress();
       return true;
@@ -70,7 +71,7 @@
     function smellTick(wdt) {
       if (smell.t < 0) return;
       const t0 = smell.t; smell.t += wdt;
-      if (t0 < SMELL.threads && smell.t >= SMELL.threads && kit && kit.chill) kit.chill(0, { secs: 1.2 });
+      if (t0 < SMELL.threads && smell.t >= SMELL.threads) { if (kit && kit.chill) kit.chill(0, { secs: 1.2 }); sniffOut(); }
       if (smell.t >= SMELL.cycle) smell.t = -1;
       if (smell.shown && kit && kit.button) { const w = smell.t < 0 ? 0 : 1 - smell.t / SMELL.cycle;
         if (Math.abs(w - smell.waitDrawn) > 0.012 || (w === 0 && smell.waitDrawn !== 0)) { smell.waitDrawn = w; kit.button('smell', { wait: w }); } }
@@ -476,6 +477,7 @@
        both) */
     function playFrame(wdt, st) {
       threadsFrame(wdt, st);
+      bedsTick(wdt, st);
       presTick(wdt);
       if (nineOn && st !== 'cine') PRAI5.tick(wdt);
       if (st !== 'play') return;
@@ -483,6 +485,7 @@
       walkersTick(wdt);
       strainTick(wdt);
       urgeTick();
+      ambTick5();
     }
     function playReset() {
       smell.t = -1; smell.presses = 0; smell.shown = false; smell.pulse = false; smell.waitDrawn = -1;
@@ -491,4 +494,5 @@
       Object.assign(sight, { heat: 0, was: false, shutPeak: 0, topArmed: true, restSaid: true, step: -1 });
       stains5.grp.visible = false; nineOn = false; castPhaseNow = null;
       pres.angry.flinch = 0;
+      soundReset5();
     }

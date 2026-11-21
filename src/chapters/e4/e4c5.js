@@ -408,11 +408,12 @@
     /* (the speed-up of v26.11 that chapters 3 and 4 took: a picture's decoded copy let go once it is on the graphics chip) */
     render: { freePictures: true },
     /* SPIRIT VISION (chapter 4's fiftieth seam, as chapter 4 tuned it: R61, R105), from the hunt on (the walkway holds it
-       shut: "Not yet. First your nose."). Its own sounds wait for this chapter's (another chapter's sound named here would
-       leave that chapter's pack): the picture, the wave and the heart's beat on the HUD, silent until then */
+       shut: "Not yet. First your nose."), with this chapter's own copies of its sounds (M10: another chapter's sound named
+       here would leave that chapter's pack) */
     vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
               front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
-              heart: { bpm: 112, rest: 76, vol: 0, secs: 2.2, restSecs: 4.5 } },
+              heart: { bpm: 112, rest: 76, sound: 'u5heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
+              sound: { on: 'u5vison', off: 'u5visoff', vol: 0.85, bed: ['u5visbed', 0.56], music: ['u5vismus', 0.32], duck: 0.6 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
@@ -460,8 +461,9 @@
     items: [],
 
     musicVol: 0,
-    /* THE BEDS: none yet (TODO: the plan's 10; each the chapter's own file, at 0 here and mixed by the place and the beat) */
-    ambience: { beds: [] },
+    /* THE BEDS, every one at 0 here: the play's mixer (c_psound.js bedsTick) sets each by the place and the beat, a film
+       through BED5.film. The order is BED5_AT's */
+    ambience: { beds: [['u5walkbed', 0], ['u5courtbed', 0], ['u5roombed', 0], ['u5fanroom', 0], ['u5sour', 0], ['u5flies', 0], ['u5clock', 0], ['u5lampbuzz', 0], ['u5threads', 0]] },
     voiceLine: null,
 
     words: {
@@ -5724,14 +5726,20 @@
     cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Walking', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
-    /* THE COLLECTOR (people/RECORD.md 3b: one level, his full body, 314,540 triangles: he sits across the table inside
-       2.2 m), at his cushion at the table's west end. Seated by his own body on the cushion (o.seat.down: his bottom on
-       it, each leg laid down to the floor from there). His file is replaced in place when CAST-2's mend lands */
+    /* THE COLLECTOR (people/RECORD.md 3b: ONE level, his full body, 314,540 triangles, drawn at every distance: he sits
+       across the table inside 2.2 m), at his cushion at the table's west end. Seated by his own body on the cushion
+       (o.seat.down: his bottom on it, each leg laid down to the floor from there). His four takes, as CAST-2 measured them
+       (21 Nov): the sit (the hermit's, retargeted) holds his collar bones 12 to 23 degrees raised, the library take's own
+       shrug, so it is let down (`shoulders`), and turns his head up to 57 degrees, so his head is damped as Grandmaster
+       Pho's seated talk is (0.3); the stand (Jun's Idle_3) and his own walk are clean; the standing talk (Mr Koh's) slopes
+       his shoulders and stands his collar off his neck: NEVER CAST HERE (he talks seated). His hands are each one rigid
+       piece, the fingers spread: no shot shows him gripping a piece (they are laid on a cut, the case moved by itself) */
     { const S0 = at0('table', 'collector');
       cast.col = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, hidden: true, skins: false,
         win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
         seat: { y: CUSHION_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
-        headDamp: { Sitting_Answering_Questions: [0.35, 'Sitting_Answering_Questions'] } });
+        shoulders: { Sitting_Answering_Questions: 1, Idle_3: 1 },
+        headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.col.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
 
     /* (each phase's places for them are the play's: c_play.js castPhase, from the world's STATION; a film that hands to a
@@ -7224,6 +7232,7 @@
       smell.t = 0; smell.presses++;
       if (smell.pulse) smellButton(true, { pulse: false });
       if (kit && kit.chill) kit.chill(0.3, { secs: 0.5, tint: 'sour' });
+      sniffIn();
       threadsSpawn();
       if (smell.onPress) smell.onPress();
       return true;
@@ -7231,7 +7240,7 @@
     function smellTick(wdt) {
       if (smell.t < 0) return;
       const t0 = smell.t; smell.t += wdt;
-      if (t0 < SMELL.threads && smell.t >= SMELL.threads && kit && kit.chill) kit.chill(0, { secs: 1.2 });
+      if (t0 < SMELL.threads && smell.t >= SMELL.threads) { if (kit && kit.chill) kit.chill(0, { secs: 1.2 }); sniffOut(); }
       if (smell.t >= SMELL.cycle) smell.t = -1;
       if (smell.shown && kit && kit.button) { const w = smell.t < 0 ? 0 : 1 - smell.t / SMELL.cycle;
         if (Math.abs(w - smell.waitDrawn) > 0.012 || (w === 0 && smell.waitDrawn !== 0)) { smell.waitDrawn = w; kit.button('smell', { wait: w }); } }
@@ -7637,6 +7646,7 @@
        both) */
     function playFrame(wdt, st) {
       threadsFrame(wdt, st);
+      bedsTick(wdt, st);
       presTick(wdt);
       if (nineOn && st !== 'cine') PRAI5.tick(wdt);
       if (st !== 'play') return;
@@ -7644,6 +7654,7 @@
       walkersTick(wdt);
       strainTick(wdt);
       urgeTick();
+      ambTick5();
     }
     function playReset() {
       smell.t = -1; smell.presses = 0; smell.shown = false; smell.pulse = false; smell.waitDrawn = -1;
@@ -7652,7 +7663,90 @@
       Object.assign(sight, { heat: 0, was: false, shutPeak: 0, topArmed: true, restSaid: true, step: -1 });
       stains5.grp.visible = false; nineOn = false; castPhaseNow = null;
       pres.angry.flinch = 0;
+      soundReset5();
     }
+    /* ================================================================ THE PLAY'S SOUND (M7, on the sounds M10 made:
+       masters/v28.0/sound/manifest.json, every one in main.js's STING_SAMPLE)
+       THE BEDS of the places he walks, each eased toward what the place and the beat want (chapter 3's mixBeds, as chapter
+       4's c_tsound.js; the engine ducks every bed 8 dB under a voice): the walkway at dusk; the court after dark with a
+       wall lamp's buzz near its lamps; his living room with its clock; the receiving room's afternoon and its fan; and
+       under them THE SMELL (u5sour), louder as he nears where it comes from (the trail's strength on the walkway, the
+       nearest place not yet found in the hunt, the pieces at the table); the flies at the drain; the threads' own drift
+       while SMELL shows them. Spirit Vision's own bed and music are the engine's (DATA.vision.sound), and its duck draws
+       these back under it. In a film the beds are the film's: BED5.film, when a film writes it ({ walk, court, room, rfan,
+       sour, ... }), else all at 0 (a film cues its own) */
+    const BED5_NAMES = ['walk', 'court', 'room', 'rfan', 'sour', 'flies', 'tick', 'buzz', 'threads'];
+    const BED5_VOL = { walk: 0.55, court: 0.55, room: 0.5, rfan: 0.55, sour: 0.32, flies: 0.45, tick: 0.22, buzz: 0.2, threads: 0.3 };
+    const BED5_EASE = { walk: 1.0, court: 1.0, room: 1.0, rfan: 1.2, sour: 0.8, flies: 0.6, tick: 0.6, buzz: 0.6, threads: 0.35 };
+    const BED5 = { mix: {}, film: null };
+    for (const k of BED5_NAMES) BED5.mix[k] = 0;
+    /* (the order of DATA.ambience.beds: a_head.js declares them, each at 0) */
+    const BED5_AT = { walk: 0, court: 1, room: 2, rfan: 3, sour: 4, flies: 5, tick: 6, buzz: 7, threads: 8 };
+    function bedsTick(wdt, st) {
+      if (!(wdt > 0)) return;
+      const want = {}; for (const k of BED5_NAMES) want[k] = 0;
+      if (st === 'cine') { if (BED5.film) for (const k in BED5.film) if (k in want) want[k] = BED5.film[k]; }
+      else if (st !== 'title' && st !== 'chapter' && phase) {
+        const x = myX(), z = myZ();
+        const inHouse = z > HOUSE.face && z < 120, inRoom = z > 120;
+        if (inRoom) want.rfan = BED5_VOL.rfan;
+        else if (inHouse) { want.room = BED5_VOL.room; want.tick = BED5_VOL.tick * Math.max(0, 1 - distTo(-6.15, -1.72) / 6); }
+        else if (inCourt(x, z, 0.3)) { want.court = BED5_VOL.court; want.walk = phase === 'walk' ? BED5_VOL.walk * 0.4 : 0;
+          if (phase !== 'walk') want.buzz = BED5_VOL.buzz * Math.max(0, 1 - Math.min(distTo(-9.28, -5.87), distTo(-7.72, -5.87)) / 3.5); }
+        else { want.walk = BED5_VOL.walk; if (phase !== 'walk') want.court = BED5_VOL.court * 0.35; }
+        /* the smell, by how near its source is */
+        let k = 0;
+        if (phase === 'walk' && asked()) k = trailStrength(trailNear(x, z)) * 0.9;
+        else if (phase === 'hunt') { const q = nearestUnfound(); if (q) k = Math.max(0.15, 1 - distTo(q.x, q.z) / 9); }
+        else if (phase === 'table' && !play.found.has('m')) k = 0.7;
+        want.sour = BED5_VOL.sour * k;
+        if (phase === 'walk') want.flies = BED5_VOL.flies * Math.max(0, 1 - distTo(FLOOR.DRAIN.x, FLOOR.DRAIN.z) / 5);
+        want.threads = smell.t >= 0 && smell.t < SMELL.threads + 0.4 ? BED5_VOL.threads : 0;
+      }
+      const B = DATA.ambience.beds;
+      for (const n of BED5_NAMES) { BED5.mix[n] += (want[n] - BED5.mix[n]) * (1 - Math.exp(-wdt / BED5_EASE[n])); if (B[BED5_AT[n]]) B[BED5_AT[n]][1] = BED5.mix[n]; }
+    }
+    /* THE PLACES' OWN NOISES, one at a time on the chapter's clock from their own seeded stream (e3c3's shape, v21.13):
+       on the walkway the last voices of a playground, a television through a wall, mynahs settling, far noises; in the
+       court at night its far noises; in the receiving room a shutter somewhere and a far chime. Each panned to where it
+       comes from, quieter while a line is said, never two at once, in play only; reset() rewinds the stream */
+    let ambSeed5 = 0x2805, ambAt5 = 0, ambLast5 = '';
+    function ambRand5() { ambSeed5 = (ambSeed5 + 0x6D2B79F5) | 0; let t = ambSeed5; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+    function panAt5(x, z) { const dx = x - myX(), dz = z - myZ(), a = Math.atan2(dx, -dz) + yaw.rotation.y; return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75); }
+    const AMB5 = {
+      walk: [['u5playground', 0.35, () => [24, -10]], ['u5tvwall', 0.3, () => [-1.4, -4 - ambRand5() * 8]], ['u5mynah', 0.35, () => [20, -2 - ambRand5() * 14]], ['u5os4', 0.3, () => [30, -20]]],
+      court: [['u5os1', 0.32, () => [-8.5, -24]], ['u5os2', 0.32, () => [-20, -10]], ['u5os3', 0.3, () => [4, -12]], ['u5os4', 0.28, () => [-8.5, 10]]],
+      room: [['u5shutter', 0.35, () => [12, 240]], ['u5farchime', 0.3, () => [-12, 238]]]
+    };
+    function ambTick5() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const z = myZ(), set = z > 120 ? 'room' : (phase === 'walk' && !inCourt()) ? 'walk' : (phase === 'hunt' && z < HOUSE.face) ? 'court' : null;
+      if (!set) { ambAt5 = 0; return; }
+      if (!ambAt5) { ambAt5 = dayClock.t + 5 + ambRand5() * 7; return; }
+      if (dayClock.t < ambAt5) return;
+      const L = AMB5[set]; let i = Math.floor(ambRand5() * L.length); if (L[i][0] === ambLast5) i = (i + 1) % L.length;
+      const [n, v, at] = L[i], p = at(); ambLast5 = n;
+      worldSfx(n, v * (lineBusy() ? 0.6 : 1), 1, panAt5(p[0], p[1]));
+      ambAt5 = dayClock.t + 9 + ambRand5() * 12;
+    }
+    /* SMELL's breath: in (dealt in turn), and out as the threads go, two and a half seconds before the next */
+    const SNIFF5 = ['u5sniff1', 'u5sniff2', 'u5sniff3'];
+    let sniffN5 = 0;
+    function sniffIn() { if (worldSfx) worldSfx(SNIFF5[sniffN5++ % SNIFF5.length], 0.8, 1, 0); }
+    function sniffOut() { if (worldSfx) worldSfx('u5sniffout', 0.7, 1, 0); }
+    /* a presence at the table, looked at: its own sound, from where it is */
+    const PRES_SND = { k1: 'u5pcangry', k2: 'u5pchungry', k3: 'u5pcwarm' };
+    function presSound(c) { const k = c === 'k1' ? 'angry' : c === 'k2' ? 'hungry' : 'energy', q = TABLE5.P[k];
+      if (worldSfx) worldSfx(PRES_SND[c], 0.75, 1, panAt5(q.x, q.z)); }
+    /* every sound the play can ask for, warmed as its phase begins (v10.2) */
+    const WARM5 = { walk: ['u5walkbed', 'u5courtbed', 'u5sour', 'u5flies', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5weaker', 'u5playground', 'u5tvwall', 'u5mynah', 'u5os4'],
+                    hunt: ['u5courtbed', 'u5roombed', 'u5clock', 'u5lampbuzz', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5os1', 'u5os2', 'u5os3', 'u5os4',
+                           'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart'],
+                    table: ['u5fanroom', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5shutter', 'u5farchime', 'u5pcangry', 'u5pchungry', 'u5pcwarm',
+                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart'] };
+    function warm5(p) { if (warmSounds && WARM5[p]) warmSounds(WARM5[p]); }
+    function soundReset5() { for (const k of BED5_NAMES) BED5.mix[k] = 0; BED5.film = null; ambSeed5 = 0x2805; ambAt5 = 0; ambLast5 = ''; sniffN5 = 0;
+      for (const b of DATA.ambience.beds) b[1] = 0; }
 
     /* ================================================================ THE STORY'S SKELETON (the tracker's M5c)
        THE PHASES (the plan's 4: "each a save"): walk -> hunt -> fight -> table -> ask.
@@ -7839,7 +7933,7 @@
     const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null };
     const asked = () => play.found.has('t') && play.found.has('j');
     function walkBegin() {
-      lookAt0(LOOK_OF.walk); castPhase('walk');
+      lookAt0(LOOK_OF.walk); castPhase('walk'); warm5('walk');
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); if (play.found.has('e')) kit.vision({ r: 0 }); }
       Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null });
       smellButton(false);
@@ -7914,7 +8008,7 @@
     const hunt5 = { pending: null, since: 0, wp: false, shown: new Set(), hints: new Set(), nag: null };
     const PLACE_OF = { s1: { line: 'q5h1', hint: 'ph5h6' }, s2: { line: 'q5h2', hint: 'ph5h5' }, s3: { line: 'q5h3', hint: 'ph5h7' } };
     function huntBegin(found) {
-      play.found = new Set(found); lookAt0(LOOK_OF.hunt); castPhase('hunt');
+      play.found = new Set(found); lookAt0(LOOK_OF.hunt); castPhase('hunt'); warm5('hunt');
       if (kit && kit.vision) kit.vision(null);
       smellButton(true);
       Object.assign(hunt5, { pending: null, since: dayClock.t, wp: false, nag: null }); hunt5.shown = new Set(); hunt5.hints = new Set();
@@ -8012,7 +8106,7 @@
       if (kit.root) kit.root(true);
     }
     function tableBegin(found) {
-      play.found = new Set(found); lookAt0(LOOK_OF.table); castPhase('table'); seatHim();
+      play.found = new Set(found); lookAt0(LOOK_OF.table); castPhase('table'); seatHim(); warm5('table');
       if (kit && kit.vision) kit.vision(null);
       smellButton(true);
       table5.since = dayClock.t;
@@ -8034,6 +8128,7 @@
       if (phase !== 'table' || play.busy || play.found.has(c) || !visOpen()) return false;
       play.busy = true;
       if (c === 'k1') pres.angry.flinch = 1;                   // (the angry one flinches when it is looked at)
+      presSound(c);
       say(line);
       andThen(() => { play.busy = false; got(c); if (lookedN() === 3) tableQuestion(); else objectiveFor(); });
       return true;
@@ -8117,7 +8212,7 @@
     smell.onPress = () => {
       if (phase === 'walk') {
         const sp = wayS(myX(), myZ());
-        if (walk5.maxS - sp > 4 && sp < 4.5 && !heard.has('q5w4') && !lineBusy()) say('q5w4');   // "Weaker here." (once)
+        if (walk5.maxS - sp > 4 && sp < 4.5 && !heard.has('q5w4') && !lineBusy()) { say('q5w4'); if (worldSfx) worldSfx('u5weaker', 0.6, 1, 0); }   // "Weaker here." (once)
       } else if (phase === 'hunt') huntSmelled();
       else if (phase === 'table') tableSmelled();
     };

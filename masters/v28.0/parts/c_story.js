@@ -184,7 +184,7 @@
     const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null };
     const asked = () => play.found.has('t') && play.found.has('j');
     function walkBegin() {
-      lookAt0(LOOK_OF.walk); castPhase('walk');
+      lookAt0(LOOK_OF.walk); castPhase('walk'); warm5('walk');
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); if (play.found.has('e')) kit.vision({ r: 0 }); }
       Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null });
       smellButton(false);
@@ -259,7 +259,7 @@
     const hunt5 = { pending: null, since: 0, wp: false, shown: new Set(), hints: new Set(), nag: null };
     const PLACE_OF = { s1: { line: 'q5h1', hint: 'ph5h6' }, s2: { line: 'q5h2', hint: 'ph5h5' }, s3: { line: 'q5h3', hint: 'ph5h7' } };
     function huntBegin(found) {
-      play.found = new Set(found); lookAt0(LOOK_OF.hunt); castPhase('hunt');
+      play.found = new Set(found); lookAt0(LOOK_OF.hunt); castPhase('hunt'); warm5('hunt');
       if (kit && kit.vision) kit.vision(null);
       smellButton(true);
       Object.assign(hunt5, { pending: null, since: dayClock.t, wp: false, nag: null }); hunt5.shown = new Set(); hunt5.hints = new Set();
@@ -357,7 +357,7 @@
       if (kit.root) kit.root(true);
     }
     function tableBegin(found) {
-      play.found = new Set(found); lookAt0(LOOK_OF.table); castPhase('table'); seatHim();
+      play.found = new Set(found); lookAt0(LOOK_OF.table); castPhase('table'); seatHim(); warm5('table');
       if (kit && kit.vision) kit.vision(null);
       smellButton(true);
       table5.since = dayClock.t;
@@ -379,6 +379,7 @@
       if (phase !== 'table' || play.busy || play.found.has(c) || !visOpen()) return false;
       play.busy = true;
       if (c === 'k1') pres.angry.flinch = 1;                   // (the angry one flinches when it is looked at)
+      presSound(c);
       say(line);
       andThen(() => { play.busy = false; got(c); if (lookedN() === 3) tableQuestion(); else objectiveFor(); });
       return true;
@@ -462,7 +463,7 @@
     smell.onPress = () => {
       if (phase === 'walk') {
         const sp = wayS(myX(), myZ());
-        if (walk5.maxS - sp > 4 && sp < 4.5 && !heard.has('q5w4') && !lineBusy()) say('q5w4');   // "Weaker here." (once)
+        if (walk5.maxS - sp > 4 && sp < 4.5 && !heard.has('q5w4') && !lineBusy()) { say('q5w4'); if (worldSfx) worldSfx('u5weaker', 0.6, 1, 0); }   // "Weaker here." (once)
       } else if (phase === 'hunt') huntSmelled();
       else if (phase === 'table') tableSmelled();
     };

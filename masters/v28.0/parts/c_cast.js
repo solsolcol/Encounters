@@ -98,14 +98,20 @@
     cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Walking', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
-    /* THE COLLECTOR (people/RECORD.md 3b: one level, his full body, 314,540 triangles: he sits across the table inside
-       2.2 m), at his cushion at the table's west end. Seated by his own body on the cushion (o.seat.down: his bottom on
-       it, each leg laid down to the floor from there). His file is replaced in place when CAST-2's mend lands */
+    /* THE COLLECTOR (people/RECORD.md 3b: ONE level, his full body, 314,540 triangles, drawn at every distance: he sits
+       across the table inside 2.2 m), at his cushion at the table's west end. Seated by his own body on the cushion
+       (o.seat.down: his bottom on it, each leg laid down to the floor from there). His four takes, as CAST-2 measured them
+       (21 Nov): the sit (the hermit's, retargeted) holds his collar bones 12 to 23 degrees raised, the library take's own
+       shrug, so it is let down (`shoulders`), and turns his head up to 57 degrees, so his head is damped as Grandmaster
+       Pho's seated talk is (0.3); the stand (Jun's Idle_3) and his own walk are clean; the standing talk (Mr Koh's) slopes
+       his shoulders and stands his collar off his neck: NEVER CAST HERE (he talks seated). His hands are each one rigid
+       piece, the fingers spread: no shot shows him gripping a piece (they are laid on a cut, the case moved by itself) */
     { const S0 = at0('table', 'collector');
       cast.col = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, hidden: true, skins: false,
         win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
         seat: { y: CUSHION_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
-        headDamp: { Sitting_Answering_Questions: [0.35, 'Sitting_Answering_Questions'] } });
+        shoulders: { Sitting_Answering_Questions: 1, Idle_3: 1 },
+        headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.col.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
 
     /* (each phase's places for them are the play's: c_play.js castPhase, from the world's STATION; a film that hands to a

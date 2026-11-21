@@ -148,11 +148,12 @@
     /* (the speed-up of v26.11 that chapters 3 and 4 took: a picture's decoded copy let go once it is on the graphics chip) */
     render: { freePictures: true },
     /* SPIRIT VISION (chapter 4's fiftieth seam, as chapter 4 tuned it: R61, R105), from the hunt on (the walkway holds it
-       shut: "Not yet. First your nose."). Its own sounds wait for this chapter's (another chapter's sound named here would
-       leave that chapter's pack): the picture, the wave and the heart's beat on the HUD, silent until then */
+       shut: "Not yet. First your nose."), with this chapter's own copies of its sounds (M10: another chapter's sound named
+       here would leave that chapter's pack) */
     vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
               front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
-              heart: { bpm: 112, rest: 76, vol: 0, secs: 2.2, restSecs: 4.5 } },
+              heart: { bpm: 112, rest: 76, sound: 'u5heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
+              sound: { on: 'u5vison', off: 'u5visoff', vol: 0.85, bed: ['u5visbed', 0.56], music: ['u5vismus', 0.32], duck: 0.6 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
@@ -200,8 +201,9 @@
     items: [],
 
     musicVol: 0,
-    /* THE BEDS: none yet (TODO: the plan's 10; each the chapter's own file, at 0 here and mixed by the place and the beat) */
-    ambience: { beds: [] },
+    /* THE BEDS, every one at 0 here: the play's mixer (c_psound.js bedsTick) sets each by the place and the beat, a film
+       through BED5.film. The order is BED5_AT's */
+    ambience: { beds: [['u5walkbed', 0], ['u5courtbed', 0], ['u5roombed', 0], ['u5fanroom', 0], ['u5sour', 0], ['u5flies', 0], ['u5clock', 0], ['u5lampbuzz', 0], ['u5threads', 0]] },
     voiceLine: null,
 
     words: {
