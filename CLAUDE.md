@@ -272,6 +272,17 @@ that fits it, with the version it came from.
   him and no work on the others ("Stop wasting effort and just use the first model unless there is a very strong reason
   to use the 4th model": he had said twice that the first looked best and was still handed three choices). The words in
   quotes are his; the rule's wording is mine, drawn from them. (v28.0)
+- THE EFFORT IS FITTED TO THE WORK, by my own judgement and without asking him ("you should be smart enough to be
+  adaptive and know what routine work requires what level of effort, and what work requires max effort. Why do i have
+  to tell you that"; the same day, of four bodies and a long clean-up nobody needed: "I can't believe you spent my
+  entire week of fable credits just doing this zavier model"). His "Fable 5.2 max" for a piece of work names the MODEL
+  for all of it, and max effort for the work that needs it: a design, a fight's or a film's direction, the story's
+  words, the judgement of a body or a picture, a hard fault. ROUTINE work (records, backups, a recipe run again, a
+  clean-up already proved on another model, a search, a list, a measured swap) is done in the fewest steps, and a
+  helper started for it runs at low or medium effort, never at max. No helper is started for what a few steps here
+  can do. Before a long job he is told about how much effort it will take, as with credits, and he decides. The
+  session's own effort dial is his setting: it cannot be turned from inside the session, and that is said, never
+  pretended. The words in quotes are his; the rule's wording is mine, drawn from them. (v28.0)
 
 ### How the work is done and checked
 
