@@ -59,16 +59,27 @@
       if (M.size > 20000) M.clear();
       M.set(key, best); return best;
     }
-    /* the bodies put in THIS drawn frame (document.timeline's time is one value for every call inside one frame), so a body
-       is kept off the ones already standing in this picture, never off where another stood a frame before (a seek then
-       lands on the same picture as play) */
-    const navFrame = { t: NaN, list: [] };
+    /* the bodies put in THIS PICTURE, so a body is kept off the ones already standing in it, never off where another stood
+       a picture before: inside a film, each call of the film's frame begins a new picture (its frame(t) puts every one of
+       its people for that t: a seek, a skip, a probe's run of seeks and play all land on the same picture); in play, one
+       drawn frame is one picture (document.timeline's time is one value for every call inside a frame) */
+    const navFrame = { t: NaN, list: [], depth: 0 };
     const navNow = () => { try { return document.timeline.currentTime; } catch (e) { return 0; } };
+    function navHook() {
+      if (navHook.done) return;
+      let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
+      navHook.done = true;
+      const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
+        const f = function (...a) { navFrame.depth++; navFrame.list.length = 0; navFrame.t = NaN; try { return f0.apply(this, a); } finally { navFrame.depth--; } };
+        f.__nav = true; o.frame = f; };
+      for (const k of Object.keys(F)) wrap(F[k]);
+    }
     let navWalker = null;                          // (the body fmWalk is moving: kept off the solids only, by its route)
     const navSeated = (x, z) => { for (const k in SEAT) { const s = SEAT[k]; if (Math.hypot(x - s.x, z - s.z) < 0.4) return true; } return false; };
     function navAt(P, x, z) {
       if (!NAV5.on || !P || !P.key || !NAV_FLOOR.test(P.key) || (typeof FS5 !== 'undefined' && FS5.on) || navSeated(x, z)) return null;
-      const t = navNow(); if (t !== navFrame.t) { navFrame.t = t; navFrame.list.length = 0; }
+      navHook();
+      if (!navFrame.depth) { const t = navNow(); if (t !== navFrame.t) { navFrame.t = t; navFrame.list.length = 0; } }
       const r = navR(P), walking = navWalker === P;
       const others = walking ? null : navFrame.list.filter(o => o[3] !== P && !o[4]).map(o => [o[0], o[1], o[2]]);
       const q = navStand(x, z, r, others);
@@ -147,7 +158,8 @@
       const moving = navWalkerMove0(W0, tx, tz, wdt, pace);
       if (!NAV5.on || !W0 || !W0.P || !W0.P.group || (typeof FS5 !== 'undefined' && FS5.on)) return moving;
       const P = W0.P, g = P.group.position, r = navR(P), others = [[myX(), myZ(), 0.25]];
-      for (const w of walkers.list) if (w !== W0 && w.P && w.P.group && w.P.group.visible) others.push([w.P.group.position.x, w.P.group.position.z, navR(w.P)]);
+      let L = []; try { L = walkers.list; } catch (e) { /* (not yet made) */ }
+      for (const w of L) if (w !== W0 && w.P && w.P.group && w.P.group.visible) others.push([w.P.group.position.x, w.P.group.position.z, navR(w.P)]);
       const q = navStand(g.x, g.z, r, others); if (q && (q[0] !== g.x || q[1] !== g.z)) { g.x = q[0]; g.z = q[1]; NAV5.moved++; }
       return moving;
     };
