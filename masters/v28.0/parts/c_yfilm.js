@@ -635,9 +635,12 @@
           }
         }));
         PRAI5.look(turned ? 'trance' : 'vision'); PRAI5.tick(0.016);
-        /* his sight, opened without his asking (the wave out from him), held until the violet */
+        /* his sight, opened without his asking (the wave out from him), held until the violet; under the violet his OWN sight
+           is shut (kit.vision(false)), or a sight he had open in the hunt came back the moment the hold let go, and the
+           third person of the turn was drawn in the vision's negative (prepare-00047, 21 Nov) */
         fmVision(t, T.open, 2.2, turned ? T.violet + 0.4 : Infinity, 0.01);
         if (turned) fmVisionOff();
+        if (t >= T.violet + 0.6 && !FM5.once.has('sightShut')) { FM5.once.add('sightShut'); if (kit && kit.vision) kit.vision(false); }
         /* THE SOUR, hard, as they come */
         if (kit && kit.chill) { const k = turned ? 0 : smo(c01((t - T.come) / 2.4)) * 0.95;
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
