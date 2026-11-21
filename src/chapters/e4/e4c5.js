@@ -9971,7 +9971,8 @@
       if (kit && kit.captions) kit.captions(null);
       lookAt0('DUSK');
     }
-    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName, smell: smell.presses, smellT: +smell.t.toFixed(2), heat: +sight.heat.toFixed(3), pending: hunt5.pending, wp: walk5.wp || hunt5.wp, fight: fightSnap() }; }
+    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName, smell: smell.presses, smellT: +smell.t.toFixed(2), heat: +sight.heat.toFixed(3), pending: hunt5.pending, wp: walk5.wp || hunt5.wp,
+                                     walkers: walkers.list.map(w => [w.n, w.ahead ? 1 : 0, +w.s.toFixed(2)]), walkIdle: +walk5.idle.toFixed(1), given: walk5.given, fight: fightSnap() }; }
 
     /* ================================================================ THE FILMS' PICTURES (M9: masters/v28.0/parts/c_yfilm.js)
        Every film of the plan's 4 (the opening, the devotee, the preparation and the turn, the bag tied, the collector's

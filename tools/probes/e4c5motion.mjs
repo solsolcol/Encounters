@@ -16,6 +16,7 @@ const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
+p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text().slice(0, 300)); });
 const T0 = Date.now(), logf = fs.createWriteStream(OUT + '/log.txt');
 const log = (...a) => { const s = ((Date.now() - T0) / 1000).toFixed(0) + 's ' + a.join(' '); console.log(s); logf.write(s + '\n'); };
 await p.goto(PAGE + '?ch=e4c5', { waitUntil: 'load', timeout: 240000 });
@@ -57,21 +58,25 @@ const walkDone = () => p.waitForFunction(() => !window.__mot.walk, null, { timeo
 const rec = (on) => p.evaluate((on) => { window.__mot.on = on; }, on);
 const take = async (name) => { const R = await p.evaluate(() => { const r = window.__mot.rec; window.__mot.rec = []; return r; }); fs.writeFileSync(`${OUT}/${name}.json`, JSON.stringify(R)); log(name, R.length, 'frames'); return R; };
 const runs = {};
+const ONLY = process.env.RUNS ? process.env.RUNS.split(',') : null, want = (k) => !ONLY || ONLY.includes(k);
 /* the walkway, both asked: he walks it to the gate; then, back at the start, he stands still until his teacher walks on */
-await phase('walk:t,j,e'); await rec(true);
+if (want('walk')) { await phase('walk:t,j,e'); await rec(true);
 await walkPath([[0.1, -3], [0.1, -8], [0.05, -13.8], [-1.5, -14.9], [-7.6, -15.1]]); await walkDone();
-await new Promise(r => setTimeout(r, 4000)); runs.walk = await take('walk');
-await phase('walk:t,j,e'); await rec(true);
+await new Promise(r => setTimeout(r, 4000)); runs.walk = await take('walk'); }
+if (want('ahead')) { await phase('walk:t,j,e'); await rec(true);
+const sn = async () => log('  story', JSON.stringify(await p.evaluate(() => { const S = window.__enc.stage, s = S.snap().story; return { t: S.dayClock.t, walkers: s.walkers, idle: s.walkIdle, given: s.given, phase: s.phase, found: s.found }; })));
+await sn();
 await p.waitForFunction(() => window.__enc.stage.dayClock.t > 52, null, { timeout: 1500000, polling: 1000 }).catch(() => log('  the walkway clock did not reach 52 s'));
-await new Promise(r => setTimeout(r, 3000)); runs.ahead = await take('ahead');
+await sn(); await new Promise(r => setTimeout(r, 3000)); await sn(); runs.ahead = await take('ahead'); }
+if (want('hunt')) {
 /* the hunt: from his door into the court, his sight opened there, and back */
 await phase('hunt:s1'); await rec(true);
 await walkPath([[-8.5, -6.5], [-8.6, -9.5]]); await walkDone();
 await p.evaluate(() => window.__enc.visionToggle()); await new Promise(r => setTimeout(r, 9000));
 await p.evaluate(() => window.__enc.visionToggle()); await walkPath([[-8.4, -7.0], [-7.9, -5.2]]); await walkDone();
-await new Promise(r => setTimeout(r, 3000)); runs.hunt = await take('hunt');
+await new Promise(r => setTimeout(r, 3000)); runs.hunt = await take('hunt'); }
 /* the table: seated */
-await phase('table:'); await rec(true); await new Promise(r => setTimeout(r, 12000)); runs.table = await take('table');
+if (want('table')) { await phase('table:'); await rec(true); await new Promise(r => setTimeout(r, 12000)); runs.table = await take('table'); }
 /* the reading */
 const names = ['pho', 'phoS', 'ton', 'jun', 'koh', 'col'];
 const out = [];
