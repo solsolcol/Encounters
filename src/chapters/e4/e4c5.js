@@ -11338,7 +11338,7 @@
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
       fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
       /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
-      people: () => people, crowd: () => crowd
+      people: () => people, crowd: () => crowd, shot: () => FM5.shot
     };
 
     /* ================================================================ THE FRAME, AND THE STAGE HANDED TO THE ENGINE */
