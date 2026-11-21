@@ -1549,9 +1549,10 @@
            solve made again and the stick laid again; nothing calls it in play) */
         tune(o = {}) { if (o.tilt != null) TILT = o.tilt * D2R; if (o.fist) STAFF.fist = o.fist.slice(); if (o.pole) STAFF.pole = o.pole.slice(); if (o.lean != null) STAFF.lean = o.lean * D2R;
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
+          if (o.out != null) STAFF.out = o.out * D2R;
           G = null; failed = false; wroteQ = null; wroteArm = null;
           if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
-          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM }; }
+          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1) }; }
       };
     })();
     if (typeof STICK5 === 'object') STICK5.grip = PHOGRIP5;

@@ -8924,9 +8924,10 @@
            solve made again and the stick laid again; nothing calls it in play) */
         tune(o = {}) { if (o.tilt != null) TILT = o.tilt * D2R; if (o.fist) STAFF.fist = o.fist.slice(); if (o.pole) STAFF.pole = o.pole.slice(); if (o.lean != null) STAFF.lean = o.lean * D2R;
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
+          if (o.out != null) STAFF.out = o.out * D2R;
           G = null; failed = false; wroteQ = null; wroteArm = null;
           if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
-          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM }; }
+          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1) }; }
       };
     })();
     if (typeof STICK5 === 'object') STICK5.grip = PHOGRIP5;
@@ -10354,7 +10355,9 @@
           /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
-          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
+          /* (its light normal-blended, never added: added, every layer of its body over another summed to white, a white
+             blot with pink edges where the Naga should be ruby, together-phone 5.8 on deploy 10; the standing rule's) */
+          const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.NormalBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
           /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
              on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
              shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga

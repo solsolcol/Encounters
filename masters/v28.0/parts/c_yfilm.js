@@ -278,7 +278,7 @@
       /* (R25: laid round the whole court, its reared head 2 m long ended on the loop's own start, where the dive from the
          arch also lands: the head is the model's own now, rigid, and needs room of its own) */
       function pathFor(sx, sz) {
-        const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;
+        const C = COURT, ins = 0.62, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;   // (0.62 off the side walls: at 0.42 the dive's swing into the west side put its body into the wall)
         const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
         const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
@@ -339,9 +339,10 @@
                ground with the hood and the face on it. Laid slice by slice round the path, each reared slice came out a
                flat sheet up to 2.6 m tall, and the head's 22 % of the body, stretched along the path, a 7 m wall of red
                planes across the court and through the people in it: together-phone 5.8, 12.8, 15.2 and 19.9 on deploy 16
-               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is laid WHOLE, the
-               model's own shape, at the path's head in the path's own frame (its neck meets the body's last slice); the
-               tail folds into the stick's head it rises from. The middle: the longest run of slices under 0.85 m tall */
+               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is carried flat and
+               raised at the end WHOLE, the model's own shape, in the path's own frame (its neck meets the body's last
+               slice); the tail folds into the stick's head it rises from (set(), below). The middle: the longest run of
+               slices under 0.85 m tall */
             const ylo = new Float32Array(NB).fill(1e9), yhi = new Float32Array(NB).fill(-1e9);
             for (let i = 0; i < n; i++) { const b0 = bin[i], y = base[i * 3 + 1]; if (y < ylo[b0]) ylo[b0] = y; if (y > yhi[b0]) yhi[b0] = y; }
             const tall = (b0) => yhi[b0] - ylo[b0] > 0.85 && yhi[b0] > ylo[b0];
@@ -386,19 +387,27 @@
           g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
           if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
-          /* the lying middle stretched from the stick's head to where the head has come (k); the head whole at k, in the
-             path's frame there; the tail folded small into the stick's head. All of it grows out of the stick over the
-             first quarter of the way (it rises from it) */
-          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), arr = st.geo.attributes.position.array, n = arr.length / 3, R = st.reg, O = st.off;
-          const H = frameAt(kk, FRH), T0 = frameAt(0, FRT), F = FR;
+          /* THE LYING MIDDLE stretched from the stick's head to where the head has come (k), thin where it leaves the stick
+             (its first 1.6 m: it rises from a point; full-thick, it brushed his teacher's arm); THE HEAD carried along the
+             path ahead of that point FLAT (each slice of it pressed to the body's own height round the path) and RAISED, the
+             model's whole reared head and hood, over the last eighth of the way, where the path runs straight up the court's
+             east side; THE TAIL folded into the stick's head. All of it grows out of the stick over the first quarter of the
+             way, and nothing goes under the ground. Measured before it was drawn (tools: four stick places, every twentieth
+             of the way): no point of it in a wall or under the ground; a head carried whole round the path stood in the
+             west wall at its turns, up to 1.3 m (its hood leans with the path) */
+          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), hr = smo(c01((kk - 0.88) / 0.12)), arr = st.geo.attributes.position.array, n = arr.length / 3;
+          const R = st.reg, O = st.off, B = st.base, cl = st.cl, LEN = st.len, alZ = st.along === 'z', T0 = frameAt(0, FRT), F = FR;
           for (let i = 0; i < n; i++) {
             const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
-            if (r === 1) { frameAt(o2 * kk, F); const xx = o0 * gr, yy = o1 * gr;
-              arr[i * 3] = F[0] + F[6] * xx + F[9] * yy; arr[i * 3 + 1] = F[1] + F[7] * xx + F[10] * yy; arr[i * 3 + 2] = F[2] + F[8] * xx + F[11] * yy; }
-            else if (r === 2) { const xx = o0 * gr, yy = o1 * gr, zz = o2 * gr;
-              arr[i * 3] = H[0] + H[3] * zz + H[6] * xx + H[9] * yy; arr[i * 3 + 1] = H[1] + H[4] * zz + H[7] * xx + H[10] * yy; arr[i * 3 + 2] = H[2] + H[5] * zz + H[8] * xx + H[11] * yy; }
-            else { const xx = o0 * gr * 0.25, yy = Math.max(-0.3, Math.min(0.3, o1)) * gr * 0.25;
-              arr[i * 3] = T0[0] + T0[6] * xx + T0[9] * yy; arr[i * 3 + 1] = T0[1] + T0[7] * xx + T0[10] * yy; arr[i * 3 + 2] = T0[2] + T0[8] * xx + T0[11] * yy; }
+            let px, py, pz;
+            if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp;
+              px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy; }
+            else if (r === 2) { const b0 = cl.bin[i], c = alZ ? B[i * 3] : B[i * 3 + 2], fx = (c - cl.cx[b0]) * gr, fy = Math.max(-0.32, Math.min(0.32, B[i * 3 + 1] - cl.cy[b0])) * gr;
+              const xx = fx + (o0 * gr - fx) * hr, yy = fy + (o1 * gr - fy) * hr, uv = kk + o2 * gr / LEN, ex = uv > 1 ? (uv - 1) * LEN : 0;
+              frameAt(Math.min(1, uv), F);
+              px = F[0] + F[3] * ex + F[6] * xx + F[9] * yy; py = F[1] + F[4] * ex + F[7] * xx + F[10] * yy; pz = F[2] + F[5] * ex + F[8] * xx + F[11] * yy; }
+            else { px = T0[0]; py = T0[1]; pz = T0[2]; }
+            arr[i * 3] = px; arr[i * 3 + 1] = Math.max(0.01, py); arr[i * 3 + 2] = pz;
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
         },
