@@ -103,9 +103,10 @@
       sayLine(q.name, q.vol, q.onStart, q.pan);
     }
     /* a line of the script, by its key. WHO SAYS IT TALKS from the line's own start and rests after it (v11.4): his
-       teacher standing or seated, Ton, Jun, Mr Koh (the collector's body is not cast yet; his lines are heard) */
+       teacher standing or seated, Ton, Jun, Mr Koh, the collector at the table */
     const TALKER = { pho: () => { const S0 = castOf('phoS'); return S0 && S0.group.visible ? S0 : castOf('pho'); },
-                     ton: () => castOf('ton'), jun: () => castOf('jun'), koh: () => castOf('koh') };
+                     ton: () => castOf('ton'), jun: () => castOf('jun'), koh: () => castOf('koh'),
+                     collector: () => { const C = castOf('col'); return C && C.group.visible ? C : null; } };
     function say(name) {
       const L = LINES[name]; if (!L) { console.warn('e4c5: no line ' + name + ' in the script'); queueLine(name); return; }
       const P = TALKER[L[0]] ? TALKER[L[0]]() : null;

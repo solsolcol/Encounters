@@ -428,6 +428,7 @@
       for (const k in pres) { pres[k].grp.visible = false; pres[k].fx = ctx.spirit ? ctx.spirit(pres[k].grp, PRES_LOOK[k]) : null; }
     })();
     function presTick(wdt) {
+      if (getState() === 'cine') return;                      // (a film directs them itself: the rite's endings)
       const on = phase === 'table' || phase === 'ask';
       for (const k in pres) pres[k].grp.visible = on;
       if (!on) return;
@@ -452,12 +453,14 @@
     let castPhaseNow = null;
     function castPhase(p) {
       castPhaseNow = p;
-      const st = STATION[p] || STATION.walk, pho = castOf('pho'), phoS = castOf('phoS'), ton = castOf('ton');
-      const show = (P, on, at) => { if (!P) return; if (at) put(P, at.x, at.z, at.ry);
+      const st = STATION[p] || STATION.walk, pho = castOf('pho'), phoS = castOf('phoS'), ton = castOf('ton'), col = castOf('col');
+      const show = (P, on, at) => { if (!P) return; if (at) put(P, at.x, at.z, at.ry, at.y != null ? at.y : undefined);
         if (on) { if (P.ready) P.group.visible = true; else whenReady(P, (Q) => { Q.group.visible = true; }); } else P.group.visible = false;
         if (on) { rest(P, 0); gaze(P, null); P.rate = 1; } };
-      if (p === 'walk' || p === 'hunt') { show(pho, true, st.pho); show(ton, true, st.ton); show(phoS, false); }
-      else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true); }
+      if (p === 'walk' || p === 'hunt') { show(pho, true, st.pho); show(ton, true, st.ton); show(phoS, false); show(col, false); }
+      /* case three: his teacher cross-legged on his cushion, the collector seated at the table's west end (c_cast.js casts
+         each seated on his own body: put back at his home, at his rest) */
+      else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home); }
       if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       stains5.grp.visible = p === 'hunt';
       if (p === 'walk') walkersInit(); else walkers.list = [];
