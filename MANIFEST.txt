@@ -1151,3 +1151,6 @@ dd0dfa3a0d8f66d36599a0af96e4834d9338aeebacb80c3c5e3bec8f2385998b  masters/v27.0/
 bfba0a5a7f0c52168d2bb8d3faf38ba2c5c5ca847d4d5726ab3a8bfdbf53211f  masters/v27.0/src/original-ravi.glb
 273954377fe1ce5df1f373ca2cfdf9a68f60adbe538c1280e353f25da1c38642  masters/v27.0/src/original-shoerack.glb
 1a0c0b359a990434dad615880ef549b79458dbc17d97b16d70bd7f23612e920d  masters/v27.0/src/original-sofa.glb
+a995bb216c7cc860e8785e7430ae195794ea2b9c02736a1ab597c71328a57346  masters/v27.0/src/original-standfan.glb
+cac6a15bb89750a510881122de38ffa27a9b120a73690553eedfbe98fe26d865  masters/v27.0/src/original-stool.glb
+0e35bcd3b73bb63936b2e5c4e8909813f70d7d2bf1a1860f085d4f9c1e7c2f19  masters/v27.0/src/original-streetlamp.glb
