@@ -1872,7 +1872,7 @@
     place('w5clothtable', R.cx, 0, R.cz, 0, { name: 'clothtable', sz: 0.70 / 0.976 });
     solidXZ(R.cx - 0.66, R.cz - 0.40, R.cx + 0.66, R.cz + 0.40, 0.34);
     things.padcase = place('w5padcase', R.cx - 0.36, 0.34, R.cz - 0.05, 18 * DEG, { name: 'padcase', matte: true });
-    const SEAT = { pho: { x: R.cx, z: R.cz + 0.78 }, him: { x: R.cx, z: R.cz - 0.80 }, collector: { x: R.cx - 0.98, z: R.cz - 0.05 } };
+    const SEAT = { pho: { x: R.cx, z: R.cz + 0.78 }, him: { x: R.cx, z: R.cz - 0.80 }, collector: { x: R.cx - 1.23, z: R.cz - 0.05 } };   // (R25: 0.25 m west of where it was: seated there his knees crossed the cloth table's edge and the padded case, clipscan)
     place('w5cushion', SEAT.pho.x, 0, SEAT.pho.z, 0); place('w5cushion', SEAT.him.x, 0, SEAT.him.z, 0); place('w5cushion', SEAT.collector.x, 0, SEAT.collector.z, 0);
     place('w5altarshelf', R.cx, 1.55, R.z1 - 0.2, Math.PI, { name: 'altarshelf', wood: true });
     things.fan = place('w5ceilfan', R.cx, R.ceil - 0.52, R.cz, 0, { name: 'ceilfan' });
@@ -1997,7 +1997,7 @@
                /* (the PLAY helper's measure: from the spawn Ton must be in a phone's view, v12.3; each clears the balustrade (x 0.8),
                   the inner wall (x -0.95) and the others by 0.7 m or more) */
                pho: { x: 0.0, z: -3.2, ry: Math.PI }, ton: { x: -0.3, z: -2.0, ry: 0.13 }, jun: { x: 0.32, z: -2.35, ry: -0.12 },
-               koh: { x: -9.0, z: -4.4, ry: Math.PI } },
+               koh: { x: -9.6, z: -4.75, ry: Math.PI } },   // (R25: out of the sofa, between it and the shoe cabinet, the door's west side)
       hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
                pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
@@ -5950,7 +5950,7 @@
          once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */
       wrapOff: null,
       carry(P) { if (this.who !== 'tonWrap' || !P || !P.ready || !things.staffWrap) return;
-        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2 }); }
+        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0.07 }); }
     };
     /* the nine as the play reaches them (c_play.js praiOf: cast.prai) */
     Object.defineProperty(cast, 'prai', { get: () => PRAI5.list, enumerable: false });
@@ -10486,7 +10486,10 @@
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
           { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
-          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          /* (Jun to Ton on a CUT between their lines: panned over the last 0.3 s of Jun's line, a phone lost him before his
+             last word, and the 70 degree pan was a whip: e4c5filmread FRAME, R25) */
+          { t: T.ju5o1 + SECS.ju5o1 + 0.12, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          { t: T.ju5o1 + SECS.ju5o1 + 0.15, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52, cut: true },
           { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
           { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
           { t: T.chime, name: 'doors', eye: CAR5.eye, at: [0.03, 1.45, 0.6], fp: 70, fd: 60 },
@@ -10510,13 +10513,13 @@
     const DUFFEL5 = {
       who: 'away', off: null,
       to(who) { this.who = who; const g = things.duffel; if (!g) return; if (who !== 'jun' && g.parent !== world) world.attach(g); g.visible = who !== 'away'; },
-      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2 }); }
+      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2, out: 0.1 }); }
     };
     /* A THING CARRIED IN ONE HAND (Ton's wrapped staff, Jun's duffel): its offset from the hand bone made ONCE, from the
        body's standing rest (its handles or its shaft at the palm's middle), and the thing carried by the hand bone from
        then on, so it goes where the hand goes in every take. `hang`: how far below the palm its top is (a bag) or, with
        `upright`, its foot over the floor (a staff carried) */
-    const _hhA = new THREE.Vector3(), _hhM = new THREE.Matrix4(), _hhQ = new THREE.Quaternion(), _hhS = new THREE.Vector3(1, 1, 1), _lbM = new THREE.Matrix4(), _lbI = new THREE.Matrix4();
+    const _hhA = new THREE.Vector3(), _hhO = new THREE.Vector3(), _hhM = new THREE.Matrix4(), _hhQ = new THREE.Quaternion(), _hhS = new THREE.Vector3(1, 1, 1), _lbM = new THREE.Matrix4(), _lbI = new THREE.Matrix4();
     /* a thing's box in its OWN frame (its meshes carried by their matrices relative to it), whatever stands it in the world */
     function localBox5(g) { const bb = new THREE.Box3(); g.updateWorldMatrix(true, true); _lbI.copy(g.matrixWorld).invert();
       g.traverse(o => { if (!o.isMesh || !o.geometry) return; if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
@@ -10550,6 +10553,11 @@
         if (g.parent !== world) world.attach(g);
         P.group.updateWorldMatrix(true, true); const pm = palmOf(P, sd, _hhA); if (!pm) return off;
         g.position.set(pm.x, pm.y - off.grip, pm.z);
+        /* (`out`, metres: carried BESIDE the body, the thing drawn that far out from the hand along the line from his hips
+           to it, level: hung under the palm's middle, the duffel's width and the staff's foot went through his thigh as he
+           walked, clipscan's pairs in the opening (staffWrap and duffel against their carriers, 600 to 1900 crossings)) */
+        if (o.out && P.hips) { P.hips.getWorldPosition(_hhO); const dx = pm.x - _hhO.x, dz = pm.z - _hhO.z, dl = Math.hypot(dx, dz);
+          if (dl > 1e-4) { g.position.x += dx / dl * o.out; g.position.z += dz / dl * o.out; } }
         if (o.upright) g.rotation.set(0, P.group.rotation.y + (o.ry || 0), Math.PI / 2, 'YXZ'); else g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0);
         g.visible = true; return off;
       }
