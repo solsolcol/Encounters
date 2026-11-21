@@ -602,8 +602,8 @@
     const LIVING = { x0: -12.3, x1: -5.1, z0: -5.5, z1: -1.6 };
     const DINING = { x0: -12.3, x1: -8.5, z0: -1.6, z1: 1.6 };
     const DOOR_FRONT = { x0: -8.9, x1: -8.1, h: 2.10 };
-    const WIN_A = { x0: -10.9, x1: -9.55, sill: 0.85, head: 2.10 };     // the front windows on the court, either side of the door
-    const WIN_B = { x0: -7.45, x1: -6.1, sill: 0.85, head: 2.10 };
+    const WIN_A = { x0: -10.95, x1: -10.0, sill: 0.85, head: 2.10 };    // the front windows on the court, either side of the door
+    const WIN_B = { x0: -7.0, x1: -6.05, sill: 0.85, head: 2.10 };      // (narrow, so the shoe cabinet stands between WIN_A and the door)
     const TERRACE = { z0: -4.7, z1: -2.6, h: 2.15, out: -13.8 };         // the terrace doors in the living room's west wall
     /* CASE THREE'S ROOM (the plan's 8.2): about 4 m by 5 m, upstairs, in daylight */
     const ROOM = { x0: -2.0, x1: 2.0, z0: 237.5, z1: 242.5, ceil: 2.80, cx: 0, cz: 240.0 };
@@ -1351,13 +1351,16 @@
       slab(-30, -52, 26, -52, 6, 28542);        // south, beyond the deck
       slab(-44, 12, -44, -40, 6, 28543);        // west, seen from the terrace
       /* the estate's trees on the lawn (chapter 4's real models of Singapore's street trees: declared, reuseInEpisode) */
+      /* (each a model of ~28,000 triangles: a few where they are seen, past the balustrade and the terrace, in cells of
+         24 m, each cell its own instanced mesh culled by its own sphere: the phone's budget, the plan's 13) */
       const TREES = [], PALMS = [], tr = rng(28544);
-      for (const [x, z] of [[8, -6], [16, 2], [24, -4], [30, 8], [12, 12], [20, 18], [-24, 0], [-30, 14], [-12, -38], [14, -12], [22, -10], [30, -14], [-8, -30], [-20, -32], [-30, -20], [12, -46], [-2, -44], [30, -40], [-34, -4], [-36, 6], [18, 6], [26, 12]])
+      for (const [x, z] of [[10, -8], [22, -6], [16, 8], [30, 4], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
         TREES.push({ x: x + (tr() - 0.5) * 2, y: G, z: z + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.75 + tr() * 0.25 });
-      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-14, -22], [-26, -23], [10, 0]])
+      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22]])
         PALMS.push({ x, y: G, z, ry: tr() * 6.28, s: 0.85 + tr() * 0.2 });
-      many('w4angsana', TREES, world, 0.03);
-      many('w4foxpalm', PALMS, world, 0.03);
+      const cells = (list) => { const m = new Map(); for (const it of list) { const k = Math.floor(it.x / 24) + ',' + Math.floor(it.z / 24); if (!m.has(k)) m.set(k, []); m.get(k).push(it); } return [...m.values()]; };
+      for (const c of cells(TREES)) many('w4angsana', c, world, 0.03);
+      for (const c of cells(PALMS)) many('w4foxpalm', c, world, 0.03);
     }
 
     /* ================================================================ THE LIFT CAR (the opening film: through his eyes,
@@ -1454,18 +1457,20 @@
     }
     /* MANY OF ONE THING, each stretched along its own x (the balustrade's 2 m sections fitted to each run): manyOf's own
        way (one InstancedMesh a mesh of the file, the file's transform folded in), with a scale per instance */
-    function manyX(key, list) {
+    function manyX(key, list, chunk = 3) {
       if (!have(key)) { waiting.add(key); return; }
       parseOnce(key).then(({ scene: src }) => {
         if (!alive) return;
         src.updateMatrixWorld(true);
         src.traverse(o => { if (!o.isMesh) return;
           const mat = o.material.clone(); mats.push(mat);
-          const im = new THREE.InstancedMesh(o.geometry, mat, list.length);
-          list.forEach((it, i) => { _me.set(0, it.ry || 0, 0, 'YXZ'); _mq.setFromEuler(_me);
+          /* (in pieces of `chunk`, each culled by its own sphere: one mesh for both runs was all of them in every frame) */
+          for (let c0 = 0; c0 < list.length; c0 += chunk) { const part = list.slice(c0, c0 + chunk);
+          const im = new THREE.InstancedMesh(o.geometry, mat, part.length);
+          part.forEach((it, i) => { _me.set(0, it.ry || 0, 0, 'YXZ'); _mq.setFromEuler(_me);
             _mm.compose(_mp.set(it.x, it.y, it.z), _mq, _ms.set(it.sx || 1, 1, 1)).multiply(o.matrixWorld); im.setMatrixAt(i, _mm); });
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.name = 'stock:' + key;
-          world.add(im); owned.push(im); });
+          world.add(im); owned.push(im); } });
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
     }
     const things = {};
@@ -1516,7 +1521,7 @@
     solidXZ(DOOR_FRONT.x0 - 0.05, HOUSE.face - 0.05, DOOR_FRONT.x0 + 0.08, HOUSE.face + 0.75);                 // the leaf, open, along the wall
     /* --- inside, by the door: the shoe cabinet against the front wall, west of the door, scaled to 0.35 m deep and
        darkened (RECORD.md 4; its ragged edges stay); the place under it is the first stain's */
-    const SHOE = { x: DOOR_FRONT.x0 - 0.62, z: LIVING.z0 + 0.175 + 0.01 };
+    const SHOE = { x: (WIN_A.x1 + DOOR_FRONT.x0) / 2, z: LIVING.z0 + 0.175 + 0.01 };
     place('w5shoecab', SHOE.x, 0, SHOE.z, 0, { name: 'shoecab', wood: true, sz: 0.35 / 0.53 });
     solidXZ(SHOE.x - 0.45, LIVING.z0, SHOE.x + 0.45, SHOE.z + 0.18, 1.06);
     /* --- the curtains: drawn over both front windows, each window two curtains a little apart and one a hand behind
@@ -1525,8 +1530,8 @@
     /* (a drawn curtain is lit from the room: its back glows a little in the lamps' warmth, seen from the court at dusk) */
     const lamplit = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if (mt && mt.emissive) { mt.emissive.set(0x3a2a18); if (mt.map) mt.emissiveMap = mt.map; } });
     for (const Wn of [WIN_A, WIN_B]) { const xm = (Wn.x0 + Wn.x1) / 2;
-      place('w5curtain', xm - 0.13, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 1.08, done: lamplit });
-      place('w5curtain', xm + 0.17, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 1.05, done: lamplit }); }
+      place('w5curtain', xm - 0.07, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 0.82, done: lamplit });
+      place('w5curtain', xm + 0.09, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 0.80, done: lamplit }); }
     place('w5curtain', LIVING.x0 + 0.2, HOUSE.ceil - 2.40 - 0.05, TERRACE.z1 + 0.42, Math.PI / 2, { sx: 0.55 });
     /* --- the living room: the sofa facing the television across the low table, the old armchair at the table's north
        end (where his nose is once behind the truth: 4.3), the floor lamp by the sofa's end, the television's console on

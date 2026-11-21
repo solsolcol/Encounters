@@ -34,9 +34,11 @@ const ALL = {
   armchair:   ['hunt', -7.3, -3.4, Math.PI, -0.3],
   doorout:    ['hunt', -8.5, -4.4, 0, -0.06],
   fight:      ['fight', -8.5, -10.6, Math.PI, -0.08],
-  fightcam:   ['fight', -8.5, -14.0, Math.PI, -0.45, 3.1 + 1.62 - 1.62],
+  fightcam:   ['fight', -8.5, -14.0, Math.PI, -0.454, 3.1 - 1.62],
   room:       ['table', 0, 239.4, Math.PI, -0.3],
-  roomwide:   ['table', -1.6, 237.9, Math.PI * 0.78, -0.12],
+  roomwide:   ['table', -1.6, 237.9, Math.PI + 0.64, -0.2],
+  roomseat:   ['table', 0, 239.2, Math.PI, -0.62, -0.47],
+  roomdoor:   ['table', 1.5, 242.0, 0.85, -0.25],
   roomwin:    ['table', -0.8, 240.6, -Math.PI / 2, -0.04]
 };
 const pick = process.env.VIEWS ? process.env.VIEWS.split(',') : Object.keys(ALL);
