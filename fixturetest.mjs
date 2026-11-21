@@ -2706,6 +2706,467 @@ K.hposeTakenByFilm = await p.evaluate(() => { const e = window.__enc; window.__f
 await until(() => window.__filmDone && window.__enc.getState() === 'play', 60000).catch(() => {});
 await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
 K.hposeFilmHandsBack = await p.evaluate(a0 => { const a = window.__enc.armNow(); return a.lv === false && a.rp.every((v, i) => v === a0.rp[i]); }, arm0);
+
+/* ---- v28.0: THE TAG MODE AND ITS SEAMS (60 to 65), on the fixture's plain-shapes fight --------------------------------
+   docs/V28.0-SEAMS.md is the reference; docs/V28.0-E4C5-PLAN.md §12 the proofs asked of each seam. The parts of every check
+   are kept in window.__tag (and printed when one fails). Real input wherever a player's input is the thing proved: the keys
+   and the mouse through the browser (CDP), the touches on the phone page below; the fixture's own verbs where the chapter is
+   the one that acts. Sanity is never compared live (the fixture's ghost drains it on wall time): what the mode HOLDS is
+   compared with what a save would write, and what a retry gives back is read the moment the card hands back */
+await lbl('tag');
+const tagParts = {};
+const TAG_HELP = `
+  const E = window.__enc, kit = E.kit, st = E.stage, F = st.fight;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const poll = async (fn, ms) => { const t0 = performance.now(); while (!fn()) { if (performance.now() - t0 > ms) return false; await frames(1); } return true; };
+  const near = (a, b, e = 1e-6) => Math.abs(a - b) < e;
+  const logSince = (n) => E.tag().log.slice(n);
+`;
+const tagEval = (body, arg) => p.evaluate(new Function('arg', 'return (async () => {' + TAG_HELP + body + '})();'), arg);
+const tagCheckSrc = async (name, body, arg) => {
+  const r = await tagEval(body, arg).catch(e => ({ threw: String(e && e.message || e) }));
+  tagParts[name] = r;
+  const ok = !!r && typeof r === 'object' && !r.threw && Object.values(r).every(v => v === true);
+  if (!ok) console.log('tag ' + name + ' parts:', JSON.stringify(r));
+  return ok;
+};
+const tagUntil = (body, ms = 30000) => p.waitForFunction(new Function('return (() => {' + TAG_HELP + body + '})();'), null, { timeout: ms, polling: 100 }).then(() => true, () => false);
+
+/* 61 · A BUTTON OF THE CHAPTER'S OWN: shown in the column under the eye, pressed by a click and by its key, its wait refusing
+   a press, its lock said and never pressed, hidden under the menu; (in the mode, hidden: below; kitReset: at the end) */
+await tagEval(`window.__nose = []; kit.button('nose', { label: 'SNIFF', key: 'KeyN', onPress: r => window.__nose.push(r) }); await frames(3); return true;`);
+K.buttonShown = await tagCheckSrc('button', `
+  const R = {}, b = document.querySelector('.cBtn'), eye = document.getElementById('visionBtn');
+  R.made = !!b && E.buttons().length === 1 && E.buttons()[0].shown;
+  const rb = b.getBoundingClientRect(), re = eye.getBoundingClientRect();
+  R.underTheEye = Math.abs(rb.left - re.left) < 1 && rb.top >= re.bottom + 4 && rb.width === re.width;
+  R.label = b.querySelector('.invLabel span').textContent === 'SNIFF' && b.getAttribute('aria-label') === 'SNIFF';
+  return R;`);
+await p.click('.cBtn');
+await p.keyboard.press('KeyN');
+K.buttonPressed = await tagUntil(`return window.__nose.length >= 2;`, 20000)
+  && await tagCheckSrc('buttonPressed', `
+  const R = {}; R.byTap = window.__nose[0].by === 'tap' && window.__nose[0].id === 'nose'; R.byKey = window.__nose[1].by === 'key';
+  kit.button('nose', { wait: 0.5 }); await frames(2);
+  R.ringDrawn = document.querySelector('.cBtn').classList.contains('waiting');
+  return R;`);
+await p.click('.cBtn');
+await p.waitForTimeout(950);                 // (past the refusal's own pause of 0.9 s, so the lock's words are not held back)
+K.buttonWaitRefuses = await tagCheckSrc('buttonWait', `
+  const R = {}; await frames(2);
+  R.notTold = window.__nose.length === 2 && E.buttons()[0].presses === 2;
+  kit.button('nose', { wait: 0, locked: 'Your nose is full.' }); await frames(2);
+  return R;`);
+await p.click('.cBtn');
+K.buttonLockSays = await tagCheckSrc('buttonLock', `
+  const R = {}; await frames(2);
+  R.notTold = window.__nose.length === 2;
+  R.said = document.getElementById('nofire').textContent === 'Your nose is full.';
+  kit.button('nose', { locked: null });
+  return R;`);
+await p.keyboard.press('KeyM');
+K.buttonHiddenUnderMenu = await tagUntil(`return E.getState() === 'menu';`, 20000)
+  && await tagCheckSrc('buttonMenu', `await frames(2); return { hidden: getComputedStyle(document.querySelector('.cBtn')).display === 'none' };`);
+await p.keyboard.press('KeyM');
+await tagUntil(`return E.getState() === 'play';`, 20000);
+
+/* 62 · the 'sour' tint on the cold (not a seam: one more colour of the thirty-third), and nothing drawn at 0 */
+K.chillSour = await tagCheckSrc('sour', `
+  const R = {};
+  kit.chill(0.6, { tint: 'sour', secs: 0 }); await frames(3);
+  const c = E.cold().chill;
+  R.tinted = c.tint === '150,166,128 128,146,104 52,64,40' && c.shown && /rgba\\(52,64,40,/.test(c.tintBg);
+  kit.chill(0, { secs: 0, tint: null }); await frames(3);
+  const d = E.cold().chill;
+  R.goneAtZero = !d.shown && d.tint === null && d.filter === '';
+  return R;`);
+
+/* 64 · THE BRIEF'S PICTURE (\`tag\`): the fight is briefed by a guard event whose picture is the mode's own (two figures, the
+   ring passing between them, a fingertip on the switch); START opens the fight */
+await tagEval(`kit.give('rifle'); kit.equip('rifle'); return true;`);
+await tagUntil(`return document.body.classList.contains('weaponUp');`, 20000);
+await tagEval(`window.__briefR = null; st.fightBrief().then(r => { window.__briefR = r; }); return true;`);
+await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return !!(d.event && d.event.briefing); }, null, { timeout: 30000 });
+K.tagPicture = await tagCheckSrc('picture', `
+  const R = {}, dm = document.getElementById('evDemo');
+  R.named = dm.className === 'tag' && getComputedStyle(dm).display !== 'none';
+  R.drawn = ['dka', 'dkb', 'dkr', 'dks', 'dkf'].every(c => getComputedStyle(dm.querySelector('.' + c)).display === 'block');
+  R.notOpenYet = !kit.tag().on;
+  return R;`);
+await tapOnce();                             // START
+K.tagOpensFromBrief = await tagUntil(`return window.__briefR === true && kit.tag().on && kit.tag().live;`, 30000);
+
+/* 60 · OPEN: the rig as it stood is held, the lens behind and above the played one, the first person's HUD aside */
+K.tagOpen = await tagCheckSrc('open', `
+  const R = {}; await frames(3);
+  const T = E.tag(), A = st.fightBodies.a, B = st.fightBodies.b;
+  R.played = T.played === 'a' && T.live && T.decl;
+  R.boom = near(T.lens[0], A.position.x) && near(T.lens[1], A.position.y + 3.1) && near(T.lens[2], A.position.z + 4.0) && T.boomK === 1;
+  R.pivot = near(E.yaw.position.x, A.position.x, 1e-9) && near(E.yaw.position.z, A.position.z, 1e-9) && near(E.yaw.position.y, A.position.y + 1.62, 1e-9);
+  R.heading = E.yaw.rotation.y === 0 && near(E.pitch.rotation.x, -26 * Math.PI / 180, 1e-12) && E.camera.fov === 72;
+  R.hud = getComputedStyle(document.getElementById('tagHud')).display === 'block'
+    && document.querySelector('#tagA0 .tgLbl').textContent === 'ZAP' && document.querySelector('#tagA1 .tgLbl').textContent === 'RING'
+    && document.getElementById('tagA2').classList.contains('hide') && document.querySelector('#tagSw .tgName').textContent === 'VIOLET'
+    && document.querySelector('#tagSw').getAttribute('aria-label').endsWith('VIOLET');
+  R.asideFirstPerson = !document.body.classList.contains('weaponUp') && ['invBtn', 'visionBtn', 'torchBtn'].every(id => getComputedStyle(document.getElementById(id)).display === 'none')
+    && getComputedStyle(document.querySelector('.cBtn')).display === 'none' && document.getElementById('interact').classList.contains('hide');
+  const vm0 = E.vmPasses(); await frames(3);
+  R.handsNotDrawn = E.vmPasses() === vm0;
+  const san = E.stats.sanity; E.stats.sanity = 30; await frames(3);
+  const pn = document.getElementById('panic');
+  R.noRedEdge = +pn.style.opacity === 0 && !pn.classList.contains('critical');
+  E.stats.sanity = san;
+  R.rigSeenBefore = Array.isArray(F.rig0) && F.rig0.length === 16 * 4 + 7 && F.rig0[16 * 4 + 1] === 0 && F.rig0[16 * 4 + 2] === 0 && F.rig0[16 * 4 + 3] === 0;
+  const s0 = E.tagSave0(), cd = E.checkpointData();
+  R.saveHeld = !!s0 && JSON.stringify(cd.stats) === JSON.stringify(s0.st.stats) && cd.at.x === s0.at.x && cd.at.z === s0.at.z && cd.phase === s0.st.phase;
+  R.refusedTwice = kit.tag({ bodies: [{ id: 'x', obj: A }] }) === false;
+  return R;`);
+
+/* the walk BY THE SCREEN (W is away down the court, D to its right), the other body still; the look dead */
+const walkKey = async (key, body, ms = 40000) => { await p.keyboard.down(key); const ok = await tagUntil(body, ms); await p.keyboard.up(key); return ok; };
+await tagEval(`window.__w0 = { a: st.fightBodies.a.position.clone(), b: st.fightBodies.b.position.clone(), y: E.yaw.rotation.y, p: E.pitch.rotation.x }; return true;`);
+const wMoved = await walkKey('KeyW', `return window.__w0.a.z - st.fightBodies.a.position.z > 0.08;`);
+const dMoved = await walkKey('KeyD', `return st.fightBodies.a.position.x - window.__w0.a.x > 0.08;`);
+await p.mouse.move(200, 200); await p.mouse.move(700, 420, { steps: 6 }); await p.mouse.move(890, 300, { steps: 4 });
+K.tagWalk = wMoved && dMoved && await tagCheckSrc('walk', `
+  const R = {}, w = window.__w0, A = st.fightBodies.a, B = st.fightBodies.b; await frames(4);
+  R.awayDownTheCourt = A.position.z < w.a.z - 0.08;
+  R.toItsRight = A.position.x > w.a.x + 0.08;
+  R.otherStill = B.position.x === w.b.x && B.position.z === w.b.z;
+  R.rigFollows = near(E.yaw.position.x, A.position.x, 1e-9) && near(E.yaw.position.z, A.position.z, 1e-9);
+  R.facesItsWalk = Math.abs(Math.atan2(Math.sin(A.rotation.y - Math.PI / 2), Math.cos(A.rotation.y - Math.PI / 2))) < Math.abs(Math.atan2(Math.sin(Math.PI - Math.PI / 2), Math.cos(Math.PI - Math.PI / 2))) - 0.05;
+  R.lookDead = E.yaw.rotation.y === w.y && E.pitch.rotation.x === w.p && !document.pointerLockElement;
+  return R;`);
+
+/* the acts: a key, a click on a button, the main act by a click on the world; one act a frame, the main first */
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+await p.keyboard.press('Space');
+const keyActs = await tagUntil(`return logSince(window.__n0).some(r => r.act === 'zap' && r.phase === 'up');`, 20000);
+K.tagActByKey = keyActs && await tagCheckSrc('actKey', `
+  const L = logSince(window.__n0);
+  return { downThenUp: L.length === 2 && L[0].act === 'zap' && L[0].phase === 'down' && L[0].by === 'key' && L[0].who === 'a' && L[1].phase === 'up' };`);
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+await p.click('#tagA1');
+K.tagActByButton = await tagUntil(`return logSince(window.__n0).some(r => r.act === 'ring' && r.phase === 'down');`, 20000)
+  && await tagCheckSrc('actButton', `
+  await frames(2);
+  const R = {}, L = logSince(window.__n0);
+  R.told = L[0].act === 'ring' && L[0].by === 'click';
+  R.ringWaits = E.tag().acts.ring.wait > 0.9 && document.getElementById('tagA1').classList.contains('waiting');
+  return R;`);
+await tagEval(`window.__n0 = E.tag().log.length; window.__r0 = E.tag().refused; return true;`);
+await p.click('#tagA1');
+K.tagWaitRefuses = await tagUntil(`return E.tag().refused > window.__r0;`, 20000)
+  && await tagCheckSrc('actWait', `return { notTold: logSince(window.__n0).length === 0 };`);
+K.tagOneActAFrame = await tagCheckSrc('oneAFrame', `
+  const n0 = E.tag().log.length, d0 = E.tag().dropped;
+  const ev = (type, id, pid) => document.getElementById(id).dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: pid, pointerType: 'touch', isPrimary: pid === 31, button: 0 }));
+  ev('pointerdown', 'tagA1', 32); ev('pointerdown', 'tagA0', 31);      // (the second one in, but the main: it is the one)
+  await frames(3);
+  ev('pointerup', 'tagA0', 31); ev('pointerup', 'tagA1', 32);
+  await frames(3);
+  const L = logSince(n0);
+  return { one: L.length === 2 && L[0].act === 'zap' && L[0].phase === 'down' && L[0].by === 'tap' && L[1].act === 'zap' && L[1].phase === 'up',
+           dropped: E.tag().dropped === d0 + 1 };`);
+await p.waitForTimeout(950);
+K.tagLockSays = await tagCheckSrc('lockSays', `
+  const n0 = E.tag().log.length;
+  kit.tagAct('zap', { blocked: 'Not now.' }); await frames(2);
+  const dim = document.getElementById('tagA0').classList.contains('blocked');
+  document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 33, pointerType: 'mouse', button: 0 }));
+  await frames(3);
+  document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 33, pointerType: 'mouse', button: 0 }));
+  await frames(2);
+  const R = { dim, notTold: logSince(n0).length === 0, said: document.getElementById('nofire').textContent === 'Not now.' };
+  kit.tagAct('zap', { blocked: null, wait: 0.5 }); await frames(2);
+  R.waitRing = document.getElementById('tagA0').classList.contains('waiting') && Math.abs(parseFloat(document.querySelector('#tagA0 .tgWait').style.strokeDashoffset) - 295.31 * 0.5) < 0.2;
+  kit.tagAct('zap', { wait: 0, pulse: true }); await frames(2);
+  R.asks = document.getElementById('tagA0').classList.contains('pulse');
+  kit.tagAct('zap', { pulse: false });
+  return R;`);
+
+/* a pick: a click on a target's mark (the mouse is free); a click on the world elsewhere is the main act */
+const markAt = await tagEval(`
+  await frames(2);
+  for (const m of E.tag().marks) { const el = document.elementFromPoint(m.x, m.y); if (el && el.id === 'scene') return m; }
+  return null;`);
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+if (markAt) await p.mouse.click(markAt.x, markAt.y);
+K.tagPickByClick = !!markAt && await tagUntil(`return logSince(window.__n0).some(r => r.act === 'target');`, 20000)
+  && await tagCheckSrc('pick', `
+  const L = logSince(window.__n0);
+  return { picked: L.length === 1 && L[0].id === arg.id && L[0].by === 'click' && F.picked === arg.id };`, markAt);
+const emptyAt = await tagEval(`
+  await frames(2);
+  for (const [x, y] of [[120, 330], [200, 260], [90, 420], [300, 200], [160, 480]]) {
+    const el = document.elementFromPoint(x, y);
+    if (el && el.id === 'scene' && E.tag().marks.every(m => Math.hypot(m.x - x, m.y - y) > m.r + 12)) return { x, y };
+  }
+  return null;`);
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+if (emptyAt) await p.mouse.click(emptyAt.x, emptyAt.y);
+K.tagMainByClick = !!emptyAt && await tagUntil(`return logSince(window.__n0).some(r => r.act === 'zap' && r.phase === 'up');`, 20000)
+  && await tagCheckSrc('mainClick', `const L = logSince(window.__n0); return { main: L[0].act === 'zap' && L[0].by === 'click', tired: st.fightTargets.some(t => t.tired) };`);
+
+/* a hidden act: TAKE stands only while a tired one is within reach; its key does nothing until then; the count */
+K.tagHiddenAct = await tagCheckSrc('hidden', `
+  const R = {}, A = st.fightBodies.a;
+  const n0 = E.tag().log.length;
+  R.hiddenNow = document.getElementById('tagA2').classList.contains('hide');
+  return R;`);
+await p.keyboard.press('KeyE');
+K.tagHiddenKeyNothing = await tagCheckSrc('hiddenKey', `await frames(3); return { nothing: !E.tag().log.slice(-1)[0] || E.tag().log.slice(-1)[0].act !== 'take' };`);
+await tagEval(`const A = st.fightBodies.a, T = st.fightTargets.find(t => t.tired && !t.taken); T.m.position.set(A.position.x + 1.0, 1.0, A.position.z - 0.4); return true;`);
+await tagUntil(`return !document.getElementById('tagA2').classList.contains('hide');`, 20000);
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+await p.keyboard.press('KeyE');
+K.tagTakeAndCount = await tagUntil(`return logSince(window.__n0).some(r => r.act === 'take' && r.phase === 'down') && F.left === 2;`, 20000)
+  && await tagCheckSrc('count', `
+  await frames(3);
+  const dots = [...document.querySelectorAll('#tagCount i')];
+  return { dots: dots.length === 3 && dots.filter(d => d.classList.contains('lit')).length === 2 && getComputedStyle(document.getElementById('tagCount')).display === 'flex',
+           label: document.querySelector('#tagA2 .tgLbl').textContent === 'TAKE' };`);
+
+/* THE SWITCH: by its key; the lens glides from behind one to behind the other (never a jump); a second inside the lock is
+   refused; past it, back */
+/* (sampled from the page's own frames, from before the press: on a fast frame the whole glide is over before a poll from
+   outside could see it; inside the lock — the first frame and the second after the switch, a tenth of a second of the
+   mode's clock at most each — a switch asked by the verb and one by the key are both refused) */
+await tagEval(`
+  window.__n0 = E.tag().log.length; window.__gs = []; window.__lockTries = null;
+  const A = st.fightBodies.a, B = st.fightBodies.b;
+  window.__gA = [A.position.x, A.position.y + 3.1, A.position.z + 4]; window.__gB = [B.position.x, B.position.y + 3.1, B.position.z + 4];
+  let after = -1;
+  const f = () => {
+    const T = E.tag(); window.__gs.push({ p: T.played, g: T.gliding, l: T.lens, lock: T.lock });
+    if (T.played === 'b') {
+      after++;
+      if (after === 0) window.__lockTries = { verb: kit.tagSwitch() === false };
+      if (after === 1) { window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyF' })); window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyF' })); }
+      if (after === 3) window.__lockTries.key = E.tag().played === 'b' && E.tag().lock > 0;
+    }
+    if (window.__gs.length < 600 && !(after > 3 && !T.gliding)) requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+  return true;`);
+await p.keyboard.press('KeyF');
+const swOk = await tagUntil(`return E.tag().played === 'b' && !E.tag().gliding && window.__lockTries && window.__lockTries.key !== undefined;`, 30000);
+K.tagSwitch = swOk && await tagCheckSrc('switch', `
+  await frames(3);
+  const R = {}, L = logSince(window.__n0), gB = window.__gB;
+  const d = (l) => Math.hypot(l[0] - gB[0], l[1] - gB[1], l[2] - gB[2]);
+  const tot = Math.hypot(window.__gA[0] - gB[0], window.__gA[1] - gB[1], window.__gA[2] - gB[2]);
+  const glide = window.__gs.filter(s => s.p === 'b' && s.g).map(s => d(s.l));
+  R.told = L.length === 1 && L[0].act === 'switch' && L[0].from === 'a' && L[0].to === 'b' && L[0].by === 'key';
+  /* the switch's own frame shows the lens exactly where it stood (behind the one left: no jump), then every frame nearer
+     the new one's boom, and it ends there */
+  R.glided = glide.length >= 3 && glide.every((v, i) => i === 0 || v <= glide[i - 1] + 1e-9) && glide[1] < tot - 1e-6 && d(E.tag().lens) < 1e-6;
+  R.notAJump = glide.length >= 2 && Math.abs(glide[0] - tot) < 1e-3;
+  R.lockRefusedVerb = !!window.__lockTries && window.__lockTries.verb === true;
+  R.lockRefusedKey = !!window.__lockTries && window.__lockTries.key === true && L.length === 1;
+  R.buttonsChangeHands = document.querySelector('#tagA0 .tgLbl').textContent === 'GRIP' && document.querySelector('#tagSw .tgName').textContent === 'GOLD'
+    && document.querySelector('#tagA1 .tgLbl').textContent === 'SNIFF' && document.getElementById('tagA2').classList.contains('hide');
+  return R;`);
+await tagUntil(`return E.tag().lock === 0;`, 30000);
+await tagEval(`window.__n0 = E.tag().log.length; return true;`);
+await p.keyboard.press('KeyF');
+K.tagSwitchBack = await tagUntil(`return E.tag().played === 'a' && logSince(window.__n0).length === 1;`, 20000);
+
+/* a press held does not cross a switch: its up is said as cut, and its lift afterwards says nothing (the one who arrives
+   never spends it) */
+await tagUntil(`return E.tag().lock === 0;`, 30000);
+K.tagHoldCut = await tagCheckSrc('holdCut', `
+  const n0 = E.tag().log.length, el = document.getElementById('tagA0');
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 41, pointerType: 'touch', isPrimary: true, button: 0 }));
+  const down = await poll(() => logSince(n0).some(r => r.act === 'zap' && r.phase === 'down'), 20000);
+  const sw = kit.tagSwitch();
+  await frames(2);
+  el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 41, pointerType: 'touch', isPrimary: true, button: 0 }));
+  await frames(3);
+  const L = logSince(n0);
+  return { down, sw, cut: L.length === 3 && L[1].act === 'zap' && L[1].phase === 'up' && L[1].cut === 'switch' && L[2].act === 'switch',
+           nothingAfter: !L.some(r => r.act === 'grip') };`);
+
+/* the bodies: never closer than their two discs; stopped by the walls (the engine's own test, from where each stands) */
+await tagUntil(`return E.tag().lock === 0;`, 30000);
+await tagEval(`kit.tagSwitch('a'); return true;`);
+await tagUntil(`return E.tag().played === 'a' && !E.tag().gliding;`, 30000);
+await tagEval(`const B = st.fightBodies.b; kit.tagPlace('a', B.position.x, B.position.z + 1.4, {}); window.__minD = 9;
+  window.__apart = setInterval(() => { const A = st.fightBodies.a, B2 = st.fightBodies.b; window.__minD = Math.min(window.__minD, Math.hypot(A.position.x - B2.position.x, A.position.z - B2.position.z)); }, 30);
+  await frames(2); return true;`);
+await p.keyboard.down('KeyW');
+await tagUntil(`return window.__minD < 0.97;`, 30000);
+await p.waitForTimeout(1500);
+await p.keyboard.up('KeyW');
+await tagEval(`kit.tagPlace('a', -10.2, 3, {}); await frames(2); window.__minX = 0; window.__inWall = false;
+  window.__wallT = setInterval(() => { const A = st.fightBodies.a; window.__minX = Math.min(window.__minX, A.position.x); if (E.tagBlocked(A.position.x, A.position.z)) window.__inWall = true; }, 30); return true;`);
+await p.keyboard.down('KeyA');
+await tagUntil(`return st.fightBodies.a.position.x < -10.85;`, 30000);
+await p.waitForTimeout(1500);
+await p.keyboard.up('KeyA');
+K.tagBodiesKept = await tagCheckSrc('kept', `
+  clearInterval(window.__apart); clearInterval(window.__wallT);
+  return { apart: window.__minD >= 0.84 - 1e-6 && window.__minD < 0.97, wall: window.__minX >= -11 && window.__minX < -10.85 && !window.__inWall };`);
+
+/* the lens kept out of a wall: the violet one stands where his boom would pass through the pillar; switched to, the lens
+   stands in front of it, never inside a blocker, and inside the chapter's box */
+await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', -3.2, 5.0, {}); await frames(2); return true;`);
+await tagUntil(`return E.tag().lock === 0;`, 30000);
+await p.keyboard.press('KeyF');
+await tagUntil(`return E.tag().played === 'b' && !E.tag().gliding;`, 30000);
+K.tagLensClear = await tagCheckSrc('lensClear', `
+  await frames(3);
+  const T = E.tag(), L = new (E.yaw.position.constructor)(...T.lens);
+  return { pulledIn: T.boomK < 0.95, inFront: L.z < st.pillar.position.z - 0.4 - 0.28, notInABlocker: !E.blockers.some(b => b.containsPoint(L)),
+           insideBox: L.x >= -10.4 && L.x <= 10.4 && L.z >= -10.4 && L.z <= 10.2 };`);
+
+/* the other one's mark at the screen's edge while he is out of the picture: his name, his share */
+await tagEval(`kit.tagPlace('a', -3.2, 10.3, {}); await frames(3); return true;`);
+K.tagMate = await tagCheckSrc('mate', `
+  await poll(() => document.getElementById('tagMate').classList.contains('on'), 20000);
+  const el = document.getElementById('tagMate'), r = el.getBoundingClientRect();
+  return { shown: el.classList.contains('on') && el.querySelector('.tmName').textContent === 'GOLD',
+           onScreen: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight,
+           share: !el.classList.contains('noShare') };`);
+await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', st.fightHome.b[0], st.fightHome.b[1], {}); await frames(2); return true;`);
+
+/* under a minigame, the menu and a hidden tab NOTHING moves and the mode's clock stands; a held key's walk stops */
+await tagUntil(`return E.tag().lock === 0;`, 30000);
+await tagEval(`kit.tagSwitch('a'); return true;`);
+await tagUntil(`return E.tag().played === 'a' && !E.tag().gliding;`, 30000);
+await p.keyboard.down('KeyW');
+await tagUntil(`return st.fightBodies.a.position.z < st.fightHome.a[1] - 0.05;`, 30000);
+await p.keyboard.press('KeyM');
+await tagUntil(`return E.getState() === 'menu';`, 20000);
+const menu0 = await tagEval(`await frames(2); return { z: st.fightBodies.a.position.z, t: E.tag().t };`);
+await p.waitForTimeout(2500);
+const menu1 = await tagEval(`await frames(2); return { z: st.fightBodies.a.position.z, t: E.tag().t, hud: getComputedStyle(document.getElementById('tagHud')).display, boom: E.tag().wrote };`);
+await p.keyboard.up('KeyW');
+await p.keyboard.press('KeyM');
+await tagUntil(`return E.getState() === 'play' && E.tag().live;`, 20000);
+K.tagStillUnderMenu = menu0.z === menu1.z && menu0.t === menu1.t && menu1.hud === 'none' && menu1.boom === true;
+if (!K.tagStillUnderMenu) console.log('tag menu', JSON.stringify({ menu0, menu1 }));
+K.tagStillUnderPanel = await tagCheckSrc('panel', `
+  window.__evr = null; kit.event({ kind: 'tap', secs: 30 }).then(r => { window.__evr = r; });
+  await frames(2);
+  const a = { z: st.fightBodies.a.position.z, t: E.tag().t };
+  await new Promise(r => setTimeout(r, 1500)); await frames(2);
+  const R = { stood: st.fightBodies.a.position.z === a.z && E.tag().t === a.t && !E.tag().live, hidden: getComputedStyle(document.getElementById('tagHud')).display === 'none' };
+  kit.abortEvent(); await poll(() => window.__evr !== null && E.tag().live, 20000);
+  R.back = E.tag().live;
+  return R;`);
+K.tagStillHidden = await tagCheckSrc('hiddenTab', `
+  await frames(2);
+  const t0 = E.tag().t;
+  Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+  await new Promise(r => setTimeout(r, 1500));
+  delete document.hidden;
+  await frames(1);
+  const dt = E.tag().t - t0;
+  return { atMostATenth: dt <= 0.1 + 1e-9, back: E.tag().live };`);
+
+/* A FILM INSIDE IT: under the film no boom at all (the film places the lens by the rig alone); after it the mode is as it
+   was: on, the lens behind the played one again, the hands not drawn, the save still the one it opened on, the bodies where
+   the film left them */
+K.tagFilmInside = await tagCheckSrc('film', `
+  const R = {}, A = st.fightBodies.a, B = st.fightBodies.b;
+  const a0 = [A.position.x, A.position.z, B.position.x, B.position.z], s0 = JSON.stringify(E.tagSave0());
+  window.__filmDone = null;
+  R.started = kit.film('probe', { onDone: () => { window.__filmDone = true; kit.fade(0, 0.2); } }) === true;
+  let zero = true, n = 0;
+  await poll(() => { if (E.getState() === 'cine') { n++; const c = E.camera.position; if (c.x !== 0 || c.y !== 0 || c.z !== 0) zero = false; } return window.__filmDone && E.getState() === 'play'; }, 90000);
+  R.noBoomInFilm = zero && n >= 2;
+  await poll(() => kit.getFade() < 0.02, 30000); await frames(3);
+  const T = E.tag();
+  R.modeBack = T.on && T.live && T.wrote && near(T.lens[0], A.position.x) && near(T.lens[1], A.position.y + 3.1) && near(T.lens[2], A.position.z + 4.0);
+  const vm0 = E.vmPasses(); await frames(3);
+  R.handsStillOff = E.vmPasses() === vm0;
+  R.saveStillHeld = JSON.stringify(E.tagSave0()) === s0 && JSON.stringify(E.checkpointData().stats) === JSON.stringify(JSON.parse(s0).st.stats);
+  R.bodiesStay = A.position.x === a0[0] && A.position.z === a0[1] && B.position.x === a0[2] && B.position.z === a0[3];
+  return R;`);
+
+/* 65 · A LOSS THAT BEGINS AGAIN: the card (its own state, the chapter's words), its guard, and on BEGIN AGAIN the run as the
+   mode held it; five running leave the same fight as the first (and from the third the second button) */
+const retryOnce = async (i) => {
+  await tagEval(`kit.award('sanity', -7); kit.award('awareness', -3); window.__lr = null; const pr = st.fightLose(); window.__lrOk = !!pr && typeof pr.then === 'function'; if (window.__lrOk) pr.then(r => { window.__lr = r; }); return true;`);
+  await tagUntil(`return E.getState() === 'retry';`, 20000);
+  const card = await tagEval(`
+    const early = E.retryPress('again');
+    const c = document.getElementById('retryCard');
+    return { early, open: !c.classList.contains('hide') && E.retryState().open, label: document.getElementById('rtLabel').textContent,
+             line: document.getElementById('rtLine').textContent, again: document.getElementById('rtAgain').textContent,
+             more: !document.getElementById('rtMore').classList.contains('hide') ? document.getElementById('rtMore').textContent : null,
+             hud: getComputedStyle(document.getElementById('tagHud')).display };`);
+  await p.waitForTimeout(800);
+  const useMore = i === 4;
+  await p.click(useMore ? '#rtMore' : '#rtAgain');
+  await tagUntil(`return E.getState() === 'play' && window.__lr !== null && E.tag().live;`, 20000);
+  const after = await tagEval(`await frames(2);
+    const s0 = E.tagSave0();
+    return { atRetry: F.atRetry, held: { s: s0.st.stats.sanity, a: s0.st.stats.awareness, w: s0.st.stats.wisdom, phase: s0.st.phase },
+             restarts: F.restarts, last: F.lastRetry, told: window.__lr && window.__lr.button, presses: E.retryState().presses,
+             fight: JSON.stringify({ left: F.left, picked: F.picked, t: st.fightTargets.map(t => [t.m.position.x, t.m.position.z, t.tired, t.taken, t.hidden]),
+                                     a: [st.fightBodies.a.position.x, st.fightBodies.a.position.z], b: [st.fightBodies.b.position.x, st.fightBodies.b.position.z] }),
+             played: E.tag().played, count: E.tag().count };`);
+  return { card, after, useMore };
+};
+const retries = [];
+for (let i = 0; i < 5; i++) retries.push(await retryOnce(i));
+K.tagRetry = retries.every((r, i) => r.card.early === false && r.card.open && r.card.label === 'The room was lost' && r.card.again === 'BEGIN AGAIN'
+    && r.card.line === 'Begin the fight again from where it opened.' && r.card.hud === 'none'
+    && (i < 2 ? r.card.more === null : r.card.more === 'AN EASIER WAY')
+    && r.after.atRetry.s === r.after.held.s && r.after.atRetry.a === r.after.held.a && r.after.atRetry.w === r.after.held.w && r.after.atRetry.phase === r.after.held.phase
+    && r.after.restarts === i + 1 && r.after.presses === i + 1 && r.after.told === (r.useMore ? 'more' : 'again') && r.after.last === r.after.told
+    && r.after.fight === retries[0].after.fight && r.after.count && r.after.count.left === 3);
+if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
+
+/* 63 · THE CAPTION IN THE MODE, and every overlap of what the mode adds, by bounding box (a desktop of 900 x 600 here; the
+   phone's 390 x 844 and a low phone's 360 x 780 below) */
+const TAG_HUD_MINE = ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire'];
+const TAG_HUD_ALL = TAG_HUD_MINE.concat(['#stats', '#mute', '#menuBtn', '#volWrap', '#objective .obox']);
+const tagOverlaps = (pg) => pg.evaluate(([mine, all]) => {
+  const shown = el => { for (let a = el; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; } return true; };
+  const box = s => { const el = document.querySelector(s); if (!el || !shown(el)) return null; const r = el.getBoundingClientRect(); return r.width >= 1 && r.height >= 1 ? { s, x: r.left, y: r.top, w: r.width, h: r.height } : null; };
+  const B = all.map(box).filter(Boolean), bad = [], off = [];
+  for (const a of B) if (a.x < -0.5 || a.y < -0.5 || a.x + a.w > innerWidth + 0.5 || a.y + a.h > innerHeight + 0.5) off.push(a.s);
+  for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) {
+    const a = B[i], b = B[j]; if (!mine.includes(a.s) && !mine.includes(b.s)) continue;
+    if (a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5) bad.push(a.s + ' x ' + b.s);
+  }
+  return { measured: B.map(b => b.s), bad, off, boxes: B };
+}, [TAG_HUD_MINE, TAG_HUD_ALL]);
+await p.waitForTimeout(950);
+await tagEval(`kit.captions([{ at: 0, end: 60, text: 'A line said while the fight is on, long enough to wrap a little.' }]);
+  kit.tagAct('zap', { blocked: 'Not now.' }); await frames(2);
+  document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
+  await frames(2);
+  document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
+  await poll(() => document.getElementById('caption').classList.contains('on') && document.getElementById('nofire').classList.contains('on'), 20000);
+  await frames(2); return true;`);
+const ovD = await tagOverlaps(p);
+K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagSw', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
+console.log('tag HUD 900x600:', JSON.stringify({ bad: ovD.bad, off: ovD.off, measured: ovD.measured }));
+await tagEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); await frames(2); return true;`);
+
+/* LEFT: the rig bit for bit as it was the instant the mode opened (every matrix, the lens, the turns), no boom, the hands
+   drawn again, the first person's HUD back, the save moving again */
+K.tagLeave = await tagCheckSrc('leave', `
+  const R = {};
+  R.left = st.fightEnd('restore') === true && !kit.tag().on;
+  R.rigExact = Array.isArray(F.rig0) && Array.isArray(F.rig1) && F.rig0.length === F.rig1.length && F.rig0.every((v, i) => Object.is(v, F.rig1[i]));
+  R.noBoom = E.camera.position.x === 0 && E.camera.position.y === 0 && E.camera.position.z === 0 && !E.tag().wrote;
+  await frames(3);
+  const vm0 = E.vmPasses(); await frames(3);
+  R.handsBack = E.vmPasses() > vm0;
+  R.hudBack = !document.body.classList.contains('tagOn') && getComputedStyle(document.getElementById('tagHud')).display === 'none'
+    && document.body.classList.contains('weaponUp') && getComputedStyle(document.getElementById('visionBtn')).display !== 'none'
+    && getComputedStyle(document.querySelector('.cBtn')).display !== 'none';
+  R.saveMoves = !E.tagSave0() && JSON.stringify(E.checkpointData().stats) === JSON.stringify(E.worldState().stats);
+  R.refusedAfter = kit.tagAct('zap', { wait: 0.5 }) === false && kit.tagSwitch() === false && kit.retry({}) === false;
+  return R;`);
+await tagEval(`kit.take('rifle'); kit.button('nose', null); await frames(2); return true;`);
+K.buttonGone = await tagCheckSrc('buttonGone', `await frames(2); return { gone: !document.querySelector('.cBtn') && E.buttons().length === 0 && !document.body.classList.contains('hasCBtn') };`);
+await p.evaluate((parts) => { window.__tag = parts; }, tagParts);
 await p.evaluate(() => { window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
@@ -2807,6 +3268,152 @@ K.loseSheetLines = K.loseRetry && await p.evaluate(() => window.__enc.kit.lose({
   && await p.evaluate(() => { const s = document.getElementById('overSay').textContent; return s.length > 0 && s !== 'Her life ran out.'; });
 await p.evaluate(() => document.getElementById('retryBtn').click());
 await until(() => window.__enc.getState() === 'play', 120000).catch(() => {});
+
+/* v28.0 (seams 60, 61, 65): kitReset takes an open tag mode down (no boom, no class, the rig left to whoever resets: a
+   restart, a Continue, a change of chapter), with every button of the chapter's own and a retry card; and a chapter that
+   declares no `tag` has none: kit.tag refused, nothing drawn (what setChapter's kitReset does on a real change of chapter;
+   the fixture's declaration is taken away for a moment and put back, as the vision's proof does). Two bare points stand
+   for the bodies here: the stage is chapter 1's since the swap above */
+K.tagResetClears = await p.evaluate(async () => {
+  const E = window.__enc, kit = E.kit;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const O = E.yaw.constructor, a = new O(), b = new O();
+  a.position.set(E.yaw.position.x, 0, E.yaw.position.z); b.position.set(E.yaw.position.x + 1.5, 0, E.yaw.position.z + 0.4);
+  E.scene.add(a); E.scene.add(b);
+  const opened = kit.tag({ bodies: [{ id: 'a', obj: a }, { id: 'b', obj: b }] }) === true;
+  kit.button('x', { label: 'X' });
+  await frames(3);
+  const wasOn = E.tag().wrote && E.camera.position.length() > 1 && document.body.classList.contains('tagOn') && !!document.querySelector('.cBtn');
+  E.kitReset();
+  await frames(3);
+  const T = E.tag();
+  const cleared = !T.on && !T.wrote && E.camera.position.x === 0 && E.camera.position.y === 0 && E.camera.position.z === 0
+    && !document.body.classList.contains('tagOn') && !document.querySelector('.cBtn') && T.decl === true && !E.retryState().open;
+  E.scene.remove(a); E.scene.remove(b);
+  return opened && wasOn && cleared;
+}).catch(() => false);
+K.tagGoneWithChapter = await p.evaluate(() => {
+  const E = window.__enc, C = window.__CHAPTERS__.chtest, had = C.tag;
+  delete C.tag; E.kitReset();
+  const a = new (E.yaw.constructor)();
+  const gone = E.tag().decl === false && E.kit.tag({ bodies: [{ id: 'a', obj: a }] }) === false && !E.kit.tag().on && !E.tag().wrote;
+  C.tag = had; E.kitReset();
+  return gone && E.tag().decl === true;
+}).catch(() => false);
+
+/* ---- v28.0: THE TAG MODE ON A PHONE (a touch page of 390 x 844, as his phone lays it out; real touches with their own
+   timestamps, CDP): a finger already down when the mode opens is not its stick; the stick moves the played one by the screen;
+   a drag on the right turns nothing; a tap on a target's mark is a pick even in the stick's half; a button by a tap; the
+   upright screen's own boom and lens; and every overlap of what the mode adds, at 390 x 844 and at a low phone's 360 x 780 */
+{
+  const pctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+  const pp = await pctx.newPage();
+  pp.on('pageerror', e => errs.push('phone pageerror: ' + e.message));
+  pp.setDefaultNavigationTimeout(180000); pp.setDefaultTimeout(120000);
+  const pEval = (body, arg) => pp.evaluate(new Function('arg', 'return (async () => {' + TAG_HELP + body + '})();'), arg);
+  const pUntil = (body, ms = 30000) => pp.waitForFunction(new Function('return (() => {' + TAG_HELP + body + '})();'), null, { timeout: ms, polling: 100 }).then(() => true, () => false);
+  const pCheck = async (name, body, arg) => {
+    const r = await pEval(body, arg).catch(e => ({ threw: String(e && e.message || e) }));
+    tagParts['phone.' + name] = r;
+    const ok = !!r && typeof r === 'object' && !r.threw && Object.values(r).every(v => v === true);
+    if (!ok) console.log('tag phone ' + name + ' parts:', JSON.stringify(r));
+    return ok;
+  };
+  for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone']) K[k] = false;
+  try {
+    await pp.goto(PAGE + sep + 'ch=chtest', { waitUntil: 'load' });
+    await pp.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
+    await pp.tap('#startBtn');
+    await pp.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 180000 });
+    await pp.evaluate(() => { window.__enc.stats.sanity = 100; });
+    const cdp = await pctx.newCDPSession(pp);
+    const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y, id]) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })) });
+    const tap = async (x, y, id) => { await touch('touchStart', [[x, y, id]]); await touch('touchEnd', []); };
+    /* a finger down on the stick's half BEFORE the mode opens */
+    await touch('touchStart', [[80, 700, 1]]);
+    await touch('touchMove', [[80, 694, 1]]);
+    K.tagPhoneOpen = await pCheck('open', `
+      const R = {}; R.stickBefore = document.getElementById('stick').classList.contains('on');
+      R.opened = st.fightOpen() === true; await frames(3);
+      const T = E.tag(), A = st.fightBodies.a;
+      R.uprightBoom = near(T.lens[0], A.position.x) && near(T.lens[1], A.position.y + 3.4) && near(T.lens[2], A.position.z + 4.4) && E.camera.fov === 74
+        && near(E.pitch.rotation.x, -26 * Math.PI / 180, 1e-12) && T.boom.back === 4.4;
+      R.staleTaken = T.stale >= 1 && !document.getElementById('stick').classList.contains('on');
+      window.__p0 = { a: [A.position.x, A.position.z] };
+      return R;`);
+    await touch('touchMove', [[80, 640, 1]]);
+    await pp.waitForTimeout(1500);
+    await touch('touchMove', [[80, 600, 1]]);
+    await pp.waitForTimeout(1000);
+    K.tagPhoneStaleFinger = await pCheck('stale', `await frames(3); const A = st.fightBodies.a; return { notMoved: A.position.x === window.__p0.a[0] && A.position.z === window.__p0.a[1] };`);
+    await touch('touchEnd', []);
+    /* a fresh finger on the stick: the played one walks away down the court; the other stands */
+    await pEval(`const B = st.fightBodies.b; window.__p1 = { a: [st.fightBodies.a.position.x, st.fightBodies.a.position.z], b: [B.position.x, B.position.z] }; return true;`);
+    await touch('touchStart', [[80, 700, 2]]);
+    await touch('touchMove', [[80, 676, 2]]);
+    await touch('touchMove', [[80, 650, 2]]);
+    const walked = await pUntil(`return window.__p1.a[1] - st.fightBodies.a.position.z > 0.08;`, 40000);
+    await touch('touchEnd', []);
+    K.tagPhoneStick = walked && await pCheck('stick', `
+      await frames(2); const A = st.fightBodies.a, B = st.fightBodies.b;
+      return { away: A.position.z < window.__p1.a[1] - 0.08 && Math.abs(A.position.x - window.__p1.a[0]) < 0.02, otherStill: B.position.x === window.__p1.b[0] && B.position.z === window.__p1.b[1],
+               stickGone: !document.getElementById('stick').classList.contains('on') };`);
+    /* a drag on the right turns nothing */
+    await touch('touchStart', [[300, 520, 3]]);
+    for (const [x, y] of [[280, 480], [240, 430], [200, 380]]) await touch('touchMove', [[x, y, 3]]);
+    await touch('touchEnd', []);
+    K.tagPhoneNoLook = await pCheck('noLook', `await frames(3); return { still: E.yaw.rotation.y === 0 && near(E.pitch.rotation.x, -26 * Math.PI / 180, 1e-12) };`);
+    /* a target's mark in the stick's half: a tap there is a pick, and never the stick */
+    const pm = await pEval(`
+      const A = st.fightBodies.a, T = st.fightTargets[0]; T.tired = false; T.taken = false; T.hidden = false;
+      T.m.position.set(A.position.x - 1.2, 1.0, A.position.z - 2.5);
+      await frames(3);
+      const m = E.tag().marks.find(k => k.id === T.id);
+      window.__n0 = E.tag().log.length; window.__p2 = [A.position.x, A.position.z];
+      return m && m.x < innerWidth * 0.45 && document.elementFromPoint(m.x, m.y).id === 'scene' ? m : null;`);
+    if (pm) {
+      await touch('touchStart', [[pm.x, pm.y, 4]]);
+      tagParts['phone.pickStick'] = await pp.evaluate(() => document.getElementById('stick').classList.contains('on'));
+      await touch('touchEnd', []);
+    }
+    K.tagPhonePickInStickHalf = !!pm && tagParts['phone.pickStick'] === false
+      && await pUntil(`return logSince(window.__n0).some(r => r.act === 'target');`, 20000)
+      && await pCheck('pick', `
+        await frames(2); const L = logSince(window.__n0), A = st.fightBodies.a;
+        return { picked: L.length === 1 && L[0].id === 't1' && L[0].by === 'tap' && F.picked === 't1', notMoved: A.position.x === window.__p2[0] && A.position.z === window.__p2[1] };`);
+    /* a button, by a tap */
+    const bA0 = await pEval(`window.__n0 = E.tag().log.length; const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
+    await tap(bA0.x, bA0.y, 5);
+    K.tagPhoneButton = await pUntil(`return logSince(window.__n0).some(r => r.act === 'zap' && r.phase === 'up');`, 20000)
+      && await pCheck('button', `const L = logSince(window.__n0); return { tapped: L[0].act === 'zap' && L[0].phase === 'down' && L[0].by === 'tap', noClick: !L.some(r => r.by === 'click') };`);
+    /* every overlap of what the mode adds, the caption up, a refusal said, TAKE shown, the other one's mark up */
+    const phoneHud = async (label) => {
+      await pEval(`
+        const A = st.fightBodies.a, T = st.fightTargets[1]; T.tired = true; T.taken = false; T.hidden = false; T.m.position.set(A.position.x + 1, 1, A.position.z - 0.4);
+        kit.tagPlace('b', A.position.x + 0.6, A.position.z + 5.4, {});
+        kit.captions([{ at: 0, end: 60, text: 'A line said while the fight is on, long enough to wrap onto two lines here.' }]);
+        kit.tagAct('zap', { blocked: 'Not now.' }); await frames(3); return true;`);
+      await new Promise(r => setTimeout(r, 950));
+      const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
+      await tap(r0.x, r0.y, 6);
+      await pUntil(`return document.getElementById('caption').classList.contains('on') && document.getElementById('nofire').classList.contains('on')
+        && !document.getElementById('tagA2').classList.contains('hide') && document.getElementById('tagMate').classList.contains('on');`, 30000);
+      const ov = await tagOverlaps(pp);
+      console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured }));
+      return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s));
+    };
+    K.tagHudPhone = await phoneHud('390x844');
+    await pp.setViewportSize({ width: 360, height: 780 });
+    await pEval(`await frames(4); return true;`);
+    K.tagHudLowPhone = await phoneHud('360x780');
+    await pEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); st.fightEnd('restore'); await frames(2); return true;`);
+  } catch (e) {
+    console.log('tag phone threw', e && e.message);
+    K.tagPhoneRan = false;
+  }
+  await pctx.close().catch(() => {});
+}
+await p.evaluate((parts) => { window.__tag = parts; }, tagParts).catch(() => {});
 out.kit = K;
 
 console.log(JSON.stringify(out, null, 1));
