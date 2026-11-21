@@ -478,7 +478,9 @@
          each seated on his own body: put back at his home, at his rest) */
       else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home);
         PIECES5.set(true); }                                   // (his pieces laid out on the cloth: the film in lays them there, c_yfilm.js)
-      if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
+      /* (the nine stand in the court for the hunt; the fight places its own; in every other phase of the play they are put
+         away, so nothing a fight left stands there on a Continue or a phase set: clipscan found them by the door at the table) */
+      if (p === 'hunt') nineStand(true); else { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       if (p === 'walk') walkersInit(); else walkers.list = [];
     }
     /* his teacher, quietly, already beside him (4.3: "Nine Prai."): a step behind his shoulder, out of the picture, where
