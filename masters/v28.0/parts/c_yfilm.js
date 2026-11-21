@@ -285,7 +285,7 @@
         const x = xs[i] + (j % 2) * 0.05, z = rowsZ[j];
         const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.09);
         if (clash || x > 0.56 || x < -0.56) continue;
-        const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); g.visible = false; list.push({ g, x, z }); n++;
+        const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); list.push({ g, x, z }); n++;
       }
       return { list, set(on) { for (const p of list) p.g.visible = on; for (const k of ['w5wuathanu', 'w5rakyom', 'w5hunphayon']) if (things[k]) things[k].visible = on; } };
     })();
@@ -379,11 +379,12 @@
       if (!off) {
         const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
         const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;
-        pose(P, 'Idle_3', 2.0, true); P.group.updateWorldMatrix(true, true);
+        const R0 = o.rest || ['Idle_3', 2.0]; pose(P, R0[0], R0[1], true); P.group.updateWorldMatrix(true, true);
         const pm = palmOf(P, sd, _hhA);
         let pos, q;
         if (o.upright) { pos = new THREE.Vector3(pm.x, o.foot != null ? o.foot : 0.04, pm.z); q = _hhQ.setFromEuler(new THREE.Euler(0, gr + (o.ry || 0), Math.PI / 2, 'YXZ')); }
-        else { g.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(g, true), hgt = bb.max.y - bb.min.y;
+        else if (o.base != null) { pos = new THREE.Vector3(pm.x, pm.y - o.base, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
+        else { const was = g.visible; g.visible = true; g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(g, true), hgt = bb.isEmpty() ? 0.3 : bb.max.y - bb.min.y; g.visible = was;
           pos = new THREE.Vector3(pm.x, pm.y - (o.hang || 0) - hgt, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
         _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
         off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM);
@@ -751,7 +752,7 @@
         if (bagO && bagO.visible) { bagO.position.set(A.tie[0], 0.36, A.tie[1]); bagO.rotation.set(0, 0.4, 0); }
         if (bagT) { bagT.visible = t >= T.tied && t < T.end;
           if (bagT.visible && !atLift) { if (bagT.parent !== world) world.attach(bagT); bagT.position.set(A.tie[0], 0.36, A.tie[1]); bagT.rotation.set(0, 0.4, 0); }
-          if (bagT.visible && atLift) whenReady(cast.pho, (P) => { FM5.bagOff = handHold5(P, 'Left', bagT, FM5.bagOff, { hang: 0.0, ry: 0.3 }); }); }
+          if (bagT.visible && atLift) whenReady(cast.pho, (P) => { FM5.bagOff = handHold5(P, 'Left', bagT, FM5.bagOff, { hang: 0.0, ry: 0.3, rest: ['Sit_to_Stand_Transition_M', 5.9] }); }); }
         /* where his teacher is: the court; the three rooms; by Mr Koh; at the lift */
         whenReady(cast.pho, (P) => {
           STICK5.to(t < T.eyes ? 'pho' : 'ton');
@@ -927,7 +928,7 @@
        Grandmaster Pho's hand resting on it, the empty case open beside it: "Understanding first. Then possession."
        Their clocks: EN5[k] (each ending's own beats, its rite at EN5[k].rite, its close after); the rite's own beats RT5,
        the close's CL5. Each ends on its black: the card lies over it */
-    const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.05], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
+    const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.22], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
     FILMS5.ending = {
       begin(k, api, s) {
@@ -964,7 +965,7 @@
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
           const flick = tr > RT.dip && tr < RT.end ? ((tr - RT.dip) % 2.2) : -1;
-          if (flick >= 0) { pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + flick * 0.85); FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { hang: -0.15, ry: 0 }); }
+          if (flick >= 0) { pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + flick * 0.85); FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); }
           else { pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6)); RITE5.fan.visible = false; }
           const speak = E.pho && E.pho.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
           if (speak && flick < 0) fmTalk(P, 'pho', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions');
@@ -999,9 +1000,15 @@
         keys.sort((a, b) => a.t - b.t);
         fmTrack(t, keys);
         /* the case: on the cloth until it is pushed across (each ending's own), open and empty in the last picture */
-        if (things.padcase && tc >= 0) { things.padcase.position.set(RITE_AT.bag[0] - 0.34, 0.34, RITE_AT.bag[1] + 0.02); things.padcase.rotation.set(0, 0.3, 0); }
+        if (tc >= 0) caseAt5(RITE_AT.bag[0] - 0.36, RITE_AT.bag[1] - 0.04, 0.3);
+        /* THE LAST PICTURE: his teacher's right hand laid on the bag (the people's own hand laid on a thing: handTo, its
+           palm on the bag's shoulder, the fingers toward the student) */
+        if (tc >= 0 && bag) whenReady(cast.phoS, (P) => handTo(P, 'R', [RITE_AT.bag[0] - 0.02, 0.345 + 0.16, RITE_AT.bag[1] + 0.03], [0.05, -0.35, -0.93], [0, -1, 0.2], smo(c01(tc / 0.6)), { out: 0.22, down: 0.3 }));
       },
-      end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null); }
+      end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null);
+        /* (a same-chapter replay never runs build() again: what the ending moved is put back, v8.1) */
+        if (things.bagTied) things.bagTied.visible = false; RITE5.string(0, null); RITE5.bowl.visible = false; SMALL5.set(0, 0);
+        PIECES5.set(true); threeAt5(0); if (casePos0.x !== null) caseAt5(casePos0.x, casePos0.z, casePos0.ry); }
     };
 
     /* EACH ENDING'S OWN DIRECTION (its lines' times are its clock, EN5[k], z_tail.js): its shots before the rite and after
