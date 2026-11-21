@@ -1087,7 +1087,8 @@
           else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
             const speak = E.col && E.col.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
             if (speak) fmTalk(P, 'col', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions'); else fmRest(P, 'col', t); }
-          lookNow(P, ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
+          const cl = ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : null;          // (an ending's own look, or none: null falls back to the common one; passed on as null it threw on every frame of ending B from the lid: endB, 21 Nov)
+          lookNow(P, cl || (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
         /* the ending's own things (the case pushed across, the lid, the three) */
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
