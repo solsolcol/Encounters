@@ -3177,6 +3177,7 @@ await tagEval(`
   await frames(2);
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
   await poll(() => document.getElementById('nofire').classList.contains('on'), 5000);
+  await new Promise(r => setTimeout(r, 450));              // (its rise, 0.3 s from nothing: measured risen)
   return true;`);
 const ovD = await tagOverlaps(p);
 K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagMate', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
@@ -3422,8 +3423,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       const sk = document.getElementById('stick'); window.__stickSeen = sk.classList.contains('on');
       window.__stickMo = new MutationObserver(() => { if (sk.classList.contains('on')) window.__stickSeen = true; }); window.__stickMo.observe(sk, { attributes: true });
       const at = m && document.elementFromPoint(m.x, m.y);
-      tagParts['phone.pickAt'] = m ? { x: m.x, y: m.y, r: m.r, at: at ? (at.id || at.className) : null, W: innerWidth } : null;
-      return m && m.x < innerWidth * 0.45 && at && at.id === 'scene' ? m : null;`);
+      return { m: m && m.x < innerWidth * 0.45 && at && at.id === 'scene' ? m : null,
+               seen: m ? { x: m.x, y: m.y, r: m.r, at: at ? (at.id || at.className) : null, W: innerWidth } : null };`).then(r => { tagParts['phone.pickAt'] = r.seen; return r.m; });
     if (pm) {
       await touch('touchStart', [[pm.x, pm.y, 4]]);
       await touch('touchEnd', []);
@@ -3455,6 +3456,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
       await tap(r0.x, r0.y, 6);
       await pUntil(`return document.getElementById('nofire').classList.contains('on');`, 5000);
+      await new Promise(r => setTimeout(r, 450));          // (its rise, 0.3 s from nothing: measured risen)
       const ov = await tagOverlaps(pp);
       const up = await pp.evaluate(() => ({ caption: document.getElementById('caption').classList.contains('on'), nofire: document.getElementById('nofire').classList.contains('on'),
         take: !document.getElementById('tagA2').classList.contains('hide'), mate: document.getElementById('tagMate').classList.contains('on') }));
