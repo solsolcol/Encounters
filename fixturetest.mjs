@@ -2748,14 +2748,15 @@ const tagCheckSrc = async (name, body, arg) => {
 };
 const tagUntil = (body, ms = 30000) => p.waitForFunction(new Function('return (() => {' + TAG_HELP + body + '})();'), null, { timeout: ms, polling: 100 }).then(() => true, () => false);
 
-/* 61 · A BUTTON OF THE CHAPTER'S OWN: shown in the column under the eye, pressed by a click and by its key, its wait refusing
+/* 61 · A BUTTON OF THE CHAPTER'S OWN: shown in the column above the eye (21 Nov: the eye a row lower), pressed by a click and by its key, its wait refusing
    a press, its lock said and never pressed, hidden under the menu; (in the mode, hidden: below; kitReset: at the end) */
 await tagEval(`window.__nose = []; kit.button('nose', { label: 'SNIFF', key: 'KeyN', onPress: r => window.__nose.push(r) }); await frames(3); return true;`);
 K.buttonShown = await tagCheckSrc('button', `
   const R = {}, b = document.querySelector('.cBtn'), eye = document.getElementById('visionBtn');
   R.made = !!b && E.buttons().length === 1 && E.buttons()[0].shown;
   const rb = b.getBoundingClientRect(), re = eye.getBoundingClientRect();
-  R.underTheEye = Math.abs(rb.left - re.left) < 1 && rb.top >= re.bottom + 4 && rb.width === re.width;
+  /* (21 Nov) the chapter's button stands ABOVE the eye, the eye a row lower, so the eye's ask hangs below it in free space */
+  R.aboveTheEye = Math.abs(rb.left - re.left) < 1 && rb.bottom + 4 <= re.top && rb.width === re.width;
   R.label = b.querySelector('.invLabel span').textContent === 'SNIFF' && b.getAttribute('aria-label') === 'SNIFF';
   return R;`);
 await p.click('.cBtn');

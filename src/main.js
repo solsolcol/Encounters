@@ -8780,7 +8780,8 @@ function tagReset() {                          // kitReset: no mode left open (t
   tag.count = null;
 }
 /* ══ v28.0 · THE SIXTY-FIRST SEAM: A BUTTON OF THE CHAPTER'S OWN (kit.button) ═════════════════════════════════════════
-   One more round button in the right-hand column, under the torch's and the eye's, for a sense a chapter gives him in play
+   One more round button in the right-hand column, under the torch's and ABOVE the eye's (21 Nov: the eye comes down a row
+   for each, so its ask hangs below it in free space), for a sense a chapter gives him in play
    (episode 4 chapter 5's SMELL, on N): `kit.button(id, { icon, label, key, wait, pulse, locked, hidden, on, onPress })`,
    each field optional and kept until changed; null takes it away. `icon` is what an event's item takes (a canvas, a function
    that makes one, or a hosted asset key); `wait` 0..1 the share of its wait still to run (its ring); `pulse` asks (the eye's
@@ -8790,6 +8791,7 @@ function tagReset() {                          // kitReset: no mode left open (t
    every one away. A chapter that never asks has no button, nothing painted and no key read */
 const cbtn = new Map();
 let cbtnShown = false;
+let cbtnRows = -1;                 // (21 Nov) how many rows the eye stands under (--cbtnN), written only when it changes
 function kitButton(id, o) {
   if (typeof id !== 'string' || !id) return false;
   if (o === null || o === false) { const b = cbtn.get(id); if (b) b.gone = true; return true; }
@@ -8819,7 +8821,11 @@ function cbtnMake(b) {
 }
 function cbtnPaint() {
   if (!cbtn.size) { if (cbtnShown) { cbtnShown = false; document.body.classList.remove('hasCBtn'); } return; }
-  const base = 168 + (document.body.classList.contains('hasTorch') ? 56 : 0) + (vis.decl ? 56 : 0);
+  /* (21 Nov, measured: e4c5eyeask) the chapter's buttons stand ABOVE the eye, where the eye stood: the eye comes down a row
+     for each (shell.html, body.hasCBtn and --cbtnN), so its ask hangs below it in free space and never over a button */
+  const base = 168 + (document.body.classList.contains('hasTorch') ? 56 : 0);
+  const nb = [...cbtn.values()].filter(b => !b.gone).length;
+  if (nb !== cbtnRows) { cbtnRows = nb; document.body.style.setProperty('--cbtnN', String(nb)); }
   let i = 0;
   for (const b of [...cbtn.values()]) {
     if (b.gone) { if (b.el) b.el.remove(); cbtn.delete(b.id); continue; }
@@ -8862,6 +8868,7 @@ function cbtnReset() {
   for (const b of cbtn.values()) if (b.el) b.el.remove();
   cbtn.clear();
   if (cbtnShown) { cbtnShown = false; document.body.classList.remove('hasCBtn'); }
+  if (cbtnRows !== -1) { cbtnRows = -1; document.body.style.removeProperty('--cbtnN'); }
 }
 /* ══ v28.0 · THE SIXTY-FIFTH SEAM: A LOSS THAT BEGINS AGAIN (kit.retry) ════════════════════════════════════════════════
    Chad, 21 Nov 2026 (R14): "Fight restarts". kit.lose rewrites the save to the chapter's start (chapter 4's fight used it
