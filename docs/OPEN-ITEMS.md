@@ -393,6 +393,12 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
     Open, mine to check (18 Nov): a thin blue line across Grandmaster Pho in ending C's last shot, photographed once
     after a probe's 4 s seek and gone at a direct seek (the vision's afterimage of the jump, by every test so far): to be
     confirmed in a live play of the ending (tools/probes/filmlive.mjs) before it is called nothing.
+  - **Episode 4 chapter 5 (S1·14 and S1·15): PLANNED, nothing built** (21 Nov 2026). docs/V28.0-E4C5-PLAN.md is its
+    second draft (attacked by an independent reader, then corrected from a second reader's check of its research: its
+    §0.2 and §0.3). Made so far: Master Zavier's body (`p5zavier`, `p5zavierh`) and the Naga stick (`w5nagastaff`).
+    WAITING ON HIM before anything is built: the plan's §16 (26 questions, each with a default; the five that shape
+    everything are its first table), every line of Grandmaster Pho's (docs/V28.0-PHO-LINES.md), and two photographs
+    asked of him (the fan of case three; a sharper front photograph of Master Zavier's face).
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

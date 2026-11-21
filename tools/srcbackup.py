@@ -35,15 +35,22 @@
 #   git archive FETCH_HEAD masters | tar -x
 #   then join each cut file (cat <name>.part1 <name>.part2 ... > <name>), and: git show FETCH_HEAD:MANIFEST.txt > M.txt;
 #   sha256sum -c M.txt
-import hashlib, json, os, subprocess, sys, time
+import hashlib, json, os, re, subprocess, sys, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 'v26.0']
-CHUNK = 600 * 1024 * 1024
+GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 'v26.0', 'v27.0', 'v28.0']
+# (v28.0, 21 Nov 2026) v27.0 is episode 4 chapter 4's people and things, v28.0 chapter 5's: both scanned as the first set
+# was (no key, no signed link, no address; one link to Meshy's documentation in a log). NOT pushed from v28.0: the three
+# bodies of Master Zavier that were made and refused (zavier, zavier2, zavier3, and zavier3's second rig). They are
+# likenesses of a real man that the game does not use; the body it does use is zavier4.
+SKIP = {'v28.0': re.compile(r'zavier(?!4)')}
+# the size of a chunk: 600 MB by default, less (SRCBACKUP_CHUNK_MB) when the machine has less room free than a chunk and
+# its margin
+CHUNK = int(os.environ.get('SRCBACKUP_CHUNK_MB', '600')) * 1024 * 1024
 PIECE = 95 * 1024 * 1024
 BRANCH = 'claude/model-sources'
 LABEL = os.environ.get('SRCBACKUP_LABEL', 'v26.12')          # (the version a chunk's commit message begins with)
 SCR = os.environ.get('SRCBACKUP_GIT')
-TRAILER = ('\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
+TRAILER = ('\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>\n'
            'Claude-Session: https://claude.ai/code/session_012dssR6qAN57acivr6t6QeS\n')
 
 def run(args, cwd, input=None, binary=False, check=True):
@@ -68,6 +75,7 @@ def files():
         d = os.path.join(ROOT, 'masters', v, 'src')
         for name in sorted(os.listdir(d)):
             p = os.path.join(d, name)
+            if v in SKIP and SKIP[v].search(name): continue
             if os.path.isfile(p) and not os.path.islink(p): out.append((os.path.relpath(p, ROOT), os.path.getsize(p)))
     return out
 
