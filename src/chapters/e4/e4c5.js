@@ -9294,10 +9294,13 @@
     const lookedN = () => ['k1', 'k2', 'k3'].filter(c => play.found.has(c)).length;
     /* seated on his cushion across the table from his teacher: the eye at a seated man's height, the look free about the
        table, his feet still (kit.pose 'lying' is the engine's way to hold the eye low; kit.root keeps him there) */
-    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5 };
+    /* (pitch: he looks down at the pieces on the cloth as play begins, what the play needs first in his line of sight, v12.3;
+       a film that hands to the table ends on this look) */
+    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, pitch: -0.5 };
     function seatHim() {
       if (!kit) return;
       yaw.position.set(STATION.table.at.x, yaw.position.y, STATION.table.at.z);
+      yaw.rotation.y = STATION.table.at.ry; pitch.rotation.x = SIT5.pitch;
       if (kit.pose) kit.pose('lying', { y: SIT5.y, yaw: STATION.table.at.ry, span: SIT5.span, pitchLo: SIT5.lo, pitchHi: SIT5.hi, secs: 0.05 });
       if (kit.root) kit.root(true);
     }
@@ -9373,9 +9376,9 @@
        tries it in (v26.18: GROUNDS, b_xpeople.js) */
     const G_WALK = undefined, G_HUNT = GROUNDS[0].what, G_TABLE = GROUNDS[2].what;
     const headOf = (n, y = 1.62) => () => { const P = castOf(n); const g = P ? P.group.position : { x: 0, z: 0 }; return { x: g.x, y, z: g.z }; };
-    const hsTon = { id: 'ton', pos: { x: STATION.walk.ton.x, y: 1.55, z: STATION.walk.ton.z }, radius: 2.3, prompt: W.hotTon, markY: 0.3, hits: markHit5(headOf('ton', 1.55), 0.12),
+    const hsTon = { id: 'ton', pos: { x: STATION.walk.ton.x, y: 1.55, z: STATION.walk.ton.z }, radius: 3.0, prompt: W.hotTon, markY: 0.3, hits: markHit5(headOf('ton', 1.55), 0.12),
       enabled: () => phase === 'walk' && !play.busy && !play.found.has('t'), onInteract() { return askOne('t', castOf('ton'), ['q5w1', 'tn5w1', 0.7, 'tn5w2']); } };
-    const hsJun = { id: 'jun', pos: { x: STATION.walk.jun.x, y: 1.55, z: STATION.walk.jun.z }, radius: 2.3, prompt: W.hotJun, markY: 0.3, hits: markHit5(headOf('jun', 1.55), 0.12),
+    const hsJun = { id: 'jun', pos: { x: STATION.walk.jun.x, y: 1.55, z: STATION.walk.jun.z }, radius: 3.0, prompt: W.hotJun, markY: 0.3, hits: markHit5(headOf('jun', 1.55), 0.12),
       enabled: () => phase === 'walk' && !play.busy && !play.found.has('j'), onInteract() { return askOne('j', castOf('jun'), ['q5w1', 'ju5w1']); } };
     const stainSpot = (c, at, y) => ({ id: 'stain' + c.slice(1), pos: { x: at.x, y, z: at.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT,
       hits: markHit5(() => ({ x: at.x, y: 0.1, z: at.z }), 0.1),
@@ -9668,6 +9671,15 @@
              path by their place along the body, a cross-section kept round the path's own frame) */
           const base = geo.attributes.position.array.slice(0);
           st.base = base; st.along = along; st.geo = geo;
+          /* ITS OWN CENTRE LINE, taken out of every point before the body is laid along the path (the file's serpent rears and
+             waves: 8.4 m long, 0.78 m wide and 3.6 m tall), so only its round cross-section, scales and all, is laid round the
+             path. Laid with its waves, each point stood up to 1.8 m off the path and the body came out as sheets of pink glass
+             across the court: together-00012 after the shader's fix, 21 Nov */
+          { const NB = 200, cx = new Float32Array(NB), cy = new Float32Array(NB), cn = new Float32Array(NB), n = base.length / 3, bin = new Uint16Array(n), sp = st.maxX - st.minX;
+            for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2];
+              const b0 = Math.min(NB - 1, Math.max(0, Math.floor((ax - st.minX) / sp * NB))); bin[i] = b0; cx[b0] += c; cy[b0] += base[i * 3 + 1]; cn[b0]++; }
+            let lx = 0, ly = 0; for (let b0 = 0; b0 < NB; b0++) { if (cn[b0] > 0) { cx[b0] /= cn[b0]; cy[b0] /= cn[b0]; lx = cx[b0]; ly = cy[b0]; } else { cx[b0] = lx; cy[b0] = ly; } }
+            st.cl = { cx, cy, bin }; }
           const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.renderOrder = 3; g.add(mesh); st.mesh = mesh; st.mat = m;
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
@@ -9694,7 +9706,7 @@
             const u = Math.max(0, Math.min(1, (k * st.len - (1 - f) * Lb) / st.len));
             P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
             _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
-            const yy = cy * s * (f > 0.86 ? 1.0 : 0.55), xx = cx * s * (f > 0.86 ? 1.0 : 0.62);
+            const bn = st.cl.bin[i], yy = (cy - st.cl.cy[bn]) * s, xx = (cx - st.cl.cx[bn]) * s;
             arr[i * 3] = _np.x + _nb.x * xx + _nn.x * yy; arr[i * 3 + 1] = _np.y + _nb.y * xx + _nn.y * yy; arr[i * 3 + 2] = _np.z + _nb.z * xx + _nn.z * yy;
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
@@ -10506,8 +10518,10 @@
             if (q.fx) q.fx.set('uAlpha', 1 - u); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
-        const vv = ENDS5[k].vis ? ENDS5[k].vis(E) : [r0 + RT.see, r0 + RT.unsee];
-        fmVision(t, vv[0], 1.8, vv[1], 1.4);
+        /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
+           there to the rite's end, every face of the talk was the vision's dark negative of a bright room: endC-00009) */
+        const vv = ENDS5[k].vis ? ENDS5[k].vis(E) : null;
+        if (vv && t < vv[1] + 1.5) fmVision(t, vv[0], 1.8, vv[1], 1.4); else fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
         /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
@@ -10527,7 +10541,8 @@
           else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
             const speak = E.col && E.col.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
             if (speak) fmTalk(P, 'col', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions'); else fmRest(P, 'col', t); }
-          lookNow(P, ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
+          const cl = ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : null;          // (an ending's own look, or none: null falls back to the common one; passed on as null it threw on every frame of ending B from the lid: endB, 21 Nov)
+          lookNow(P, cl || (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
         /* the ending's own things (the case pushed across, the lid, the three) */
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
@@ -10639,7 +10654,7 @@
            things: (t, E) => { threeAt5(t < E.across ? smo(c01((t - E.three) / 1.4)) : 1);
              const packed = t >= E.pack && t < E.across; for (const p of PIECES5.list) p.g.visible = p.g.visible && !packed;
              SMALL5.set(t >= E.see && t < E.across ? smo(c01((t - E.see - 0.6) / 1.2)) : 0, t); },
-           vis: (E) => [E.see, E.rite + RT5.unsee] },
+           vis: (E) => [E.see, E.ph5C1 + 0.2] },
       /* D · "Keep the holy ones. The Yin ones are the trouble." (worst): his face clears, he knows a man, twenty by
          Friday, already counting on his fingers; his teacher does not laugh, quite: to him, then to the student; the
          collector's hand comes down from his counting; the rite; his own thought */
@@ -11046,6 +11061,7 @@
         sfx(E.pack + 0.15, 'u5foam', 0.7); sfx(E.pack + 0.75, 'u5foam', 0.6);  // the seventeen fitted back into their foam
         sfx(E.see, 'u5vison', 0.8);                                            // his sight opened on the case
         sfx(E.see + 1.3, 'u5pcwarm', 0.4);                                     // something small his nose never caught lifts its head
+        sfx(E.ph5C1 + 0.2, 'u5visoff', 0.7);                                   // his sight shut again for the talk
         sfx(E.ph5C1, 'ph5C1', 1); sfx(E.co5C2, 'co5C2', 1); sfx(E.ph5C2, 'ph5C2', 1);
         sfx(E.across + 0.2, 'u5slide', 0.7);                                   // all twenty go across
         sfx(E.q5C1, 'q5C1', 1);
@@ -11061,7 +11077,7 @@
       /* THE RITE (RT5 from r0): his sight held open (ending C's is open already); the fan dipped and thrown every 2.2 s,
          its whisk and the water falling on the pieces; the presences crying out and coming away; his sight shut; the
          pieces gathered into the bag on a cut; the white string wound and knotted; the heaviness lifting */
-      if (k !== 'C') sfx(r0 + R.see, 'u5vison', 0.8);
+      sfx(r0 + R.see, 'u5vison', 0.8);
       sfx(r0 + R.see + 0.5, 'u5heart', 0.5); sfx(r0 + R.see + 1.2, 'u5heart', 0.5);
       sfx(r0 + R.dip + 0.35, 'u5whisk1', 0.7); sfx(r0 + R.dip + 0.95, 'u5drops', 0.6);
       sfx(r0 + R.dip + 2.55, 'u5whisk2', 0.7); sfx(r0 + R.dip + 3.15, 'u5drops', 0.6);
