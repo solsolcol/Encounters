@@ -85,6 +85,16 @@ const same = (a, b, skip = []) => { const diff = [];
   for (const key of Object.keys(a)) { if (skip.includes(key)) continue; if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) diff.push(key + ': ' + JSON.stringify(a[key]).slice(0, 160) + ' / ' + JSON.stringify(b[key]).slice(0, 160)); }
   return diff; };
 const savedNow = () => p.evaluate(() => { try { return JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); } catch { return null; } });
+/* the same comparison in detail: an array element by element (its index and both sides, nothing cut), and which of the
+   differences touch something shown (a spirit shown on either side; the beds read apart, as their levels ease) */
+const sameDetail = (a, b) => { const out = [], seen = [];
+  for (const key of Object.keys(a)) { const x = a[key], y = b[key]; if (JSON.stringify(x) === JSON.stringify(y)) continue;
+    if (Array.isArray(x) && Array.isArray(y) && x.length === y.length && key !== 'beds') {
+      x.forEach((q, i) => { if (JSON.stringify(q) === JSON.stringify(y[i])) return; out.push(`${key}[${i}]: ${JSON.stringify(q)} / ${JSON.stringify(y[i])}`);
+        if (key !== 'spirits' || q.v || y[i].v) seen.push(`${key}[${i}]`); });
+    } else { out.push(`${key}: ${JSON.stringify(x)} / ${JSON.stringify(y)}`); if (key !== 'beds' && key !== 'voicesLive') seen.push(key); } }
+  return { out, seen }; };
+const bedsSeq = async (n = 16) => { const seq = []; for (let i = 0; i < n; i++) { seq.push(await p.evaluate(() => { const M = window.__enc.stage.amb().beds, o = {}; for (const k in M) if (M[k] > 0.001) o[k] = +M[k].toFixed(3); return o; })); await frames(1); } return seq; };
 
 /* ---- to the title and Continue */
 async function boot(tag) {
@@ -184,9 +194,7 @@ if (MODE === 'button') {
   /* (the beds after a Continue into the fight's start, frame by frame: the chapter mixes them before it lays the phase on
      (updateNotes: mixBeds, then applyPhase), so its first frame mixes the lit room's beds; read until they settle. On this
      box a frame is a quarter second of the beds' clock) */
-  const seq = [];
-  for (let i = 0; i < 16; i++) { seq.push(await p.evaluate(() => { const M = window.__enc.stage.amb().beds, o = {}; for (const k in M) if (M[k] > 0.001) o[k] = +M[k].toFixed(3); return o; })); await frames(1); }
-  log('the beds after the Continue, frame by frame:', JSON.stringify(seq));
+  log('the beds after the Continue, frame by frame:', JSON.stringify(await bedsSeq()));
 }
 checks.briefFirst = A.ok;
 checks.briefNoReload = !/reload|R to |gold icon|refill/i.test(A.text);
@@ -265,7 +273,18 @@ checks.rNothing = F20.dip !== 'reload' && F20.motes === 0;
 await shot('fight-flicks');
 
 if (MODE === 'button') {
-  /* (nothing more: the button's pictures and boxes are this mode's) */
+  /* (a loss and Retry here too, the start compared in detail: which differences touch anything shown, and the beds frame by
+     frame as they settle) */
+  const L = await loseIt('button-loss');
+  checks.buttonLoss = L.lost && L.ready && L.card.restart === 'Restart chapter';
+  await pressSel('#retryBtn');
+  const C = await atBrief('button-retry');
+  log('the beds after Retry, frame by frame:', JSON.stringify(await bedsSeq()));
+  const C2 = await SNAP();
+  const dd = sameDetail(A.S, C.S), d2 = sameDetail(A.S, C2);
+  log('Retry against the arrival, in detail:', dd.out.length ? '\n  ' + dd.out.join('\n  ') : 'the same');
+  log('  differences that touch anything shown:', JSON.stringify(dd.seen), ' and sixteen frames later:', JSON.stringify(d2.seen), d2.out.filter(q => q.startsWith('beds')).join(' '));
+  checks.buttonRetryAtStart = C.ok && dd.seen.length === 0;
 } else if (MODE === 'retry') {
   /* ========================================================== (R144 case 6) a tab closed in the middle of the fight, no loss:
      the fight has moved the run on (the water thrown at Appa: his receipt x and the card's note, and his nerve spent), and
