@@ -158,11 +158,15 @@ the change: sha1 8380984448ef... and 131c7a26a1ee...). FOUND ON THE WAY: retarge
 carried his rest's lean (his spine leans back 11 degrees at rest where Jun's leans 5): the stand leant him back 17 degrees
 and put his upper arms into his sides. With --align (each bone's rest first swung onto the source's) every limb's line
 is the source's at the moment (the upper arm, forearm, spine and thigh at the stand's middle, the talk's and the sit's).
-AND THE COLLAR BONES HELD AT HIS REST (--skip, new and opt-in in tools/retarget.mjs; held under the spine as it moves, so
-each arm still takes the source's line): photographed, the library's talk dropped both collar bones 24 degrees (a coat
-hanger's shoulders on a narrow man, his collar standing off a long bare neck) and its sit raised them 12 to 24 (a shrug
-that flared his collar open). Runs without --skip write the same bytes as before (granny's walk 8380984448ef..., the
-collector's sit by `same` 8b6ffd4d57a7..., before and after the change).
+NOT HIS NECK AND HEAD (--noalign, new and opt-in in tools/retarget.mjs): his head joint stands 13 cm IN FRONT of his
+neck joint where the sources' stand above theirs, so swung onto their line his head rose 10 to 19 cm off his collar (the
+head joint's height over the shoulders' middle, against his rest: stand 8 to 12 cm, talk 14 to 19; turned from his own
+rest: stand 0 to 3, sit 1 to 2), photographed as a long bare neck with his collar torn off it. In the talk, not his
+collar bones either: swung onto Mr Koh's sloping ones and then dropped by the talk, 28 to 43 degrees (a coat hanger's
+shoulders); turned from his own rest, 16 to 21. TRIED AND REFUSED: his collar bones held at rest (--skip, kept in the tool,
+opt-in): under a spine the sit curls forward they read 21 degrees DOWN and his collar stood off his neck. Runs without the
+new switches write the same bytes as before (granny's v25.5 walk 8380984448ef..., the collector's stand by `same`
+1504258ec083..., against the tool as first committed here, 5ace4be).
 
 **Prepared**: ONE LEVEL, assets/p5collector.glb, his full body (314,540 triangles, no fins), repainted at 2048 (face
 2,224 texels a metre, head 1,645, hands 1,048, body 836; 2,029 charts; 2 unplaced corners mended), with the four takes;
@@ -173,20 +177,28 @@ walks to the door in two endings, where a lighter body would be drawn if there w
 **Measured** (tools/probes/filejoints.mjs, new: jointscan's own measure, read out of jointscan.mjs at run time, on the
 file's skeleton posed in Node at 12 moments of each take; tools/probes/armside.mjs, new: an arm inside the body's side,
 every 1/30 s, in the body's own frame; head travel and turn over each take):
-- the sit: no flag (before the collar bones were held at rest: both raised 12 to 24 degrees in every moment, the library
-  take's own shrug, which the hermit's file holds at 18 to 32). His head travels 16 cm side to side and 21 cm fore and aft at up to 23 cm a second, and turns up to 57 degrees to his
+- the sit: both collar bones raised, the left 21 to 23 degrees over his neutral and the right 12 to 14: THE LIBRARY TAKE'S
+  OWN SHRUG (the hermit's file holds 18 to 32 in the same take). The chapter's cast lets a take's shrug down at run time
+  (chapter 4's c_scast `shoulders`): it must be asked for Sitting_Answering_Questions on him. His head travels 16 cm side to side and 21 cm fore and aft at up to 23 cm a second, and turns up to 57 degrees to his
   right of his chest (the hermit's: 57; Grandmaster Pho's 54 to 61 were "too extreme", v26.3): the chapter's head damping
   must be asked for this take too, and a lens that looks at his face measured as it plays (filmlive).
-- the stand: no flag. The talk: one moment (0.50 s) of his left elbow 3.9 cm behind his shoulder with the hand 13 cm
-  before it; his head travels 19 cm side to side at up to 29 cm a second (a shot that follows his face will sway). The walk: no
+- the stand: no flag. The talk: no flag; his head travels 19 cm side to side at up to 29 cm a second (a shot that follows his face will sway). The walk: no
   flag.
-- his arms against his sides (armside): the sit up to 1.8 / 4.4 cm; the stand 1.9 / 2.1 cm; the talk 1.6 / 5.1 cm; his own
+- his arms against his sides (armside): the sit up to 1.3 / 3.7 cm; the stand 1.5 / 2.3 cm; the talk 3.5 / 7.4 cm; his own
   walk 3.8 / 3.9 cm (the elbow brushing his
   hip, with the house's arms brought in to 7 degrees). The probe reads Jun's prepared stand at 4.7 / 3.2 cm, so a few
   centimetres there is the loose shirt; the pictures (section 3c) say what shows.
 - feet (each foot's lowest skin against the floor, in Node): the sit's left foot 1.7 cm under the floor and the right on it
   (the chapter sets a body on its lowest contact); the stand's two feet 2.5 cm apart in height, as Jun's own stand (1.9):
   the library stand's; his walk's feet on the floor in turn.
+- PHOTOGRAPHED (scratch e4c5/cast2/final-*.png, 780 x 1688 from across the table at a seated eye's 1.15 m, 1600 x 1000,
+  1000 x 1700 whole, each opened full size): the sit reads as a man seated forward, his collar round his neck, his knees
+  wide (the library sit's), his left hand flat on his belt with the fingers spread straight; at the shirt's tail a small
+  pale notch where it meets the trousers in his lap. The stand is clean but for the hands (palms forward, fingers spread,
+  as his bind pose). THE STANDING TALK IS STILL WRONG: his shoulders slope steeply down and his collar stands off a long
+  neck (the library talk's collar-bone drop, 16 to 21 degrees even turned from his rest): do not cast it in a close shot;
+  he talks at the table in the sit; Jun's one-handed talk is the untried alternative. The walk: the leading hand carried
+  palm forward with straight fingers (the rig's own walk, as Master Zavier's).
 - hands: rigid, as made, fingers spread and straight (he lays twenty pieces out with them: in a close shot they cannot
   close on a piece). Way D (his rig made here from Jun's 66 joints) is the only free way to fingers; not tried, as agreed.
 
@@ -224,9 +236,17 @@ in people.sh exports it, so all three levels take it):
   tatters); begun at 0.35 (the talk as before, the hourglass half there from behind). The chosen one is between.
 **Proved**: with WFIX unset, Master Zavier's first body is prepared as people.sh prepares it and comes out the committed
 bytes (near 4af3b908ddc5..., full d05886dd081b...; scratch e4c5/cast2/zproof.sh, run with wfix.mjs and the hook in the
-tree). **Measured after**: no triangle at his shoulders stretched past three times in the talk on any level; in the stand,
-from in front his sides run straight down to his belly (the hourglass gone); from behind a little narrowing is left under
-the arms; in the talk the armpit as before the mend (a small pale notch where his scan's armpit opens, there in his file).
+tree). **The reach of the slope** is a distance (`spread` 28.4 mm): the passes each body's own edges need for it (near 11.5 mm
+edges, 6 passes; mid 26.3 mm, 1; full 3.4 mm, 68). Six passes on the full body left a notch in each side at the top of
+his belly (photographed); the distance cured it. The near body's file is the same bytes either way.
+**Measured after**: no triangle at his shoulders stretched past three times in the talk on any level; jointscan's measure
+(filejoints) flags his talk's wrists wrung 64 to 95 degrees in 3 to 4 of 12 moments and his stand's collar bones 10 to
+15 over neutral in a few moments: both the library takes' own (his file before the mend has them), not mended here.
+PHOTOGRAPHED (scratch e4c5/cast2/m4-kohN-*, m5-kohHf2-*, each opened full size): his near body in the talk from behind his
+left shoulder: the dark wedge gone, a faint dark line about 2 mm wide where it was, seen at 1.1 m with a 22 degree lens; in
+the stand, from in front his sides run down to his belly with a shallow crease under each arm (the hourglass gone), his
+full body the same and smooth; from behind a little narrowing is left under the arms; in the talk the armpit as before
+the mend (a small pale notch where his scan's armpit opens, there in his file).
 
 ## 7 · THE HEAVY PRAI: her arm into her side in the walk, mended (CAST-2, 21 Nov 2026)
 
