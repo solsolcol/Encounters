@@ -584,7 +584,7 @@
        with people (he says nothing of who, and nobody asks); "We will look first."; his teacher's order, turned to him.
        Ton and Jun stay in the court (the hunt's stations). It ends on the view the hunt begins in */
     const DV5AT = { gateEye: [-8.18, EYE, -15.05], phoGate: [-8.92, -14.52], tonW: [-7.58, -15.3], junW: [-9.75, -15.35],
-                    kohDoor: [-8.52, -5.95], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
+                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
     /* (his room, measured against its solids (b_world.js): the door's leaf stands open along x -8.9 from the wall to z -4.75, the
        sofa fills x -9.06..-8.18, z -4.67..-2.57. So he stands where the hunt begins (STATION.hunt.at, east of the door), his
        teacher west of the sofa's back, north of the leaf, so no line of sight crosses the leaf (from where the first cut put
@@ -610,7 +610,10 @@
         lamp(1, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
         whenReady(cast.koh, (P) => {
           if (t < T.walk) { put(P, A.kohDoor[0], A.kohDoor[1], Math.PI); fmRest(P, 'koh', t); }
-          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2);
+          /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
+             them: stood in the court with his back to the shut door, his arm went through its frame (clipscan, 168
+             crossings), and the door opened behind him by itself) */
+          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
           else if (t < T.in) { put(P, A.kohGate[0], A.kohGate[1], faceTo(A.kohGate[0], A.kohGate[1], A.phoGate[0], A.phoGate[1]));
             fmTalk(P, 'koh', t, T.ko5d1, SECS.ko5d1, 'Talk_with_Hands_Open');
             /* his head bowed to Grandmaster Pho as he greets him (the wai's own take is wanted: the plan's 4.2) */
