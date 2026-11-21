@@ -131,7 +131,7 @@
           const ox = S0.x + (R() - 0.5) * 2 * (S0.rx || 0.25), oz = S0.z + (R() - 0.5) * 2 * (S0.rz || 0.25), oy = (S0.y || 0) + R() * (S0.ry || 0.05);
           addThread({ O: [ox, oy, oz], D: S0.d || [0, 1, 0], v: (S0.v || 0.25) * (0.75 + R() * 0.5), L: (S0.L || 0.5) * (0.7 + R() * 0.6), delay: R() * 1.5,
                       life: (S0.life || 2.2) * (0.8 + R() * 0.4), w: (S0.w || 0.028) * (0.8 + R() * 0.5), a: S0.a == null ? 0.04 : S0.a, f: S0.f || 1.6,
-                      col: S0.col || TH_COL.dark, alpha: Math.min(1, 0.45 + 0.55 * S0.k), grow: S0.grow || 0 });
+                      col: S0.col || TH_COL.dark, alpha: Math.min(1, 0.45 + 0.55 * S0.k), grow: S0.grow || 0, anchor: !!S0.anchor });
         }
       }
       /* A WRONG TAP IS STILL A DIRECTION (4.3): where nothing is near, the threads about him come FROM the nearest place
@@ -149,7 +149,7 @@
       if (phase === 'walk') {
         /* the decoy (4.1): a drain's grating at the walkway's edge where water has stood; its threads brown, short, and
            staying where they are */
-        return [{ x: FLOOR.DRAIN.x, y: 0.02, z: FLOOR.DRAIN.z, k: 0.8, reach: 8, n: 70, rx: 0.42, rz: 0.2, ry: 0.04, d: [0, 1, 0], v: 0.05, L: 0.3, a: 0.04, f: 2.2, col: TH_COL.drain, life: 2.4, w: 0.022 }];
+        return [{ x: FLOOR.DRAIN.x, y: 0.02, z: FLOOR.DRAIN.z, k: 0.8, reach: 8, n: 70, rx: 0.42, rz: 0.2, ry: 0.04, d: [0, 1, 0], v: 0.08, L: 0.3, a: 0.04, f: 2.2, col: TH_COL.drain, life: 2.4, w: 0.022, anchor: true }];
       }
       if (phase === 'hunt') {
         const f = (c) => play.found.has(c) ? 0.35 : 1;
@@ -157,18 +157,19 @@
           /* under the shoe cabinet by the doors: threads pooling out from under it */
           { x: HUNT5.s1.x, y: 0.02, z: HUNT5.s1.z + 0.12, k: 0.85 * f('s1'), reach: 7, n: 55, rx: 0.32, rz: 0.12, d: [0.0, 0.18, 0.98], v: 0.22, L: 0.45, a: 0.035 },
           /* the court, at the left planter's foot: rising along it */
-          { x: HUNT5.s2.x, y: 0.02, z: HUNT5.s2.z, k: 0.85 * f('s2'), reach: 9, n: 60, rx: 0.06, rz: 0.95, d: [-0.12, 0.99, 0], v: 0.26, L: 0.55, a: 0.04 },
+          { x: HUNT5.s2.x, y: 0.02, z: HUNT5.s2.z, k: 0.85 * f('s2'), reach: 9, n: 60, rx: 0.06, rz: 0.95, d: [-0.12, 0.99, 0], v: 0.26, L: 0.55, a: 0.04, anchor: true },
           /* between the gate posts: the thickest of all, running to his door */
           { x: HUNT5.s3.x, y: 0.02, z: HUNT5.s3.z, k: 1.0 * f('s3'), reach: 11, n: 90, rx: 0.55, rz: 0.18, d: [0, 0.12, 0.99], v: 0.5, L: 1.2, a: 0.05, w: 0.034 },
           /* the old armchair: threads standing thick over it (his nose is once behind the truth) */
-          { x: HUNT5.arm.x, y: 0.5, z: HUNT5.arm.z, k: 0.9 * (play.found.has('a') ? 0.35 : 1), reach: 7, n: 55, rx: 0.28, rz: 0.26, ry: 0.15, d: [0, 1, 0], v: 0.2, L: 0.8, a: 0.05 }
+          { x: HUNT5.arm.x, y: 0.5, z: HUNT5.arm.z, k: 0.9 * (play.found.has('a') ? 0.35 : 1), reach: 7, n: 55, rx: 0.28, rz: 0.26, ry: 0.15, d: [0, 1, 0], v: 0.25, L: 0.8, a: 0.05, anchor: true }
         ];
       }
       if (phase === 'table' || phase === 'ask') {
         /* the pieces themselves, all of them, like smoke from snuffed candles (4.7) */
-        const out = [];
-        for (const P of TABLE5.pieces) out.push({ x: P.x, y: P.y + 0.03, z: P.z, k: 1, reach: 4, n: 16, rx: 0.02, rz: 0.02, d: [0, 1, 0], v: 0.14, L: 0.32, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.015 });
-        out.push({ x: TABLE5.caseAt.x, y: TABLE5.caseAt.y, z: TABLE5.caseAt.z, k: 1, reach: 4, n: 40, rx: 0.13, rz: 0.08, d: [0, 1, 0], v: 0.14, L: 0.3, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.015 });
+        const out = [], at = TABLE5.pieces.map(P => ({ x: P.x, z: P.z }));
+        for (const q of (PIECES5.list || [])) at.push({ x: q.x, z: q.z });
+        for (const q of at) out.push({ x: q.x, y: TABLE5.P.angry.y + 0.02, z: q.z, k: 1, reach: 4, n: 5, rx: 0.008, rz: 0.008, d: [0, 1, 0], v: 0.12, L: 0.26, a: 0.012, f: 1.3, grow: 0.05, col: TH_COL.smoke, life: 2.8, w: 0.0065, anchor: true });
+        out.push({ x: TABLE5.caseAt.x, y: TABLE5.caseAt.y, z: TABLE5.caseAt.z, k: 1, reach: 4, n: 10, rx: 0.12, rz: 0.07, d: [0, 1, 0], v: 0.12, L: 0.24, a: 0.012, f: 1.3, grow: 0.05, col: TH_COL.smoke, life: 2.8, w: 0.0065, anchor: true });
         return out;
       }
       return [];
@@ -191,7 +192,8 @@
         return out;
       }
       /* (the head runs ahead of its source and the tail starts at it: a thread never reaches back under the floor) */
-      const D = T.D, d = T.v * age + (1 - u) * T.L;
+      /* (an ANCHORED one stands on its source and grows up from it, smoke from a snuffed candle: its tail never leaves it) */
+      const D = T.D, d = T.anchor ? (1 - u) * Math.min(T.L, T.v * age + 0.04) : T.v * age + (1 - u) * T.L;
       out.set(T.O[0] + D[0] * d, T.O[1] + D[1] * d, T.O[2] + D[2] * d);
       /* the wave across it, in the two directions square to its flow, growing along a rising smoke's length */
       const amp = T.a * (1 + (T.grow || 0) * 20 * Math.max(0, d));
@@ -339,8 +341,9 @@
     };
     const stainFx = [];
     function spillShape(seed, rx, rz) {
-      const r = rng(seed), sh = new THREE.Shape(), n = 22;
-      for (let i = 0; i <= n; i++) { const a = (i % n) / n * Math.PI * 2, k = 0.72 + r() * 0.42 + 0.18 * Math.sin(a * 3 + r());
+      const r = rng(seed), sh = new THREE.Shape(), n = 40;
+      const ks = []; for (let i = 0; i < n; i++) ks.push(0.8 + r() * 0.3);
+      for (let i = 0; i <= n; i++) { const a = (i % n) / n * Math.PI * 2, j = i % n, k = (ks[(j + n - 1) % n] + 2 * ks[j] + ks[(j + 1) % n]) / 4 + 0.12 * Math.sin(a * 3 + ks[0] * 5);
         const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i === 0) sh.moveTo(x, z); else sh.lineTo(x, z); }
       return sh;
     }
@@ -365,7 +368,7 @@
       const fx = ctx.spirit ? ctx.spirit(grp, STAIN_LOOK) : null;
       return { grp, fx };
     }
-    const STAIN_LOOK = { color: 0x1c2410, fill: 0.88, rim: 0.35, flicker: 0.3, power: 1.6, xray: 0 };
+    const STAIN_LOOK = { color: 0x1c2410, fill: 0.6, rim: 0.3, flicker: 0.35, power: 1.6, xray: 0 };
     const stains5 = stainsBuild();
     /* (drawn only in the hunt; the vision draws it only where his sight's wave has reached) */
     function stainsTick(st) { stains5.grp.visible = phase === 'hunt' && st !== 'cine'; }
