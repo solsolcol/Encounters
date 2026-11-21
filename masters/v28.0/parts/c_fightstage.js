@@ -536,10 +536,14 @@
       for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
       P.mixer.update(0); personSettle(P);
     }
-    whenReady(cast.pho, fsGroundActs);
+    /* (on only once proved: until tools/probes/e4c5ground.mjs has measured his feet over each window and photographed him,
+       the gold and the bag stand as before and the fire keeps its build-time grounding; a probe turns it on: lab.groundOn) */
+    const FS_GROUND_ON = false;
+    if (FS_GROUND_ON) whenReady(cast.pho, fsGroundActs);
+    const fsActOn = (kind) => kind === 'phoFire' || FS_GROUND_ON || FS5.groundOn;
     function fsPhoAct(kind, up) {
       const P = cast.pho, A = FS_PHO_TAKE[kind];
-      if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
+      if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take] || !fsActOn(kind)) return 0;
       const run = FS5.run, n = ++FS5.actN, u = up != null ? up : A.up;
       FS5.act = { kind, n, top: false, down: false, at: FS5.wall, until: FS5.wall + u + (A.hold ? 9 : A.down) };
       span(P, A.take, A.a, A.top, u, { fade: Math.min(0.2, u), then: () => { if (run !== FS5.run || !FS5.act || FS5.act.n !== n) return;
@@ -1025,6 +1029,7 @@
          on every frame until it is let go (null), so a probe photographs and measures it whatever else runs */
       pose(name, t) { FS5.labPose = name && cast.pho && cast.pho.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labPose || !name; },
       ground() { const P = cast.pho; return P && P.groundRep ? JSON.parse(JSON.stringify(P.groundRep)) : null; },
+      groundOn() { FS5.groundOn = true; fsGroundActs(cast.pho); return this.ground(); },
       clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
@@ -1064,7 +1069,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1 });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];

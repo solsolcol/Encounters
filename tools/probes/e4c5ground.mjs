@@ -28,7 +28,7 @@ await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
 await frames(2);
-const ground = await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.ground());
+const ground = await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.groundOn());   // (the curves made, the gold's and the bag's takes on)
 say('ground curves', JSON.stringify(Object.fromEntries(Object.entries(ground || {}).filter(([k]) => /the fight/.test(k)))));
 const FEET = () => p.evaluate(() => {
   const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor, v = new V(), out = { L: 9, R: 9, all: 9 };
