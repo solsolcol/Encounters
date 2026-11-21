@@ -195,9 +195,10 @@
 #   (still dark: it was the fin); tools/rigstrain.mjs (written for Grandmaster Pho's rig: no Spine2 joint here).
 # 5g. EVERY TOOL CHANGE OF THIS BODY IS OPT-IN: prepmonk FINS; repaint.py XSCALE (and the torn-sliver test, under
 #   MENDOUT); edgeclean.py's class `sd`, fills `clone`, region keys `slab`, `turn`, `grow`, `dissolve`, `main`;
-#   shootclose.mjs's model keys `clip`, `at`, `aniso`. PROVED on the first body's NEAR file: through the tools as they
-#   were before this body (commit 1f39fc3^) and as they are now, the switches unset, the same bytes, and the bytes of the
-#   first body's file as it was committed (54038f5). Its FULL file through both: (the result is written in below).
+#   shootclose.mjs's model keys `clip`, `at`, `aniso`. PROVED on the first body, both levels (21 Nov): its near and its full file
+#   through the tools as they were before this body (commit 1f39fc3^) and as they are now, the switches unset, come out
+#   the same bytes (near ab824c15..., 2,110,196 bytes; full ff4b7998..., 5,919,704 bytes), and both are the bytes of the
+#   first body's files as they were committed (54038f5). The same inputs through both trees: scratch e4c5/proof.sh.
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 7. THE SOURCES, ON THE SOURCES BRANCH (21 Nov 2026)
