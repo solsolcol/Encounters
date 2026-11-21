@@ -55,7 +55,7 @@ async function walk(dx, dy, ms) {
   await sleep(60);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: ox + kx * 0.5, y: oy + ky * 0.5, id: 7 }] });
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: ox + kx, y: oy + ky, id: 7 }] });
-  await sleep(ms);
+  await sleep(ms); await frames(4);                          // (held over drawn frames too: on a slow box one frame is seconds)
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await cdp.detach(); log.walks++;
 }
@@ -118,7 +118,7 @@ while (Date.now() - T0 < MAXMS) {
   /* a picture now and then of the fight as it stands (every 15 s of its clock), and the first time each need is asked */
   const nd = f.need;
   if (nd && !seenNeed.has(f.who + ':' + nd.id)) { seenNeed.add(f.who + ':' + nd.id); log.needs.push({ t: f.t, who: f.who, need: nd, left: f.left }); if (seenNeed.size <= 40) await pic('need-' + f.who + '-' + nd.id); }
-  else if (f.t - lastPicT > 15) { lastPicT = f.t; await pic('fight-' + f.stage + '-' + f.left); }
+  else if (f.t - lastPicT > 30) { lastPicT = f.t; await pic('fight-' + f.stage + '-' + f.left); }
   if (LOSE && !lostOnce && f.stage === 'fight') { await sleep(600); continue; }   // (presses nothing: the fight is lost)
   if (!nd) { await sleep(300); continue; }
   /* walk to what the bag needs (or what the moment names) when it is out of reach */

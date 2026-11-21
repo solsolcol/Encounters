@@ -337,7 +337,6 @@
       s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
       arm: { x: -7.25, z: -2.18 }                                   // the old armchair
     };
-    const STAIN_LOOK = { color: 0x9db36a, fill: 0.34, rim: 0.9, flicker: 0.22, power: 1.6, xray: 0 };
     const stainFx = [];
     function spillShape(seed, rx, rz) {
       const r = rng(seed), sh = new THREE.Shape(), n = 22;
@@ -359,10 +358,27 @@
       const r = rng(28714);
       for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
       grp.visible = false;
-      const fx = ctx.spirit ? ctx.spirit(grp, STAIN_LOOK) : null;
-      return { grp, fx };
+      /* (seen as DARK through his sight: the vision draws the world as its negative, and a spirit's glow laid on its white
+         floor did not show at all (photographed on a phone, the hunt's first run). So each patch is drawn in the world's
+         own layer as a pale film, which the negative turns to a dark spill, shown only where his sight's wave has reached
+         and only while it is out; with his sight shut it is not drawn) */
+      const mat = new THREE.MeshBasicMaterial({ color: 0xf4f2e6, transparent: true, opacity: 0, depthWrite: false, fog: false,
+                                                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+      mats.push(mat);
+      grp.traverse(o => { if (o.isMesh) o.material = mat; });
+      return { grp, mat, fx: null };
     }
     const stains5 = stainsBuild();
+    /* the patches' strength: his sight's wave out past them (its radius from the lens), with a slow sheen moving on them */
+    function stainsTick(st) {
+      const v = (phase === 'hunt' && st !== 'cine' && kit && kit.vision) ? kit.vision() : null;
+      if (!v || !(v.r > 0.05)) { stains5.mat.opacity = 0; stains5.grp.visible = false; return; }
+      camera.getWorldPosition(_pv5);
+      const d = Math.min(distTo(HUNT5.s1.x, HUNT5.s1.z), distTo(HUNT5.s2.x, HUNT5.s2.z), distTo(HUNT5.s3.x, HUNT5.s3.z));
+      const k = Math.max(0, Math.min(1, (v.r - d) / 1.2));
+      stains5.grp.visible = k > 0.01;
+      stains5.mat.opacity = k * (0.78 + 0.12 * Math.sin(wallClock.t * 1.7));
+    }
     /* THE NINE, in the court from the moment he arrives (4.3): still, heads bowed, all facing the doors of the house,
        standing between where he has been walking: the chapter's cast puts them at their places (c_cast.js PRAI5.home),
        the play bows their heads */
@@ -464,7 +480,6 @@
       else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home);
         PIECES5.set(true); }                                   // (his pieces laid out on the cloth: the film in lays them there, c_yfilm.js)
       if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
-      stains5.grp.visible = p === 'hunt';
       if (p === 'walk') walkersInit(); else walkers.list = [];
     }
     /* his teacher, quietly, already beside him (4.3: "Nine Prai."): a step behind his shoulder, out of the picture, where
@@ -484,6 +499,7 @@
       threadsFrame(wdt, st);
       bedsTick(wdt, st);
       presTick(wdt);
+      stainsTick(st);
       if (nineOn && st !== 'cine') PRAI5.tick(wdt);
       if (st !== 'play') return;
       smellTick(wdt);

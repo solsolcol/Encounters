@@ -102,7 +102,18 @@ if (PART.includes('hunt')) {
   await wait(() => window.__enc.stage.snap().story.phase === 'fight', null);
   log('hunt done');
 }
+/* a film still playing (the hunt hands to the preparation's) is skipped as a player may, before a phase is set */
+async function noFilm() { if (await p.evaluate(() => window.__enc.getState() === 'cine')) await toPlay(p, 1500000); }
+if (PART.includes('stains')) {
+  await noFilm(); await p.evaluate(() => window.__enc.stage.setPhase('hunt'));
+  await wait(() => window.__enc.getState() === 'play' && window.__enc.stage.snap().story.phase === 'hunt', null); await frames(6);
+  await at(-8.5, -12.3, 0, -0.62); await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 4000)); await pic('stains-threshold');
+  await at(-7.4, -11.0, -0.69, -0.6); await frames(6); await pic('stains-planter');
+  await at(-8.75, -4.7, 0.95, -0.75); await frames(6); await pic('stains-shoecab');
+  await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 2500));
+}
 if (PART.includes('table')) {
+  await noFilm();
   await p.evaluate(() => window.__enc.stage.setPhase('table'));
   await wait(() => window.__enc.getState() === 'play' && window.__enc.stage.snap().story.phase === 'table', null); await frames(6);
   await pic('table-start');
