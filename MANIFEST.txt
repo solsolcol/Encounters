@@ -1150,3 +1150,4 @@ a9047921dc60a805d192f77eddf7f382811ba80a8e301937136155fa71ac9e64  masters/v27.0/
 dd0dfa3a0d8f66d36599a0af96e4834d9338aeebacb80c3c5e3bec8f2385998b  masters/v27.0/src/original-prayershelf.glb
 bfba0a5a7f0c52168d2bb8d3faf38ba2c5c5ca847d4d5726ab3a8bfdbf53211f  masters/v27.0/src/original-ravi.glb
 273954377fe1ce5df1f373ca2cfdf9a68f60adbe538c1280e353f25da1c38642  masters/v27.0/src/original-shoerack.glb
+1a0c0b359a990434dad615880ef549b79458dbc17d97b16d70bd7f23612e920d  masters/v27.0/src/original-sofa.glb
