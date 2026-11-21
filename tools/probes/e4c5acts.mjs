@@ -171,7 +171,7 @@ if (process.env.TRIES) { for (const T of JSON.parse(process.env.TRIES)) { await 
 /* HIS REST, the stick's distances to beat */
 await pose(REST[0], REST[1]); await frames(4);
 res.rest = await measure('rest'); say('rest', JSON.stringify(res.rest));
-const restFace = res.rest.st.face, restHead = res.rest.st.head;
+const restFace = res.rest.st.face, restHead = res.rest.st.head, restLine = res.rest.st.faceLine;
 /* EVERY FRAME OF EACH ACT */
 for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = [];
   for (const u of A.us) { await pose(A.take, u); const r = await measure(act + '@' + u); rows.push(r);
@@ -179,7 +179,7 @@ for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = []
     if (r.flags && r.flags.length) bad.push('joints ' + JSON.stringify(r.flags));
     for (const f in s.skin) if (f !== 'grip' && s.skin[f].inside) bad.push(`skin ${f} ${s.skin[f].inside} in, ${s.skin[f].deep} cm at ${s.skin[f].at} m`);
     if (s.skin.grip && s.skin.grip.deep > 0.6) bad.push(`grip ${s.skin.grip.deep} cm`);
-    if (s.face < restFace - 0.005) bad.push(`face ${s.face} < rest ${restFace}`);
+    if (s.faceLine < restLine - 0.005) bad.push(`face line ${s.faceLine} < rest ${restLine} (nearest point ${s.face}, at rest ${restFace})`);
     if (s.low < -0.005) bad.push(`stick ${s.low} under the paving`);
     if (s.feet.L < -0.01 || s.feet.R < -0.01) bad.push(`feet ${s.feet.L} ${s.feet.R}`);
     say(act, u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s.face, 'foot', s.foot[1], JSON.stringify(r.mv), JSON.stringify(r.R)); }
@@ -198,7 +198,7 @@ for (const act of ACTS) { const A = PLAN[act]; if (!A) continue; const rows = []
       const s2 = r.st, bad = [];
       if (r.flags && r.flags.length) bad.push('joints ' + JSON.stringify(r.flags));
       for (const f in s2.skin) if (f !== 'grip' && s2.skin[f].inside) bad.push(`skin ${f} ${s2.skin[f].inside} in, ${s2.skin[f].deep} cm at ${s2.skin[f].at} m`);
-      if (s2.face < restFace - 0.005) bad.push(`face ${s2.face} < rest ${restFace}`);
+      if (s2.faceLine < restLine - 0.005) bad.push(`face line ${s2.faceLine} < rest ${restLine} (nearest point ${s2.face})`);
       say('planted', u, bad.length ? 'FAULT ' + bad.join(' | ') : 'ok', 'face', s2.face, 'grip', JSON.stringify(s2.skin.grip), JSON.stringify(r.R)); }
     res.acts.planted = held;
     await p.evaluate(() => { const S5 = window.__enc.stage.films.STICK5; S5.to('pho'); }); await frames(3); }
