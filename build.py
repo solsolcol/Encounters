@@ -34,6 +34,16 @@ chap_dir = d / 'src' / 'chapters'
 chapters = {p.stem: p.read_text() for p in sorted(chap_dir.rglob('*.js'))}
 assert chapters, 'no chapters found in src/chapters/'
 assert len(chapters) == len(list(chap_dir.rglob('*.js'))), 'two chapter files share a name'
+# v28.0 (21 Nov 2026): A CHAPTER READ FROM A FILE ASSEMBLED APART. While a release builds, helpers go on editing a
+# generated chapter's parts and assembling it in place, so the file in src/chapters can hold half-done work.
+# ENC_CHAPTER_FROM="key=/abs/path.js[,key2=/abs/path2.js]" reads those chapters from the files named (a chapter
+# assembled from committed parts, outside the tree) in place of src/chapters. Absent, nothing changes.
+import os as _os
+for _spec in filter(None, _os.environ.get('ENC_CHAPTER_FROM', '').split(',')):
+    _k, _, _p = _spec.partition('=')
+    assert _k in chapters and _p, f'ENC_CHAPTER_FROM: {_spec!r} names no chapter file'
+    chapters[_k] = pathlib.Path(_p).read_text()
+    print(f'  {_k}: read from {_p} (ENC_CHAPTER_FROM)')
 # which episode a chapter belongs to, read off its DATA block (1 when silent)
 def chapter_episode(text):
     m = re.search(r"\bepisode:\s*(\d+)", text)

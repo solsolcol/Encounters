@@ -279,8 +279,11 @@
          arch also lands: the head is the model's own now, rigid, and needs room of its own) */
       function pathFor(sx, sz) {
         const C = COURT, ins = 0.62, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;   // (0.62 off the side walls: at 0.42 the dive's swing into the west side put its body into the wall)
-        const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
+        /* (it rises leaning toward the court's middle: leaning toward the house, from a stick planted near the house end
+           its body stood in the house's front) */
+        const cxC = (x0 + x1) / 2; let dx = cxC - sx, dz = zm - sz; const dl = Math.hypot(dx, dz); if (dl < 0.3) { dx = 0; dz = 1; } else { dx /= dl; dz /= dl; }
+        const pts = [[sx, 1.4, sz], [sx + 0.2 * dx, 3.2, sz + 0.2 * dz], [sx + 0.9 * dx, 5.0, sz + 0.9 * dz], [cxC, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
+        const r = 1.0, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
@@ -299,6 +302,27 @@
           /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
+          /* ITS LONG TRIANGLES DIVIDED (R25), each into pieces no longer than 5 cm along the body, so the body bends with the
+             path at the court's corners instead of cutting across them: its 5.8 m middle is laid along about 21 m of path,
+             and a triangle 0.2 to 0.57 m long in the file came out 0.9 to 2.4 m long and laid flat across the inside of
+             each turn (324 over 0.8 m, measured). Divided at their middles, each shared middle made once (no cracks), the
+             winding kept: 62,393 triangles become 85,916; the longest laid edge 0.43 m */
+          if (geo.index) { const ax = along === 'z' ? 2 : 0, P0 = geo.attributes.position.array, N0 = geo.attributes.normal ? geo.attributes.normal.array : null, X0 = geo.index.array;
+            const Pa = Array.from(P0), Na = N0 ? Array.from(N0) : null, out = [], mid = new Map(), todo = [];
+            for (let q = 0; q < X0.length; q += 3) todo.push([X0[q], X0[q + 1], X0[q + 2]]);
+            while (todo.length) { const [a, b, c] = todo.pop(), za = Pa[a * 3 + ax], zb = Pa[b * 3 + ax], zc = Pa[c * 3 + ax];
+              const sab = Math.abs(za - zb), sbc = Math.abs(zb - zc), sca = Math.abs(zc - za);
+              if (Math.max(sab, sbc, sca) <= 0.05) { out.push(a, b, c); continue; }
+              const [i, j, k] = sab >= sbc && sab >= sca ? [a, b, c] : sbc >= sca ? [b, c, a] : [c, a, b];
+              const key = i < j ? i * 1048576 + j : j * 1048576 + i; let mi = mid.get(key);
+              if (mi === undefined) { mi = Pa.length / 3; Pa.push((Pa[i * 3] + Pa[j * 3]) / 2, (Pa[i * 3 + 1] + Pa[j * 3 + 1]) / 2, (Pa[i * 3 + 2] + Pa[j * 3 + 2]) / 2);
+                if (Na) { const nx = Na[i * 3] + Na[j * 3], ny = Na[i * 3 + 1] + Na[j * 3 + 1], nz = Na[i * 3 + 2] + Na[j * 3 + 2], nl = Math.hypot(nx, ny, nz) || 1; Na.push(nx / nl, ny / nl, nz / nl); }
+                mid.set(key, mi); }
+              todo.push([i, mi, k], [mi, j, k]); }
+            const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(Pa), 3));
+            if (Na) g2.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(Na), 3));
+            g2.setIndex(new THREE.BufferAttribute(Pa.length / 3 > 65535 ? new Uint32Array(out) : new Uint16Array(out), 1));
+            geo.dispose(); geo = g2; owned.push(geo); }
           /* (its light normal-blended, never added: added, every layer of its body over another summed to white, a white
              blot with pink edges where the Naga should be ruby, together-phone 5.8 on deploy 10; the standing rule's) */
           const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.NormalBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
@@ -372,7 +396,7 @@
           T.set([_np.x, _np.y, _np.z, _nt.x, _nt.y, _nt.z, _nb.x, _nb.y, _nb.z, _nn.x, _nn.y, _nn.z], j * 12); }
         st.tab = T;
       }
-      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12);
+      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12), FRP = new Float32Array(12);
       function frameAt(u, out) {
         const T = st.tab, x = Math.max(0, Math.min(1, u)) * TABN, j = Math.min(TABN - 1, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
         for (let q = 0; q < 12; q++) out[q] = T[a + q] + (T[b + q] - T[a + q]) * w;
@@ -411,7 +435,13 @@
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
         },
-        ready: () => st.ready
+        ready: () => st.ready,
+        /* a place on its path `d` metres from the stick's head, where the films aim (the same path set() lays) */
+        pointAtDist(sx, sz, d) {
+          const key = sx.toFixed(2) + ',' + sz.toFixed(2);
+          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
+          const F = frameAt(d / st.len, FRP); return [F[0], F[1], F[2]];
+        }
       };
     })();
 
@@ -962,7 +992,7 @@
           const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
           if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, [sx, 3.8, sz + 0.6]], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
+          fmGaze(P, t, [[0, () => NAGA5.pointAtDist(sx, sz, 2.6)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (up its own path as it rises: R25)
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
@@ -989,8 +1019,10 @@
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
-          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: [sx, 3.6, sz + 0.8], fp: 70, fd: 62 },
-          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: [sx - 0.2, 4.6, sz + 1.6], fp: 72, fd: 64 },
+          /* (aimed at its own path, 2.4 and 5 m from the stick's head: it rises leaning toward the court's middle now, and
+             a fixed aim north of the stick could miss its body, R25) */
+          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: () => NAGA5.pointAtDist(sx, sz, 2.4), fp: 70, fd: 62 },
+          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: () => NAGA5.pointAtDist(sx, sz, 5.0), fp: 72, fd: 64 },
           { t: T.lay + 2.2, name: 'high', eye: [COURT5.x + 0.4, 7.6, COURT.z0 + 1.3], at: [COURT5.x, 0.2, (COURT.z0 + HOUSE.face) / 2 + 0.6], fp: 66, fd: 58 },
           { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.2, 6.8, COURT.z0 + 1.6], at: [zz.x, 0.6, zz.z + 0.6], fp: 62, fd: 54 },
           { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },

@@ -8724,22 +8724,26 @@
        holding it"; R26, his pick: "Finger bones (Recommended)"). His file has no finger bones; this chapter's copy of it
        (p5pho, tools/fingergraft.mjs: fifteen of the library's, and their ends, grafted onto his right hand from its own
        geometry, masters/v28.0/pho5) has, and at rest draws exactly as his. Here his hand is CLOSED ROUND THE SHAFT:
-       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.12 m up its middle
-         stands 8.2 cm along its own x and its radius is 3.3 to 3.7 cm (3.6 taken); his hand closes at 1.10 m up it, just
-         under the Naga's head (which begins at 1.15 m), as a staff is held;
+       THE SHAFT, from the stick's file (w5nagastaff, read across its length, every 4 cm): 1.40 m; from 0.96 to 1.12 m up
+         its middle stands 8.2 cm along its own x and its radius is 3.2 to 3.9 cm (3.6 taken; below 0.92 the Naga's coils
+         are 5 to 8 cm, above 1.12 its head flares): his hand closes round the middle of that straight neck, as a staff is
+         held, his little finger at its foot and his first finger under the head;
        ACROSS HIS PALM, in his hand's own frame (armsOf: the fingers' line, the palm's facing; across toward his thumb): its
-         middle 1.8 cm short of his middle finger's knuckle along his hand and pressed into his palm (the palm 1.2 cm off
-         the bone's line, measured from his hand's own skin there: 1.1 to 1.7 cm, a grip's press taken off), the shaft's
-         line sloped 18 degrees from straight across, its upper end toward his fingers (a power grip: the shaft runs from
-         the heel of the little finger's side to the first finger's knuckle), the Naga's head up past his thumb, facing
-         where his knuckles face;
+         middle 2.5 cm short of his middle finger's knuckle along his hand, so the fingers close round its far side from
+         the knuckles (the shaft deeper in the palm: 1.8 cm left the fingers hooked on its near side, drawn down the shaft
+         with no browser by tools/probes/gripsolve.mjs and gripdraw.py), pressed into his palm 1.6 cm off the bone's line
+         (his palm's skin there 1.1 to 1.7 cm: the thick pads at its heel no more than a grip's press into the shaft),
+         straight across it (sloped toward the fingers, as a power grip's oblique line, it turned his wrist toward his
+         thumb by as much again: 18 degrees took it past a real wrist's 25), the Naga's head up past his thumb;
        EACH FINGER CLOSED ROUND IT, solved from its own three bones' lengths in its own plane (MCP, PIP and DIP turning
          about the axis square to the finger and to the palm's facing): its first bone turned until its middle joint meets a
          circle round the shaft's line at the shaft's radius and the finger's (0.8 cm, pressed), then the middle and end
-         bones laid as chords round that circle; THE THUMB the other way round it, from the heel of the hand, its
-         metacarpal turned at its base until its knuckle meets the thumb's circle above the shaft, its two bones as chords
-         round it toward the fingertips; each joint held inside a hand's own range (MCP 90, PIP 110, DIP 85 degrees; the
-         thumb's 60, 60, 80), measured after (tools/probes/jointscan.mjs);
+         bones laid as chords round that circle (a hand of his size closes about a third of the way round a shaft this
+         thick: the fingertips on its far side, not under it); THE THUMB the other way round it, from the heel of the hand,
+         its metacarpal turned at its base until its knuckle meets the thumb's circle (its radius 1.2 cm, a thumb's) above
+         the shaft on his wrist's side, the root its metacarpal turns least to reach (its other, beneath, swung the thumb
+         round under the shaft), its two bones as chords round it toward the fingertips; each joint held inside a hand's
+         own range (MCP 90, PIP 110, DIP 85 degrees; the thumb's 60, 60, 80), measured after (tools/probes/jointscan.mjs);
        LAID at the very start of each drawing of the world, after every take, film and lay of his (a first child of the
          world whose matrix update runs before his: his bones' matrices are made from it), and taken off before his mixer
          runs again (armsBack, as every laid pose: v11.5); eased over 0.3 s as the stick comes into his hand or leaves it.
@@ -8750,7 +8754,7 @@
          on through the fight's lab, gripOn) */
       let GRIP_ON = false;
       const STICK_R = 0.036, STICK_C = [0.082, -0.003], FING_R = 0.008, GAP = 0.003;
-      let TILT = 18 * Math.PI / 180, STICK_Y = 1.10, THUMB_R = 0.009, BACK = 0.018, PALM = 0.012;   // (a probe may try others: tune)
+      let TILT = 0, STICK_Y = 1.05, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -10334,9 +10338,12 @@
       /* (R25: laid round the whole court, its reared head 2 m long ended on the loop's own start, where the dive from the
          arch also lands: the head is the model's own now, rigid, and needs room of its own) */
       function pathFor(sx, sz) {
-        const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;
-        const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
+        const C = COURT, ins = 0.62, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;   // (0.62 off the side walls: at 0.42 the dive's swing into the west side put its body into the wall)
+        /* (it rises leaning toward the court's middle: leaning toward the house, from a stick planted near the house end
+           its body stood in the house's front) */
+        const cxC = (x0 + x1) / 2; let dx = cxC - sx, dz = zm - sz; const dl = Math.hypot(dx, dz); if (dl < 0.3) { dx = 0; dz = 1; } else { dx /= dl; dz /= dl; }
+        const pts = [[sx, 1.4, sz], [sx + 0.2 * dx, 3.2, sz + 0.2 * dz], [sx + 0.9 * dx, 5.0, sz + 0.9 * dz], [cxC, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
+        const r = 1.0, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
@@ -10355,6 +10362,27 @@
           /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
+          /* ITS LONG TRIANGLES DIVIDED (R25), each into pieces no longer than 5 cm along the body, so the body bends with the
+             path at the court's corners instead of cutting across them: its 5.8 m middle is laid along about 21 m of path,
+             and a triangle 0.2 to 0.57 m long in the file came out 0.9 to 2.4 m long and laid flat across the inside of
+             each turn (324 over 0.8 m, measured). Divided at their middles, each shared middle made once (no cracks), the
+             winding kept: 62,393 triangles become 85,916; the longest laid edge 0.43 m */
+          if (geo.index) { const ax = along === 'z' ? 2 : 0, P0 = geo.attributes.position.array, N0 = geo.attributes.normal ? geo.attributes.normal.array : null, X0 = geo.index.array;
+            const Pa = Array.from(P0), Na = N0 ? Array.from(N0) : null, out = [], mid = new Map(), todo = [];
+            for (let q = 0; q < X0.length; q += 3) todo.push([X0[q], X0[q + 1], X0[q + 2]]);
+            while (todo.length) { const [a, b, c] = todo.pop(), za = Pa[a * 3 + ax], zb = Pa[b * 3 + ax], zc = Pa[c * 3 + ax];
+              const sab = Math.abs(za - zb), sbc = Math.abs(zb - zc), sca = Math.abs(zc - za);
+              if (Math.max(sab, sbc, sca) <= 0.05) { out.push(a, b, c); continue; }
+              const [i, j, k] = sab >= sbc && sab >= sca ? [a, b, c] : sbc >= sca ? [b, c, a] : [c, a, b];
+              const key = i < j ? i * 1048576 + j : j * 1048576 + i; let mi = mid.get(key);
+              if (mi === undefined) { mi = Pa.length / 3; Pa.push((Pa[i * 3] + Pa[j * 3]) / 2, (Pa[i * 3 + 1] + Pa[j * 3 + 1]) / 2, (Pa[i * 3 + 2] + Pa[j * 3 + 2]) / 2);
+                if (Na) { const nx = Na[i * 3] + Na[j * 3], ny = Na[i * 3 + 1] + Na[j * 3 + 1], nz = Na[i * 3 + 2] + Na[j * 3 + 2], nl = Math.hypot(nx, ny, nz) || 1; Na.push(nx / nl, ny / nl, nz / nl); }
+                mid.set(key, mi); }
+              todo.push([i, mi, k], [mi, j, k]); }
+            const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(Pa), 3));
+            if (Na) g2.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(Na), 3));
+            g2.setIndex(new THREE.BufferAttribute(Pa.length / 3 > 65535 ? new Uint32Array(out) : new Uint16Array(out), 1));
+            geo.dispose(); geo = g2; owned.push(geo); }
           /* (its light normal-blended, never added: added, every layer of its body over another summed to white, a white
              blot with pink edges where the Naga should be ruby, together-phone 5.8 on deploy 10; the standing rule's) */
           const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.NormalBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
@@ -10395,9 +10423,10 @@
                ground with the hood and the face on it. Laid slice by slice round the path, each reared slice came out a
                flat sheet up to 2.6 m tall, and the head's 22 % of the body, stretched along the path, a 7 m wall of red
                planes across the court and through the people in it: together-phone 5.8, 12.8, 15.2 and 19.9 on deploy 16
-               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is laid WHOLE, the
-               model's own shape, at the path's head in the path's own frame (its neck meets the body's last slice); the
-               tail folds into the stick's head it rises from. The middle: the longest run of slices under 0.85 m tall */
+               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is carried flat and
+               raised at the end WHOLE, the model's own shape, in the path's own frame (its neck meets the body's last
+               slice); the tail folds into the stick's head it rises from (set(), below). The middle: the longest run of
+               slices under 0.85 m tall */
             const ylo = new Float32Array(NB).fill(1e9), yhi = new Float32Array(NB).fill(-1e9);
             for (let i = 0; i < n; i++) { const b0 = bin[i], y = base[i * 3 + 1]; if (y < ylo[b0]) ylo[b0] = y; if (y > yhi[b0]) yhi[b0] = y; }
             const tall = (b0) => yhi[b0] - ylo[b0] > 0.85 && yhi[b0] > ylo[b0];
@@ -10427,7 +10456,7 @@
           T.set([_np.x, _np.y, _np.z, _nt.x, _nt.y, _nt.z, _nb.x, _nb.y, _nb.z, _nn.x, _nn.y, _nn.z], j * 12); }
         st.tab = T;
       }
-      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12);
+      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12), FRP = new Float32Array(12);
       function frameAt(u, out) {
         const T = st.tab, x = Math.max(0, Math.min(1, u)) * TABN, j = Math.min(TABN - 1, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
         for (let q = 0; q < 12; q++) out[q] = T[a + q] + (T[b + q] - T[a + q]) * w;
@@ -10442,23 +10471,37 @@
           g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
           const key = sx.toFixed(2) + ',' + sz.toFixed(2);
           if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
-          /* the lying middle stretched from the stick's head to where the head has come (k); the head whole at k, in the
-             path's frame there; the tail folded small into the stick's head. All of it grows out of the stick over the
-             first quarter of the way (it rises from it) */
-          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), arr = st.geo.attributes.position.array, n = arr.length / 3, R = st.reg, O = st.off;
-          const H = frameAt(kk, FRH), T0 = frameAt(0, FRT), F = FR;
+          /* THE LYING MIDDLE stretched from the stick's head to where the head has come (k), thin where it leaves the stick
+             (its first 1.6 m: it rises from a point; full-thick, it brushed his teacher's arm); THE HEAD carried along the
+             path ahead of that point FLAT (each slice of it pressed to the body's own height round the path) and RAISED, the
+             model's whole reared head and hood, over the last eighth of the way, where the path runs straight up the court's
+             east side; THE TAIL folded into the stick's head. All of it grows out of the stick over the first quarter of the
+             way, and nothing goes under the ground. Measured before it was drawn (tools: four stick places, every twentieth
+             of the way): no point of it in a wall or under the ground; a head carried whole round the path stood in the
+             west wall at its turns, up to 1.3 m (its hood leans with the path) */
+          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.25)), hr = smo(c01((kk - 0.88) / 0.12)), arr = st.geo.attributes.position.array, n = arr.length / 3;
+          const R = st.reg, O = st.off, B = st.base, cl = st.cl, LEN = st.len, alZ = st.along === 'z', T0 = frameAt(0, FRT), F = FR;
           for (let i = 0; i < n; i++) {
             const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
-            if (r === 1) { frameAt(o2 * kk, F); const xx = o0 * gr, yy = o1 * gr;
-              arr[i * 3] = F[0] + F[6] * xx + F[9] * yy; arr[i * 3 + 1] = F[1] + F[7] * xx + F[10] * yy; arr[i * 3 + 2] = F[2] + F[8] * xx + F[11] * yy; }
-            else if (r === 2) { const xx = o0 * gr, yy = o1 * gr, zz = o2 * gr;
-              arr[i * 3] = H[0] + H[3] * zz + H[6] * xx + H[9] * yy; arr[i * 3 + 1] = H[1] + H[4] * zz + H[7] * xx + H[10] * yy; arr[i * 3 + 2] = H[2] + H[5] * zz + H[8] * xx + H[11] * yy; }
-            else { const xx = o0 * gr * 0.25, yy = Math.max(-0.3, Math.min(0.3, o1)) * gr * 0.25;
-              arr[i * 3] = T0[0] + T0[6] * xx + T0[9] * yy; arr[i * 3 + 1] = T0[1] + T0[7] * xx + T0[10] * yy; arr[i * 3 + 2] = T0[2] + T0[8] * xx + T0[11] * yy; }
+            let px, py, pz;
+            if (r === 1) { frameAt(o2 * kk, F); const tp = smo(c01(o2 * kk * LEN / 1.6)), xx = o0 * gr * tp, yy = o1 * gr * tp;
+              px = F[0] + F[6] * xx + F[9] * yy; py = F[1] + F[7] * xx + F[10] * yy; pz = F[2] + F[8] * xx + F[11] * yy; }
+            else if (r === 2) { const b0 = cl.bin[i], c = alZ ? B[i * 3] : B[i * 3 + 2], fx = (c - cl.cx[b0]) * gr, fy = Math.max(-0.32, Math.min(0.32, B[i * 3 + 1] - cl.cy[b0])) * gr;
+              const xx = fx + (o0 * gr - fx) * hr, yy = fy + (o1 * gr - fy) * hr, uv = kk + o2 * gr / LEN, ex = uv > 1 ? (uv - 1) * LEN : 0;
+              frameAt(Math.min(1, uv), F);
+              px = F[0] + F[3] * ex + F[6] * xx + F[9] * yy; py = F[1] + F[4] * ex + F[7] * xx + F[10] * yy; pz = F[2] + F[5] * ex + F[8] * xx + F[11] * yy; }
+            else { px = T0[0]; py = T0[1]; pz = T0[2]; }
+            arr[i * 3] = px; arr[i * 3 + 1] = Math.max(0.01, py); arr[i * 3 + 2] = pz;
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
         },
-        ready: () => st.ready
+        ready: () => st.ready,
+        /* a place on its path `d` metres from the stick's head, where the films aim (the same path set() lays) */
+        pointAtDist(sx, sz, d) {
+          const key = sx.toFixed(2) + ',' + sz.toFixed(2);
+          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
+          const F = frameAt(d / st.len, FRP); return [F[0], F[1], F[2]];
+        }
       };
     })();
 
@@ -11009,7 +11052,7 @@
           const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
           if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, [sx, 3.8, sz + 0.6]], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
+          fmGaze(P, t, [[0, () => NAGA5.pointAtDist(sx, sz, 2.6)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (up its own path as it rises: R25)
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
@@ -11036,8 +11079,10 @@
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
-          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: [sx, 3.6, sz + 0.8], fp: 70, fd: 62 },
-          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: [sx - 0.2, 4.6, sz + 1.6], fp: 72, fd: 64 },
+          /* (aimed at its own path, 2.4 and 5 m from the stick's head: it rises leaning toward the court's middle now, and
+             a fixed aim north of the stick could miss its body, R25) */
+          { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: () => NAGA5.pointAtDist(sx, sz, 2.4), fp: 70, fd: 62 },
+          { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: () => NAGA5.pointAtDist(sx, sz, 5.0), fp: 72, fd: 64 },
           { t: T.lay + 2.2, name: 'high', eye: [COURT5.x + 0.4, 7.6, COURT.z0 + 1.3], at: [COURT5.x, 0.2, (COURT.z0 + HOUSE.face) / 2 + 0.6], fp: 66, fd: 58 },
           { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.2, 6.8, COURT.z0 + 1.6], at: [zz.x, 0.6, zz.z + 0.6], fp: 62, fd: 54 },
           { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },
