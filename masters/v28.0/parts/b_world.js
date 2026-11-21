@@ -313,10 +313,12 @@
          open to the sky): the block's paint over a tiled dado, a slab band at every storey, and the homes' windows that
          look into the court (his bedroom's at the ground storey behind its grille; two a storey above) */
       const SW = [{ z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];
-      const sideOpens = (ground) => { const o = []; if (ground) o.push({ z0: -9.1, z1: -7.7, y0: 1.0, y1: 2.15 });
-        for (let st = 1; st <= 2; st++) for (const q of SW) o.push({ z0: q.z0, z1: q.z1, y0: st * STOREY + 0.9, y1: st * STOREY + 2.1 }); return o; };
-      wallZ(mCourtWall, C.x0 - 0.1, 0.2, C.z0, H.face, sideOpens(true), 0, C.wallTop);
-      wallZ(mCourtWall, C.x1 + 0.1, 0.2, C.z0, H.face, sideOpens(false), 0, C.wallTop);
+      /* (storey by storey: wallZ takes openings in order along the wall, and the ground window and an upper one overlap
+         in z: built as one, the upper one's cut drew a wall over the ground window. The ground storey is solid) */
+      for (let st = 0; st <= 2; st++) { const y = st * STOREY, y1 = st === 2 ? C.wallTop : y + STOREY;
+        const up = st ? SW.map(q => ({ z0: q.z0, z1: q.z1, y0: y + 0.9, y1: y + 2.1 })) : [];
+        wallZ(mCourtWall, C.x0 - 0.1, 0.2, C.z0, H.face, st ? up : [{ z0: -9.1, z1: -7.7, y0: 1.0, y1: 2.15 }], y, y1, st === 0);
+        wallZ(mCourtWall, C.x1 + 0.1, 0.2, C.z0, H.face, up, y, y1, st === 0); }
       homeWin('z', C.x0, 1, -9.1, -7.7, 1.0, 2.15, 0);
       for (let gz = -9.06; gz < -7.72; gz += 0.11) bar(M({ color: 0xe6e6e0, roughness: 0.5 }), [C.x0 + 0.05, 1.0, gz], [C.x0 + 0.05, 2.15, gz], 0.008, 5);
       for (let st = 1; st <= 2; st++) for (const q of SW) { homeWin('z', C.x0, 1, q.z0, q.z1, st * STOREY + 0.9, st * STOREY + 2.1); homeWin('z', C.x1, -1, q.z0, q.z1, st * STOREY + 0.9, st * STOREY + 2.1); }
