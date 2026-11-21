@@ -9708,7 +9708,9 @@
   }
 
   /* THE COLLECTOR, THE FILM IN (the plan's 4.7): the card on black; the room in daylight; the pieces laid; his words */
-  const CO5 = tl(0, [[0.3], ['@card'], [2.6], ['@up'], [1.4], ['@case'], [2.2], ['@laid'], [0.6], ['co5t1', 0.6], ['@laugh'], [0.8], ['co5t2', 0.4], ['@end']]);
+  const CO5 = tl(0, [[0.3], ['@card'], [2.6], ['@up'], [1.4], ['@case'], [2.2], ['@laid'], [0.6], ['co5t1', 0.6], ['@laugh'], [1.35], ['co5t2', 0.4], ['@end']]);
+  /* (the laugh is heard for 1.15 s from its mark, u5colaugh's sound from 0.15 to 1.30 s of its file: his next line waits
+     0.2 s past it, so his voice is never over his own laugh) */
   function filmCollector(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.collector, T = CO5;
     step(0, () => F.begin(api, s));
@@ -9720,6 +9722,7 @@
     sfx(T.case + 1.0, 'u5lay1', 0.6); sfx(T.case + 1.35, 'u5lay2', 0.6); sfx(T.case + 1.7, 'u5lay1', 0.55);
     sfx(T.laid - 0.25, 'u5lay3', 0.7); sfx(T.laid + 0.25, 'u5lay2', 0.55);    // laid out one after another, quickly, heard as the shot finds them
     sfx(T.co5t1, 'co5t1', 1);                                                  // "Twenty. Twenty-one, with this one. I started with one."
+    sfx(T.laugh - 0.15, 'u5colaugh', 0.6);                                     // his small laugh (its sound from 0.15 s into the file)
     sfx(T.co5t2, 'co5t2', 1);                                                  // "Lately nothing goes right. I am tired all the time. And there is a smell. ..."
     sfxFade(T.end - 1.2, T.end - 0.1, 'u5m13shop');
     step(T.end, () => F.end());
