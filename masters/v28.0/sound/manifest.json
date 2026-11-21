@@ -161,7 +161,7 @@
   "loop_secs": 75.0,
   "bpm": 96,
   "key": "D minor",
-  "rule": "ALL FIVE asked for together on the fight's first frame (loopVol), so they stay in step; each brought up or down over 0.4 s, never on a beat; every spoken line ducks the music 8 dB (the engine's duck)"
+  "rule": "ALL FIVE asked for together on the fight's first frame (loopVol), so they stay in step; each brought up or down over 0.4 s, never on a beat; every spoken line ducks the music 8 dB (the engine's duck). At the gains below the sum peaks at -3.9 / -2.8 / -3.2 dBFS (mp3: the teacher's, the student's, a hold) and -3.5 / -2.2 / -2.5 (Opus); ALL FIVE AT 1 TOGETHER PEAK OVER FULL SCALE in Opus (+0.2 dBFS): never cue that"
  },
  "sounds": [
   {

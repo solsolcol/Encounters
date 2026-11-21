@@ -73,7 +73,7 @@ for n, e in P.items():
 cued = [r for r in rows if r['kind'] != 'source']
 json.dump(dict(chapter='e4c5', made='masters/v28.0/sound (make.sh: the record)', fight_events=EVENT,
                m7=dict(stems=['u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice'], loop_secs=75.0, bpm=96, key='D minor',
-                       rule="ALL FIVE asked for together on the fight's first frame (loopVol), so they stay in step; each brought up or down over 0.4 s, never on a beat; every spoken line ducks the music 8 dB (the engine's duck)"),
+                       rule="ALL FIVE asked for together on the fight's first frame (loopVol), so they stay in step; each brought up or down over 0.4 s, never on a beat; every spoken line ducks the music 8 dB (the engine's duck). At the gains below the sum peaks at -3.9 / -2.8 / -3.2 dBFS (mp3: the teacher's, the student's, a hold) and -3.5 / -2.2 / -2.5 (Opus); ALL FIVE AT 1 TOGETHER PEAK OVER FULL SCALE in Opus (+0.2 dBFS): never cue that"),
                sounds=[r for r in rows if r['kind'] != 'source']),
           open(os.path.join(R, 'manifest.json'), 'w'), indent=1, ensure_ascii=False)
 from collections import Counter
