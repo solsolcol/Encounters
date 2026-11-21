@@ -365,7 +365,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            its body stood in the house's front) */
         const cxC = (x0 + x1) / 2; let dx = cxC - sx, dz = zm - sz; const dl = Math.hypot(dx, dz); if (dl < 0.3) { dx = 0; dz = 1; } else { dx /= dl; dz /= dl; }
         const pts = [[sx, 1.4, sz], [sx + 0.2 * dx, 3.2, sz + 0.2 * dz], [sx + 0.9 * dx, 5.0, sz + 0.9 * dz], [cxC, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        const r = 1.0, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.4], [x1, y, zm + 1.0]];
+        /* (OVER THE PLANTERS: the court's two planters stand against its side walls near the gate, 2 m long and 0.76 to 0.84
+           m deep, their plants 0.67 and 0.71 m high (b_world.js PLANT_Z), and the loop's sides 0.62 m in ran through both,
+           0.42 m deep, 2143 and 2863 crossings in the film's clipscan. The body is lifted over each, 1.12 m, from 0.85 m
+           before it to round the gate end's corner, as a serpent goes over a box: measured at 32 stick places, every
+           twentieth of the way, none of it in a planter, a wall or the house) */
+        const r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, -9.1], [x0 + 0.02, HY, -9.95], [x0 + 0.14, HY, -12.6], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
+                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, -12.6], [x1 - 0.02, HY, -10.45], [x1, y, -9.6], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
