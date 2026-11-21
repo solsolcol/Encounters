@@ -501,12 +501,42 @@
          until it is in the bag, then let down
        FS_ACTS off: he fires from his walk and his rest, as the first pass had him */
     const FS_ACTS = true;
-    /* (SHOCKWAVE and BAG are left standing, measured: his Charged_Spell_Cast lifts both feet 6 cm off the paving in its
-       crouch, mage_soell_cast_8 sinks his left foot 2 cm into it; their takes are listed wanted. The gold's and the bag's
-       own pictures carry those acts. fsPhoAct answers 0 for a kind with no row, so their calls stand ready) */
-    /* (the fire's coming down ends at 0.90 of his take and hands him back from there: at 1.0 his right foot stands 1.3 cm
-       into the paving, measured in the game (e4c5takes' feet), at 0.71 both feet 6 to 7 mm over it) */
-    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 0.90, up: 0.12, down: 0.3, hold: false } };
+    /* (the fire's coming down ends at 0.90 of his take and hands him back from there. SHOCKWAVE and BAG play his own takes
+       too (the lead's word, R23), each SET DOWN BY HIS OWN FEET over the moments played: fsGroundActs, below) */
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 0.90, up: 0.12, down: 0.3, hold: false },
+                          wave: { take: 'Charged_Spell_Cast', a: 0.50, top: 2.00, b: 2.60, up: 1.5, down: 0.60, hold: true },
+                          bag:  { take: 'mage_soell_cast_8', a: 0.00, top: 0.40, b: 0.40, up: 0.6, down: 0.35, hold: true } };
+    /* HIS ACTS SET DOWN BY HIS OWN FEET, at run time (his file untouched: his rule). Each of his takes is set down once at
+       build over its whole length (groundTakes: by its lowest moment), so a take whose feet rise in its middle floats there
+       (his charged cast's crouch: both feet 6 cm up, measured) and one whose foot dips between the moments read sinks
+       (cast_8: his left foot 2 cm under). Here each act's played window gets a curve instead, as a rise from a seat has one
+       (riseCurve, read by personSettle at the take's own moment): the lowest of his soles at 25 moments of the window,
+       each set GROUND_SOLE over the paving, read on his own skin through groundTakes' own points. Once, when his body has
+       landed (behind the loading curtain) */
+    function fsGroundActs(P) {
+      if (!P || !P.ready || !P.lv || !P.lv[1] || !P.lv[1][0] || !P.lv[1][0].skeleton || !P.hips) return;
+      const skins = P.lv[1], PTS = groundPoints(P, skins), keep = {};
+      for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k] || 0, P.acts[k].timeScale];
+      for (const kind in FS_PHO_TAKE) {
+        const R0 = FS_PHO_TAKE[kind], name = R0.take, A = P.acts[name]; if (!A || (P.rise && P.rise[name])) continue;
+        for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+        P.model.position.set(0, 0, 0);
+        const t0 = Math.min(R0.a, R0.top, R0.b), t1 = Math.max(R0.a, R0.top, R0.b), N = 25, ts = [], off = [], ks = [];
+        const sms = FASTSKIN ? new Map() : null;
+        for (let i = 0; i < N; i++) { const t = t0 + (t1 - t0) * i / (N - 1); A.time = t; P.mixer.update(0); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
+          _grI.copy(P.group.matrixWorld).invert(); let m = Infinity; if (sms) sms.clear();
+          for (const [k, j] of PTS.foot) { const q = skins[k]; if (!q) continue; _grM.multiplyMatrices(_grI, q.matrixWorld);
+            if (sms) { let SM = sms.get(q); if (!SM) { SM = skinMats(q).map(x => x.clone()); sms.set(q, SM); } skinVertex(q, j, _grV, SM); } else q.getVertexPosition(j, _grV);
+            _grV.applyMatrix4(_grM); if (_grV.y < m) m = _grV.y; }
+          if (!(m < 1)) { m = P.offY[name] || 0; }
+          ts.push(t); off.push(m - GROUND_SOLE); ks.push(0); }
+        (P.rise = P.rise || {})[name] = { ts, off, k: ks };
+        (P.groundRep = P.groundRep || {})[name + ' (the fight)'] = { from: +t0.toFixed(2), to: +t1.toFixed(2), lo: +Math.min(...off).toFixed(4), hi: +Math.max(...off).toFixed(4), whole: P.offY[name] };
+      }
+      for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
+      P.mixer.update(0); personSettle(P);
+    }
+    whenReady(cast.pho, fsGroundActs);
     function fsPhoAct(kind, up) {
       const P = cast.pho, A = FS_PHO_TAKE[kind];
       if (!FS_ACTS || !P || !P.ready || !A || !P.acts[A.take]) return 0;
@@ -537,7 +567,7 @@
     function fsBodyTake(P, who, pace, wdt) {
       if (!P || !P.ready) return;
       const T = fsTake[who]; T.pace = pace;
-      if (who === 'pho' && fsActing()) return;                         // (an act's take holds him: it hands him back itself)
+      if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
       const moving = pace > 0.08;
       if (moving) { T.t = 0; if (!T.walking) { T.walking = true; if (P.win) delete P.win.Walking; take(P, 'Walking', 0.25); if (P.acts.Walking) P.acts.Walking.timeScale = 1; } }
       else if (T.walking) { T.t += wdt; if (T.t > 0.25) { T.walking = false;
@@ -816,6 +846,7 @@
       if (!FS5.on || !FS5.st || !kit || !kit.tagState) return;
       FS5.wall += wdt;
       const st = FS5.st, ts = kit.tagState();
+      if (FS5.labPose && cast.pho && cast.pho.ready) pose(cast.pho, FS5.labPose.name, FS5.labPose.t);   // (a probe's: lab.pose)
       if (!ts.on) return;
       /* the card after a loss waits a moment of the court going dark */
       if (FS5.card && FS5.wall >= FS5.cardAt) { const c = FS5.card; FS5.card = null; c(); }
@@ -990,6 +1021,10 @@
     const FS_LAB = {
       open() { if (!FS5.st) return false; FS5.lab = true; if (FS5.brief && kit && kit.abortEvent) kit.abortEvent(); return true; },
       speed(k) { FS5.probeK = Math.max(1, Math.min(20, Math.round(+k || 1))); return FS5.probeK; },
+      /* his body held in one of his takes at one moment (the chapter's own pose: every law of his, his feet's curve), laid
+         on every frame until it is let go (null), so a probe photographs and measures it whatever else runs */
+      pose(name, t) { FS5.labPose = name && cast.pho && cast.pho.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labPose || !name; },
+      ground() { const P = cast.pho; return P && P.groundRep ? JSON.parse(JSON.stringify(P.groundRep)) : null; },
       clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
@@ -1029,7 +1064,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, probeK: FS5.probeK || 1 });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1 });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
