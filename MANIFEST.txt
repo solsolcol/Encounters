@@ -1134,3 +1134,5 @@ efba8a1ae7cc8e4e4003bed6c019cc54853eca1e1cbe45c6be561e7477b90feb  masters/v27.0/
 60739943a56c955239824114f99e1a40a414c6b146981ea9176a14bd41b6bce0  masters/v27.0/src/original-door.glb
 c2433aafa1ea31133ba1fcfe4ad377e9a883dfa4ace92c9d3759071900e211d3  masters/v27.0/src/original-folder.glb
 7cc74c6d29c0210eca541c713198244aff0059791550bcac0ce59f4a7ddbbfd8  masters/v27.0/src/original-foxpalm.glb
+6d10454b0e714c2ac846daed8a5f732efda6e688401696107a8ef6213d738965  masters/v27.0/src/original-frameport.glb
+d85c676f33b355b97201efb821de1e83de2d5c5f1226b852791a2e620131d67c  masters/v27.0/src/original-framesmall.glb
