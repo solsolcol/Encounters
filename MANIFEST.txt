@@ -1483,6 +1483,7 @@ ec7cdd944a6589962e554373e6aa2b4386a20b94c0f4ed06d0f2765cef1b17a4  masters/v28.0/
 3d33e4fa627866e286bc3c712ff2028fa2e68daff1ade19827c48c481ae50f3b  masters/v28.0/src/original-floorlamp.glb
 35e9452c08bd138bf8ddbdd3e902c8973f473dd3967d94002cd8cbef6bbb0d05  masters/v28.0/src/original-frame.glb
 771c88887967be9e89e42da3c651ccaad8bd81c14bbe5db73a820e1475bc65f1  masters/v28.0/src/original-frontdoor.glb
+c964c76c13116033e19a6db16055e10f605f062e7f23ba53f4d8264e6614ef94  masters/v28.0/src/original-gate.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
