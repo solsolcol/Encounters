@@ -1,0 +1,483 @@
+    /* ================================================================ THE PLAY'S OWN MACHINERY (the tracker's M7; the plan's
+       4.1 the walkway, 4.3 the hunt, 4.7 the collector's table). The phases' logic, their orders and their lines are in
+       c_story.js; what they stand on is here: SMELL (the chapter's own button, kit.button: the sixty-first seam) and the
+       threads it shows; the two followers and their teacher walking the walkway with him; Spirit Vision's strain (chapter
+       4's, as it behaved there); the stains, the nine and the three presences, each seen only through Spirit Vision.
+       THE PEOPLE are the chapter's shared cast (c_cast.js: cast.pho standing, cast.phoS seated in case three, cast.ton,
+       prai[0..8]; Mr Koh and Jun are the world's, b_xpeople.js): the play only places them for its own phases and moves
+       them on the walkway. Every one is asked for through `castOf`, so a body that is not cast yet costs its moves and
+       never the play. */
+    const TOUCH5 = !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window);
+    const castOf = (n) => (typeof cast === 'object' && cast && cast[n] && cast[n].group) ? cast[n] : null;
+    const praiOf = () => { try { if (typeof prai !== 'undefined' && Array.isArray(prai)) return prai; } catch (e) { /* not cast yet */ }
+      return (cast && Array.isArray(cast.prai)) ? cast.prai : []; };
+    const _pv5 = new THREE.Vector3(), _pw5 = new THREE.Vector3(), _hv5 = new THREE.Vector3();
+    /* a mark that is pressed by a tap on it on a phone (v12.5): within a share of the screen of the point or of its mark */
+    const markHit5 = (posF, frac = 0.1) => function (x, y) {
+      const p = posF(), r = Math.min(innerWidth, innerHeight) * frac;
+      camera.updateMatrixWorld();
+      const pts = [[p.x, p.y, p.z]];
+      if (this && this.pos) pts.push([this.pos.x, (this.pos.y ?? 1.0) + (this.markY ?? 0.55), this.pos.z]);
+      return pts.some(([px, py, pz]) => { _hv5.set(px, py, pz).project(camera);
+        return _hv5.z < 1 && Math.hypot(x - (_hv5.x * 0.5 + 0.5) * innerWidth, y - (-_hv5.y * 0.5 + 0.5) * innerHeight) < r; });
+    };
+    const myX = () => yaw.position.x, myZ = () => yaw.position.z;
+    const distTo = (x, z) => Math.hypot(yaw.position.x - x, yaw.position.z - z);
+    const inCourt = (x = myX(), z = myZ(), pad = 0) => x > COURT.x0 - pad && x < COURT.x1 + pad && z > COURT.z0 - pad && z < HOUSE.face + pad;
+
+    /* ---------------------------------------------------------------- THE WALKWAY'S ONE LINE (the plan's 4.1): where
+       along it he is (`s`, metres from the lift's doors, round the one turn to his gate) and a point on it, `lat` metres
+       toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
+    const WAY = { turnS: 15.2, gateS: 15.2 + 8.5 };
+    function wayS(x, z) { return z > -14.95 ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
+    function wayAt(s, lat, out) {
+      if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
+      return out.set(-(s - WAY.turnS), 0, -14.95 + lat);
+    }
+
+    /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
+       the edges of the picture darken a little, for about three seconds dark threads drift in the air FROM where the
+       smell comes, thicker where it is stronger; then he breathes out, two and a half seconds before the next. It costs
+       nothing). The button is the chapter's (seam 61), in the right-hand column under the eye, a nose; N on a desktop */
+    const SMELL = { threads: 3.4, fade: 0.9, gap: 2.5 };
+    SMELL.cycle = SMELL.threads + SMELL.fade + SMELL.gap;
+    const smell = { shown: false, t: -1, presses: 0, waitDrawn: -1, pulse: false, onPress: null };
+    const noseIcon = (() => { const c = document.createElement('canvas'); c.width = c.height = 96; const x = c.getContext('2d');
+      x.strokeStyle = '#f2ece0'; x.lineWidth = 6; x.lineCap = 'round'; x.lineJoin = 'round';
+      x.beginPath(); x.moveTo(38, 14); x.bezierCurveTo(36, 34, 26, 50, 22, 60); x.bezierCurveTo(18, 70, 28, 76, 38, 74);
+      x.bezierCurveTo(42, 80, 50, 80, 54, 74); x.stroke();
+      x.lineWidth = 4.5;
+      for (let i = 0; i < 3; i++) { const y0 = 34 + i * 16; x.beginPath(); x.moveTo(62, y0); x.bezierCurveTo(70, y0 - 7, 76, y0 + 7, 86, y0); x.stroke(); }
+      return c; })();
+    function smellButton(on, o = {}) {
+      if (!kit || !kit.button) return;
+      if (!on) { if (smell.shown) kit.button('smell', null); smell.shown = false; smell.pulse = false; smell.waitDrawn = -1; return; }
+      if (!smell.shown) { smell.shown = true; smell.waitDrawn = -1;
+        kit.button('smell', { icon: noseIcon, label: W.btnSmell, key: 'KeyN', wait: 0, pulse: false, onPress: () => { smellPress(); } }); }
+      if (o.pulse !== undefined && o.pulse !== smell.pulse) { smell.pulse = !!o.pulse; kit.button('smell', { pulse: smell.pulse }); }
+    }
+    function smellBusy() { return smell.t >= 0 && smell.t < SMELL.cycle; }
+    function smellPress() {
+      if (smellBusy() || getState() !== 'play') return false;
+      smell.t = 0; smell.presses++;
+      if (smell.pulse) smellButton(true, { pulse: false });
+      if (kit && kit.chill) kit.chill(0.3, { secs: 0.5, tint: 'sour' });
+      threadsSpawn();
+      if (smell.onPress) smell.onPress();
+      return true;
+    }
+    function smellTick(wdt) {
+      if (smell.t < 0) return;
+      const t0 = smell.t; smell.t += wdt;
+      if (t0 < SMELL.threads && smell.t >= SMELL.threads && kit && kit.chill) kit.chill(0, { secs: 1.2 });
+      if (smell.t >= SMELL.cycle) smell.t = -1;
+      if (smell.shown && kit && kit.button) { const w = smell.t < 0 ? 0 : 1 - smell.t / SMELL.cycle;
+        if (Math.abs(w - smell.waitDrawn) > 0.012 || (w === 0 && smell.waitDrawn !== 0)) { smell.waitDrawn = w; kit.button('smell', { wait: w }); } }
+    }
+
+    /* ---------------------------------------------------------------- THE THREADS: one ribbon a thread, all of them one
+       mesh drawn in one call, each a pure function of its own age (a thread flows along its line from its source, its
+       tail behind it, a slow wave across it). Spawned at a press, from the places the phase smells of (smellSources) */
+    const TH = { N: 170, SEG: 10 };
+    const thPos = new Float32Array(TH.N * TH.SEG * 2 * 3), thCol = new Float32Array(TH.N * TH.SEG * 2 * 4);
+    const thIdx = [];
+    for (let t = 0; t < TH.N; t++) for (let i = 0; i < TH.SEG - 1; i++) { const a = (t * TH.SEG + i) * 2; thIdx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    const thGeo = new THREE.BufferGeometry();
+    thGeo.setAttribute('position', new THREE.BufferAttribute(thPos, 3).setUsage(THREE.DynamicDrawUsage));
+    thGeo.setAttribute('color', new THREE.BufferAttribute(thCol, 4).setUsage(THREE.DynamicDrawUsage));
+    thGeo.setIndex(thIdx);
+    const thMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false });
+    const thMesh = new THREE.Mesh(thGeo, thMat); thMesh.frustumCulled = false; thMesh.visible = false; thMesh.renderOrder = 3; thMesh.name = 'smell threads';
+    world.add(thMesh);
+    const threads = [];
+    let thRng = rng(28701);
+    /* the colours: the true smell grey-black; the drain's brown; the pieces' smoke grey */
+    const TH_COL = { dark: [0.07, 0.065, 0.06, 0.78], drain: [0.30, 0.21, 0.11, 0.62], smoke: [0.16, 0.15, 0.14, 0.62] };
+    /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
+       and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
+    const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];
+    const trailLen = []; { let L = 0; trailLen.push(0); for (let i = 1; i < TRAIL.length; i++) { L += Math.hypot(TRAIL[i][0] - TRAIL[i - 1][0], TRAIL[i][1] - TRAIL[i - 1][1]); trailLen.push(L); } }
+    const TRAIL_L = trailLen[trailLen.length - 1];
+    function trailAt(s, out) {
+      s = Math.max(0, Math.min(TRAIL_L, s)); let i = 1; while (i < TRAIL.length - 1 && trailLen[i] < s) i++;
+      const a = TRAIL[i - 1], b = TRAIL[i], k = (s - trailLen[i - 1]) / Math.max(1e-6, trailLen[i] - trailLen[i - 1]);
+      return out.set(a[0] + (b[0] - a[0]) * k, 0, a[1] + (b[1] - a[1]) * k);
+    }
+    function trailNear(x, z) { let best = 0, bd = 1e9; for (let s = 0; s <= TRAIL_L; s += 0.25) { trailAt(s, _pw5); const d = Math.hypot(_pw5.x - x, _pw5.z - z); if (d < bd) { bd = d; best = s; } } return best; }
+    const trailStrength = (s) => 0.16 + 0.84 * Math.pow(Math.max(0, Math.min(1, s / TRAIL_L)), 1.6);
+    function addThread(o) { if (threads.length < TH.N) threads.push(Object.assign({ age: -(o.delay || 0), life: 2.2, w: 0.018, a: 0.05, f: 1.6, ph: thRng() * 6.28, col: TH_COL.dark }, o)); }
+    /* the places this phase smells of: [{ x, y, z, k, kind, ... }] (k its strength) */
+    function threadsSpawn() {
+      threads.length = 0; thRng = rng(28701 + smell.presses * 7);
+      const R = thRng, me = [myX(), myZ()], src = smellSources(), lean = [];
+      let total = 0;
+      for (const S0 of src) { S0.wt = S0.k * Math.pow(Math.max(0, 1 - Math.hypot(S0.x - me[0], S0.z - me[1]) / (S0.reach || 11)), 1.3); total += S0.wt; }
+      if (phase === 'walk' && play.found.has('t') && play.found.has('j')) {
+        /* the trail: threads laid where he can see them, more and darker the nearer the gate */
+        const sp = trailNear(me[0], me[1]), k = trailStrength(sp + 4);
+        const n = Math.round(46 + 90 * k);
+        for (let i = 0; i < n; i++) {
+          const s = Math.max(0.3, Math.min(TRAIL_L - 0.2, sp - 2.5 + R() * 13.5)), ks = trailStrength(s);
+          if (R() > 0.35 + 0.65 * ks) continue;
+          addThread({ trail: true, s0: s + 1.2, v: 0.55 + R() * 0.35, L: 1.0 + R() * 1.4 * ks, lat: (R() - 0.5) * 0.9, h: 0.03 + R() * 0.32,
+                      delay: R() * 1.6, life: 1.9 + R() * 0.9, w: 0.014 + 0.02 * ks, a: 0.05 + R() * 0.06, alpha: 0.4 + 0.6 * ks });
+        }
+      }
+      for (const S0 of src) {
+        const n = Math.round(Math.min(90, S0.wt * (S0.n || 60)));
+        for (let i = 0; i < n; i++) {
+          const ox = S0.x + (R() - 0.5) * 2 * (S0.rx || 0.25), oz = S0.z + (R() - 0.5) * 2 * (S0.rz || 0.25), oy = (S0.y || 0) + R() * (S0.ry || 0.05);
+          addThread({ O: [ox, oy, oz], D: S0.d || [0, 1, 0], v: (S0.v || 0.25) * (0.75 + R() * 0.5), L: (S0.L || 0.5) * (0.7 + R() * 0.6), delay: R() * 1.5,
+                      life: (S0.life || 2.2) * (0.8 + R() * 0.4), w: (S0.w || 0.018) * (0.8 + R() * 0.5), a: S0.a == null ? 0.04 : S0.a, f: S0.f || 1.6,
+                      col: S0.col || TH_COL.dark, alpha: Math.min(1, 0.45 + 0.55 * S0.k), grow: S0.grow || 0 });
+        }
+      }
+      /* A WRONG TAP IS STILL A DIRECTION (4.3): where nothing is near, the threads about him come FROM the nearest place
+         not yet found, and lean toward it */
+      if (total < 0.14 && phase !== 'walk') {
+        const q = nearestUnfound();
+        if (q) { const dx = me[0] - q.x, dz = me[1] - q.z, L = Math.hypot(dx, dz) || 1, ux = dx / L, uz = dz / L;
+          for (let i = 0; i < 34; i++) { const back = 1.2 + R() * 3.2, side = (R() - 0.5) * 2.4;
+            addThread({ O: [me[0] - ux * back - uz * side, 0.15 + R() * 1.1, me[1] - uz * back + ux * side], D: [ux, 0.05, uz], v: 0.45 + R() * 0.3, L: 0.7 + R() * 0.6,
+                        delay: R() * 1.4, life: 1.8 + R() * 0.6, w: 0.012, alpha: 0.45 }); } }
+      }
+      thMesh.visible = threads.length > 0;
+    }
+    function smellSources() {
+      if (phase === 'walk') {
+        /* the decoy (4.1): a drain's grating at the walkway's edge where water has stood; its threads brown, short, and
+           staying where they are */
+        return [{ x: FLOOR.DRAIN.x, y: 0.02, z: FLOOR.DRAIN.z, k: 0.8, reach: 8, n: 40, rx: 0.4, rz: 0.2, ry: 0.1, d: [0, 1, 0], v: 0.03, L: 0.22, a: 0.05, f: 2.2, col: TH_COL.drain, life: 2.4, w: 0.016 }];
+      }
+      if (phase === 'hunt') {
+        const f = (c) => play.found.has(c) ? 0.35 : 1;
+        return [
+          /* under the shoe cabinet by the doors: threads pooling out from under it */
+          { x: HUNT5.s1.x, y: 0.02, z: HUNT5.s1.z + 0.12, k: 0.85 * f('s1'), reach: 7, n: 55, rx: 0.32, rz: 0.12, d: [0.0, 0.18, 0.98], v: 0.22, L: 0.45, a: 0.035 },
+          /* the court, at the left planter's foot: rising along it */
+          { x: HUNT5.s2.x, y: 0.02, z: HUNT5.s2.z, k: 0.85 * f('s2'), reach: 9, n: 60, rx: 0.06, rz: 0.95, d: [-0.12, 0.99, 0], v: 0.26, L: 0.55, a: 0.04 },
+          /* between the gate posts: the thickest of all, running to his door */
+          { x: HUNT5.s3.x, y: 0.02, z: HUNT5.s3.z, k: 1.0 * f('s3'), reach: 11, n: 90, rx: 0.55, rz: 0.18, d: [0, 0.12, 0.99], v: 0.5, L: 1.2, a: 0.05, w: 0.022 },
+          /* the old armchair: threads standing thick over it (his nose is once behind the truth) */
+          { x: HUNT5.arm.x, y: 0.5, z: HUNT5.arm.z, k: 0.9 * (play.found.has('a') ? 0.35 : 1), reach: 7, n: 55, rx: 0.28, rz: 0.26, ry: 0.15, d: [0, 1, 0], v: 0.2, L: 0.8, a: 0.05 }
+        ];
+      }
+      if (phase === 'table' || phase === 'ask') {
+        /* the pieces themselves, all of them, like smoke from snuffed candles (4.7) */
+        const out = [];
+        for (const P of TABLE5.pieces) out.push({ x: P.x, y: P.y + 0.03, z: P.z, k: 1, reach: 4, n: 16, rx: 0.02, rz: 0.02, d: [0, 1, 0], v: 0.14, L: 0.32, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.009 });
+        out.push({ x: TABLE5.caseAt.x, y: TABLE5.caseAt.y, z: TABLE5.caseAt.z, k: 1, reach: 4, n: 40, rx: 0.13, rz: 0.08, d: [0, 1, 0], v: 0.14, L: 0.3, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.009 });
+        return out;
+      }
+      return [];
+    }
+    function nearestUnfound() {
+      if (phase !== 'hunt') return null;
+      let best = null, bd = 1e9;
+      for (const c of STAINS) if (!play.found.has(c)) { const q = HUNT5[c], d = distTo(q.x, q.z); if (d < bd) { bd = d; best = Object.assign({ c }, q); } }
+      return best;
+    }
+    const _ta = new THREE.Vector3(), _tb = new THREE.Vector3(), _tt = new THREE.Vector3(), _tc = new THREE.Vector3(), _ts = new THREE.Vector3(), _tp = new THREE.Vector3(), _tq = new THREE.Vector3();
+    function threadPoint(T, u, out) {
+      const age = Math.max(0, T.age);
+      if (T.trail) {
+        const s = T.s0 - T.v * age + u * T.L; trailAt(s, out);
+        trailAt(s + 0.05, _tq); const tx = _tq.x - out.x, tz = _tq.z - out.z, tl = Math.hypot(tx, tz) || 1;
+        const wv = Math.sin(T.f * age * 1.7 + u * 5.5 + T.ph) * T.a;
+        out.x += (-tz / tl) * (T.lat + wv); out.z += (tx / tl) * (T.lat + wv);
+        out.y = T.h + Math.sin(T.f * age + u * 4 + T.ph * 1.3) * T.a * 0.7 + u * 0.03;
+        return out;
+      }
+      const D = T.D, d = T.v * age - u * T.L;
+      out.set(T.O[0] + D[0] * d, T.O[1] + D[1] * d, T.O[2] + D[2] * d);
+      /* the wave across it, in the two directions square to its flow, growing along a rising smoke's length */
+      const px = Math.abs(D[1]) > 0.9 ? 1 : -D[2], pz = Math.abs(D[1]) > 0.9 ? 0 : D[0];
+      const amp = T.a * (1 + (T.grow || 0) * 20 * Math.max(0, d));
+      const w1 = Math.sin(T.f * age * 1.6 + u * 5.0 + T.ph) * amp, w2 = Math.cos(T.f * age * 1.2 + u * 4.0 + T.ph * 0.7) * amp * 0.7;
+      out.x += px * w1 + (Math.abs(D[1]) > 0.9 ? 0 : 0) ; out.z += pz * w1 + (Math.abs(D[1]) > 0.9 ? w2 : 0);
+      if (Math.abs(D[1]) <= 0.9) out.y += w2 * 0.6;
+      return out;
+    }
+    function threadsFrame(wdt, st) {
+      if (!thMesh.visible) return;
+      if (st === 'cine' || smell.t < 0 || !threads.length) { thMesh.visible = false; threads.length = 0; return; }
+      const E = smell.t < 0.45 ? smell.t / 0.45 : smell.t < SMELL.threads ? 1 : Math.max(0, 1 - (smell.t - SMELL.threads) / SMELL.fade);
+      camera.getWorldPosition(_tc);
+      let vi = 0, ci = 0;
+      for (let t = 0; t < TH.N; t++) {
+        const T = threads[t];
+        if (T) T.age += wdt;
+        const on = T && T.age > 0 && T.age < T.life;
+        const env = on ? Math.min(1, T.age / 0.45) * Math.min(1, (T.life - T.age) / 0.7) * E : 0;
+        for (let i = 0; i < TH.SEG; i++) {
+          if (!on || env <= 0.002) { for (let k = 0; k < 6; k++) thPos[vi + k] = 0; vi += 6; for (let k = 0; k < 8; k++) thCol[ci + k] = 0; ci += 8; continue; }
+          const u = i / (TH.SEG - 1);
+          threadPoint(T, u, _ta); threadPoint(T, Math.min(1, u + 0.06), _tb);
+          _tt.subVectors(_tb, _ta); _ts.subVectors(_tc, _ta);
+          _tp.crossVectors(_tt, _ts); const pl = _tp.length() || 1; const hw = T.w * (1 - 0.55 * u) * 0.5 / pl; _tp.multiplyScalar(hw);
+          thPos[vi] = _ta.x + _tp.x; thPos[vi + 1] = _ta.y + _tp.y; thPos[vi + 2] = _ta.z + _tp.z;
+          thPos[vi + 3] = _ta.x - _tp.x; thPos[vi + 4] = _ta.y - _tp.y; thPos[vi + 5] = _ta.z - _tp.z; vi += 6;
+          const a = env * (T.alpha == null ? 1 : T.alpha) * T.col[3] * Math.pow(Math.sin(Math.PI * Math.min(1, 0.08 + u * 0.92)), 0.6);
+          for (let k = 0; k < 2; k++) { thCol[ci] = T.col[0]; thCol[ci + 1] = T.col[1]; thCol[ci + 2] = T.col[2]; thCol[ci + 3] = a; ci += 4; }
+        }
+      }
+      thGeo.attributes.position.needsUpdate = true; thGeo.attributes.color.needsUpdate = true;
+    }
+
+    /* ================================================================ THE WALKWAY'S THREE (4.1): Ton, Jun and their
+       teacher walk with him, in single file along the wall side, never solid to him (the walkway is 1.9 m wide: a solid
+       follower would box him in); they step to the wall as he comes, and when he walks on they follow at a walking pace
+       and come to HIM, so he is never sent back. Each walks his own take at the pace of the ground he covers (v7.1).
+       Past 40 s of nothing done, his teacher walks on ahead and waits at the gate. */
+    const FOLLOW = { gap: 1.5, step: 1.05, wall: 0.55, slack: 0.7 };
+    const PHO_GATE = { x: -7.75, z: -14.5 };
+    const walkers = { list: [], ahead: false };
+    function walkersInit() {
+      walkers.list = []; walkers.ahead = false;
+      const add = (n, st, rank) => { const P = castOf(n); if (!P) return;
+        walkers.list.push({ n, P, rank, s: wayS(st.x, st.z), lat: -st.x, v: 0, moving: false, ahead: false }); };
+      add('pho', STATION.walk.pho, 0); add('ton', STATION.walk.ton, 1); add('jun', STATION.walk.jun, 2);
+    }
+    function walkerMove(W0, tx, tz, wdt, pace) {
+      const P = W0.P, g = P.group.position, dx = tx - g.x, dz = tz - g.z, d = Math.hypot(dx, dz);
+      if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } return false; }
+      if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
+      const want = Math.min(pace, 0.6 + d * 1.2);
+      W0.v += (want - W0.v) * Math.min(1, wdt * 3.5);
+      const st = Math.min(d, W0.v * wdt); g.x += dx / d * st; g.z += dz / d * st;
+      P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(dx, dz)) * Math.min(1, wdt * 5.5);
+      P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
+      return true;
+    }
+    function walkersTick(wdt) {
+      if (phase !== 'walk' || !walkers.list.length) return;
+      const sp = wayS(myX(), myZ());
+      /* the order of the file along the way: whoever is furthest along goes first (no two in one place) */
+      const lst = walkers.list.filter(W0 => W0.P.ready && !W0.ahead).sort((a, b) => b.s - a.s);
+      let cap = Infinity;
+      for (const W0 of lst) {
+        const g = W0.P.group.position;
+        W0.s = wayS(g.x, g.z);
+        let ts = W0.s, tl = W0.lat;
+        const near = Math.abs(sp - W0.s) < 1.9;
+        /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
+        if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
+        else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
+        ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
+        wayAt(ts, tl, _pv5);
+        const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
+        const moving = walkerMove(W0, _pv5.x, _pv5.z, wdt, pace);
+        if (!moving && !W0.looking && distTo(g.x, g.z) < 7) { W0.looking = true; gaze(W0.P, 'lens', { secs: 0.8, reach: 0.7 }); }
+        if (moving) W0.looking = false;
+        W0.lat = tl;
+      }
+      /* his teacher walks on ahead and waits at the gate */
+      const ph = walkers.list.find(W0 => W0.n === 'pho' && W0.ahead);
+      if (ph && ph.P.ready) { const P = ph.P, pace = (P.pace && P.pace.Walking) || 1.1, g = P.group.position;
+        const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
+        wayAt(ts, s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, _pv5);
+        if (s >= WAY.gateS - 1.1) _pv5.set(PHO_GATE.x, 0, PHO_GATE.z);
+        if (!walkerMove(ph, _pv5.x, _pv5.z, wdt, pace) && !ph.turned) { ph.turned = true; P.group.rotation.y = faceTo(g.x, g.z, myX(), myZ()); gaze(P, 'lens', { secs: 1, reach: 0.7 }); } }
+    }
+    function phoWalksAhead() { const W0 = walkers.list.find(w => w.n === 'pho'); if (W0 && !W0.ahead) { W0.ahead = true; W0.turned = false; } }
+
+    /* ================================================================ SPIRIT VISION'S STRAIN (chapter 4's, as it behaved
+       there: R95, R96, R128, R129): his heart climbs while his sight is open and settles while it is shut; the ring on
+       the eye fills with it, red from its mark, where the eye asks to close; once it is empty after a shut with strain in
+       it, the eye asks to open again. Nothing here charges him for looking (4.3: "dread, not damage") */
+    const HEAT5 = { up: 1 / 32, down: 1 / 2.8 }, WARN5 = 0.85;
+    const sight = { heat: 0, was: false, shutPeak: 0, topArmed: true, restSaid: true, step: -1 };
+    const visOpen = () => { const v = kit && kit.vision ? kit.vision() : null; return !!(v && v.on && !v.held); };
+    function strainTick(wdt) {
+      if (!kit || !kit.vision) return;
+      const live = phase === 'hunt' || phase === 'table';
+      const v = kit.vision(); if (!v) return;
+      const open = v.on && !v.held;
+      if (sight.was && !open) { sight.shutPeak = sight.heat; sight.restSaid = false; }
+      if (!open || sight.heat < WARN5) sight.topArmed = true;
+      sight.was = open;
+      sight.heat = Math.max(0, Math.min(1, sight.heat + (open ? HEAT5.up : -HEAT5.down) * wdt));
+      const step = !open ? 0 : sight.heat >= 1 ? 3 : sight.heat >= 0.75 ? 2 : sight.heat >= 0.45 ? 1 : 0;
+      if (open && step !== sight.step && kit.pulse) { sight.step = step; kit.pulse(step === 3 ? { bpm: 160, secs: 1.2, erratic: 0.4 } : step === 2 ? { bpm: 142, secs: 2 } : step === 1 ? { bpm: 128, secs: 2.5 } : { bpm: 114, secs: 2.4 }); }
+      if (!open) sight.step = -1;
+      if (kit.visionStrain) kit.visionStrain(live ? sight.heat : null, { warn: WARN5 });
+      if (!live || play.busy) return;
+      /* (R128, R129) "You're losing control, close your Spirit Vision, and re-open it again." at the top; "When you feel
+         better, open your Spirit Vision again." once the ring of a shut made with strain in it is empty, while there is
+         still something to look at */
+      if (open && sight.heat >= 1 && sight.topArmed && !lineBusy()) { sight.topArmed = false; say('ph5v1'); }
+      if (!open && !sight.restSaid && sight.shutPeak >= WARN5 && sight.heat <= 0.02 && sightNeeded() && !lineBusy()) { sight.restSaid = true; say('ph5v2'); }
+    }
+    /* THE EYE ASKS (chapter 4's two colours): to CLOSE while the ring is red; to OPEN while the order is to look */
+    let urgeNow = null;
+    function urgeTick() {
+      if (!kit || !kit.visionUrge) return;
+      const open = visOpen();
+      let u = false;
+      if (phase === 'hunt' || phase === 'table') {
+        if (open && sight.heat >= WARN5) u = 'close';
+        else if (!open && sightNeeded() && sight.heat <= 0.05 && !play.busy) u = 'open';
+      }
+      if (u !== urgeNow) { urgeNow = u; kit.visionUrge(u); }
+    }
+
+    /* ================================================================ THE HUNT'S PLACES (4.3), each seen only through
+       Spirit Vision (ctx.spirit: drawn in the vision's layer, nowhere else): what his sight shows at each of the three
+       places the smell is strongest, and nothing at the armchair. The patches are a spill's shape on the floor with a
+       faint sheen moving on it; the threshold's with spots in a trail across the court to his doors. */
+    const HUNT5 = {
+      s1: { x: -9.45, z: -5.12 },                                   // under the shoe cabinet by the doors (inside)
+      s2: { x: -6.82, z: -11.7 },                                   // the court, at the left planter's foot (his left as he comes in)
+      s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
+      arm: { x: -7.25, z: -2.18 }                                   // the old armchair
+    };
+    const STAIN_LOOK = { color: 0x9db36a, fill: 0.34, rim: 0.9, flicker: 0.22, power: 1.6, xray: 0 };
+    const stainFx = [];
+    function spillShape(seed, rx, rz) {
+      const r = rng(seed), sh = new THREE.Shape(), n = 22;
+      for (let i = 0; i <= n; i++) { const a = (i % n) / n * Math.PI * 2, k = 0.72 + r() * 0.42 + 0.18 * Math.sin(a * 3 + r());
+        const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i === 0) sh.moveTo(x, z); else sh.lineTo(x, z); }
+      return sh;
+    }
+    function stainMesh(seed, x, z, rx, rz, ry = 0, y = 0.012) {
+      const g = new THREE.ShapeGeometry(spillShape(seed, rx, rz), 2); g.rotateX(Math.PI / 2);
+      const m = new THREE.Mesh(g, matProxy); m.position.set(x, y, z); m.rotation.y = ry; world.add(m); return m;
+    }
+    function stainsBuild() {
+      const grp = new THREE.Group(); grp.name = 'the hunt\'s stains (Spirit Vision only)'; world.add(grp);
+      const add = (m) => { world.remove(m); grp.add(m); };
+      add(stainMesh(28711, HUNT5.s1.x, HUNT5.s1.z - 0.06, 0.42, 0.26));
+      add(stainMesh(28712, HUNT5.s2.x, HUNT5.s2.z, 0.16, 1.0));
+      add(stainMesh(28713, HUNT5.s3.x, HUNT5.s3.z, 0.85, 0.3));
+      /* the spots in a trail from the threshold across the court to his doors */
+      const r = rng(28714);
+      for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
+      grp.visible = false;
+      const fx = ctx.spirit ? ctx.spirit(grp, STAIN_LOOK) : null;
+      return { grp, fx };
+    }
+    const stains5 = stainsBuild();
+    /* THE NINE, in the court from the moment he arrives (4.3): still, heads bowed, all facing the doors of the house,
+       standing between where he has been walking. The three large ones are prai[6..8] (the chapter's cast) */
+    const NINE_AT = [[-9.9, -12.9], [-7.2, -12.8], [-8.9, -11.6], [-7.7, -10.4], [-10.0, -10.1], [-8.4, -9.0], [-6.9, -8.2], [-9.6, -7.6], [-8.1, -6.9]];
+    function nineStand(on) {
+      const L = praiOf();
+      L.forEach((P, i) => { if (!P || !P.group) return; const a = NINE_AT[i % NINE_AT.length];
+        if (!on) { if (P.group.userData.p7) { P.group.visible = false; P.group.userData.p7 = false; } return; }
+        put(P, a[0], a[1], faceTo(a[0], a[1], GATE.x, HOUSE.face)); P.group.userData.p7 = true;
+        if (P.ready) P.group.visible = true; else whenReady(P, (Q) => { if (Q.group.userData.p7) Q.group.visible = true; });
+        gaze(P, [a[0] + Math.sin(P.group.rotation.y) * 1.1, 0.0, a[1] + Math.cos(P.group.rotation.y) * 1.1], { secs: 0.1, reach: 0.9, down: 0 }); });
+    }
+    /* whether any of the nine is in the picture within reach: the wave runs out and they are there (4.3: seen the first
+       time his sight is open in the court, or with them in front of him through the open door) */
+    function nineInView() {
+      camera.updateMatrixWorld();
+      for (const a of NINE_AT) { if (distTo(a[0], a[1]) > 9) continue; _hv5.set(a[0], 1.1, a[1]).project(camera);
+        if (_hv5.z < 1 && Math.abs(_hv5.x) < 0.95 && Math.abs(_hv5.y) < 0.95) return true; }
+      return false;
+    }
+
+    /* ================================================================ THE COLLECTOR'S TABLE (4.7): his pieces on the white
+       cloth, and on three of them the three presences, each a look answered by a press (v21.9). Which presence sits on
+       which piece is the game's own picture (docs/research/V28.0-PIECES.md): the ANGRY knot on the charging bull (Wua
+       Thanu), the HUNGRY reaching shape on the bottle of oil (Rak Yom), the one LOOKING FOR ENERGY on the bound effigy (Hun
+       Phayon). The pieces are the three real models made for them, laid out before him (the films lay them there) */
+    const TABLE5 = (() => {
+      const R = ROOM, top = 0.345;
+      const P = { angry: { x: R.cx - 0.02, y: top, z: R.cz - 0.20, key: 'w5wuathanu', ry: Math.PI + 0.5 },
+                  hungry: { x: R.cx + 0.20, y: top, z: R.cz - 0.14, key: 'w5rakyom', ry: Math.PI },
+                  energy: { x: R.cx + 0.42, y: top, z: R.cz - 0.22, key: 'w5hunphayon', ry: Math.PI - 0.2 } };
+      return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: top + 0.06, z: R.cz - 0.05 } };
+    })();
+    FLOOR.pieces = TABLE5;
+    for (const k of ['angry', 'hungry', 'energy']) { const q = TABLE5.P[k];
+      if (!things[q.key]) things[q.key] = place(q.key, q.x, q.y, q.z, q.ry, { name: q.key }); }
+    /* the presences: no body and no face (they are not people: a knot, a reaching thinness, a small pale warmth) */
+    const PRES_LOOK = {
+      angry:  { color: 0xff3a2c, fill: 0.08, rim: 2.2, flicker: 0.45, power: 1.8, xray: 0 },
+      hungry: { color: 0x9cff54, fill: 0.05, rim: 2.0, flicker: 0.2, power: 2.0, xray: 0 },
+      energy: { color: 0xe4ecff, fill: 0.18, rim: 1.4, flicker: 0.08, power: 2.2, xray: 0 }
+    };
+    const pres = {};
+    (function presencesBuild() {
+      const q = TABLE5.P;
+      /* ANGRY: a tight, jagged knot that flinches when it is looked at */
+      { const g = new THREE.IcosahedronGeometry(0.045, 2), p = g.attributes.position, r = rng(28731);
+        for (let i = 0; i < p.count; i++) { const k = 0.7 + r() * 0.65; p.setXYZ(i, p.getX(i) * k, p.getY(i) * k, p.getZ(i) * k); }
+        g.computeVertexNormals(); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.angry.x, q.angry.y + 0.075, q.angry.z); world.add(grp);
+        pres.angry = { grp, m, home: grp.position.clone(), flinch: 0 }; }
+      /* HUNGRY: a thin shape bent over its piece, reaching toward the collector's hands (he sits at the table's west end) */
+      { const C = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.0, 0.11, 0.01), new THREE.Vector3(-0.05, 0.16, 0.0), new THREE.Vector3(-0.13, 0.13, -0.02), new THREE.Vector3(-0.2, 0.07, -0.03)]);
+        const g = new THREE.TubeGeometry(C, 24, 0.011, 6, false), t = g.attributes.position;
+        /* (thinning to its reaching end) */
+        for (let i = 0; i < t.count; i++) { const seg = Math.floor(i / 7) / 24, k = 1 - 0.75 * seg; const c0 = C.getPoint(Math.min(1, seg)); t.setXYZ(i, c0.x + (t.getX(i) - c0.x) * k, c0.y + (t.getY(i) - c0.y) * k, c0.z + (t.getZ(i) - c0.z) * k); }
+        g.computeVertexNormals(); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.hungry.x, q.hungry.y + 0.02, q.hungry.z); world.add(grp);
+        pres.hungry = { grp, m, home: grp.position.clone() }; }
+      /* LOOKING FOR ENERGY: small and pale, drifting toward whoever is nearest: toward HIM as he leans in */
+      { const g = new THREE.SphereGeometry(0.032, 16, 12); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.energy.x, q.energy.y + 0.12, q.energy.z); world.add(grp);
+        pres.energy = { grp, m, home: grp.position.clone() }; }
+      for (const k in pres) { pres[k].grp.visible = false; pres[k].fx = ctx.spirit ? ctx.spirit(pres[k].grp, PRES_LOOK[k]) : null; }
+    })();
+    function presTick(wdt) {
+      const on = phase === 'table' || phase === 'ask';
+      for (const k in pres) pres[k].grp.visible = on;
+      if (!on) return;
+      const t = wallClock.t;
+      const A = pres.angry; A.flinch = Math.max(0, A.flinch - wdt * 1.6);
+      const j = 0.006 + 0.02 * A.flinch;
+      A.grp.position.set(A.home.x + Math.sin(t * 23) * j, A.home.y + Math.sin(t * 17 + 1) * j - 0.02 * A.flinch, A.home.z + Math.cos(t * 19) * j);
+      A.grp.rotation.set(t * 0.7, t * 1.3, Math.sin(t * 3) * 0.4); A.grp.scale.setScalar(1 - 0.25 * A.flinch);
+      const H = pres.hungry; H.grp.rotation.y = 0.15 * Math.sin(t * 0.8); H.grp.rotation.z = 0.1 * Math.sin(t * 1.1 + 0.5);
+      /* the one looking for energy drifts toward the nearest warmth: him, and nearer the more he leans in */
+      const E = pres.energy; camera.getWorldPosition(_pv5);
+      const to = _pw5.set(_pv5.x - E.home.x, _pv5.y - E.home.y, _pv5.z - E.home.z), L = to.length() || 1, k = Math.min(0.16, 0.42 / Math.max(0.5, L)) * 0.6;
+      E.grp.position.set(E.home.x + to.x / L * k + Math.sin(t * 0.9) * 0.01, E.home.y + to.y / L * k * 0.5 + Math.sin(t * 1.3) * 0.012, E.home.z + to.z / L * k);
+    }
+    /* each presence's own place on the screen, for its mark and its tap */
+    const presAt = (k) => () => { const g = pres[k].grp.position; return { x: g.x, y: g.y, z: g.z }; };
+
+    /* ================================================================ WHO STANDS WHERE IN THE PLAY'S PHASES (each change
+       made as a phase begins, under the film or the curtain that hands to it: v24.12). Grandmaster Pho stands for the
+       walkway and the hunt and sits for the table; Ton is with him until the table; the nine stand in the court from the
+       hunt on (the fight's own from its brief) */
+    function castPhase(p) {
+      const st = STATION[p] || STATION.walk, pho = castOf('pho'), phoS = castOf('phoS'), ton = castOf('ton');
+      const show = (P, on, at) => { if (!P) return; if (at) put(P, at.x, at.z, at.ry);
+        if (on) { if (P.ready) P.group.visible = true; else whenReady(P, (Q) => { Q.group.visible = true; }); } else P.group.visible = false;
+        if (on) { rest(P, 0); gaze(P, null); P.rate = 1; } };
+      if (p === 'walk' || p === 'hunt') { show(pho, true, st.pho); show(ton, true, st.ton); show(phoS, false); }
+      else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true); }
+      nineStand(p === 'hunt');
+      stains5.grp.visible = p === 'hunt';
+      if (p === 'walk') walkersInit(); else walkers.list = [];
+    }
+    /* his teacher, quietly, already beside him (4.3: "Nine Prai."): a step behind his shoulder, out of the picture, where
+       the court has room (a change made where no shot sees it: v24.12) */
+    function phoBeside() {
+      const P = castOf('pho'); if (!P) return;
+      const ry = yaw.rotation.y, fx = -Math.sin(ry), fz = -Math.cos(ry);           // (a turn of 0 looks toward -z)
+      for (const side of [1, -1]) {
+        const x = myX() + fx * -0.45 + fz * 1.05 * side, z = myZ() + fz * -0.45 - fx * 1.05 * side;
+        if (inCourt(x, z, -0.3)) { put(P, x, z, faceTo(x, z, x + fx, z + fz)); return; }
+      }
+    }
+
+    /* ================================================================ THE PLAY'S FRAME and its reset (d_play.js calls
+       both) */
+    function playFrame(wdt, st) {
+      threadsFrame(wdt, st);
+      presTick(wdt);
+      if (st !== 'play') return;
+      smellTick(wdt);
+      walkersTick(wdt);
+      strainTick(wdt);
+      urgeTick();
+    }
+    function playReset() {
+      smell.t = -1; smell.presses = 0; smell.shown = false; smell.pulse = false; smell.waitDrawn = -1;
+      threads.length = 0; thMesh.visible = false;
+      walkers.list = []; urgeNow = null;
+      Object.assign(sight, { heat: 0, was: false, shutPeak: 0, topArmed: true, restSaid: true, step: -1 });
+      stains5.grp.visible = false; nineStand(false);
+      pres.angry.flinch = 0;
+    }
