@@ -70,14 +70,14 @@ const SNAP = () => p.evaluate(() => {
   const sp = [D.spirits.appa, D.spirits.large, D.spirits.oppress].concat(D.spirits.wander).map(S => ({ v: !!S.group.visible, gone: !!S.gone,
     x: r(S.group.position.x), z: r(S.group.position.z) }));
   const cast = {}; for (const c of ['amma', 'ravi', 'mala', 'pho', 'phoB']) { const C = D.cast[c]; cast[c] = C ? { v: !!C.group.visible, x: r(C.group.position.x), z: r(C.group.position.z) } : null; }
-  let beds = {}; try { const M = E.stage.amb().beds; for (const q in M) beds[q] = r(M[q]); } catch { /* */ }
+  let beds = []; try { const M = E.stage.amb().beds; beds = Object.keys(M).filter(q => M[q] > 0.02).sort(); } catch { /* */ }   // (which beds play: their levels ease)
   const v = E.vision(), st = E.stats;
   return { phase: k.getPhase(), stats: { s: r(st.sanity), a: r(st.awareness), w: r(st.wisdom) }, notes: k.getConduct().notes.slice().sort(), choices: k.choices(),
            at: { x: r(Y.position.x), z: r(Y.position.z), ry: r(Y.rotation.y) }, fight: P.fight ? 'on' : null, water: !!P.water, why: !!P.why, appaGone: !!P.appaGone,
-           heat: r(P.heat || 0), vision: { on: v.on, r: r(v.r) }, strain: E.kitDebug && E.kitDebug().visStrain !== undefined ? E.kitDebug().visStrain : null,
+           heat: r(P.heat || 0), vision: { on: v.on, r: r(v.r) },
            life: E.stakes ? !!E.stakes().life.on : null, edge: E.stakes ? r(E.stakes().edge.k) : null, glow: E.weaponGlowOn(),
            held: !!E.loseHold(), cast, spirits: sp, beds, voicesLive: E.voices().filter(q => q.t1 === null).length,
-           bag: JSON.stringify(E.kitDebug ? (E.kitDebug().inv || null) : null), obj: (document.getElementById('objTxt') || {}).textContent || '' }; });
+           bag: JSON.stringify(E.inv()), obj: (() => { const o = document.getElementById('objective'); return o && !o.classList.contains('hide') ? (document.getElementById('objTxt') || o).textContent.trim() : null; })() }; });
 const same = (a, b, skip = []) => { const diff = [];
   for (const key of Object.keys(a)) { if (skip.includes(key)) continue; if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) diff.push(key + ': ' + JSON.stringify(a[key]).slice(0, 160) + ' / ' + JSON.stringify(b[key]).slice(0, 160)); }
   return diff; };
