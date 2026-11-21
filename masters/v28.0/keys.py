@@ -31,6 +31,37 @@ group("e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on w
       "own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)",
       [('w5nagastaff', 'w5nagastaff.glb', "Grandmaster Pho's Naga stick, light brown, 1.40 m")])
 
+group("e4c5: MR KOH and JUN (M5a), made here end to end: the near body with their takes, `m` the mid body, `h` every\n"
+      "triangle for within 2.2 m (v26.5). masters/v28.0/people/RECORD.md, people.sh",
+      [('p5koh', 'p5koh.glb', 'Mr Koh, the devotee, 1.68 m: a heavy man in a polo tee'),
+       ('p5kohm', 'p5kohm.glb', ''), ('p5kohh', 'p5kohh.glb', ''),
+       ('p5jun', 'p5jun.glb', 'Jun, the second follower, 1.72 m'),
+       ('p5junm', 'p5junm.glb', ''), ('p5junh', 'p5junh.glb', '')])
+group("e4c5: THE HOME'S AND THE ROOM'S THINGS (M5b), each made once: a checked picture on white, Meshy at its highest and\n"
+      "its remesh, prepared in metres on its base's middle (masters/v28.0/props/RECORD.md: every id, size and fault;\n"
+      "the mends taken at no credits are the world's, masters/v28.0/parts/b_world.js)",
+      [('w5rail', 'w5rail.glb', 'the walkway\'s balustrade, a 2 m section'),
+       ('w5walklight', 'w5walklight.glb', "the walkway's ceiling light"),
+       ('w5grating', 'w5grating.glb', "the drain's grating at the walkway's edge"),
+       ('w5liftpanel', 'w5liftpanel.glb', "the lift car's panel of buttons"),
+       ('w5gate', 'w5gate.glb', 'his gate'), ('w5gatepost', 'w5gatepost.glb', 'its posts'),
+       ('w5planter', 'w5planter.glb', "the court's left planter"), ('w5planter2', 'w5planter2.glb', 'and its right'),
+       ('w5walllamp', 'w5walllamp.glb', "the court's wall lamps"), ('w5slippers', 'w5slippers.glb', 'slippers by his door'),
+       ('w5frontdoor', 'w5frontdoor.glb', 'his front door'), ('w5shoecab', 'w5shoecab.glb', 'the shoe cabinet inside it'),
+       ('w5curtain', 'w5curtain.glb', 'the curtains'), ('w5sofa', 'w5sofa.glb', 'the sofa'),
+       ('w5lowtable', 'w5lowtable.glb', 'the low table'), ('w5tvconsole', 'w5tvconsole.glb', "the television's console"),
+       ('w5oldchair', 'w5oldchair.glb', 'the old armchair'), ('w5floorlamp', 'w5floorlamp.glb', 'the floor lamp'),
+       ('w5tablelamp', 'w5tablelamp.glb', 'the table lamps'), ('w5wallclock', 'w5wallclock.glb', 'the wall clock'),
+       ('w5dintable', 'w5dintable.glb', 'the dining table'), ('w5dinchair', 'w5dinchair.glb', 'its chairs'),
+       ('w5pendant', 'w5pendant.glb', 'the pendant over it'), ('w5sideboard', 'w5sideboard.glb', 'the sideboard'),
+       ('w5frame', 'w5frame.glb', 'the picture frames'),
+       ('w5bagopen', 'w5bagopen.glb', 'the black bag, open'), ('w5bagtied', 'w5bagtied.glb', 'and tied'),
+       ('w5threadreel', 'w5threadreel.glb', 'the reel of white thread'), ('w5staffwrap', 'w5staffwrap.glb', 'the Naga stick wrapped'),
+       ('w5staffcloth', 'w5staffcloth.glb', 'its cloth'), ('w5duffel', 'w5duffel.glb', "Jun's duffel bag"),
+       ('w5clothtable', 'w5clothtable.glb', "case three's low table under its white cloth"),
+       ('w5padcase', 'w5padcase.glb', "the collector's padded case"), ('w5cushion', 'w5cushion.glb', 'the floor cushions'),
+       ('w5altarshelf', 'w5altarshelf.glb', 'the altar shelf, empty'), ('w5ceilfan', 'w5ceilfan.glb', 'the ceiling fan')])
+
 B0, B1 = '    # >>> e4c5 keys: written by masters/v28.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c5 keys: the rows end <<<'
 S0, S1 = '           # >>> e4c5 keys (masters/v28.0/keys.py) >>>\n', '           # <<< e4c5 keys <<<'
 H0, H1 = '      /* >>> this chapter\'s own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */\n', '      /* <<< this chapter\'s own keys <<< */'

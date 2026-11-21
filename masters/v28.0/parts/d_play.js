@@ -24,6 +24,7 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       wallClock.t += wdt;
+      worldFrame(wdt, st);                                     // (the world's hook: its people and levels)
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
@@ -42,7 +43,7 @@
     function reset() {
       phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       dayClock.t = 0; wallClock.t = 0; lastWall0 = 0; lastWall = 0; pausedAt = 0;
-      storyReset();
+      storyReset(); worldReset();
     }
 
     /* what he cannot walk through: every solid of the place, a column from the floor (v5.03). TODO-WORLD: none yet */
@@ -77,17 +78,17 @@
       world, noteTex, blockers: blockers(),
       /* TODO-WORLD: true only once every body is ready and no model is still being unpacked, so all of it is done under
          the curtain and warmed before the black lifts (chapter 4's R51; v14.15) */
-      ready: () => true,
+      ready: () => worldReady(),
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,
               glow: () => 0 },
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
-      skyAt: () => null,
+      skyAt: () => worldSkyAt(),
       /* TODO-WORLD: where a scene change puts him down (`arrivals`), the ground he is kept on (`keepIn`), each later
          ground for the walk test (`grounds`: the court at night, the receiving room), and the floor's height (`groundAt`) */
-      arrivals: [],
+      arrivals: ARRIVALS, keepIn: KEEP, grounds: GROUNDS, groundAt: flatGround, things: FLOOR.things,
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,

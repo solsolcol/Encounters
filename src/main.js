@@ -2343,7 +2343,10 @@ const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el
    neutral grey instead of the Yin shop's blue — `tint` names one of these (or gives its own three [r, g, b]: the clear
    middle's, the ring's, the edge's). Unset (null, and again after kitReset) the layer is painted from the very same
    strings as before the option existed, so every chapter that never names a tint draws exactly as it did. */
-const CHILL_TINTS = { grey: [[178, 180, 184], [156, 158, 162], [70, 72, 78]] };
+/* v28.0 (the sixty-second, a tint and not a seam: docs/V28.0-E4C5-PLAN.md §12): 'sour', the colour of the picture thinned
+   toward grey-green from the edges in (episode 4 chapter 5's smell), the third edge-in drain after the Yin shop's cold and the
+   fog; a chapter that never names it draws exactly as before */
+const CHILL_TINTS = { grey: [[178, 180, 184], [156, 158, 162], [70, 72, 78]], sour: [[150, 166, 128], [128, 146, 104], [52, 64, 40]] };
 function chillEls() {
   if (!chill.el) chill.el = { blur: document.getElementById('chillBlur'), tint: document.getElementById('chillTint') };
   return chill.el.blur && chill.el.tint ? chill.el : null;
@@ -2485,6 +2488,7 @@ function pulseWaveAt(kp, tau) {
 const smear = { k: 0, to: 0, secs: 1, last: 0, tex: null, mesh: null, scene: null, cam: null, w: 0, h: 0,
                 ok: true, check: false, at: -1, drawn: 0, copied: 0, err: 0, lastDraw: 0 };
 let framesDrawn = 0;    // v22.0: frames that reached the GPU — a smear draws only over the frame drawn just before it
+let vmPassN = 0;        // v28.0: the hands' own passes drawn (the plain path), so the fixture can see the tag mode skip them
 function kitSmear(k, opts = {}) {
   smear.to = Math.max(0, Math.min(1, +k || 0));
   if (opts.secs !== undefined) smear.secs = Math.max(0.01, +opts.secs);
@@ -3229,7 +3233,7 @@ function setInteractBadge(spot) {
    the nearest hotspot. A hotspot's onInteract may return false to say
    "nothing happened"; `once` retires it after it fires. */
 function interactNow() {
-  if (state !== 'play') return false;
+  if (state !== 'play' || tag.on) return false;   // (v28.0: the tag mode's buttons are its acts)
   if (stage.pile.dist() < stage.pile.radius && stage.pile.inView()) return stage.pile.interact();
   const h = activeSpot;
   if (!h) return false;
@@ -3246,7 +3250,7 @@ function interactNow() {
    badge. Only a hotspot that DECLARES hits can be reached this way, and no
    hotspot before v14.7 declares one, so nothing that shipped can change. */
 function hotspotTap(x, y) {
-  if (state !== 'play' || ev) return false;
+  if (state !== 'play' || ev || tag.on) return false;
   for (const h of hotspotList()) {
     if (!h || !h.pos || (typeof h.hits !== 'function' && !h.pressAim) || h.done
         || (typeof h.enabled === 'function' && !h.enabled())) continue;
@@ -3567,7 +3571,7 @@ function hotMarkEl(i) {
 function paintHotMarks() {
   if (!$('hotmarks')) return;
   let n = 0;
-  if (state === 'play' && !ev) {
+  if (state === 'play' && !ev && !tag.on) {           // (v28.0: no hotspot's mark in the tag mode)
     for (const h of hotspotList()) {
       if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
       /* v24.0: `mark: false` — a spot the player must FIND by looking (episode 4 chapter 1's four signs: noticing them
@@ -3856,7 +3860,7 @@ function torchAvailSync() {
   wardPaint();
 }
 function torchToggle() {
-  if (!torchLight || state !== 'play' || !torchAvail()) return;
+  if (!torchLight || state !== 'play' || !torchAvail() || tag.on) return;   // (v28.0: F is the switch in the tag mode)
   torchSet(!torchOn);
   if (torchDecl.click) snd(torchDecl.click, 0.8); else snd('uiclick', 0.3);   // v11.1: a real switch when the chapter names one
 }
@@ -3953,7 +3957,7 @@ function visionSet(on, instant) {
   return true;
 }
 function visionToggle() {
-  if (!vis.decl || state !== 'play') return;
+  if (!vis.decl || state !== 'play' || tag.on) return;   // (v28.0: the eye is not his to open or shut in the tag mode)
   /* (18 Nov: while the chapter holds his sight, kit.vision({ r }), a press of the eye is answered with why, never dropped
      without a word: a lock always says why, v8.1. The chapter's words, `words.visionHeld`, or the sheet's) */
   if (vis.held) { visionHeldSay(); return; }
@@ -4475,8 +4479,8 @@ function weaponAvailSync() {
    it is up; a film's `armR.visible = false` takes it out of shot too */
 function weaponPropSync() {
   const want = weaponWant();
-  document.body.classList.toggle('weaponUp', want && state === 'play');
-  if (weaponDecl && weaponDecl.hands === 'own') { weaponOwnSync(want && state === 'play'); return; }   // v27.0
+  document.body.classList.toggle('weaponUp', want && state === 'play' && !tag.on);   // (v28.0: never up in the tag mode)
+  if (weaponDecl && weaponDecl.hands === 'own') { weaponOwnSync(want && state === 'play' && !tag.on); return; }   // v27.0
   if (!weaponProp) { weaponShown = false; return; }
   if (want && !weaponShown) {
     weaponShown = true; weaponBusy = 'draw';
@@ -4655,7 +4659,7 @@ let adsLens = false;
    times as long on a hot phone is the v9.3 clock bug in a third place. */
 let adsK = 0;
 function adsWantK() {
-  return (weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant()) ? 1 : 0;
+  return (weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant() && !tag.on) ? 1 : 0;   // (v28.0: the tag mode has the lens)
 }
 function weaponAdsSync() { document.body.classList.toggle('weaponAds', adsWantK() === 1); }
 function weaponAdsStep(dtWall) {
@@ -4757,7 +4761,7 @@ function weaponBlockSet(msg) {
   }
 }
 function weaponFire() {
-  if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  if (!weaponDecl || state !== 'play' || !weaponWant() || tag.on) return false;   // (v28.0: no first-person shot in the tag mode)
   /* the chapter's own rule, before anything is spent: no round, no take,
      no flash, no raycast — and the reason on the screen */
   if (weaponBlock) { weaponBlockSay(); return false; }
@@ -4821,7 +4825,7 @@ function weaponFire() {
   return true;
 }
 function weaponReload() {
-  if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  if (!weaponDecl || state !== 'play' || !weaponWant() || tag.on) return false;   // (v28.0: nor a reload)
   /* v13.0: silently, not with the empty click — there is nothing to reload
      and nothing on screen asking for it */
   if (weaponDecl.unlimited) return false;
@@ -7114,6 +7118,8 @@ function kitInit() {
   if (CH.torch && !torchLight) torchSetup(CH.torch);
   if (CH.weapon && !weaponDecl) weaponSetup(CH.weapon);   // v12.0
   if (visDeclOf(CH) && !vis.decl) visionSetup(visDeclOf(CH));   // v27.0
+  if (CH.tag && !tag.decl) tagSetup(CH.tag);                    // v28.0 (seam 60): the tag mode, declared
+  tagWire();                                                     // v28.0: its buttons and the retry card's, wired once
   $('visionBtn')?.addEventListener('click', e => { e.stopPropagation(); visionToggle(); });
   { const vb = $('visionBtn'); if (vb) { vb.setAttribute('aria-label', T('hud.vision'));
     /* v27.0: the two words under it while it asks (CSS reads them: the sheet's, never typed into the style) */
@@ -7768,6 +7774,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
     else if (!(vis.held && vis.held.lock)) vis.heldSaid = false; }   // (a lock's words once as it begins, not again after a panel)
   lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
   edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
+  tagPaint();        // v28.0 (seam 60): the tag mode's buttons, marks and count (one boolean when it was never opened)
+  cbtnPaint();       // v28.0 (seam 61): a button of the chapter's own (nothing when none was asked for)
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
      round buttons sit at z 9 and the cards at z 5, so the decision, the
      outcome and the sealed card all had the lit torch button on top of
@@ -7875,7 +7883,7 @@ function kitLens(fov, opts = {}) {
   if (klens.to != null) klens.took = true;
 }
 function kitLensStep() {
-  if (!klens.took || state === 'cine') return;
+  if (!klens.took || state === 'cine' || tag.on) return;   // (v28.0: the tag mode has the lens while it is on; a chapter's own waits)
   const target = klens.to == null ? CAM_FOV : klens.to;
   const u = klens.secs > 0 ? Math.min(1, (performance.now() / 1000 - klens.t0) / klens.secs) : 1;
   klens.now = klens.from + (target - klens.from) * (u * u * (3 - 2 * u));
@@ -7947,6 +7955,9 @@ function kitReset() {
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   if (visDeclOf(CH)) { if (vis.decl) { vis.held = null; visionSet(false, true); } else visionSetup(visDeclOf(CH)); } else if (vis.decl) visionTeardown();   // v27.0: closed, at once
+  tagReset();                            // v28.0 (seam 60): no tag mode left open, its boom exactly zero, its declaration re-read
+  cbtnReset();                           // v28.0 (seam 61): no button of the last chapter's own
+  retryClose();                          // v28.0 (seam 65): nor a retry card
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
   kitHold(null);                         // v21.0: nor with something still in his hand
@@ -8056,6 +8067,827 @@ function kitFilm(key, opts = {}) {
      probe's __enc.cine.skip() still ends it. Absent, every film is exactly as it was. */
   c.noSkip = !!opts.noSkip;
   return true;
+}
+/* ══ v28.0 · THE SIXTIETH SEAM: THE TAG MODE (a chapter's `tag` declaration, and kit.tag) ═════════════════════════════
+   Chad, 20 Nov 2026 (docs/V28.0-E4C5-PLAN.md, R3): "toggle between master zavier and grandmaster pho in a tag team like
+   battle, like final fantasy where you can switch between the characters", both "in a third person character view"; and
+   21 Nov (R14): "Behind and above". TWO BODIES THE CHAPTER HANDS OVER, ONE PLAYED; the engine knows no ability.
+   - THE RIG stays what every line of the engine reads as "where he is": `yaw` is the PLAYED one's head (his distances, the
+     drains, the sound's distances, a chapter's "me" are right by construction), turned to the court's heading, and the lens
+     goes back on a BOOM behind and above him (`camera.position`, which nothing else writes). The boom is DERIVED on the
+     frame from the declaration and the screen's shape, and is exactly zero outside the mode and under any film (a film, a
+     save, a faint and a card never inherit it). At a switch it glides from behind one to behind the other (a smooth
+     function of the mode's clock); it keeps inside the chapter's box (eased at its edges) and in front of every wall between
+     it and his head (in at once, out eased).
+   - THE WALK: the stick and the keys move the played body BY THE SCREEN (up is away down the court), at its own pace, on
+     the mode's clock; it slides along the chapter's blockers (the engine's own test, from where IT stands), never closer to
+     the other body than their two discs, turns to face where it walks and rides the ground. THE LOOK IS DEAD (a drag and a
+     moved mouse turn nothing; no pointer lock).
+   - THE SWITCH (its button carries the OTHER one's picture and name, and its key): the lens glides, the presses held by the
+     one left end (a press is never spent by the one who arrives), and no other switch inside the lock.
+   - THE BUTTONS: each body's acts in three slots (main, second, third), each with a label or a picture, a key, a ring for
+     its wait, a fill for a hold, an ask (it grows and shrinks) and a lock that is said, never pressed. One act a frame, the
+     main first; every press is TOLD (`onAct`, with its phase: down, then up) and the chapter decides what it means.
+   - THE MARKS over the chapter's targets (a tap or a click on one picks it, read before the stick), the other one's mark at
+     the screen's edge while he is out of the picture, a count under the objective.
+   - WHAT STEPS ASIDE while it is on: the first-person hands' pass, the weapon and the reticle, the bag, the torch's button,
+     the eye, the hotspots and their badge, the red edge.
+   - THE SAVE IS HELD as the run stood when the mode opened, until it is left (a Continue lands where it opened, in first
+     person, and the chapter briefs the fight again); a film inside it saves that and nothing newer.
+   - THE CLOCK is wall time while the mode is live (in play, no window or minigame, no film, the tab seen), a tenth of a
+     second at most a frame: under a menu, a panel or a hidden tab nothing moves and nothing the chapter drives from it fills.
+   Left (kit.tag(null)), the rig is put back exactly as the mode found it. A chapter that declares no `tag` reaches none of
+   it: kit.tag refuses, `tag.on` stays false, and every branch the mode adds stands behind that. */
+const TAG_DEFAULTS = {
+  heading: 0,                                  // the court's heading (yaw.rotation.y, radians): the lens always faces down it
+  boom: { back: 4.0, up: 3.1, pitch: 26 },     // metres behind and above the played one's feet, and degrees down (§5.6)
+  portrait: null,                              // the same three (and `fov`) for an upright screen; absent, `boom` serves both
+  fov: CAM_FOV,                                // the lens while the mode is on (vertical degrees)
+  camBox: null,                                // { minX, maxX, minZ, maxZ, minY, maxY }: where the lens may stand
+  soft: 0.6,                                   // metres over which the box's edges ease the lens to a stop
+  glide: 0.4,                                  // seconds the lens takes from behind one to behind the other
+  lock: 0.6,                                   // and no other switch for this long (the mode's clock)
+  radius: 0.42,                                // each body's disc: the two never stand closer than both together
+  speed: 1.2,                                  // a body's pace, metres a second, unless it names its own
+  turn: 9,                                     // how fast a body turns to face where it walks
+  eye: 1.62,                                   // the pivot's height over his feet: "where he is" for every distance
+  keys: { switch: 'KeyF' }
+};
+const TAG_SLOTS = ['main', 'second', 'third'];
+const TAG_RANK = { main: 0, second: 1, third: 2, switch: 3, target: 4 };
+const TAG_RING_C = 295.31;                     // 2π·47: the buttons' rings (shell.html, viewBox 100)
+const _tgV = new THREE.Vector3(), _tgW = new THREE.Vector3(), _tgH = new THREE.Vector3(), _tgHit = new THREE.Vector3();
+const _tgA = new THREE.Vector3(), _tgB = new THREE.Vector3(), _tgQ = new THREE.Vector3();
+const _tgRay = new THREE.Ray(), _tgX = new THREE.Vector3(1, 0, 0), _tgY = new THREE.Vector3(0, 1, 0);
+function tagSetup(decl) {
+  const d = decl && typeof decl === 'object' ? decl : {};
+  tag.decl = { ...TAG_DEFAULTS, ...d, boom: { ...TAG_DEFAULTS.boom, ...(d.boom || {}) },
+               portrait: d.portrait ? { ...TAG_DEFAULTS.boom, ...(d.boom || {}), ...d.portrait } : null,
+               keys: { ...TAG_DEFAULTS.keys, ...(d.keys || {}) } };
+}
+function tagTeardown() { if (tag.on) tagOff(null); tag.decl = null; tag.cfg = null; }
+function tagLive() { return tag.on && state === 'play' && !ev && !cine && !fainting; }
+function tagKeyName(code) {
+  const c = String(code || '');
+  if (/^Key[A-Z]$/.test(c)) return c.slice(3);
+  if (/^Digit\d$/.test(c)) return c.slice(5);
+  return ({ Space: 'Space', Enter: 'Enter', ShiftLeft: 'Shift', ShiftRight: 'Shift', ArrowUp: '↑', ArrowDown: '↓',
+            ArrowLeft: '←', ArrowRight: '→' })[c] || c;
+}
+/* a value held inside [lo, hi], eased over the last `m` metres (one smooth curve, its slope 1 where the ease begins), so a
+   lens that meets the chapter's box slows to a stop there instead of hitting it */
+function tagSoft(v, lo, hi, m) {
+  if (!(hi > lo)) return (lo + hi) / 2;
+  m = Math.max(0, Math.min(m, (hi - lo) / 2));
+  if (m <= 0) return Math.max(lo, Math.min(hi, v));
+  if (v > hi - m) return hi - m + m * (1 - Math.exp(-(v - (hi - m)) / m));
+  if (v < lo + m) return lo + m - m * (1 - Math.exp(-((lo + m) - v) / m));
+  return v;
+}
+function tagBoomNow() {
+  const c = tag.cfg, b = (innerHeight > innerWidth && c.portrait) || c.boom;
+  return { back: +b.back || 0, up: +b.up || 0, pitch: +b.pitch || 0, fov: Math.max(20, Math.min(110, +(b.fov || c.fov) || CAM_FOV)) };
+}
+/* where the lens stands for this body (into `out`): behind and above his feet, inside the chapter's box and bounds; answers
+   the share of that boom the walls between it and his head leave it (1: the whole of it) */
+function tagBoomFor(A, out) {
+  const c = tag.cfg, bm = tagBoomNow(), h = c.heading, o = A.obj.position;
+  out.set(o.x + bm.back * Math.sin(h), o.y + bm.up, o.z + bm.back * Math.cos(h));
+  const cb = c.camBox;
+  if (cb) {
+    if (Number.isFinite(cb.minX) && Number.isFinite(cb.maxX)) out.x = tagSoft(out.x, cb.minX, cb.maxX, c.soft);
+    if (Number.isFinite(cb.minZ) && Number.isFinite(cb.maxZ)) out.z = tagSoft(out.z, cb.minZ, cb.maxZ, c.soft);
+    if (Number.isFinite(cb.minY) && Number.isFinite(cb.maxY)) out.y = tagSoft(out.y, cb.minY, cb.maxY, c.soft);
+  }
+  out.x = Math.max(BOUNDS.minX, Math.min(BOUNDS.maxX, out.x));
+  out.z = Math.max(BOUNDS.minZ, Math.min(BOUNDS.maxZ, out.z));
+  _tgH.set(o.x, o.y + 1.6, o.z);
+  _tgW.subVectors(out, _tgH);
+  const L = _tgW.length();
+  if (!(L > 1e-4)) return 1;
+  _tgRay.origin.copy(_tgH); _tgRay.direction.copy(_tgW).multiplyScalar(1 / L);
+  let near = L;
+  for (const b of BLOCKERS) {
+    if (b.containsPoint(_tgH)) continue;
+    const p = _tgRay.intersectBox(b, _tgHit);
+    if (p) { const dd = p.distanceTo(_tgH) - 0.22; if (dd < near) near = Math.max(0, dd); }
+  }
+  return near / L;
+}
+function tagPull(A, p, k) {                    // the lens drawn in along the boom toward his head, to the share the walls leave
+  if (!(k < 1)) return p;
+  const o = A.obj.position;
+  _tgQ.set(o.x, o.y + 1.6, o.z);
+  return p.sub(_tgQ).multiplyScalar(Math.max(0, k)).add(_tgQ);
+}
+function tagLens(out, wdt) {
+  const P = tag.bodies[tag.played];
+  const k = tagBoomFor(P, _tgB);
+  tag.boomK = k < tag.boomK ? k : tag.boomK + (k - tag.boomK) * (1 - Math.exp(-wdt * 3));   // a wall: in at once, out eased
+  tagPull(P, _tgB, tag.boomK);
+  if (tag.glideFrom >= 0) {
+    const A = tag.bodies[tag.glideFrom], u = (tag.t - tag.glideT0) / Math.max(0.01, tag.cfg.glide);
+    if (!A || u >= 1) tag.glideFrom = -1;
+    else {
+      tagPull(A, _tgA, tagBoomFor(A, _tgA));
+      const w = Math.max(0, u), s = w * w * (3 - 2 * w);
+      return out.lerpVectors(_tgA, _tgB, s);
+    }
+  }
+  return out.copy(_tgB);
+}
+/* the rig, derived on the frame: the pivot at the played one's head, the court's heading and pitch, the lens on the boom */
+function tagRig(wdt) {
+  const P = tag.bodies[tag.played]; if (!P) return;
+  const c = tag.cfg, bm = tagBoomNow(), o = P.obj.position;
+  yaw.position.set(o.x, o.y + c.eye, o.z);
+  yaw.rotation.y = c.heading;
+  pitch.rotation.x = -bm.pitch * Math.PI / 180;
+  camera.rotation.z = 0;
+  tagLens(_tgV, wdt);
+  _tgV.sub(yaw.position).applyAxisAngle(_tgY, -c.heading).applyAxisAngle(_tgX, -pitch.rotation.x);
+  camera.position.copy(_tgV);
+  tag.wrote = true;
+  camLens(bm.fov);
+}
+/* the boom back to exactly zero: whenever the mode is not on, under any film (`force` from a film's first line), and once */
+function tagCamZero(force) {
+  if (!tag.wrote || (!force && tag.on && state !== 'cine')) return;
+  camera.position.set(0, 0, 0);
+  tag.wrote = false;
+}
+/* would this body be stopped stepping to (nx, nz)? The engine's own test from where IT stands, and never closer to the other
+   body than their two discs (stepping away from him is always allowed) */
+function tagBlocked(A, nx, nz) {
+  const o = A.obj.position;
+  if (collideFrom(o.x, o.z, nx, nz)) return true;
+  for (const B of tag.bodies) {
+    if (B === A) continue;
+    const b = B.obj.position, r = A.radius + B.radius, dn = Math.hypot(nx - b.x, nz - b.z);
+    if (dn < r && dn < Math.hypot(o.x - b.x, o.z - b.z) - 1e-9) return true;
+  }
+  return false;
+}
+function tagBodyStep(A, wdt, drive) {
+  const o = A.obj.position, x0 = o.x, z0 = o.z, c = tag.cfg;
+  if (A.place) {                               // the chapter's own move (kit.tagPlace): eased along a line on the mode's clock
+    const pl = A.place, u = pl.secs > 0 ? Math.min(1, (tag.t - pl.t0) / pl.secs) : 1, s = u * u * (3 - 2 * u);
+    o.x = pl.x0 + (pl.x1 - pl.x0) * s; o.z = pl.z0 + (pl.z1 - pl.z0) * s;
+    A.vx = A.vz = 0;
+    if (u >= 1) A.place = null;
+  } else if (drive) {
+    let f = 0, s = 0;
+    if (keys.KeyW || keys.ArrowUp) f += 1;
+    if (keys.KeyS || keys.ArrowDown) f -= 1;
+    if (keys.KeyA || keys.ArrowLeft) s -= 1;
+    if (keys.KeyD || keys.ArrowRight) s += 1;
+    f -= stickVec.y; s += stickVec.x;
+    if (A.root || kitRooted) { f = 0; s = 0; }
+    const len = Math.hypot(f, s);
+    if (len > 1) { f /= len; s /= len; }
+    /* by the SCREEN: (s, -f) turned by the court's heading, as the walk turns by the look's */
+    const h = c.heading, ch = Math.cos(h), sh = Math.sin(h), sp = A.speed;
+    const tx = (s * ch - f * sh) * sp, tz = (-s * sh - f * ch) * sp;
+    const k = 1 - Math.exp(-7.6 * wdt);        // the walk's own ease (0.0005 a second), on the mode's clock
+    A.vx += (tx - A.vx) * k; A.vz += (tz - A.vz) * k;
+    if (!f && !s && Math.hypot(A.vx, A.vz) < 0.01) A.vx = A.vz = 0;
+    const nx = o.x + A.vx * wdt, nz = o.z + A.vz * wdt;
+    if (!tagBlocked(A, nx, o.z)) o.x = nx;     // each axis on its own: he slides along a wall
+    if (!tagBlocked(A, o.x, nz)) o.z = nz;
+  }
+  const g = groundAt(o.x, o.z);
+  A.gy = (!Number.isFinite(A.gy) || Math.hypot(o.x - x0, o.z - z0) > 1.5) ? g : A.gy + (g - A.gy) * (1 - Math.exp(-wdt * 14));
+  o.y = A.gy + A.y0;
+  A.cov = wdt > 0 ? Math.hypot(o.x - x0, o.z - z0) / wdt : 0;   // the ground covered: what a take's rate follows
+  const v = Math.hypot(A.vx, A.vz);
+  const want = A.face != null ? A.face : (v > 0.05 ? Math.atan2(A.vx, A.vz) + A.faceOff : null);
+  if (want != null && wdt > 0) {
+    const ry = A.obj.rotation.y, dd = Math.atan2(Math.sin(want - ry), Math.cos(want - ry));
+    A.obj.rotation.y = ry + dd * (1 - Math.exp(-wdt * c.turn));
+  }
+}
+/* the mode's frame, every frame while it is on (tick, before the chapter's own frame): its clock, this frame's one act, both
+   bodies and the rig; answers the played one's pace while it is live (his footsteps), 0 otherwise */
+function tagFrame() {
+  if (!tagLive()) {
+    if (tag.live) { tag.live = false; tagCutAll('pause'); }
+    tag.last = 0;
+    return 0;
+  }
+  const now = performance.now();
+  const wdt = tag.last ? Math.min(0.1, Math.max(0, (now - tag.last) / 1000)) : 0;
+  tag.last = now;
+  if (!tag.live) { tag.live = true; tagStale(); }   // a finger already down belongs to what came before: never a stick, never a tap
+  tag.t += wdt;
+  tagFlush();
+  if (!tagLive()) return 0;                    // (an act's answer may have left the mode, or begun a film)
+  const P = tag.bodies[tag.played];
+  for (const A of tag.bodies) tagBodyStep(A, wdt, A === P);
+  tagRig(wdt);
+  return P ? P.cov : 0;
+}
+function tagStale() {
+  for (const id of touchStarts.keys()) tag.stale.add(id);
+  if (stickId !== null) {
+    tag.stale.add(stickId); stickId = null; stickVec.x = stickVec.y = 0;
+    knob.style.transform = 'translate(0,0)'; stick.classList.remove('on');
+  }
+  if (lookId !== null) { tag.stale.add(lookId); lookId = null; }
+}
+/* a press (a button, its key, a click, a tap on a target), queued for this frame's one act; `up` when it was let go too */
+function tagPress(slot, pid, by, id, up) {
+  if (!tagLive() || !Object.prototype.hasOwnProperty.call(TAG_RANK, slot)) return false;
+  tag.dead.delete(pid);
+  const q = tag.queue.find(x => x.pid === pid);
+  if (q) { if (up) q.up = true; return true; }
+  tag.queue.push({ slot, pid, by, id: id == null ? null : id, up: !!up });
+  return true;
+}
+function tagLift(pid) {
+  const q = tag.queue.find(x => x.pid === pid);
+  if (q) { q.up = true; return; }              // pressed and let go inside one frame: its down still goes, then its up
+  if (tag.dead.delete(pid)) return;            // a press refused, cut, or begun before: its lift says nothing
+  const d = tag.down.get(pid); if (!d) return;
+  tag.down.delete(pid);
+  tagTell({ act: d.act, who: d.who, phase: 'up', by: d.by, t: tag.t });
+}
+function tagTell(r) {
+  tag.log.push(r); if (tag.log.length > 80) tag.log.shift();
+  tag.acted++;
+  const f = tag.onAct; if (typeof f !== 'function') return;
+  try { f(r); } catch (err) { console.error('tag: onAct threw', err); }
+}
+/* every press held ends, said as an `up` with why (a switch, a pause, the mode left): the one who arrives never spends it */
+function tagCutAll(why) {
+  const down = [...tag.down]; tag.down.clear();
+  for (const q of tag.queue) if (!q.up) tag.dead.add(q.pid);
+  tag.queue.length = 0;
+  for (const [pid, d] of down) { tag.dead.add(pid); tagTell({ act: d.act, who: d.who, phase: 'up', by: d.by, cut: why, t: tag.t }); }
+}
+function tagRefuse(slot, words) {              // a wait or a lock: the button shakes, and a lock says why (never pressed: v21.28)
+  tag.refused++;
+  const E = tagEls(), b = slot === 'switch' ? E.sw : E.btn[TAG_RANK[slot]];
+  if (b && b.el) { b.el.classList.remove('nope'); void b.el.offsetWidth; b.el.classList.add('nope'); }
+  if (words) weaponBlockSay(String(words));
+}
+/* this frame's one act: the main first, the rest dropped (their lift says nothing) */
+function tagFlush() {
+  if (!tag.queue.length) return;
+  const Q = tag.queue.splice(0).sort((a, b) => TAG_RANK[a.slot] - TAG_RANK[b.slot]);
+  const q = Q[0];
+  for (let i = 1; i < Q.length; i++) { tag.dropped++; if (!Q[i].up) tag.dead.add(Q[i].pid); }
+  const P = tag.bodies[tag.played]; if (!P) return;
+  const spent = () => { if (!q.up) tag.dead.add(q.pid); };
+  if (q.slot === 'switch') { spent(); tagSwitchTo(null, q.by); return; }
+  if (q.slot === 'target') { spent(); tagTell({ act: 'target', id: q.id, who: P.id, by: q.by, t: tag.t }); return; }
+  const a = P.slots[q.slot], st = a && tag.acts[a.id];
+  if (!a || !st || st.hidden) { spent(); return; }
+  if (st.blocked) { spent(); tagRefuse(q.slot, st.blocked); return; }
+  if (st.wait > 0.0005) { spent(); tagRefuse(q.slot, st.waitSay); return; }
+  if (!q.up) tag.down.set(q.pid, { act: a.id, who: P.id, by: q.by });
+  tagTell({ act: a.id, who: P.id, phase: 'down', by: q.by, t: tag.t });
+  if (q.up) tagTell({ act: a.id, who: P.id, phase: 'up', by: q.by, t: tag.t });
+}
+function tagSwitchTo(toId, by, force) {
+  if (!tagLive() || tag.bodies.length < 2) return false;
+  const st = tag.acts.switch;
+  if (!force && st && st.blocked) { tagRefuse('switch', st.blocked); return false; }
+  if (!force && tag.t < tag.lockTo) { tagRefuse('switch', null); return false; }
+  const from = tag.played, n = tag.bodies.length;
+  const to = toId == null ? (from + 1) % n : tag.bodies.findIndex(b => b.id === toId);
+  if (to < 0 || to === from) return false;
+  tagCutAll('switch');
+  const A = tag.bodies[from], B = tag.bodies[to];
+  A.vx = A.vz = 0;                             // the one left stands where he is
+  tag.boomK = tagBoomFor(B, _tgA);             // (the new one's own share of the walls)
+  tag.glideFrom = from; tag.glideT0 = tag.t;
+  tag.played = to; tag.lockTo = tag.t + Math.max(0, +tag.cfg.lock || 0);
+  tagTell({ act: 'switch', from: A.id, to: B.id, by: by || 'kit', t: tag.t });
+  return true;
+}
+/* the mode's keys: the switch's and the played one's acts'; and the play keys a first-person moment owns (the torch, the
+   eye, the hand, the weapon) are not this mode's. Answers true for a key the mode has taken */
+function tagKeyOf(c) {
+  if (c === tag.cfg.keys.switch) return 'switch';
+  const P = tag.bodies[tag.played];
+  if (P) for (const s of TAG_SLOTS) { const a = P.slots[s]; if (a && a.key && a.key === c) return s; }
+  if (c === 'KeyF' || c === 'KeyV' || c === 'KeyE' || c === 'Space' || c === 'KeyR' || c === 'KeyQ') return 'own';
+  return null;
+}
+function tagKey(e, isDown) {
+  if (!tag.on) return false;
+  const pid = 'k' + e.code;
+  if (!isDown) { tagLift(pid); return false; }
+  if (state !== 'play' || ev) return false;
+  const s = tagKeyOf(e.code);
+  if (!s) return false;
+  if (e.code === 'Space') e.preventDefault();
+  if (s !== 'own' && !e.repeat) tagPress(s, pid, 'key');
+  return true;
+}
+/* the mouse on the world, while the mode is on: no look and no lock; a click on a target's mark picks it, any other click
+   is the main act (and its release lets it go) */
+function tagMouse(e, isDown) {
+  if (!tag.on) return false;
+  if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return isDown;   // a finger's echo is never a click
+  if (!isDown) { tagLift('m' + e.button); return false; }
+  if (state !== 'play') return false;
+  if (!tagLive()) return true;
+  if (e.button !== 0) return true;
+  const hit = tagMarkAt(e.clientX, e.clientY);
+  if (hit != null) tagPress('target', 'mt', 'click', hit, true);
+  else tagPress('main', 'm0', 'click');
+  return true;
+}
+/* a finger on the world: on a target's mark it is a pick, never a stick (read before the stick, its half included) */
+function tagTouchStart(t, at) {
+  if (!tagLive()) return false;
+  const hit = tagMarkAt(t.clientX, t.clientY);
+  if (hit == null) return false;
+  tag.tgtTouch.set(t.identifier, { id: hit, x: t.clientX, y: t.clientY, at });
+  return true;
+}
+function tagTouchEnd(t, now) {                 // true: the mode had this finger (a pick, or one down before it went live)
+  if (tag.stale.delete(t.identifier)) return true;
+  const g = tag.tgtTouch.get(t.identifier);
+  if (!g) return false;
+  tag.tgtTouch.delete(t.identifier);
+  if (now - g.at < 380 && Math.hypot(t.clientX - g.x, t.clientY - g.y) < 15) tagPress('target', 't' + t.identifier, 'tap', g.id, true);
+  return true;
+}
+function tagMarkAt(x, y) {                     // the mark nearest the point, exactly where tagPaintMarks last drew it
+  let best = null, bd = Infinity;
+  for (const m of tag.drawn) { const d = Math.hypot(x - m.x, y - m.y); if (d <= m.r && d < bd) { bd = d; best = m.id; } }
+  return best;
+}
+function tagActState(a) {
+  return { wait: 0, fill: 0, pulse: false, blocked: null, hidden: false, on: false, label: undefined, icon: undefined,
+           waitSay: a && a.waitSay ? String(a.waitSay) : null };
+}
+/* opened: refused outside play, without the chapter's declaration, with no body, or while it is already on */
+function tagOpen(o) {
+  if (!kitInited || !tag.decl || tag.on || !o || typeof o !== 'object') return false;
+  if (state !== 'play' || cine || fainting) return false;
+  const seen = new Set(['switch', 'target']), bodies = [];
+  for (const b of (Array.isArray(o.bodies) ? o.bodies : [])) {
+    if (!b || typeof b.id !== 'string' || !b.obj || !b.obj.isObject3D || bodies.some(x => x.id === b.id)) continue;
+    const slots = {};
+    for (const a of (Array.isArray(b.acts) ? b.acts : [])) {
+      if (!a || typeof a.id !== 'string' || seen.has(a.id) || !TAG_SLOTS.includes(a.slot) || slots[a.slot]) continue;
+      seen.add(a.id);
+      slots[a.slot] = { id: a.id, slot: a.slot, label: a.label == null ? '' : String(a.label), icon: a.icon || null,
+                        key: typeof a.key === 'string' ? a.key : null, waitSay: a.waitSay };
+    }
+    bodies.push({ id: b.id, obj: b.obj, name: b.name == null ? b.id : String(b.name), pic: b.pic || null,
+                  speed: Number.isFinite(+b.speed) && +b.speed >= 0 ? +b.speed : null,
+                  radius: Number.isFinite(+b.radius) && +b.radius >= 0 ? +b.radius : null, faceOff: +b.faceOff || 0,
+                  slots, vx: 0, vz: 0, cov: 0, gy: NaN, y0: 0, place: null, face: null, root: false, share: null });
+  }
+  if (!bodies.length) return false;
+  if (ev) evResolve({ ok: false, aborted: true });
+  const d = tag.decl, num = (v, fb) => (Number.isFinite(+v) ? +v : fb);
+  tag.cfg = { ...d, heading: num(o.heading, d.heading), fov: num(o.fov, d.fov), camBox: o.camBox !== undefined ? o.camBox : d.camBox,
+              soft: num(o.soft, d.soft), glide: num(o.glide, d.glide), lock: num(o.lock, d.lock), radius: num(o.radius, d.radius),
+              speed: num(o.speed, d.speed), turn: num(o.turn, d.turn), eye: num(o.eye, d.eye),
+              boom: { ...d.boom, ...(o.boom || {}) }, portrait: o.portrait ? { ...d.boom, ...(o.boom || {}), ...o.portrait } : d.portrait,
+              keys: { ...d.keys, ...(o.keys || {}) } };
+  for (const B of bodies) {
+    if (B.speed == null) B.speed = tag.cfg.speed;
+    if (B.radius == null) B.radius = tag.cfg.radius;
+    const p = B.obj.position, g = groundAt(p.x, p.z);
+    B.gy = g; B.y0 = p.y - g;
+  }
+  /* the run as it stands, HELD: every save while the mode is on writes this, and a Continue lands here in first person */
+  try { tag.save0 = { st: JSON.parse(JSON.stringify(worldState())), at: { x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y } }; }
+  catch { tag.save0 = null; }
+  tag.snap = { pos: yaw.position.clone(), ry: yaw.rotation.y, px: pitch.rotation.x, roll: camera.rotation.z, fov: camera.fov };
+  /* the hands are taken back as a film takes them (the first-person hands are not drawn in the mode) */
+  prayOff(); hpOff(); kitHold(null); handsOff(); weaponAdsOff();
+  tag.bodies = bodies; tag.played = Math.max(0, bodies.findIndex(b => b.id === o.played));
+  tag.onAct = typeof o.onAct === 'function' ? o.onAct : (stage && typeof stage.onAct === 'function' ? (r => stage.onAct(r)) : null);
+  tag.targets = o.targets === undefined ? null : o.targets;
+  tag.acts = { switch: tagActState(null) };
+  for (const B of bodies) for (const s of TAG_SLOTS) if (B.slots[s]) tag.acts[B.slots[s].id] = tagActState(B.slots[s]);
+  tag.t = 0; tag.last = 0; tag.lockTo = 0; tag.glideFrom = -1;
+  tag.queue.length = 0; tag.down.clear(); tag.dead.clear(); tag.stale.clear(); tag.tgtTouch.clear(); tag.drawn.length = 0;
+  tag.log.length = 0; tag.acted = tag.dropped = tag.refused = 0; tag.count = null;
+  tag.on = true; tag.live = false;
+  vel.set(0, 0, 0);
+  document.exitPointerLock?.();
+  hint.classList.add('hide');
+  tag.boomK = tagBoomFor(tag.bodies[tag.played], _tgA);
+  tagRig(0);                                   // the lens behind him at once (the mode opens under the chapter's black)
+  return true;
+}
+/* left: presses held end (cut), the boom is exactly zero again, the save is let go, and the rig is put where `how` says:
+   'restore' (the kit's default: exactly as the mode found it), 'body' (first person where the played one stands, looking
+   where he faces), { x, y, z, ry }, or null (left alone: the caller places it, as every reset does). Under a film, the
+   film's own snapshot is written instead, so its end puts the rig there */
+function tagOff(how) {
+  if (!tag.on) return false;
+  tagCutAll('leave');
+  const P = tag.bodies[tag.played], sn = tag.snap;
+  let to = null;
+  if (how === 'restore' && sn) to = { pos: sn.pos.clone(), ry: sn.ry, px: sn.px, roll: sn.roll };
+  else if (how === 'body' && P) { const o = P.obj.position; to = { pos: new THREE.Vector3(o.x, o.y - P.y0 + tag.cfg.eye, o.z), ry: P.obj.rotation.y - P.faceOff + Math.PI, px: 0, roll: 0 }; }
+  else if (how && typeof how === 'object' && Number.isFinite(+how.x) && Number.isFinite(+how.z)) {
+    to = { pos: new THREE.Vector3(+how.x, Number.isFinite(+how.y) ? +how.y : groundAt(+how.x, +how.z) + 1.62, +how.z),
+           ry: Number.isFinite(+how.ry) ? +how.ry : yaw.rotation.y, px: 0, roll: 0 };
+  }
+  tag.on = false; tag.live = false; tag.save0 = null;
+  tag.queue.length = 0; tag.down.clear(); tag.dead.clear(); tag.stale.clear(); tag.tgtTouch.clear(); tag.drawn.length = 0;
+  tag.bodies = []; tag.onAct = null; tag.targets = null; tag.acts = {}; tag.count = null; tag.glideFrom = -1;
+  tagCamZero(true);
+  if (to) {
+    if (state === 'cine' && cine && cine.snap) { cine.snap.yawPos.copy(to.pos); cine.snap.yawRot = to.ry; cine.snap.pitchX = to.px; cine.snap.camRoll = to.roll; }
+    else { yaw.position.copy(to.pos); yaw.rotation.y = to.ry; pitch.rotation.x = to.px; camera.rotation.z = to.roll; }
+  }
+  if (state !== 'cine') camLens(sn && how === 'restore' ? sn.fov : CAM_FOV);
+  vel.set(0, 0, 0);
+  tag.snap = null;
+  return true;
+}
+function kitTag(o, how) {
+  if (o === undefined) return tagStateRead();
+  if (o === null || o === false) return tagOff(how === undefined ? 'restore' : how);
+  return tagOpen(o);
+}
+function kitTagAct(id, p) {
+  const st = tag.on && tag.acts[id];
+  if (!st || !p || typeof p !== 'object') return false;
+  const k01 = v => Math.max(0, Math.min(1, +v || 0));
+  if ('wait' in p) st.wait = k01(p.wait);
+  if ('fill' in p) st.fill = k01(p.fill);
+  if ('pulse' in p) st.pulse = !!p.pulse;
+  if ('blocked' in p) st.blocked = p.blocked ? String(p.blocked) : null;
+  if ('hidden' in p) st.hidden = !!p.hidden;
+  if ('on' in p) st.on = !!p.on;
+  if ('label' in p) st.label = p.label == null ? undefined : String(p.label);
+  if ('icon' in p) st.icon = p.icon == null ? undefined : p.icon;
+  if ('waitSay' in p) st.waitSay = p.waitSay ? String(p.waitSay) : null;
+  /* an act taken away or locked while it is held is let go (said as an up, cut) */
+  if (st.hidden || st.blocked) for (const [pid, d] of [...tag.down]) if (d.act === id) {
+    tag.down.delete(pid); tag.dead.add(pid); tagTell({ act: d.act, who: d.who, phase: 'up', by: d.by, cut: st.hidden ? 'hidden' : 'blocked', t: tag.t });
+  }
+  return true;
+}
+function kitTagBody(id, p) {
+  const B = tag.on ? tag.bodies.find(b => b.id === id) : null;
+  if (!B || !p || typeof p !== 'object') return false;
+  if ('speed' in p && Number.isFinite(+p.speed) && +p.speed >= 0) B.speed = +p.speed;
+  if ('root' in p) B.root = !!p.root;
+  if ('face' in p) B.face = p.face == null || !Number.isFinite(+p.face) ? null : +p.face;
+  if ('name' in p) B.name = p.name == null ? B.id : String(p.name);
+  if ('pic' in p) B.pic = p.pic || null;
+  if ('share' in p) B.share = p.share == null || !Number.isFinite(+p.share) ? null : Math.max(0, Math.min(1, +p.share));
+  return true;
+}
+/* a body moved by the chapter (the one not played stepping aside, a fight begun again): eased over `secs` of the mode's
+   clock, or at once; refused into a wall or out of bounds */
+function kitTagPlace(id, x, z, o = {}) {
+  const B = tag.on ? tag.bodies.find(b => b.id === id) : null;
+  if (!B || !Number.isFinite(+x) || !Number.isFinite(+z) || collideFrom(+x, +z, +x, +z)) return false;
+  const p = B.obj.position, secs = Math.max(0, +o.secs || 0);
+  if (secs === 0) { p.x = +x; p.z = +z; B.place = null; B.gy = NaN; }
+  else B.place = { x0: p.x, z0: p.z, x1: +x, z1: +z, t0: tag.t, secs };
+  if (Number.isFinite(+o.ry)) { B.face = +o.ry; if (secs === 0) B.obj.rotation.y = +o.ry; }
+  B.vx = B.vz = 0;
+  return true;
+}
+/* the run held again, as it stands now (the place a Continue lands is still where the mode opened): a chapter whose fight's
+   lessons cost nothing re-holds at the fight's real start, so a Continue after it lands there */
+function kitTagHold() {
+  if (!tag.on || !tag.save0) return false;
+  try { tag.save0 = { st: JSON.parse(JSON.stringify(worldState())), at: { ...tag.save0.at } }; return true; } catch { return false; }
+}
+/* a switch the chapter asks for (a beat of its own): refused inside the lock or while the chapter's own lock stands, unless
+   `force` (and never outside live play) */
+function kitTagSwitchVerb(to, o) { return tagSwitchTo(to == null ? null : String(to), 'kit', !!(o && o.force)); }
+function kitTagCount(left, of) {
+  if (left === null || left === undefined) { tag.count = null; return true; }
+  const n = Math.max(0, Math.min(24, (+of || 0) | 0));
+  tag.count = { left: Math.max(0, Math.min(n, (+left || 0) | 0)), of: n };
+  return true;
+}
+function tagStateRead() {
+  const P = tag.on ? tag.bodies[tag.played] : null;
+  return { on: tag.on, live: tagLive(), played: P ? P.id : null, t: +tag.t.toFixed(3),
+           lock: tag.on ? +Math.max(0, tag.lockTo - tag.t).toFixed(3) : 0, gliding: tag.glideFrom >= 0, held: !!tag.save0,
+           bodies: tag.bodies.map(b => ({ id: b.id, x: +b.obj.position.x.toFixed(3), z: +b.obj.position.z.toFixed(3),
+                                         ry: +b.obj.rotation.y.toFixed(3), v: +b.cov.toFixed(3), moving: b.cov > 0.05, played: b === P })),
+           count: tag.count ? { ...tag.count } : null };
+}
+/* ---- the mode's screen (from kitFrame): the buttons, the switch, the marks, the other one's mark, the count ---------- */
+function tagEls() {
+  if (tag.el) return tag.el;
+  const mk = id => { const el = $(id); return el ? { el, ico: el.querySelector('.tgIco'), lbl: el.querySelector('.tgLbl'), kbd: el.querySelector('.wpnKey kbd'),
+                      wait: el.querySelector('.tgWait'), fill: el.querySelector('.tgFill'), face: el.querySelector('.tgFace'),
+                      name: el.querySelector('.tgName'), sig: '', lblOf: null, icoOf: undefined, keyOf: null } : null; };
+  tag.el = { btn: ['tagA0', 'tagA1', 'tagA2'].map(mk), sw: mk('tagSw'), marks: $('tagMarks'), mate: $('tagMate'), count: $('tagCount'),
+             pool: [], countOf: -1, countLeft: -1, mateSig: '' };
+  return tag.el;
+}
+function tagRing(c, k) { if (c) c.style.strokeDashoffset = (TAG_RING_C * (1 - Math.max(0, Math.min(1, k)))).toFixed(1); }
+function tagPaintBtn(b, a, st) {
+  if (!b) return;
+  if (!a || !st || st.hidden) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }
+  const label = st.label !== undefined ? st.label : a.label, icon = st.icon !== undefined ? st.icon : a.icon;
+  const wait = st.wait > 0.0005 ? st.wait : 0, cl = b.el.classList;
+  if (b.icoOf !== icon) {
+    b.icoOf = icon; b.sig = '';
+    if (b.ico) { b.ico.textContent = ''; if (icon) b.ico.appendChild(evIconNode(icon, 'tgIcoIn')); }
+    cl.toggle('hasIco', !!icon);
+  }
+  const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3);
+  if (sig === b.sig) return;
+  b.sig = sig;
+  cl.remove('hide');
+  if (b.lblOf !== label) { b.lblOf = label; if (b.lbl) b.lbl.textContent = label; b.el.setAttribute('aria-label', label || a.id); cl.toggle('long', label.length > 7); }
+  const kn = tagKeyName(a.key);
+  if (b.keyOf !== kn) { b.keyOf = kn; if (b.kbd) b.kbd.textContent = kn; cl.toggle('noKey', !kn); }
+  cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked); cl.toggle('on', !!st.on);
+  cl.toggle('waiting', wait > 0); cl.toggle('ready', !wait && !st.blocked);
+  tagRing(b.wait, 1 - wait); tagRing(b.fill, st.fill);
+}
+function tagPaintSw(E) {
+  const b = E.sw; if (!b) return;
+  const n = tag.bodies.length, O = n > 1 ? tag.bodies[(tag.played + 1) % n] : null, st = tag.acts.switch;
+  if (!O || !st) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }
+  const lock = tag.cfg.lock > 0 ? Math.max(0, Math.min(1, (tag.lockTo - tag.t) / tag.cfg.lock)) : 0, cl = b.el.classList;
+  if (b.icoOf !== O.pic) { b.icoOf = O.pic; b.sig = ''; if (b.face) { b.face.textContent = ''; if (O.pic) b.face.appendChild(evIconNode(O.pic, 'tgFaceIn')); } }
+  const sig = O.id + '|' + O.name + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + '|' + lock.toFixed(3);
+  if (sig === b.sig) return;
+  b.sig = sig;
+  cl.remove('hide');
+  if (b.lblOf !== O.name) { b.lblOf = O.name; if (b.name) b.name.textContent = O.name; b.el.setAttribute('aria-label', T('hud.tagSwitch') + ' ' + O.name); }
+  const kn = tagKeyName(tag.cfg.keys.switch);
+  if (b.keyOf !== kn) { b.keyOf = kn; if (b.kbd) b.kbd.textContent = kn; cl.toggle('noKey', !kn); }
+  cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked);
+  cl.toggle('waiting', lock > 0); cl.toggle('ready', !lock && !st.blocked);
+  tagRing(b.wait, 1 - lock); tagRing(b.fill, 0);
+}
+function tagMarkEl(i) {
+  const E = tagEls(); if (!E.marks) return null;
+  while (E.pool.length <= i) {
+    const el = document.createElement('i'); el.className = 'tmark'; el.style.display = 'none';
+    E.marks.appendChild(el); E.pool.push({ el, sig: '' });
+  }
+  return E.pool[i];
+}
+function tagPaintMarks() {
+  const E = tagEls();
+  tag.drawn.length = 0;
+  let list = tag.targets, n = 0;
+  if (typeof list === 'function') { try { list = list(); } catch (err) { list = null; } }
+  if (tagLive() && Array.isArray(list)) for (const m of list) {
+    if (!m || m.id == null) continue;
+    const at = Array.isArray(m.at) ? m.at : (m.at && typeof m.at === 'object' ? [m.at.x, m.at.y, m.at.z] : null);
+    if (!at) continue;
+    const q = projectTo(+at[0] || 0, +at[1] || 0, +at[2] || 0);
+    if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) continue;
+    const x = (q.x * 0.5 + 0.5) * innerWidth, y = (-q.y * 0.5 + 0.5) * innerHeight;
+    const pm = tagMarkEl(n++); if (!pm) break;
+    pm.el.style.display = '';
+    pm.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+    const sig = (m.picked ? 'p' : '') + (m.dim ? 'd' : '') + '|' + (m.color || '');
+    if (sig !== pm.sig) {
+      pm.sig = sig; pm.el.classList.toggle('picked', !!m.picked); pm.el.classList.toggle('dim', !!m.dim);
+      if (m.color) pm.el.style.setProperty('--tc', String(m.color)); else pm.el.style.removeProperty('--tc');
+    }
+    tag.drawn.push({ id: m.id, x, y, r: Math.max(18, Number.isFinite(+m.r) ? +m.r : 32) });
+  }
+  for (let i = n; i < E.pool.length; i++) if (E.pool[i].el.style.display !== 'none') E.pool[i].el.style.display = 'none';
+}
+function tagPaintMate() {
+  const E = tagEls(), el = E.mate; if (!el) return;
+  const n = tag.bodies.length, O = n > 1 ? tag.bodies[(tag.played + 1) % n] : null;
+  let show = false;
+  if (O && tagLive()) {
+    const o = O.obj.position, q = projectTo(o.x, o.y + 1.9, o.z);
+    const W = innerWidth, H = innerHeight, behind = q.z > 1;
+    let x = (q.x * 0.5 + 0.5) * W, y = (-q.y * 0.5 + 0.5) * H;
+    if (behind) { x = W - x; y = H - y; }
+    if (behind || x < 0 || x > W || y < 0 || y > H) {
+      show = true;
+      /* at the screen's edge toward him, inside the mode's own margins: under the count, above the caption, and in a
+         landscape screen clear of the buttons' column */
+      const portrait = H > W, top = portrait ? 252 : 96, bot = portrait ? 312 : 120, left = 16, right = portrait ? 16 : 236;
+      const cx = (left + W - right) / 2, cy = (top + H - bot) / 2;
+      let dx = x - cx, dy = y - cy;
+      if (Math.abs(dx) < 1e-3 && Math.abs(dy) < 1e-3) dy = 1;
+      const sc = Math.min(Math.max(1, (W - right - left) / 2 - 52) / Math.max(1e-3, Math.abs(dx)), Math.max(1, (H - bot - top) / 2) / Math.max(1e-3, Math.abs(dy)));
+      const ang = Math.atan2(dy, dx);
+      el.style.left = (cx + dx * sc).toFixed(1) + 'px'; el.style.top = (cy + dy * sc).toFixed(1) + 'px';
+      const sig = O.name + '|' + (O.share == null ? '' : O.share.toFixed(2));
+      if (sig !== E.mateSig) {
+        E.mateSig = sig;
+        const nm = el.querySelector('.tmName'); if (nm) nm.textContent = O.name;
+        el.classList.toggle('noShare', O.share == null);
+        const arc = el.querySelector('.tmArc'); if (arc) arc.style.strokeDashoffset = (50.27 * (1 - (O.share || 0))).toFixed(2);
+      }
+      const a = el.querySelector('.tmArrow');
+      if (a) {
+        const hw = el.offsetWidth / 2, hh = el.offsetHeight / 2, c = Math.abs(Math.cos(ang)), sn = Math.abs(Math.sin(ang));
+        const dd = Math.min(c > 1e-3 ? hw / c : 1e9, sn > 1e-3 ? hh / sn : 1e9) + 3;
+        a.style.transform = 'rotate(' + ang.toFixed(3) + 'rad)'; a.style.setProperty('--ad', dd.toFixed(1) + 'px');
+      }
+    }
+  }
+  el.classList.toggle('on', show);
+}
+function tagPaintCount() {
+  const E = tagEls(), el = E.count; if (!el) return;
+  const c = tag.on ? tag.count : null;
+  el.classList.toggle('on', !!c && c.of > 0);
+  if (!c) return;
+  if (E.countOf !== c.of) { el.textContent = ''; for (let i = 0; i < c.of; i++) el.appendChild(document.createElement('i')); E.countOf = c.of; E.countLeft = -1; }
+  if (E.countLeft !== c.left) {
+    const dots = el.children, was = E.countLeft;
+    for (let i = 0; i < dots.length; i++) dots[i].classList.toggle('lit', i < c.left);
+    if (was > c.left && dots[c.left]) { const d = dots[c.left]; d.classList.remove('out'); void d.offsetWidth; d.classList.add('out'); }
+    E.countLeft = c.left;
+  }
+}
+/* one boolean a frame for every chapter that never opens the mode */
+function tagPaint() {
+  if (tag.on !== tag.classOn) {
+    tag.classOn = tag.on;
+    document.body.classList.toggle('tagOn', tag.on);
+    if (!tag.on) {
+      const E = tagEls();
+      for (const p of E.pool) p.el.style.display = 'none';
+      if (E.mate) E.mate.classList.remove('on');
+      if (E.count) E.count.classList.remove('on');
+      for (const b of [...E.btn, E.sw]) if (b) { b.sig = ''; b.icoOf = undefined; }
+      E.countOf = -1; E.countLeft = -1; E.mateSig = '';
+    }
+  }
+  if (!tag.on) return;
+  const E = tagEls(), P = tag.bodies[tag.played];
+  if (state === 'play') {
+    for (let i = 0; i < 3; i++) { const a = P && P.slots[TAG_SLOTS[i]]; tagPaintBtn(E.btn[i], a, a && tag.acts[a.id]); }
+    tagPaintSw(E);
+  }
+  tagPaintMarks(); tagPaintMate(); tagPaintCount();
+}
+function tagWire() {                           // once (kitInit): the buttons answer the finger's touch, never its lift, and never become a drag
+  if (tag.wired) return;
+  tag.wired = true;
+  for (const [id, slot] of [['tagA0', 'main'], ['tagA1', 'second'], ['tagA2', 'third'], ['tagSw', 'switch']]) {
+    const b = $(id); if (!b) continue;
+    b.addEventListener('pointerdown', e => {
+      e.stopPropagation(); e.preventDefault();
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      try { b.setPointerCapture(e.pointerId); } catch {}
+      tagPress(slot, 'p' + e.pointerId, e.pointerType === 'mouse' ? 'click' : 'tap');
+    });
+    const up = e => tagLift('p' + e.pointerId);
+    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('lostpointercapture', up);
+    b.addEventListener('contextmenu', e => e.preventDefault());
+  }
+  const ag = $('rtAgain'), mo = $('rtMore');
+  if (ag) ag.addEventListener('click', e => { e.stopPropagation(); retryPress('again'); });
+  if (mo) mo.addEventListener('click', e => { e.stopPropagation(); retryPress('more'); });
+}
+function tagReset() {                          // kitReset: no mode left open (the caller places the rig), the declaration re-read
+  if (tag.on) tagOff(null);
+  tagCamZero(true);
+  if (CH.tag) tagSetup(CH.tag); else if (tag.decl) tagTeardown();
+  tag.count = null;
+}
+/* ══ v28.0 · THE SIXTY-FIRST SEAM: A BUTTON OF THE CHAPTER'S OWN (kit.button) ═════════════════════════════════════════
+   One more round button in the right-hand column, under the torch's and the eye's, for a sense a chapter gives him in play
+   (episode 4 chapter 5's SMELL, on N): `kit.button(id, { icon, label, key, wait, pulse, locked, hidden, on, onPress })`,
+   each field optional and kept until changed; null takes it away. `icon` is what an event's item takes (a canvas, a function
+   that makes one, or a hosted asset key); `wait` 0..1 the share of its wait still to run (its ring); `pulse` asks (the eye's
+   language); `locked` a sentence: it dims and a press says it (never pressed: v21.28); `onPress({ id, by })` is told of a
+   press by a tap or a click ('tap') or its key ('key'). Refused outside play, under any window, minigame or film, and in
+   the tag mode, whose own buttons are the acts. The verb keeps state; the frame makes and paints the button. kitReset takes
+   every one away. A chapter that never asks has no button, nothing painted and no key read */
+const cbtn = new Map();
+let cbtnShown = false;
+function kitButton(id, o) {
+  if (typeof id !== 'string' || !id) return false;
+  if (o === null || o === false) { const b = cbtn.get(id); if (b) b.gone = true; return true; }
+  if (!o || typeof o !== 'object') return false;
+  let b = cbtn.get(id);
+  if (!b) { b = { id, o: {}, el: null, sig: '', gone: false, presses: 0, icoOf: undefined }; cbtn.set(id, b); }
+  b.gone = false;
+  for (const k of ['icon', 'label', 'key', 'wait', 'pulse', 'locked', 'hidden', 'on', 'onPress']) if (k in o) b.o[k] = o[k];
+  return true;
+}
+function cbtnMake(b) {
+  const el = document.createElement('button');
+  el.type = 'button'; el.className = 'soundBtn cBtn';
+  const ico = document.createElement('span'); ico.className = 'cbIco'; el.appendChild(ico);
+  const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('class', 'cbRing'); svg.setAttribute('viewBox', '0 0 46 46'); svg.setAttribute('aria-hidden', 'true');
+  for (const cl of ['cbTrack', 'cbArc']) {
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('class', cl); c.setAttribute('cx', '23'); c.setAttribute('cy', '23'); c.setAttribute('r', '21.5'); svg.appendChild(c);
+  }
+  el.appendChild(svg);
+  const lab = document.createElement('span'); lab.className = 'invLabel';
+  const lt = document.createElement('span'), lk = document.createElement('kbd'); lab.appendChild(lt); lab.appendChild(lk); el.appendChild(lab);
+  el.addEventListener('click', e => { e.stopPropagation(); cbtnPress(b, 'tap'); });
+  document.body.appendChild(el);
+  b.el = el; b.ico = ico; b.arc = svg.lastChild; b.lt = lt; b.lk = lk;
+}
+function cbtnPaint() {
+  if (!cbtn.size) { if (cbtnShown) { cbtnShown = false; document.body.classList.remove('hasCBtn'); } return; }
+  const base = 168 + (document.body.classList.contains('hasTorch') ? 56 : 0) + (vis.decl ? 56 : 0);
+  let i = 0;
+  for (const b of [...cbtn.values()]) {
+    if (b.gone) { if (b.el) b.el.remove(); cbtn.delete(b.id); continue; }
+    if (!b.el) cbtnMake(b);
+    const o = b.o, hidden = !!o.hidden, wait = Math.max(0, Math.min(1, +o.wait || 0));
+    const label = o.label == null ? '' : String(o.label), kn = tagKeyName(o.key), top = base + 56 * i;
+    if (b.icoOf !== o.icon) { b.icoOf = o.icon; b.ico.textContent = ''; if (o.icon) b.ico.appendChild(evIconNode(o.icon, 'cbIcoIn')); }
+    const sig = top + '|' + label + '|' + kn + '|' + (hidden ? 1 : 0) + (o.pulse ? 1 : 0) + (o.locked ? 1 : 0) + (o.on ? 1 : 0) + '|' + wait.toFixed(3);
+    if (sig !== b.sig) {
+      b.sig = sig;
+      const cl = b.el.classList;
+      b.el.style.top = 'calc(max(14px,env(safe-area-inset-top)) + ' + top + 'px)';
+      cl.toggle('hide', hidden); cl.toggle('urge', !!o.pulse && !o.locked); cl.toggle('locked', !!o.locked);
+      cl.toggle('on', !!o.on); cl.toggle('waiting', wait > 0.0005);
+      b.ico.setAttribute('data-l', label.slice(0, 6));
+      b.lt.textContent = label; b.lk.textContent = kn; b.el.setAttribute('aria-label', label || b.id);
+      b.arc.style.strokeDashoffset = (135.09 * wait).toFixed(2);     // full when ready; the wait eats it from the top
+    }
+    if (!hidden) i++;
+  }
+  if (!cbtnShown && cbtn.size) { cbtnShown = true; document.body.classList.add('hasCBtn'); }
+}
+function cbtnNope(b) { if (b.el) { b.el.classList.remove('nope'); void b.el.offsetWidth; b.el.classList.add('nope'); } }
+function cbtnPress(b, by) {
+  if (!b || b.gone || state !== 'play' || ev || cine || fainting || tag.on) return false;
+  const o = b.o;
+  if (o.hidden) return false;
+  if (o.locked) { weaponBlockSay(String(o.locked)); cbtnNope(b); return false; }
+  if (+o.wait > 0.0005) { cbtnNope(b); return false; }
+  b.presses++;
+  if (typeof o.onPress === 'function') { try { o.onPress({ id: b.id, by }); } catch (err) { console.error('kit.button ' + b.id + ': onPress threw', err); } }
+  return true;
+}
+function cbtnKey(e) {
+  if (!cbtn.size || state !== 'play' || ev || tag.on || e.repeat) return false;
+  for (const b of cbtn.values()) if (!b.gone && !b.o.hidden && b.o.key && b.o.key === e.code) { cbtnPress(b, 'key'); return true; }
+  return false;
+}
+function cbtnReset() {
+  for (const b of cbtn.values()) if (b.el) b.el.remove();
+  cbtn.clear();
+  if (cbtnShown) { cbtnShown = false; document.body.classList.remove('hasCBtn'); }
+}
+/* ══ v28.0 · THE SIXTY-FIFTH SEAM: A LOSS THAT BEGINS AGAIN (kit.retry) ════════════════════════════════════════════════
+   Chad, 21 Nov 2026 (R14): "Fight restarts". kit.lose rewrites the save to the chapter's start (chapter 4's fight used it
+   at his word, R18); this begins again WHERE THE CHAPTER SAYS: a card of its own (a screen state of its own, `retry`), its
+   words the chapter's (`title`, `line`, `button`, and `more`, a second button only when given), and on a press the run put
+   back exactly as the tag mode HELD it (his stats, the bag, the worn piece's charge, the bookmark and what play had earned:
+   the save the mode holds), play again, and the chapter told which (`onPress({ button })`, and the Promise it answers:
+   'again' or 'more'). Refused unless the mode is on and holding the run, in play. The press that lost cannot also retry:
+   the buttons wait 0.6 s. Nothing in the world is moved by it: the chapter begins its fight again itself */
+const rty = { open: false, res: null, o: null, t0: 0, presses: 0 };
+function kitRetry(o) {
+  if (rty.open || state !== 'play' || cine || fainting || !tag.on || !tag.save0) return false;
+  if (ev) evResolve({ ok: false, aborted: true });
+  tagCutAll('retry');
+  rty.open = true; rty.o = o && typeof o === 'object' ? o : {}; rty.t0 = performance.now();
+  state = 'retry';
+  const card = $('retryCard');
+  $('rtLabel').textContent = rty.o.title != null ? String(rty.o.title) : T('hud.retryLabel');
+  $('rtLine').textContent = rty.o.line != null ? String(rty.o.line) : '';
+  $('rtAgain').textContent = rty.o.button != null ? String(rty.o.button) : T('hud.retryAgain');
+  const mo = $('rtMore');
+  if (rty.o.more) { mo.textContent = String(rty.o.more); mo.classList.remove('hide'); } else { mo.textContent = ''; mo.classList.add('hide'); }
+  card.classList.remove('hide'); card.classList.add('guard');
+  setTimeout(() => card.classList.remove('guard'), 650);
+  document.body.classList.add('retryopen');
+  for (const k in keys) keys[k] = false;      // a held W does not walk him on after the card
+  document.exitPointerLock?.();
+  snd('ulost', 0.55);
+  return new Promise(res => { rty.res = res; });
+}
+function retryPress(which) {
+  if (!rty.open || performance.now() - rty.t0 < 600) return false;
+  if (which === 'more' && !(rty.o && rty.o.more)) return false;
+  /* the run put back as the mode held it */
+  if (tag.save0) applyState(JSON.parse(JSON.stringify(tag.save0.st)));
+  rty.open = false; rty.presses++;
+  $('retryCard').classList.add('hide'); document.body.classList.remove('retryopen');
+  state = 'play';
+  snd('uiconfirm', 0.35);
+  const res = rty.res, o = rty.o || {}; rty.res = null; rty.o = null;
+  if (typeof o.onPress === 'function') { try { o.onPress({ button: which }); } catch (err) { console.error('kit.retry: onPress threw', err); } }
+  if (res) res({ button: which });
+  return true;
+}
+function retryClose() {
+  if (!rty.open) return;
+  rty.open = false;
+  $('retryCard')?.classList.add('hide'); document.body.classList.remove('retryopen');
+  const r = rty.res; rty.res = null; rty.o = null;
+  if (r) r(null);
 }
 const KIT = {
   film: kitFilm,                   // v21.0: the twenty-sixth seam — a cutscene from play, back to play
@@ -8208,6 +9040,21 @@ const KIT = {
   },
   ammoInf: (on) => { weaponInf = !!on; return true; },             // v27.0 (R56): the count reads the infinity sign
   ammo: (rounds, mags) => { if (rounds !== undefined) weaponRounds = Math.max(0, rounds | 0); if (mags !== undefined) weaponMags = Math.max(0, mags | 0); return { rounds: weaponRounds, mags: weaponMags }; },
+  /* v28.0 · THE TAG MODE (the sixtieth seam; docs/V28.0-SEAMS.md): kit.tag(opts) opens it (two bodies the chapter hands
+     over, one played; false when it cannot), kit.tag(null, how) leaves it ('restore' by default), kit.tag() reads it; the
+     rest change it while it is on */
+  tag: kitTag,
+  tagState: tagStateRead,
+  tagSwitch: kitTagSwitchVerb,
+  tagAct: kitTagAct,                       // an act's state on its button: { wait, fill, pulse, blocked, hidden, on, label, icon, waitSay }
+  tagBody: kitTagBody,                     // a body's: { speed, root, face, name, pic, share }
+  tagPlace: kitTagPlace,                   // a body moved by the chapter: (id, x, z, { secs, ry })
+  tagMarks: (list) => { if (!tag.on) return false; tag.targets = list === undefined ? null : list; return true; },
+  tagCount: kitTagCount,                   // the count under the objective: (left, of), or null
+  tagHold: kitTagHold,                     // the run held again as it stands now
+  button: kitButton,                       // v28.0: the sixty-first seam — a button of the chapter's own in the right-hand column
+  retry: kitRetry,                         // v28.0: the sixty-fifth seam — a loss that begins again where the chapter says
+  retryOpen: () => rty.open,
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
   interact: () => interactNow(),
@@ -9219,6 +10066,10 @@ addEventListener('keydown', e => {
   /* v7.0: a live event owns Space / Enter / E — and (v24.5, R2-1) no later listener sees them: the press that finished a
      film's minigame went on to the film's skip listener, which found no event any more and skipped the film */
   if (evKey(e, true)) { e.stopImmediatePropagation(); return; }
+  /* v28.0 (seam 65): the retry card's own key — Enter or Space begins again, once its guard is past */
+  if (rty.open) { if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat) { e.preventDefault(); retryPress('again'); } return; }
+  if (tagKey(e, true)) return;             // v28.0 (seam 60): the tag mode's keys (its switch, the played one's acts) before the torch, the eye, the hand and the weapon
+  if (cbtnKey(e)) return;                  // v28.0 (seam 61): a button of the chapter's own, by its key
   if (e.code === 'KeyF' && state === 'play') { torchToggle(); return; }   // v7.0
   if (e.code === 'KeyV' && state === 'play' && vis.decl) { visionToggle(); return; }   // v27.0: SPIRIT VISION
   // Escape closes whatever is open: credits first, then the decision panel
@@ -9234,7 +10085,7 @@ addEventListener('keydown', e => {
 });
 /* (v23.0 CP13: a key let go is let go whoever reads it — a W released while a surface event owned it stayed held in
    keys[] and walked him on after the event) */
-addEventListener('keyup', e => { keys[e.code] = false; evKey(e, false); });
+addEventListener('keyup', e => { keys[e.code] = false; evKey(e, false); tagKey(e, false); });   // (v28.0: an act's key let go is its hold let go)
 
 let lookX = 0, lookY = 0;            // accumulated look delta this frame
 let lastWallLook = 0;                // v12.2: the recoil spring runs on WALL time
@@ -9250,6 +10101,7 @@ function tryLock() {
   // no pointer lock at all -- which is why this only ever bit Android.
   if (!FINE_PTR) return;
   if (lockBlocked || locked || state === 'title') return;
+  if (tag.on) return;                          // v28.0 (seam 60): the tag mode's mouse is free (a click picks a target, v9.4)
   if (state === 'ledger' || led.open) return;   // v24.0 (CP13): under the open book a click that missed both lines locked the cursor
   try {
     const r = canvas.requestPointerLock?.();
@@ -9308,6 +10160,7 @@ canvas.addEventListener('mousedown', e => {
      nothing ever said it for the mouse. Episode 1 declares no events and no
      weapon, so it cannot reach either half. */
   if (ev) return;
+  if (tagMouse(e, true)) return;           // v28.0 (seam 60): in the tag mode a click is a pick or the main act, never a lock
   if (e.button === 2 && state === 'play' && weaponWant()) { e.preventDefault(); weaponAdsToggle(); return; }   // v12.2
   if (e.button !== 0) return;
   if (locked && state === 'play' && weaponWant()) { weaponFire(); return; }   // v12.0: under lock the click is the trigger
@@ -9325,7 +10178,10 @@ canvas.addEventListener('mousedown', e => {
   tryLock();                         // upgrade to real free look where allowed
 });
 
+/* v28.0 (seam 60): a mouse button let go anywhere lets the tag mode's main act go */
+addEventListener('mouseup', e => { if (tag.on) tagMouse(e, false); });
 document.addEventListener('mousemove', e => {
+  if (tag.on && state === 'play') { edgeTurn = 0; return; }   // v28.0 (seam 60): the look is dead in the tag mode
   if (locked) {                      // pointer lock: the ideal path, no limits
     lookX -= e.movementX * 0.0022;
     lookY -= e.movementY * 0.0022;
@@ -9367,6 +10223,7 @@ function onTouchStart(e) {
   const at = e.timeStamp || performance.now();
   for (const t of e.changedTouches) {
     touchStarts.set(t.identifier, { x: t.clientX, y: t.clientY, at });
+    if (tag.on && tagTouchStart(t, at)) continue;   // v28.0 (seam 60): a finger on a target's mark picks it, never a stick
     if (t.clientX < innerWidth * 0.45 && stickId === null) {
       stickId = t.identifier;
       stick.style.left = t.clientX + 'px'; stick.style.top = t.clientY + 'px';
@@ -9398,7 +10255,11 @@ function onTouchEnd(e) {
   for (const t of e.changedTouches) {
     const s = touchStarts.get(t.identifier);
     touchStarts.delete(t.identifier);
-    if (s && now - s.at < 380
+    /* v28.0 (seam 60): in the tag mode no finger on the world is a click (the browser's mouse events after it would press
+       the main act); and the mode's own fingers (a pick, or one down before it went live) are its alone */
+    if (tag.on) e.preventDefault();
+    if ((tag.on || tag.stale.size || tag.tgtTouch.size) && tagTouchEnd(t, now)) continue;
+    if (s && !tag.on && now - s.at < 380
         && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
         && state === 'play' && !(performance.now() < (led.swallowUntil || 0))   // v24.0 (CP13): not the tap that closed a ledger page
         /* (v24.5, L4-4: nor any touch that began while the book was open — on a phone drawing a frame a second the closing
@@ -11452,11 +12313,24 @@ function saveCheckpoint(extra) {
      player actually cares about — the read guard alone is not enough. */
   if (CH_ASKED) return false;
   try {
-    const held = ev && ev.save0 && !(extra && 'at' in extra);      // v24.0 (CP13): a minigame open is saved as it opened
-    const at = (extra && 'at' in extra) ? extra.at : held ? { ...ev.save0.at } : {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(checkpointData(extra)));
+    lastSaveAt = performance.now();
+    return true;
+  } catch { return false; }        // private mode, quota, or storage disabled
+}
+/* v28.0: what a save writes, built on its own (saveCheckpoint stores it; the fixture reads it, since a ?ch= session stores
+   nothing) — unchanged, but for the tag mode's hold */
+function checkpointData(extra) {
+  {
+    /* v28.0 (seam 60): THE TAG MODE HOLDS THE SAVE as the run stood when it opened, until it is left — its hold is older
+       than any minigame opened inside it, so it comes first */
+    const heldT = !!tag.save0 && !(extra && 'at' in extra);
+    const held = !heldT && ev && ev.save0 && !(extra && 'at' in extra);      // v24.0 (CP13): a minigame open is saved as it opened
+    const from = heldT ? tag.save0 : held ? ev.save0 : null;
+    const at = (extra && 'at' in extra) ? extra.at : from ? { ...from.at } : {
       x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y
     };
-    const base = held ? JSON.parse(JSON.stringify(ev.save0.st)) : worldState();
+    const base = from ? JSON.parse(JSON.stringify(from.st)) : worldState();
     if (extra && extra.stats) base.stats = { ...extra.stats };
     if (extra && extra.ward) base.ward = { ...extra.ward };   // v14.7: a faint and a boundary say what the amulet holds
     if (extra && extra.ch && chapterExists(extra.ch)) base.ch = extra.ch;
@@ -11470,12 +12344,8 @@ function saveCheckpoint(extra) {
        does not even show up"). e2c4 → e2c5 skipped the clearance the same
        way, and a faint kept the phase it fainted in. */
     if (at === null) { base.phase = null; base.conduct = { s: 0, a: 0, notes: [] }; }
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      ...base, at, done: !!(extra && extra.done), t: Date.now()
-    }));
-    lastSaveAt = performance.now();
-    return true;
-  } catch { return false; }        // private mode, quota, or storage disabled
+    return { ...base, at, done: !!(extra && extra.done), t: Date.now() };
+  }
 }
 function loadCheckpoint() {
   /* An explicit ?ch= wins over the save. Asking for a chapter by name and
@@ -14230,7 +15100,7 @@ function zavFrame() {
 }
 
 function invOpen() {
-  if (inv.open || state !== 'play' || ev) return;   // the bag belongs to the walk, not the cards (v14.4: nor to a live event)
+  if (inv.open || state !== 'play' || ev || tag.on) return;   // the bag belongs to the walk, not the cards (v14.4: nor to a live event; v28.0: nor to the tag mode — what he wore when it opened is what he fights with)
   inv.open = true;
   invEl().classList.remove('hide');
   zavInit(); zavLoad();
@@ -15861,6 +16731,7 @@ function camLens(fov) {
   camera.updateProjectionMatrix();
 }
 function playCineFn(sceneFn, onDone, startFade = 0) {
+  tagCamZero(true);                // v28.0 (seam 60): a film never inherits the tag mode's boom (it places the lens by the rig alone)
   const snap = snapWorld();
   const c = {
     t: 0, last: performance.now(), paused: false,
@@ -17254,6 +18125,8 @@ function wardPaint() {
 syncBars();
 
 function startDecision() {
+  /* v28.0 (seam 60): a decision is a first-person card — the tag mode is left first, the rig back as the mode found it */
+  if (tag.on) tagOff('restore');
   /* v24.5 (L2-3): the run is saved as the decision opens. The decision, the scene and the cards are never saved, so a
      Continue from any of them went back to the last 8 s autosave — in episode 4 chapter 1 usually the start of the storm,
      which it then played again (only an autosave that happened to fall in the 3.4 s hush after it kept the bookmark) */
@@ -17651,6 +18524,7 @@ function scFaint(c, s) {
    words the sheet's own */
 function lose(o) {
   if (state === 'lost' || fainting) return;
+  if (tag.on) tagOff(null);        // v28.0 (seam 60): the faint is a first-person film; the mode is left and its film places the rig
   fainting = true;
   const own = !!(o && typeof o === 'object');
   if (!own) { stats.sanity = 0; syncBars(); }
@@ -17932,13 +18806,16 @@ function groundFollow(dt) {
   groundLX = x; groundLZ = z;
   return groundY;
 }
-function collide(nx, nz) {
+/* v28.0 (seam 60): the same test asked from any spot — a body the tag mode walks steps from where IT stands; the
+   player's own `collide` asks it from the rig, exactly as it always did */
+function collideFrom(fx, fz, nx, nz) {
   const g = groundAt(nx, nz);
-  if (g - groundAt(yaw.position.x, yaw.position.z) > STEP_UP) return true;
+  if (g - groundAt(fx, fz) > STEP_UP) return true;
   const p = new THREE.Vector3(nx, 1.0 + g, nz);
   for (const b of BLOCKERS) if (b.containsPoint(p)) return true;
   return nx < BOUNDS.minX || nx > BOUNDS.maxX || nz < BOUNDS.minZ || nz > BOUNDS.maxZ;
 }
+function collide(nx, nz) { return collideFrom(yaw.position.x, yaw.position.z, nx, nz); }
 
 /* Frame pacing.
 
@@ -17976,7 +18853,8 @@ function tick(now = 0) {
   // owns the camera, and a locked pointer must not be able to fight it.
   if (edgeTurn) lookX += Math.sign(edgeTurn) * edgeTurn * edgeTurn * 2.6 * dt;
   const dLookX = lookX, dLookY = lookY;
-  if (state === 'play') {
+  /* v28.0 (seam 60): in the tag mode the look is dead — a drag and a moved mouse turn nothing; the rig is the mode's */
+  if (state === 'play' && !tag.on) {
     /* v12.2: a narrowed lens turns the same swipe into a far bigger angle on
        screen, so the look is scaled by the zoom ratio — without this, aiming
        down a 30-degree lens is unusable. And the recoil spring rides on top
@@ -18027,7 +18905,11 @@ function tick(now = 0) {
 
   // move
   let strafeInput = 0, playerSpeed = 0;
+  /* v28.0 (seam 60): THE TAG MODE walks the played body and derives the rig from it (its frame runs whatever the state, so
+     its clock stops and its presses are cut the moment play is left); while it is on, the player's own walk never runs */
+  const tagPace = tag.on ? tagFrame() : 0;
   if (state === 'play') {
+    if (tag.on) playerSpeed = tagPace; else {
     let f = 0, s = 0;
     if (keys.KeyW || keys.ArrowUp) f += 1;
     if (keys.KeyS || keys.ArrowDown) f -= 1;
@@ -18052,6 +18934,7 @@ function tick(now = 0) {
     bob += dt * sp * 8.5;
     const gw = kitPose === 'standing' ? smoothK(poseT) : 0;           // v16.4: a pose keeps its own height
     yaw.position.y = eyeY + gw * groundFollow(dt) + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);   // v7.0: eyeY is 1.62 unless a pose moved it
+    }                                  // (v28.0: the end of the player's own walk, which the tag mode stands in for)
 
     // Distance to the burner, which is still what raises the "something is
     // burning ahead" line. Nothing opens the decision on its own any more:
@@ -18071,7 +18954,7 @@ function tick(now = 0) {
 
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
-    dwellHotspots();                   // v11.0: a torch spot counts when LOOKED at
+    if (!tag.on) dwellHotspots();      // v11.0: a torch spot counts when LOOKED at (v28.0: never in the tag mode, whose lens is not his eye)
     /* v12.5: THE APPROACH PROMPT OBEYS THE COMMENT ABOVE IT. "only when it is
        actually on screen" has been the stated rule since v2.1 and the code
        never tested it — the label showed on DISTANCE alone, so it named the
@@ -18087,11 +18970,12 @@ function tick(now = 0) {
        encik before the third answer, the ground before the pressure). One
        call, shared with `reach` below, which used to compute it and throw
        it away whenever the player was out of arm's reach. */
-    const onScreen = stage.pile.inView();
+    /* (v28.0, seam 60: in the tag mode the screen's buttons are the acts: no pile, no hotspot, no badge, no prompt) */
+    const onScreen = !tag.on && stage.pile.inView();
     const reach = stage.pile.dist() < stage.pile.radius && onScreen;
     // v7.0: and the nearest hotspot, when the pile is not in reach — the
     // badge names it; chapters 1–5 declare none, so `spot` is always null there
-    const spot = reach ? null : nearestHotspot();
+    const spot = (reach || tag.on) ? null : nearestHotspot();
     setInteractBadge(reach ? null : spot);
     if (reach || spot) {
       ui.interact.classList.remove('hide');
@@ -18130,7 +19014,8 @@ function tick(now = 0) {
        it is at"): while a chapter's glow is up (kit.edge, seam 56) the low-sanity red stands down at ANY sanity, its
        own .4 s fade taking it off as the gold comes on and back once the gold has gone; no glow asked (every chapter
        but episode 4 chapter 4, and that one outside its gold) is exactly the frame it always was */
-    const goldUp = edgeG.to > 0 || edgeG.k > 0.002;
+    /* (v28.0, seam 60: and in the tag mode, whose fight sours its own picture: the red edge is held off, plan §5.8) */
+    const goldUp = edgeG.to > 0 || edgeG.k > 0.002 || tag.on;
     const dread = goldUp ? 0 : THREE.MathUtils.clamp((60 - stats.sanity) / 60, 0, 1);
     ui.panic.style.opacity = dread.toFixed(3);
     ui.panic.classList.toggle('critical', !goldUp && stats.sanity > 0 && stats.sanity < 30);
@@ -18222,8 +19107,9 @@ function tick(now = 0) {
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
     weaponPropSync();                      // v12.0: or the weapon, over both
-    if (state !== 'cine') { prayFrame(); handsFrame(); hpFrame(); }   // v16.5: the praying hands; v18.0: and the hands taken; v23.0: and a pose (a scene owns the hands itself)
+    if (state !== 'cine' && !tag.on) { prayFrame(); handsFrame(); hpFrame(); }   // v16.5: the praying hands; v18.0: and the hands taken; v23.0: and a pose (a scene owns the hands itself; v28.0: the tag mode draws none, and their sway is a first-person roll)
   }
+  tagCamZero(false);                       // v28.0 (seam 60): no boom under a film begun this frame, nor once the mode is left
   /* v15: COVERED FRAMES. While an OPAQUE layer covers the whole canvas — the
      title, the chapter card once it is forced solid, a film or a scene held
      on black, the episode card — nothing drawn under it can reach the
@@ -18254,7 +19140,7 @@ function tick(now = 0) {
   framesDrawn++;                           // v22.0: kit.smear lays only the frame drawn just before over this one
   if (visGo) {
     const ledUpV = !!(led.root && led.root.visible);
-    const drawHands = (handsReady || ledUpV) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUpV);
+    const drawHands = !tag.on && (handsReady || ledUpV) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUpV);   // (v28.0: never in the tag mode)
     const d = vis.decl, sight = visionActive();
     try {
       /* (v27.0, seam 57: with his sight shut the pass draws the world as it is, nothing turned and no spirit, and only the
@@ -18283,11 +19169,14 @@ function tick(now = 0) {
   // nothing visible in it clears a depth buffer and draws nothing
   /* (v24.5, L4-5: the ledger's book is drawn even when the hands never loaded — open, tappable and invisible otherwise) */
   const ledUp = !!(led.root && led.root.visible);
-  if (state !== 'title' && (handsReady || ledUp) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUp)) {   // v24.0: and the ledger's book (S43)
+  /* (v28.0, seam 60: and never while the tag mode is on — his first-person arms over a third-person picture — the test the
+     pass already makes, so `handsRoot.visible`, another owner's switch, is never written for it) */
+  if (state !== 'title' && !tag.on && (handsReady || ledUp) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUp)) {   // v24.0: and the ledger's book (S43)
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);
     renderer.autoClear = true;
+    vmPassN++;                             // v28.0: the hands' passes drawn, for the fixture
   } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
   }
   if (OPT.lightMem) lightMemTick();      // v15: a compile on screen is remembered for the next curtain
@@ -18767,6 +19656,26 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                     rounds: weaponRounds, busy: weaponBusy, fire: ($('fireBtn')?.textContent || '').trim() }),
                  weaponDeclare: (d) => { weaponTeardown(); if (d) weaponSetup(d); return !!weaponDecl; },
                  kitBar: () => kitBarK,              // v27.0 (seam 52): the objective's bar, for the fixture
+                 /* v28.0 (seams 60, 61, 65): the tag mode, a chapter's own button and the retry card, for the fixture and the
+                    probes: what each holds, where the lens is in the world, the hands' passes drawn, and what a save writes */
+                 tag: () => {
+                   camera.updateWorldMatrix(true, false);
+                   const lens = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld);
+                   return { ...tagStateRead(), decl: !!tag.decl, wrote: tag.wrote, cam: camera.position.toArray(), lens: lens.toArray(),
+                            fov: camera.fov, boomK: +tag.boomK.toFixed(4), boom: tag.cfg ? tagBoomNow() : null, heading: tag.cfg ? tag.cfg.heading : null,
+                            queue: tag.queue.length, down: tag.down.size, dead: tag.dead.size, stale: tag.stale.size,
+                            acted: tag.acted, dropped: tag.dropped, refused: tag.refused, log: tag.log.slice(-24),
+                            acts: JSON.parse(JSON.stringify(tag.acts)), marks: tag.drawn.map(m => ({ ...m })), save0: !!tag.save0,
+                            classOn: document.body.classList.contains('tagOn') };
+                 },
+                 tagBlocked: (x, z) => collideFrom(x, z, x, z),
+                 tagSave0: () => (tag.save0 ? JSON.parse(JSON.stringify(tag.save0)) : null),
+                 vmPasses: () => vmPassN,
+                 checkpointData: (extra) => checkpointData(extra),
+                 buttons: () => [...cbtn.values()].map(b => ({ id: b.id, made: !!b.el, presses: b.presses, gone: b.gone,
+                                                            shown: !!b.el && getComputedStyle(b.el).display !== 'none', top: b.el ? b.el.style.top : null })),
+                 retryState: () => ({ open: rty.open, presses: rty.presses, state }),
+                 retryPress,
                  /* v27.0: a probe slows the game's clock (the THREE.Timer every frame reads) to photograph what lasts less than
                     one of a software renderer's frames (the water's drops: half a second); 1 gives it back. Nothing in play
                     calls it */

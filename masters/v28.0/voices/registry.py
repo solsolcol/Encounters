@@ -30,9 +30,10 @@ WORDS_AS_SAID = {}     # key: the words a picked take says where the transcriber
 
 def dur(f):
     return float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f], check=True, capture_output=True, text=True).stdout.strip())
+SPELL = {'quarreling': 'quarrelling', 'quarreled': 'quarrelled', 'mister': 'mr'}   # the transcriber's spellings, not other words
 def norm(s):
     s = re.sub(r'\[[^\]]*\]', ' ', s).lower().replace("'", '').replace('’', '').replace('-', ' ')
-    return [w for w in re.sub(r'[^a-z0-9 ]+', ' ', s).split() if w]
+    return [SPELL.get(w, w) for w in re.sub(r'[^a-z0-9 ]+', ' ', s).split() if w]
 def files(k): return os.path.join(ROOT, 'assets', 'audio', k + '.mp3'), os.path.join(ROOT, 'assets', 'audio-opus', k + '.ogg')
 
 # chapter 4's registry rows (for the words of the two lines copied from it)

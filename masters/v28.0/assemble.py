@@ -61,6 +61,8 @@ COPY_FROM = {
 
 # (old, new): each `old` must occur exactly once in the assembled text
 EDITS = [
+    # (the world's: b_xpeople.js copies chapter 4's people) the bodies this chapter made are keyed p5: its sheets' rules are theirs
+    ("const NOMIP = /^p4/;", "const NOMIP = /^p5/;"),
 ]
 
 AT = ['open', 'walk', 'devotee', 'hunt', 'prepare', 'fight', 'bagtied', 'table', 'endA', 'endB', 'endC', 'endD', 'close', 'card']

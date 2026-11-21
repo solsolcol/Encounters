@@ -124,14 +124,14 @@
        words exactly, and the sentence the episode's own plan closes episode 4 on. No term is added (v11.10). */
     core: 'Cultivation, control, experience and discernment — that is the real path, and there is no shortcut through any of it.',
 
-    /* TODO-WORLD: units metres, y up. The skeleton's ground is one bare floor, 12 m by 16 m: he begins at its near end
-       looking down it (a turn of 0 looks toward -z), and the four phases' stand-ins lie along it toward the far end,
-       where the decision's anchor is. Every number here is replaced when the plan's 8 is built (the lift landing and
-       the walkway, his gate and court, the living and dining room; then the receiving room of case three). */
-    spawn:     { x: 0, y: 1.62, z: 6.5, rot: 0 },
-    shrine:    { x: 0, z: -6.0 },                // the engine's anchor (ghost: null): the decision's place, the chapter's pile
-    ghostHome: { x: 0, z: -6.0 },
-    bounds:    { minX: -6, maxX: 6, minZ: -8, maxZ: 8 },
+    /* THE WORLD (masters/v28.0/parts/b_world.js; docs/V28.0-WORLD.md): units metres, y up, the origin at the middle of
+       the lift's doors on the walkway's floor. He begins a step outside the lift, looking down the walkway (a turn of 0
+       looks toward -z); the decision's anchor is the low table in case three's room, a pocket world 240 m along +z. The
+       bounds hold both (what he walks is held by walls: stage.keepIn names it). */
+    spawn:     { x: 0, y: 1.62, z: 0.25, rot: 0 },
+    shrine:    { x: 0, z: 240.0 },               // the engine's anchor (ghost: null): the collector's table, the chapter's pile
+    ghostHome: { x: 0, z: 240.0 },
+    bounds:    { minX: -13.0, maxX: 2.5, minZ: -16.5, maxZ: 243.0 },
 
     ghost: null,
     fireLight: null,
@@ -150,14 +150,21 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail',
+      'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp',
+      'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair',
+      'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
+      'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
+      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
       /* <<< this chapter's own keys <<< */
+      /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
+      'w4angsana', 'w4foxpalm',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
     ],
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
-    reuseInEpisode: {},
+    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool" },
     placeholders: {},
     items: [],
 

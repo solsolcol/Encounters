@@ -1,0 +1,100 @@
+# v28.0 · episode 4 chapter 5 · THE VOICES (M10): the record
+
+Every spoken line of the chapter but the fight's (its 50 rows are FIGHT-DRAFT: the fight is being redesigned after R14,
+so they are voiced when its specification is written). The words are masters/v28.0/script/lines.json's, the one copy;
+Grandmaster Pho's are docs/V28.0-PHO-LINES.md's, voiced as drafted (Chad, 21 Nov 2026, R14: "Just do it").
+
+Made through ElevenLabs' own API with Chad's key (it lives only at /root/.config/elevenlabs/key: never in this public
+repository, printed, or on a command line), eleven_v3, 128 kbps 44.1 kHz. Every call's characters are in spend.log.
+
+## How to make it again (from the repo root)
+
+    python3 -I masters/v28.0/voices/prompts.py           # lines.json + one tag a line -> prompts.json, copies.json
+    python3 -I masters/v28.0/voices/api.py <key> <a|b|c> ...      # a take (a failed one re-run unchanged, v24.3)
+    python3 -I masters/v28.0/voices/pick.py              # every take transcribed here (faster-whisper small.en) and measured; picks.json
+    python3 -I masters/v28.0/voices/chain.py             # the picks levelled and encoded -> assets/audio, assets/audio-opus; CHAIN.txt
+    python3 -I masters/v28.0/voices/registry.py          # words heard against the script; the copies; secs into lines.json; registry.json
+    python3 -I masters/v28.0/assemble.py                 # the measured lengths into the chapter's SECS
+    python3 -I masters/v28.0/voices/install.py           # ONLY when the engine is free: main.js and voicelines.js rows
+
+## 1 · The voices
+
+| speaker | registry | voice | how |
+|---|---|---|---|
+| Master Zavier (he) | `jamesAdult` | Brian, `bP8FJDHmWVEgXJDitdQd` | his since episode 3; his own bus (peak -6.85 / -6.6) |
+| Grandmaster Pho | `pho` | Songkran, `xYmBpJREC3WfqEFpbPvO` | chapters 3 and 4; three takes, the unhurried read |
+| Ton | `ton` | Kirin, `uI1epevl1X6hqrxEciKt` | chapter 3's (a declared reuse: the same man) |
+| Jun | `jun5` | **Sam**, `c86brOBXdSSYxT5FqIUS` | NEW: the measured pick of six (below) |
+| Mr Koh | `koh5` | **Mr David**, `76X7rrvQajZEHM3u9zcd` | NEW: the measured pick of three |
+| the collector | `collector5` | **Shawn Ng**, `eWKcOFrcmRNtJMcUZYOm` | NEW: the measured pick of three |
+
+None of the three new voices is heard anywhere else in the game (checked against every speaker in src/voicelines.js).
+
+### 1.1 · The auditions (audition/: audition.json the candidates and lines, audition.py the measure, measures.json)
+
+Each candidate said two of the part's own lines once, with the tag the line is voiced with. A session has no ears: the
+measure SCREENS and Chad's ear DECIDES (v10.6). The measure: every word heard (all 27 takes: every word); words a second
+over the voice; median pitch by YIN; the two lines' pitch apart (one person across takes, or two); the recording's
+FLOOR (its quietest 100 ms against its speaking level: hiss or a room under the voice shows here, and a clean take is
+50 dB and more under); its end (pick.py's own test: every take clean).
+
+**Jun** (a Singaporean Chinese man of about 27, stocky, friendly, a little joking). The first three all came back with a
+floor only 26 to 37 dB under the voice: a hiss under every word, where every other speaker's takes are 54 to 78 dB under.
+None was clean, so three more were screened first on the library's own previews (their floors 53, 54 and 69 dB under)
+and auditioned the same way.
+
+| candidate | floor (two lines) | pitch | apart | pace (w/s) | |
+|---|---|---|---|---|---|
+| James - Playful (`aSXZu6bgEOS8MXVRzjPi`) | -35 / -35 dB | 103 / 163 Hz | 8.0 st | 2.36 / 1.45 | refused: hiss; two people across two lines |
+| Jake (`BHyvQU4czkhWdOZH4Rdq`) | -26 / -30 | 113 / 113 | 0.0 | 2.86 / 1.28 | refused: the noisiest |
+| Darryl Lim (`O8ykjWKd0RjX6e5EyDuE`) | -35 / -37 | 216 / 184 | 2.8 | 2.91 / 1.94 | refused: hiss; high for a stocky man |
+| **Sam** (`c86brOBXdSSYxT5FqIUS`) | **-55 / -66** | 140 / 126 | 1.9 | 2.43 / 1.66 | **PICKED**: clean, steady, the game's pace, lively on the joke |
+| Jack (`yJ83gnYhwi5mhFPAai2P`) | -29 / -34 | 116 / 115 | 0.1 | 2.23 / 1.18 | refused: hiss; flat (spread 1.1 st) |
+| Cedric Xu (`43txzXEL1HzTzsHDGXpl`) | -54 / -67 | 100 / 138 | 5.6 | 2.39 / 1.26 | clean, but drifts 5.6 st between lines |
+
+**Mr Koh** (about 56, heavy-set, tired, short-tempered from three weeks without sleep, frightened).
+
+| candidate | floor | pitch | apart | pace | |
+|---|---|---|---|---|---|
+| Lazarus Liew (`yEgon8WYkQ5wZh49byZr`) | -76 / -75 | 250 / 155 | 8.2 st | 3.07 / 2.33 | clean, but his anxious line went up to 250 Hz: two people |
+| Louis (`rOVKXrU0YcQMzmTNwaDq`) | -34 / -36 | 127 / 114 | 1.8 | 2.38 / 2.34 | refused: hiss |
+| **Mr David** (`76X7rrvQajZEHM3u9zcd`) | **-78 / -68** | 161 / 134 | 3.2 | 3.02 / 2.95 | **PICKED**: clean, steadier than Lazarus, a plain man's read |
+
+**The collector** (about 35, lean, tired; curious, not a fool; a small laugh at himself).
+
+| candidate | floor | pitch | apart | pace | |
+|---|---|---|---|---|---|
+| Mun (`owsLoyJNU4K7ctU6NF7F`) | -67 / -70 | 115 / 180 | 7.7 st | 2.32 / 3.54 | clean, but two people, and the short line rushed |
+| **Shawn Ng** (`eWKcOFrcmRNtJMcUZYOm`) | **-74 / -73** | 143 / 150 | **0.8** | 2.78 / 2.76 | **PICKED**: the cleanest and the steadiest |
+| Ivan (`HDVDearvsECwhyI3Y21m`) | -36 / -33 | 135 / 162 | 3.3 | 2.32 / 3.15 | refused: hiss |
+
+Said plainly: the three picks sit near one another in pitch (Sam 126-140 Hz, Mr David 134-161, Shawn 143-150): they are
+three different voices, but not three registers. Mr Koh and Jun are heard in the same scene (at the door). If Chad's ear
+wants Mr Koh lower and older, the library has no older Singaporean man (searched: "uncle", age "old", Hokkien): it would
+be a designed voice, which the connector refused in chapter 4.
+
+**THE REELS FOR CHAD'S EAR** (every take levelled by RMS to -16 dBFS under the -1.5 dBFS limiter, the cast's own level,
+so none wins by being louder; each candidate's two lines 0.6 s apart, 1.5 s between candidates; audition/reel.py):
+- `audition/reel-jun.mp3` (70 s): James, Jake, Darryl Lim, **Sam**, Jack, Cedric Xu
+- `audition/reel-koh.mp3` (37 s): Lazarus Liew, Louis, **Mr David**
+- `audition/reel-collector.mp3` (53 s): Mun, **Shawn Ng**, Ivan
+
+The build goes on with the measured picks until he answers. The picked voices' audition takes ARE the take `a` of
+those six lines (the same prompt, the same voice: copied into raw/, nothing said twice).
+
+## 2 · The lines
+
+96 lines said, 3 copied (copies.json), of the 99 that are not the fight's:
+- `ph5v1` and `ph5v2` are chapter 4's `ph4b9` and `ph4b8` (lines.json `same`: Chad's own words, R128 and R129 of chapter
+  4), copied as files of this chapter's own, byte for byte: no chapter cues another's sound by name (v7.1).
+- `ph5t5` ("SMELL." at the table) is `ph5w6` (the same word on the walkway), byte for byte.
+
+Tags: one a line, naming an emotion (prompts.py's TAG). The script's capitals are its own ("SMELL.": the word on the
+screen); none added, no ellipsis added. No line says "LP" or Grandmaster Pho's name (so none needs "Puu"). Takes: three
+for Grandmaster Pho, two for everyone else (as chapter 4). 222 takes made: NONE failed.
+
+The pick (pick.py, chapter 4's rule unchanged): a CLEAN END first, then NO ODD HOLE, then NOT RUSHED, then the tighter
+read (the unhurried one for Grandmaster Pho); every pick transcribed here, and its words held against the script by
+registry.py (refused if they differ). The chain (chain.py, chapter 4's): his lines high-passed and peak-matched for his
+bus; the cast by RMS to -16 dBFS; silent tails and leads trimmed; the last 0.12 s faded; mp3 128 kbps 44.1 kHz and
+Opus 64 kbps 48 kHz, each from its own source, metadata stripped. Every line's row: CHAIN.txt.

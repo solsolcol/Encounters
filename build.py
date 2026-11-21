@@ -805,6 +805,53 @@ ASSETS = {
     # e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its
     # own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)
     'w5nagastaff':  ('assets/w5nagastaff.glb', True, False),     # Grandmaster Pho's Naga stick, light brown, 1.40 m
+    # e4c5: MR KOH and JUN (M5a), made here end to end: the near body with their takes, `m` the mid body, `h` every
+    # triangle for within 2.2 m (v26.5). masters/v28.0/people/RECORD.md, people.sh
+    'p5koh':        ('assets/p5koh.glb', True, False),     # Mr Koh, the devotee, 1.68 m: a heavy man in a polo tee
+    'p5kohm':       ('assets/p5kohm.glb', True, False),
+    'p5kohh':       ('assets/p5kohh.glb', True, False),
+    'p5jun':        ('assets/p5jun.glb', True, False),     # Jun, the second follower, 1.72 m
+    'p5junm':       ('assets/p5junm.glb', True, False),
+    'p5junh':       ('assets/p5junh.glb', True, False),
+    # e4c5: THE HOME'S AND THE ROOM'S THINGS (M5b), each made once: a checked picture on white, Meshy at its highest and
+    # its remesh, prepared in metres on its base's middle (masters/v28.0/props/RECORD.md: every id, size and fault;
+    # the mends taken at no credits are the world's, masters/v28.0/parts/b_world.js)
+    'w5rail':       ('assets/w5rail.glb', True, False),     # the walkway's balustrade, a 2 m section
+    'w5walklight':  ('assets/w5walklight.glb', True, False),     # the walkway's ceiling light
+    'w5grating':    ('assets/w5grating.glb', True, False),     # the drain's grating at the walkway's edge
+    'w5liftpanel':  ('assets/w5liftpanel.glb', True, False),     # the lift car's panel of buttons
+    'w5gate':       ('assets/w5gate.glb', True, False),     # his gate
+    'w5gatepost':   ('assets/w5gatepost.glb', True, False),     # its posts
+    'w5planter':    ('assets/w5planter.glb', True, False),     # the court's left planter
+    'w5planter2':   ('assets/w5planter2.glb', True, False),     # and its right
+    'w5walllamp':   ('assets/w5walllamp.glb', True, False),     # the court's wall lamps
+    'w5slippers':   ('assets/w5slippers.glb', True, False),     # slippers by his door
+    'w5frontdoor':  ('assets/w5frontdoor.glb', True, False),     # his front door
+    'w5shoecab':    ('assets/w5shoecab.glb', True, False),     # the shoe cabinet inside it
+    'w5curtain':    ('assets/w5curtain.glb', True, False),     # the curtains
+    'w5sofa':       ('assets/w5sofa.glb', True, False),     # the sofa
+    'w5lowtable':   ('assets/w5lowtable.glb', True, False),     # the low table
+    'w5tvconsole':  ('assets/w5tvconsole.glb', True, False),     # the television's console
+    'w5oldchair':   ('assets/w5oldchair.glb', True, False),     # the old armchair
+    'w5floorlamp':  ('assets/w5floorlamp.glb', True, False),     # the floor lamp
+    'w5tablelamp':  ('assets/w5tablelamp.glb', True, False),     # the table lamps
+    'w5wallclock':  ('assets/w5wallclock.glb', True, False),     # the wall clock
+    'w5dintable':   ('assets/w5dintable.glb', True, False),     # the dining table
+    'w5dinchair':   ('assets/w5dinchair.glb', True, False),     # its chairs
+    'w5pendant':    ('assets/w5pendant.glb', True, False),     # the pendant over it
+    'w5sideboard':  ('assets/w5sideboard.glb', True, False),     # the sideboard
+    'w5frame':      ('assets/w5frame.glb', True, False),     # the picture frames
+    'w5bagopen':    ('assets/w5bagopen.glb', True, False),     # the black bag, open
+    'w5bagtied':    ('assets/w5bagtied.glb', True, False),     # and tied
+    'w5threadreel': ('assets/w5threadreel.glb', True, False),     # the reel of white thread
+    'w5staffwrap':  ('assets/w5staffwrap.glb', True, False),     # the Naga stick wrapped
+    'w5staffcloth': ('assets/w5staffcloth.glb', True, False),     # its cloth
+    'w5duffel':     ('assets/w5duffel.glb', True, False),     # Jun's duffel bag
+    'w5clothtable': ('assets/w5clothtable.glb', True, False),     # case three's low table under its white cloth
+    'w5padcase':    ('assets/w5padcase.glb', True, False),     # the collector's padded case
+    'w5cushion':    ('assets/w5cushion.glb', True, False),     # the floor cushions
+    'w5altarshelf': ('assets/w5altarshelf.glb', True, False),     # the altar shelf, empty
+    'w5ceilfan':    ('assets/w5ceilfan.glb', True, False),     # the ceiling fan
     # <<< e4c5 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -967,7 +1014,12 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
-           'p5zavier', 'p5zavierh', 'w5nagastaff',
+           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
+           'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
+           'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable',
+           'w5tvconsole', 'w5oldchair', 'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+           'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap',
+           'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

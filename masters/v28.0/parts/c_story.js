@@ -42,7 +42,7 @@
     /* A PHASE BOOKED: the phase string says it from now, with nothing found in it yet; the order that was up is done
        (COMPLETE, for what he did), and the new phase's order waits for whatever hands off to it (v21.21) */
     function book(p) {
-      phase = p; play.found = new Set();
+      phase = p; play.found = new Set(); worldPhase(p);           // (the world's hook: b_xpeople.js)
       if (kit) { kit.setPhase(p + ':'); kit.objective(null); kit.waypoint(null); }
     }
 
@@ -240,6 +240,7 @@
       /* (a jump from one phase to another drops what the last one had queued: its lines, its timers, its busy hand-off:
          the v21.25 law, a phase jump leaves the line queue full) */
       phase = R.p; play.run++; play.busy = false; play.found = new Set(R.found); decOpen = false;
+      worldPhase(R.p);                                         // (the world's hook: a Continue lands at the phase's start)
       lineQ.length = 0; speakReset(); dropTodo();
       if (kit && kit.captions) kit.captions(null);
       if (R.p === 'walk') walkBegin();

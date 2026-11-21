@@ -72,6 +72,12 @@
        V, the wave out and home, the pass while it is open and the world's own drawing once it is home, a spirit drawn
        only through it (`ctx.spirit`), a held radius, and kitReset shutting it (fixturetest K.visionSeam) */
     vision: {},
+    /* v28.0: THE TAG MODE (the sixtieth seam), declared with the plan's own camera (behind and above the played one:
+       docs/V28.0-E4C5-PLAN.md §5.6) and an upright screen's own numbers (so the proof sees the screen's shape choose), a box
+       for the lens inside the room; the fixture's fight below is plain shapes (the fixture is not part of the game) and
+       exercises seams 60 to 65 (fixturetest K.tag*) */
+    tag: { heading: 0, boom: { back: 4.0, up: 3.1, pitch: 26 }, portrait: { back: 4.4, up: 3.4, pitch: 26, fov: 74 },
+           camBox: { minX: -10.4, maxX: 10.4, minZ: -10.4, maxZ: 10.2 }, lock: 0.6, glide: 0.4 },
     words: { presence: 'Something is in the room.' }
   };
 
@@ -221,6 +227,7 @@
     }
 
     function updateNotes(dt, t) {
+      fightTick();                       // v28.0: the fixture's fight (seams 60 to 65), only while it is open
       const m = new THREE.Matrix4();
       for (let i = 0; i < 8; i++) {
         m.setPosition(SHRINE.x + Math.cos(t * noteStorm + i) * 2,
@@ -262,6 +269,7 @@
     function reset() {
       drum.position.copy(DRUM_REST.pos); drum.rotation.z = DRUM_REST.rotZ;
       ash.visible = true; heroNote.visible = true; noteStorm = 1;
+      fightReset();                      // v28.0: and no fight left open (kitReset has already left the mode)
     }
 
     /* v16.4 · THE GROUND (the twenty-first seam): a platform 0.9 m high on the
@@ -462,7 +470,158 @@
                kinds: kitStand.children.map(c => c.geometry === kitGeos[0] ? 'cone' : c.geometry === kitGeos[1] ? 'post' : '?').sort().join(',') };
     }
 
+    /* ---- v28.0 · THE FIXTURE'S FIGHT (seams 60 to 65) -------------------------------------------------------------------
+       Not a fight of the game: two plain shapes (a column and a cone, a small block on each one's front to show where it
+       faces) and three plain targets on the west half of the room, hidden until the harness opens it. Every seam the tag mode
+       adds is driven through it: the brief's picture (`tag`), the mode itself (the lens behind and above, the walk by the
+       screen, the switch and its lock, the acts and their rings, the marks and a pick, the other one's mark, the count) and
+       a loss that begins again (kit.retry). A pillar stands where a boom would pass through it, so the lens is seen kept out
+       of it. What each act does here is the fixture's own: the engine knows none of it. Two acts ('zap', 'sniff') are never
+       written by the fixture's frame, so the harness can set their rings and locks itself */
+    const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 3.2, 0.8), matWall);
+    pillar.position.set(-3.2, 1.6, 8.6); world.add(pillar);
+    const fMatA = new THREE.MeshStandardMaterial({ color: 0xd8b04a, roughness: 0.7 });
+    const fMatB = new THREE.MeshStandardMaterial({ color: 0x8a6ad8, roughness: 0.7 });
+    const fMatT = new THREE.MeshBasicMaterial({ color: 0xff6a5a });
+    const fMatTired = new THREE.MeshBasicMaterial({ color: 0x8a9098 });
+    const mkBody = (mat, geo) => {
+      const g = new THREE.Group(), m = new THREE.Mesh(geo, mat); m.position.y = 0.85; g.add(m);
+      const nose = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.3), mat); nose.position.set(0, 1.4, 0.3); g.add(nose);
+      g.visible = false; world.add(g); return g;
+    };
+    const bodyA = mkBody(fMatA, new THREE.CylinderGeometry(0.3, 0.3, 1.7, 12));
+    const bodyB = mkBody(fMatB, new THREE.ConeGeometry(0.34, 1.7, 12));
+    const F_HOME = { a: [-6, 5], b: [-4.6, 5.6] };
+    const F_START = [{ id: 't1', x: -6.5, z: -1 }, { id: 't2', x: -4.0, z: -2.5 }, { id: 't3', x: -5.2, z: -4, hides: true }];
+    const fTargets = F_START.map(s => {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 8), fMatT); m.visible = false; world.add(m);
+      return { ...s, m, tired: false, taken: false, hidden: !!s.hides };
+    });
+    const F = { on: false, left: 3, picked: null, ringAt: -1e9, gripTo: 0, lastT: 0, log: [], restarts: 0, losses: 0, lastRetry: null, manual: false };
+    function fReset() {
+      F.left = 3; F.picked = null; F.ringAt = -1e9; F.gripTo = 0; F.lastT = 0; F.log.length = 0;
+      for (const T of fTargets) {
+        T.tired = false; T.taken = false; T.hidden = !!T.hides;
+        T.m.position.set(T.x, 1.0, T.z); T.m.material = fMatT; T.m.visible = F.on && !T.hidden;
+      }
+    }
+    function fNearest(from, pred) {
+      let best = null, bd = Infinity;
+      for (const T of fTargets) {
+        if (!pred(T)) continue;
+        const d = Math.hypot(T.m.position.x - from.position.x, T.m.position.z - from.position.z);
+        if (d < bd) { bd = d; best = T; }
+      }
+      return best ? { T: best, d: bd } : null;
+    }
+    function fTire(T) { T.tired = true; T.m.material = fMatTired; }
+    function fMarks() {
+      return fTargets.filter(T => !T.taken && !T.hidden).map(T => ({ id: T.id, at: [T.m.position.x, T.m.position.y, T.m.position.z],
+        picked: T.id === F.picked, dim: T.tired, color: T.tired ? '#9aa0a8' : '#ff6a5a' }));
+    }
+    function fOnAct(r) {
+      F.log.push({ ...r });
+      if (r.act === 'target') { F.picked = r.id; return; }
+      if (r.phase !== 'down') return;
+      const t = kit.tagState().t;
+      if (r.act === 'zap') {
+        const T = fTargets.find(x => x.id === F.picked && !x.taken && !x.tired && !x.hidden)
+          || (fNearest(bodyB, x => !x.taken && !x.tired && !x.hidden) || {}).T;
+        if (T) fTire(T);
+      } else if (r.act === 'ring') { for (const T of fTargets) if (!T.taken && !T.hidden) fTire(T); F.ringAt = t; }
+      else if (r.act === 'take') {
+        const n = fNearest(bodyA, x => !x.taken && x.tired);
+        if (n && n.d <= 2.5) { n.T.taken = true; n.T.m.visible = false; F.left = Math.max(0, F.left - 1); if (F.picked === n.T.id) F.picked = null; }
+      } else if (r.act === 'grip') F.gripTo = t + 5;
+      else if (r.act === 'sniff') { for (const T of fTargets) if (T.hidden) { T.hidden = false; T.m.visible = true; } }
+    }
+    /* the fixture's own frame for its fight: the targets drift toward the violet one (and stop where it holds them), and the
+       acts it owns say their state (a ring's long wait, a take shown only within reach, a hold lit while it lasts) */
+    function fightTick() {
+      if (!F.on || !kit || getState() !== 'play') return;
+      const st = kit.tagState(); if (!st.on) return;
+      const dtF = Math.max(0, Math.min(0.1, st.t - F.lastT)); F.lastT = st.t;
+      const gripping = st.t < F.gripTo;
+      for (const T of fTargets) {
+        if (T.taken || T.tired) continue;
+        T.m.visible = !T.hidden;
+        const dx = bodyB.position.x - T.m.position.x, dz = bodyB.position.z - T.m.position.z, d = Math.hypot(dx, dz);
+        if ((gripping && d < 2.5) || d < 1.2) continue;
+        const step = Math.min(d - 1.2, 0.25 * dtF);
+        T.m.position.x += dx / d * step; T.m.position.z += dz / d * step;
+      }
+      if (F.manual) return;
+      const live = fTargets.filter(T => !T.taken && !T.hidden);
+      kit.tagAct('ring', { wait: Math.max(0, 1 - (st.t - F.ringAt) / 20), blocked: live.length && live.every(T => T.tired) ? 'They are all down.' : null });
+      const n = fNearest(bodyA, x => !x.taken && x.tired);
+      kit.tagAct('take', { hidden: !(n && n.d <= 2.5) });
+      kit.tagAct('grip', { on: gripping, wait: gripping ? (F.gripTo - st.t) / 5 : 0 });
+      kit.tagCount(F.left, 3);
+      kit.tagBody('b', { share: F.left / 3 });
+    }
+    /* the rig as the FIXTURE reads it (every matrix, the lens, the turns), taken the instant before the mode opens and the
+       instant after it is left, so the harness can hold the two side by side, bit for bit */
+    function rigNow() {
+      camera.updateWorldMatrix(true, false);
+      return [...yaw.matrixWorld.elements, ...ctx.pitch.matrixWorld.elements, ...camera.matrixWorld.elements, ...camera.projectionMatrix.elements,
+              camera.fov, camera.position.x, camera.position.y, camera.position.z, yaw.rotation.y, ctx.pitch.rotation.x, camera.rotation.z];
+    }
+    function fightOpen(o = {}) {
+      if (!kit || !kit.tag) return false;
+      F.rig0 = rigNow();
+      bodyA.position.set(F_HOME.a[0], 0, F_HOME.a[1]); bodyA.rotation.y = Math.PI;
+      bodyB.position.set(F_HOME.b[0], 0, F_HOME.b[1]); bodyB.rotation.y = Math.PI;
+      bodyA.visible = bodyB.visible = true;
+      F.on = true; fReset();
+      const ok = kit.tag({
+        bodies: [
+          { id: 'a', obj: bodyA, name: 'GOLD', speed: 1.2, acts: [
+            { id: 'zap', slot: 'main', label: 'ZAP', key: 'Space' },
+            { id: 'ring', slot: 'second', label: 'RING', key: 'KeyQ' },
+            { id: 'take', slot: 'third', label: 'TAKE', key: 'KeyE' }] },
+          { id: 'b', obj: bodyB, name: 'VIOLET', speed: 0.6, acts: [
+            { id: 'grip', slot: 'main', label: 'GRIP', key: 'Space' },
+            { id: 'sniff', slot: 'second', label: 'SNIFF', key: 'KeyN' }] }
+        ],
+        played: o.played || 'a', targets: fMarks, onAct: fOnAct
+      });
+      if (!ok) { F.on = false; bodyA.visible = bodyB.visible = false; for (const T of fTargets) T.m.visible = false; }
+      else kit.tagCount(3, 3);
+      return ok;
+    }
+    function fightEnd(how) {
+      const ok = kit ? kit.tag(null, how) : false;
+      F.rig1 = rigNow();
+      F.on = false; bodyA.visible = bodyB.visible = false;
+      for (const T of fTargets) T.m.visible = false;
+      return ok;
+    }
+    /* the brief, with the mode's own picture under its title (the sixty-fourth seam); START opens the fight */
+    function fightBrief() {
+      if (!kit) return null;
+      return kit.event({ kind: 'guard', label: 'THE ROOM', demo: 'tag',
+                         brief: 'Two of you: switch between them. The gold one takes, the violet one holds. Three targets.' })
+        .then(r => (r && r.ok ? fightOpen() : false));
+    }
+    /* a loss: the card, and the fight begun again where it opened (the bodies, the targets and the count are the fixture's) */
+    function fightLose() {
+      if (!kit || !kit.retry) return false;
+      F.losses++;
+      return kit.retry({ title: 'The room was lost', line: 'Begin the fight again from where it opened.', button: 'BEGIN AGAIN',
+                         more: F.losses >= 3 ? 'AN EASIER WAY' : null,
+                         onPress: r => {
+                           /* what the run holds the moment the card hands back (the engine has put the held run back) */
+                           F.atRetry = { s: kit.stat('sanity'), a: kit.stat('awareness'), w: kit.stat('wisdom'), ward: kit.wardLeft(), phase: kit.getPhase() };
+                           F.restarts++; F.lastRetry = r.button; fReset();
+                           kit.tagPlace('a', F_HOME.a[0], F_HOME.a[1], { ry: Math.PI });
+                           kit.tagPlace('b', F_HOME.b[0], F_HOME.b[1], { ry: Math.PI });
+                           kit.tagCount(3, 3);
+                         } });
+    }
+    function fightReset() { F.on = false; F.losses = 0; F.restarts = 0; F.lastRetry = null; F.manual = false; bodyA.visible = bodyB.visible = false; fReset(); }
+
     function dispose() {
+      fMatT.dispose(); fMatTired.dispose();   // (v28.0: the targets' two looks, one of them on no mesh until a target tires)
       if (kitStand && kitStand.userData.disposeTrees) kitStand.userData.disposeTrees();
       for (const g of kitGeos) g.dispose();
       kitMat.dispose();
@@ -496,7 +655,10 @@
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose,
       hotspots,                                  // v7.0
-      shootables, onShot, shots                  // v12.0: rifle mode
+      shootables, onShot, shots,                 // v12.0: rifle mode
+      /* v28.0: the fixture's fight (seams 60 to 65), for fixturetest */
+      fight: F, fightOpen, fightEnd, fightBrief, fightLose, fightBodies: { a: bodyA, b: bodyB }, fightTargets: fTargets,
+      fightHome: F_HOME, pillar
     });
   }
 

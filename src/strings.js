@@ -274,6 +274,10 @@ Object.assign(window.__TEXT__, {
   'hud.reloadKey':       'R',
   'hud.aim':             'AIM',
   'hud.aimKey':          'Q',
+  // v28.0: the tag mode's switch (said to a screen reader before the other one's name) and the card that begins a fight again
+  'hud.tagSwitch':       'Switch to',
+  'hud.retryLabel':      'Not finished',
+  'hud.retryAgain':      'Begin again',
   'event.tap':           'TAP',
   'event.timed':         'WAIT FOR IT',
   'event.go':            'NOW',
