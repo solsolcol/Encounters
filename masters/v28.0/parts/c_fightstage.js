@@ -72,7 +72,7 @@
        (never across a person: it rises), a short trail of ruby behind it and a ruby pool on the paving under it; a bloom
        where it lands. Four in the air at most (his own, and his teacher's when he is not played) */
     const FS_TRAIL = 6;
-    const fsBalls = [0, 1, 2, 3].map(() => ({ on: false, core: fsSprite(FS_COL.rubyCore, true, 6), glow: fsSprite(FS_COL.ruby, true, 6),
+    const fsBalls = [0, 1, 2, 3].map(() => ({ on: false, core: fsSprite(FS_COL.rubyCore, true, 6), glow: fsSprite(FS_COL.ruby, true, 6), halo: fsSprite(FS_COL.ruby, true, 5),
       trail: Array.from({ length: FS_TRAIL }, () => fsSprite(FS_COL.ruby, true, 5)), pool: fsGround(fsDot, FS_COL.ruby, true, 0.016),
       a: new THREE.Vector3(), b: new THREE.Vector3(), t: 0, T: 0.7, ai: false, id: 0, hist: [] }));
     const fsBlooms = [0, 1, 2, 3].map(() => ({ on: false, s: fsSprite(FS_COL.ruby, true, 6), g: fsGround(fsDot, FS_COL.ruby, true, 0.017), t: 0, col: FS_COL.ruby, k: 1 }));
@@ -96,7 +96,7 @@
     const fsPuffs = Array.from({ length: 4 }, () => { const s = new THREE.Sprite(fsSmokeMat()); s.visible = false; s.renderOrder = 4; FSG.add(s); return { s, t: -1, x: 0, z: 0 }; });
     /* THE GOLDEN SHOCKWAVE: the gold gathering at his shoulders and a ring of gold drawn in round him (its 1.5 s), then the
        wheel going out over the paving; the lamps flaring as it passes them; the screen warmed a fifth of a second */
-    const fsWheel = fsGround(fsWheelTex, FS_COL.gold, true, 0.02);
+    const fsWheel = fsGround(fsWheelTex, FS_COL.gold, true, 0.02), fsWheel2 = fsGround(fsWheelTex, FS_COL.gold, true, 0.019);
     const fsGatherRing = fsGround(fsRingTex, FS_COL.gold, true, 0.021);
     const fsGoldHalo = fsSprite(FS_COL.gold, true, 6);
     /* THE BAG: what is drawn streams to his mouth and down into the open bag at the doorway; a thin line on the paving joins
@@ -157,8 +157,8 @@
         S.pos[i * 3] = p.x; S.pos[i * 3 + 1] = p.y; S.pos[i * 3 + 2] = p.z; S.col[i * 3] = p.c.r; S.col[i * 3 + 1] = p.c.g; S.col[i * 3 + 2] = p.c.b;
         S.siz[i] = p.s0 + (p.s1 - p.s0) * u; S.alp[i] = a; hi = i + 1;
       }
-      S.g.setDrawRange(0, hi);
-      for (const k of ['position', 'aC', 'aS', 'aA']) S.g.attributes[k].needsUpdate = true;
+      S.g.setDrawRange(0, hi); S.pts.visible = hi > 0;
+      if (hi > 0) for (const k of ['position', 'aC', 'aS', 'aA']) S.g.attributes[k].needsUpdate = true;
     }
     function fsPtsClear() { for (const p of fsPts.P) p.on = false; fsPts.g.setDrawRange(0, 0); }
 
@@ -370,19 +370,24 @@
     function fsBallSound(B) { const m = B.a; fsFx(fsDeal('ball'), B.ai ? 0.45 : 0.8, m.x, m.z); fsFx('u5flight', B.ai ? 0.32 : 0.6, m.x, m.z); }
     function fsBloom(x, z, col, k = 1) { const L = fsBlooms.find(b => !b.on) || fsBlooms[0]; L.on = true; L.t = 0; L.col = col; L.k = k;
       L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, 0.9, z); L.g.position.set(x, 0.017, z); }
-    function fsFxFrame(wdt, ft) {
-      const st = FS5.st;
+    function fsFxFrame(wdt0, ft) {
+      const st = FS5.st, wdt = FS5.labHold ? 0 : wdt0;
       /* the fireballs: up out of the mouth, over, and down (a parabola above the line between them; it rises 1.6 m) */
       for (const B of fsBalls) {
-        if (!B.on) { if (B.core.visible) { B.core.visible = B.glow.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
-        if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallSound(B); }   // (let go now, from the stick's head)
+        if (!B.on) { if (B.core.visible) { B.core.visible = B.glow.visible = B.halo.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
+        if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallSound(B);   // (let go now, from the stick's head)
+          fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 6 : 12, { sp: 1.6, up: 0.2, life: 0.45, s0: 0.06, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.4, grav: -2 }); }
         B.t += wdt; const u = c01(B.t / B.T), h = (B.ai ? 1.1 : 1.6) * 4 * u * (1 - u);
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
-        const sz = B.ai ? 0.62 : 1;
-        B.core.visible = B.glow.visible = true; B.core.position.copy(_fsA); B.glow.position.copy(_fsA);
-        B.core.scale.setScalar(0.16 * sz); B.glow.scale.setScalar(0.62 * sz * (0.9 + 0.1 * Math.sin(ft * 40)));
-        B.core.material.opacity = 1; B.glow.material.opacity = 0.9;
-        B.hist.unshift(_fsA.clone()); if (B.hist.length > FS_TRAIL * 2) B.hist.length = FS_TRAIL * 2;
+        const sz = B.ai ? 0.62 : 1, fl = 0.88 + 0.08 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67);
+        B.core.visible = B.glow.visible = B.halo.visible = true; B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
+        B.core.scale.setScalar(0.18 * sz * (0.95 + 0.1 * fl)); B.glow.scale.setScalar(0.62 * sz * fl); B.halo.scale.setScalar(1.25 * sz * (0.9 + 0.1 * fl));
+        B.core.material.opacity = 1; B.glow.material.opacity = 0.9; B.halo.material.opacity = 0.28;
+        /* (its sparks: shed behind it, ruby and its pale heart, falling away) */
+        if (wdt > 0) { const r = FS5.srand || Math.random, n = B.ai ? 1 : 2;
+          for (let k = 0; k < n; k++) fsSpark(_fsA.x + (r() - 0.5) * 0.12, _fsA.y + (r() - 0.5) * 0.12, _fsA.z + (r() - 0.5) * 0.12,
+            { vx: (r() - 0.5) * 0.8, vy: (r() - 0.3) * 0.8, vz: (r() - 0.5) * 0.8, life: 0.32 + 0.25 * r(), s0: (B.ai ? 0.05 : 0.075) * (0.7 + 0.6 * r()), col: r() < 0.35 ? FS_COL.rubyCore : FS_COL.ruby, grav: -2.2, drag: 2.5 }); }
+        if (wdt > 0) { B.hist.unshift(_fsA.clone()); if (B.hist.length > FS_TRAIL * 2) B.hist.length = FS_TRAIL * 2; }
         B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; s.position.copy(q); s.scale.setScalar(0.36 * sz * (1 - j / FS_TRAIL)); s.material.opacity = 0.55 * (1 - j / FS_TRAIL); });
         B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.1 * sz, 1, 1.1 * sz); B.pool.material.opacity = 0.32 * (0.4 + 0.6 * (1 - h / 1.6));
         if (u >= 1) B.on = false;
@@ -405,6 +410,9 @@
         const left = c01((p.bub || 0) / Math.max(0.1, FN5.bubbleSecs || 10)), sc = V ? V.s : 1;
         Bb.me.visible = true; Bb.me.position.set(w.x, 0.92 * sc, w.z); Bb.me.scale.set(0.62 * sc, 1.0 * sc, 0.62 * sc);
         const U = Bb.me.material.uniforms; U.uA.value = 0.35 + 0.65 * left; U.uT.value = ft; U.uFl.value = Bb.fl;
+        /* (violet motes rising off its skin, the fewer the thinner it has worn) */
+        if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * (6 + 10 * left)) { const a = rr() * Math.PI * 2, yy = rr() * 2 - 1, q = Math.sqrt(1 - yy * yy);
+          fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.045, s1: 0.02, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
         void P;
       });
       /* the tired ones' rings, closing */
@@ -429,14 +437,21 @@
       /* THE GOLD: gathering at his shoulders (a ring of gold drawn in round him), then the wheel out over the paving */
       const ph = st.pho, pw = cast.pho ? cast.pho.group.position : null, wind = ph.wind > 0 ? 1 - ph.wind / Math.max(0.1, FN5.windSecs || 1.5) : 0;
       if (wind > 0 && pw) { fsGatherRing.visible = true; fsGatherRing.position.set(pw.x, 0.021, pw.z); const r = 2.6 - 1.9 * wind; fsGatherRing.scale.set(r * 2, 1, r * 2); fsGatherRing.material.opacity = 0.35 + 0.5 * wind;
-        fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.35 + 0.5 * wind; }
+        fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.35 + 0.5 * wind;
+        if (wdt > 0) { const rr = FS5.srand || Math.random, to = { x: fsGoldHalo.position.x, y: fsGoldHalo.position.y, z: fsGoldHalo.position.z, k: 3.2 };
+          for (let k = 0; k < 4; k++) { const a = rr() * Math.PI * 2, R = r + 0.2 + rr() * 0.6;
+            fsSpark(pw.x + Math.cos(a) * R, 0.15 + rr() * 1.7, pw.z + Math.sin(a) * R, { vx: -Math.sin(a) * 0.9, vy: 0, vz: Math.cos(a) * 0.9, life: 0.5 + 0.2 * rr(), s0: 0.06 * (0.7 + 0.6 * rr()), s1: 0.03, col: rr() < 0.25 ? 0xfff0c8 : FS_COL.gold, grav: 0, drag: 0.5, to }); } } }
       else { fsGatherRing.visible = false; fsGoldHalo.visible = false; }
       if (ph.ring) { const w = fsW(ph.ring.x, ph.ring.z), r = Math.max(0.2, ph.ring.r), out = c01(r / Math.max(0.1, FN5.ringMax || 7));
         fsWheel.visible = true; fsWheel.position.set(w.x, 0.02, w.z); fsWheel.scale.set(r * 2, 1, r * 2); fsWheel.rotation.y = -r * 0.25; fsWheel.material.opacity = 0.95 * (1 - out * out);
+        /* (a second wheel just behind it, turning the other way; gold motes lifting off its rim as it goes) */
+        const r2 = Math.max(0.15, r - 0.55); fsWheel2.visible = true; fsWheel2.position.set(w.x, 0.019, w.z); fsWheel2.scale.set(r2 * 2, 1, r2 * 2); fsWheel2.rotation.y = r * 0.4; fsWheel2.material.opacity = 0.5 * (1 - out);
+        if (wdt > 0) { const rr = FS5.srand || Math.random; for (let k = 0; k < 7; k++) { const a = rr() * Math.PI * 2;
+          fsSpark(w.x + Math.cos(a) * r, 0.06, w.z + Math.sin(a) * r, { vx: Math.cos(a) * 0.5, vy: 0.7 + 0.8 * rr(), vz: Math.sin(a) * 0.5, life: 0.55 + 0.35 * rr(), s0: 0.07 * (0.7 + 0.6 * rr()), col: rr() < 0.3 ? 0xfff0c8 : FS_COL.gold, grav: 0.25, drag: 1.2, a: 0.9 * (1 - out) }); } }
         /* the lamps at the house flare as it passes them */
         const dl = Math.abs((COURT5.z - (HOUSE.face - 0.3)) - ph.ring.z) - r;
         if (dl < 0.2 && !FS5.flared) { FS5.flared = true; FS5.flare = 1; fsFx('u5lampflare', 0.4, DOOR_FRONT.x0 - 0.38, HOUSE.face - 0.3); fsFx('u5lampflare', 0.34, DOOR_FRONT.x1 + 0.38, HOUSE.face - 0.3); } }
-      else { fsWheel.visible = false; FS5.flared = false; }
+      else { fsWheel.visible = fsWheel2.visible = false; FS5.flared = false; }
       FS5.flare = Math.max(0, FS5.flare - wdt * 2.2);
       /* the streaks: drawn to his mouth, and down into the bag (gold when the gold gathers it) */
       for (const S of fsStreaks) {
@@ -457,7 +472,9 @@
       fsPress.forEach((s, j) => { const p = press[j]; if (!p || !zz) { s.visible = false; return; }
         const w = fsW(p.x, p.z), dx = w.x - zz.x, dz = w.z - zz.z, d = Math.hypot(dx, dz) || 1, R = (FN5.cageR || 1);
         s.visible = true; s.position.set(zz.x + dx / d * R, 1.0, zz.z + dz / d * R); s.scale.setScalar(0.5 + 0.18 * Math.sin(ft * 23 + j * 2));
-        s.material.opacity = 0.55 + 0.35 * Math.sin(ft * 17 + j); });
+        s.material.opacity = 0.55 + 0.35 * Math.sin(ft * 17 + j);
+        if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * 24) fsSpark(s.position.x, 0.5 + rr() * 1.1, s.position.z, { vx: dx / d * (0.4 + rr() * 0.6), vy: (rr() - 0.4) * 1.2, vz: dz / d * (0.4 + rr() * 0.6), life: 0.22 + 0.15 * rr(), s0: 0.05, col: rr() < 0.3 ? 0xffffff : FS_COL.violet, grav: -1, drag: 3 }); } });
+      fsPtsFrame(wdt);
     }
 
     /* ---------------------------------------------------------------- THE TWO OF THEM: their takes, their faces */
@@ -635,15 +652,20 @@
             fsBallStart(e, up); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7;
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
-            if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1; }
-            else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_COL.ruby, e.result === 'setback' ? 0.7 : 1); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); }
-            else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_COL.ruby, 0.5); fsFx('u5slipthru', 0.8, w.x, w.z); }
-            else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); }
-            else { fsBloom(w.x, w.z, FS_COL.ruby, 0.6); fsFx(fsDeal('land'), 0.6, w.x, w.z); }
+            const y0 = 0.9 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
+            if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
+              fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.085, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.35, grav: -4 }); }
+            else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_COL.ruby, e.result === 'setback' ? 0.7 : 1); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.075, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.3, grav: -4 }); }
+            else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_COL.ruby, 0.5); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_COL.ruby, grav: -4 }); }
+            else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); fsBurst(w.x, 0.5, w.z, 8, { sp: 0.9, up: 0.5, life: 0.7, s0: 0.06, col: FS_COL.sour, grav: 0.3, a: 0.5 }); }
+            else { fsBloom(w.x, w.z, FS_COL.ruby, 0.6); fsFx(fsDeal('land'), 0.6, w.x, w.z); fsBurst(w.x, 0.1, w.z, 10, { sp: 2, up: 0.45, life: 0.5, s0: 0.065, col: FS_COL.ruby, grav: -5 }); }
             break; }
           case 'bind': { const zw = cast.zav ? cast.zav.group.position : null;
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
-            else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null); if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = 0.7; } }
+            else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null);
+              if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = 0.7; fsBloom(w.x, w.z, FS_COL.violet, 0.9);
+                fsBurst(w.x, 0.95, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.065, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 }); } }
             break; }
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5bindpop', 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
@@ -657,12 +679,15 @@
           case 'waveReady': fsFx('u5waveready', 0.8, null); break;
           case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
             fsPhoAct('wave', FN5.windSecs || 1.5); break; }
-          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave'); break;
+          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave');
+            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.085, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 }); }
+            break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
-            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); } else fsFx(fsDeal('drawn'), 0.8, null);
+            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
+            else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.07, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 }); } }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
@@ -672,7 +697,8 @@
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'rise': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5unrise', 0.8, w ? w.x : null, w ? w.z : null); break; }
-          case 'cageBreak': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); fsFx('u5stagger', 0.8, zw ? zw.x : null, zw ? zw.z : null); break; }
+          case 'cageBreak': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); fsFx('u5stagger', 0.8, zw ? zw.x : null, zw ? zw.z : null);
+            if (zw) fsBurst(zw.x, 1.1, zw.z, 26, { sp: 2.4, up: 0, life: 0.7, s0: 0.07, col: FS_COL.violet, col2: 0xffffff, mix: 0.2, grav: -3, drag: 1.5 }); break; }
           case 'cageWhole': fsFx('u5cagewhole', 0.8, null); break;
           case 'switch': fsFx(e.to === 'pho' ? 'u5swpho' : 'u5swzav', 0.8, null); break;
           case 'hold': fsFx('u5plant', 0.8, null); break;
@@ -757,7 +783,7 @@
     }
     function fsFxClear() {
       for (const B of fsBalls) B.on = false; for (const L of fsBlooms) L.on = false; for (const S of fsStreaks) S.on = false;
-      fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false;
+      fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false; fsPtsClear();
       for (const o of FSG.children) o.visible = false;
     }
 
@@ -941,18 +967,43 @@
       for (const P of PRAI5.list) { P.group.rotation.x = 0; P.group.rotation.order = 'XYZ'; P.group.scale.setScalar(1); }
       FS5.live = false; FS5.mode = false; FS5.on = false;
     }
+    /* A PROBE'S LAB (tools/probes/e4c5look.mjs): one of the fight's moments set out by the fight's own effects and HELD, so
+       each is photographed full size from the fight's camera on a phone (the play-through photographs them as they come).
+       The brief is taken down and not put back (the rules stand at their brief: nothing steps); each moment is begun as
+       its event begins it, run on its own frame in thirtieths of a second to the moment asked for, then held (labHold:
+       the effects' clock stands). Only a probe calls it, through stage.snap().story.fight.lab */
+    const FS_LAB = {
+      open() { if (!FS5.st) return false; FS5.lab = true; if (FS5.brief && kit && kit.abortEvent) kit.abortEvent(); return true; },
+      clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
+        st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
+      moment(name, secs = 0.3) {
+        const st = FS5.st; if (!st) return false; this.clear();
+        const L = st.prai[0], w = fsW(L.x, L.z);
+        if (name === 'labBall') fsBallStart({ x: L.x, z: L.z, id: L.id }, 0);
+        else if (name === 'labLand') fsEvents([{ e: 'land', result: 'chased', id: L.id, x: L.x, z: L.z }]);
+        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
+        else if (name === 'labBind') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
+        else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
+        else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
+        else if (name === 'labStreak') fsStreak(L, false);
+        else return false;
+        void w;
+        for (let t = 0; t < secs; t += 1 / 30) fsFxFrame(1 / 30, (st.t || 0) + t);
+        FS5.labHold = true; return true;
+      }
+    };
     /* what a probe and the walk test read (stage.snap().story.fight) */
     function fightSnap() {
       const st = FS5.st, left = { fxOn: FSG.visible, fx: FSG.children.reduce((n, o) => n + (o.visible ? 1 : 0), 0), loops: fsLoops.size, stems: FS5.stemsOn,
                                   praiShown: PRAI5.list.reduce((n, P) => n + (P.group.visible ? 1 : 0), 0) };
-      if (!st) return Object.assign({ on: FS5.on }, left);
+      if (!st) return Object.assign({ on: FS5.on, lab: FS_LAB }, left);
       const H = FIGHT.hud(st);
       return { on: FS5.on, mode: FS5.mode, brief: FS5.brief, stage: st.stage, who: st.who, left: st.left, losses: st.losses, sanity: +st.sanity.toFixed(2),
                t: +st.t.toFixed(2), need: st.cur ? { id: st.cur.id, act: st.cur.act, target: st.cur.target, ready: st.cur.ready, move: st.cur.move } : null,
                hud: { main: H.main, second: H.second, third: H.third, swap: H.swap, together: H.together, objective: H.objective, cage: H.cage },
                pho: { x: +st.pho.x.toFixed(3), z: +st.pho.z.toFixed(3) }, zav: { x: +st.zav.x.toFixed(3), z: +st.zav.z.toFixed(3) },
                prai: st.prai.map(p => ({ id: p.id, kind: p.kind, st: p.st, x: +p.x.toFixed(2), z: +p.z.toFixed(2) })), pick: FS5.pick,
-               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), act: FS5.act ? FS5.act.kind : null, phoTake: cast.pho ? cast.pho.cur : null, ...left };
+               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), act: FS5.act ? FS5.act.kind : null, phoTake: cast.pho ? cast.pho.cur : null, lab: FS_LAB, ...left };
     }
     function fightReset() {
       FS5.run++;
@@ -961,7 +1012,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {} });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
@@ -1023,7 +1074,7 @@
       kit.event({ kind: 'guard', label: W5.fightTitle, demo: 'tag', brief }).then((r) => {
         if (run !== FS5.run || !FS5.st) return;
         FS5.brief = false;
-        if (!r || r.aborted) { if (FS5.st.stage === 'brief' && getState() === 'play') fightBrief(); return; }
+        if (!r || r.aborted) { if (FS5.lab) return; if (FS5.st.stage === 'brief' && getState() === 'play') fightBrief(); return; }
         fightStart5();
       });
     }
