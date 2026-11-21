@@ -8704,5 +8704,44 @@
     "heard": "It had already moved."
    }
   }
+ },
+ "q5c4": {
+  "who": "he",
+  "text": "[reflective] I gave my teacher my cage. For a moment there was nothing round me.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 5.3100000000000005,
+  "takes": {
+   "a": {
+    "len": 5.44,
+    "first": 0.0,
+    "last": 5.34,
+    "e_first": 0.2,
+    "e_last": 5.42,
+    "tail_db": -32.4,
+    "tail_rel": -19.5,
+    "hole": 1.8,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.68,
+    "heard": "I gave my teacher my cage. For a moment there was nothing round me."
+   },
+   "b": {
+    "len": 5.68,
+    "first": 0.0,
+    "last": 5.58,
+    "e_first": 0.26,
+    "e_last": 5.66,
+    "tail_db": -29.4,
+    "tail_rel": -15.7,
+    "hole": 1.82,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.59,
+    "heard": "I gave my teacher my cage. For a moment there was nothing round me."
+   }
+  }
  }
 }
