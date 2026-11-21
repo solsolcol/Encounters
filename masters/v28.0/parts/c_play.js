@@ -344,8 +344,9 @@
         const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i === 0) sh.moveTo(x, z); else sh.lineTo(x, z); }
       return sh;
     }
-    function stainMesh(seed, x, z, rx, rz, ry = 0, y = 0.012) {
-      const g = new THREE.ShapeGeometry(spillShape(seed, rx, rz), 2); g.rotateX(Math.PI / 2);
+    function stainMesh(seed, x, z, rx, rz, ry = 0, y = 0.03) {
+      /* (laid flat facing UP: turned the other way it faced the floor, and from above it was culled and never drawn) */
+      const g = new THREE.ShapeGeometry(spillShape(seed, rx, rz), 2); g.rotateX(-Math.PI / 2);
       const m = new THREE.Mesh(g, matProxy); m.position.set(x, y, z); m.rotation.y = ry; world.add(m); return m;
     }
     function stainsBuild() {
@@ -358,27 +359,16 @@
       const r = rng(28714);
       for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
       grp.visible = false;
-      /* (seen as DARK through his sight: the vision draws the world as its negative, and a spirit's glow laid on its white
-         floor did not show at all (photographed on a phone, the hunt's first run). So each patch is drawn in the world's
-         own layer as a pale film, which the negative turns to a dark spill, shown only where his sight's wave has reached
-         and only while it is out; with his sight shut it is not drawn) */
-      const mat = new THREE.MeshBasicMaterial({ color: 0xf4f2e6, transparent: true, opacity: 0, depthWrite: false, fog: false,
-                                                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-      mats.push(mat);
-      grp.traverse(o => { if (o.isMesh) o.material = mat; });
-      return { grp, mat, fx: null };
+      /* seen only through his sight, LAID ON its white negative by its own strength (vision.js: never added), so a dark
+         colour reads as a dark spill, with a slow sheen (its flicker) moving on it; 3 cm over the floor, so the pass's
+         depth test does not hide it in the floor */
+      const fx = ctx.spirit ? ctx.spirit(grp, STAIN_LOOK) : null;
+      return { grp, fx };
     }
+    const STAIN_LOOK = { color: 0x1c2410, fill: 0.88, rim: 0.35, flicker: 0.3, power: 1.6, xray: 0 };
     const stains5 = stainsBuild();
-    /* the patches' strength: his sight's wave out past them (its radius from the lens), with a slow sheen moving on them */
-    function stainsTick(st) {
-      const v = (phase === 'hunt' && st !== 'cine' && kit && kit.vision) ? kit.vision() : null;
-      if (!v || !(v.r > 0.05)) { stains5.mat.opacity = 0; stains5.grp.visible = false; return; }
-      camera.getWorldPosition(_pv5);
-      const d = Math.min(distTo(HUNT5.s1.x, HUNT5.s1.z), distTo(HUNT5.s2.x, HUNT5.s2.z), distTo(HUNT5.s3.x, HUNT5.s3.z));
-      const k = Math.max(0, Math.min(1, (v.r - d) / 1.2));
-      stains5.grp.visible = k > 0.01;
-      stains5.mat.opacity = k * (0.78 + 0.12 * Math.sin(wallClock.t * 1.7));
-    }
+    /* (drawn only in the hunt; the vision draws it only where his sight's wave has reached) */
+    function stainsTick(st) { stains5.grp.visible = phase === 'hunt' && st !== 'cine'; }
     /* THE NINE, in the court from the moment he arrives (4.3): still, heads bowed, all facing the doors of the house,
        standing between where he has been walking: the chapter's cast puts them at their places (c_cast.js PRAI5.home),
        the play bows their heads */
