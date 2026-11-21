@@ -8743,5 +8743,44 @@
     "heard": "I gave my teacher my cage. For a moment there was nothing round me."
    }
   }
+ },
+ "q5c5": {
+  "who": "he",
+  "text": "[awed] My hand rose by itself. And the thing was held.",
+  "pick": "a",
+  "why": "no odd hole",
+  "med": 4.6,
+  "takes": {
+   "a": {
+    "len": 4.48,
+    "first": 0.0,
+    "last": 4.22,
+    "e_first": 0.08,
+    "e_last": 4.46,
+    "tail_db": -27.4,
+    "tail_rel": -12.9,
+    "hole": 1.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.28,
+    "heard": "My hand rose by itself. And the thing was held."
+   },
+   "b": {
+    "len": 4.88,
+    "first": 0.0,
+    "last": 4.66,
+    "e_first": 0.04,
+    "e_last": 4.86,
+    "tail_db": -30.0,
+    "tail_rel": -14.7,
+    "hole": 1.72,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.07,
+    "heard": "My hand rose by itself. And the thing was held."
+   }
+  }
  }
 }
