@@ -6280,5 +6280,59 @@
     "heard": "To me. BAG."
    }
   }
+ },
+ "ph5nj1": {
+  "who": "pho",
+  "text": "[urgent] It is at Zavier. FIRE.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 2.1799999999999997,
+  "takes": {
+   "a": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.06,
+    "e_first": 0.12,
+    "e_last": 2.3,
+    "tail_db": -30.9,
+    "tail_rel": -16.3,
+    "hole": 0.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.29,
+    "heard": "It is at Zavier. FIRE."
+   },
+   "b": {
+    "len": 2.24,
+    "first": 0.0,
+    "last": 1.86,
+    "e_first": 0.08,
+    "e_last": 2.22,
+    "tail_db": -26.6,
+    "tail_rel": -14.3,
+    "hole": 0.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.34,
+    "heard": "It is at Zavier. FIRE."
+   },
+   "c": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 1.96,
+    "e_first": 0.1,
+    "e_last": 2.3,
+    "tail_db": -27.7,
+    "tail_rel": -14.1,
+    "hole": 0.34,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.27,
+    "heard": "It is at Zavier. FIRE."
+   }
+  }
  }
 }
