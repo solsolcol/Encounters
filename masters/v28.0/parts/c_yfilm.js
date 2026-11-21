@@ -288,7 +288,7 @@
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
                   uNGlowC: { value: new THREE.Color(0xff1030) }, uNGold: { value: new THREE.Color(0xffc860) },
-                  uNLook: { value: new THREE.Vector4(0.9, 2.6, 0.85, 0.30) } };   // (core alpha, rim power, glow strength, scale strength; the core at 0.82 showed the court's tiles and edges through it, red glass: together-phone 8.5 and 11.8 on 0f693b7)
+                  uNLook: { value: new THREE.Vector4(1.0, 2.6, 0.6, 0.30) } };   // (core alpha, rim power, glow strength, scale strength; the core at 0.82 showed the court's tiles and edges through it, red glass: together-phone 8.5 and 11.8 on 0f693b7)
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
       /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
          so the nearest surface and the body are the same depths to the bit */
@@ -332,18 +332,26 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   float nSc = mix(0.62, mix(0.45, 1.0, smoothstep(0.62, 0.97, nD)) * (1.0 - 0.55 * smoothstep(0.97, 1.0, nD)), nAa * uNLook.w / 0.3);
   /* a slow breath of light down its length */
   float nBr = 0.84 + 0.32 * (0.5 + 0.5 * sin(vNS * 0.7 - uNT * 1.9));
-  vec3 nCol = mix(uNDeep, uNCol, nSc) * nBr;
-  nCol = mix(nCol, uNRim, nFr);
+  /* ITS FORM: a key light from over the lens (above it and from its side, wherever the lens stands), so its round body and
+     its head's planes read as one solid thing of light; unshaded, its head read as a flat cut-out with a glowing rim and
+     its body as see-through cloth (the independent review of ba6a2bb: desk 7.0 and 25.5) */
+  float nLam = max(dot(nN, normalize(nV + vec3(0.0, 1.3, 0.0))), 0.0);
+  vec3 nCol = mix(uNDeep, uNCol, nSc) * nBr * (0.3 + 0.95 * nLam);
+  nCol = mix(nCol, uNRim, nFr * 0.85);
   /* his light: gold on the faces turned to his shoulders, near him, and nowhere else */
   vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
   float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.5, 2.0, nDl));
   nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.3));
-  gl_FragColor = vec4(nCol, uNA * mix(uNLook.x, 1.0, max(nFr, 0.35 * nAa * smoothstep(0.85, 1.0, nD))));`;
+  /* (SOLID: its light uNA makes it brighter or darker, never see-through: at the fight's 0.3 it is a darker ruby lying
+     round the court, where a see-through one showed the planters' plants, the skirting's tiles and the window frames
+     through it, the review's 11.8 and 25.5; it comes in over its first quarter of light) */
+  nCol *= 0.4 + 0.6 * clamp(uNA, 0.0, 1.0);
+  gl_FragColor = vec4(nCol, uNLook.x * clamp(uNA * 4.0, 0.0, 1.0));`;
       /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
       SH5.glow = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nK = clamp(-dot(nN, nV), 0.0, 1.0);
   vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
-  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.25 * nGk, 0.0, 0.25)), pow(nK, 1.5) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.25 * nGk, 0.0, 0.25)), pow(nK, 2.0) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
       function nagaMat(kind) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
           depthWrite: kind === 'depth', colorWrite: kind !== 'depth',
@@ -508,7 +516,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              cut out by a body nearly not there. Dim and drawn among them, only its front faces and nothing nearest, every
              scale and fold of the crumpled model drew its own faint line: glass again, together-phone 26.8 on lab 4) */
           for (const [me, lo, hi] of [[mD, 2.5, 9.5], [mB, 2.6, 9.6], [mG, 2.7, 9.7]]) { me.frustumCulled = false;
-            Object.defineProperty(me, 'renderOrder', { get: () => (U.uNA.value < 0.5 ? hi : lo), set: () => {}, configurable: true }); g.add(me); }
+            Object.defineProperty(me, 'renderOrder', { get: () => lo, set: () => {}, configurable: true }); g.add(me); }   // (solid now at every light: drawn before the fight's effects always, hi kept for a see-through look)
           st.mesh = mB; st.mat = mB.material; st.meshes = [mD, mB, mG];
           /* ITS EMBERS (the plan's 11: "embers rising"; the film's u5embers): forty sparks of its light, a fixed set (the same
              on every phone: the plan's 13), each rising from a point of its lying body (chosen once, seeded) a metre and a
@@ -527,11 +535,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 float eC = fract(uNT * aSpd + aPh);
                 transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * (0.12 + 0.2 * aPh), 1.35, cos(aPh * 4.1 + uNT * 1.1) * (0.12 + 0.2 * fract(aPh * 3.7))) * eC;
                 vEA = (1.0 - eC) * (1.0 - eC) * smoothstep(0.0, 0.12, eC);`);
-              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.2, 0.6, uNA) * smoothstep(0.1, 0.6, uNGR) );');
+              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.4, 0.85, uNA) * smoothstep(0.1, 0.6, uNGR) );');
               if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s embers found no colour line to write (three changed?)');
               sh.fragmentShader = 'uniform float uNA, uNGR; varying float vEA;\n' + out; };
             em.customProgramCacheKey = () => 'e4c5nagaEmbers';
-            const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => (U.uNA.value < 0.5 ? 9.8 : 2.8), set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
+            const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => 2.8, set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
       }
@@ -629,7 +637,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 vx = qx; vy = qy; vz = qz;
                 kv = kx * ex + kz * ez; qx = ex * ca - kz * ey * sa + kx * kv * (1 - ca); qy = ey * ca + (kz * ex - kx * ez) * sa; qz = ez * ca + kx * ey * sa + kz * kv * (1 - ca);
                 ex = qx; ey = qy; ez = qz; }
-              px = F[0] + vx; py = F[1] + vy; pz = F[2] + vz; }
+              px = F[0] + vx; py = F[1] + vy; pz = F[2] + vz;
+              /* (A SOLID BODY OF SCALES: its normal leaned seven tenths to its tube's own way out from the path, so it is shaded
+                 as one round body with the shader's scales on it; read whole from the file, every lump and crumple of the
+                 generated skin was drawn as a facet, and its glow, pushed out along them, as see-through copies round its
+                 outline: the independent review of ba6a2bb, phone 4.2 and 5.8, "crumpled, faceted", "copies stacked") */
+              const tl = Math.hypot(vx, vy, vz), el0 = Math.hypot(ex, ey, ez);
+              if (tl > 1e-6 && el0 > 1e-9) { ex = 0.3 * ex / el0 + 0.7 * vx / tl; ey = 0.3 * ey / el0 + 0.7 * vy / tl; ez = 0.3 * ez / el0 + 0.7 * vz / tl; } }
             else if (r === 2) { /* (the model's across onto (-hz, 0, hx), its up onto the world's, its along onto (hx, 0, hz): the
                  path's own B, N, T where the path lies level, so the neck's foot meets the body there exactly) */
               px = HA[0] + (-hz * o0 + hx * o2) * gr; py = HA[1] + o1 * gr; pz = HA[2] + (hx * o0 + hz * o2) * gr;
