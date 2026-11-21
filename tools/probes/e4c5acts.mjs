@@ -157,6 +157,21 @@ if (PICS) {
         E.yaw.rotation.y = Math.atan2(-d.x, -d.z); E.pitch.rotation.x = Math.atan2(d.y, Math.hypot(d.x, d.z)); });
       await frames(3);
       const f = `${OUT}/${act}-${u}-${view}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); res.pics.push(f); } }
+  /* (his fist round the shaft at rest, close: from above it and from before it, through a 26 degree lens: a detail taken with a
+     lens, never by enlarging) */
+  if (process.env.HANDS !== '0') for (const view of ['handtop', 'handfront']) { await pose(null, 0);
+    await p.evaluate(([view]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor;
+      P.group.rotation.y = window.__ry0; P.group.updateWorldMatrix(true, true);
+      let mb = null, hb = null; for (const n in P.bone) { if (/^(mixamorig:?)?RightHandMiddle1$/.test(n)) mb = P.bone[n]; if (/^(mixamorig:?)?RightHand$/.test(n)) hb = P.bone[n]; }
+      const fist = new V(), h = new V(); hb.getWorldPosition(h); mb.getWorldPosition(fist); fist.lerp(h, 0.35);
+      const ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry);
+      const c = view === 'handtop' ? new V(fist.x + fx * 0.06, fist.y + 0.62, fist.z + fz * 0.06) : new V(fist.x + fx * 0.62, fist.y + 0.08, fist.z + fz * 0.62);
+      E.yaw.position.copy(c); window.__aim = fist; if (E.kit.lens) E.kit.lens(26, { secs: 0 }); }, [view]);
+    await frames(2);
+    await p.evaluate(() => { const E = window.__enc, tg = window.__aim, c = E.yaw.position, d = tg.clone().sub(c);
+      E.yaw.rotation.y = Math.atan2(-d.x, -d.z); E.pitch.rotation.x = Math.atan2(d.y, Math.hypot(d.x, d.z)); });
+    await frames(3);
+    const f = `${OUT}/rest-0-${view}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); res.pics.push(f); }
 }
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.pose(null));
 fs.writeFileSync(OUT + '/acts.json', JSON.stringify({ res, errs, logs }, null, 1));

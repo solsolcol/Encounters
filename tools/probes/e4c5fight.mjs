@@ -19,6 +19,8 @@ const MAXMS = (+(process.env.MAXMIN || 70)) * 60000;
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: DSF, hasTouch: !DESK, isMobile: !DESK });
 const p = await ctx.newPage(); const errs = [], log = { stages: [], needs: [], lines: [], shots: [], errs, losses: 0, presses: 0, walks: 0 };
+/* (CHFILE=<file.js>: the chapter served from that file, as e4c5films.mjs: a change to the chapter alone played with no build) */
+if (process.env.CHFILE) { const src = fs.readFileSync(process.env.CHFILE, 'utf8'); await p.route(new RegExp('/assets/e4c5\\.[0-9a-f]+\\.js$'), (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: src })); }
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
 p.on('console', m => { if (m.type() === 'error' || /failed|threw|has no take|cannot|undefined/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 300)); });
 const T0 = Date.now(), say = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);

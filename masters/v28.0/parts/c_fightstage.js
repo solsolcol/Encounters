@@ -1510,7 +1510,7 @@
              arm hanging, his forearm level and forward, his wrist straight, the staff upright, its foot a hand outside his
              foot; a man setting a stick down ahead of his front foot: its foot struck ahead, his wrist straight.
          FIRE (mage_soell_cast_7): lifted and held off his face as he winds, then THRUST as his step carries him in (the
-           body's own travel added: follow), his fist out and up, the stick tipped forward so the Naga's head goes toward
+           travel of his right shoulder added: follow), his fist out and up, the stick tipped forward so the Naga's head goes toward
            what he fires at and the ball leaves its mouth at the top; held as the ball goes, then home with his step, its
            foot set down on the paving.
          THE GOLD (Charged_Spell_Cast): planted through his gather (his arm folds as he sinks), lifted as he rises, its head
@@ -1537,26 +1537,26 @@
         MOVES.Charged_Spell_Cast_1.keys = [[0, 0, 0, 0, 0, 0], [0.55, 0, 0, 0, 0, 0], [1.25, dx * 0.6 - 0.04, 0.20, dz * 0.6, 0, 6], [1.50, dx - 0.02, 0.22, dz, 0, 3], [1.70, dx, 0, dz, 0, 0, 'drive']];
       }
       plantKeys();
-      /* his hips' place across a take that carries him (the throw's step: 0.35 m to his right and 0.22 on by its top), read
-         from his file once his body has landed (behind the loading curtain), so the stick goes with him */
+      /* his right shoulder's place across a take that carries him (the throw's step takes it on and over to his right),
+         read from his file once his body has landed (behind the loading curtain), so the stick goes where his arm hangs from */
       const HIPS = {};
       whenReady(cast.pho, (P) => {
-        const hb = boneOf(P, 'Hips'); if (!hb || !P.mixer) return;
+        const hb = boneOf(P, 'RightArm'); if (!hb || !P.mixer) return;
         const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k] || 0, P.acts[k].timeScale];
         const v = new THREE.Vector3();
         for (const name in MOVES) { const A = P.acts[name]; if (!MOVES[name].follow || !A) continue;
-          const d = A.getClip().duration, N = 48, xs = [], zs = [];
+          const d = A.getClip().duration, N = 48, xs = [], ys = [], zs = [];
           for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
           for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-3, d * i / N); P.mixer.update(0); P.group.updateMatrixWorld(true);
-            hb.getWorldPosition(v); P.group.worldToLocal(v); xs.push(v.x); zs.push(v.z); }
-          HIPS[name] = { d, N, xs, zs }; }
+            hb.getWorldPosition(v); P.group.worldToLocal(v); xs.push(v.x); ys.push(v.y); zs.push(v.z); }
+          HIPS[name] = { d, N, xs, ys, zs }; }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
         P.mixer.update(0); personSettle(P);
       });
-      const hipsAt = (name, u, o) => { const H = HIPS[name]; if (!H) { o[0] = 0; o[1] = 0; return o; }
+      const hipsAt = (name, u, o) => { const H = HIPS[name]; if (!H) { o[0] = 0; o[1] = 0; o[2] = 0; return o; }
         const f = Math.max(0, Math.min(H.N, u / H.d * H.N)), i = Math.min(H.N - 1, Math.floor(f)), s = f - i;
-        o[0] = H.xs[i] + (H.xs[i + 1] - H.xs[i]) * s; o[1] = H.zs[i] + (H.zs[i + 1] - H.zs[i]) * s; return o; };
-      const MV = { x: 0, y: 0, z: 0, tip: 0, lean: 0, take: null, u: 0, w: 0 }, _h0 = [0, 0], _h1 = [0, 0];
+        o[0] = H.xs[i] + (H.xs[i + 1] - H.xs[i]) * s; o[1] = H.ys[i] + (H.ys[i + 1] - H.ys[i]) * s; o[2] = H.zs[i] + (H.zs[i + 1] - H.zs[i]) * s; return o; };
+      const MV = { x: 0, y: 0, z: 0, tip: 0, lean: 0, take: null, u: 0, w: 0 }, _h0 = [0, 0, 0], _h1 = [0, 0, 0];
       function moveOf(P) {
         MV.x = MV.y = MV.z = MV.tip = MV.lean = 0; MV.take = null; MV.w = 0;
         const w = P.w || {}; let best = null, bw = 0;
@@ -1569,7 +1569,8 @@
         const f = b[6] === 'strike' ? 1 - Math.sqrt(1 - s) : b[6] === 'drive' ? s * s : s * s * (3 - 2 * s);
         const at = (j) => (a[j] + (b[j] - a[j]) * f) * bw;
         MV.x = at(1); MV.y = at(2); MV.z = at(3); MV.tip = at(4) * D2R; MV.lean = at(5) * D2R; MV.take = best; MV.u = u; MV.w = bw;
-        if (M.follow) { hipsAt(best, u, _h1); hipsAt(best, K[0][0], _h0); MV.x += (_h1[0] - _h0[0]) * M.follow * bw; MV.z += (_h1[1] - _h0[1]) * M.follow * bw; }
+        if (M.follow) { hipsAt(best, u, _h1); hipsAt(best, K[0][0], _h0); for (let j = 0; j < 3; j++) _h1[j] = (_h1[j] - _h0[j]) * M.follow * bw;
+          MV.x += _h1[0]; MV.y += _h1[1]; MV.z += _h1[2]; }
         return MV;
       }
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
