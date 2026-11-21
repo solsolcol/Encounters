@@ -55,7 +55,7 @@ OPTIONAL = ['c_fightrules.js']                       # another hand's part: in w
 
 # the chapters a //@@COPY marker copies from, each pinned (checked only when a marker of its kind is used)
 COPY_FROM = {
-    'COPY':  ('src/chapters/e4/e4c4.js', 'e35bb75b55d0482c64c5eb86cdf99699bc1ce0fe'),   # chapter 4 as of 21 Nov 2026 (v27.0, the sheet's v153)
+    'COPY':  ('src/chapters/e4/e4c4.js', '8c60e5c7b7e1c8518c64ff5bb5f68ce83da93348'),   # chapter 4 as of 21 Nov 2026 evening (R139 to R144, CH4's 6a3ac4d: every copied range the same text as e35bb75's, moved -9 and -63 lines)
     'COPY3': ('src/chapters/e4/e4c3.js', '7a8c4f42ecef78fb03407470ab57576f86b1301c'),   # chapter 3 as of v26.18 build 22
 }
 

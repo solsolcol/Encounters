@@ -1,5 +1,5 @@
   function build(ctx) {
-//@@COPY 309-451 :: const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
+//@@COPY 300-442 :: const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
 
     /* ================================================================ THE WORLD (the tracker's M6; the plan's 8.1, 8.2, 9.4)
        docs/V28.0-WORLD.md has every number below written out with its reason. Units metres, y up. THE ORIGIN is the middle
@@ -42,7 +42,7 @@
 
     /* ------------------------------------------------- one parse per asset, many of one, a model stood (chapter 3's own,
        as chapter 4 copied them), and the merged pieces of what never moves */
-//@@COPY 519-897 :: function parseOnce(key) {
+//@@COPY 510-888 :: function parseOnce(key) {
 
     /* ================================================================ THE SURFACES (painted: each at its real size, so a
        metre of wall is a metre of its picture; the merged pieces' UVs are metres) */

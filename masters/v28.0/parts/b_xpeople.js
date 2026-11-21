@@ -5,8 +5,8 @@
        laws for a body sat or stood up straight (c_scast.js: Grandmaster Pho's, R42, R64, R76, R77, R88). Every one of its
        laws was learned on those chapters' bodies; see its own notes. The one change (assemble.py EDITS): the bodies this
        chapter made are keyed p5. The ground under every one is this chapter's floor (flatGround). */
-//@@COPY 1657-3556 :: /* ================================================================ THE PEOPLE (the plan's §3.3, §6.1; the tracker's §5)
-//@@COPY 5213-5435 :: /* A BODY SAT OR STOOD UP STRAIGHT (o.upright; R42, Chad, 18 Nov 2026: "From the very start of the intro cutscene to the
+//@@COPY 1648-3547 :: /* ================================================================ THE PEOPLE (the plan's §3.3, §6.1; the tracker's §5)
+//@@COPY 5204-5426 :: /* A BODY SAT OR STOOD UP STRAIGHT (o.upright; R42, Chad, 18 Nov 2026: "From the very start of the intro cutscene to the
 
     /* ---------------------------------------------- the ground: one level everywhere he walks (the walkway, the court,
        the house and case three's room are each flat, and at one height: the walk test floods them whole) */
@@ -119,6 +119,6 @@
     const FLOOR = { WALK, COURT, GATE, HOUSE, LIVING, DINING, ROOM, LIFT, STATION, RITE, DRAIN: DRAIN_SPOT, SEAT, things, setDown, lamp, courtLamps, liftDoors, gateOpen, doorOpen, cast };
 
     /* ====================================================== THE DRAWN SURFACES' HELPERS (chapter 3's own, as chapter 4's) */
-//@@COPY 8904-8904 :: function rng(seed)
-//@@COPY 8905-8909 :: function done(THREE, c, rep) {
-//@@COPY 8910-8910 :: function noMip(THREE, t)
+//@@COPY 8841-8841 :: function rng(seed)
+//@@COPY 8842-8846 :: function done(THREE, c, rep) {
+//@@COPY 8847-8847 :: function noMip(THREE, t)

@@ -20,9 +20,9 @@
 
     /* ---------------------------------------------------------------- GRANDMASTER PHO'S LAWS, copied from chapter 4 as it
        shipped (assemble.py pins its sha1): his robe's flecks, his posture numbers, his look D */
-//@@COPY 3557-4963 :: /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits
-//@@COPY 5439-5501 :: /* chapter 3's numbers for a man set on a seat by his own body
-//@@COPY 5503-5536 :: /* LOOK D on Grandmaster Pho
+//@@COPY 3548-4954 :: /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits
+//@@COPY 5430-5492 :: /* chapter 3's numbers for a man set on a seat by his own body
+//@@COPY 5494-5527 :: /* LOOK D on Grandmaster Pho
     /* and chapter 3's numbers for him seated CROSS-LEGGED on a cushion (its hall, v26.18: masters/v26.18/pho), with the
        white cloth over his crossed legs (w3pholap, a declared reuse) */
 //@@COPY3 4616-4618 :: const CROSS = {
