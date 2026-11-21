@@ -37,7 +37,8 @@ async function tapMark(id) {
   if (q && (q.z >= 1 || q.x < 20 || q.y < 60 || q.x > 370 || q.y > 800)) {
     /* off the screen: he turns to it, as a player would */
     await p.evaluate((id) => { const E = window.__enc, h = E.stage.hotspots.find(s => s.id === id); const dx = h.pos.x - E.yaw.position.x, dz = h.pos.z - E.yaw.position.z;
-      E.yaw.rotation.y = Math.atan2(-dx, -dz); }, id);
+      const my = (h.pos.y ?? 1.0) + (h.markY ?? 0.55) - E.yaw.position.y;
+      E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = Math.max(-1.0, Math.min(0.6, Math.atan2(my, Math.hypot(dx, dz)) - 0.05)); }, id);
     await frames(4); q = await p.evaluate((id) => window.__enc.hotMarkAt(id), id); log('  turned to', id); }
   if (!q || q.z >= 1 || q.x < 0 || q.y < 0 || q.x > 390 || q.y > 844) { log('  mark not on screen:', id, JSON.stringify(q)); return false; }
   await p.touchscreen.tap(q.x, q.y); log('  tapped', id, q.x.toFixed(0), q.y.toFixed(0)); await frames(3); return true;
@@ -70,7 +71,7 @@ if (PART.includes('walk')) {
   await tapMark('drain'); await wait(() => window.__enc.stage.info().heard.includes('q5w2'), null); await pic('walk-drain');
   await idle(); await at(0.0, -12.0, 0.35, -0.22); await smellNow(); await pic('walk-smell-turn');
   await at(-6.6, -14.85, Math.PI / 2, -0.2); await smellNow(); await pic('walk-smell-gate');
-  await at(-8.5, -15.1, Math.PI, -0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
+  await at(-7.6, -15.3, Math.PI / 2 + 0.5, 0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
   await wait(() => window.__enc.stage.snap().story.phase === 'hunt', null);
   log('walk done');
 }
