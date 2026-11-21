@@ -33,7 +33,8 @@ prep() { # prep <in> <out> <sheet px> <log> [keep]
   #  repaint: tools/edgeclean.py, masters/v28.0/people/edgeclean-<name>.json)
   ec=masters/v28.0/people/edgeclean-$n.json; [ -f $ec ] && [ -n "$rp" ] || ec=
   # (FINS=1 on a body's line: the triangles a remesh left hanging from the body by one edge are taken out first, tools/prepmonk.mjs)
-  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} ${FINS:+FINS=1} REPAINT=$rp MENDOUT=${MENDOUT:-12} ${ec:+EDGECLEAN=$ec} BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
+  # (WSMOOTH=<passes> and XSCALE=<unit> on a body's line reach prepmonk and tools/repaint.py; unset, both are as they always were)
+  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} ${FINS:+FINS=1} ${WSMOOTH:+WSMOOTH=$WSMOOTH} ${XSCALE:+XSCALE=$XSCALE} REPAINT=$rp MENDOUT=${MENDOUT:-12} ${ec:+EDGECLEAN=$ec} BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
       FACE=3 HEADK=2 HANDK=1.5 PAD=$( [ $3 -ge 2048 ] && echo 3 || echo 2 ) node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
 one() {  # one <name> <near triangles> <near sheet px> <take args...>     (OUTN=<x>: the game's files are p5<x>*.glb)
@@ -62,18 +63,28 @@ WANT="$*"; all=0; [ -z "$WANT" ] && all=1
 go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 0; done; return 1; }
 # MASTER ZAVIER (Chad, 20 Nov 2026, R5): the player's own body, seen in the third-person fight. For now the rig's own
 # walk only (the takes of the fight are laid on once the plan names them). His full body is repainted (HEROKEEP empty).
-go zavier && HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking)
+# (each body's line runs in ( ) so that the switches written in front of `one` end with it: in some shells an
+#  assignment in front of a FUNCTION stays set afterwards, and the next body would inherit OUTN, WSMOOTH, XSCALE or FINS)
+go zavier && ( HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking) )
 # HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
 # them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
 # (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.
-go zavier2 && HEROKEEP= one zavier2 40000 2048 $(T zavier2 walking Walking)
+go zavier2 && ( HEROKEEP= one zavier2 40000 2048 $(T zavier2 walking Walking) )
 # HIS THIRD (the same reference again): the second came with both eyes painted looking aside and a lump on the back of
-# its left hand; this one has neither, and every finger its own. The body that goes on (masters/v28.0/make.sh 4).
-go zavier3 && HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking)
+# its left hand; this one has neither, and every finger its own. REFUSED all the same: its rig came back with no finger
+# bones, twice (masters/v28.0/make.sh 4).
+go zavier3 && ( HEROKEEP= one zavier3 40000 2048 $(T zavier3 walking Walking) )
 # HIS FOURTH (the same reference a third time), THE BODY THE GAME DRAWS (assets/p5zavier.glb, p5zavierh.glb): the third's
 # rig came back with no finger bones, twice (Meshy rigs no fingers on hands it has left palm-forward); this one has all
 # sixty-six joints, every finger its own, the eyes ahead, and a watch that reads as a watch.
 # FINS=1: his near body came from the remesh with a leftover triangle 9 mm across lying on his left cheek, drawn dark
 # whatever was painted on it (tools/probes/fins.mjs: 16 such on the near body, 12 on the full one, each hanging by one edge).
-go zavier4 && FINS=1 HEROKEEP= OUTN=zavier one zavier4 40000 2048 $(T zavier4 walking Walking)
+# WSMOOTH=0: the prep's weight smoothing SMEARS this body's knit when he moves (the walk seen from behind: patches of
+# 3 x 9 cm between his shoulder blades). Measured on the back, the walk at 0.3, 99th percentile edge stretch and the
+# roughness's 99th: near 1.365 / 0.53 as rigged, 1.741 / 1.13 smoothed; full 1.404 / 0.63 and 1.627 / 0.97; the chest and
+# both armpits are best unsmoothed too (tools/probes/edgestrain.mjs).
+# XSCALE=1000: xatlas takes a triangle too small in its unit for no triangle. In metres, 12,807 of his full body's
+# triangles were left at the sheet's corner (16.7 cm2 of him, drawn as dark and pink specks along every edge) and 8,036
+# slivers torn; in millimetres none, and his sheet is sharper (full body: face 1,944 -> 2,264 texels a metre, body 700 -> 818).
+go zavier4 && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier4 40000 2048 $(T zavier4 walking Walking) )
 echo PEOPLE DONE

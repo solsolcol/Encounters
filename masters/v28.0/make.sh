@@ -142,6 +142,64 @@
 #    a ragged skin edge. Taken back out. A thing the generator draws wrong is made again (a new body), not painted over.
 #
 # ---------------------------------------------------------------------------------------------------------------------
+# 6. THE FOURTH BODY'S PREP (21 Nov 2026): what its line in people.sh sets, and why
+# ---------------------------------------------------------------------------------------------------------------------
+#   ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier4 40000 2048 ... )      -> assets/p5zavier.glb, p5zavierh.glb
+# Each switch was adopted only after its picture was seen better at full size; unset, each tool is as it was (5g).
+# WSMOOTH=0: THE PREP'S WEIGHT SMOOTHING SMEARED HIS KNIT WHEN HE MOVES. The walk seen from behind, where the fight's
+#   camera stands: patches of 3 x 9 cm between the shoulder blades, none in the bind pose and none on the body as rigged.
+#   tools/probes/edgestrain.mjs (new, read only: how far a take stretches a skinned body's edges, by part), his back in
+#   the walk at 0.3, 99th percentile stretch / roughness: near 1.365 / 0.53 unsmoothed against 1.741 / 1.13 smoothed
+#   (WSMOOTH 2, 4 and 8 each worse than 0); full 1.372 / 0.60 against 1.627 / 0.97. The chest and both armpits are best
+#   unsmoothed too. (The smoothing was written for Grandmaster Pho's robe, whose auto-rig's weights were blocky; this
+#   rig's are not, and a marled knit shows every strain.)
+# XSCALE=1000: XATLAS TAKES A TRIANGLE TOO SMALL IN ITS UNIT FOR NO TRIANGLE, twice (in its cut, and in its second
+#   packing) and leaves its corners at the sheet's corner. In metres: 12,807 of the full body's 312,932 triangles
+#   (16.7 cm2 of him), each drawn in whatever the corner texel holds: dark and pink specks along every edge of the
+#   cardigan and on his skin. In millimetres: none; charts 9,530 -> 2,221; torn slivers 8,036 -> 0; triangles of one flat
+#   colour 18,648 (33 cm2) -> 3,841 (5.1 cm2); of the wrong material 3,145 -> 214 (28 mm2); and a sharper sheet (full
+#   body, texels a metre: face 1,944 -> 2,256, head 1,470 -> 1,710, hands 1,045 -> 1,215, body 700 -> 816).
+# FINS=1: A REMESH CAN LEAVE A TRIANGLE LYING ON THE BODY BY ONE EDGE (tools/probes/fins.mjs, new, owns the test). The
+#   near body had 16 (44.7 mm2; the largest, 30 mm2, a dark facet nine millimetres across on his left cheek, dark
+#   whatever was painted on it), the full one 12 (7.4 mm2). Taken out; no hole opens (open edges not on a fin: 0 and 4,
+#   unchanged).
+# THE EDGE SPEC (people/edgeclean-zavier4.json; metres, feet at 0, his left +x): collar (tee over skin); frontR, frontL
+#   (knit over tee); neckR, neckL (knit over skin); rollR, rollL (knit on the collar's roll); cheekL (skin); sideL,
+#   sideR: THE FLAT GREY THE GENERATOR LEFT UNDER BOTH ARMS, where it could not see: the same colour as the knit by
+#   every test but its weave (the spread of lightness round a texel: about twelve on the knit, under two on the grey),
+#   so a class may ask for a weave (`sd`), flat is turned to knit (`turn`), grown 3 mm (`grow`) and filled with the
+#   clean weave ONE MOVE away, a cell of 3 cm at a time (`clone`: the mirror fill left hairlines and a dark smear).
+# THE LOG: near 41,534 -> 41,518 triangles, 1,072 charts; full 312,944 -> 312,932, 2,221 charts; the second packing kept
+#   on both; texels a metre near / full: face 2,290 / 2,256, head 1,770 / 1,710, hands 1,251 / 1,215, body 849 / 816; the
+#   edge clean painted 71,774 / 70,273 texels (the two sides about 31,000 each).
+# PHOTOGRAPHED (scratch: e4c5/zav4, N-* the near body, H-* the full, W* the walk; 27 views a level) and each opened at
+#   its full size. WHAT IS STILL WRONG, said to Chad (21 Nov):
+#   both levels: the tee's neckline, a dotted pale fringe 25 mm wide at its centre and ragged ends (a white notch 6 x 8
+#     mm on his left, a skin-coloured tab 8 x 15 mm on his right); teeth of 1 to 2 mm on the lapels at the neck and down
+#     both front edges; under the arms the knit is knit but coarser in patches (25 x 50 mm lighter and a matted column
+#     40 x 80 mm on his left, a band 40 x 180 mm on his right); grey-blue marks of 4 to 12 mm in the finger webs; the
+#     belt white with black blobs and a smeared buckle (the generator's); pale strokes down the hair's back; a seam in
+#     the weave near each cuff; in the walk from behind a white hairline of 40 mm low on his left back and one along
+#     the hem (neither can be made out at the fight's distance on a phone).
+#   the near body only (drawn beyond 2.2 m): a tone seam of 25 mm down the chin and a flat, crumpled underside of the
+#     nose, both in Meshy's own remesh (photographed on the source); a faceted fold on the right cuff; and of the 82
+#     back-facing triangles measured before the fins came out (the largest 211 mm2 on his right side), those that are
+#     left were not photographed one by one.
+#   THE WALK'S HANDS: the rig's own walk carries the leading hand palm forward with straight, spread fingers (the bind
+#     pose's hands are palm-forward, which is what gave every finger its bones). EVERY TAKE made for him turns the
+#     forearm in and curls the fingers before it is cast, measured by tools/probes/jointscan.mjs (v26.3).
+#   not checked yet: feet against the ground, joints against human ranges, the walk's head turn and gait (the takes).
+# TRIED AND DROPPED: the mirror fill for the sides; a weave threshold of 6.5; one move for a whole patch (worse); XSCALE
+#   on the first cut only (3,971 corner triangles and 10,409 torn slivers still); laying a mended triangle back whole
+#   in its chart (229 of 12,602 could be; the code stays under XSCALE and now finds nothing); the cheek painted as skin
+#   (still dark: it was the fin); tools/rigstrain.mjs (written for Grandmaster Pho's rig: no Spine2 joint here).
+# 5g. EVERY TOOL CHANGE OF THIS BODY IS OPT-IN: prepmonk FINS; repaint.py XSCALE (and the torn-sliver test, under
+#   MENDOUT); edgeclean.py's class `sd`, fills `clone`, region keys `slab`, `turn`, `grow`, `dissolve`, `main`;
+#   shootclose.mjs's model keys `clip`, `at`, `aniso`. PROVED on the first body's NEAR file: through the tools as they
+#   were before this body (commit 1f39fc3^) and as they are now, the switches unset, the same bytes, and the bytes of the
+#   first body's file as it was committed (54038f5). Its FULL file through both: (the result is written in below).
+#
+# ---------------------------------------------------------------------------------------------------------------------
 # 7. THE SOURCES, ON THE SOURCES BRANCH (21 Nov 2026)
 # ---------------------------------------------------------------------------------------------------------------------
 # masters/v28.0/src's fourth body and the Naga stick (22 files), and with them chapter 4's whole folder

@@ -43,6 +43,15 @@ The spec (masters/<v>/people/edgeclean-<name>.json):
     (`raw`: a texel's OWN colour must fit it too, or it is painted again when within REACH of an edge: a hairline of
      black on skin is skin once blurred. `step.from`/`to` are along `across`: here y from 1.445 down to 1.36.)
 """
+# v28.0 (Master Zavier's fourth body, 21 Nov 2026) · KEYS ADDED, each absent = the tool as it was:
+#   a class's "sd": [lo, hi]       the local spread of Lab L round a texel (within "sds" metres, 0.0015): a marled knit has
+#                                  it, a flat grey patch the generator left has not (his sides under the arms);
+#   a region's "turn": {a: b}      every texel of class a is painted as class b, wherever it lies in the box;
+#   a region's "grow": metres      ... and what lies that near a turned texel (the rim a patch leaves, the holes in it);
+#   a class's "fill": "clone"      for a patch too wide for "mirror": taken a 3 cm cell at a time, each cell the clean paint
+#                                  one move away (a step of 12 to 65 mm, or a turn of 15 to 60 degrees about the upright
+#                                  axis), the move that reaches the most different clean texels;
+#   a region's "dissolve", "main"  that box's own island sizes (mm2) in place of the spec's ("main": 0 keeps every island).
 import json, math, os, sys, time
 import numpy as np
 from PIL import Image
