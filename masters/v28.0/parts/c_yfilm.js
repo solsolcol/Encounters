@@ -772,9 +772,13 @@
        says which; "lighter... or is it me"; "Both can be true."; his head bowed to Grandmaster Pho, deeper than the
        first; his teacher's two lines to him. At the lift, the bag in his teacher's hand: "Was it real?" and the case
        file's second lesson; as the doors open, the next case seeded; in, and the doors close on black */
-    const BT5AT = { live: [-8.1, -3.9], dine: [-10.3, -0.9], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.0, EYE, -2.9], eyeTerr: [-9.8, EYE, -4.6],
-                    tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-8.2, EYE, -3.3], tonKoh: [-8.9, -3.2],
-                    liftPho: [0.35, 0.05], liftTon: [-0.45, -0.55], liftJun: [0.55, -0.9], liftEye: [-0.1, EYE, -1.55] };
+    /* (every place measured against the rooms' solids, b_world.js: the sofa x -9.06..-8.18, z -4.67..-2.57; the low table
+       x -7.66..-6.9, z -4.22..-3.02; the floor lamp by the sofa x -8.92..-8.42, z -2.5..-1.98; the dining table and its
+       chairs x -11.6..-9.2, z -1.18..1.0. As first written, his teacher stood in the sofa's edge and on a dining chair, the
+       eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
+    const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
+                    tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
+                    liftPho: [0.35, 0.05], liftTon: [-0.45, -0.55], liftJun: [0.45, -0.9], liftEye: [-0.1, EYE, -1.55] };
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -836,7 +840,7 @@
         /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
         whenReady(cast.ton, (P) => {
           if (!inEyes) { const s0 = STATION.fight.ton; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'ton', t); }
-          else if (t < T.knot) { const at = t < T.room2 ? [A.live[0] + 0.9, A.live[1] - 0.8] : t < T.room3 ? [A.dine[0] + 1.1, A.dine[1] - 0.7] : [A.terr[0] + 1.2, A.terr[1] - 0.3];
+          else if (t < T.knot) { const at = t < T.room2 ? [-7.02, -4.8] : t < T.room3 ? [-9.35, -2.1] : [-10.0, -3.9];   // (behind his teacher, each clear of the furniture)
             put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
             lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
           else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');

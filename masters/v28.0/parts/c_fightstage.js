@@ -724,7 +724,10 @@
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
       const c = st.cage, at = c.lent > 0 ? pw : zw;
-      if (at) CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: at.x, z: at.z, t: FS5.wall, crack: c.broken || st.stage === 'surge' });
+      /* (lent, it lifts off him and closes round his teacher: it travels there, 0.4 s, and back) */
+      if (at) { const C0 = FS5.cageAt || (FS5.cageAt = { x: at.x, z: at.z }), q = 1 - Math.exp(-wdt / 0.12);
+        C0.x += (at.x - C0.x) * q; C0.z += (at.z - C0.z) * q;
+        CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: C0.x, z: C0.z, t: FS5.wall, crack: c.broken || st.stage === 'surge' }); }
       TRANCE5.set(1, FS5.wall); TRANCE5.pools(c.lent > 0 ? null : zw, pw, 1, 1);
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
       TRANCE5.gold(Math.min(1.8, 1 + 0.8 * wind));
@@ -800,14 +803,16 @@
     }
     /* what a probe and the walk test read (stage.snap().story.fight) */
     function fightSnap() {
-      const st = FS5.st; if (!st) return { on: FS5.on };
+      const st = FS5.st, left = { fxOn: FSG.visible, fx: FSG.children.reduce((n, o) => n + (o.visible ? 1 : 0), 0), loops: fsLoops.size, stems: FS5.stemsOn,
+                                  praiShown: PRAI5.list.reduce((n, P) => n + (P.group.visible ? 1 : 0), 0) };
+      if (!st) return Object.assign({ on: FS5.on }, left);
       const H = FIGHT.hud(st);
       return { on: FS5.on, mode: FS5.mode, brief: FS5.brief, stage: st.stage, who: st.who, left: st.left, losses: st.losses, sanity: +st.sanity.toFixed(2),
                t: +st.t.toFixed(2), need: st.cur ? { id: st.cur.id, act: st.cur.act, target: st.cur.target, ready: st.cur.ready, move: st.cur.move } : null,
                hud: { main: H.main, second: H.second, third: H.third, swap: H.swap, together: H.together, objective: H.objective, cage: H.cage },
                pho: { x: +st.pho.x.toFixed(3), z: +st.pho.z.toFixed(3) }, zav: { x: +st.zav.x.toFixed(3), z: +st.zav.z.toFixed(3) },
                prai: st.prai.map(p => ({ id: p.id, kind: p.kind, st: p.st, x: +p.x.toFixed(2), z: +p.z.toFixed(2) })), pick: FS5.pick,
-               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), loops: fsLoops.size, stems: FS5.stemsOn };
+               stats: Object.assign({}, st.stats), lines: FS5.heard.slice(-12), ...left };
     }
     function fightReset() {
       FS5.run++;
@@ -816,7 +821,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);

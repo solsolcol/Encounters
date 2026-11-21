@@ -390,7 +390,7 @@
        cloth, and on three of them the three presences, each a look answered by a press (v21.9). Which presence sits on
        which piece is the game's own picture (docs/research/V28.0-PIECES.md): the ANGRY knot on the charging bull (Wua
        Thanu), the HUNGRY reaching shape on the bottle of oil (Rak Yom), the one LOOKING FOR ENERGY on the bound effigy (Hun
-       Phayon). The pieces are the three real models made for them, laid out before him (the films lay them there) */
+       Phayon). The three are placed here (stage.things by key: the films move and show them, c_yfilm.js PIECES5, THREE5) */
     const TABLE5 = (() => {
       const R = ROOM, top = 0.345;
       const P = { angry: { x: R.cx - 0.02, y: top, z: R.cz - 0.20, key: 'w5wuathanu', ry: Math.PI + 0.5 },
@@ -460,7 +460,8 @@
       if (p === 'walk' || p === 'hunt') { show(pho, true, st.pho); show(ton, true, st.ton); show(phoS, false); show(col, false); }
       /* case three: his teacher cross-legged on his cushion, the collector seated at the table's west end (c_cast.js casts
          each seated on his own body: put back at his home, at his rest) */
-      else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home); }
+      else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home);
+        PIECES5.set(true); }                                   // (his pieces laid out on the cloth: the film in lays them there, c_yfilm.js)
       if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       stains5.grp.visible = p === 'hunt';
       if (p === 'walk') walkersInit(); else walkers.list = [];
