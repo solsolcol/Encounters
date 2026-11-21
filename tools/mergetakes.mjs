@@ -152,6 +152,10 @@ if (cmd === 'list') {
       if (d(n.getWorldMatrix(), t.getWorldMatrix()) > 2e-4) restDiff.push(n.getName());
       const sp = n.getParentNode(), tp = t.getParentNode();
       if (!sp || !tp) continue;
+      // (v28.0: a parent that stands the same in the world in both files leaves the bone's tracks its own, so it is never
+      //  inverted: a PLAIN rig's armature (no finger bones) carries a scale of 0.01, which inv() refuses. Where the two
+      //  parents agree to 1e-6, the old test below found no re-expression either: every earlier merge is unchanged.)
+      if (d(sp.getWorldMatrix(), tp.getWorldMatrix()) < 1e-6) continue;
       const m = mul(inv(tp.getWorldMatrix()), sp.getWorldMatrix());
       if (d(m, IDENT) > 1e-3) rel.set(n.getName(), decomp(m));      // an axis change is of order 1; a deep chain's float noise 1e-5
     }

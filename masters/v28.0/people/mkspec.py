@@ -12,6 +12,8 @@
 """
 import json, math, sys
 BG = (0x5a, 0x5e, 0x66)
+import os
+HANDTIP = bool(os.environ.get('HANDTIP'))   # HANDTIP=1: each hand aimed at its lowest 16 cm (the fingers), not the band's middle
 
 def base(file, h, clip=None, at=None):
     m = {'file': file, 'h': h, 'x': 0, 'z': 0, 'ry': 0, 'aniso': 4}
@@ -49,6 +51,8 @@ def close(file, h, prefix, out):
         tip = cols[-1] if side > 0 else cols[0]
         span = int(0.17 / mm); xs = range(tip - span, tip + 1) if side > 0 else range(tip, tip + span + 1)
         pts = [(x, y) for x in xs for y in range(floorrow) if 0 <= x < W and F[y][x]]
+        if HANDTIP:   # (21 Nov, the nine: on a slim arm the band's middle is the wrist and the fingers fell out of the frame)
+            low = max(p[1] for p in pts); pts = [p for p in pts if p[1] > low - 0.16 / mm]
         return [X(sum(p[0] for p in pts) / len(pts)), Y(sum(p[1] for p in pts) / len(pts)), 0.04]
     hl, hr = hand(+1), hand(-1)
     fy = top - 0.125 * k

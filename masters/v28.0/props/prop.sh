@@ -21,7 +21,7 @@ for n in "$@"; do
   [ -f $SRC/remeshed-$n-$polys.glb ] || { echo "$n: remesh failed" | tee -a $SRC/props.log; continue; }
   if ERR=0.002 node tools/prepmeshy.mjs $SRC/remeshed-$n-$polys.glb assets/$key.glb $size $ax 1 $turn $px >> $SRC/props.log 2>&1; then
     rm $SRC/remeshed-$n-$polys.glb
-    CHROMIUM_PATH=/opt/pw-browsers/chromium timeout 300 node tools/shootmodel.mjs assets/$key.glb $OUT/$n --size=1100 >> $SRC/props.log 2>&1
+    CHROMIUM_PATH=/opt/pw-browsers/chromium sh tools/bslot.sh timeout 300 node tools/shootmodel.mjs assets/$key.glb $OUT/$n --size=1100 >> $SRC/props.log 2>&1
     echo "$n -> assets/$key.glb $(stat -c %s assets/$key.glb) bytes" | tee -a $SRC/props.log
   else echo "$n: prep failed" | tee -a $SRC/props.log; fi
 done
