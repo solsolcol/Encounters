@@ -1448,3 +1448,17 @@ fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
 553953a9a668b520f8155d2d51fb88264a2b41881f476abd9eb69752bbd18961  masters/v28.0/src/preremesh-zavier4.glb
 920ac96cf968bda2f4722729550c18d04c0af49754bbfce4482e2d8cdf7f7d72  masters/v28.0/src/props.log
+15dd431447d653a473dcebddce5e75b61e9b15460d2fa92775a81075af127140  masters/v28.0/src/rigged-zavier4.glb
+e53fcbed888386030d0d2d8091d95b372d0f632f9c522b325d67cbf8e86358d2  masters/v28.0/src/takes-zavier4-walking.glb
+c451ae194b7ad1c856e125a9cc4fc5e566f6bc2891549d294d417b3198c1cfee  masters/v28.0/src/thumb-nagastaff-back.png
+387261743a97cc24ef2f0ccbff27f36d705241d57bdff967eefd55ce9ce31679  masters/v28.0/src/thumb-nagastaff-front.png
+f6a4563d72e0a40061a9a6c08d7091e47b07c49c6bf03fc943dd79cdcc017eb0  masters/v28.0/src/thumb-nagastaff-left.png
+cc9afbac15f1f7f5b53d76beeb5920c104912d3a9b8c7d2d6fe51844310cd407  masters/v28.0/src/thumb-nagastaff-right.png
+2d2d060987b38a7183d9d4a3397ae7169b1f56e188384bab8210f4341f7e6890  masters/v28.0/src/thumb-zavier4-back.png
+0765ee4ccdf1c0e30ff876d0568556de7e40b22ae159104b478b33f2499dbf71  masters/v28.0/src/thumb-zavier4-front.png
+c2a097fd582c99cd0acd1da9303007aa3cf1902bafd255b517fe4bec411961b3  masters/v28.0/src/thumb-zavier4-left.png
+24de392d700e86f088fa9f745f1e4bfd974bf7fcf0c4db85c15fedeb0a890605  masters/v28.0/src/thumb-zavier4-right.png
+f1be85bc9ee806e3c8ad275dad538abf288edbf17fac6452b8e1508ce65dd5be  masters/v28.0/src/zavier4-bodies.log
+96cae4e9cc80448788b8cf65d2d4e638425e84f363d9ce2d72207c9500359774  masters/v28.0/src/zavier4-model.log
+fea771b8a950282198e8b2ba3212abef43c3a1b3fdd929670c13fb8514e8f891  masters/v28.0/src/zavier4-people.log
+f61599e3f3356c4326fe6cc81bd1effe6743649da0d314992bacfec325804ec7  masters/v28.0/src/zavier4-rig.log
