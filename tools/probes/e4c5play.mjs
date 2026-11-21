@@ -33,7 +33,12 @@ async function at(x, z, ry, pt = -0.08) {
   await frames(4);
 }
 async function tapMark(id) {
-  const q = await p.evaluate((id) => window.__enc.hotMarkAt(id), id);
+  let q = await p.evaluate((id) => window.__enc.hotMarkAt(id), id);
+  if (q && (q.z >= 1 || q.x < 20 || q.y < 60 || q.x > 370 || q.y > 800)) {
+    /* off the screen: he turns to it, as a player would */
+    await p.evaluate((id) => { const E = window.__enc, h = E.stage.hotspots.find(s => s.id === id); const dx = h.pos.x - E.yaw.position.x, dz = h.pos.z - E.yaw.position.z;
+      E.yaw.rotation.y = Math.atan2(-dx, -dz); }, id);
+    await frames(4); q = await p.evaluate((id) => window.__enc.hotMarkAt(id), id); log('  turned to', id); }
   if (!q || q.z >= 1 || q.x < 0 || q.y < 0 || q.x > 390 || q.y > 844) { log('  mark not on screen:', id, JSON.stringify(q)); return false; }
   await p.touchscreen.tap(q.x, q.y); log('  tapped', id, q.x.toFixed(0), q.y.toFixed(0)); await frames(3); return true;
 }

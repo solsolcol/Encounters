@@ -30,6 +30,7 @@
        toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
     const WAY = { turnS: 15.2, gateS: 15.2 + 8.5 };
     function wayS(x, z) { return z > -14.95 ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
+    const wayLat = (x, z) => z > -14.95 ? -x : z + 14.95;
     function wayAt(s, lat, out) {
       if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
       return out.set(-(s - WAY.turnS), 0, -14.95 + lat);
@@ -258,7 +259,7 @@
         const g = W0.P.group.position;
         W0.s = wayS(g.x, g.z);
         let ts = W0.s, tl = W0.lat;
-        const near = Math.abs(sp - W0.s) < 1.9;
+        const near = Math.abs(sp - W0.s) < 1.1 && Math.abs(wayLat(myX(), myZ()) - W0.lat) < 0.9;
         /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
         if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
         else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
@@ -266,7 +267,11 @@
         wayAt(ts, tl, _pv5);
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
         const moving = walkerMove(W0, _pv5.x, _pv5.z, wdt, pace);
-        if (!moving && !W0.looking && distTo(g.x, g.z) < 7) { W0.looking = true; gaze(W0.P, 'lens', { secs: 0.8, reach: 0.7 }); }
+        if (!moving && distTo(g.x, g.z) < 7) {
+          /* standing, he turns to the one he walks with (his whole body: v14.5), and looks at him */
+          const want = faceTo(g.x, g.z, myX(), myZ()), d0 = angTo(W0.P.group.rotation.y, want);
+          if (Math.abs(d0) > 0.5 || W0.turning) { W0.turning = Math.abs(d0) > 0.05; W0.P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); }
+          if (!W0.looking) { W0.looking = true; gaze(W0.P, 'lens', { secs: 0.8, reach: 0.7 }); } }
         if (moving) W0.looking = false;
         W0.lat = tl;
       }
@@ -357,21 +362,25 @@
     }
     const stains5 = stainsBuild();
     /* THE NINE, in the court from the moment he arrives (4.3): still, heads bowed, all facing the doors of the house,
-       standing between where he has been walking. The three large ones are prai[6..8] (the chapter's cast) */
-    const NINE_AT = [[-9.9, -12.9], [-7.2, -12.8], [-8.9, -11.6], [-7.7, -10.4], [-10.0, -10.1], [-8.4, -9.0], [-6.9, -8.2], [-9.6, -7.6], [-8.1, -6.9]];
+       standing between where he has been walking: the chapter's cast puts them at their places (c_cast.js PRAI5.home),
+       the play bows their heads */
+    /* (where they stand all evening, in the world's metres: the cast's places, read by the films too: c_yfilm.js NINE5) */
+    const NINE_AT = PRAI_STAND.map(a => { const w = courtWorld(a[0], a[1]); return [w.x, w.z]; });
+    const nineAt = () => NINE_AT;
+    let nineOn = false;
     function nineStand(on) {
-      const L = praiOf();
-      L.forEach((P, i) => { if (!P || !P.group) return; const a = NINE_AT[i % NINE_AT.length];
-        if (!on) { if (P.group.userData.p7) { P.group.visible = false; P.group.userData.p7 = false; } return; }
-        put(P, a[0], a[1], faceTo(a[0], a[1], GATE.x, HOUSE.face)); P.group.userData.p7 = true;
-        if (P.ready) P.group.visible = true; else whenReady(P, (Q) => { if (Q.group.userData.p7) Q.group.visible = true; });
-        gaze(P, [a[0] + Math.sin(P.group.rotation.y) * 1.1, 0.0, a[1] + Math.cos(P.group.rotation.y) * 1.1], { secs: 0.1, reach: 0.9, down: 0 }); });
+      if (on === nineOn && !on) return;
+      nineOn = on;
+      if (!on) { if (castPhaseNow === 'hunt') PRAI5.home('walk'); return; }
+      PRAI5.home('hunt');
+      for (const P of praiOf()) whenReady(P, (Q) => { if (!nineOn) return; const g = Q.group.position, ry = Q.group.rotation.y;
+        gaze(Q, [g.x + Math.sin(ry) * 1.1, 0.0, g.z + Math.cos(ry) * 1.1], { secs: 0.1, reach: 0.9, down: 0 }); });
     }
     /* whether any of the nine is in the picture within reach: the wave runs out and they are there (4.3: seen the first
        time his sight is open in the court, or with them in front of him through the open door) */
     function nineInView() {
       camera.updateMatrixWorld();
-      for (const a of NINE_AT) { if (distTo(a[0], a[1]) > 9) continue; _hv5.set(a[0], 1.1, a[1]).project(camera);
+      for (const a of nineAt()) { if (distTo(a[0], a[1]) > 9) continue; _hv5.set(a[0], 1.1, a[1]).project(camera);
         if (_hv5.z < 1 && Math.abs(_hv5.x) < 0.95 && Math.abs(_hv5.y) < 0.95) return true; }
       return false;
     }
@@ -439,14 +448,16 @@
        made as a phase begins, under the film or the curtain that hands to it: v24.12). Grandmaster Pho stands for the
        walkway and the hunt and sits for the table; Ton is with him until the table; the nine stand in the court from the
        hunt on (the fight's own from its brief) */
+    let castPhaseNow = null;
     function castPhase(p) {
+      castPhaseNow = p;
       const st = STATION[p] || STATION.walk, pho = castOf('pho'), phoS = castOf('phoS'), ton = castOf('ton');
       const show = (P, on, at) => { if (!P) return; if (at) put(P, at.x, at.z, at.ry);
         if (on) { if (P.ready) P.group.visible = true; else whenReady(P, (Q) => { Q.group.visible = true; }); } else P.group.visible = false;
         if (on) { rest(P, 0); gaze(P, null); P.rate = 1; } };
       if (p === 'walk' || p === 'hunt') { show(pho, true, st.pho); show(ton, true, st.ton); show(phoS, false); }
       else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true); }
-      nineStand(p === 'hunt');
+      if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       stains5.grp.visible = p === 'hunt';
       if (p === 'walk') walkersInit(); else walkers.list = [];
     }
@@ -466,6 +477,7 @@
     function playFrame(wdt, st) {
       threadsFrame(wdt, st);
       presTick(wdt);
+      if (nineOn && st !== 'cine') PRAI5.tick(wdt);
       if (st !== 'play') return;
       smellTick(wdt);
       walkersTick(wdt);
@@ -477,6 +489,6 @@
       threads.length = 0; thMesh.visible = false;
       walkers.list = []; urgeNow = null;
       Object.assign(sight, { heat: 0, was: false, shutPeak: 0, topArmed: true, restSaid: true, step: -1 });
-      stains5.grp.visible = false; nineStand(false);
+      stains5.grp.visible = false; nineOn = false; castPhaseNow = null;
       pres.angry.flinch = 0;
     }
