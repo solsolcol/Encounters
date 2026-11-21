@@ -1445,3 +1445,6 @@ c43bb9cc489a288050835bceb8abad7ccbb921e960dfb3d864c4821898413a28  masters/v28.0/
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v28.0/src/jobs.json.lock
 2a183811bd97545e4f7a3604a7b8de68ca3d40dfabc60e19dd34c9d91537dd02  masters/v28.0/src/nagastaff-model.log
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
+36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
+553953a9a668b520f8155d2d51fb88264a2b41881f476abd9eb69752bbd18961  masters/v28.0/src/preremesh-zavier4.glb
+920ac96cf968bda2f4722729550c18d04c0af49754bbfce4482e2d8cdf7f7d72  masters/v28.0/src/props.log

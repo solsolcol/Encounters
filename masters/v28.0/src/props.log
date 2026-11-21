@@ -1,0 +1,42 @@
+  remesh nagastaff 30000 IN_PROGRESS 1%
+  remesh nagastaff 30000 IN_PROGRESS 35%
+  remesh nagastaff 30000 IN_PROGRESS 64%
+  remesh nagastaff 30000 IN_PROGRESS 89%
+  remesh nagastaff 30000 IN_PROGRESS 90%
+  remesh nagastaff 30000 SUCCEEDED 100%
+remesh done nagastaff 30000 93498988
+  CONTRACT: w 0.333  h 1.400  l 0.115 m (x -0.166..0.166, z -0.058..0.058)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5nagastaff.glb: 31130 -> 31130 triangles; 89.2 MB -> 3089 KB
+{
+ "info": {
+  "size": [
+   0.3327494068520038,
+   1.399999976158142,
+   0.11518906020454575
+  ],
+  "min": [
+   -0.1663747034260019,
+   0,
+   -0.057594530102272876
+  ],
+  "max": [
+   0.1663747034260019,
+   1.399999976158142,
+   0.057594530102272876
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 31130
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.166,0,-0.058],[0.166,1.4,0.058]],"size":[0.333,1.4,0.115]}
+errs []
+nagastaff -> assets/w5nagastaff.glb 3163080 bytes
