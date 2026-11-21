@@ -112,3 +112,7 @@ masters/*/src/*.fbx
 
 # v26.0: the four sounds made in code are remade from their seeds (masters/v26.0/sound/synth.py; sound.sh does it when they are absent)
 masters/v26.0/sound/made/
+
+# v28.0: a recipe's temporary folder (the voices' chain writes its levelled wavs here and remakes them): never committed
+masters/*/voices/_tmp/
+masters/*/sound/_tmp/
