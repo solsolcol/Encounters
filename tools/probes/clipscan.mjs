@@ -122,7 +122,9 @@ const ANALYSE = ([VOX, R, FLAT, CX = 0, CZ = 0]) => {
         va.applyMatrix4(m4); W[i * 3] = va.x; W[i * 3 + 1] = va.y; W[i * 3 + 2] = va.z; bb.add(va);
       }
       if (bb.max.y - bb.min.y < FLAT && bb.max.y < 0.3) { skipped.flat++; continue; }
-      if (bb.min.x > R || bb.max.x < -R || bb.min.z > R || bb.max.z < -R) { skipped.far++; continue; }
+      /* (21 Nov, FIGHT-IN's find) far from the range's own centre (CX, CZ), not from the world's origin: a set 240 m out was
+         dropped whole and read clean with nothing measured */
+      if (bb.min.x > CX + R || bb.max.x < CX - R || bb.min.z > CZ + R || bb.max.z < CZ - R) { skipped.far++; continue; }
       if (bb.max.x - bb.min.x > 2 * R && bb.max.z - bb.min.z > 2 * R) { skipped.far++; continue; }   // a dome, a ring
       /* WHICH OBJECT each triangle belongs to:
          - a copy of an instanced model: its materials are separate meshes, joined by the copy's own matrix;
@@ -252,6 +254,8 @@ const ANALYSE = ([VOX, R, FLAT, CX = 0, CZ = 0]) => {
                  a: { label: OA.label, min: OA.min.map(r2), max: OA.max.map(r2) }, b: { label: OB.label, min: OB.min.map(r2), max: OB.max.map(r2) } });
   }
   pairs.sort((x, y) => (x.rest - y.rest) || (y.hits - x.hits));
+  /* (21 Nov) NOTHING MEASURED IS NEVER CLEAN: a range that holds no object is a wrong range, so it stops the reader */
+  if (!objs.length) throw new Error('clipscan: NOTHING MEASURED, 0 objects within ' + R + ' m of (' + CX + ', ' + CZ + '); skipped ' + JSON.stringify(skipped));
   return { objects: objs.length, people: nPeople, tris, cells: cells.size, candidates: cand.size, skipped, pairs,
            objs: objs.map(O => ({ label: O.label, min: O.min.map(v => +v.toFixed(2)), max: O.max.map(v => +v.toFixed(2)) })) };
 };
