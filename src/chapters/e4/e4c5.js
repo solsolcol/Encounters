@@ -2013,7 +2013,7 @@
                   m from Ton, 567 between them. The doorway's floor is 0.8 m wide and 0.83 m deep to the sofa's front (z -4.67),
                   the open leaf along its west side: the three in it as a group, Ton in its west half, Jun in its east half, both
                   at the threshold, Mr Koh a step behind and between them, clear of the sofa) */
-               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.66, z: -5.22, ry: Math.PI }, jun: { x: -7.86, z: -5.22, ry: Math.PI },
+               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.66, z: -5.22, ry: Math.PI }, jun: { x: -7.72, z: -5.24, ry: Math.PI },   // (Jun 0.14 m east: his arm crossed Mr Koh's, clipscan)
                koh: { x: -8.28, z: -4.98, ry: Math.PI } },
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },
@@ -6235,12 +6235,17 @@
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
                                               // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
         laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
-        entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3], [0.86, -2.09], [-0.51, -2.6]],
+        entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45, 0.09], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3, 0.39], [0.86, -2.09, 0.58], [-0.51, -2.6]],
                                               // (R25, 21 Nov: spread so no two touch: each body's own ground at every 20 cm
                                               // of height (tools/probes/footprint.mjs), turned to face him, 12 cm apart or
                                               // more, clear of the slippers, the bag, the reel, the cloth and the wall lamps,
                                               // one only before the doorway; the two heavies had stood 0.46 m into each
                                               // other and a hide on the slippers, FILMS' clipscan of the turn: FIGHT-IN)
+                                              // A slot's third number is a beat, in seconds, before its first move once risen:
+                                              // each that rises nearer him than its old slot did waits what its own pace takes
+                                              // to cover the difference, so it reaches him on the old line's timing (the 3rd
+                                              // 0.05 m at 0.55, the 6th 0.22 m at 0.55, the 7th, a heavy, 0.46 m at 0.8: no
+                                              // clear slot at its old 3.38 m); one that rises farther, none
         entryJitter: 0.25,
         // THE TWO OF THEM
         phoWalk: 2.3, zavWalk: 1.4,           // (R25, 21 Nov: "the characters walking speed feels sluggish, make it faster")
@@ -6781,7 +6786,7 @@
             if (st.stageT >= next.due && freeN < (st.lead ? n.leadMax : cap) && st.stageT - st.lastEntry >= n.entryGap) {
               const at = n.entryAt[(next.id - 2) % n.entryAt.length], j = n.entryJitter;
               const r1 = io && io.rand ? io.rand() : 0.5, r2 = io && io.rand ? io.rand() : 0.5;
-              enter(st, next, at[0] + (r1 - 0.5) * 2 * j, at[1] + (r2 - 0.5) * j);
+              enter(st, next, at[0] + (r1 - 0.5) * 2 * j, at[1] + (r2 - 0.5) * j); next.stop = at[2] || 0;   // (its beat once risen: entryAt)
             }
           }
           // a hold begins: at six left, and at four (each once a fight)
@@ -9405,7 +9410,9 @@
          each seated on his own body: put back at his home, at his rest) */
       else if (p === 'table' || p === 'ask') { show(pho, false); show(ton, false); show(phoS, true, phoS && phoS.home); show(col, true, col && col.home);
         PIECES5.set(true); }                                   // (his pieces laid out on the cloth: the film in lays them there, c_yfilm.js)
-      if (p === 'hunt') nineStand(true); else if (nineOn) { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
+      /* (the nine stand in the court for the hunt; the fight places its own; in every other phase of the play they are put
+         away, so nothing a fight left stands there on a Continue or a phase set: clipscan found them by the door at the table) */
+      if (p === 'hunt') nineStand(true); else { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       if (p === 'walk') walkersInit(); else walkers.list = [];
     }
     /* his teacher, quietly, already beside him (4.3: "Nine Prai."): a step behind his shoulder, out of the picture, where
@@ -11250,7 +11257,7 @@
           { t: T.co5t2 + SECS.co5t2 - 0.35, name: 'col', eye: me, at: COL, fp: 50, fd: 44 },   // (on him to his line's end: from 1.2 s before it a phone lost him, e4c5filmread FRAME)
           /* (it ends on his seat's own view and KEEPS it (z_tail.js: keep.view), where the table's play seats him (c_story.js
              seatHim): the view it began in was the court's, where the bag tied film left the rig) */
-          { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: -0.25, fp: PLAYFOV5, fd: PLAYFOV5 }
+          { t: T.end, name: 'table', eye: me, yaw: STATION.table.at.ry, pitch: SIT5.pitch, fp: PLAYFOV5, fd: PLAYFOV5 }   // (the seat's own look, PLAY's SIT5: no turn as play takes over)
         ]);
       },
       end() { fmLens(PLAYFOV5); PIECES5.set(true); endPhase5('table'); }

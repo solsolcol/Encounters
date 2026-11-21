@@ -273,13 +273,14 @@
       const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNCol: { value: new THREE.Color(0xff2a4a) }, uNGold: { value: new THREE.Color(0xffc860) } };
       const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null };
       /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
-         corner and round it a little inside the walls, back to where it rose */
+         corner and round it a little inside the walls: west side, gate end, east side, where its head turns in toward the
+         court and rears over it, facing what it guards them from */
+      /* (R25: laid round the whole court, its reared head 2 m long ended on the loop's own start, where the dive from the
+         arch also lands: the head is the model's own now, rigid, and needs room of its own) */
       function pathFor(sx, sz) {
-        const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32;
-        const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, (z0 + z1) / 2 + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        /* round the court's edge, once, a rounded rectangle from the house's west corner: west side, gate end, east side,
-           house end, closing past where it began */
-        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, z1 - r], [x1 - r, y, z1], [x0 + r + 0.2, y, z1], [x0, y, z1 - r - 0.1]];
+        const C = COURT, ins = 0.42, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;
+        const pts = [[sx, 1.4, sz], [sx, 3.2, sz + 0.2], [sx - 0.3, 5.0, sz + 1.0], [(x0 + x1) / 2, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
+        const r = 0.7, loop = [[x0, y, z1 - r], [x0, y, z0 + r], [x0 + r, y, z0], [x1 - r, y, z0], [x1, y, z0 + r], [x1, y, zm - 0.9], [x1 - 0.3, 0.75, zm - 0.05], [x1 - 0.85, 1.15, zm + 0.12]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
