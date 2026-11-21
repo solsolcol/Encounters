@@ -1470,6 +1470,7 @@ dcf2b356ce3c8530f2824af3852dfbda99dc6387e966cdcbaf8eeab9e64a3df9  masters/v28.0/
 6cf15de96f79a11abb86477badbe7c50bec41b8b869e24a379a86ee669ab8fdb  masters/v28.0/src/naga-prep.log
 2a183811bd97545e4f7a3604a7b8de68ca3d40dfabc60e19dd34c9d91537dd02  masters/v28.0/src/nagastaff-model.log
 30ee596b3f2e684d645a1d175a9df809f526ccabd951141c3e3f2aeda0c82cee  masters/v28.0/src/original-altarshelf.glb
+62746e05c0d6b6aab38ddc3b1d2ee559b908e995b70077b2ca6097896a60219d  masters/v28.0/src/original-bagopen.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
