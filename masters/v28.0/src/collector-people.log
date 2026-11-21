@@ -1,0 +1,24 @@
+wrote masters/v28.0/src/merged-collector.glb 60831740 bytes
+["Sitting_Answering_Questions (27 ch, 9.67 s)","Idle_3 (27 ch, 9.97 s)","Talk_with_Hands_Open (27 ch, 3.97 s)","Walking (27 ch, 1.03 s)"]
+calmarms masters/v28.0/src/merged-collector.glb: the body's left 1.00,0.00,-0.00, its face 0.00,0.00,1.00
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 2.5..8.1; swing -5.6..4.1 -> -5.6..4.1 | Right out 12.6..21.9 (mean 17.4) -> 3.1..8.7; swing -5.2..2.9 -> -5.2..2.9
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: Left out 7.2..24.5 (mean 15.9) -> 2.6..11.3; swing -25.3..30.3 -> -17.7..21.2 | Right out 8.8..30.2 (mean 19.0) -> 1.9..12.6; swing -23.6..28.4 -> -16.5..19.9
+wrote masters/v28.0/src/merged-collector.glb
+  fins: 0 triangles hanging from the body by one edge taken out (0.0 mm2 in all, the largest 0.0 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (2), Accessor (5)
+  177961 vertices in 157268 positions; 8882 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.1s] 177961 points joined into 157268 places; 314540 triangles
+  repaint [   0.2s] the face 21597 triangles, the rest of the head 29931, the hands 27304, the body 235708 (looking [0.0, 0.0, 1.0])
+  repaint [ 371.4s] xatlas: 2029 charts, 73% of the square used
+  repaint [ 378.0s] packed again: 2029 charts in a 3507x3474 square drawn at 2048 (77% used), a margin of 3.5 pixels at 2048
+  repaint [ 388.1s] 2 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (2, 1 of them laid back whole in the chart round them, 1 at one point); together 5.0 mm2 of the body, the largest 4.212 mm2 with an edge of 5.58 mm
+  repaint [ 388.2s] texels a metre at 2048, before -> now: face 1362 -> 2224, head 1321 -> 1645, hands 1569 -> 1048, body 1102 -> 836; 2029 charts, margin 3.5 px; 2 unplaced corners mended
+  repaint [ 389.3s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 412.9s] baked
+  repaint [ 412.9s] written
+  repaint: 177961 points -> 209013 (31052 copied along the new seams), 314540 triangles; texels a metre at 2048, before -> now: face 1362 -> 2224, head 1321 -> 1645, hands 1569 -> 1048, body 1102 -> 836; 2029 charts, margin 3.5 px; 2 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5collector.glb: tris 314540 -> 314540, 4 takes, 4065 KB
