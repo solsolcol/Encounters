@@ -606,7 +606,7 @@
         /* MASTER ZAVIER, SEEN: standing where the fight puts him, eyes half shut, lips moving (his trance's take is CAST's
            to make: until it lands he stands in his rest), in his cage; his teacher's gold; the trance's look */
         if (turned) { whenReady(cast.zav, (P) => { fmShow(P, true); put(P, F.zav.x, F.zav.z, COURT5.heading + Math.PI);
-            const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); lookNow(P, [F.lesson.x, 1.4, F.lesson.z], 0.5, 0.7); });
+            const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); lookNow(P, [F.lesson.x, 1.4, F.lesson.z], 0.5, 0.7); });
           CAGE5.set({ k: smo(c01((t - T.leave) / 1.2)), x: F.zav.x, z: F.zav.z, t });
           TRANCE5.set(1, t); TRANCE5.pools(F.zav, F.pho, 1, 1); TRANCE5.gold(smo(c01((t - T.leave - 0.5) / 1.5))); }
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
@@ -680,7 +680,7 @@
           if (t < T.plant + 4.2) { pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant)); if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry); }
           else { fmRest(P, 'pho', t); STICK5.plant(sx, sz, pz.ry); }
           lookNow(P, t < T.lay ? [sx, 3.8, sz + 0.6] : [zz.x, 1.5, zz.z], 0.6, 0.7); });
-        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); });
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
         CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart });
@@ -764,7 +764,7 @@
         if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
         /* the cage thins; Master Zavier seen until the violet */
         const kc = 1 - smo(c01((t - T.thin) / 1.4));
-        if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.violet + 0.45); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', 0.27); });
+        if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.violet + 0.45); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
           CAGE5.set({ k: kc, x: zz.x, z: zz.z, t }); TRANCE5.set(1 - smo(c01((t - T.thin) / 2.0)), t); TRANCE5.pools(zz, pz, kc, kc); TRANCE5.gold(kc); }
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
         /* his own hands before him, shaking, as his sight comes home to them */

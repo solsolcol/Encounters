@@ -98,6 +98,10 @@
     cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Walking', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
+    /* until he has a rest, the moment of his own walk where he most nearly stands (measured on his file, 21 Nov: at 0.03 s
+       his feet 17 cm apart and level within 6 cm, his hands at his sides; the 0.27 s first held was mid-stride, his feet
+       68 cm apart) */
+    const ZAV_STAND5 = 0.03;
     /* THE COLLECTOR (people/RECORD.md 3b: ONE level, his full body, 314,540 triangles, drawn at every distance: he sits
        across the table inside 2.2 m), at his cushion at the table's west end. Seated by his own body on the cushion
        (o.seat.down: his bottom on it, each leg laid down to the floor from there). His four takes, as CAST-2 measured them
