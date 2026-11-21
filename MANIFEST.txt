@@ -1507,6 +1507,7 @@ bef3583cb3df9ce6cc35f99342142a61cf7e9e6359eaee203322d6cf20939bef  masters/v28.0/
 1701d885a6e6e8adc5eded953532d06ffc10d39484cfbf65e1bd4f170a0f3a65  masters/v28.0/src/original-sofa.glb
 6f9e10bcdba5b792e7da6d7afd08574a395590b44b6ef54839d36e80cab27e84  masters/v28.0/src/original-staffcloth.glb
 a6e2cfb9e07ba6001908179218f41bd37c7331ec36b2401a1f6cccd846e02554  masters/v28.0/src/original-staffwrap.glb
+0ba08797b593f7ab692c7c7bb512e5c479443cfd7067f87764f3e4d927563a15  masters/v28.0/src/original-tablelamp.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
 1047915f3740de26778949faaedc209be48304d15a2b981f188b46b137c95672  masters/v28.0/src/preremesh-zavier.glb
