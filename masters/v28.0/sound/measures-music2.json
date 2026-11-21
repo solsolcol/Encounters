@@ -1,0 +1,58 @@
+{
+ "u5m7band_a": {
+  "len": 96.03,
+  "asked": 96,
+  "peak": 1.7,
+  "level": -13.3,
+  "loud": -8.0,
+  "silent": 0.0,
+  "first": 0.0,
+  "last": 95.3,
+  "phone": 0.48,
+  "voice": 0.38,
+  "sub120": 0.44,
+  "median": -13.5,
+  "swing": 28.5,
+  "holes": [
+   95
+  ],
+  "words": ""
+ },
+ "u5m7band_b": {
+  "len": 96.03,
+  "asked": 96,
+  "peak": 1.8,
+  "level": -13.0,
+  "loud": -7.2,
+  "silent": 0.0,
+  "first": 0.0,
+  "last": 94.3,
+  "phone": 0.56,
+  "voice": 0.44,
+  "sub120": 0.38,
+  "median": -13.7,
+  "swing": 38.6,
+  "holes": [
+   94,
+   95
+  ],
+  "words": ""
+ },
+ "u5m7band_c": {
+  "len": 96.03,
+  "asked": 96,
+  "peak": 1.4,
+  "level": -13.4,
+  "loud": -7.2,
+  "silent": 0.0,
+  "first": 0.0,
+  "last": 96.0,
+  "phone": 0.46,
+  "voice": 0.34,
+  "sub120": 0.46,
+  "median": -13.6,
+  "swing": 8.5,
+  "holes": [],
+  "words": ""
+ }
+}
