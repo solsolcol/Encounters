@@ -1125,3 +1125,4 @@ dfb8be09ab2373e7bacfc9bdd17e0568b36de6ef748107fda9293851fa62b96b  masters/v27.0/
 a7c4a03fa69bf8bb4cb0a75cc3e9ee9d059ad2b126f512a78d7823b79e22e4c3  masters/v27.0/src/original-bougain.glb
 d7566c4442ff837cf578247f4bf2834c005596eda6d16e78be741326819d4d9a  masters/v27.0/src/original-cabinet.glb
 18f6f71cc0a48e200910356729a35f4fb1439535166c0ed1c4488680f6a6c1f5  masters/v27.0/src/original-clock.glb
+08f522c8a9d2b6e616c2b6b3ff11e7b1cd22a9246d3b42e2a235cd6e3dff6b58  masters/v27.0/src/original-clothesrack.glb
