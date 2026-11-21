@@ -710,7 +710,11 @@
       box(mStop, (DOOR_FRONT.x0 + DOOR_FRONT.x1) / 2, DOOR_FRONT.h - 0.035, zs, DOOR_FRONT.x1 - DOOR_FRONT.x0, 0.07, 0.03); }
     things.door = place('w5frontdoor', 0.395, 0, 0, Math.PI, { name: 'frontdoor', wood: true });
     world.remove(things.door); doorHinge.add(things.door);
-    function doorOpen(k) { doorHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 90 * DEG; }
+    /* (R25: wide open it stands at 85.5 degrees, not 90: at 90 the leaf's back crossed the jamb's wall piece at (-8.93, 1.05,
+       -5.50), 126 crossings in the devotee film's slippers shot (FILMS' clipscan; 0.95 of the way clears it). The one number:
+       the hunt and every film open it through here) */
+    const DOOR_OPEN_DEG = 85.5;
+    function doorOpen(k) { doorHinge.rotation.y = -Math.max(0, Math.min(1, k)) * DOOR_OPEN_DEG * DEG; }
     solidXZ(DOOR_FRONT.x0 - 0.05, LIVING.z0 - 0.05, DOOR_FRONT.x0 + 0.07, LIVING.z0 + 0.75);                 // the leaf, open, along the wall                 // the leaf, open, along the wall
     /* --- inside, by the door: the shoe cabinet against the front wall, west of the door, scaled to 0.35 m deep and
        darkened (RECORD.md 4; its ragged edges stay); the place under it is the first stain's */
