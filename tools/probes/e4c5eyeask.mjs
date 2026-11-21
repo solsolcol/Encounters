@@ -64,9 +64,10 @@ for (const [name, opt] of [['phone', { viewport: { width: 390, height: 844 }, de
     }, s);
     report[name]['s' + s] = m;
   }
+  console.log('MEASURE ' + name + ' ' + JSON.stringify(report[name]));
   await p.evaluate(() => { document.getElementById('visionBtn').style.transform = 'scale(1.32)'; });
   const vw = opt.viewport.width;
-  await p.screenshot({ path: OUT + '/' + name + '-column.png', clip: { x: Math.max(0, vw - 260), y: 60, width: 260, height: 420 } });
+  await p.screenshot({ path: OUT + '/' + name + '-column.png', clip: { x: Math.max(0, vw - 260), y: 60, width: 260, height: 420 }, timeout: 300000 });
   await p.evaluate(() => { document.getElementById('visionBtn').style.transform = ''; window.__askHold = false; });
   await ctx.close();
 }

@@ -757,9 +757,12 @@
           st.said.ph5fe = 0; sayOnce(st, 'ph5fe');               // (said each time it happens)
         } else if (ph.wind <= 0) {
           ph.wind = 0; ph.waveWait = st.hold ? n.holdRetry : n.waveWait;
-          ph.ring = { r: 0, x: ph.x, z: ph.z, touched: 0, gathered: 0 };
+          /* (out from where the stick's foot strikes the paving when the stage says where that is (ph.strike: opt-in, the
+             sim never sets it), else from where he stands) */
+          const sx = ph.strike ? ph.strike.x : ph.x, sz = ph.strike ? ph.strike.z : ph.z;
+          ph.ring = { r: 0, x: sx, z: sz, touched: 0, gathered: 0 };
           for (const p of st.prai) if (p.st === 'rushing') { ph.ring.touched |= 1 << p.id; throwBack(st, p, ph.ring); }   // crowded round him: the ring's first instant
-          st.ev.push({ e: 'wave', x: ph.x, z: ph.z });
+          st.ev.push({ e: 'wave', x: sx, z: sz });
           if (!st.firsts.waveOut) { st.firsts.waveOut = true; sayOnce(st, 'ju5c1', 5.0); }
         }
       }

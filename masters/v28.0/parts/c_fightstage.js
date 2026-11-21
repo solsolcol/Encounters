@@ -999,6 +999,7 @@
     }
 
     /* ---------------------------------------------------------------- THE FIGHT'S FRAME (c_story.js storyTick, in play) */
+    const _fsFoot = new THREE.Vector3();
     function fightTick(wdt) {
       if (!FS5.on || !FS5.st || !kit || !kit.tagState) return;
       FS5.wall += wdt;
@@ -1030,6 +1031,8 @@
         const pk = FS5.pick;
         if (pk && q.slot && q.slot !== 'swap' && q.slot !== 'together') { if (pk[0] === 'p') input.pick = +pk.slice(1); else input.pickCloud = +pk.slice(1); FS5.pick = null; }
       } else if (FS5.swNeed) { input.act = 'SWITCH'; FS5.swNeed = false; }
+      /* (where the stick's foot stands while his hand holds it: the gold's wheel goes out from the point it strikes) */
+      { const f = typeof PHOGRIP5 === 'object' && PHOGRIP5.footAt ? PHOGRIP5.footAt(_fsFoot) : null; st.pho.strike = f ? fsL(f.x, f.z) : null; }
       /* 3. the step */
       if (st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won' && st.stage !== 'naga') { fsStep(input, dt);
         /* (A PROBE'S SPEED, inert unless a probe sets it (lab.speed): on a box that draws a frame in seconds the rules are
@@ -1221,6 +1224,7 @@
       grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
       gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
       gripTune(o) { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.tune(o) : null; },
+      gripMove() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.move() : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -1491,33 +1495,113 @@
          in the game, every number jointscan's own); the hand's turn along the forearm carried by the forearm (thumb-up is a
          forearm's middle); a step nearer him (0.22 m) the stick's line crossed his robe; leaned, its top forward, it met
          his shins; lifted 6 cm as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). In
-         every take but a cast, by the casts' weights: in a cast (the throw, the gold, the bag, the Naga's planting) his own
-         take's arm carries it */
-      const STAFF = { fist: [-0.30, 1.10, 0.28], lift: 0.06, out: 15 * D2R, pole: [0.36, -0.65, -0.66], hm: [0.805, 0, 0.593], lean: 0,
-                      casts: /^(Charged_Spell_Cast|mage_soell_cast|Right_Hand_Sword_Slash)/ };
+         every take, his casts too (the lead's Go of 21 Nov, R25: "in the three acts the right arm keeps the staff and the
+         stick makes its own move ... His take plays on the rest of him": a cast's own arm carried the stick across his face
+         in the throw, upside down over his head in the gold, and through him in the planting) */
+      const STAFF = { fist: [-0.30, 1.10, 0.28], lift: 0.06, out: 15 * D2R, pole: [0.36, -0.65, -0.66], hm: [0.805, 0, 0.593], lean: 0 };
+      /* THE STICK'S OWN MOVES IN HIS ACTS, on his take's own clock (a pure function of the take's moment, so a probe's pose and
+         a slow phone land on the same picture), each the fist's way from where it stands at rest, in his own frame (out:
+         to his left +, up, on: before him +, metres) and the stick's turn (tip: its head forward +, lean: its head out to his
+         right +, degrees). LEARNED first from real photographs (masters/v28.0/m8 ref notes; none kept in the repository):
+           a man pointing a long stick one-handed at what he means, its top toward it and his hand below its middle: the
+             upper arm raised forward and out about 45 degrees, the elbow open about 130, the wrist bent back about 15,
+             the stick 16 degrees from upright, the other hand down at his side;
+           a man standing with a tall staff planted beside his right foot: his hand at two thirds of his height, his upper
+             arm hanging, his forearm level and forward, his wrist straight, the staff upright, its foot a hand outside his
+             foot; a man setting a stick down ahead of his front foot: its foot struck ahead, his wrist straight.
+         FIRE (mage_soell_cast_7): lifted and held off his face as he winds, then THRUST as his step carries him in (the
+           body's own travel added: follow), his fist out and up, the stick tipped forward so the Naga's head goes toward
+           what he fires at and the ball leaves its mouth at the top; held as the ball goes, then home with his step, its
+           foot set down on the paving.
+         THE GOLD (Charged_Spell_Cast): planted through his gather (his arm folds as he sinks), lifted as he rises, its head
+           leaned out away from his face, and STRUCK down onto the paving at the top, where the wheel goes out from (the
+           strike: driven into the ground, never eased onto it); planted while the wheel goes out.
+         THE PLANTING (the Naga's film, Charged_Spell_Cast_1): lifted, carried over the place the film stands it (PLANT_AT)
+           and struck down there at 1.7 s, where the film lets it stand.
+         THE BAG (mage_soell_cast_8): planted; his other hand draws.
+         Each key [moment, out, up, on, tip, lean, shape]: 'strike' a fall into the paving under a take his act plays eased
+         (the span slows to its top: the rest of the fall is sped to meet it), 'drive' a fall on a film's even clock */
+      const MOVES = {
+        mage_soell_cast_7: { follow: 1, keys: [[0.45, 0, 0, 0, 0, 0], [0.66, -0.03, 0.04, 0, 0, 0], [0.95, 0, 0.15, 0.24, 20, 0], [1.30, 0, 0.14, 0.22, 18, 0], [2.00, 0, 0, 0, 0, 0]] },
+        Charged_Spell_Cast: { follow: 0, keys: [[0.50, 0, 0, 0, 0, 0], [1.55, 0, 0, 0, 0, 0], [1.88, -0.06, 0.18, 0.02, 0, 8], [2.00, 0, 0, 0, 0, 0, 'strike']] },
+        Charged_Spell_Cast_1: { follow: 0, plant: true, keys: null },
+        mage_soell_cast_8: { follow: 0, keys: [[0, 0, 0, 0, 0, 0]] }
+      };
+      /* where the Naga's film stands the stick: 0.42 m before him and 0.18 to his right (c_yfilm.js TOGETHER, its own two
+         numbers), the stick's own origin there; his fist brings its shaft down onto that place, the stick turned as his hand
+         holds it (plantYaw) */
+      const PLANT_AT = [-0.18, 0.42];
+      function plantKeys() {
+        const ph = Math.PI / 2 - STAFF.out, cx = STICK_C[0] * Math.cos(ph) + STICK_C[1] * Math.sin(ph), cz = -STICK_C[0] * Math.sin(ph) + STICK_C[1] * Math.cos(ph);
+        const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2];
+        MOVES.Charged_Spell_Cast_1.keys = [[0, 0, 0, 0, 0, 0], [0.55, 0, 0, 0, 0, 0], [1.25, dx * 0.6 - 0.04, 0.20, dz * 0.6, 0, 6], [1.50, dx - 0.02, 0.22, dz, 0, 3], [1.70, dx, 0, dz, 0, 0, 'drive']];
+      }
+      plantKeys();
+      /* his hips' place across a take that carries him (the throw's step: 0.35 m to his right and 0.22 on by its top), read
+         from his file once his body has landed (behind the loading curtain), so the stick goes with him */
+      const HIPS = {};
+      whenReady(cast.pho, (P) => {
+        const hb = boneOf(P, 'Hips'); if (!hb || !P.mixer) return;
+        const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k] || 0, P.acts[k].timeScale];
+        const v = new THREE.Vector3();
+        for (const name in MOVES) { const A = P.acts[name]; if (!MOVES[name].follow || !A) continue;
+          const d = A.getClip().duration, N = 48, xs = [], zs = [];
+          for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+          for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-3, d * i / N); P.mixer.update(0); P.group.updateMatrixWorld(true);
+            hb.getWorldPosition(v); P.group.worldToLocal(v); xs.push(v.x); zs.push(v.z); }
+          HIPS[name] = { d, N, xs, zs }; }
+        for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
+        P.mixer.update(0); personSettle(P);
+      });
+      const hipsAt = (name, u, o) => { const H = HIPS[name]; if (!H) { o[0] = 0; o[1] = 0; return o; }
+        const f = Math.max(0, Math.min(H.N, u / H.d * H.N)), i = Math.min(H.N - 1, Math.floor(f)), s = f - i;
+        o[0] = H.xs[i] + (H.xs[i + 1] - H.xs[i]) * s; o[1] = H.zs[i] + (H.zs[i + 1] - H.zs[i]) * s; return o; };
+      const MV = { x: 0, y: 0, z: 0, tip: 0, lean: 0, take: null, u: 0, w: 0 }, _h0 = [0, 0], _h1 = [0, 0];
+      function moveOf(P) {
+        MV.x = MV.y = MV.z = MV.tip = MV.lean = 0; MV.take = null; MV.w = 0;
+        const w = P.w || {}; let best = null, bw = 0;
+        for (const nm in MOVES) { const k = w[nm] || 0; if (k > bw && P.acts[nm] && MOVES[nm].keys) { bw = k; best = nm; } }
+        if (!best || !(bw > 0.001)) return MV;
+        const M = MOVES[best], K = M.keys, u = P.acts[best].time;
+        let i = 0; while (i < K.length - 1 && u >= K[i + 1][0]) i++;
+        const a = K[i], b = K[Math.min(K.length - 1, i + 1)];
+        const s = b[0] > a[0] ? Math.max(0, Math.min(1, (u - a[0]) / (b[0] - a[0]))) : 0;
+        const f = b[6] === 'strike' ? 1 - Math.sqrt(1 - s) : b[6] === 'drive' ? s * s : s * s * (3 - 2 * s);
+        const at = (j) => (a[j] + (b[j] - a[j]) * f) * bw;
+        MV.x = at(1); MV.y = at(2); MV.z = at(3); MV.tip = at(4) * D2R; MV.lean = at(5) * D2R; MV.take = best; MV.u = u; MV.w = bw;
+        if (M.follow) { hipsAt(best, u, _h1); hipsAt(best, K[0][0], _h0); MV.x += (_h1[0] - _h0[0]) * M.follow * bw; MV.z += (_h1[1] - _h0[1]) * M.follow * bw; }
+        return MV;
+      }
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       let wroteArm = null;
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
-        /* (every take of his holds it so but his casts, whose own arm carries the stick: his rest, walk and run, and his talk
-           in the films, the free hand talking (with the talk's arm the stick swung through his robe: FILMS' clipscan of the
-           preparation at 27 s, 144 crossings at 1.1 m); a cast by its weight, so the arm is handed over as the take is) */
+        /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
+           talk's arm the stick swung through his robe: FILMS' clipscan of the preparation at 27 s, 144 crossings at 1.1 m),
+           and his casts, where the stick makes its own move: MOVES) */
         const w = P.w || {};
-        let cast = 0; for (const nm in w) if (w[nm] > 0 && STAFF.casts.test(nm)) cast += w[nm];
-        const share = Math.max(0, 1 - Math.min(1, cast)) * kk; if (!(share > 0.001)) return;
+        const share = kk; if (!(share > 0.001)) return;
         if (a.wrote && wroteArm && a.up.quaternion.equals(wroteArm[0]) && a.fore.quaternion.equals(wroteArm[1]) && a.hand.quaternion.equals(wroteArm[2])) return;   // (laid already in this frame)
         if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
         _keep[0].copy(a.up.quaternion); _keep[1].copy(a.fore.quaternion); _keep[2].copy(a.hand.quaternion);
         hingeOf(a, -1, STAFF.hm);
         P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_sq);
         const walk = Math.min(1, (w.Walking || 0) + (w.Running || 0));
-        /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear) */
-        const Ct = _sa.set(STAFF.fist[0], STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk, STAFF.fist[2]); P.group.localToWorld(Ct);
-        const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out)).applyQuaternion(_sq).normalize();
-        /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it) */
-        if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fy = front.y, fz = front.z;
+        /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear;
+           in an act, its move from there) */
+        const m = moveOf(P);
+        const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
+        const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
+        /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it; in his own frame) */
+        if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fz = front.z;
           front.set(fx * cl, sl, fz * cl).normalize(); up.set(-fx * sl, cl, -fz * sl).normalize(); }
+        /* (an act's turn of the stick: its head out to his right (about his forward line), then forward (about his side's line)) */
+        if (m.lean) { const c = Math.cos(m.lean), s = Math.sin(m.lean);
+          for (const v of [up, front]) v.set(v.x * c - v.y * s, v.x * s + v.y * c, v.z); }
+        if (m.tip) { const c = Math.cos(m.tip), s = Math.sin(m.tip);
+          for (const v of [up, front]) v.set(v.x, v.y * c - v.z * s, v.y * s + v.z * c); }
+        up.applyQuaternion(_sq).normalize(); front.applyQuaternion(_sq).normalize();
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
@@ -1554,14 +1638,31 @@
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },
+        /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
+           face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
+        plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },
+        /* where the stick's foot stands, in the world, while his hand holds it (the gold's wheel goes out from it: the rules'
+           ph.strike); null with the grip off or the stick not in his hand */
+        footAt(out) { const g = things.nagaStaff, P = cast.pho;
+          if (!GRIP_ON || !(k > 0.5) || !g || !P || typeof STICK5 !== 'object' || STICK5.who !== 'pho') return null;
+          g.updateWorldMatrix(true, false); return out.set(STICK_C[0], 0, STICK_C[1]).applyMatrix4(g.matrixWorld); },
+        /* (a probe's: the act's move at this moment, as staffLay reads it) */
+        move() { const P = cast.pho; if (!P || !P.ready) return null; const m = moveOf(P);
+          return { take: m.take, u: +m.u.toFixed(3), w: +m.w.toFixed(3), x: +m.x.toFixed(3), y: +m.y.toFixed(3), z: +m.z.toFixed(3), tip: +(m.tip / D2R).toFixed(1), lean: +(m.lean / D2R).toFixed(1) }; },
         /* (a probe's: another slope across his palm, place of his fist, side of his elbow or lean of the stick tried, the
            solve made again and the stick laid again; nothing calls it in play) */
         tune(o = {}) { if (o.tilt != null) TILT = o.tilt * D2R; if (o.fist) STAFF.fist = o.fist.slice(); if (o.pole) STAFF.pole = o.pole.slice(); if (o.lean != null) STAFF.lean = o.lean * D2R;
           if (o.stickY != null) STICK_Y = +o.stickY; if (o.thumbR != null) THUMB_R = +o.thumbR; if (o.back != null) BACK = +o.back; if (o.palm != null) PALM = +o.palm;
           if (o.out != null) STAFF.out = o.out * D2R;
+          /* (an act's keys tried: { take: [[moment, out, up, on, tip, lean, shape], ...] }) */
+          if (o.moves) for (const nm in o.moves) if (MOVES[nm]) MOVES[nm].keys = o.moves[nm];
+          if (o.plantAt) PLANT_AT.splice(0, 2, +o.plantAt[0], +o.plantAt[1]);
+          if (o.fist || o.out != null || o.plantAt) plantKeys();
           G = null; failed = false; wroteQ = null; wroteArm = null;
           if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
           return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1), stickY: STICK_Y, thumbR: THUMB_R, back: BACK, palm: PALM, out: +(STAFF.out / D2R).toFixed(1) }; }
       };
     })();
-    if (typeof STICK5 === 'object') STICK5.grip = PHOGRIP5;
+    if (typeof STICK5 === 'object') { STICK5.grip = PHOGRIP5;
+      /* (planted where his strike brought it down, at the turn his hand held it: the film's place, the grip's turn) */
+      const plant0 = STICK5.plant; STICK5.plant = function (x, z, ry = 0) { return plant0.call(this, x, z, PHOGRIP5.plantYaw(ry)); }; }
