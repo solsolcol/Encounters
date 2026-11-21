@@ -1872,7 +1872,9 @@
        the world (b_xpeople.js); Grandmaster Pho's, Ton's and the collector's are MARKED for their builders. */
     const STATION = {
       walk:  { at: { x: 0, z: 0.25, ry: 0 },
-               pho: { x: 0.05, z: -2.7, ry: Math.PI }, ton: { x: -0.5, z: -1.15, ry: 0.35 }, jun: { x: 0.42, z: -1.45, ry: -0.3 },
+               /* (the PLAY helper's measure: from the spawn Ton must be in a phone's view, v12.3; each clears the balustrade (x 0.8),
+                  the inner wall (x -0.95) and the others by 0.7 m or more) */
+               pho: { x: 0.0, z: -3.2, ry: Math.PI }, ton: { x: -0.3, z: -2.0, ry: 0.13 }, jun: { x: 0.32, z: -2.35, ry: -0.12 },
                koh: { x: -9.0, z: -4.4, ry: Math.PI } },
       hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
                pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
