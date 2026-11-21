@@ -288,7 +288,10 @@ that fits it, with the version it came from.
   helper started for it runs at low or medium effort, never at max. No helper is started for what a few steps here
   can do. Before a long job he is told about how much effort it will take, as with credits, and he decides. The
   session's own effort dial is his setting: it cannot be turned from inside the session, and that is said, never
-  pretended. The words in quotes are his; the rule's wording is mine, drawn from them. (v28.0)
+  pretended. The words in quotes are his; the rule's wording is mine, drawn from them. (v28.0) A CHECK IS SIZED TO ITS
+  QUESTION ("I dont need another 10,000 simulations, you are burning all my credits", of a tuning I had briefed to be
+  checked by the full 10,000-fight table again): a short run where a short run answers, the big table only where it was
+  asked for, and never again after a tweak; a helper finishes its piece in the fewest steps and stops. (v28.0, R22)
 
 ### How the work is done and checked
 
