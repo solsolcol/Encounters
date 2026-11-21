@@ -13,7 +13,7 @@ again (v24.3: re-run only what failed, unchanged). Every call's cost, as the ser
 header), goes into spend.log (no key, no address). One call at a time by default (N=2 at most: the account allows two at once, and the voices helper uses it too)."""
 import json, os, sys, time, threading, urllib.request, uuid
 from concurrent.futures import ThreadPoolExecutor
-HERE = os.path.dirname(os.path.abspath(__file__)); RAW = os.path.join(HERE, 'raw')
+HERE = os.path.dirname(os.path.abspath(__file__)); RAW = os.environ.get('RAW') or '/tmp/claude-0/-home-user-Encounters/f1062235-ca86-59a9-b000-61422c281293/scratchpad/e4c5/sound/raw'   # takes land in scratch, then move into raw/ with their save
 KEY = open('/root/.config/elevenlabs/key', encoding='utf-8').read().strip()
 H = {'xi-api-key': KEY}
 LOCK = threading.Lock()
@@ -82,7 +82,8 @@ if __name__ == '__main__':
         if only and o['name'] not in only: continue
         for i in range(o['takes']):
             l = LET[i]
-            if not os.path.exists(os.path.join(RAW, f"{o['name']}_{l}.mp3")): jobs.append((o, l))
+            f = f"{o['name']}_{l}.mp3"
+            if not (os.path.exists(os.path.join(RAW, f)) or os.path.exists(os.path.join(HERE, 'raw', f))): jobs.append((o, l))
     print(len(jobs), 'takes to make', flush=True)
     fn = sfx_take if kind == 'sfx' else music_take
     with ThreadPoolExecutor(int(os.environ.get("N", "1"))) as ex:
