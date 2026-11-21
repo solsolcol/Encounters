@@ -265,7 +265,10 @@ that fits it, with the version it came from.
   person again; Master Zavier modelled from his photograph and rigged) and ALL of its work are done on Fable 5.2 at max
   effort ("Continue all of this in fable 5.2 max"): a session on another model does only the bookkeeping on it and asks
   him to switch the session's model. Its plan is docs/V28.0-E4C5-PLAN.md (§0 his words, R1 on; §0.1 where it stands):
-  read it first. (v28.0)
+  read it first. (v28.0) HIS EXCEPTION, 21 Nov 2026 (R17), with the build under way: "If fable reaches limit, continue
+  on opus, resume exactly where things were left off". So when Fable 5.2's limit is reached, a session on Opus BUILDS
+  the chapter on, from the tracker (docs/V28.0-E4C5-BUILD.md, its section 6 says how each piece is picked up), and does
+  not stop to ask for the model to be switched; when Fable is back, the work goes back to it.
 - A generated model is not made a second time without his yes ("Why did you generate 4 models of zavier, when the first
   one already looked the best? You are burning my credits": Master Zavier's body was generated four times, 50 Meshy
   credits each, the first refused by me for its joined fingers and never shown to him). When a model comes back with a
