@@ -736,6 +736,7 @@
         const N = NINE5(); PRAI5.list.forEach((P, i) => { const a = N[i % N.length]; P.hidden = false; put(P, a[0], a[1], faceTo(a[0], a[1], a[0], HOUSE.face)); if (P.ready) P.group.visible = true; });
         PRAI5.look('vision');
         if (things.staffCloth) things.staffCloth.visible = false;
+        bagBlobs5();
       },
       frame(t, api) {
         const T = PR5, F = fightStart(), N = NINE5();
@@ -982,6 +983,7 @@
         whenReady(cast.koh, (P) => fmShow(P, true)); whenReady(cast.jun, (P) => fmShow(P, true)); fmShow(cast.ton, true); fmShow(cast.pho, true);
         PRAI5.list.forEach((P) => fmShow(P, false));
         if (things.bagTied) things.bagTied.visible = false;
+        bagBlobs5();
       },
       frame(t, api) {
         const T = BT5, A = BT5AT, zz = this.zav, pz = this.pho, inEyes = t >= T.eyes, atLift = t >= T.lift;
@@ -1205,7 +1207,11 @@
        the close's CL5. Each ends on its black: the card lies over it */
     const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.22], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
-    const BAGBLOB5 = { m: null };
+    const BAGBLOB5 = { m: null, o: null };
+    /* (each bag's own painted contact shadow, carried with it: the open bag on the low table at the knot read as floating,
+       bagtied-phone 18.6 on deploy 10; made once, the first film that sets a bag down) */
+    function bagBlobs5() { if (things.bagOpen && !BAGBLOB5.o) BAGBLOB5.o = blob(things.bagOpen, 0.3, 0.28);
+      if (things.bagTied && !BAGBLOB5.m) BAGBLOB5.m = blob(things.bagTied, 0.34, 0.3); }
     FILMS5.ending = {
       begin(k, api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
