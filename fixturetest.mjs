@@ -3375,8 +3375,11 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     await pp.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;      // (pinned, as the desktop block is)
       setInterval(() => { if (E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
     const cdp = await pctx.newCDPSession(pp);
-    const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y, id]) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })) });
-    const tap = async (x, y, id) => { await touch('touchStart', [[x, y, id]]); await touch('touchEnd', []); };
+    /* (a touch carries its own time, as a finger's does: on this box the page answers one CDP touch a slow frame later, so
+       two sent back to back land half a second apart, and a tap read by its events' own times (v24.2) was a long press) */
+    const touch = (type, pts, ts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y, id]) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })),
+                                                                           ...(ts ? { timestamp: ts } : {}) });
+    const tap = async (x, y, id) => { const ts = Date.now() / 1000; await touch('touchStart', [[x, y, id]], ts); await touch('touchEnd', [], ts + 0.09); };
     /* a finger down on the stick's half BEFORE the mode opens */
     await touch('touchStart', [[80, 700, 1]]);
     await touch('touchMove', [[80, 694, 1]]);
@@ -3426,8 +3429,9 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       return { m: m && m.x < innerWidth * 0.45 && at && at.id === 'scene' ? m : null,
                seen: m ? { x: m.x, y: m.y, r: m.r, at: at ? (at.id || at.className) : null, W: innerWidth } : null };`).then(r => { tagParts['phone.pickAt'] = r.seen; return r.m; });
     if (pm) {
-      await touch('touchStart', [[pm.x, pm.y, 4]]);
-      await touch('touchEnd', []);
+      const ts = Date.now() / 1000;
+      await touch('touchStart', [[pm.x, pm.y, 4]], ts);
+      await touch('touchEnd', [], ts + 0.09);
       tagParts['phone.pickStick'] = await pp.evaluate(() => { window.__stickMo.disconnect(); return window.__stickSeen; });
     }
     if (!pm || tagParts['phone.pickStick'] !== false) console.log('tag phone pick', JSON.stringify({ at: tagParts['phone.pickAt'], stick: tagParts['phone.pickStick'] }));
