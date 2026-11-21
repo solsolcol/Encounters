@@ -306,8 +306,12 @@ const dstChild = (dn, name) => { const cn = MAP[CHILD[name]]; const c = cn && ds
 const srcChild = (sn, name) => srcNode.get(CHILD[name]) || sn.listChildren()[0] || null;
 if (ALIGN) {
   const sP = restPos(take), dP = restPos(dst);
+  /* (v28.0 · --noalign=<bone,bone>: those bones are not swung, their turn taken from their own rest as without --align:
+     the collector's head joint stands 13 cm IN FRONT of his neck joint, where Mr Koh's stands above his, so his neck
+     swung onto Mr Koh's line lifted his head 10 cm off his collar. Unset, every mapped bone is swung as before) */
+  const NOALIGN = new Set(((process.argv.find(a => a.startsWith('--noalign=')) || '--noalign=').slice(10)).split(',').filter(Boolean));
   for (const { dn, sn, name } of mapped) {
-    if (name === 'Hips' || !sn) continue;                // the hips' rest is the body's: never swung
+    if (name === 'Hips' || !sn || NOALIGN.has(dn.getName())) continue;                // the hips' rest is the body's: never swung
     const dc = dstChild(dn, name), sc = srcChild(sn, name);
     if (!dc || !sc) continue;
     const vd = vNorm(vSub(dP.get(dc), dP.get(dn))), vs = vNorm(vSub(sP.get(sc), sP.get(sn)));

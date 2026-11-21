@@ -16,7 +16,8 @@ VOICE = {'he': 'bP8FJDHmWVEgXJDitdQd',          # Brian, his voice since episode
          'jun': 'c86brOBXdSSYxT5FqIUS',         # Sam: the measured pick of six (RECORD.md), until Chad's ear
          'koh': '76X7rrvQajZEHM3u9zcd',         # Mr David: the measured pick of three
          'collector': 'eWKcOFrcmRNtJMcUZYOm'}   # Shawn Ng: the measured pick of three
-COPY = {'ph5v1': ('v27.0', 'ph4b9'), 'ph5v2': ('v27.0', 'ph4b8'), 'ph5t5': ('v28.0', 'ph5w6')}
+COPY = {'ph5v1': ('v27.0', 'ph4b9'), 'ph5v2': ('v27.0', 'ph4b8'), 'ph5t5': ('v28.0', 'ph5w6'),
+        'ph5nf3': ('v28.0', 'ph5w6')}   # (the fight's short SMELL: the same word, said with the same firmness)
 TAG = {
  'q5o1': 'reflective', 'ju5o1': 'casual', 'tn5o1': 'amused', 'q5o2': 'uneasy',
  'q5w1': 'uneasy', 'tn5w1': 'puzzled', 'tn5w2': 'casual', 'ju5w1': 'amused', 'ph5w1': 'calm', 'ph5w2': 'firm',
@@ -36,7 +37,25 @@ TAG = {
  'q5B1': 'gentle', 'ph5B1': 'warm', 'q5B2': 'quiet',
  'co5C1': 'disappointed', 'ph5C1': 'calm', 'co5C2': 'embarrassed', 'ph5C2': 'gentle', 'q5C1': 'ashamed',
  'co5D1': 'excited', 'ph5D1': 'calm', 'ph5D2': 'serious', 'q5D1': 'regretful',
- 'co5z1': 'relieved', 'q5z1': 'reflective', 'q5A': 'reflective', 'q5B': 'quiet', 'q5C': 'ashamed', 'q5D': 'regretful'}
+ 'co5z1': 'relieved', 'q5z1': 'reflective', 'q5A': 'reflective', 'q5B': 'quiet', 'q5C': 'ashamed', 'q5D': 'regretful',
+ # the fight (docs/V28.0-FIGHT.md 10): Grandmaster Pho calm, firm and unhurried even when urgent, a teacher guiding a
+ # cleansing, never shouting; his thoughts quiet; the three behind the thread concerned, puzzled, afraid, awed
+ 'ph5f0': 'calm', 'ph5f1': 'firm', 'ph5f2': 'calm', 'ph5f3': 'firm', 'ph5f4': 'firm', 'ph5f5': 'calm', 'ph5f6': 'firm',
+ 'ph5f7': 'calm', 'ph5f8': 'urgent', 'ph5f9': 'serious', 'ph5f10': 'calm', 'ph5fa': 'calm', 'ph5fc': 'serious',
+ 'ph5fd': 'firm', 'ph5fe': 'serious', 'ph5fg': 'stern', 'ph5fi': 'serious', 'ph5fj': 'gentle', 'ph5fh': 'serious',
+ 'ph5na1': 'urgent', 'ph5na2': 'urgent', 'ph5na3': 'urgent', 'ph5nb1': 'urgent', 'ph5nb2': 'firm', 'ph5nc2': 'firm',
+ 'ph5nc3': 'firm', 'ph5nd1': 'calm', 'ph5nd2': 'firm', 'ph5nd3': 'firm', 'ph5ne1': 'serious', 'ph5nf2': 'firm',
+ 'ph5ng1': 'urgent', 'ph5ng2': 'firm', 'ph5nh1': 'serious', 'ph5nh2': 'firm', 'ph5ni1': 'firm', 'ph5ni2': 'firm',
+ 'ph5nj1': 'urgent', 'ph5nj2': 'urgent', 'ph5nk1': 'urgent', 'ph5nk2': 'urgent', 'ph5nl1': 'urgent', 'ph5nl2': 'firm',
+ 'ph5nl3': 'calm', 'ph5nm1': 'urgent', 'ph5nn1': 'urgent', 'ph5nn2': 'firm', 'ph5no1': 'firm', 'ph5no2': 'urgent',
+ 'ph5np1': 'firm', 'ph5nq1': 'firm', 'ph5nr1': 'serious', 'ph5nr2': 'calm', 'ph5ns2': 'firm', 'ph5ns3': 'firm',
+ 'ph5nt1': 'calm', 'ph5nt2': 'firm', 'ph5nu1': 'calm', 'ph5nu2': 'firm', 'ph5nv1': 'calm', 'ph5nv2': 'serious',
+ 'ph5nv3': 'firm', 'ph5nw1': 'calm', 'ph5nw2': 'firm', 'ph5nx1': 'firm', 'ph5nx2': 'calm', 'ph5ny2': 'firm',
+ 'ph5g1': 'warm', 'ph5g2': 'warm', 'ph5g3': 'warm', 'ph5g4': 'warm', 'ph5ca': 'urgent', 'ph5cb': 'firm',
+ 'ph5c1': 'calm', 'ph5c2': 'serious', 'ph5c3': 'gentle', 'ph5c4': 'gentle', 'ph5l1': 'gentle', 'ph5l2': 'warm',
+ 'q5c0': 'reflective', 'q5c1': 'shaken', 'q5c2': 'shaken', 'q5c3': 'quiet', 'q5c4': 'reflective', 'q5c5': 'awed',
+ 'tn5c0': 'concerned', 'ko5c1': 'puzzled', 'tn5c1': 'firm', 'ju5c1': 'awed', 'tn5c2': 'afraid', 'ju5c2': 'afraid',
+ 'ko5c2': 'awed', 'tn5c3': 'concerned'}
 out = []
 for r in L['lines']:
     k = r['key']

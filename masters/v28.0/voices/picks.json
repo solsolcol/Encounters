@@ -4282,5 +4282,59 @@
     "heard": "I gave him a rule about kinds. It was never the kind."
    }
   }
+ },
+ "ph5f0": {
+  "who": "pho",
+  "text": "[calm] We do not destroy them, Zavier. We gather them.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 3.42,
+  "takes": {
+   "a": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 3.2,
+    "e_first": 0.12,
+    "e_last": 3.26,
+    "tail_db": -27.5,
+    "tail_rel": -12.1,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.87,
+    "heard": "We do not destroy them, Zavier. We gather them."
+   },
+   "b": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 3.54,
+    "e_first": 0.1,
+    "e_last": 3.58,
+    "tail_db": -23.4,
+    "tail_rel": -9.3,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.59,
+    "heard": "We do not destroy them, Zavier. We gather them."
+   },
+   "c": {
+    "len": 3.52,
+    "first": 0.0,
+    "last": 3.42,
+    "e_first": 0.08,
+    "e_last": 3.5,
+    "tail_db": -34.1,
+    "tail_rel": -19.6,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.63,
+    "heard": "We do not destroy them, Zavier. We gather them."
+   }
+  }
  }
 }

@@ -301,6 +301,657 @@
   "prompt": "[awed] And then I was not alone in my body."
  },
  {
+  "key": "ph5f0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] We do not destroy them, Zavier. We gather them."
+ },
+ {
+  "key": "ph5f1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] FIRE."
+ },
+ {
+  "key": "ph5f2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The fire only chases them away. They hide, and they come back."
+ },
+ {
+  "key": "ph5f3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Only Zavier can find it. Switch to Zavier."
+ },
+ {
+  "key": "ph5f4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND."
+ },
+ {
+  "key": "ph5f5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] It is bound. Now switch to me."
+ },
+ {
+  "key": "ph5f6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] FIRE. Then the BAG."
+ },
+ {
+  "key": "ph5f7",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] It is hiding. SMELL."
+ },
+ {
+  "key": "ph5f8",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] There. BIND it, before it sinks again."
+ },
+ {
+  "key": "ph5f9",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The golden shockwave is ready. Lend me your cage first."
+ },
+ {
+  "key": "ph5f10",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The gold gathers what is bound. The rest, it only drives back."
+ },
+ {
+  "key": "ph5fa",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] A bound Prai cannot run. Now the fire tires it."
+ },
+ {
+  "key": "ph5fc",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Now they all come. BIND them, and I will gather them."
+ },
+ {
+  "key": "ph5fd",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND one first. The gold gathers only what is bound."
+ },
+ {
+  "key": "ph5fe",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] They broke the gold. Lend me your cage before I gather it."
+ },
+ {
+  "key": "ph5fg",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[stern] Do not open yourself for nothing. They feel it."
+ },
+ {
+  "key": "ph5fi",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] They draw together. The bag cannot take them now. Only the gold, and only what is bound."
+ },
+ {
+  "key": "ph5fj",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Three is all you can hold. Let me take one."
+ },
+ {
+  "key": "ph5fh",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The last of them cling to the house. Only the gold can take them. BIND them, Zavier."
+ },
+ {
+  "key": "ph5na1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] His cage is breaking. FIRE."
+ },
+ {
+  "key": "ph5na2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Chase them off his cage. FIRE."
+ },
+ {
+  "key": "ph5na3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] They press at his cage. Switch to Zavier."
+ },
+ {
+  "key": "ph5nb1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Your cage is wearing thin. BIND them."
+ },
+ {
+  "key": "ph5nb2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Hold them still. BIND."
+ },
+ {
+  "key": "ph5nc2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Now. Switch to me, and FIRE."
+ },
+ {
+  "key": "ph5nc3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] To me. FIRE."
+ },
+ {
+  "key": "ph5nd1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] It is tired. Go to it, and BAG it."
+ },
+ {
+  "key": "ph5nd2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BAG the tired Prai before it rises."
+ },
+ {
+  "key": "ph5nd3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BAG."
+ },
+ {
+  "key": "ph5ne1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The Prai rise again. Bag them while they are tired."
+ },
+ {
+  "key": "ph5nf2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] SMELL, Zavier. Find the Prai."
+ },
+ {
+  "key": "ph5ng1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] BIND it before it reaches you."
+ },
+ {
+  "key": "ph5ng2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND the Prai that comes."
+ },
+ {
+  "key": "ph5nh1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The golden shockwave is ready. SHOCKWAVE."
+ },
+ {
+  "key": "ph5nh2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] SHOCKWAVE."
+ },
+ {
+  "key": "ph5ni1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Switch to me. BAG."
+ },
+ {
+  "key": "ph5ni2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] To me. BAG."
+ },
+ {
+  "key": "ph5nj1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] It is at Zavier. FIRE."
+ },
+ {
+  "key": "ph5nj2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Chase it off him. FIRE."
+ },
+ {
+  "key": "ph5nk1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] It slips the fire. Switch to Zavier."
+ },
+ {
+  "key": "ph5nk2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] It comes for Zavier. Switch to Zavier."
+ },
+ {
+  "key": "ph5nl1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] It is at you. BIND."
+ },
+ {
+  "key": "ph5nl2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND the Prai at you."
+ },
+ {
+  "key": "ph5nl3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Switch to me. I will chase it off."
+ },
+ {
+  "key": "ph5nm1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Something is under him. Switch to Zavier."
+ },
+ {
+  "key": "ph5nn1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Something is under you. SMELL."
+ },
+ {
+  "key": "ph5nn2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] It is under you. SMELL."
+ },
+ {
+  "key": "ph5no1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Now switch to me."
+ },
+ {
+  "key": "ph5no2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] To me. Now."
+ },
+ {
+  "key": "ph5np1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Now. SHOCKWAVE."
+ },
+ {
+  "key": "ph5nq1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] It is bound. FIRE."
+ },
+ {
+  "key": "ph5nr1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] It will rise again. BIND it, and it cannot."
+ },
+ {
+  "key": "ph5nr2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] BIND the tired Prai. Keep it for the bag."
+ },
+ {
+  "key": "ph5ns2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND the Prai you found."
+ },
+ {
+  "key": "ph5ns3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Switch to Zavier."
+ },
+ {
+  "key": "ph5nt1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Zavier has found it. Switch to Zavier, and BIND it."
+ },
+ {
+  "key": "ph5nt2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Switch to Zavier. BIND."
+ },
+ {
+  "key": "ph5nu1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Switch to Zavier, and lend me your cage."
+ },
+ {
+  "key": "ph5nu2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Lend me your cage first."
+ },
+ {
+  "key": "ph5nv1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Lend me your cage, Zavier."
+ },
+ {
+  "key": "ph5nv2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The golden shockwave is ready. LEND."
+ },
+ {
+  "key": "ph5nv3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] LEND."
+ },
+ {
+  "key": "ph5nw1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] That Prai slips the fire. Switch to Zavier."
+ },
+ {
+  "key": "ph5nw2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Only Zavier can hold it. Switch to Zavier."
+ },
+ {
+  "key": "ph5nx1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] BIND the one that slips."
+ },
+ {
+  "key": "ph5nx2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] BIND it, and the fire will hold."
+ },
+ {
+  "key": "ph5ny2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Switch to Zavier. SMELL."
+ },
+ {
+  "key": "ph5g1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Good."
+ },
+ {
+  "key": "ph5g2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Bind, then fire. That is how it is done."
+ },
+ {
+  "key": "ph5g3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] You held. Remember how that felt."
+ },
+ {
+  "key": "ph5g4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] You found it, and you held it."
+ },
+ {
+  "key": "ph5ca",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Together, Zavier. Now."
+ },
+ {
+  "key": "ph5cb",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Together."
+ },
+ {
+  "key": "ph5c1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Three Prai. Do not hurry."
+ },
+ {
+  "key": "ph5c2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The Naga guards. It always has."
+ },
+ {
+  "key": "ph5c3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Bag them. Gently."
+ },
+ {
+  "key": "ph5c4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Come. It is over for you too."
+ },
+ {
+  "key": "ph5l1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Enough. Breathe. We begin again."
+ },
+ {
+  "key": "ph5l2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Breathe. You are safe beside me."
+ },
+ {
+  "key": "q5c0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I could see. I could hear. I was not the one standing."
+ },
+ {
+  "key": "q5c1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[shaken] I could hear my own voice, and the words were not mine."
+ },
+ {
+  "key": "q5c2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[shaken] It stood over me."
+ },
+ {
+  "key": "q5c3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] It had already moved."
+ },
+ {
+  "key": "q5c4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I gave my teacher my cage. For a moment there was nothing round me."
+ },
+ {
+  "key": "q5c5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[awed] My hand rose by itself. And the thing was held."
+ },
+ {
+  "key": "tn5c0",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[concerned] Brother has gone quiet. Look at his lips."
+ },
+ {
+  "key": "ko5c1",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[puzzled] Who is he talking to? There is nobody there."
+ },
+ {
+  "key": "tn5c1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[firm] Stay behind the thread, Mr Koh."
+ },
+ {
+  "key": "ju5c1",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[awed] Did you feel that? Like a door slammed."
+ },
+ {
+  "key": "tn5c2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[afraid] Master. Brother is shaking."
+ },
+ {
+  "key": "ju5c2",
+  "speaker": "jun",
+  "voice_id": "c86brOBXdSSYxT5FqIUS",
+  "takes": 2,
+  "prompt": "[afraid] The lamps. Master, the lamps."
+ },
+ {
+  "key": "ko5c2",
+  "speaker": "koh",
+  "voice_id": "76X7rrvQajZEHM3u9zcd",
+  "takes": 2,
+  "prompt": "[awed] It is... warm. Why is it warm?"
+ },
+ {
+  "key": "tn5c3",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[concerned] Stay there, brother."
+ },
+ {
   "key": "tn5b1",
   "speaker": "ton",
   "voice_id": "uI1epevl1X6hqrxEciKt",

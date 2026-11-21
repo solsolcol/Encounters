@@ -43,9 +43,11 @@
       if (!block0.has(solid)) block0.set(solid, b.clone());
       if (on) b.copy(block0.get(solid)); else b.makeEmpty();
     }
-    /* (feetscan, LEVEL=1, at every phase: both bodies' lowest skin 1.7 to 1.8 cm under the floor where their takes are set
-       down for -0.3 cm; lifted 1.2 cm, a sole sinks half a centimetre, as a body on a floor does: v9.3) */
-    const FEET_LIFT = 0.012;
+    /* (feetscan, LEVEL=1, at every phase: a foot read 1.7 to 1.8 cm under its "floor", and that floor was each body's own
+       contact shadow (a flat card 1.4 cm up, which the probe's ray down meets first): lifted 1.2 cm, the reading did not
+       move, which proved it. Against the floor itself the soles stand 0.3 to 0.4 cm into it, as the grounding sets them
+       (GROUND_SOLE): left as they are) */
+    const FEET_LIFT = 0;
     function standAt(P, st) {
       if (!P) return;
       if (!st) { P.hidden = true; P.group.visible = false; return; }
