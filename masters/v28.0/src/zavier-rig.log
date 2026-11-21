@@ -1,0 +1,10 @@
+started rig zavier 01a1fad8-70ea-70d4-8a99-31198f97e6be
+  rig zavier IN_PROGRESS 0%
+  rig zavier IN_PROGRESS 42%
+  rig zavier IN_PROGRESS 84%
+  rig zavier IN_PROGRESS 90%
+  rig zavier SUCCEEDED 100%
+rig done zavier {'rigged': 82608944, 'walk': 82850596}
+body identical to masters/v28.0/src/rigged-zavier.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v28.0/src/takes-zavier-walking.glb 98504 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]

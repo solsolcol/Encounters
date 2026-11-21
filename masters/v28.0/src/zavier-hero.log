@@ -1,0 +1,17 @@
+  skin weights: 214559 vertices in 156276 positions over 65 joints, 24 diffusion passes; 4741 vertices' main weight moved
+prune: Removed types... Texture (2), Accessor (1)
+  214559 vertices in 156276 positions; 54602 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.1s] 214559 points joined into 156276 places; 312640 triangles
+  repaint [   0.2s] the face 47100 triangles, the rest of the head 88875, the hands 23538, the body 153127 (looking [0.0, 0.0, 1.0])
+  repaint [ 142.8s] xatlas: 8726 charts, 86% of the square used
+  repaint [ 148.6s] packed again: 8741 charts in a 3121x3123 square drawn at 2048 (80% used), a margin of 3.3 pixels at 2048
+  repaint [ 148.6s] the second packing left 1 triangles outside the square: kept, and those mended with the unplaced corners (MENDOUT 12)
+  repaint [ 149.4s] 8635 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (8635)
+  repaint [ 149.4s] texels a metre at 2048, before -> now: face 2100 -> 1867, head 2167 -> 1404, hands 1816 -> 996, body 925 -> 666; 11980 charts, margin 3.3 px; 8635 unplaced corners mended
+  repaint [ 149.9s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 156.1s] baked
+  repaint [ 156.1s] written
+  repaint: 214559 points -> 298567 (84008 copied along the new seams), 312640 triangles; texels a metre at 2048, before -> now: face 2100 -> 1867, head 2167 -> 1404, hands 1816 -> 996, body 925 -> 666; 11980 charts, margin 3.3 px; 8635 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5zavierh.glb: tris 312640 -> 312640, 0 takes, 5773 KB

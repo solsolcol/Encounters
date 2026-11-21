@@ -1,0 +1,11 @@
+started image-to-3d zavier 01a1fad1-8abc-701a-954a-da0a538b9722
+  zavier IN_PROGRESS 1%
+  zavier IN_PROGRESS 25%
+  zavier IN_PROGRESS 29%
+  zavier IN_PROGRESS 45%
+  zavier IN_PROGRESS 58%
+  zavier IN_PROGRESS 67%
+  zavier IN_PROGRESS 80%
+  zavier IN_PROGRESS 99%
+  zavier SUCCEEDED 100%
+done zavier {'glb': 78282680, 'pre': 10938280} credits 40

@@ -1,0 +1,11 @@
+  remesh zavier 40000 IN_PROGRESS 1%
+  remesh zavier 40000 IN_PROGRESS 35%
+  remesh zavier 40000 IN_PROGRESS 60%
+  remesh zavier 40000 IN_PROGRESS 89%
+  remesh zavier 40000 IN_PROGRESS 90%
+  remesh zavier 40000 SUCCEEDED 100%
+remesh done zavier 40000 107815400
+  fit: turn 0 degrees, size x0.9141, moved [0.0005, 0.8701, 0.0001]; a remeshed point lies 0.18 mm from the rig's points on average, 3.3 mm at worst (the other turns: 18.9, 40.2, 40.9 mm)
+  weights: 43433 points from 214620; 14 reached further than 4 cm, 6 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-zavier-40000.glb: 41439 triangles on 66 joints; sheets colour 22.3 MB, normal 4.5 MB, mr 0.0 MB; 29.7 MB
