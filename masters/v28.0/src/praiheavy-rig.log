@@ -1,0 +1,10 @@
+started plain rig praiheavy 01a1fc91-03d7-7559-9458-80baf136f468
+  rig praiheavy IN_PROGRESS 0%
+  rig praiheavy IN_PROGRESS 47%
+  rig praiheavy IN_PROGRESS 84%
+  rig praiheavy IN_PROGRESS 90%
+  rig praiheavy SUCCEEDED 100%
+rig done praiheavy {'rigged': 30560268, 'walk': 30540588}
+body identical to masters/v28.0/src/rigged-praiheavy.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (8)
+wrote masters/v28.0/src/takes-praiheavy-walking.glb 45624 bytes ["Armature|walking_man|baselayer (66 ch, 1.07 s)"]

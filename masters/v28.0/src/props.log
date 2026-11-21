@@ -40,3 +40,1374 @@ prepmeshy w5nagastaff.glb: 31130 -> 31130 triangles; 89.2 MB -> 3089 KB
 (static) {"box":[[-0.166,0,-0.058],[0.166,1.4,0.058]],"size":[0.333,1.4,0.115]}
 errs []
 nagastaff -> assets/w5nagastaff.glb 3163080 bytes
+  remesh bagopen 20000: the job is in the ledger (01a1fc9a-1ba5-742b-b1f4-5779a1c69c8e): waited for, not started again
+  remesh bagopen 20000 IN_PROGRESS 42%
+  remesh bagopen 20000 IN_PROGRESS 68%
+  remesh bagopen 20000 IN_PROGRESS 90%
+  remesh bagopen 20000 SUCCEEDED 100%
+remesh done bagopen 20000 91870476
+  CONTRACT: w 0.370  h 0.400  l 0.283 m (x -0.185..0.185, z -0.142..0.142)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5bagopen.glb: 20724 -> 20724 triangles; 87.6 MB -> 2239 KB
+{
+ "info": {
+  "size": [
+   0.37040925873160113,
+   0.4000000059604645,
+   0.2830408685018259
+  ],
+  "min": [
+   -0.18520462936580057,
+   0,
+   -0.14152043425091296
+  ],
+  "max": [
+   0.18520462936580057,
+   0.4000000059604645,
+   0.14152043425091296
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20724
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.185,0,-0.142],[0.185,0.4,0.142]],"size":[0.37,0.4,0.283]}
+errs []
+bagopen -> assets/w5bagopen.glb 2292316 bytes
+  remesh bagtied 20000: the job is in the ledger (01a1fc9a-1d12-7218-8c41-3efa599efac3): waited for, not started again
+  remesh bagtied 20000 SUCCEEDED 100%
+remesh done bagtied 20000 87921900
+  CONTRACT: w 0.253  h 0.350  l 0.170 m (x -0.127..0.127, z -0.085..0.085)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5bagtied.glb: 20769 -> 20769 triangles; 83.8 MB -> 2316 KB
+{
+ "info": {
+  "size": [
+   0.25300149109837455,
+   0.3499999940395355,
+   0.17027344294516544
+  ],
+  "min": [
+   -0.12650074554918728,
+   0,
+   -0.08513672147258272
+  ],
+  "max": [
+   0.12650074554918728,
+   0.3499999940395355,
+   0.08513672147258272
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20769
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.127,0,-0.085],[0.127,0.35,0.085]],"size":[0.253,0.35,0.17]}
+errs []
+bagtied -> assets/w5bagtied.glb 2371716 bytes
+  remesh threadreel 12000: the job is in the ledger (01a1fc9a-1eb2-7648-9f6c-3a1b99788386): waited for, not started again
+  remesh threadreel 12000 SUCCEEDED 100%
+remesh done threadreel 12000 100237380
+  CONTRACT: w 0.100  h 0.090  l 0.080 m (x -0.050..0.050, z -0.040..0.040)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5threadreel.glb: 12231 -> 12231 triangles; 95.6 MB -> 1237 KB
+{
+ "info": {
+  "size": [
+   0.10003377497196198,
+   0.08999589991144952,
+   0.07992139027042429
+  ],
+  "min": [
+   -0.05001688748598099,
+   0.000002051832414577681,
+   -0.039960695135212145
+  ],
+  "max": [
+   0.05001688748598099,
+   0.0899979517438641,
+   0.039960695135212145
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12231
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.05,0,-0.04],[0.05,0.09,0.04]],"size":[0.1,0.09,0.08]}
+errs []
+threadreel -> assets/w5threadreel.glb 1266896 bytes
+  remesh staffwrap 16000: the job is in the ledger (01a1fc9a-2016-76e1-a8d3-54fa9d69181b): waited for, not started again
+  remesh staffwrap 16000 SUCCEEDED 100%
+remesh done staffwrap 16000 70587384
+  CONTRACT: w 1.500  h 0.178  l 0.184 m (x -0.750..0.750, z -0.092..0.092)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5staffwrap.glb: 16516 -> 16516 triangles; 67.3 MB -> 813 KB
+{
+ "info": {
+  "size": [
+   1.5,
+   0.17835016937772763,
+   0.18384350108340708
+  ],
+  "min": [
+   -0.75,
+   -0.000015640714368866937,
+   -0.09192175054170354
+  ],
+  "max": [
+   0.75,
+   0.17833452866335875,
+   0.09192175054170354
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16516
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.75,0,-0.092],[0.75,0.178,0.092]],"size":[1.5,0.178,0.184]}
+errs []
+staffwrap -> assets/w5staffwrap.glb 832340 bytes
+  remesh staffcloth 12000: the job is in the ledger (01a1fc9a-21c7-7202-bb6b-0733801546ea): waited for, not started again
+  remesh staffcloth 12000 SUCCEEDED 100%
+remesh done staffcloth 12000 81473372
+  CONTRACT: w 0.600  h 0.115  l 0.427 m (x -0.300..0.300, z -0.214..0.214)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5staffcloth.glb: 12287 -> 12287 triangles; 77.7 MB -> 772 KB
+{
+ "info": {
+  "size": [
+   0.6000000238418579,
+   0.11521348155195685,
+   0.42719811262033586
+  ],
+  "min": [
+   -0.30000001192092896,
+   0.000004929569089553998,
+   -0.21359905631016793
+  ],
+  "max": [
+   0.30000001192092896,
+   0.1152184111210464,
+   0.21359905631016793
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12287
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.3,0,-0.214],[0.3,0.115,0.214]],"size":[0.6,0.115,0.427]}
+errs []
+staffcloth -> assets/w5staffcloth.glb 790292 bytes
+  remesh clothtable 16000: the job is in the ledger (01a1fc9a-2343-731d-ad97-8707bba49051): waited for, not started again
+  remesh clothtable 16000 SUCCEEDED 100%
+remesh done clothtable 16000 42827952
+  CONTRACT: w 1.200  h 0.340  l 0.976 m (x -0.600..0.600, z -0.488..0.488)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5clothtable.glb: 16236 -> 16236 triangles; 40.8 MB -> 701 KB
+{
+ "info": {
+  "size": [
+   1.2000000476837158,
+   0.3404767126473436,
+   0.9758721051859485
+  ],
+  "min": [
+   -0.6000000238418579,
+   0.000008676914739186303,
+   -0.48793605259297423
+  ],
+  "max": [
+   0.6000000238418579,
+   0.34048538956208274,
+   0.48793605259297423
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16236
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.6,0,-0.488],[0.6,0.34,0.488]],"size":[1.2,0.34,0.976]}
+errs []
+clothtable -> assets/w5clothtable.glb 718040 bytes
+  remesh padcase 20000: the job is in the ledger (01a1fc9a-249d-7111-9a36-90c92f97c43d): waited for, not started again
+  remesh padcase 20000 SUCCEEDED 100%
+remesh done padcase 20000 96135020
+  CONTRACT: w 0.340  h 0.259  l 0.266 m (x -0.170..0.170, z -0.133..0.133)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5padcase.glb: 20100 -> 20100 triangles; 91.7 MB -> 2879 KB
+{
+ "info": {
+  "size": [
+   0.3400000035762787,
+   0.25927244146124073,
+   0.26562273297980155
+  ],
+  "min": [
+   -0.17000000178813934,
+   -0.000005178250151616215,
+   -0.13281136648990077
+  ],
+  "max": [
+   0.17000000178813934,
+   0.2592672632110891,
+   0.13281136648990077
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20100
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.17,0,-0.133],[0.17,0.259,0.133]],"size":[0.34,0.259,0.266]}
+errs []
+padcase -> assets/w5padcase.glb 2947936 bytes
+  remesh shoecab 20000: the job is in the ledger (01a1fc9a-25f5-70ba-b49b-477f28853e09): waited for, not started again
+  remesh shoecab 20000 SUCCEEDED 100%
+remesh done shoecab 20000 84746048
+  CONTRACT: w 0.900  h 1.061  l 0.530 m (x -0.450..0.450, z -0.265..0.265)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5shoecab.glb: 19468 -> 19468 triangles; 80.8 MB -> 2363 KB
+{
+ "info": {
+  "size": [
+   0.8999785008412873,
+   1.0608149766921997,
+   0.5303265521163038
+  ],
+  "min": [
+   -0.44998925042064364,
+   0,
+   -0.2651632760581519
+  ],
+  "max": [
+   0.44998925042064364,
+   1.0608149766921997,
+   0.2651632760581519
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 19468
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.45,0,-0.265],[0.45,1.061,0.265]],"size":[0.9,1.061,0.53]}
+errs []
+shoecab -> assets/w5shoecab.glb 2419932 bytes
+  remesh oldchair 30000: the job is in the ledger (01a1fc9a-2758-7697-8462-aa17393e9415): waited for, not started again
+  remesh oldchair 30000 SUCCEEDED 100%
+remesh done oldchair 30000 101627684
+  CONTRACT: w 0.950  h 0.822  l 0.838 m (x -0.475..0.475, z -0.419..0.419)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5oldchair.glb: 30845 -> 30845 triangles; 96.9 MB -> 2392 KB
+{
+ "info": {
+  "size": [
+   0.949999988079071,
+   0.8219687387319481,
+   0.8376247338966778
+  ],
+  "min": [
+   -0.4749999940395355,
+   0.000012455136970901393,
+   -0.4188123669483389
+  ],
+  "max": [
+   0.4749999940395355,
+   0.821981193868919,
+   0.4188123669483389
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 30845
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.475,0,-0.419],[0.475,0.822,0.419]],"size":[0.95,0.822,0.838]}
+errs []
+oldchair -> assets/w5oldchair.glb 2449036 bytes
+  remesh grating 16000: the job is in the ledger (01a1fc9a-28c9-72d6-b6cd-8246dbf45e30): waited for, not started again
+  remesh grating 16000 SUCCEEDED 100%
+remesh done grating 16000 107355440
+  CONTRACT: w 1.000  h 0.079  l 0.480 m (x -0.500..0.500, z -0.240..0.240)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5grating.glb: 16217 -> 16217 triangles; 102.4 MB -> 3302 KB
+{
+ "info": {
+  "size": [
+   1,
+   0.07934812463759269,
+   0.4797814874721519
+  ],
+  "min": [
+   -0.5,
+   0.000022746585613062087,
+   -0.23989074373607594
+  ],
+  "max": [
+   0.5,
+   0.07937087122320576,
+   0.23989074373607594
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16217
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.5,0,-0.24],[0.5,0.079,0.24]],"size":[1,0.079,0.48]}
+errs []
+grating -> assets/w5grating.glb 3381532 bytes
+  remesh gate 30000: the job is in the ledger (01a1fc9a-2a1d-7464-9417-0a152829ae9c): waited for, not started again
+  remesh gate 30000 SUCCEEDED 100%
+remesh done gate 30000 95418120
+  CONTRACT: w 1.248  h 1.400  l 0.115 m (x -0.624..0.624, z -0.057..0.057)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5gate.glb: 29001 -> 29001 triangles; 91.0 MB -> 1318 KB
+{
+ "info": {
+  "size": [
+   1.247895727520092,
+   1.399999976158142,
+   0.11467634925408043
+  ],
+  "min": [
+   -0.623947863760046,
+   0,
+   -0.05733817462704022
+  ],
+  "max": [
+   0.623947863760046,
+   1.399999976158142,
+   0.05733817462704022
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 29001
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.624,0,-0.057],[0.624,1.4,0.057]],"size":[1.248,1.4,0.115]}
+errs []
+gate -> assets/w5gate.glb 1349164 bytes
+  remesh gatepost 12000: the job is in the ledger (01a1fc9a-2b79-72cc-89eb-4a9cfde77eab): waited for, not started again
+  remesh gatepost 12000 SUCCEEDED 100%
+remesh done gatepost 12000 89459536
+  CONTRACT: w 0.417  h 1.700  l 0.417 m (x -0.208..0.208, z -0.208..0.208)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5gatepost.glb: 10939 -> 10939 triangles; 85.3 MB -> 883 KB
+{
+ "info": {
+  "size": [
+   0.41671194747751106,
+   1.7000000476837158,
+   0.41671194747751106
+  ],
+  "min": [
+   -0.20835597373875553,
+   0,
+   -0.20835597373875553
+  ],
+  "max": [
+   0.20835597373875553,
+   1.7000000476837158,
+   0.20835597373875553
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 10939
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.208,0,-0.208],[0.208,1.7,0.208]],"size":[0.417,1.7,0.417]}
+errs []
+gatepost -> assets/w5gatepost.glb 904344 bytes
+  remesh planter 40000: the job is in the ledger (01a1fc9a-2cc1-716b-9fcc-9dbad080e813): waited for, not started again
+  remesh planter 40000 SUCCEEDED 100%
+remesh done planter 40000 87059796
+  CONTRACT: w 2.000  h 0.823  l 0.745 m (x -1.000..1.000, z -0.372..0.372)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5planter.glb: 33798 -> 33798 triangles; 83.0 MB -> 4505 KB
+{
+ "info": {
+  "size": [
+   2,
+   0.8235724967192604,
+   0.7449568163090915
+  ],
+  "min": [
+   -1,
+   -0.00004561749453307895,
+   -0.37247840815454575
+  ],
+  "max": [
+   1,
+   0.8235268792247272,
+   0.37247840815454575
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 33798
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1,0,-0.372],[1,0.824,0.372]],"size":[2,0.824,0.745]}
+errs []
+planter -> assets/w5planter.glb 4612640 bytes
+  remesh planter2 40000: the job is in the ledger (01a1fc9a-2e1b-7300-a74f-ff3ff061fdd9): waited for, not started again
+  remesh planter2 40000 SUCCEEDED 100%
+remesh done planter2 40000 86977352
+  CONTRACT: w 2.000  h 0.960  l 0.825 m (x -1.000..1.000, z -0.412..0.412)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5planter2.glb: 35354 -> 35354 triangles; 82.9 MB -> 2085 KB
+{
+ "info": {
+  "size": [
+   2,
+   0.9600512710959197,
+   0.8245490890224921
+  ],
+  "min": [
+   -1,
+   0.0000696913525223275,
+   -0.41227454451124607
+  ],
+  "max": [
+   1,
+   0.960120962448442,
+   0.41227454451124607
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 35354
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1,0,-0.412],[1,0.96,0.412]],"size":[2,0.96,0.825]}
+errs []
+planter2 -> assets/w5planter2.glb 2135032 bytes
+  remesh frontdoor 8000: the job is in the ledger (01a1fc9a-2f78-746a-947c-596044b1ac17): waited for, not started again
+  remesh frontdoor 8000 SUCCEEDED 100%
+remesh done frontdoor 8000 83626324
+  CONTRACT: w 0.790  h 2.100  l 0.097 m (x -0.395..0.395, z -0.048..0.048)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5frontdoor.glb: 7287 -> 7287 triangles; 79.8 MB -> 709 KB
+{
+ "info": {
+  "size": [
+   0.7898952856409316,
+   2.0999999046325684,
+   0.09690236688755283
+  ],
+  "min": [
+   -0.3949476428204658,
+   0,
+   -0.04845118344377641
+  ],
+  "max": [
+   0.3949476428204658,
+   2.0999999046325684,
+   0.04845118344377641
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 7287
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.395,0,-0.048],[0.395,2.1,0.048]],"size":[0.79,2.1,0.097]}
+errs []
+frontdoor -> assets/w5frontdoor.glb 726316 bytes
+  remesh liftpanel 12000: the job is in the ledger (01a1fc9a-30fa-711d-9475-531817a35487): waited for, not started again
+  remesh liftpanel 12000 SUCCEEDED 100%
+remesh done liftpanel 12000 84343888
+  CONTRACT: w 0.274  h 1.100  l 0.045 m (x -0.137..0.137, z -0.022..0.022)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5liftpanel.glb: 11373 -> 11373 triangles; 80.4 MB -> 862 KB
+{
+ "info": {
+  "size": [
+   0.2736655841047037,
+   1.100000023841858,
+   0.044850002498023074
+  ],
+  "min": [
+   -0.13683279205235185,
+   0,
+   -0.022425001249011537
+  ],
+  "max": [
+   0.13683279205235185,
+   1.100000023841858,
+   0.022425001249011537
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 11373
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.137,0,-0.022],[0.137,1.1,0.022]],"size":[0.274,1.1,0.045]}
+errs []
+liftpanel -> assets/w5liftpanel.glb 882744 bytes
+  remesh sofa 30000: the job is in the ledger (01a1fc9a-3293-7719-a171-2426d7099b77): waited for, not started again
+  remesh sofa 30000 SUCCEEDED 100%
+remesh done sofa 30000 73130452
+  CONTRACT: w 2.100  h 0.782  l 0.881 m (x -1.050..1.050, z -0.441..0.441)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5sofa.glb: 30885 -> 30885 triangles; 69.7 MB -> 748 KB
+{
+ "info": {
+  "size": [
+   2.0999999046325684,
+   0.7822046216022369,
+   0.8814141877013981
+  ],
+  "min": [
+   -1.0499999523162842,
+   -0.0000425545221267587,
+   -0.44070709385069906
+  ],
+  "max": [
+   1.0499999523162842,
+   0.7821620670801102,
+   0.44070709385069906
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 30885
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1.05,0,-0.441],[1.05,0.782,0.441]],"size":[2.1,0.782,0.881]}
+errs []
+sofa -> assets/w5sofa.glb 766000 bytes
+  remesh lowtable 12000: the job is in the ledger (01a1fc9a-33fd-71fc-b023-6d99525d52a8): waited for, not started again
+  remesh lowtable 12000 SUCCEEDED 100%
+remesh done lowtable 12000 85324728
+  CONTRACT: w 1.200  h 0.358  l 0.760 m (x -0.600..0.600, z -0.380..0.380)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5lowtable.glb: 12100 -> 12100 triangles; 81.4 MB -> 1083 KB
+{
+ "info": {
+  "size": [
+   1.2000000476837158,
+   0.3582018636553369,
+   0.75976442729717
+  ],
+  "min": [
+   -0.6000000238418579,
+   -0.0000326495810787919,
+   -0.379882213648585
+  ],
+  "max": [
+   0.6000000238418579,
+   0.3581692140742581,
+   0.379882213648585
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12100
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.6,0,-0.38],[0.6,0.358,0.38]],"size":[1.2,0.358,0.76]}
+errs []
+lowtable -> assets/w5lowtable.glb 1109300 bytes
+  remesh tvconsole 16000: the job is in the ledger (01a1fc9a-3538-767d-be92-a06417c00b3b): waited for, not started again
+  remesh tvconsole 16000 SUCCEEDED 100%
+remesh done tvconsole 16000 67547788
+  CONTRACT: w 1.800  h 1.185  l 0.711 m (x -0.900..0.900, z -0.355..0.355)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5tvconsole.glb: 15197 -> 15197 triangles; 64.4 MB -> 670 KB
+{
+ "info": {
+  "size": [
+   1.7999999523162842,
+   1.1851313507880343,
+   0.7106723039373689
+  ],
+  "min": [
+   -0.8999999761581421,
+   0.000007669313471847516,
+   -0.35533615196868445
+  ],
+  "max": [
+   0.8999999761581421,
+   1.1851390201015062,
+   0.35533615196868445
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 15197
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.9,0,-0.355],[0.9,1.185,0.355]],"size":[1.8,1.185,0.711]}
+errs []
+tvconsole -> assets/w5tvconsole.glb 685628 bytes
+  remesh floorlamp 12000: the job is in the ledger (01a1fc9a-369a-742d-a14c-982500382129): waited for, not started again
+  remesh floorlamp 12000 SUCCEEDED 100%
+remesh done floorlamp 12000 55448876
+  CONTRACT: w 0.547  h 1.550  l 0.547 m (x -0.274..0.274, z -0.273..0.273)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5floorlamp.glb: 11737 -> 11737 triangles; 52.9 MB -> 977 KB
+{
+ "info": {
+  "size": [
+   0.5472563691624833,
+   1.5499999523162842,
+   0.5466887249036927
+  ],
+  "min": [
+   -0.27362818458124166,
+   0,
+   -0.27334436245184635
+  ],
+  "max": [
+   0.27362818458124166,
+   1.5499999523162842,
+   0.27334436245184635
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 11737
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.274,0,-0.273],[0.274,1.55,0.273]],"size":[0.547,1.55,0.547]}
+errs []
+floorlamp -> assets/w5floorlamp.glb 1000468 bytes
+  remesh tablelamp 12000: the job is in the ledger (01a1fc9a-37dc-750b-9357-07e1878fddff): waited for, not started again
+  remesh tablelamp 12000 SUCCEEDED 100%
+remesh done tablelamp 12000 82875736
+  CONTRACT: w 0.381  h 0.550  l 0.381 m (x -0.191..0.191, z -0.191..0.191)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5tablelamp.glb: 12330 -> 12330 triangles; 79.0 MB -> 849 KB
+{
+ "info": {
+  "size": [
+   0.38099002870513765,
+   0.550000011920929,
+   0.38112431014974246
+  ],
+  "min": [
+   -0.19049501435256883,
+   0,
+   -0.19056215507487123
+  ],
+  "max": [
+   0.19049501435256883,
+   0.550000011920929,
+   0.19056215507487123
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12330
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.19,0,-0.191],[0.19,0.55,0.191]],"size":[0.381,0.55,0.381]}
+errs []
+tablelamp -> assets/w5tablelamp.glb 869396 bytes
+  remesh pendant 8000: the job is in the ledger (01a1fc9a-3926-70d5-8492-f7aa3f429d66): waited for, not started again
+  remesh pendant 8000 SUCCEEDED 100%
+remesh done pendant 8000 83621984
+  CONTRACT: w 0.450  h 0.450  l 0.450 m (x -0.225..0.225, z -0.225..0.225)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5pendant.glb: 8315 -> 8315 triangles; 79.7 MB -> 359 KB
+{
+ "info": {
+  "size": [
+   0.44999998807907104,
+   0.4498901214478679,
+   0.4495605215542586
+  ],
+  "min": [
+   -0.22499999403953552,
+   0.0000034647048380020973,
+   -0.2247802607771293
+  ],
+  "max": [
+   0.22499999403953552,
+   0.4498935861527059,
+   0.2247802607771293
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8315
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.225,0,-0.225],[0.225,0.45,0.225]],"size":[0.45,0.45,0.45]}
+errs []
+pendant -> assets/w5pendant.glb 367632 bytes
+  remesh curtain 16000: the job is in the ledger (01a1fc9a-3a64-716d-be90-8b5506bf7a6e): waited for, not started again
+  remesh curtain 16000 SUCCEEDED 100%
+remesh done curtain 16000 69752568
+  CONTRACT: w 1.414  h 2.400  l 0.195 m (x -0.707..0.707, z -0.098..0.098)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5curtain.glb: 14413 -> 14413 triangles; 66.5 MB -> 1003 KB
+{
+ "info": {
+  "size": [
+   1.4137639039516028,
+   2.4000000953674316,
+   0.1951231499392327
+  ],
+  "min": [
+   -0.7068819519758014,
+   0,
+   -0.09756157496961634
+  ],
+  "max": [
+   0.7068819519758014,
+   2.4000000953674316,
+   0.09756157496961634
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 14413
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.707,0,-0.098],[0.707,2.4,0.098]],"size":[1.414,2.4,0.195]}
+errs []
+curtain -> assets/w5curtain.glb 1026924 bytes
+  remesh dintable 16000: the job is in the ledger (01a1fc9a-3bc1-740a-bf87-47d5ee15fa0a): waited for, not started again
+  remesh dintable 16000 SUCCEEDED 100%
+remesh done dintable 16000 81006096
+  CONTRACT: w 1.300  h 0.873  l 1.301 m (x -0.650..0.650, z -0.651..0.651)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5dintable.glb: 16221 -> 16221 triangles; 77.3 MB -> 1088 KB
+{
+ "info": {
+  "size": [
+   1.3000545684231952,
+   0.87263447093757,
+   1.30148446559906
+  ],
+  "min": [
+   -0.6500272842115976,
+   -0.000002712248722669397,
+   -0.65074223279953
+  ],
+  "max": [
+   0.6500272842115976,
+   0.8726317586888472,
+   0.65074223279953
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16221
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.65,0,-0.651],[0.65,0.873,0.651]],"size":[1.3,0.873,1.301]}
+errs []
+dintable -> assets/w5dintable.glb 1114164 bytes
+  remesh dinchair 12000: the job is in the ledger (01a1fc9a-3cfe-7220-a43d-27123f7ce6f7): waited for, not started again
+  remesh dinchair 12000 SUCCEEDED 100%
+remesh done dinchair 12000 77663340
+  CONTRACT: w 0.564  h 1.000  l 0.697 m (x -0.282..0.282, z -0.348..0.348)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5dinchair.glb: 11769 -> 11769 triangles; 74.1 MB -> 926 KB
+{
+ "info": {
+  "size": [
+   0.5639210180974761,
+   1,
+   0.6969817194128238
+  ],
+  "min": [
+   -0.28196050904873804,
+   0,
+   -0.3484908597064119
+  ],
+  "max": [
+   0.28196050904873804,
+   1,
+   0.3484908597064119
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 11769
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.282,0,-0.348],[0.282,1,0.348]],"size":[0.564,1,0.697]}
+errs []
+dinchair -> assets/w5dinchair.glb 947800 bytes
+  remesh sideboard 20000: the job is in the ledger (01a1fc9a-3e5f-76b7-aeb1-ad5589e4b14b): waited for, not started again
+  remesh sideboard 20000 SUCCEEDED 100%
+remesh done sideboard 20000 71351564
+  CONTRACT: w 1.600  h 1.016  l 0.565 m (x -0.800..0.800, z -0.283..0.283)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5sideboard.glb: 19821 -> 19821 triangles; 68.0 MB -> 820 KB
+{
+ "info": {
+  "size": [
+   1.600000023841858,
+   1.0159489881909756,
+   0.5653004631494244
+  ],
+  "min": [
+   -0.800000011920929,
+   -0.00002687036578197244,
+   -0.2826502315747122
+  ],
+  "max": [
+   0.800000011920929,
+   1.0159221178251936,
+   0.2826502315747122
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 19821
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.8,0,-0.283],[0.8,1.016,0.283]],"size":[1.6,1.016,0.565]}
+errs []
+sideboard -> assets/w5sideboard.glb 839732 bytes
+  remesh wallclock 8000: the job is in the ledger (01a1fc9a-3fbd-7591-bd56-be75e68f4bef): waited for, not started again
+  remesh wallclock 8000 SUCCEEDED 100%
+remesh done wallclock 8000 81052668
+  CONTRACT: w 0.246  h 0.550  l 0.124 m (x -0.123..0.123, z -0.062..0.062)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5wallclock.glb: 7372 -> 7372 triangles; 77.3 MB -> 814 KB
+{
+ "info": {
+  "size": [
+   0.24568468808516608,
+   0.550000011920929,
+   0.12380749192568047
+  ],
+  "min": [
+   -0.12284234404258304,
+   0,
+   -0.061903745962840234
+  ],
+  "max": [
+   0.12284234404258304,
+   0.550000011920929,
+   0.061903745962840234
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 7372
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.123,0,-0.062],[0.123,0.55,0.062]],"size":[0.246,0.55,0.124]}
+errs []
+wallclock -> assets/w5wallclock.glb 833672 bytes
+  remesh frame 6000: the job is in the ledger (01a1fc9a-4105-77da-9c86-295fd9c834e9): waited for, not started again
+  remesh frame 6000 SUCCEEDED 100%
+remesh done frame 6000 70064708
+  CONTRACT: w 0.680  h 0.461  l 0.048 m (x -0.340..0.340, z -0.024..0.024)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5frame.glb: 4773 -> 4773 triangles; 66.8 MB -> 766 KB
+{
+ "info": {
+  "size": [
+   0.6800000071525574,
+   0.46141301184209604,
+   0.04773094932251601
+  ],
+  "min": [
+   -0.3400000035762787,
+   0.000012449476557874206,
+   -0.023865474661258004
+  ],
+  "max": [
+   0.3400000035762787,
+   0.4614254613186539,
+   0.023865474661258004
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4773
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.34,0,-0.024],[0.34,0.461,0.024]],"size":[0.68,0.461,0.048]}
+errs []
+frame -> assets/w5frame.glb 784548 bytes
+  remesh walllamp 8000: the job is in the ledger (01a1fc9a-4252-7013-aa9c-ae9d6b12f5d8): waited for, not started again
+  remesh walllamp 8000 SUCCEEDED 100%
+remesh done walllamp 8000 84261008
+  CONTRACT: w 0.168  h 0.350  l 0.147 m (x -0.084..0.084, z -0.073..0.073)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5walllamp.glb: 7957 -> 7957 triangles; 80.4 MB -> 845 KB
+{
+ "info": {
+  "size": [
+   0.16847895461853674,
+   0.3499999940395355,
+   0.14681691696137625
+  ],
+  "min": [
+   -0.08423947730926837,
+   0,
+   -0.07340845848068812
+  ],
+  "max": [
+   0.08423947730926837,
+   0.3499999940395355,
+   0.07340845848068812
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 7957
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.084,0,-0.073],[0.084,0.35,0.073]],"size":[0.168,0.35,0.147]}
+errs []
+walllamp -> assets/w5walllamp.glb 865452 bytes
+  remesh rail 16000: the job is in the ledger (01a1fc9a-439e-7701-9864-23a5610b0b55): waited for, not started again
+  remesh rail 16000 SUCCEEDED 100%
+remesh done rail 16000 67903596
+  CONTRACT: w 2.000  h 0.994  l 0.152 m (x -1.000..1.000, z -0.076..0.076)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5rail.glb: 13997 -> 13997 triangles; 64.8 MB -> 828 KB
+{
+ "info": {
+  "size": [
+   2,
+   0.9942320017090367,
+   0.15161595507675404
+  ],
+  "min": [
+   -1,
+   -0.00002581020548569901,
+   -0.07580797753837702
+  ],
+  "max": [
+   1,
+   0.9942061915035509,
+   0.07580797753837702
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 13997
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1,0,-0.076],[1,0.994,0.076]],"size":[2,0.994,0.152]}
+errs []
+rail -> assets/w5rail.glb 847936 bytes
+  remesh walklight 4000: the job is in the ledger (01a1fc9a-44e1-7293-b6b5-43cc84edb9fc): waited for, not started again
+  remesh walklight 4000 SUCCEEDED 100%
+remesh done walklight 4000 86017312
+  CONTRACT: w 0.280  h 0.168  l 0.279 m (x -0.140..0.140, z -0.139..0.139)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5walklight.glb: 4132 -> 4132 triangles; 82.0 MB -> 342 KB
+{
+ "info": {
+  "size": [
+   0.2800000011920929,
+   0.16774193619802802,
+   0.2788036756155405
+  ],
+  "min": [
+   -0.14000000059604645,
+   -0.0000016449645916932765,
+   -0.13940183780777024
+  ],
+  "max": [
+   0.14000000059604645,
+   0.1677402912334363,
+   0.13940183780777024
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4132
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.14,0,-0.139],[0.14,0.168,0.139]],"size":[0.28,0.168,0.279]}
+errs []
+walklight -> assets/w5walklight.glb 350116 bytes
+  remesh slippers 8000: the job is in the ledger (01a1fc9a-462c-759a-a4cb-c18e1d00f293): waited for, not started again
+  remesh slippers 8000 SUCCEEDED 100%
+remesh done slippers 8000 92339504
+  CONTRACT: w 0.238  h 0.087  l 0.270 m (x -0.119..0.119, z -0.135..0.135)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5slippers.glb: 8285 -> 8285 triangles; 88.1 MB -> 442 KB
+{
+ "info": {
+  "size": [
+   0.23835841884679831,
+   0.08695669769040215,
+   0.27000001072883606
+  ],
+  "min": [
+   -0.11917920942339916,
+   -0.000002445274549060794,
+   -0.13500000536441803
+  ],
+  "max": [
+   0.11917920942339916,
+   0.08695425241585308,
+   0.13500000536441803
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8285
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.119,0,-0.135],[0.119,0.087,0.135]],"size":[0.238,0.087,0.27]}
+errs []
+slippers -> assets/w5slippers.glb 452980 bytes
+  remesh duffel 12000: the job is in the ledger (01a1fc9a-4763-70b8-812c-d17272f827e4): waited for, not started again
+  remesh duffel 12000 SUCCEEDED 100%
+remesh done duffel 12000 102439812
+  CONTRACT: w 0.600  h 0.361  l 0.271 m (x -0.300..0.300, z -0.135..0.135)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5duffel.glb: 12058 -> 12058 triangles; 97.7 MB -> 855 KB
+{
+ "info": {
+  "size": [
+   0.6000000238418579,
+   0.3612781295327572,
+   0.2708029527450556
+  ],
+  "min": [
+   -0.30000001192092896,
+   -7.067694380025191e-7,
+   -0.1354014763725278
+  ],
+  "max": [
+   0.30000001192092896,
+   0.3612774227633192,
+   0.1354014763725278
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12058
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.3,0,-0.135],[0.3,0.361,0.135]],"size":[0.6,0.361,0.271]}
+errs []
+duffel -> assets/w5duffel.glb 875244 bytes
+  remesh cushion 6000: the job is in the ledger (01a1fc9a-48c6-73fa-bb7e-651d8ea14f8a): waited for, not started again
+  remesh cushion 6000 SUCCEEDED 100%
+remesh done cushion 6000 84914568
+  CONTRACT: w 0.500  h 0.125  l 0.500 m (x -0.250..0.250, z -0.250..0.250)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5cushion.glb: 6036 -> 6036 triangles; 81.0 MB -> 296 KB
+{
+ "info": {
+  "size": [
+   0.4999778021512282,
+   0.12454017513194934,
+   0.5003442764282227
+  ],
+  "min": [
+   -0.2499889010756141,
+   0.000013979707165281963,
+   -0.25017213821411133
+  ],
+  "max": [
+   0.2499889010756141,
+   0.12455415483911463,
+   0.25017213821411133
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 6036
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.25,0,-0.25],[0.25,0.125,0.25]],"size":[0.5,0.125,0.5]}
+errs []
+cushion -> assets/w5cushion.glb 302788 bytes
+  remesh altarshelf 16000: the job is in the ledger (01a1fc9a-4a16-7537-a8dd-c0f81c618553): waited for, not started again
+  remesh altarshelf 16000 SUCCEEDED 100%
+remesh done altarshelf 16000 80056752
+  CONTRACT: w 0.700  h 0.225  l 0.398 m (x -0.350..0.350, z -0.199..0.199)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5altarshelf.glb: 16049 -> 16049 triangles; 76.3 MB -> 1016 KB
+{
+ "info": {
+  "size": [
+   0.699999988079071,
+   0.22493056656039734,
+   0.3984191344241058
+  ],
+  "min": [
+   -0.3499999940395355,
+   0.0000011265222381595663,
+   -0.1992095672120529
+  ],
+  "max": [
+   0.3499999940395355,
+   0.2249316930826355,
+   0.1992095672120529
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16049
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.35,0,-0.199],[0.35,0.225,0.199]],"size":[0.7,0.225,0.398]}
+errs []
+altarshelf -> assets/w5altarshelf.glb 1040668 bytes
+  remesh ceilfan 12000: the job is in the ledger (01a1fc9a-4b6b-74cd-afb1-734b9ca07293): waited for, not started again
+  remesh ceilfan 12000 SUCCEEDED 100%
+remesh done ceilfan 12000 65763028
+  CONTRACT: w 1.300  h 0.520  l 1.299 m (x -0.650..0.650, z -0.650..0.650)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w5ceilfan.glb: 12238 -> 12238 triangles; 62.7 MB -> 765 KB
+{
+ "info": {
+  "size": [
+   1.2999999523162842,
+   0.5199285676169594,
+   1.299206471099013
+  ],
+  "min": [
+   -0.6499999761581421,
+   -0.0000035430038073935854,
+   -0.6496032355495065
+  ],
+  "max": [
+   0.6499999761581421,
+   0.5199250246131519,
+   0.6496032355495065
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12238
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.65,0,-0.65],[0.65,0.52,0.65]],"size":[1.3,0.52,1.299]}
+errs []
+ceilfan -> assets/w5ceilfan.glb 782912 bytes

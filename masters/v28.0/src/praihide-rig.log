@@ -1,0 +1,10 @@
+started plain rig praihide 01a1fc91-03cc-7247-80fe-925576890a34
+  rig praihide IN_PROGRESS 0%
+  rig praihide IN_PROGRESS 47%
+  rig praihide IN_PROGRESS 84%
+  rig praihide IN_PROGRESS 90%
+  rig praihide SUCCEEDED 100%
+rig done praihide {'rigged': 33688340, 'walk': 33668864}
+body identical to masters/v28.0/src/rigged-praihide.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (8)
+wrote masters/v28.0/src/takes-praihide-walking.glb 45520 bytes ["Armature|walking_man|baselayer (66 ch, 1.07 s)"]

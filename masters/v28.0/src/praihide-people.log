@@ -1,0 +1,21 @@
+wrote masters/v28.0/src/merged-praihide.glb 8419624 bytes
+["Armature|clip0|baselayer (72 ch, 0.03 s)","Idle_3 (66 ch, 10.00 s)","Walking (66 ch, 1.07 s)"]
+calmarms masters/v28.0/src/merged-praihide.glb: the body's left 1.00,0.00,0.00, its face -0.00,0.00,1.00
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 5.5..11.1; swing -5.7..4.0 -> -5.7..4.0 | Right out 12.6..22.0 (mean 17.4) -> 6.1..11.7; swing -5.3..2.9 -> -5.3..2.9
+  Walking: Left out 7.2..24.8 (mean 16.0) -> 4.6..13.4; swing -25.3..30.1 -> -17.7..21.1 | Right out 8.8..30.3 (mean 19.1) -> 3.9..14.6; swing -23.7..28.3 -> -16.6..19.8
+wrote masters/v28.0/src/merged-praihide.glb
+  fins: 2 triangles hanging from the body by one edge taken out (10.0 mm2 in all, the largest 9.1 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1), Accessor (4)
+  16779 vertices in 8344 positions; 6804 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 16779 points joined into 8344 places; 16680 triangles
+  repaint [   0.0s] the face 1516 triangles, the rest of the head 3875, the hands 1870, the body 9419 (looking [-0.0, 0.0, 1.0])
+  repaint [   1.4s] xatlas: 261 charts, 65% of the square used
+  repaint [   2.0s] packed again: 261 charts in a 1802x1820 square drawn at 1024 (64% used), a margin of 2.3 pixels at 1024
+  repaint [   2.0s] texels a metre at 1024, before -> now: face 974 -> 1270, head 934 -> 993, hands 1008 -> 599, body 607 -> 493; 261 charts, margin 2.3 px
+  repaint [   2.1s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   5.8s] baked
+  repaint [   5.8s] written
+  repaint: 16779 points -> 18849 (2070 copied along the new seams), 16680 triangles; texels a metre at 1024, before -> now: face 974 -> 1270, head 934 -> 993, hands 1008 -> 599, body 607 -> 493; 261 charts, margin 2.3 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5praihide.glb: tris 16682 -> 16680, 3 takes, 506 KB

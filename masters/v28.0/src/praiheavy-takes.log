@@ -1,0 +1,10 @@
+started animation praiheavy lib 01a1fc93-23e4-71f5-8979-9d7a0b076458
+  anim praiheavy lib IN_PROGRESS 0%
+  anim praiheavy lib IN_PROGRESS 47%
+  anim praiheavy lib SUCCEEDED 100%
+animation done praiheavy lib 30777652
+body identical to masters/v28.0/src/rigged-praiheavy.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (8)
+wrote masters/v28.0/src/takes-praiheavy-lib.glb 282664 bytes ["Armature|Idle_3|baselayer (66 ch, 10.00 s)"]
+praiheavy lib strip exit 0
+praiheavy lib done

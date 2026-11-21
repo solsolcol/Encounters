@@ -1,0 +1,10 @@
+started plain rig praicome 01a1fc91-03e1-7517-a2e7-b2890e98b230
+  rig praicome IN_PROGRESS 0%
+  rig praicome IN_PROGRESS 47%
+  rig praicome IN_PROGRESS 84%
+  rig praicome IN_PROGRESS 90%
+  rig praicome SUCCEEDED 100%
+rig done praicome {'rigged': 33310728, 'walk': 33291372}
+body identical to masters/v28.0/src/rigged-praicome.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (8)
+wrote masters/v28.0/src/takes-praicome-walking.glb 45268 bytes ["Armature|walking_man|baselayer (66 ch, 1.07 s)"]

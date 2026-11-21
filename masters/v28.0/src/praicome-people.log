@@ -1,0 +1,21 @@
+wrote masters/v28.0/src/merged-praicome.glb 8187980 bytes
+["Armature|clip0|baselayer (72 ch, 0.03 s)","Idle_3 (66 ch, 10.00 s)","Walking (66 ch, 1.07 s)"]
+calmarms masters/v28.0/src/merged-praicome.glb: the body's left 1.00,0.00,0.00, its face -0.00,0.00,1.00
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 5.5..11.1; swing -5.7..4.0 -> -5.7..4.0 | Right out 12.5..21.9 (mean 17.3) -> 6.1..11.7; swing -5.1..3.0 -> -5.1..3.0
+  Walking: Left out 7.2..24.9 (mean 16.1) -> 4.6..13.4; swing -25.3..30.1 -> -17.7..21.1 | Right out 8.8..30.1 (mean 19.0) -> 3.9..14.6; swing -23.6..28.4 -> -16.5..19.9
+wrote masters/v28.0/src/merged-praicome.glb
+  fins: 1 triangles hanging from the body by one edge taken out (3.0 mm2 in all, the largest 3.0 mm2, if the file is in metres); edges of one triangle left: 0
+prune: Removed types... Texture (1), Accessor (4)
+  15536 vertices in 8360 positions; 5451 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 15536 points joined into 8360 places; 16714 triangles
+  repaint [   0.0s] the face 1432 triangles, the rest of the head 3908, the hands 2042, the body 9332 (looking [-0.0, 0.0, 1.0])
+  repaint [   1.2s] xatlas: 303 charts, 65% of the square used
+  repaint [   1.8s] packed again: 303 charts in a 1798x1848 square drawn at 1024 (64% used), a margin of 2.2 pixels at 1024
+  repaint [   1.8s] texels a metre at 1024, before -> now: face 891 -> 1318, head 1125 -> 1001, hands 1264 -> 612, body 569 -> 488; 303 charts, margin 2.2 px
+  repaint [   1.9s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   5.9s] baked
+  repaint [   5.9s] written
+  repaint: 15536 points -> 18015 (2479 copied along the new seams), 16714 triangles; texels a metre at 1024, before -> now: face 891 -> 1318, head 1125 -> 1001, hands 1264 -> 612, body 569 -> 488; 303 charts, margin 2.2 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p5praicome.glb: tris 16715 -> 16714, 3 takes, 481 KB

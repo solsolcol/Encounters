@@ -1,0 +1,10 @@
+started animation praicome lib 01a1fc93-23cd-77de-ae69-7bf253a83545
+  anim praicome lib IN_PROGRESS 0%
+  anim praicome lib IN_PROGRESS 47%
+  anim praicome lib SUCCEEDED 100%
+animation done praicome lib 33528436
+body identical to masters/v28.0/src/rigged-praicome.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (8)
+wrote masters/v28.0/src/takes-praicome-lib.glb 282312 bytes ["Armature|Idle_3|baselayer (66 ch, 10.00 s)"]
+praicome lib strip exit 0
+praicome lib done
