@@ -123,3 +123,50 @@ lacks, so BOTH files' rows are held in registry.json and written together by ins
 73, STING_SAMPLE 99, the three speakers, 99 registry rows, the chapter's name on the sheet), each between markers of
 its own after chapter 4's; proved on a scratch copy of both files: a second run changes nothing. Until it runs, a cue
 of these lines plays nothing (the M11 release gate counts this).
+
+## 5 · The fight (21 Nov 2026: its 94 rows, frozen from docs/V28.0-FIGHT.md §10)
+
+94 rows (`"at": "fight"`): Grandmaster Pho 80, him 6, Ton 4, Mr Koh 2, Jun 2. 93 said, 1 copied: `ph5nf3` ("SMELL.",
+the short one of the hidden needs) is `ph5w6` byte for byte (lines.json `same`; the same word said with the same
+firmness), as `ph5t5` is. The chapter now has 193 lines: 189 said, 4 copied.
+
+**Tags** (prompts.py, one a line). Grandmaster Pho calm, firm and unhurried even when it is urgent: a teacher guiding a
+cleansing, never shouting. `firm` for the orders (FIRE, BIND, BAG, SMELL, LEND, SHOCKWAVE, the switches), `calm` for
+the lesson's explanations and the gentler hand-offs, `urgent` where a cage is breaking or a Prai is at him or under
+him, `serious` for the gold and the holds, `stern` once (ph5fg, opening himself for nothing), `gentle` for the last
+bag and the fight lost, `warm` for the praise and "You are safe beside me". His thoughts: reflective (q5c0, q5c4),
+shaken (q5c1, q5c2), quiet (q5c3), awed (q5c5). Behind the thread: Ton concerned / firm / afraid, Mr Koh puzzled and
+awed, Jun awed and afraid. No capitals added (the script's FIRE, BIND, BAG, SMELL, LEND, SHOCKWAVE are its own: the
+words on the screen); no ellipsis added (ko5c2's is the script's); no "LP", no name said that needs "Puu".
+
+**Takes**: three for Grandmaster Pho, two for everyone else: 265, NONE failed. Eight more were said for four lines the
+pick flagged (below): 273 calls, 11,066 characters of prompts in spend.log.
+
+**The pick** (pick.py, the house rule unchanged). Two takes REFUSED BY THEIR WORDS, a new table in pick.py (`REFUSED`),
+because the words-heard measure counts the script's words found and so passes a word said twice: `ph5na2` a ("FIRE.
+FIRE.") and `ph5c1` a ("Three Pai"); both lines took another take, clean. Four lines where every take fails one test
+the same way (the voice's read, not one take's fault) were picked by reading the measures, each reason in pick.py
+(`CHOSEN`) and CHAIN.txt; all four are the ones to hear first:
+- `ph5fc` "Now they all come. BIND them, and I will gather them.": all five takes (two said again) end on the word's
+  release 13 to 21 dB under the voice with a breath rising in the last 40 ms, which the end test refuses; take c, the
+  unhurried read, whose rise lies inside the chain's 0.12 s fade.
+- `ph5f7` "It is hiding. SMELL.": all five drag (0.97 to 1.16 words a second over 4 words: the long pause before SMELL
+  is how the voice reads it); c, the least, its end the cleanest.
+- `ph5l1` "Enough. Breathe. We begin again.": all five drag (1.03 to 1.29); b, the least, as the card opens.
+- `q5c4` (his thought after the first shockwave): both whole takes hold 1.80 s between the two sentences (his hole
+  limit 1.7); of the two said again, c ended on a word and d dropped the first sentence; a, the tighter.
+Every other fight pick passed clean (clean end, no odd hole, not rushed, no tag spoken, every word heard).
+
+**The chain** (chain.py, unchanged), then registry.py: every transcript held against the script (no difference), the
+copy made, every length into lines.json; assemble.py (193 lines measured, 0 FIGHT-DRAFT); `node chaptertest.mjs` 0.
+Said plainly: chain.py re-encodes every line when run whole, and the Opus encoder writes a new stream serial each
+time, so the earlier 99 lines' .ogg files took new bytes with the same sound (committed in the lead's checkpoint
+3926813; ph5t5 copied again from ph5w6 so the copy stays byte for byte). Their mp3s are byte-identical.
+
+**Install**: install.py carries the fight with no change: it writes every row of registry.json (193), and
+registry.py and prompts.py skip only a row marked `draft` (none is). Not run here (the engine is another helper's).
+
+**The cost** (the account's own balance): 151,694 used before (146,488 left) → 156,364 after the 265 takes
+(141,818 left) → 212,923 at the end (85,259 left). The account is shared at the same time with the chapter's sound and
+music; this run's own share is its 11,066 prompt characters (by section 3's ratio, about 4,900 billed); the rest of
+the 61,229 is the sound helper's.
