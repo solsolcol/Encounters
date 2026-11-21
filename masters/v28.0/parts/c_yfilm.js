@@ -791,7 +791,7 @@
        eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
     const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
-                    liftPho: [0.35, 0.05], liftTon: [-0.45, -0.55], liftJun: [0.45, -0.9], liftEye: [-0.1, EYE, -1.55] };
+                    liftPho: [0.35, 0.05], liftTon: [-0.6, 0.2], liftJun: [0.6, -0.3], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -898,8 +898,10 @@
           { t: T.room3 - 0.05, name: 'dining', eye: [A.eyeDine[0], EYE, A.eyeDine[2] + 0.1], at: [A.dine[0] - 0.7, 1.45, A.dine[1] + 1.6], fp: 54, fd: 48 },
           { t: T.room3, name: 'terrace', eye: A.eyeTerr, at: [A.terr[0] - 1.2, 1.45, A.terr[1]], fp: 56, fd: 50, cut: true },
           { t: T.knot - 0.05, name: 'terrace', eye: [A.eyeTerr[0] - 0.1, EYE, A.eyeTerr[2]], at: [A.terr[0] - 1.3, 1.45, A.terr[1]], fp: 54, fd: 48 },
-          { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.55, 1.05, A.tie[1] - 0.6], at: [A.tie[0], 0.48, A.tie[1]], fp: 30, fd: 26, cut: true },
-          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.5, 1.02, A.tie[1] - 0.58], at: [A.tie[0], 0.5, A.tie[1]], fp: 28, fd: 24 },
+          /* (the bag on its table with the table round it, the knot readable: at 0.85 m on a 30 degree lens its black cloth
+             filled the whole phone: bagtied-018_5) */
+          { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.7, 1.15, A.tie[1] - 0.75], at: [A.tie[0], 0.5, A.tie[1]], fp: 46, fd: 38, cut: true },
+          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.62, 1.1, A.tie[1] - 0.68], at: [A.tie[0], 0.52, A.tie[1]], fp: 42, fd: 35 },
           { t: T.tn5b1, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 46, fd: 40, cut: true },
           { t: T.window - 0.05, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 44, fd: 38 },
           { t: T.window, name: 'window', eye: A.eyeKoh, at: () => lp3(fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), [A.kohWin[0] - 0.3, 1.5, A.kohWin[1] - 0.5], 0.3), fp: 52, fd: 46, cut: true },
