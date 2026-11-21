@@ -75,7 +75,19 @@ const B = await count();
 await p.evaluate(() => { const L = window.__enc.stage.films.PRAI5.list; L.forEach((P, i) => { P.group.visible = window.__was[i]; }); });
 say('one frame with the nine', JSON.stringify(A), 'without', JSON.stringify(B), 'the nine drew', A.calls - B.calls, 'calls', A.tris - B.tris, 'triangles');
 await frames(4); await p.waitForTimeout(1200);
-await p.screenshot({ path: OUT + '/hunt-sight-open.png' });
-say('picture', OUT + '/hunt-sight-open.png');
+/* what the spirits' pass wrote where each of the nine stands on the screen (its chest and its head: the target's own
+   texel, read back), and where the world's depth stands there against the body's own */
+/* where each of the nine stands on the screen (CSS pixels: its chest, 1.1 m, and its head, 1.55 m), for the pictures'
+   colours to be read there */
+const px = await p.evaluate(() => { const E = window.__enc, cam = E.camera, v = cam.position.clone(); cam.updateMatrixWorld(true);
+  return E.stage.films.PRAI5.list.map(P => [1.1, 1.55].map(y => { v.set(P.group.position.x, y, P.group.position.z).project(cam);
+    return v.z < 1 ? [Math.round((v.x * 0.5 + 0.5) * innerWidth), Math.round((0.5 - v.y * 0.5) * innerHeight)] : null; })); });
+fs.writeFileSync(OUT + '/nine-at.json', JSON.stringify(px));
+console.log('the nine on the screen (css px, chest and head):', JSON.stringify(px));
+const shot = async (nm) => { await frames(4); await p.waitForTimeout(1500); await p.screenshot({ path: OUT + '/' + nm + '.png', timeout: 300000 }); say('picture', OUT + '/' + nm + '.png'); };
+await shot('hunt-sight-open');
+/* the same with the world's depth let through (every material of the nine at xray 1): whether something before them hides them */
+await p.evaluate(() => { for (const P of window.__enc.stage.films.PRAI5.list) { for (const q of [P.fx, P.edge]) if (q) for (const m of q.mats) m.uniforms.uXray.value = 1; } });
+await shot('hunt-sight-open-xray');
 console.log('errs', JSON.stringify(errs.slice(0, 10)));
 await b.close();

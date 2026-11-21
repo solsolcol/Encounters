@@ -1,11 +1,11 @@
 /* v28.0 (E4C5, M8): GRANDMASTER PHO'S THREE ACT TAKES SET DOWN BY HIS OWN FEET, proved (the lead's word, R23). On a phone
    page (390 x 844 at 2, a touch context), the fight set out and its brief taken down through the fight's lab; then for
-   each act's played window (the fire's mage_soell_cast, the gold's Charged_Spell_Cast, the bag's mage_soell_cast_8: the
+   each act's played window (the fire's mage_soell_cast_7 since R25, the gold's Charged_Spell_Cast, the bag's mage_soell_cast_8: the
    windows of c_fightstage.js FS_PHO_TAKE) his body held at 13 moments by the chapter's own pose (lab.pose: every law of
    his and his feet's curve), and at each the lowest of the skin that rides each foot (half its weight or more on that
    side's foot or toe bones) and the lowest of all his skin, against the court's floor: the feetscan way, over the window.
    Then his body photographed full size from his front and his left side (the court's open side) at the gold's crouch and
-   top, the bag's draw and the fire's top. OUT/ground.json holds every number; the pictures are OUT/<take>-<t>-<side>.png.
+   top, the bag's draw and the fire's throw and its held hand. OUT/ground.json holds every number; the pictures are OUT/<take>-<t>-<side>.png.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] node tools/probes/e4c5ground.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -42,7 +42,7 @@ const FEET = () => p.evaluate(() => {
       if (wl >= 0.5 && y < out.L) out.L = y; if (wr >= 0.5 && y < out.R) out.R = y; } });
   for (const k in out) out[k] = +out[k].toFixed(4);
   return out; });
-const WIN = [['mage_soell_cast', 0.50, 0.90], ['Charged_Spell_Cast', 0.50, 2.60], ['mage_soell_cast_8', 0.00, 0.40]];
+const WIN = [['mage_soell_cast_7', 0.45, 2.20], ['Charged_Spell_Cast', 0.50, 2.60], ['mage_soell_cast_8', 0.00, 0.40]];
 const res = { ground, windows: {} };
 for (const [name, a, z] of WIN) {
   const rows = [];
@@ -56,7 +56,7 @@ for (const [name, a, z] of WIN) {
 }
 /* the pictures: his front (3.0 m before him, toward the house) and his left side (2.6 m, the court's open side) */
 await p.evaluate(() => { const k = window.__enc.kit; if (k.tag().on) k.tag(null, null); });
-for (const [name, t] of [['Charged_Spell_Cast', 1.0], ['Charged_Spell_Cast', 2.0], ['mage_soell_cast_8', 0.4], ['mage_soell_cast', 0.71]]) {
+for (const [name, t] of [['Charged_Spell_Cast', 1.0], ['Charged_Spell_Cast', 2.0], ['mage_soell_cast_8', 0.4], ['mage_soell_cast_7', 0.95], ['mage_soell_cast_7', 1.3]]) {
   for (const side of ['front', 'side']) {
     await p.evaluate(([n, t, side]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; E.stage.snap().story.fight.lab.pose(n, t);
       const g = P.group.position, ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), lx = Math.cos(ry), lz = -Math.sin(ry);

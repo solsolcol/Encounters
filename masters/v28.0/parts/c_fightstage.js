@@ -519,9 +519,13 @@
        between two of its own moments (span) on the frame the rules begin the act, with every posture law of his as it
        stands (none is keyed to these three, so each plays as his file has it). Read from his file through its bones
        (hands, head, hips and feet at thirty moments of each: M8's takeread), then photographed in the game:
-       FIRE, mage_soell_cast: the stick swept up over his head from its rise (0.50 of the take) to its top (0.71) in
-         0.12 s, the fireball let go at the top, then brought down to 1.30 in 0.42 s; he plants for it (his walk held
-         from the rise to the stick's coming down: 0.54 s of the fire's 1.1 s wait)
+       FIRE, mage_soell_cast_7 (R25: "Fireball, shockwave, walking and bagging can all be different animations"; his file's
+         nineteen takes measured as motions, M8's takemotion: of the six that cast, this one is the THROW: a step in with
+         his right foot, 0.7 m, its toe 4 cm off the paving, and his right hand driven out to arm's length at his
+         shoulder's height, 1.14 m before him, fastest at 0.78 of it; mage_soell_cast, the first pass's, lifts the stick
+         straight over his head and throws nothing): from his wind (0.45) to the hand out (0.95) in 0.28 s, the fireball let
+         go there, then the hand back and the foot stepped home (2.2) in 0.55 s; he plants for it (0.83 s of the fire's
+         1.1 s wait)
        SHOCKWAVE, Charged_Spell_Cast: the gather low (0.50 to 1.50 of it) and both hands up (2.0) over the gold's 1.5 s,
          held up until the wheel goes out, then down (2.6) in 0.6 s; broken, he lets it go at once
        BAG, mage_soell_cast_8: both hands drawn in to his mouth (0 to 0.40 of it) over 0.6 s of the bag's draw, held
@@ -530,7 +534,7 @@
     const FS_ACTS = true;
     /* (the fire's coming down ends at 0.90 of his take and hands him back from there. SHOCKWAVE and BAG play his own takes
        too (the lead's word, R23), each SET DOWN BY HIS OWN FEET over the moments played: fsGroundActs, below) */
-    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast', a: 0.50, top: 0.71, b: 0.90, up: 0.12, down: 0.3, hold: false },
+    const FS_PHO_TAKE = { phoFire: { take: 'mage_soell_cast_7', a: 0.45, top: 0.95, b: 2.20, up: 0.28, down: 0.55, hold: false },
                           wave: { take: 'Charged_Spell_Cast', a: 0.50, top: 2.00, b: 2.60, up: 1.5, down: 0.60, hold: true },
                           bag:  { take: 'mage_soell_cast_8', a: 0.00, top: 0.40, b: 0.40, up: 0.6, down: 0.35, hold: true } };
     /* HIS ACTS SET DOWN BY HIS OWN FEET, at run time (his file untouched: his rule). Each of his takes is set down once at
