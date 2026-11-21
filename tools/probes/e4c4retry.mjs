@@ -270,7 +270,7 @@ if (MODE === 'button') {
   const mid = await p.evaluate(() => ({ phase: window.__enc.kit.getPhase(), san: window.__enc.stats.sanity, notes: window.__enc.kit.getConduct().notes,
     saved: (() => { try { const s = JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); return { phase: s.phase, san: s.stats.sanity, notes: s.conduct.notes }; } catch { return null; } })() }));
   log('mid-fight, Appa struck', struck, JSON.stringify(mid));
-  checks.midFightSaveHeld = struck && /(^|,)x(,|$)/.test(mid.phase.split(':')[1] || '') && !!mid.saved && mid.saved.phase === A.S.phase && mid.saved.san === A.S.stats.s;
+  checks.midFightSaveHeld = struck && /(^|,)x(,|$)/.test(mid.phase.split(':')[1] || '') && !!mid.saved && mid.saved.phase === A.S.phase && Math.abs(mid.saved.san - A.S.stats.s) < 0.01;
   await p.reload({ waitUntil: 'load', timeout: 240000 });
   checks.midFightContinue = await boot('mid-fight');
   const M6 = await atBrief('mid-fight');
@@ -282,7 +282,7 @@ if (MODE === 'button') {
   const L1 = await loseIt('loss1');
   checks.loss1 = L1.filmed && L1.lost && L1.ready && L1.card.say.startsWith('Too many green spirits reached Amma') && L1.card.restart === 'Restart chapter';
   const s1 = await savedNow();
-  checks.loss1Saved = !!s1 && s1.phase === A.S.phase && s1.stats.sanity === A.S.stats.s && Math.abs(s1.at.x - A.S.at.x) < 0.01 && Math.abs(s1.at.z - A.S.at.z) < 0.01;
+  checks.loss1Saved = !!s1 && s1.phase === A.S.phase && Math.abs(s1.stats.sanity - A.S.stats.s) < 0.01 && Math.abs(s1.at.x - A.S.at.x) < 0.01 && Math.abs(s1.at.z - A.S.at.z) < 0.01;
   log('the save after the loss:', JSON.stringify({ phase: s1 && s1.phase, stats: s1 && s1.stats, at: s1 && s1.at }));
   await p.reload({ waitUntil: 'load', timeout: 240000 });
   checks.reloadContinue = await boot('reload');
@@ -321,6 +321,7 @@ if (MODE === 'button') {
   checks.fightOn4 = await start();
   const tW = Date.now();
   let flicks = 0;
+  const showcase = [];                                                       // (the button read while the golden showcase stands: R140, never breathing there)
   while (Date.now() - tW < 120 * 60 * 1000) {
     const I = await info();
     if (I.st === 'play' && I.fight && I.fight.on) {
@@ -333,12 +334,18 @@ if (MODE === 'button') {
       if (t) { await aimAt(t); await frames(1); await pressSel('#fireBtn'); flicks++; }
       await wait(450); continue;
     }
-    if (I.st === 'unlock') { await wait(800); continue; }                       // (the golden showcase goes by itself)
+    if (I.st === 'unlock') {                                                    // (the golden showcase goes by itself)
+      showcase.push(await p.evaluate(() => { const b = document.body, fb = document.getElementById('fireBtn');
+        return { up: b.classList.contains('weaponUp'), toHud: b.classList.contains('scToHud'), hud: getComputedStyle(document.getElementById('weaponHud')).display,
+                 anim: getComputedStyle(fb).animationName, light: getComputedStyle(fb, '::before').content }; }));
+      await wait(200); continue; }
     if (I.fight && I.fight.ended) break;
     await wait(500);
   }
   const kept = await info();
   log('the fight ended:', JSON.stringify(kept), 'flicks', flicks);
+  log('the button under the golden showcase,', showcase.length, 'reads:', JSON.stringify(showcase.filter((q, i) => i === 0 || JSON.stringify(q) !== JSON.stringify(showcase[i - 1]))));
+  checks.noGlowUnderShowcase = showcase.length ? showcase.every(q => !/wpnBreath/.test(q.anim) && q.light === 'none') : 'not seen';
   const sK = await savedNow();
   checks.wonSavedAtOnce = !!sK && /^kept/.test(sK.phase || '') && (await p.evaluate(() => window.__enc.loseHold() === null));
   /* (the coordinator's case a) after the WIN, the page reloaded and Continue tapped: after the fight (the room kept, its

@@ -85,13 +85,16 @@ for (const name of ONLY) {
   /* where it landed: a film first or straight into play, then the phase the chapter applies */
   const first = await until(() => ['cine', 'play'].includes(window.__enc.getState()), 1800000).then(() => p.evaluate(() => window.__enc.getState()));
   let film = first === 'cine';
+  /* (a Continue into the kept room: a film this soon is the trance itself, once the chapter has applied the phase, and
+     never an opening film; it is left to play, read below) */
+  if (film && C.want.trance && await p.evaluate(() => { try { const i = window.__enc.stage.info(); return !!i.applied && i.phase === 'kept'; } catch { return false; } })) film = false;
   if (film) {
     /* the opening (or the trance) watched to its Skip and skipped, as a thumb does */
     await until(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.2, 600000);
     await tap('#cineSkip');
   }
-  const inPlay = await until(() => { const E = window.__enc; let i = {}; try { i = E.stage.info(); } catch { /* */ }
-    return E.getState() === 'play' && (typeof E.stage.info !== 'function' || !!i.applied); }, 1800000);   // (episode 1's stages have no info())
+  const inPlay = await until((tr) => { const E = window.__enc; let i = {}; try { i = E.stage.info(); } catch { /* */ }
+    return (E.getState() === 'play' || tr && E.getState() === 'cine') && (typeof E.stage.info !== 'function' || !!i.applied); }, 1800000, !!C.want.trance);   // (episode 1's stages have no info(); the kept room may already be in its trance)
   if (C.want.why) await until(() => window.__enc.stage.info().heard.includes('ph4k4') && !window.__enc.stage.dbg.play.busy, 1800000);
   if (C.want.brief) await until(() => { const q = window.__enc.kitDebug().event; return !!q && q.kind === 'guard' && !!q.briefing; }, 600000);
   const trance = C.want.trance ? await until(() => window.__enc.getState() === 'cine', 600000) : null;
