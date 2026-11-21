@@ -42,7 +42,10 @@ await p.goto(PAGE + '?ch=' + CH, { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
-await p.waitForFunction(() => { try { return window.__enc.stage.dayClock.t > 0.5; } catch { return false; } }, null, { timeout: 600000, polling: 500 });
+/* (v28.0: a chapter with no day clock (episode 4 chapter 5) is read on the page's own clock once its stage is ready and its
+   phase applied; a chapter with one, as before) */
+const CLOCK = () => p.evaluate(() => { const E = window.__enc; return E.stage.dayClock ? E.stage.dayClock.t : performance.now() / 1000; });
+await p.waitForFunction(() => { try { const S = window.__enc.stage; return S.dayClock ? S.dayClock.t > 0.5 : (S.ready() && (!S.info || !('applied' in S.info()) || S.info().applied)); } catch { return false; } }, null, { timeout: 600000, polling: 500 });
 
 /* THE MEASURE, in the page: every body once (its bones, whichever of its skins is drawn), in the world */
 const MEASURE = ([WHO, NAMES]) => {
@@ -50,7 +53,7 @@ const MEASURE = ([WHO, NAMES]) => {
   if (E.handsRoot) E.handsRoot.updateMatrixWorld(true);
   const D = 180 / Math.PI, v = () => new V3();
   const vis = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
-  const names = new Map(), C = (E.stage.dbg && E.stage.dbg.cast) || {};
+  const names = new Map(), C = (E.stage.dbg && E.stage.dbg.cast) || (E.stage.plan && E.stage.plan.FLOOR && E.stage.plan.FLOOR.cast) || {};
   for (const k in C) if (C[k] && C[k].group) names.set(C[k].group, 'cast:' + k);
   const nameOf = (o) => { for (let q = o; q; q = q.parent) if (names.has(q)) return names.get(q); return null; };
   /* (the bodies whose hands a rest lays (the seated masters': c_cast.js restHands), held to a resting hand's numbers too) */
@@ -207,7 +210,7 @@ const res = { phases: {} };
 const sample = async (tag) => { const rows = await p.evaluate(MEASURE, [WHO, NAMES]); return rows.map(r => Object.assign(r, { tag })); };
 for (const ph of LIST) {
   if (ph) { await p.evaluate((ph) => { const E = window.__enc; if (E.cine && E.cine.active && E.cine.active() && E.cine.skip) E.cine.skip(); E.stage.reset(); E.kit.setPhase(ph); }, ph);
-    await p.waitForFunction((ph) => { const E = window.__enc; return E.stage.info().phase === ph.split(':')[0] && E.stage.dayClock.t > 0.3 && !(E.cine && E.cine.active && E.cine.active()); }, ph, { timeout: 600000, polling: 300 }).catch(() => log('phase', ph, 'not reached as play'));
+    await p.waitForFunction((ph) => { const E = window.__enc; return E.stage.info().phase === ph.split(':')[0] && (E.stage.dayClock ? E.stage.dayClock.t > 0.3 : true) && !(E.cine && E.cine.active && E.cine.active()); }, ph, { timeout: 600000, polling: 300 }).catch(() => log('phase', ph, 'not reached as play'));
   }
   await p.waitForFunction(() => { try { const i = window.__enc.stage.info(); return !i.waiting || !i.waiting.length; } catch { return false; } }, null, { timeout: 600000, polling: 1000 }).catch(() => {});
   if (PRE) log('PRE', await p.evaluate((s) => { const E = window.__enc; return String(eval(s)); }, PRE));
@@ -233,8 +236,8 @@ for (const ph of LIST) {
       all.push(...await sample(ex)); }
   }
   for (let k = 0; k < (process.env.CHOOSE != null && ph ? 0 : N); k++) {
-    const t0 = await p.evaluate(() => window.__enc.stage.dayClock.t);
-    await p.waitForFunction(([t0, s]) => window.__enc.stage.dayClock.t >= t0 + s, [t0, SPAN], { timeout: 300000, polling: 200 }).catch(() => {});
+    const t0 = await CLOCK();
+    await p.waitForFunction(([t0, s]) => { const E = window.__enc; return (E.stage.dayClock ? E.stage.dayClock.t : performance.now() / 1000) >= t0 + s; }, [t0, SPAN], { timeout: 300000, polling: 200 }).catch(() => {});
     await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
     all.push(...await sample('t' + k)); }
   for (const h of HOLDS) {

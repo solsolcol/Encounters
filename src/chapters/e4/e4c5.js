@@ -10414,12 +10414,16 @@
       const list = [];
       /* three rows across the table's front half (the cloth's x -0.55 .. 0.55), the presences' three where the play
          puts them (TABLE5.P) and the rest about them, a little apart, each turned to him */
-      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
+      /* (CLEAR OF THE PADDED CASE, PLAY's finding: the case stands at (cx - 0.36, cz - 0.05), 0.34 by 0.27 m turned 18
+         degrees, so its footprint runs to x -0.17 over z cz - 0.21 .. cz + 0.11, and four pieces of the two rows behind the
+         first stood inside it. Those rows now start east of it (x -0.15), and a fourth row behind them takes the rest) */
+      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06, R.cz + 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
+      const caseX = R.cx - 0.15, caseZ0 = R.cz - 0.24, caseZ1 = R.cz + 0.14;
       let n = 0; const r = rng(28650);
-      for (let j = 0; j < 3 && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
+      for (let j = 0; j < rowsZ.length && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
         const x = xs[i] + (j % 2) * 0.05, z = rowsZ[j];
         const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.09);
-        if (clash || x > 0.56 || x < -0.56) continue;
+        if (clash || x > 0.56 || x < -0.56 || (x < caseX && z > caseZ0 && z < caseZ1)) continue;
         const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); list.push({ g, x, z }); n++;
       }
       return { list, set(on) { for (const p of list) p.g.visible = on; for (const k of ['w5wuathanu', 'w5rakyom', 'w5hunphayon']) if (things[k]) things[k].visible = on; } };
@@ -10586,7 +10590,7 @@
        with people (he says nothing of who, and nobody asks); "We will look first."; his teacher's order, turned to him.
        Ton and Jun stay in the court (the hunt's stations). It ends on the view the hunt begins in */
     const DV5AT = { gateEye: [-8.18, EYE, -15.05], phoGate: [-8.92, -14.52], tonW: [-7.58, -15.3], junW: [-9.75, -15.35],
-                    kohDoor: [-8.52, -5.95], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
+                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
     /* (his room, measured against its solids (b_world.js): the door's leaf stands open along x -8.9 from the wall to z -4.75, the
        sofa fills x -9.06..-8.18, z -4.67..-2.57. So he stands where the hunt begins (STATION.hunt.at, east of the door), his
        teacher west of the sofa's back, north of the leaf, so no line of sight crosses the leaf (from where the first cut put
@@ -10612,7 +10616,10 @@
         lamp(1, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
         whenReady(cast.koh, (P) => {
           if (t < T.walk) { put(P, A.kohDoor[0], A.kohDoor[1], Math.PI); fmRest(P, 'koh', t); }
-          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2);
+          /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
+             them: stood in the court with his back to the shut door, his arm went through its frame (clipscan, 168
+             crossings), and the door opened behind him by itself) */
+          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
           else if (t < T.in) { put(P, A.kohGate[0], A.kohGate[1], faceTo(A.kohGate[0], A.kohGate[1], A.phoGate[0], A.phoGate[1]));
             fmTalk(P, 'koh', t, T.ko5d1, SECS.ko5d1, 'Talk_with_Hands_Open');
             /* his head bowed to Grandmaster Pho as he greets him (the wai's own take is wanted: the plan's 4.2) */
@@ -11323,7 +11330,7 @@
          two questions first."; when he has gone his teacher's word; his own thought */
       B: { shots: (me, COL, PHO, E) => [
              { t: 0, name: 'row1', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.42, 0.36, 239.7], fp: 40, fd: 34 },
-             { t: E.co5B2 + 0.2, name: 'row2', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.18, 0.36, 239.82], fp: 40, fd: 34 },
+             { t: E.co5B2 + 0.2, name: 'row2', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [-0.06, 0.36, 239.78], fp: 40, fd: 34 },   // (the pieces east of the case: PIECES5)
              { t: E.co5B3 + 0.2, name: 'row3', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [0.12, 0.36, 239.94], fp: 40, fd: 34 },
              { t: E.co5B4 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.lid - 0.2, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },

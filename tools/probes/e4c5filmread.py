@@ -5,7 +5,7 @@
 (optional) gives each film's spoken lines [key, start, secs, speaker], so a line's speaker can be held to the frame.
 It lists LEADS, never verdicts:
   CUTS     where the lens jumps (the eye 0.25 m, the look 10 degrees, the angle 5 degrees in one step);
-  JUMP     a person's hips or head moving faster than 2.5 m a second between two rows, on screen, with no cut between;
+  JUMP     a person's hips or head moving faster than 2.5 m a second (a hand 5) between two rows, on screen, no cut between;
   JERK     a person's head or hips changing speed by more than 1.2 m a second in one row (a take switched, a pose snapped),
            on screen, with no cut;
   POP      a person or a thing shown or hidden on screen with no cut (and a flicker: shown and hidden again within 0.5 s);
@@ -85,7 +85,7 @@ for k, lab in enumerate(labels):
         if a[0] != b[0]: Pp.append(t)
         if a[0] and b[0]:
             # (hips and head: 2.5 m/s and a change of 1.2 m/s in a step; the hands, when measured: 3.5 and 2.5)
-            LIM = [(3, 2.5, 1.2), (4, 2.5, 1.2), (7, 3.5, 2.5), (8, 3.5, 2.5)]
+            LIM = [(3, 2.5, 1.2), (4, 2.5, 1.2), (7, 5.0, 2.5), (8, 5.0, 2.5)]   # (a brisk walk swings a hand at 3 to 4 m/s)
             for j, vj, _ in LIM:
                 if len(a) > j and len(b) > j and a[j] and b[j] and math.dist(a[j], b[j]) / dt > vj: J.append(t); break
             if i + 1 < len(rows) and not near_cut(i + 1):
