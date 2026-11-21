@@ -1326,5 +1326,12 @@
   "family": "music",
   "where": "M7, the fight: the student's: the wordless choir (beatless, its own piece)",
   "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
+ },
+ "u5colaugh": {
+  "kind": "fx",
+  "take": "u5colaugh_a",
+  "family": "case3",
+  "where": "the collector film: his small laugh at himself, between co5t1 and co5t2",
+  "why": "a: one breath of laughter, sound 0.15 to 1.30 s, its end clean (-67.6 dB); b the same length with a gap after its first 'heh' (end -69.8 dB); c rings on to its end (-39.2 dB): refused. The transcriber writes only 'Heh, heh heh.' (a laugh, no word). His voice (Shawn Ng), eleven_v3, prompted '[amused] Heh. Heh heh.' (v5.28: one emotion tag, voiceable text, v10.8)"
  }
 }
