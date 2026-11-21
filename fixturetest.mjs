@@ -3152,15 +3152,18 @@ if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
    phone's 390 x 844 and a low phone's 360 x 780 below) */
 const TAG_HUD_MINE = ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire'];
 const TAG_HUD_ALL = TAG_HUD_MINE.concat(['#stats', '#mute', '#menuBtn', '#volWrap', '#objective .obox']);
-/* (`risen`: measured from inside the page the frame the refusal's words and the caption stand risen — their rise is 0.3 s
-   from nothing, the words stand 2.2 s, and a slow page's round trips between a press and a measure outlasted them) */
+/* (`risen`: measured from inside the page in the very task the refusal's words and the caption are up, each where it stands
+   risen — their rise (0.3 s from nothing, from the frame after) set aside for the measure and given back: the words stand
+   2.2 s, and on a slow page the round trips between a press and a measure, or a frame landing inside the risen part of
+   that, outlasted them) */
 const tagOverlaps = (pg, risen) => pg.evaluate(async ([mine, all, risen]) => {
-  const op = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? +getComputedStyle(el).opacity : 0; };
-  let waited = 0;
+  const on = id => { const el = document.getElementById(id); return !!el && el.classList.contains('on'); };
+  let waited = 0; const nf = document.getElementById('nofire'), cp = document.getElementById('caption'), keep = [nf.style.animation, cp.style.transition, cp.style.animation];
   if (risen) { const t0 = performance.now();
-    while (!(op('nofire') >= 0.999 && op('caption') >= 0.999) && performance.now() - t0 < 6000) await new Promise(r => requestAnimationFrame(r));
-    waited = Math.round(performance.now() - t0); }
-  const up = { caption: op('caption'), nofire: op('nofire'), take: !document.getElementById('tagA2').classList.contains('hide'),
+    while (!(on('nofire') && on('caption')) && performance.now() - t0 < 8000) await new Promise(r => setTimeout(r, 10));
+    waited = Math.round(performance.now() - t0);
+    nf.style.animation = 'none'; cp.style.transition = 'none'; cp.style.animation = 'none'; void nf.offsetWidth; void cp.offsetWidth; }
+  const up = { caption: on('caption'), nofire: on('nofire'), take: !document.getElementById('tagA2').classList.contains('hide'),
                mate: document.getElementById('tagMate').classList.contains('on'), waited };
   const shown = el => { for (let a = el; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; } return true; };
   const box = s => { const el = document.querySelector(s); if (!el || !shown(el)) return null; const r = el.getBoundingClientRect(); return r.width >= 1 && r.height >= 1 ? { s, x: r.left, y: r.top, w: r.width, h: r.height } : null; };
@@ -3170,6 +3173,7 @@ const tagOverlaps = (pg, risen) => pg.evaluate(async ([mine, all, risen]) => {
     const a = B[i], b = B[j]; if (!mine.includes(a.s) && !mine.includes(b.s)) continue;
     if (a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5) bad.push(a.s + ' x ' + b.s);
   }
+  if (risen) { nf.style.animation = keep[0]; cp.style.transition = keep[1]; cp.style.animation = keep[2]; }
   return { measured: B.map(b => b.s), bad, off, boxes: B, up };
 }, [TAG_HUD_MINE, TAG_HUD_ALL, !!risen]);
 await p.waitForTimeout(950);
