@@ -19,7 +19,8 @@ p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 const T0 = Date.now(), say = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);
 await p.addInitScript(() => {
   /* (every draw of the page's WebGL, counted: the game's one context) */
-  const wrap = (proto) => { if (!proto || proto.__counted) return; proto.__counted = true; const C = window.__gl = { calls: 0, tris: 0, on: false };
+  const C = window.__gl = { calls: 0, tris: 0, on: false };              // (one counter for both kinds of context)
+  const wrap = (proto) => { if (!proto || proto.__counted) return; proto.__counted = true;
     const tri = (mode, n) => mode === 4 ? n / 3 : mode === 5 || mode === 6 ? Math.max(0, n - 2) : 0;
     for (const [nm, ci, ii] of [['drawElements', 1, -1], ['drawArrays', 2, -1], ['drawElementsInstanced', 1, 4], ['drawArraysInstanced', 2, 3]]) {
       const f = proto[nm]; if (!f) continue;
@@ -49,7 +50,7 @@ const count = (tag, nf = 6) => p.evaluate(async ([tag, nf]) => {
   const top = (o) => { let q = o; while (q.parent && q.parent !== scene && q.parent.parent !== scene) q = q.parent; return q; };
   const nameOf = (o) => { for (let q = o; q && q !== scene; q = q.parent) if (q.name) return q.name; return o.type; };
   const walk = (o) => { if (!o.visible) return;
-    if ((o.isMesh || o.isSprite || o.isPoints) && o.geometry && inF(o)) { const g = o.geometry, n = g.index ? g.index.count / 3 : (g.attributes.position ? g.attributes.position.count / 3 : 0), k = o.isInstancedMesh ? o.count : 1, t = Math.round(n * k);
+    if ((o.isMesh || o.isSprite || o.isPoints) && o.geometry && camera.layers.test(o.layers) && inF(o)) { const g = o.geometry, n = g.index ? g.index.count / 3 : (g.attributes.position ? g.attributes.position.count / 3 : 0), k = o.isInstancedMesh ? o.count : 1, t = Math.round(n * k);
       meshes++; triCut += t; const key = nameOf(top(o)) + (o.isSkinnedMesh ? ' (skinned)' : ''); const G = groups[key] || (groups[key] = { tris: 0, draws: 0 }); G.tris += t; G.draws++;
       if (o.isSkinnedMesh && o.skeleton && !skel.has(o.skeleton)) { skel.add(o.skeleton); bones += o.skeleton.bones.length; } }
     for (const c of o.children) walk(c); };
@@ -65,7 +66,7 @@ const count = (tag, nf = 6) => p.evaluate(async ([tag, nf]) => {
   const people = []; if (fl && fl.cast) for (const k in fl.cast) people.push([k, fl.cast[k]]);
   const PR = S.films && S.films.PRAI5 ? S.films.PRAI5.list : []; PR.forEach((P, i) => people.push(['prai' + (i + 1), P]));
   for (const [k, P] of people) { if (!P || !P.group) continue; const lv = P.lv || []; let tri = 0; const sh = P.lvShown;
-    if (P.group.visible) P.group.traverse(o => { if (o.isSkinnedMesh && o.visible) { let ok = true; for (let q = o; q; q = q.parent) if (!q.visible) { ok = false; break; } if (ok && o.geometry && o.geometry.index) tri += o.geometry.index.count / 3; } });
+    if (P.group.visible) P.group.traverse(o => { if (o.isSkinnedMesh && o.visible && camera.layers.test(o.layers)) { let ok = true; for (let q = o; q; q = q.parent) if (!q.visible) { ok = false; break; } if (ok && o.geometry && o.geometry.index) tri += o.geometry.index.count / 3; } });
     L.push({ who: k, shown: P.group.visible, level: sh, force: P.force == null ? null : P.force, levels: lv.map(x => !!x), tris: Math.round(tri), take: P.cur }); }
   const ts = E.kit.tagState();
   return { tag, frames, drawsMax: Math.max(...frames.map(f => f.calls)), trisMax: Math.max(...frames.map(f => f.tris)), cut: { meshes, tris: triCut, big }, bones, skeletons: skel.size,
