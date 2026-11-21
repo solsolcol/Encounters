@@ -1536,6 +1536,8 @@ f1bea9e8f3d253026f85b127676480816759b8483577d820d0e7ec44a49521be  masters/v28.0/
 1047915f3740de26778949faaedc209be48304d15a2b981f188b46b137c95672  masters/v28.0/src/preremesh-zavier.glb
 553953a9a668b520f8155d2d51fb88264a2b41881f476abd9eb69752bbd18961  masters/v28.0/src/preremesh-zavier4.glb
 16b9f6a5c42da519da754e466a2fbc77b6a911f73b6521c2ecc4af0b2367de64  masters/v28.0/src/props.log
+04addce429c1b21364bd2dcca0b16e18e557ca72292e354c9ba9ac592dd097d6  masters/v28.0/src/rigged-collector.glb
+7d41a04399b2857a26275fe69acc7b7763e9f9ebc1184a2fa2dd3454e33d7ba5  masters/v28.0/src/rigged-jun.glb
 8d776a94c70c2d849e7e39fd92a7dfa7dc6c050545908fae2e4e6b1ba4255af9  masters/v28.0/src/rigged-zavier.glb
 15dd431447d653a473dcebddce5e75b61e9b15460d2fa92775a81075af127140  masters/v28.0/src/rigged-zavier4.glb
 3534744eea52f179e0d0db130a20e00bca4a5d8c20fe3a3a573f466067249d5f  masters/v28.0/src/takes-zavier-walking.glb
