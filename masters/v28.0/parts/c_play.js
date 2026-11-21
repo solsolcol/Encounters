@@ -94,7 +94,7 @@
     const threads = [];
     let thRng = rng(28701);
     /* the colours: the true smell grey-black; the drain's brown; the pieces' smoke grey */
-    const TH_COL = { dark: [0.07, 0.065, 0.06, 0.78], drain: [0.30, 0.21, 0.11, 0.62], smoke: [0.16, 0.15, 0.14, 0.62] };
+    const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.30, 0.20, 0.09, 0.8], smoke: [0.14, 0.13, 0.12, 0.7] };
     /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
        and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
     const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];
@@ -121,8 +121,8 @@
         for (let i = 0; i < n; i++) {
           const s = Math.max(0.3, Math.min(TRAIL_L - 0.2, sp - 2.5 + R() * 13.5)), ks = trailStrength(s);
           if (R() > 0.35 + 0.65 * ks) continue;
-          addThread({ trail: true, s0: s + 1.2, v: 0.55 + R() * 0.35, L: 1.0 + R() * 1.4 * ks, lat: (R() - 0.5) * 0.9, h: 0.03 + R() * 0.32,
-                      delay: R() * 1.6, life: 1.9 + R() * 0.9, w: 0.014 + 0.02 * ks, a: 0.05 + R() * 0.06, alpha: 0.4 + 0.6 * ks });
+          addThread({ trail: true, s0: s + 1.2, v: 0.55 + R() * 0.35, L: 1.3 + R() * 2.0 * ks, lat: (R() - 0.5) * 1.0, h: 0.05 + R() * R() * 0.9,
+                      delay: R() * 1.6, life: 1.9 + R() * 0.9, w: 0.026 + 0.03 * ks, a: 0.06 + R() * 0.08, alpha: 0.55 + 0.45 * ks });
         }
       }
       for (const S0 of src) {
@@ -130,7 +130,7 @@
         for (let i = 0; i < n; i++) {
           const ox = S0.x + (R() - 0.5) * 2 * (S0.rx || 0.25), oz = S0.z + (R() - 0.5) * 2 * (S0.rz || 0.25), oy = (S0.y || 0) + R() * (S0.ry || 0.05);
           addThread({ O: [ox, oy, oz], D: S0.d || [0, 1, 0], v: (S0.v || 0.25) * (0.75 + R() * 0.5), L: (S0.L || 0.5) * (0.7 + R() * 0.6), delay: R() * 1.5,
-                      life: (S0.life || 2.2) * (0.8 + R() * 0.4), w: (S0.w || 0.018) * (0.8 + R() * 0.5), a: S0.a == null ? 0.04 : S0.a, f: S0.f || 1.6,
+                      life: (S0.life || 2.2) * (0.8 + R() * 0.4), w: (S0.w || 0.028) * (0.8 + R() * 0.5), a: S0.a == null ? 0.04 : S0.a, f: S0.f || 1.6,
                       col: S0.col || TH_COL.dark, alpha: Math.min(1, 0.45 + 0.55 * S0.k), grow: S0.grow || 0 });
         }
       }
@@ -149,7 +149,7 @@
       if (phase === 'walk') {
         /* the decoy (4.1): a drain's grating at the walkway's edge where water has stood; its threads brown, short, and
            staying where they are */
-        return [{ x: FLOOR.DRAIN.x, y: 0.02, z: FLOOR.DRAIN.z, k: 0.8, reach: 8, n: 40, rx: 0.4, rz: 0.2, ry: 0.1, d: [0, 1, 0], v: 0.03, L: 0.22, a: 0.05, f: 2.2, col: TH_COL.drain, life: 2.4, w: 0.016 }];
+        return [{ x: FLOOR.DRAIN.x, y: 0.02, z: FLOOR.DRAIN.z, k: 0.8, reach: 8, n: 70, rx: 0.42, rz: 0.2, ry: 0.04, d: [0, 1, 0], v: 0.05, L: 0.3, a: 0.04, f: 2.2, col: TH_COL.drain, life: 2.4, w: 0.022 }];
       }
       if (phase === 'hunt') {
         const f = (c) => play.found.has(c) ? 0.35 : 1;
@@ -159,7 +159,7 @@
           /* the court, at the left planter's foot: rising along it */
           { x: HUNT5.s2.x, y: 0.02, z: HUNT5.s2.z, k: 0.85 * f('s2'), reach: 9, n: 60, rx: 0.06, rz: 0.95, d: [-0.12, 0.99, 0], v: 0.26, L: 0.55, a: 0.04 },
           /* between the gate posts: the thickest of all, running to his door */
-          { x: HUNT5.s3.x, y: 0.02, z: HUNT5.s3.z, k: 1.0 * f('s3'), reach: 11, n: 90, rx: 0.55, rz: 0.18, d: [0, 0.12, 0.99], v: 0.5, L: 1.2, a: 0.05, w: 0.022 },
+          { x: HUNT5.s3.x, y: 0.02, z: HUNT5.s3.z, k: 1.0 * f('s3'), reach: 11, n: 90, rx: 0.55, rz: 0.18, d: [0, 0.12, 0.99], v: 0.5, L: 1.2, a: 0.05, w: 0.034 },
           /* the old armchair: threads standing thick over it (his nose is once behind the truth) */
           { x: HUNT5.arm.x, y: 0.5, z: HUNT5.arm.z, k: 0.9 * (play.found.has('a') ? 0.35 : 1), reach: 7, n: 55, rx: 0.28, rz: 0.26, ry: 0.15, d: [0, 1, 0], v: 0.2, L: 0.8, a: 0.05 }
         ];
@@ -167,8 +167,8 @@
       if (phase === 'table' || phase === 'ask') {
         /* the pieces themselves, all of them, like smoke from snuffed candles (4.7) */
         const out = [];
-        for (const P of TABLE5.pieces) out.push({ x: P.x, y: P.y + 0.03, z: P.z, k: 1, reach: 4, n: 16, rx: 0.02, rz: 0.02, d: [0, 1, 0], v: 0.14, L: 0.32, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.009 });
-        out.push({ x: TABLE5.caseAt.x, y: TABLE5.caseAt.y, z: TABLE5.caseAt.z, k: 1, reach: 4, n: 40, rx: 0.13, rz: 0.08, d: [0, 1, 0], v: 0.14, L: 0.3, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.009 });
+        for (const P of TABLE5.pieces) out.push({ x: P.x, y: P.y + 0.03, z: P.z, k: 1, reach: 4, n: 16, rx: 0.02, rz: 0.02, d: [0, 1, 0], v: 0.14, L: 0.32, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.015 });
+        out.push({ x: TABLE5.caseAt.x, y: TABLE5.caseAt.y, z: TABLE5.caseAt.z, k: 1, reach: 4, n: 40, rx: 0.13, rz: 0.08, d: [0, 1, 0], v: 0.14, L: 0.3, a: 0.02, f: 1.3, grow: 0.06, col: TH_COL.smoke, life: 2.6, w: 0.015 });
         return out;
       }
       return [];
@@ -190,7 +190,8 @@
         out.y = T.h + Math.sin(T.f * age + u * 4 + T.ph * 1.3) * T.a * 0.7 + u * 0.03;
         return out;
       }
-      const D = T.D, d = T.v * age - u * T.L;
+      /* (the head runs ahead of its source and the tail starts at it: a thread never reaches back under the floor) */
+      const D = T.D, d = T.v * age + (1 - u) * T.L;
       out.set(T.O[0] + D[0] * d, T.O[1] + D[1] * d, T.O[2] + D[2] * d);
       /* the wave across it, in the two directions square to its flow, growing along a rising smoke's length */
       const amp = T.a * (1 + (T.grow || 0) * 20 * Math.max(0, d));
