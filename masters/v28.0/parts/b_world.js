@@ -932,8 +932,12 @@
       fight: { at: { x: -8.5, z: -10.6, ry: Math.PI },
                /* (the FILMS builder's measure: Ton at x -9.12 stood behind the open door's leaf, x -8.95 to -8.83, and was hidden
                   from the court; he stands in the doorway's west half now, Mr Koh a step behind between the two) */
-               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.58, z: -4.95, ry: Math.PI }, jun: { x: -7.88, z: -4.95, ry: Math.PI },
-               koh: { x: -8.25, z: -4.45, ry: Math.PI } },
+               /* (R25, FILMS' clipscan of the preparation: Mr Koh at (-8.25, -4.45) stood in the sofa, 555 to 756 crossings, and 0.6
+                  m from Ton, 567 between them. The doorway's floor is 0.8 m wide and 0.83 m deep to the sofa's front (z -4.67),
+                  the open leaf along its west side: the three in it as a group, Ton in its west half, Jun in its east half, both
+                  at the threshold, Mr Koh a step behind and between them, clear of the sofa) */
+               pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.66, z: -5.22, ry: Math.PI }, jun: { x: -7.86, z: -5.22, ry: Math.PI },
+               koh: { x: -8.28, z: -4.98, ry: Math.PI } },
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },
                pho: { x: SEAT.pho.x, z: SEAT.pho.z, ry: Math.PI }, collector: { x: SEAT.collector.x, z: SEAT.collector.z, ry: Math.PI / 2 },
