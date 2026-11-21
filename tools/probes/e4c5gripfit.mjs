@@ -54,6 +54,12 @@ await p.evaluate(() => {
       if (phi > 25) { const h = new V().crossVectors(u, e).normalize(), med = h.clone().multiplyScalar(side), dn = u.clone().addScaledVector(e, -u.dot(e)).normalize();
         out.forearmTurn = +(Math.atan2(ne.dot(dn), ne.dot(med)) * D).toFixed(1); }
       out.forearmSlope = +(Math.asin(e.y) * D).toFixed(1); out.elbowY = +el.y.toFixed(3); out.wristY = +wr.y.toFixed(3); out.shoulderY = +sh.y.toFixed(3); }
+    /* each finger's bends as its bones stand drawn (the angle between one bone's line and the next's, at the knuckle, the
+       middle and the end joint: 0 straight), so a solve that is laid is told from one that is not */
+    { const bends = {}; for (const nm of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) { const q = [0, 1, 2, 3, 4].map(i => i === 0 ? at('RightHand') : at('RightHand' + nm + i));
+        if (q.some(x => !x)) continue; const ang = (a0, a1, a2) => { const u = a1.clone().sub(a0).normalize(), w = a2.clone().sub(a1).normalize(); return +(Math.acos(Math.max(-1, Math.min(1, u.dot(w)))) * D).toFixed(1); };
+        bends[nm] = [ang(q[0], q[1], q[2]), ang(q[1], q[2], q[3]), ang(q[2], q[3], q[4])]; }
+      out.bends = bends; }
     /* the stick: its foot over the paving, its lean (back toward him + / forward -, out to his right + / in -) */
     { const foot = new V(0.082, 0, -0.003).applyMatrix4(g.matrixWorld), top = new V(0.082, 1.15, -0.003).applyMatrix4(g.matrixWorld), ax = top.clone().sub(foot).normalize();
       const ry = P.group.rotation.y, fw = new V(Math.sin(ry), 0, Math.cos(ry)), lf = new V(Math.cos(ry), 0, -Math.sin(ry));
