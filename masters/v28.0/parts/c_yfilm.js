@@ -616,8 +616,8 @@
           { t: T.leave, name: 'violet', eye: [F.zav.x, EYE, F.zav.z - 0.05], at: [F.zav.x, 1.5, F.zav.z + 2.0], fp: 64, fd: 58 },
           { t: T.leave + 0.05, name: 'leave', eye: [ZH[0], 1.68, ZH[2] - 0.35], at: [ZH[0], 1.45, ZH[2] + 3.0], fp: 60, fd: 54, cut: true },
           { t: T.leave + 2.6, name: 'leave', eye: RISE, at: [ZH[0], 1.0, ZH[2] + 2.2], fp: 58, fd: 54 },
-          { t: T.rest, name: 'boom', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov },
-          { t: T.end, name: 'boom', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov }
+          { t: T.rest, name: 'fightcam', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov },
+          { t: T.end, name: 'fightcam', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov }
         ]);
       },
       end() { fmLens(PLAYFOV5); if (FM5.sour && kit && kit.chill) kit.chill(0, { tint: 'sour' }); FM5.sour = false; fmVisionOff();
@@ -685,8 +685,8 @@
            them); high over the court as its body closes round it; the shape coming apart; the doorway; the boom again */
         const B0 = boomAt({ x: pz.x, z: pz.z });
         fmTrack(t, [
-          { t: 0, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
-          { t: T.plant + 0.8, name: 'boom', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
+          { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
+          { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
           { t: T.rise + 0.3, name: 'low', eye: [pz.x - 1.2, 0.9, pz.z - 1.4], at: [sx, 3.6, sz + 0.8], fp: 70, fd: 62 },
           { t: T.ph5c2 + 0.6, name: 'low', eye: [pz.x - 1.0, 0.95, pz.z - 1.3], at: [sx - 0.2, 4.6, sz + 1.6], fp: 72, fd: 64 },
           { t: T.lay + 2.2, name: 'high', eye: [COURT5.x + 0.4, 7.6, COURT.z0 + 1.3], at: [COURT5.x, 0.2, (COURT.z0 + HOUSE.face) / 2 + 0.6], fp: 66, fd: 58 },
@@ -694,8 +694,8 @@
           { t: T.low + 1.2, name: 'three', eye: [zz.x + 1.4, 1.9, zz.z - 1.8], at: [zz.x, 0.5, zz.z + 0.9], fp: 56, fd: 50 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
-          { t: T.back, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
-          { t: T.end, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
+          { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
+          { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
       end() { fmLens(PLAYFOV5);
@@ -810,7 +810,7 @@
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
         const B0 = boomAt({ x: pz.x, z: pz.z }), ZH = [zz.x, 1.66, zz.z];
         fmTrack(t, [
-          { t: 0, name: 'boom', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
+          { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.violet + 0.3, name: 'into', eye: [ZH[0], ZH[1] + 0.35, ZH[2] - 0.9], at: [ZH[0], 1.4, ZH[2] + 2.5], fp: 60, fd: 54 },
           { t: T.eyes, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [ZH[0], 1.05, ZH[2] + 1.6], fp: 62, fd: 56, cut: true },
           { t: T.room1 - 0.3, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [-8.6, 1.4, -7.0], fp: 60, fd: 54 },
