@@ -21,3 +21,98 @@ enlarged):
   margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background. Sharp
   focus, natural skin texture, realistic knit and denim texture, realistic cloth folds. No text, no logo, no watermark,
   no props.
+
+---------------------------------------------------------------------------------------------------------------------
+THE CAST OF 21 NOV 2026 (helper CAST; the record is masters/v28.0/people/RECORD.md): three people, three bodies for the
+nine, the Naga. Higgsfield, model gpt_image_2_6, quality max (the best), resolution 2k (7 credits a picture with no image
+reference, read by estimate_image_cost on the day; 4k is offered at 12 and was not used: the recipe's 2k is what every
+body of chapters 3 and 4 was made from, and Meshy takes one picture at its own size). Aspect 2:3; the Naga 21:9.
+Nobody is modelled on a real person; no name, no brand, no crest. The pictures are kept in scratch only
+(e4c5/cast/refs), never in the repository; each is at Higgsfield under its job id.
+
+THE SHARED WORDING (WHO, FEET and DRESS change). The hands are make.sh section 4's lesson: palms toward the lens,
+every finger apart (hands held edge on came back as mittens):
+  Photorealistic full-body studio photograph of WHO, standing upright in an A-pose: both arms straight and held about
+  35 degrees away from the body, both hands open with the palms turned to face the camera and all five fingers of each
+  hand spread wide apart, a clear gap of white background visible between every two fingers, feet shoulder-width
+  apart, facing the camera straight on, head level, looking at the camera FEET. DRESS. There is clear empty white space
+  between each arm and his sides; nothing hangs between an arm and the body. His hands are empty. The whole figure is
+  in frame from the top of the head to the toes with a clear margin all round. Even soft studio lighting from the
+  front, no cast shadow, pure white seamless background. Sharp focus, EXPRESSION, mouth closed, natural skin texture,
+  realistic cloth folds. No wristwatch, no jewellery, no bag, no text, no logo, no watermark, no props.
+  (No watch and no patterned belt on anyone: Master Zavier's watch came back a checkered patch and his patterned belt
+  a white band with black marks.)
+
+koh       (Mr Koh, the devotee: plan 4.2, "a heavy man in a polo tee, tired")     job 5648aedf-5350-432a-848e-323efc0e8e74
+  WHO   a Singaporean Chinese man of about fifty-six, heavy-set and broad with a large round belly, a thick short neck
+        and thick forearms, a broad tired face with heavy bags under the eyes and deep lines beside the mouth,
+        clean-shaven, thinning grey-black hair cut very short
+  FEET  , barefoot
+  DRESS He wears a plain faded brick-red short-sleeved cotton polo shirt with a plain collar and two plain buttons,
+        worn untucked, and plain khaki-beige knee-length bermuda shorts
+  EXPRESSION neutral tired expression
+jun       (Jun, the second follower: plan 4.0, 4.1)                                 job df80ebd4-1c46-4d9e-a20d-e3c406a74c6a
+  WHO   a Singaporean Chinese man of about twenty-seven, stocky and solid with broad shoulders, a round friendly open
+        face, clean-shaven, black hair in a very short crew cut
+  DRESS He wears a plain white short-sleeved crew-neck cotton T-shirt, loose dark navy blue cotton drawstring trousers
+        to the ankle, and plain black canvas slip-on shoes
+  EXPRESSION calm neutral expression
+collector (the collector: plan 4.7, "a man in his thirties")                        job 2fffea85-9ce6-4acb-af08-b02d4ccca66d
+  WHO   a Singaporean Chinese man of about thirty-five, lean with narrow shoulders, a long thin face with slightly
+        hollow cheeks and dark tired circles under the eyes, clean-shaven, short black hair neatly combed with a side
+        parting
+  DRESS He wears a plain pale blue long-sleeved cotton business shirt with the sleeves rolled up neatly to just below
+        the elbows, tucked into plain dark charcoal grey trousers with a plain black leather belt with a small plain
+        buckle, and plain black socks with no shoes
+  EXPRESSION neutral slightly anxious expression            (and: no glasses)
+
+THE NINE (plan 9.2: "a woman's standing shape, faceless, of black oil with a pale sheen"; three bodies, one for each
+kind of behaviour; nothing of a film ghost: no hair over a face, no gore). The wording, SHAPE changing:
+  Photorealistic full-body studio photograph of a faceless female spirit figure about HEIGHT metres tall, made
+  entirely of black oil: SHAPE, in the shape of a plain straight sleeveless shift dress that ends just below the knees,
+  with bare lower legs and bare feet. The face is completely blank and smooth: no eyes, no nose, no mouth. The figure
+  stands upright in an A-pose: both arms straight and held about 35 degrees away from the body, both hands open with
+  the palms turned to face the camera and all five fingers of each hand spread wide apart, a clear gap of white
+  background visible between every two fingers, feet shoulder-width apart, legs apart with white background visible
+  between them, facing the camera straight on, head level. The whole figure, hair, skin and dress alike, is one
+  continuous surface of dense black oil with a satin finish and a soft pale silvery sheen along its edges and curves,
+  so that every form reads clearly. There is clear empty white space between each arm and the body. No drips, no
+  strands, nothing hanging from it. The whole figure is in frame from the top of the head to the toes with a clear
+  margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background. Sharp
+  focus. No text, no logo, no watermark, no props.
+  (The legs are apart below a dress that ends at the knee so that Meshy's rig finds two legs: a long skirt is one
+  column. No drips or strands: anything hanging between an arm and the body fuses to both.)
+praicome  (the four that COME)   1.60   job 3a102b44-60e6-4fa9-920a-454ab8dbbc36
+  SHAPE the slender standing shape of a woman with narrow shoulders and long thin arms, her hair drawn up into a smooth
+        high bun on top of the head
+praihide  (the two that HIDE)    1.40   job 3e2da36b-09ae-49f1-a866-5388f895fc7c
+  SHAPE the small, thin, slightly stooped standing shape of a woman with narrow sloping shoulders and thin limbs, the
+        head bowed a little forward, her hair hanging straight and close to the head down to the jaw line like a smooth
+        cap                                                  (its dress "ends at the knees")
+praiheavy (the three that are HEAVY) 1.90   job 44470329-b2b1-4e6a-98b3-787b9cc0a924
+  SHAPE the very tall, broad, heavy standing shape of a woman with wide rounded shoulders, a thick waist, wide hips,
+        thick heavy arms and legs and large hands, her hair gathered into a large low bun at the nape of the neck
+        (its dress "a plain wide sleeveless shift dress")
+
+THE NAGA (plan 9.3: a sacred form, so real photographs first; RECORD.md has the photographs studied and their sources).
+Two image references went with the prompt, each cut from a photograph on Wikimedia Commons so that it shows the image
+alone (no person, no sign): the head of the Naga at Tha Sadet, Nong Khai, and the whole Naga on Nong Khai's promenade.
+21:9, max, 2k:                                                                       job 877c411f-4da8-446d-8f52-783532803d44
+  A studio photograph, in exact side view (profile), of one single-headed Thai Naga temple sculpture of the
+  north-eastern Thai (Isan, Mekong) style: the same kind of Naga as in the two reference photographs. Keep what the
+  reference photographs show: the head with its tall flame-shaped crest rising in layered points, the round eye, the
+  open jaw with white fangs and teeth, the curled ornament on the snout, the pointed flame-shaped beard under the chin,
+  the ornamental collar band at the base of the neck with its small flame-shaped fins, the body covered in small
+  overlapping scales with broad banded plates along the belly, a low row of small flame-shaped fins along the whole
+  length of the back, and the tail ending in a tall flame-shaped kanok finial. Pose: the head is at the left of the
+  picture, facing left, raised high on a neck curved in one S; behind the neck the long body comes down to the ground
+  and then runs perfectly straight and level along the ground toward the right, of constant thickness like a long
+  straight rail, for most of the width of the picture; at the far right the tail lifts off the ground and ends in the
+  flame finial. One head only. No coils, no loops, no knots, no hood, no legs, no wings. The sculpture is painted deep
+  ruby red, with the crest, the fins, the collar, the beard and the belly plates gilded gold. No base, no pedestal, no
+  waves, no people, no flags, no text. The whole Naga is in frame from the tip of the crest to the tip of the tail with
+  a clear margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background.
+  Sharp focus.
+  (WHY THIS POSE: the plan lays its body once round the court's edge, about 27 m. The head and neck, one straight
+  length of body and the tail are three parts the chapter can cut by x: the straight length is laid again and again
+  along the edge and bent to it, the head and the tail are kept whole. One head, no hood, no coils: plan 9.3.)
