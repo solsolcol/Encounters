@@ -3164,16 +3164,24 @@ const tagOverlaps = (pg) => pg.evaluate(([mine, all]) => {
   return { measured: B.map(b => b.s), bad, off, boxes: B };
 }, [TAG_HUD_MINE, TAG_HUD_ALL]);
 await p.waitForTimeout(950);
-await tagEval(`kit.captions([{ at: 0, end: 60, text: 'A line said while the fight is on, long enough to wrap a little.' }]);
-  kit.tagAct('zap', { blocked: 'Not now.' }); await frames(2);
+/* (everything the mode can put up at once: the caption, TAKE beside a tired one, the other one's mark at the edge while he
+   is behind the lens, the count, and a refusal's words, the refusal last so its words are measured standing) */
+await tagEval(`
+  const A = st.fightBodies.a, T = st.fightTargets[1]; T.tired = true; T.taken = false; T.hidden = false; T.m.position.set(A.position.x + 1, 1, A.position.z - 0.4);
+  kit.tagPlace('b', A.position.x + 0.6, A.position.z + 5.0, {});
+  kit.captions([{ at: 0, end: 60, text: 'A line said while the fight is on, long enough to wrap a little.' }]);
+  kit.tagAct('zap', { blocked: 'Not now.' });
+  await poll(() => document.getElementById('caption').classList.contains('on') && !document.getElementById('tagA2').classList.contains('hide')
+    && document.getElementById('tagMate').classList.contains('on'), 20000);
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
   await frames(2);
   document.getElementById('tagA0').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 51, pointerType: 'mouse', button: 0 }));
-  await poll(() => document.getElementById('caption').classList.contains('on') && document.getElementById('nofire').classList.contains('on'), 20000);
-  await frames(2); return true;`);
+  await poll(() => document.getElementById('nofire').classList.contains('on'), 5000);
+  return true;`);
 const ovD = await tagOverlaps(p);
-K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagSw', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
+K.tagHudDesktop = ovD.bad.length === 0 && ovD.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagMate', '#caption', '#nofire', '#tagCount'].every(s => ovD.measured.includes(s));
 console.log('tag HUD 900x600:', JSON.stringify({ bad: ovD.bad, off: ovD.off, measured: ovD.measured }));
+await tagEval(`kit.tagPlace('a', st.fightHome.a[0], st.fightHome.a[1], {}); kit.tagPlace('b', st.fightHome.b[0], st.fightHome.b[1], {}); await frames(2); return true;`);
 await tagEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); await frames(2); return true;`);
 
 /* LEFT: the rig bit for bit as it was the instant the mode opened (every matrix, the lens, the turns), no boom, the hands
@@ -3409,12 +3417,19 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       await frames(3);
       const m = E.tag().marks.find(k => k.id === T.id);
       window.__n0 = E.tag().log.length; window.__p2 = [A.position.x, A.position.z];
-      return m && m.x < innerWidth * 0.45 && document.elementFromPoint(m.x, m.y).id === 'scene' ? m : null;`);
+      /* (the stick watched while the finger is down, by the page itself: a read from out here between the two touches
+         would hold the finger down longer than a tap) */
+      const sk = document.getElementById('stick'); window.__stickSeen = sk.classList.contains('on');
+      window.__stickMo = new MutationObserver(() => { if (sk.classList.contains('on')) window.__stickSeen = true; }); window.__stickMo.observe(sk, { attributes: true });
+      const at = m && document.elementFromPoint(m.x, m.y);
+      tagParts['phone.pickAt'] = m ? { x: m.x, y: m.y, r: m.r, at: at ? (at.id || at.className) : null, W: innerWidth } : null;
+      return m && m.x < innerWidth * 0.45 && at && at.id === 'scene' ? m : null;`);
     if (pm) {
       await touch('touchStart', [[pm.x, pm.y, 4]]);
-      tagParts['phone.pickStick'] = await pp.evaluate(() => document.getElementById('stick').classList.contains('on'));
       await touch('touchEnd', []);
+      tagParts['phone.pickStick'] = await pp.evaluate(() => { window.__stickMo.disconnect(); return window.__stickSeen; });
     }
+    if (!pm || tagParts['phone.pickStick'] !== false) console.log('tag phone pick', JSON.stringify({ at: tagParts['phone.pickAt'], stick: tagParts['phone.pickStick'] }));
     K.tagPhonePickInStickHalf = !!pm && tagParts['phone.pickStick'] === false
       && await pUntil(`return logSince(window.__n0).some(r => r.act === 'target');`, 20000)
       && await pCheck('pick', `
@@ -3432,13 +3447,18 @@ K.tagGoneWithChapter = await p.evaluate(() => {
         kit.tagPlace('b', A.position.x + 0.6, A.position.z + 5.4, {});
         kit.captions([{ at: 0, end: 60, text: 'A line said while the fight is on, long enough to wrap onto two lines here.' }]);
         kit.tagAct('zap', { blocked: 'Not now.' }); await frames(3); return true;`);
+      /* (the caption, TAKE and the other one's mark first; the refusal LAST, so its words, up for 2.2 s, are measured
+         standing: on a slow box four things waited for together outlast them) */
+      await pUntil(`return document.getElementById('caption').classList.contains('on')
+        && !document.getElementById('tagA2').classList.contains('hide') && document.getElementById('tagMate').classList.contains('on');`, 30000);
       await new Promise(r => setTimeout(r, 950));
       const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
       await tap(r0.x, r0.y, 6);
-      await pUntil(`return document.getElementById('caption').classList.contains('on') && document.getElementById('nofire').classList.contains('on')
-        && !document.getElementById('tagA2').classList.contains('hide') && document.getElementById('tagMate').classList.contains('on');`, 30000);
+      await pUntil(`return document.getElementById('nofire').classList.contains('on');`, 5000);
       const ov = await tagOverlaps(pp);
-      console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured }));
+      const up = await pp.evaluate(() => ({ caption: document.getElementById('caption').classList.contains('on'), nofire: document.getElementById('nofire').classList.contains('on'),
+        take: !document.getElementById('tagA2').classList.contains('hide'), mate: document.getElementById('tagMate').classList.contains('on') }));
+      console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured, up }));
       return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s));
     };
     K.tagHudPhone = await phoneHud('390x844');

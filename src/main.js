@@ -3404,7 +3404,7 @@ function flashRun() {
    starts with one up (kitReset). The verb only records; the frame paints (the kit's law). Episodes 1 and 2 never call
    it. */
 let kitCaps = null;
-const capPainted = { k: -2, el: null, list: null };   // (v24.24: and WHICH list it painted — see captionsFrame)
+const capPainted = { k: -2, el: null, list: null, mode: false };   // (v24.24: and WHICH list it painted — see captionsFrame; v28.0: and in which mode)
 function kitCaptionsSet(list) {
   const L = Array.isArray(list) ? list.filter(q => q && (q.text || q.sub)).map(q => ({
     at: Math.max(0, +q.at || 0), end: Math.max(0, +q.end || 0), text: String(q.text || ''), sub: String(q.sub || '') })) : [];
@@ -3422,9 +3422,11 @@ function captionsFrame() {
      another 0.25 s after it ends while its subtitle stands 0.4 s past it, so "What kind of shop do you have?" and the
      reading's first words were never painted at any real frame rate (index 0 both times: the old words stayed). A box
      drawing a frame a second hid it. Episodes 1 and 2 never call captions; episode 3's lists never replace one standing */
-  if (k === capPainted.k && capPainted.list === kitCaps) return;
+  /* (v28.0, seam 63: a caption standing when the tag mode opens or closes is measured again — the mode moves it above the
+     thumbs, and what stands above it reads where it now is; tag.on is false in every chapter that never opens the mode) */
+  if (k === capPainted.k && capPainted.list === kitCaps && capPainted.mode === tag.on) return;
   const el = capPainted.el || (capPainted.el = $('caption')); if (!el) return;
-  const was = capPainted.k; capPainted.k = k; capPainted.list = kitCaps;
+  const was = capPainted.mode === tag.on ? capPainted.k : -1; capPainted.k = k; capPainted.list = kitCaps; capPainted.mode = tag.on;
   if (k < 0) { el.classList.remove('on'); document.body.classList.remove('capsOn'); return; }
   const q = kitCaps.list[k];
   el.querySelector('.capMain').textContent = q.text;
@@ -8348,11 +8350,15 @@ function tagFlush() {
   tagTell({ act: a.id, who: P.id, phase: 'down', by: q.by, t: tag.t });
   if (q.up) tagTell({ act: a.id, who: P.id, phase: 'up', by: q.by, t: tag.t });
 }
+/* the switch's lock still to run, in seconds of the mode's clock — ONE function for the refusal, the read and the ring (a
+   lock read as 0 must be a lock that refuses nothing: the clock is summed in tenths on a slow frame, and 0.6 minus six
+   tenths is 1e-16, which refused a switch the read called free) */
+function tagLockLeft() { const d = tag.lockTo - tag.t; return d > 1e-6 ? d : 0; }
 function tagSwitchTo(toId, by, force) {
   if (!tagLive() || tag.bodies.length < 2) return false;
   const st = tag.acts.switch;
   if (!force && st && st.blocked) { tagRefuse('switch', st.blocked); return false; }
-  if (!force && tag.t < tag.lockTo) { tagRefuse('switch', null); return false; }
+  if (!force && tagLockLeft() > 0) { tagRefuse('switch', null); return false; }
   const from = tag.played, n = tag.bodies.length;
   const to = toId == null ? (from + 1) % n : tag.bodies.findIndex(b => b.id === toId);
   if (to < 0 || to === from) return false;
@@ -8572,7 +8578,8 @@ function kitTagCount(left, of) {
 function tagStateRead() {
   const P = tag.on ? tag.bodies[tag.played] : null;
   return { on: tag.on, live: tagLive(), played: P ? P.id : null, t: +tag.t.toFixed(3),
-           lock: tag.on ? +Math.max(0, tag.lockTo - tag.t).toFixed(3) : 0, gliding: tag.glideFrom >= 0, held: !!tag.save0,
+           /* (the lock to the millisecond, rounded UP: it reads 0 only when a switch is free) */
+           lock: tag.on ? Math.ceil(tagLockLeft() * 1000) / 1000 : 0, gliding: tag.glideFrom >= 0, held: !!tag.save0,
            bodies: tag.bodies.map(b => ({ id: b.id, x: +b.obj.position.x.toFixed(3), z: +b.obj.position.z.toFixed(3),
                                          ry: +b.obj.rotation.y.toFixed(3), v: +b.cov.toFixed(3), moving: b.cov > 0.05, played: b === P })),
            count: tag.count ? { ...tag.count } : null };
@@ -8613,7 +8620,7 @@ function tagPaintSw(E) {
   const b = E.sw; if (!b) return;
   const n = tag.bodies.length, O = n > 1 ? tag.bodies[(tag.played + 1) % n] : null, st = tag.acts.switch;
   if (!O || !st) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }
-  const lock = tag.cfg.lock > 0 ? Math.max(0, Math.min(1, (tag.lockTo - tag.t) / tag.cfg.lock)) : 0, cl = b.el.classList;
+  const lock = tag.cfg.lock > 0 ? Math.min(1, tagLockLeft() / tag.cfg.lock) : 0, cl = b.el.classList;
   if (b.icoOf !== O.pic) { b.icoOf = O.pic; b.sig = ''; if (b.face) { b.face.textContent = ''; if (O.pic) b.face.appendChild(evIconNode(O.pic, 'tgFaceIn')); } }
   const sig = O.id + '|' + O.name + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + '|' + lock.toFixed(3);
   if (sig === b.sig) return;
@@ -8671,7 +8678,11 @@ function tagPaintMate() {
       show = true;
       /* at the screen's edge toward him, inside the mode's own margins: under the count, above the caption, and in a
          landscape screen clear of the buttons' column */
-      const portrait = H > W, top = portrait ? 252 : 96, bot = portrait ? 312 : 120, left = 16, right = portrait ? 16 : 236;
+      const portrait = H > W, top = portrait ? 252 : 96, left = 16, right = portrait ? 16 : 236;
+      /* (and above a caption standing, with room for a refusal's words over it: the caption's top as its painter measured
+         it, --capTop, from the foot of the screen) */
+      let bot = portrait ? 312 : 120;
+      if (capPainted.k >= 0) { const ct = parseFloat(document.body.style.getPropertyValue('--capTop')); if (ct > 0) bot = Math.max(bot, ct + 62); }
       const cx = (left + W - right) / 2, cy = (top + H - bot) / 2;
       let dx = x - cx, dy = y - cy;
       if (Math.abs(dx) < 1e-3 && Math.abs(dy) < 1e-3) dy = 1;
