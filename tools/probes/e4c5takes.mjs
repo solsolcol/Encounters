@@ -52,7 +52,7 @@ const feet = [];
 if (VIEWS.length) {
   await p.evaluate(() => window.__enc.stage.setPhase('fight'));
   await p.waitForFunction(() => window.__enc.kit.tagState().on && window.__enc.kit.eventActive(), null, { timeout: 120000, polling: 250 });
-  await p.evaluate(() => document.getElementById('evBtn').click());       // (START: the mode live behind him)
+  await new Promise(r => setTimeout(r, 1500)); { const r = await p.evaluate(() => { const e = document.getElementById('evBtn').getBoundingClientRect(); return { x: e.x + e.width / 2, y: e.y + e.height / 2 }; }); await p.touchscreen.tap(r.x, r.y); }   // (START by a tap: the brief's button answers a press, not a DOM click)
   await p.waitForFunction(() => window.__enc.kit.tagState().live, null, { timeout: 60000, polling: 250 }).catch(() => say('(the mode not live)'));
   await new Promise(r => setTimeout(r, 2500));
   /* (every boom picture first, while the mode stands; then his side and front, the mode left for the first-person lens) */

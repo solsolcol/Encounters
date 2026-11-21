@@ -76,7 +76,7 @@ await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 300000, polling: 500 });
 await new Promise(r => setTimeout(r, 3000));
 res.push(await count('the brief: the nine standing, the boom behind Grandmaster Pho'));
-await p.evaluate(() => document.getElementById('evBtn').click());
+await new Promise(r => setTimeout(r, 1500)); { const r = await p.evaluate(() => { const e = document.getElementById('evBtn').getBoundingClientRect(); return { x: e.x + e.width / 2, y: e.y + e.height / 2 }; }); await p.touchscreen.tap(r.x, r.y); }   // (START by a tap: the brief's button answers a press, not a DOM click)
 await p.waitForFunction(() => window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 }).catch(() => say('(not live)'));
 await new Promise(r => setTimeout(r, 4000));
 res.push(await count('START pressed: the lesson\'s one, the eight sunk'));
