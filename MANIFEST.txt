@@ -1121,3 +1121,4 @@ feba8ea2626d58a3f8e0a4127e9d11b694209c2c9d08601d00c320c0b4fb55d6  masters/v27.0/
 bd6830e27b95df33ba27b593c3466ac97f2f4b203df8c994232908652dfc99d3  masters/v27.0/src/original-armchair.glb
 64d4d13c3f198bee0ec9968b2bb77650253985822ef6e5594c8c98766370e306  masters/v27.0/src/original-bed.glb
 907d6f48e39c473e6be39ff98c5edefac1ea34a538fce31f7337ce039908bb59  masters/v27.0/src/original-bicycle.glb
+dfb8be09ab2373e7bacfc9bdd17e0568b36de6ef748107fda9293851fa62b96b  masters/v27.0/src/original-bigbowl.glb
