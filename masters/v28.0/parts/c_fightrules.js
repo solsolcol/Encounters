@@ -74,7 +74,8 @@
         waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
         bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
-        bubbleLongest: 19,                    // a bubble's own time and the longest lend (while his cage is lent the bubbles hold: the gold is coming)
+        bubbleLongest: 30,                    // a bubble's own time, a hold's grace for the gold, the longest lend, and the gold gathered
+                                              // and gone out (none of these run a bubble down: 10 + 8 + 9 + 1.5 + 1.2, rounded up)
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
