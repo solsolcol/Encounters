@@ -39,10 +39,12 @@ import hashlib, json, os, re, subprocess, sys, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 'v26.0', 'v27.0', 'v28.0']
 # (v28.0, 21 Nov 2026) v27.0 is episode 4 chapter 4's people and things, v28.0 chapter 5's: both scanned as the first set
-# was (no key, no signed link, no address; one link to Meshy's documentation in a log). NOT pushed from v28.0: the three
-# bodies of Master Zavier that were made and refused (zavier, zavier2, zavier3, and zavier3's second rig). They are
-# likenesses of a real man that the game does not use; the body it does use is zavier4.
-SKIP = {'v28.0': re.compile(r'zavier(?!4)')}
+# was (no key, no signed link, no address; one link to Meshy's documentation in a log). NOT pushed from v28.0: the second
+# and third bodies of Master Zavier, made and refused (zavier2, zavier3, and zavier3's second rig): likenesses of a real
+# man that the game does not use. The FIRST body (zavier) goes up since 21 Nov 2026, when Chad said it looked the best
+# (plan R8): until his pick between it and the fourth (zavier4) it must not exist on one machine only. Its fourteen
+# files were scanned the same way first (no link, no key, no address).
+SKIP = {'v28.0': re.compile(r'zavier[23]')}
 # the size of a chunk: 600 MB by default, less (SRCBACKUP_CHUNK_MB) when the machine has less room free than a chunk and
 # its margin
 CHUNK = int(os.environ.get('SRCBACKUP_CHUNK_MB', '600')) * 1024 * 1024

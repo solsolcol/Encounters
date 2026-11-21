@@ -263,6 +263,12 @@ that fits it, with the version it came from.
   effort ("Continue all of this in fable 5.2 max"): a session on another model does only the bookkeeping on it and asks
   him to switch the session's model. Its plan is docs/V28.0-E4C5-PLAN.md (§0 his words, R1 on; §0.1 where it stands):
   read it first. (v28.0)
+- A generated model is not made a second time without his yes ("Why did you generate 4 models of zavier, when the first
+  one already looked the best? You are burning my credits": Master Zavier's body was generated four times, 50 Meshy
+  credits each, the first refused by me for its joined fingers and never shown to him). When a model comes back with a
+  fault, he is shown it as it is, the fault said plainly, with what another would cost in credits, and he picks: keep
+  it, mend it here at no credits, or pay for another. A job that failed outright (nothing usable came back) is still
+  re-run unchanged (v24.3). The words in quotes are his; the rule's wording is mine, drawn from them. (v28.0)
 
 ### How the work is done and checked
 

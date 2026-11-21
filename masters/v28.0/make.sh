@@ -109,6 +109,15 @@
 # WHAT A REFERENCE MUST SHOW for a person whose hands will be seen: the PALMS TOWARD THE LENS with every finger apart
 #   (hands held edge on come back as mittens). And even then each generation is its own throw: count the rig's joints
 #   (66 with fingers, 32 without) and look at the eyes and the backs of the hands before anything is built on a body.
+# CHAD ON THE FOUR (21 Nov 2026, plan R8): "Why did you generate 4 models of zavier, when the first one already looked
+#   the best? You are burning my credits". He is right about how it was done: the first body was refused on my judgement
+#   alone and never shown to him with its fault and the price of another. The three after it cost 155 Meshy credits (the
+#   third's second rig in it) and 9 Higgsfield (the second reference). THE RULE SINCE (CLAUDE.md, v28.0): a generated
+#   model is not made a second time without his yes: the first is shown as it is, its fault said, the price said, and he
+#   picks. The first body was photographed from its committed files (54038f5; no credits) and sent beside the fourth:
+#   face, whole, left hand. WHICH OF THE TWO IS HIS IS OPEN. The first's line in people.sh is `OUTN=zavier1 one zavier`;
+#   with the fourth's switches (WSMOOTH=0 XSCALE=1000 FINS=1) and its own edge spec (people/edgeclean-zavier.json) it is
+#   a local re-run at no credits, checked like the fourth before it is called his. Not run until he picks.
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 5. THE PREP, and five things these bodies found (tools/prepmonk.mjs, tools/repaint.py, tools/edgeclean.py)
