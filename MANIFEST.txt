@@ -1128,3 +1128,5 @@ d7566c4442ff837cf578247f4bf2834c005596eda6d16e78be741326819d4d9a  masters/v27.0/
 08f522c8a9d2b6e616c2b6b3ff11e7b1cd22a9246d3b42e2a235cd6e3dff6b58  masters/v27.0/src/original-clothesrack.glb
 828833376e4a61eb1bacf3b7ffd97bd93025c6c1a89215c1ca4e0444c33405dd  masters/v27.0/src/original-coffeetable.glb
 efba8a1ae7cc8e4e4003bed6c019cc54853eca1e1cbe45c6be561e7477b90feb  masters/v27.0/src/original-commode.glb
+9a6447365d3ead0112567bebc770c59dc1f5edcb6bd28b9f70b86d10223fa92a  masters/v27.0/src/original-corrpots.glb
+13befb6a5c01f37df2173cecb0ce6c776b2acb11a5d02324906fbba819683c91  masters/v27.0/src/original-dinechair.glb
