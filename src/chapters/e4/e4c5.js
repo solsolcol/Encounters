@@ -71,36 +71,36 @@
      books its window by it and every film's times are built from it, so a measured take moves what follows it: v5.15).
      The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when the chapter names it in
      quotes (v21.1). */
-  const SECS = {      // 0 of 149 MEASURED from their takes; the other 149 PROVISIONAL (words / 2.3 s)
+  const SECS = {      // 99 of 149 MEASURED from their takes; the other 50 PROVISIONAL (words / 2.3 s)
     /* Master Zavier (the player) */
-    'q5o1': 8.26, 'q5o2': 3.04, 'q5w1': 1.74, 'q5w2': 2.61, 'q5w3': 3.04, 'q5w4': 0.87, 'q5h1': 5.65, 'q5h2': 2.61,
-    'q5h3': 5.22, 'q5h4': 1.74, 'q5h5': 1.74, 'q5p1': 3.91, 'q5c0': 5.22, 'q5c1': 5.22, 'q5c3': 1.74, 'q5c2': 1.74,
-    'q5b1': 2.17, 'q5b2': 2.61, 'q5t1': 7.83, 'q5A1': 0.43, 'q5A2': 5.22, 'q5B1': 2.61, 'q5B2': 2.17, 'q5C1': 8.7,
-    'q5D1': 5.65, 'q5z1': 1.74, 'q5A': 6.52, 'q5B': 5.65, 'q5C': 5.65, 'q5D': 5.22,
+    'q5o1': 9.05, 'q5o2': 2.41, 'q5w1': 1.43, 'q5w2': 2.49, 'q5w3': 2.25, 'q5w4': 1.05, 'q5h1': 5.05, 'q5h2': 3.13,
+    'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5c0': 5.22, 'q5c1': 5.22, 'q5c3': 1.74, 'q5c2': 1.74,
+    'q5b1': 1.37, 'q5b2': 4.65, 'q5t1': 7.13, 'q5A1': 0.91, 'q5A2': 5.21, 'q5B1': 2.01, 'q5B2': 1.85, 'q5C1': 6.73,
+    'q5D1': 4.81, 'q5z1': 3.13, 'q5A': 6.01, 'q5B': 4.97, 'q5C': 4.97, 'q5D': 4.33,
     /* Grandmaster Pho */
-    'ph5w1': 4.35, 'ph5w2': 4.35, 'ph5w3': 2.17, 'ph5w4': 2.17, 'ph5w5': 7.83, 'ph5w6': 0.43, 'ph5w7': 1.3,
-    'ph5d1': 1.74, 'ph5d2': 7.83, 'ph5h1': 0.87, 'ph5h2': 2.61, 'ph5h3': 9.13, 'ph5h4': 5.65, 'ph5h5': 1.3,
-    'ph5h6': 1.74, 'ph5h7': 1.3, 'ph5v1': 4.78, 'ph5v2': 3.91, 'ph5p1': 4.78, 'ph5p2': 4.78, 'ph5f1': 0.43,
+    'ph5w1': 5.69, 'ph5w2': 5.53, 'ph5w3': 2.81, 'ph5w4': 1.69, 'ph5w5': 8.23, 'ph5w6': 1.2, 'ph5w7': 3.44,
+    'ph5d1': 1.56, 'ph5d2': 7.53, 'ph5h1': 1.37, 'ph5h2': 2.17, 'ph5h3': 7.29, 'ph5h4': 4.89, 'ph5h5': 1.37,
+    'ph5h6': 1.69, 'ph5h7': 1.27, 'ph5v1': 5.05, 'ph5v2': 3.56, 'ph5p1': 4.57, 'ph5p2': 6.09, 'ph5f1': 0.43,
     'ph5f2': 3.04, 'ph5f3': 6.09, 'ph5f4': 0.43, 'ph5f5': 3.48, 'ph5f6': 1.74, 'ph5f7': 2.61, 'ph5f8': 2.17,
     'ph5f9': 2.61, 'ph5f10': 5.22, 'ph5na1': 3.04, 'ph5na2': 1.74, 'ph5na3': 0.87, 'ph5nb1': 1.74, 'ph5nb2': 1.3,
     'ph5nc1': 3.04, 'ph5nc2': 2.61, 'ph5nc3': 1.3, 'ph5nd1': 2.17, 'ph5nd2': 3.04, 'ph5nd3': 0.43, 'ph5ne1': 4.35,
     'ph5nf2': 2.17, 'ph5nf3': 0.43, 'ph5ng1': 3.48, 'ph5ng2': 2.17, 'ph5nh2': 0.43, 'ph5ni1': 1.74, 'ph5ni2': 1.3,
     'ph5g1': 0.43, 'ph5g2': 3.91, 'ph5g3': 2.61, 'ph5c1': 2.17, 'ph5c2': 2.61, 'ph5c3': 1.3, 'ph5c4': 3.04,
-    'ph5l1': 2.17, 'ph5l2': 2.61, 'ph5b1': 1.74, 'ph5b2': 7.83, 'ph5b3': 7.83, 'ph5b4': 9.13, 'ph5b5': 7.39,
-    'ph5b6': 0.43, 'ph5t1': 0.43, 'ph5t2': 0.43, 'ph5t3': 4.78, 'ph5t4': 7.83, 'ph5t5': 0.43, 'ph5t6': 3.91,
-    'ph5A1': 3.91, 'ph5A2': 7.39, 'ph5B1': 11.3, 'ph5C1': 2.17, 'ph5C2': 3.91, 'ph5D1': 4.78, 'ph5D2': 7.83,
+    'ph5l1': 2.17, 'ph5l2': 2.61, 'ph5b1': 1.51, 'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13,
+    'ph5b6': 1, 'ph5t1': 0.84, 'ph5t2': 0.97, 'ph5t3': 4.65, 'ph5t4': 8.27, 'ph5t5': 1.2, 'ph5t6': 3.05,
+    'ph5A1': 5.21, 'ph5A2': 6.89, 'ph5B1': 8.44, 'ph5C1': 2.14, 'ph5C2': 4.17, 'ph5D1': 4.09, 'ph5D2': 6.17,
     /* Ton, the follower who carries the Naga stick */
-    'tn5o1': 4.35, 'tn5w1': 0.87, 'tn5w2': 0.87, 'tn5w3': 1.74, 'tn5w4': 3.91, 'tn5c0': 3.48, 'tn5c1': 2.61,
-    'tn5c2': 1.74, 'tn5c3': 1.3, 'tn5b1': 7.83,
+    'tn5o1': 4.17, 'tn5w1': 0.97, 'tn5w2': 1.76, 'tn5w3': 1.45, 'tn5w4': 2.81, 'tn5c0': 3.48, 'tn5c1': 2.61,
+    'tn5c2': 1.74, 'tn5c3': 1.3, 'tn5b1': 7.13,
     /* Jun, the second follower */
-    'ju5o1': 5.65, 'ju5w1': 2.61, 'ju5w2': 2.61, 'ju5c1': 3.48, 'ju5c2': 2.17, 'ju5b1': 5.22,
+    'ju5o1': 5.48, 'ju5w1': 3.77, 'ju5w2': 2.17, 'ju5c1': 3.48, 'ju5c2': 2.17, 'ju5b1': 4.88,
     /* Mr Koh, the devotee */
-    'ko5d1': 4.78, 'ko5d2': 9.13, 'ko5d3': 6.09, 'ko5d4': 6.52, 'ko5p1': 1.74, 'ko5c1': 3.91, 'ko5c2': 3.04,
-    'ko5b1': 4.35,
+    'ko5d1': 3.63, 'ko5d2': 10.89, 'ko5d3': 5.21, 'ko5d4': 5.03, 'ko5p1': 1.45, 'ko5c1': 3.91, 'ko5c2': 3.04,
+    'ko5b1': 4.01,
     /* The collector */
-    'co5t1': 3.91, 'co5t2': 13.48, 'co5t3': 3.91, 'co5t4': 2.17, 'co5t5': 6.52, 'co5t6': 3.91, 'co5t7': 3.48,
-    'co5A1': 3.04, 'co5A2': 5.22, 'co5B1': 5.65, 'co5B2': 4.35, 'co5B3': 3.04, 'co5B4': 3.91, 'co5B5': 2.17,
-    'co5C1': 1.3, 'co5C2': 1.74, 'co5D1': 7.39, 'co5z1': 3.04
+    'co5t1': 3.68, 'co5t2': 10.81, 'co5t3': 2.91, 'co5t4': 2.11, 'co5t5': 4.12, 'co5t6': 3.21, 'co5t7': 2.81,
+    'co5A1': 2.65, 'co5A2': 3.13, 'co5B1': 3.69, 'co5B2': 3.45, 'co5B3': 2.38, 'co5B4': 2.41, 'co5B5': 1.85,
+    'co5C1': 1.9, 'co5C2': 1.89, 'co5D1': 7.05, 'co5z1': 2.53
   };
   /* every line's words: key: [who, where in the chapter, the words exactly as said]. A row marked FIGHT-DRAFT is a line
      of the fight as the plan's 7.3 drafted it: the fight is being redesigned (R14), so these WILL change, and none is
@@ -1006,6 +1006,10 @@
     /* ================================================================ THE SURFACES (painted: each at its real size, so a
        metre of wall is a metre of its picture; the merged pieces' UVs are metres) */
     const rep = (t, tu, tv) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / tu, 1 / tv); return t; };
+    /* a quad whose picture is laid on it once, whole (a plate, a sign): UVs 0..1 */
+    function quadUV(mat, a, b, c, d) { const Bt = batchOf(mat); let nx = (b[1] - a[1]) * (d[2] - a[2]) - (b[2] - a[2]) * (d[1] - a[1]), ny = (b[2] - a[2]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[2] - a[2]), nz = (b[0] - a[0]) * (d[1] - a[1]) - (b[1] - a[1]) * (d[0] - a[0]);
+      const nl = Math.hypot(nx, ny, nz) || 1; const P = [a, b, c, a, c, d], U = [[0, 0], [1, 0], [1, 1], [0, 0], [1, 1], [0, 1]];
+      for (let i = 0; i < 6; i++) { Bt.p.push(P[i][0], P[i][1], P[i][2]); Bt.n.push(nx / nl, ny / nl, nz / nl); Bt.u.push(U[i][0], U[i][1]); } }
     const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
     const pic = (c, tu, tv, aniso = 8) => { const t = tex(done(THREE, c, true)); rep(t, tu, tv); t.anisotropy = aniso; return t; };
     /* square tiles: `n` a side in the picture, their colour varied a little, their grout */
@@ -1054,18 +1058,18 @@
     const mCeil = M({ color: 0xe8e4da, roughness: 0.95, emissive: 0x262420 });
     const mSkirt = M({ color: 0x5a4636, roughness: 0.6 });
     const mVeneer = (() => { const [c, x] = canvas(128, 256), r = rng(28508);
-      x.fillStyle = '#5c3f2c'; x.fillRect(0, 0, 128, 256);
+      x.fillStyle = '#7d5a3e'; x.fillRect(0, 0, 128, 256);
       for (let i = 0; i < 80; i++) { x.strokeStyle = `rgba(${30 + r() * 30},${18 + r() * 14},10,${0.18 + r() * 0.2})`; x.lineWidth = 1 + r() * 2;
         const xx = r() * 128; x.beginPath(); x.moveTo(xx, 0); x.bezierCurveTo(xx + r() * 8 - 4, 80, xx + r() * 8 - 4, 170, xx + r() * 6 - 3, 256); x.stroke(); }
       return M({ map: pic(c, 0.9, 2.1), roughness: 0.55 }); })();
     const mAlu = M({ color: 0xb9bcbd, roughness: 0.4, metalness: 0.5 });
-    const mGlass = M({ color: 0x1a2028, roughness: 0.06, metalness: 0.3, transparent: true, opacity: 0.35, depthWrite: false });
+    const mGlass = M({ color: 0x2a3038, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.22, depthWrite: false });
     const mGlassDay = M({ color: 0xcfe0ee, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.18, depthWrite: false });
     /* the lift: brushed steel, its floor a grey rubber, its ceiling a lit panel (painted light) */
     const mSteel = (() => { const [c, x] = canvas(256, 256), r = rng(28509);
       x.fillStyle = '#9da2a6'; x.fillRect(0, 0, 256, 256);
       for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '255,255,255' : '40,44,48'},${0.04 + r() * 0.06})`; x.fillRect(0, r() * 256, 256, 1); }
-      return M({ map: pic(c, 0.6, 0.6), roughness: 0.35, metalness: 0.55 }); })();
+      return M({ map: pic(c, 0.6, 0.6), roughness: 0.4, metalness: 0.15 }); })();
     const mRubber = M({ map: pic(tiles(128, 8, [70, 72, 74], '#3c3e40', 28510, 0.05), 0.4, 0.4), roughness: 0.9 });
     const mLit = B({ color: 0xf6f3ea });
     /* the receiving room: pale grey vinyl planks, white walls, a white ceiling */
@@ -1142,6 +1146,10 @@
       for (let z = -6.55; z < -5.4; z += 0.12) bar(mBand, [W.x0 - 0.1, 0.02, z], [W.x0 - 0.1, 1.38, z], 0.009, 5);
       for (const y of [0.1, 0.7, 1.35]) bar(mBand, [W.x0 - 0.1, y, -6.6], [W.x0 - 0.1, y, -5.35], 0.012, 5);
       solidXZ(W.x0 - 0.2, -6.6, W.x0, -5.35);
+      /* (behind it, its court: a strip of its paving and its far wall in shade, so the bars stand against a place) */
+      floor(mPave, W.x0 - 2.4, -6.6, W.x0 - 0.2, -5.35, -0.002);
+      wallZ(M({ color: 0x9a9284, roughness: 0.95 }), W.x0 - 2.4, 0.1, -6.7, -5.25, [], 0, 2.6, false);
+      wallX(mCourtWall, -6.65, 0.1, W.x0 - 2.4, W.x0 - 0.2, [], 0, 2.6, false); wallX(mCourtWall, -5.3, 0.1, W.x0 - 2.4, W.x0 - 0.2, [], 0, 2.6, false);
       /* THE INNER SIDE of run 2 (z -14.0): the corner's wall, the neighbours' court wall, his gate between its posts, his
          court's low front wall, and the end wall */
       wallX(mFace, W.turnZ + 0.1, 0.2, W.x0 - 0.2, COURT.x1 + 0.1, [], 0, s);
@@ -1161,7 +1169,7 @@
       const plate = (() => { const [c, x] = canvas(256, 128); x.fillStyle = '#9aa0a5'; x.fillRect(0, 0, 256, 128);
         x.fillStyle = '#1e2024'; x.fillRect(84, 14, 88, 100); x.fillStyle = '#d65b2c'; x.font = 'bold 80px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('3', 128, 66);
         return B({ map: tex(done(THREE, c, false)) }); })();
-      quad(plate, [0.25, 2.18, W.z1 - 0.002], [-0.25, 2.18, W.z1 - 0.002], [-0.25, 2.43, W.z1 - 0.002], [0.25, 2.43, W.z1 - 0.002]);
+      quadUV(plate, [0.25, 2.18, W.z1 - 0.002], [-0.25, 2.18, W.z1 - 0.002], [-0.25, 2.43, W.z1 - 0.002], [0.25, 2.43, W.z1 - 0.002]);
       box(mSteel, 0.66, 1.15, W.z1 - 0.01, 0.09, 0.16, 0.02);
       box(B({ color: 0xffe9b0 }), 0.66, 1.17, W.z1 - 0.022, 0.03, 0.03, 0.006);
       /* the storeys below, seen over the balustrade: each a band of parapet and the slab's edge */
@@ -1212,6 +1220,27 @@
         { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, y0: 0, y1: DOOR_FRONT.h },
         { x0: WIN_B.x0, x1: WIN_B.x1, y0: WIN_B.sill, y1: WIN_B.head }], 0, STOREY);
       windowX(WIN_A, H.face - 0.1, 0.2); windowX(WIN_B, H.face - 0.1, 0.2);
+      /* the walls' feet: a grey plinth 15 cm high round the court (a builder's waterproof band), standing 1 cm proud */
+      box(mBand, C.x0 + 0.005, 0.075, (C.z0 + H.face) / 2, 0.03, 0.15, H.face - C.z0 - 0.2);
+      box(mBand, C.x1 - 0.005, 0.075, (C.z0 + H.face) / 2, 0.03, 0.15, H.face - C.z0 - 0.2);
+      box(mBand, (C.x0 + DOOR_FRONT.x0) / 2, 0.075, H.face - 0.205, DOOR_FRONT.x0 - C.x0, 0.15, 0.03);
+      box(mBand, (DOOR_FRONT.x1 + C.x1) / 2, 0.075, H.face - 0.205, C.x1 - DOOR_FRONT.x1, 0.15, 0.03);
+      box(mBand, (C.x0 + C.x1) / 2, 0.075, C.z0 + 0.205, C.x1 - C.x0, 0.15, 0.03);
+      /* on his side wall (the west, his bedroom wing) its window, its grille and its curtain drawn behind the glass; on his
+         neighbour's (the east) a high louvred vent: painted, as their faces are seen across the court and never reached */
+      const winCard = (() => { const [c, x] = canvas(256, 256);
+        x.fillStyle = '#b9bcbd'; x.fillRect(0, 0, 256, 256); x.fillStyle = '#4a4438'; x.fillRect(10, 10, 236, 236);
+        const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, 'rgba(232,206,160,0.9)'); g.addColorStop(1, 'rgba(196,168,124,0.9)'); x.fillStyle = g; x.fillRect(14, 14, 228, 228);
+        x.strokeStyle = 'rgba(120,96,70,0.35)'; for (let i = 0; i < 18; i++) { x.beginPath(); x.moveTo(20 + i * 12.5, 14); x.lineTo(20 + i * 12.5, 242); x.stroke(); }
+        x.fillStyle = '#b9bcbd'; x.fillRect(124, 10, 8, 236);
+        x.fillStyle = '#e6e6e0'; for (let i = 0; i < 9; i++) x.fillRect(20 + i * 27, 6, 5, 244); x.fillRect(6, 120, 244, 6);
+        return B({ map: tex(done(THREE, c, false)) }); })();
+      quadUV(winCard, [C.x0 + 0.012, 1.0, -7.7], [C.x0 + 0.012, 1.0, -9.1], [C.x0 + 0.012, 2.15, -9.1], [C.x0 + 0.012, 2.15, -7.7]);
+      box(mBand, C.x0 + 0.04, 0.98, -8.4, 0.06, 0.04, 1.5);
+      const vent = (() => { const [c, x] = canvas(128, 64); x.fillStyle = '#9e978a'; x.fillRect(0, 0, 128, 64);
+        for (let j = 0; j < 7; j++) { x.fillStyle = '#3a3630'; x.fillRect(6, 6 + j * 8, 116, 4); x.fillStyle = '#c9c2b2'; x.fillRect(6, 10 + j * 8, 116, 2); }
+        return B({ map: tex(done(THREE, c, false)) }); })();
+      quadUV(vent, [C.x1 - 0.012, 2.2, -10.4], [C.x1 - 0.012, 2.2, -9.4], [C.x1 - 0.012, 2.7, -9.4], [C.x1 - 0.012, 2.7, -10.4]);
       /* the door's frame: its jambs and head in dark timber, 7 cm wide on the court's face, covering the leaf's edges
          (the leaf's hinge edge came back ragged: the frame covers it, RECORD.md 8) */
       const mJamb = M({ color: 0x3a2618, roughness: 0.6 });
@@ -1264,7 +1293,8 @@
       sk([L.x1 - 0.006, L.z0], [L.x1 - 0.006, L.z1 - 0.006]); sk([L.x1 - 0.006, L.z1 - 0.006], [-5.35, L.z1 - 0.006]);
       sk([-6.15, L.z1 - 0.006], [D.x1 + 0.006, L.z1 - 0.006]);
       /* the house's outer faces seen from the estate past the terrace (its west end): the block's paint, to the roof */
-      box(mFace, L.x0 - 0.2, STOREY * 1.5 + 1.0, (L.z0 + D.z1) / 2, 0.15, STOREY * 3 - 0.6 + 2.0, D.z1 - L.z0 + 0.2);
+      box(mFace, TERRACE.out - 0.08, h + 0.3 + (STOREY * 3 - h) / 2, (TERRACE.z0 + TERRACE.z1) / 2, 0.15, STOREY * 3 - h, TERRACE.z1 - TERRACE.z0 + 1.2);   // the terrace above's parapets, to the roof
+      box(mBand, (TERRACE.out + L.x0) / 2, h + 0.15, (TERRACE.z0 + TERRACE.z1) / 2, L.x0 - TERRACE.out + 0.2, 0.3, TERRACE.z1 - TERRACE.z0 + 1.2);
     }
 
     /* ================================================================ THE ESTATE ROUND THE BLOCK (seen past the
@@ -1286,7 +1316,7 @@
       floor(mDeck, 4, -40, 28, -18, G + 0.02); floor(mPool, 7, -37, 25, -24, G + 0.04);
       floor(mDeck, -40, -26, 4, -21, G + 0.02); floor(mDeck, 4, -18, 8, 20, G + 0.02);
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
-      box(mFace, -6, G / 2, -6, 10, -G, 16);
+      box(mFace, -6, (G - 0.35) / 2, -6, 10, -G - 0.35, 16);
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
       const NW = 8, atlas = (() => { const [c, x] = canvas(1024, 1024), r = rng(28532), cw = 1024 / 4, ch = 1024 / 4;
         x.fillStyle = '#e2dccd'; x.fillRect(0, 0, 1024, 1024);
@@ -1299,7 +1329,7 @@
             if (lit < 0.58) { x.fillStyle = 'rgba(0,0,0,0.18)'; for (let k = 0; k < 6; k++) x.fillRect(ox + wx * cw + k * cw * 0.055, oy + 37, 3, ch * 0.5); }
             x.fillStyle = '#b9bcbd'; x.fillRect(ox + wx * cw + cw * 0.155, oy + 37, 3, ch * 0.5); } }
         const t = tex(done(THREE, c, false)); t.anisotropy = 8; return B({ map: t, fog: true }); })();
-      const BAYW = 7.0;
+      const BAYW = 7.0, mFaceD = B({ color: 0xcfc8b8, fog: true, side: THREE.DoubleSide });
       const slab = (x0, z0, x1, z1, storeys, seed) => {
         const r = rng(seed), L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, nb = Math.max(1, Math.round(L / BAYW)), bw = L / nb;
         const P = (u, y, w = 0) => [x0 + ax * u + az * w, y, z0 + az * u - ax * w];
@@ -1309,20 +1339,20 @@
           const PP = [a, b, c, a, c, d], U = [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]];
           for (let q = 0; q < 6; q++) { Bt.p.push(PP[q][0], PP[q][1], PP[q][2]); Bt.n.push(-az, 0, ax); Bt.u.push(U[q][0], U[q][1]); } }
         const top = G + storeys * STOREY, dp = 12;
-        const e0 = P(0, 0), e1 = P(L, 0), b0 = P(0, 0, -dp), b1 = P(L, 0, -dp);
-        quad(mFace, [b0[0], G, b0[2]], [e0[0], G, e0[2]], [e0[0], top, e0[2]], [b0[0], top, b0[2]]);
-        quad(mFace, [e1[0], G, e1[2]], [b1[0], G, b1[2]], [b1[0], top, b1[2]], [e1[0], top, e1[2]]);
-        quad(mSoffit, [e0[0], top, e0[2]], [e1[0], top, e1[2]], [b1[0], top, b1[2]], [b0[0], top, b0[2]]);
+        const e0 = P(0, 0), e1 = P(L, 0), b0 = P(0, 0, dp), b1 = P(L, 0, dp);
+        quad(mFaceD, [b0[0], G, b0[2]], [e0[0], G, e0[2]], [e0[0], top, e0[2]], [b0[0], top, b0[2]]);
+        quad(mFaceD, [e1[0], G, e1[2]], [b1[0], G, b1[2]], [b1[0], top, b1[2]], [e1[0], top, e1[2]]);
+        quad(mFaceD, [e0[0], top, e0[2]], [e1[0], top, e1[2]], [b1[0], top, b1[2]], [b0[0], top, b0[2]]);
         const c0 = P(-0.3, top - 0.1, 0.3), c1 = P(L + 0.3, top - 0.1, 0.3);
         box(mBand, (c0[0] + c1[0]) / 2, top + 0.5, (c0[2] + c1[2]) / 2, Math.abs(c1[0] - c0[0]) || 0.4, 1.2, Math.abs(c1[2] - c0[2]) || 0.4);
       };
       /* (each slab's face turned toward the walkway: P's w is out of its face) */
-      slab(36, 22, 36, -30, 6, 28541);          // east, across the pool, its face to the west
-      slab(26, -52, -30, -52, 6, 28542);        // south, beyond the deck
-      slab(-44, -40, -44, 12, 6, 28543);        // west, seen from the terrace
+      slab(36, -30, 36, 22, 6, 28541);          // east, across the pool, its face to the west
+      slab(-30, -52, 26, -52, 6, 28542);        // south, beyond the deck
+      slab(-44, 12, -44, -40, 6, 28543);        // west, seen from the terrace
       /* the estate's trees on the lawn (chapter 4's real models of Singapore's street trees: declared, reuseInEpisode) */
       const TREES = [], PALMS = [], tr = rng(28544);
-      for (const [x, z] of [[14, -12], [22, -10], [30, -14], [-8, -30], [-20, -32], [-30, -20], [12, -46], [-2, -44], [30, -40], [-34, -4], [-36, 6], [18, 6], [26, 12]])
+      for (const [x, z] of [[8, -6], [16, 2], [24, -4], [30, 8], [12, 12], [20, 18], [-24, 0], [-30, 14], [-12, -38], [14, -12], [22, -10], [30, -14], [-8, -30], [-20, -32], [-30, -20], [12, -46], [-2, -44], [30, -40], [-34, -4], [-36, 6], [18, 6], [26, 12]])
         TREES.push({ x: x + (tr() - 0.5) * 2, y: G, z: z + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.75 + tr() * 0.25 });
       for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-14, -22], [-26, -23], [10, 0]])
         PALMS.push({ x, y: G, z, ry: tr() * 6.28, s: 0.85 + tr() * 0.2 });
@@ -1411,7 +1441,7 @@
        picture's own colour turned 16 degrees toward orange about the grey axis (hueTurn) and darkened, so its grain and
        wear stay and its red becomes a dark reddish brown. His files untouched (v12.4 holds it for his; it costs nothing) */
     function rosewood(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) { if (!mt || !mt.color) continue;
-      mt.color.multiply(C3.set(0x7a6358)); hueTurn(mt, 16); } }); }
+      mt.color.multiply(C3.set(0xa88c7e)); hueTurn(mt, 16); } }); }
     /* the case's foam (RECORD.md 7): its pits drew as black mirrors. Matte: no shine and no metal, the whole case */
     function matte(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) { if (!mt) continue;
       if ('metalness' in mt) { mt.metalness = 0; mt.metalnessMap = null; } if ('roughness' in mt) { mt.roughness = 0.92; mt.roughnessMap = null; } mt.needsUpdate = true; } }); }
@@ -1492,9 +1522,11 @@
     /* --- the curtains: drawn over both front windows, each window two curtains a little apart and one a hand behind
        the other (RECORD.md 1: the cloth's two slits are each covered by the other's cloth), their rails 5 cm under the
        ceiling; and one gathered beside the terrace doors, pushed to the side */
+    /* (a drawn curtain is lit from the room: its back glows a little in the lamps' warmth, seen from the court at dusk) */
+    const lamplit = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if (mt && mt.emissive) { mt.emissive.set(0x3a2a18); if (mt.map) mt.emissiveMap = mt.map; } });
     for (const Wn of [WIN_A, WIN_B]) { const xm = (Wn.x0 + Wn.x1) / 2;
-      place('w5curtain', xm - 0.13, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 1.08 });
-      place('w5curtain', xm + 0.17, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 1.05 }); }
+      place('w5curtain', xm - 0.13, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 1.08, done: lamplit });
+      place('w5curtain', xm + 0.17, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 1.05, done: lamplit }); }
     place('w5curtain', LIVING.x0 + 0.2, HOUSE.ceil - 2.40 - 0.05, TERRACE.z1 + 0.42, Math.PI / 2, { sx: 0.55 });
     /* --- the living room: the sofa facing the television across the low table, the old armchair at the table's north
        end (where his nose is once behind the truth: 4.3), the floor lamp by the sofa's end, the television's console on
@@ -1598,7 +1630,7 @@
       walk:  { at: { x: 0, z: 0.25, ry: 0 },
                pho: { x: 0.05, z: -2.7, ry: Math.PI }, ton: { x: -0.5, z: -1.15, ry: 0.35 }, jun: { x: 0.42, z: -1.45, ry: -0.3 },
                koh: { x: -9.0, z: -4.4, ry: Math.PI } },
-      hunt:  { at: { x: -8.3, z: -4.55, ry: Math.PI * 0.62 },
+      hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
                pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
       /* the cleansing: he in the court (the fight's own start is the fight's), the three in the doorway behind the thread */

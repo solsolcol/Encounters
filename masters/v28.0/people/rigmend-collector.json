@@ -1,0 +1,15 @@
+{
+  "_": "v28.0 · the collector's rig mended here (way B, Chad's default, R19). Each stray bone's share goes to the bone of a man's body it stands in for, read from where its points lie (scratch probes where.mjs and box.mjs, RECORD.md section 3b) and from how Meshy weights the same regions on the three rigs of this chapter that came back whole (Jun, Mr Koh, Master Zavier): the upper chest to the shoulder, the upper arm and the side under it to the arm, the belt to the hips, a shoe to its foot. Each hand one rigid piece.",
+  "drop": {
+    "Bone_029": "RightShoulder", "Bone_028": "RightArm", "Bone_027": "RightForeArm",
+    "Bone_034": "LeftShoulder",  "Bone_033": "LeftArm",  "Bone_032": "LeftForeArm",
+    "Bone_002": "Hips", "Bone_015": "Hips", "Bone_016": "Hips",
+    "Bone_017": "Head",
+    "Bone_035": "LeftFoot", "Bone_036": "LeftFoot", "Bone_037": "LeftFoot",
+    "Bone_039": "RightFoot", "Bone_040": "RightFoot", "Bone_041": "RightFoot",
+    "Bone_043": "LeftHand", "Bone_044": "RightHand",
+    "LeftHandMiddle1": "LeftHand", "LeftHandMiddle2": "LeftHand", "LeftHandMiddle3": "LeftHand", "LeftHand_End": "LeftHand",
+    "RightHandMiddle1": "RightHand", "RightHandMiddle2": "RightHand", "RightHandMiddle3": "RightHand", "RightHand_End": "RightHand"
+  },
+  "fold": { "LeftToeBase": "LeftFoot", "RightToeBase": "RightFoot" }
+}

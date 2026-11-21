@@ -111,12 +111,30 @@ go koh && ( HERO=koh CALM="Idle_3=12,0.6 Stand_and_Chat=12 Listening_Gesture=12 
 # JUN (the second follower, plan 4.0 and 4.1; 1.72 m): the same set, his talk the one-handed one.
 go jun && ( HERO=jun WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= \
   one jun 40000 2048 $(T jun lib Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Right_Hand_Open) $(T jun walking Walking) )
-# THE COLLECTOR (plan 4.7; 1.77 m): NOT PREPARED. His body is good and his RIG CAME BACK WRONG (52 joints where a rig
-# with fingers has 66: each hand one piece on its hand bone, one finger chain a hand carrying almost nothing, and
-# eighteen stray bones holding his chest, sides, hips and feet). Stopped there by the rule of v28.0 (no remesh, no
-# takes): RECORD.md section 3 has what was measured and his five ways on, each with its cost. His line,
-# once Chad has picked (the sitting take is 307, Sitting_Answering_Questions):
-#   go collector && ( HERO=collector WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= one collector 40000 2048 $(T collector lib ...) $(T collector walking Walking) )
+# THE COLLECTOR (plan 4.7; 1.77 m). His body is good and his RIG CAME BACK WRONG (52 joints where a rig with fingers has
+# 66: each hand one piece on its hand bone, one finger chain a hand carrying almost nothing, and eighteen stray bones
+# holding his chest, sides, hips and feet): RECORD.md section 3. WAY B, Chad's default (R19, "Keep going"): THE RIG
+# MENDED HERE, AT NO CREDITS (CAST-2, 21 Nov 2026; RECORD.md section 3b):
+#   1. tools/rigmend.mjs: the eighteen stray bones and both finger chains out (52 joints -> 26), each one's share given
+#      to the bone of a man's body it stands in for (people/rigmend-collector.json); his toe bones kept but carrying
+#      nothing (his left toe joint stands mid-shoe); each hand ONE rigid piece, as made (fingers spread, never closing);
+#   2. his takes at no credits, from files already here (Meshy's library takes are the same motion laid on each rig):
+#      tools/retarget.mjs `same` (each bone by its own name, in the world: a Meshy rig to a Meshy rig) with --hips:
+#      Sitting_Answering_Questions (307) from the seated hermit's file (assets/e4hermita.glb, chapter 3's), Idle_3 from
+#      Jun's library file, Talk_with_Hands_Open from Mr Koh's, and his own walk (proved: retargeted onto his mended rig it
+#      is his rig's own walk to 0.0000 degrees, every bone at every key);
+#   3. ONE LEVEL: his full body, every triangle, with every take (assets/p5collector.glb). A near (40,000) and a mid
+#      (8,000) body are each a remesh at Meshy (5 credits): not made (no generation in this pass; his yes first). He
+#      is seated across the table from the player, inside 2.2 m, where an important person is drawn whole (v26.5).
+go collectorrig && ( W=${WORK:-$OUT/collector}; mkdir -p $W
+  node tools/rigmend.mjs $SRC/rigged-collector.glb $SRC/body-collector-full.glb masters/v28.0/people/rigmend-collector.json &&
+  node tools/retarget.mjs assets/e4hermita.glb $SRC/body-collector-full.glb $W/r1.glb Sitting_Answering_Questions same --hips &&
+  node tools/retarget.mjs $SRC/takes-jun-lib.glb $W/r1.glb $W/r2.glb Idle_3 same --hips &&
+  node tools/retarget.mjs $SRC/takes-koh-lib.glb $W/r2.glb $W/r3.glb Talk_with_Hands_Open same --hips &&
+  node tools/retarget.mjs $SRC/takes-collector-walking.glb $W/r3.glb $W/r4.glb "Armature|walking_man|baselayer" same --hips &&
+  node tools/mergetakes.mjs strip $W/r4.glb $SRC/takes-collector-mended.glb $SRC/body-collector-full.glb && rm -f $W/r[1-4].glb )
+go collector && ( LEVELS=none WSMOOTH=0 XSCALE=1000 FINS=1 \
+  one collector full 2048 $(T collector mended Sitting_Answering_Questions,Idle_3,Talk_with_Hands_Open,Walking) )
 # THE NINE (plan 9.2, 5.4): three bodies, one for each kind (the four that COME 1.60 m, the two that HIDE 1.42 m, the
 # three that are HEAVY 1.90 m), each on a PLAIN rig of 24 joints (people/rigplain.sh: no finger bones; plan 13 counts
 # the nine at about 24 joints each), one level each at 16,000 triangles, colour at 1024 (the chapter draws them as

@@ -520,6 +520,28 @@
    "glb": 80793428
   }
  },
+ "hunphayon": {
+  "image": "masters/v28.0/props/refs/hunphayon-2k.png",
+  "image_to_3d": "01a1fcd1-e34d-7109-b7f7-234234c3c8c4",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
  "jun": {
   "credits": 40,
   "expires_at": 1795497893291,
@@ -1099,6 +1121,28 @@
    "glb": 55683000
   }
  },
+ "rakyom": {
+  "image": "masters/v28.0/props/refs/rakyom-2k.png",
+  "image_to_3d": "01a1fcd1-d43a-7360-b0dc-0fe995d262d4",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
  "shoecab": {
   "credits": 40,
   "expires_at": 1795497920006,
@@ -1457,6 +1501,28 @@
   },
   "sizes": {
    "glb": 64724664
+  }
+ },
+ "wuathanu": {
+  "image": "masters/v28.0/props/refs/wuathanu-2k.png",
+  "image_to_3d": "01a1fcd1-c686-7314-8e26-8a7404a11f3b",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
   }
  },
  "zavier": {

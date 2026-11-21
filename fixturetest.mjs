@@ -2714,6 +2714,11 @@ K.hposeFilmHandsBack = await p.evaluate(a0 => { const a = window.__enc.armNow();
    the one that acts. Sanity is never compared live (the fixture's ghost drains it on wall time): what the mode HOLDS is
    compared with what a save would write, and what a retry gives back is read the moment the card hands back */
 await lbl('tag');
+/* (sanity PINNED for the whole block, as every block before it is: her drain runs on wall time, about 0.8 a second, and
+   these checks wait for what they prove, minutes in all. Nothing here tests sanity but the red edge, which sets its own
+   and puts it back, with the pin held off while it looks) */
+await p.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;
+  window.__tagPin = setInterval(() => { if (!window.__noPin && E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
 const tagParts = {};
 const TAG_HELP = `
   const E = window.__enc, kit = E.kit, st = E.stage, F = st.fight;
@@ -2812,10 +2817,10 @@ K.tagOpen = await tagCheckSrc('open', `
     && getComputedStyle(document.querySelector('.cBtn')).display === 'none' && document.getElementById('interact').classList.contains('hide');
   const vm0 = E.vmPasses(); await frames(3);
   R.handsNotDrawn = E.vmPasses() === vm0;
-  const san = E.stats.sanity; E.stats.sanity = 30; await frames(3);
+  const san = E.stats.sanity; window.__noPin = true; E.stats.sanity = 30; await frames(3);
   const pn = document.getElementById('panic');
-  R.noRedEdge = +pn.style.opacity === 0 && !pn.classList.contains('critical');
-  E.stats.sanity = san;
+  R.noRedEdge = +pn.style.opacity === 0 && !pn.classList.contains('critical') && E.stats.sanity < 31;
+  E.stats.sanity = san; window.__noPin = false;
   R.rigSeenBefore = Array.isArray(F.rig0) && F.rig0.length === 16 * 4 + 7 && F.rig0[16 * 4 + 1] === 0 && F.rig0[16 * 4 + 2] === 0 && F.rig0[16 * 4 + 3] === 0;
   const s0 = E.tagSave0(), cd = E.checkpointData();
   R.saveHeld = !!s0 && JSON.stringify(cd.stats) === JSON.stringify(s0.st.stats) && cd.at.x === s0.at.x && cd.at.z === s0.at.z && cd.phase === s0.st.phase;
@@ -3167,7 +3172,7 @@ K.tagLeave = await tagCheckSrc('leave', `
 await tagEval(`kit.take('rifle'); kit.button('nose', null); await frames(2); return true;`);
 K.buttonGone = await tagCheckSrc('buttonGone', `await frames(2); return { gone: !document.querySelector('.cBtn') && E.buttons().length === 0 && !document.body.classList.contains('hasCBtn') };`);
 await p.evaluate((parts) => { window.__tag = parts; }, tagParts);
-await p.evaluate(() => { window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
+await p.evaluate(() => { clearInterval(window.__tagPin); window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;
@@ -3325,7 +3330,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     await pp.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
     await pp.tap('#startBtn');
     await pp.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 180000 });
-    await pp.evaluate(() => { window.__enc.stats.sanity = 100; });
+    await pp.evaluate(() => { const E = window.__enc; E.stats.sanity = 100;      // (pinned, as the desktop block is)
+      setInterval(() => { if (E.stats.sanity < 50) E.stats.sanity = 100; }, 1000); });
     const cdp = await pctx.newCDPSession(pp);
     const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y, id]) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })) });
     const tap = async (x, y, id) => { await touch('touchStart', [[x, y, id]]); await touch('touchEnd', []); };

@@ -180,7 +180,17 @@ const MAP = mapName === 'mixamo'
   ? Object.fromEntries(dst.getRoot().listNodes()
       .filter(n => /^mixamorig/.test(n.getName()))
       .map(n => [n.getName().replace(/^mixamorig\d*:?/, '').replace(/_\d+$/, ''), n.getName()]))   // v21.0: and a NUMBERED prefix (mixamorig9:, a second Mixamo export)
+  : mapName === 'same' ? sameMap()
   : MAPS[mapName];
+/* v28.0 · `same`: a take from one MESHY rig onto another (the collector's mended rig, tools/rigmend.mjs, given the
+   library's takes from Jun's, Mr Koh's and a seated master's files at no credits). Every bone of the target's skin by its
+   own name, matched to the source bone of the SAME name: the `meshy` map is for a Mixamo-named source, and on a Meshy
+   source it pairs the source's top spine bone ('Spine') with the target's lowest ('Spine02'). Opt-in: no other map's
+   path changes. */
+function sameMap() {
+  const skinJ = new Set(dst.getRoot().listSkins().flatMap(s => s.listJoints().map(j => j.getName())));
+  return Object.fromEntries([...skinJ].map(n => [n, n]));
+}
 if (!MAP) { console.error('unknown map: ' + mapName + ' (have: ' + Object.keys(MAPS) + ', mixamo)'); process.exit(1); }
 
 /* the take's animated nodes, by Mixamo core name */
