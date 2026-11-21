@@ -452,7 +452,7 @@
     const hotspots = [hsTon, hsJun,
       { id: 'drain', pos: { x: FLOOR.DRAIN.x, y: 0.9, z: FLOOR.DRAIN.z }, radius: 1.9, prompt: W.hotDrain, markY: 0.1, hits: markHit5(() => ({ x: FLOOR.DRAIN.x, y: 0.05, z: FLOOR.DRAIN.z }), 0.1),
         enabled: () => phase === 'walk' && !play.busy && walk5.drain && !play.found.has('d'), onInteract() { return atDrain(); } },
-      { id: 'gate', pos: SPOT.gate, radius: 2.0, prompt: W.hotGate,
+      { id: 'gate', pos: SPOT.gate, radius: 2.0, prompt: W.hotGate, markY: 0, hits: markHit5(() => ({ x: GATE.x, y: 1.0, z: WALK.turnZ }), 0.12),
         enabled: () => phase === 'walk' && !play.busy && walk5.given >= 0, onInteract() { return atGate(); } },
       stainSpot('s1', HUNT5.s1, 0.9), stainSpot('s2', HUNT5.s2, 0.9), stainSpot('s3', HUNT5.s3, 0.9),
       { id: 'armchair', pos: { x: HUNT5.arm.x, y: 1.0, z: HUNT5.arm.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT, hits: markHit5(() => ({ x: HUNT5.arm.x, y: 0.7, z: HUNT5.arm.z }), 0.1),

@@ -65,6 +65,9 @@ if (PART.includes('walk')) {
   await idle(); await tapMark('jun'); await wait(() => window.__enc.stage.info().heard.includes('ju5w1'), null); await pic('walk-askjun');
   await wait(() => window.__enc.stage.info().heard.includes('ph5w2'), null); await pic('walk-pho-smell');
   await idle(); await frames(4); await pic('walk-follow');
+  if (process.env.WALKFAST) { await at(-7.6, -15.3, Math.PI / 2 + 0.5, 0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
+    await wait(() => window.__enc.stage.snap().story.phase === 'hunt', null); log('walk done (fast)'); }
+  else {
   await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('ph5w3'), null, 60).catch(() => log('  no ph5w3')); await pic('walk-eye-notyet');
   await idle(); await smellNow(); await pic('walk-smell-lift');
   await at(0.2, -7.3, -0.25, -0.42); await smellNow(); await pic('walk-smell-drain');
@@ -74,6 +77,7 @@ if (PART.includes('walk')) {
   await at(-7.6, -15.3, Math.PI / 2 + 0.5, 0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
   await wait(() => window.__enc.stage.snap().story.phase === 'hunt', null);
   log('walk done');
+  }
 }
 if (PART.includes('hunt')) {
   if (!PART.includes('walk')) { await p.evaluate(() => window.__enc.stage.setPhase('hunt')); }

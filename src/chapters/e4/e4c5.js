@@ -8333,11 +8333,10 @@
         ],
         played: 'pho', targets: fsMarks, onAct: fsOnAct }));
       FS5.mode = ok; FS5.fallback = !ok;
-      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9);
-        /* (the run is held with him in first person, where a Continue lands; then, while the brief stands and the mode is
-           not yet live, the view is the boom behind his teacher, the picture the preparation ends on and START keeps: the
-           engine derives the boom from the bodies only once the mode is live, and holds whatever stands meanwhile) */
-        const B = boomAt({ x: F.pho.x, z: F.pho.z }); yaw.position.set(B.eye[0], B.eye[1], B.eye[2]); yaw.rotation.y = B.heading; pitch.rotation.x = B.pitch; }
+      /* (the run is held with him in first person, where a Continue lands; the mode's opening puts the lens on the boom
+         behind his teacher at once (tagOpen's own rig), so the brief stands over the picture START keeps. A second boom
+         laid on here doubled it: the lens 3 m behind the court's gate, measured, and taken back out) */
+      if (ok) { FS5.lastT = kit.tagState().t; fsHud(); kit.tagCount(9, 9); }
       return ok;
     }
     /* THE BRIEF (v8.7, v18.2: instructions first, the mode's own picture under its title, START): nothing moves until START */
@@ -8458,7 +8457,7 @@
     const threads = [];
     let thRng = rng(28701);
     /* the colours: the true smell grey-black; the drain's brown; the pieces' smoke grey */
-    const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.30, 0.20, 0.09, 0.8], smoke: [0.14, 0.13, 0.12, 0.7] };
+    const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.16, 0.09, 0.03, 0.85], smoke: [0.14, 0.13, 0.12, 0.7] };
     /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
        and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
     const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];
@@ -9401,7 +9400,7 @@
     const hotspots = [hsTon, hsJun,
       { id: 'drain', pos: { x: FLOOR.DRAIN.x, y: 0.9, z: FLOOR.DRAIN.z }, radius: 1.9, prompt: W.hotDrain, markY: 0.1, hits: markHit5(() => ({ x: FLOOR.DRAIN.x, y: 0.05, z: FLOOR.DRAIN.z }), 0.1),
         enabled: () => phase === 'walk' && !play.busy && walk5.drain && !play.found.has('d'), onInteract() { return atDrain(); } },
-      { id: 'gate', pos: SPOT.gate, radius: 2.0, prompt: W.hotGate,
+      { id: 'gate', pos: SPOT.gate, radius: 2.0, prompt: W.hotGate, markY: 0, hits: markHit5(() => ({ x: GATE.x, y: 1.0, z: WALK.turnZ }), 0.12),
         enabled: () => phase === 'walk' && !play.busy && walk5.given >= 0, onInteract() { return atGate(); } },
       stainSpot('s1', HUNT5.s1, 0.9), stainSpot('s2', HUNT5.s2, 0.9), stainSpot('s3', HUNT5.s3, 0.9),
       { id: 'armchair', pos: { x: HUNT5.arm.x, y: 1.0, z: HUNT5.arm.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT, hits: markHit5(() => ({ x: HUNT5.arm.x, y: 0.7, z: HUNT5.arm.z }), 0.1),

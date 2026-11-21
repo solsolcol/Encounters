@@ -94,7 +94,7 @@
     const threads = [];
     let thRng = rng(28701);
     /* the colours: the true smell grey-black; the drain's brown; the pieces' smoke grey */
-    const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.30, 0.20, 0.09, 0.8], smoke: [0.14, 0.13, 0.12, 0.7] };
+    const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.16, 0.09, 0.03, 0.85], smoke: [0.14, 0.13, 0.12, 0.7] };
     /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
        and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
     const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];

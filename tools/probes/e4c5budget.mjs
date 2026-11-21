@@ -12,6 +12,8 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c5budget.json';
+/* (counted once: a count already written is not made again unless FORCE=1) */
+if (fs.existsSync(OUT) && process.env.FORCE !== '1') { console.log('already counted: ' + OUT); process.exit(0); }
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
