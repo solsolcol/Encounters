@@ -1475,6 +1475,8 @@ dcf2b356ce3c8530f2824af3852dfbda99dc6387e966cdcbaf8eeab9e64a3df9  masters/v28.0/
 0bf2a0ffe2e5bb3e88f250ce546bc9861c8184140fbfc498c232256bd55063a3  masters/v28.0/src/original-ceilfan.glb
 f875f91b96285afc6af2109199a90e6839a06032fd6f2b465be5910b1e86d502  masters/v28.0/src/original-clothtable.glb
 f261aa843835999837b0140d7e3859d49bb5dcaebb10cb909ea78fb124955f48  masters/v28.0/src/original-collector.glb
+a4454ae7cc95eddbad4be8d72423f4824682c9e7a30eb2b58f07288d4624493d  masters/v28.0/src/original-curtain.glb
+b2178a1d189968bc0202acbc7b660bdb2d56cd7b245d5a5a252aa4c5e4f563c5  masters/v28.0/src/original-cushion.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
