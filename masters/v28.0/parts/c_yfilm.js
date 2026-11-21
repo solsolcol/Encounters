@@ -1055,8 +1055,10 @@
             if (q.fx) q.fx.set('uAlpha', 1 - u); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
-        const vv = ENDS5[k].vis ? ENDS5[k].vis(E) : [r0 + RT.see, r0 + RT.unsee];
-        fmVision(t, vv[0], 1.8, vv[1], 1.4);
+        /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
+           there to the rite's end, every face of the talk was the vision's dark negative of a bright room: endC-00009) */
+        const vv = ENDS5[k].vis ? ENDS5[k].vis(E) : null;
+        if (vv && t < vv[1] + 1.5) fmVision(t, vv[0], 1.8, vv[1], 1.4); else fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
         /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
@@ -1188,7 +1190,7 @@
            things: (t, E) => { threeAt5(t < E.across ? smo(c01((t - E.three) / 1.4)) : 1);
              const packed = t >= E.pack && t < E.across; for (const p of PIECES5.list) p.g.visible = p.g.visible && !packed;
              SMALL5.set(t >= E.see && t < E.across ? smo(c01((t - E.see - 0.6) / 1.2)) : 0, t); },
-           vis: (E) => [E.see, E.rite + RT5.unsee] },
+           vis: (E) => [E.see, E.ph5C1 + 0.2] },
       /* D · "Keep the holy ones. The Yin ones are the trouble." (worst): his face clears, he knows a man, twenty by
          Friday, already counting on his fingers; his teacher does not laugh, quite: to him, then to the student; the
          collector's hand comes down from his counting; the rite; his own thought */

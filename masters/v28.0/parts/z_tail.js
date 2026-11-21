@@ -274,6 +274,7 @@
         sfx(E.pack + 0.15, 'u5foam', 0.7); sfx(E.pack + 0.75, 'u5foam', 0.6);  // the seventeen fitted back into their foam
         sfx(E.see, 'u5vison', 0.8);                                            // his sight opened on the case
         sfx(E.see + 1.3, 'u5pcwarm', 0.4);                                     // something small his nose never caught lifts its head
+        sfx(E.ph5C1 + 0.2, 'u5visoff', 0.7);                                   // his sight shut again for the talk
         sfx(E.ph5C1, 'ph5C1', 1); sfx(E.co5C2, 'co5C2', 1); sfx(E.ph5C2, 'ph5C2', 1);
         sfx(E.across + 0.2, 'u5slide', 0.7);                                   // all twenty go across
         sfx(E.q5C1, 'q5C1', 1);
@@ -289,7 +290,7 @@
       /* THE RITE (RT5 from r0): his sight held open (ending C's is open already); the fan dipped and thrown every 2.2 s,
          its whisk and the water falling on the pieces; the presences crying out and coming away; his sight shut; the
          pieces gathered into the bag on a cut; the white string wound and knotted; the heaviness lifting */
-      if (k !== 'C') sfx(r0 + R.see, 'u5vison', 0.8);
+      sfx(r0 + R.see, 'u5vison', 0.8);
       sfx(r0 + R.see + 0.5, 'u5heart', 0.5); sfx(r0 + R.see + 1.2, 'u5heart', 0.5);
       sfx(r0 + R.dip + 0.35, 'u5whisk1', 0.7); sfx(r0 + R.dip + 0.95, 'u5drops', 0.6);
       sfx(r0 + R.dip + 2.55, 'u5whisk2', 0.7); sfx(r0 + R.dip + 3.15, 'u5drops', 0.6);
