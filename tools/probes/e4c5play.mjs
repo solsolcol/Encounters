@@ -66,6 +66,8 @@ if (PART.includes('walk')) {
   await wait(() => window.__enc.stage.info().heard.includes('ph5w2'), null); await pic('walk-pho-smell');
   await idle(); await frames(4); await pic('walk-follow');
   if (process.env.WALKFAST) { await at(-7.6, -15.3, Math.PI / 2 + 0.5, 0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
+    /* the devotee's film: skipped as a player may, past its 3 s (testlib's toPlay: its key) */
+    await wait(() => window.__enc.getState() === 'cine', null, 400).catch(() => {}); await toPlay(p, 1500000);
     await wait(() => window.__enc.stage.snap().story.phase === 'hunt', null); log('walk done (fast)'); }
   else {
   await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('ph5w3'), null, 60).catch(() => log('  no ph5w3')); await pic('walk-eye-notyet');
