@@ -107,6 +107,60 @@
     const fsReach = (() => { const m = new THREE.Mesh(fsQuad, fsGroundMat(null, FS_COL.pale, true)); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; })();
     /* where a Prai presses his cage's bars: a violet flare on the bars, flickering */
     const fsPress = [0, 1, 2].map(() => fsSprite(FS_COL.violet, true, 5));
+    /* THE SPARKS AND MOTES: one cloud of points for every glint the fight throws (the fire's sparks and its burst where it
+       lands, the gold's motes gathering into his shoulders and riding the wheel, its burst as it goes out, the bubbles'
+       violet motes and the bind's burst, the bars' flicker where a Prai presses), ONE draw: each point a soft round light,
+       hot at its heart, additive, sized in metres on the screen's own scale (chapter 1's points, e4c1's pxScale). Dealt
+       from a ring of 360; the oldest goes when it is full; a spark that falls to the paving skips and dies there */
+    const FS_PN = 360;
+    const fsPts = (() => {
+      const g = new THREE.BufferGeometry(), pos = new Float32Array(FS_PN * 3), col = new Float32Array(FS_PN * 3), siz = new Float32Array(FS_PN), alp = new Float32Array(FS_PN);
+      const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
+      g.setAttribute('position', at(pos, 3)); g.setAttribute('aC', at(col, 3)); g.setAttribute('aS', at(siz, 1)); g.setAttribute('aA', at(alp, 1));
+      g.setDrawRange(0, 0); owned.push(g);
+      const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uScale: { value: 500 } },
+        vertexShader: 'attribute vec3 aC; attribute float aS; attribute float aA; varying vec3 vC; varying float vA; uniform float uScale; void main(){ vC = aC; vA = aA; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+        fragmentShader: 'varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float f = pow(1.0 - d, 1.7); gl_FragColor = vec4(vC + vec3(pow(1.0 - d, 6.0) * 0.75), vA * f); }' });
+      mats.push(m);
+      const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.renderOrder = 7; FSG.add(pts);
+      const P = Array.from({ length: FS_PN }, () => ({ on: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, age: 0, life: 1, s0: 0.05, s1: 0.02, c: new THREE.Color(), a0: 1, drag: 0, grav: 0, to: null }));
+      return { g, m, pts, pos, col, siz, alp, P, cur: 0 };
+    })();
+    const _fsCol = {}; const fsC = (hex) => _fsCol[hex] || (_fsCol[hex] = new THREE.Color(hex));
+    function fsSpark(x, y, z, o) {
+      const S = fsPts; let p = null;
+      for (let i = 0; i < FS_PN; i++) { const q = S.P[(S.cur + i) % FS_PN]; if (!q.on) { p = q; S.cur = (S.cur + i + 1) % FS_PN; break; } }
+      if (!p) { p = S.P[S.cur]; S.cur = (S.cur + 1) % FS_PN; }
+      p.on = true; p.x = x; p.y = y; p.z = z; p.vx = o.vx || 0; p.vy = o.vy || 0; p.vz = o.vz || 0; p.age = 0; p.life = Math.max(0.05, o.life || 0.5);
+      p.s0 = o.s0 || 0.06; p.s1 = o.s1 != null ? o.s1 : p.s0 * 0.35; p.c.copy(fsC(o.col || FS_COL.pale)); p.a0 = o.a != null ? o.a : 1;
+      p.drag = o.drag != null ? o.drag : 1.5; p.grav = o.grav != null ? o.grav : -3; p.to = o.to || null;
+    }
+    /* a burst out from a point: `up` the least rise (0 flat, 1 straight up), `sp` its speed, `mix` the share in the second colour */
+    function fsBurst(x, y, z, n, o) {
+      const r = FS5.srand || Math.random;
+      for (let i = 0; i < n; i++) { const th = r() * Math.PI * 2, ph = Math.asin(Math.min(1, (o.up != null ? o.up : 0.25) + r() * (1 - (o.up != null ? o.up : 0.25)))), sp = (o.sp || 2) * (0.45 + 0.55 * r());
+        fsSpark(x, y, z, { vx: Math.cos(th) * Math.cos(ph) * sp, vy: Math.sin(ph) * sp, vz: Math.sin(th) * Math.cos(ph) * sp, life: (o.life || 0.6) * (0.6 + 0.4 * r()),
+          s0: (o.s0 || 0.07) * (0.7 + 0.6 * r()), col: o.col2 != null && r() < (o.mix || 0) ? o.col2 : o.col, grav: o.grav, drag: o.drag, a: o.a }); }
+    }
+    function fsPtsFrame(wdt) {
+      const S = fsPts; let hi = 0;
+      S.m.uniforms.uScale.value = Math.min(devicePixelRatio || 1, LOW ? 1.6 : 2) * innerHeight / (2 * Math.tan(camera.fov * Math.PI / 360));
+      for (let i = 0; i < FS_PN; i++) {
+        const p = S.P[i];
+        if (p.on && wdt > 0) { p.age += wdt; if (p.age >= p.life) p.on = false; }
+        if (!p.on) { S.siz[i] = 0; S.alp[i] = 0; continue; }
+        if (wdt > 0) { const dk = Math.exp(-p.drag * wdt); p.vx *= dk; p.vz *= dk; p.vy = p.vy * dk + p.grav * wdt;
+          if (p.to) { const k = 1 - Math.exp(-p.to.k * wdt); p.x += (p.to.x - p.x) * k; p.y += (p.to.y - p.y) * k; p.z += (p.to.z - p.z) * k; }
+          p.x += p.vx * wdt; p.y += p.vy * wdt; p.z += p.vz * wdt;
+          if (p.y < 0.02) { p.y = 0.02; p.vy *= -0.25; p.vx *= 0.5; p.vz *= 0.5; p.life = Math.min(p.life, p.age + 0.12); } }
+        const u = p.age / p.life, a = p.a0 * Math.min(1, u / 0.12) * Math.pow(1 - u, 1.3);
+        S.pos[i * 3] = p.x; S.pos[i * 3 + 1] = p.y; S.pos[i * 3 + 2] = p.z; S.col[i * 3] = p.c.r; S.col[i * 3 + 1] = p.c.g; S.col[i * 3 + 2] = p.c.b;
+        S.siz[i] = p.s0 + (p.s1 - p.s0) * u; S.alp[i] = a; hi = i + 1;
+      }
+      S.g.setDrawRange(0, hi);
+      for (const k of ['position', 'aC', 'aS', 'aA']) S.g.attributes[k].needsUpdate = true;
+    }
+    function fsPtsClear() { for (const p of fsPts.P) p.on = false; fsPts.g.setDrawRange(0, 0); }
 
     /* ---------------------------------------------------------------- THE BUTTONS' PICTURES (drawn things, each in its
        act's own colour so a phone reads the act at a glance; no person is drawn: v21.16) */

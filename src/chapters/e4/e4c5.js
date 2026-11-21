@@ -6113,12 +6113,9 @@
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
-        // AN ACT SPENT ON NOTHING (Chad's R21: "A button masher should not win so easily"): each costs something he can see
-        smellCost: 0,                         // his sanity, for a SMELL opened with nothing hidden (they feel him open)
-        fireSpent: 0,                         // the fire's wait after a ball that found nothing (an empty landing, a slip, a stale cloud)
-        idleLock: 0,                          // the switch's lock when the one played did nothing at all since he arrived
-        lendLapse: -1,                        // the cage's strength when a lend runs out with the gold never loosed under it
-        lockLongest: 0.8,                     // the longest lock (the ordinary one, or the idle one)
+        // A SMELL OPENED FOR NOTHING COSTS HIM (Chad's R21: "A button masher should not win so easily"): with nothing hidden,
+        // they feel him open, and it costs his sanity, seen on its bar (and said once: ph5fg)
+        smellCost: 4,
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
         drawSecs: 3.0, drawPace: 2.5, drawWear: 3.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
@@ -6138,7 +6135,6 @@
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
         needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0, holdLate: 30.0,
-        calmLong: 0, calmNear: 2.0,           // a lesson longer than calmLong seconds waits for a calm court (nothing within calmNear)
         // THE FRAME: no step moves the fight more than this (a slow phone gets a slower fight, never a jump)
         dtMax: 0.1
       };
@@ -6170,7 +6166,7 @@
       /* the fight's own stages (the plan's 5.5: the lesson, the fight, the surge, the Naga, the last three); and the
          fight's own timed things, each with the number that bounds it */
       const STAGES = ['brief', 'learn', 'fight', 'surge', 'naga', 'last', 'lost', 'won'];
-      const TIMED = { wind: 'windSecs', lend: 'lendLongest', lock: 'lockLongest', fill: 'togetherSecs', naga: 'filmGuard' };
+      const TIMED = { wind: 'windSecs', lend: 'lendLongest', lock: 'switchLock', fill: 'togetherSecs', naga: 'filmGuard' };
 
       /* ------------------------------------------------------------------ THE WORDS SAID (keys of masters/v28.0/script/
          lines.json; the words are there, never here). A NEED's three wordings by who is played: the first, other words,
@@ -6258,9 +6254,8 @@
         const n = Object.assign({}, NUM, o.num || {});
         const s0 = Number.isFinite(o.sanity) ? Math.max(0, Math.min(100, o.sanity)) : 100;
         const st = {
-          v: 2, n, stage: 'brief', t: 0, stageT: 0, who: 'pho', lock: 0, lockUntil: 0, lockLen: 0, drawT: 0,
-          owe: 0, acted: true, lendGold: false,   // a one-off cost to his sanity; whether the one played has done anything since he
-                                                  // arrived; whether the gold was loosed under the cage lent
+          v: 2, n, stage: 'brief', t: 0, stageT: 0, who: 'pho', lock: 0, lockUntil: 0, drawT: 0,
+          owe: 0,                                 // a one-off cost to his sanity, taken where the drain is
           left: 9, losses: 0, lead: false,
           sanity: s0, open: s0, raised: false, preSurge: 0, guard: Math.max(0, Math.min(0.9, +o.guard || 0)),
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, wind: 0, ring: null, draw: 0 },
@@ -6272,8 +6267,7 @@
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
           stats: { fires: 0, chased: 0, slipped: 0, binds: 0, smells: 0, lends: 0, waves: 0, broken: 0, bags: 0, byWave: 0,
-                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0,
-                   emptySmell: 0, spent: 0, idle: 0, lapses: 0 },
+                   switches: 0, refused: 0, stale: 0, rose: 0, drained: 0, breaks: 0, lines: 0, length: 0, emptySmell: 0 },
           ev: []
         };
         st.prai.push(fresh(1, 'come'));
@@ -6339,7 +6333,7 @@
           if (!due) return;
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
-        } else if ((qp >= 2 || (qp >= 0 && !due)) && (calmOk(st, v.q[best].key, io) || v.q[best].prio < 2)) { key = v.q[best].key; v.q.splice(best, 1); }
+        } else if (qp >= 2 || (qp >= 0 && !due)) { key = v.q[best].key; v.q.splice(best, 1); }
         else if (due) {
           const words = NEEDLINES[id][isP(st) ? 'pho' : 'zav'], c = v.count[id] || 0;
           key = words[Math.min(c, words.length - 1)]; v.count[id] = c + 1; fromNeed = true;
@@ -6351,22 +6345,6 @@
         st.stats.lines++;
         st.ev.push({ e: 'say', key, need: fromNeed ? id : '' });
         if (key === 'ko5c1') sayOnce(st, 'tn5c1', 3.0);          // Ton answers Mr Koh
-      }
-
-      /* a long lesson waits for a calm court: one that would still be speaking when a Prai could reach him does not begin
-         while one is at him, at his bars, or near him unseen or shown, or while his cage is lent (a seven-second line begun
-         in such a moment left the next order unsaid, and the careful player lost the last hold for it) */
-      function calmOk(st, key, io) {
-        const n = st.n, z = st.zav;
-        if (!(n.calmLong > 0) || st.stage !== 'fight') return true;
-        const secs = (io && io.secs ? +io.secs(key) : 0) || 2.5;
-        if (secs <= n.calmLong) return true;
-        if (st.cage.lent > 0) return false;
-        for (const p of st.prai) {
-          if (atHim(p) || p.st === 'pressing' || p.st === 'rushing') return false;
-          if ((p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || p.st === 'coming') && dist(z.x, z.z, p.x, p.z) < n.calmNear) return false;
-        }
-        return true;
       }
 
       /* ------------------------------------------------------------------ what can be pressed, and why not (the HUD and
@@ -6485,21 +6463,16 @@
         const w = why(st, act);
         if (w) { refuse(st, act, w); return; }                    // (the game's buttons never send such a press: v21.28)
         const n = st.n, ph = st.pho, z = st.zav;
-        if (PHO_ACTS[act] || ZAV_ACTS[act]) st.acted = true;
         switch (act) {
           case 'START': begin(st); return;
           case 'RETRY': case 'LEAD': beginFight(st, act === 'LEAD'); return;
           case 'FILMDONE': layThree(st); return;
           case 'TOGETHER': st.together = n.togetherSecs; st.ev.push({ e: 'together' }); return;
-          case 'SWITCH': {
-            // a switch away from one who did nothing at all since he arrived is a switch spent on nothing: a longer lock
-            const lk = !st.acted && n.idleLock > 0 && st.stage === 'fight' ? n.idleLock : n.switchLock;
-            if (lk > n.switchLock) { st.stats.idle++; sayOnce(st, 'ph5fk'); }
-            st.who = isP(st) ? 'zavier' : 'pho'; st.lock = lk; st.lockLen = lk; st.lockUntil = st.t + lk; st.stats.switches++; st.acted = false;
+          case 'SWITCH':
+            st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
-            st.ev.push({ e: 'switch', to: st.who, lock: lk });
+            st.ev.push({ e: 'switch', to: st.who });
             return;
-          }
           case 'FIRE': {
             ph.fireWait = n.fireWait; st.stats.fires++;
             let target = null, cloud = 0;
@@ -6522,7 +6495,6 @@
           }
           case 'SHOCKWAVE':
             ph.wind = n.windSecs; st.stats.waves++;
-            if (st.cage.lent > 0) st.lendGold = true;
             if (st.cage.lent > 0) st.cage.lent = Math.max(st.cage.lent, n.windSecs + n.ringMax / n.ringSpeed + n.lendAfter);   // it stands until the gold is out
             st.ev.push({ e: 'windup' });
             for (const p of st.prai) if (seenFree(p)) { p.was = p.st; p.stop = 0; setSt(st, p, 'rushing', 'the gold gathers'); }
@@ -6554,13 +6526,13 @@
             st.ev.push({ e: 'smell', found: k });
             if (!k && st.stage === 'fight') {                       // opened for nothing, he draws them on: faster and harder, a while
               st.drawT = n.drawSecs; st.ev.push({ e: 'drawn', secs: n.drawSecs });
-              if (n.smellCost > 0) { st.owe += n.smellCost; st.stats.emptySmell++; }   // and they felt him open: it costs him
+              if (n.smellCost > 0) { st.owe += n.smellCost; st.stats.emptySmell++; }
               sayOnce(st, 'ph5fg');                                 // "Do not open yourself for nothing. They feel it."
             }
             return;
           }
           case 'LEND':
-            st.cage.lent = n.lendSecs; st.stats.lends++; st.lendGold = false;
+            st.cage.lent = n.lendSecs; st.stats.lends++;
             for (const p of st.prai) if (p.st === 'pressing') { p.gath = n.gather; p.at = 2; setSt(st, p, 'through', 'the cage is lent'); }
             st.ev.push({ e: 'lend' });
             return;
@@ -6588,8 +6560,8 @@
         for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
         st.left = 8; st.lead = !!lead;
         st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0;
-        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1;
-        st.owe = 0; st.acted = true; st.lendGold = false;   // (a breath taken for nothing in the lost fight is not carried into the next)
+        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1; st.owe = 0;
+        // (a breath taken for nothing in the lost fight, and what it cost, are not carried into the next)
         const ph = st.pho, z = st.zav;
         ph.wind = 0; ph.ring = null; ph.draw = 0; ph.fireWait = 0; ph.aiWait = n.aiFireWait;
         ph.waveWait = n.waveWait; z.bindWait = 0; z.smellWait = 0;
@@ -6753,7 +6725,7 @@
       }
       function land(st, f) {
         const n = st.n;
-        if (f.cloud) { st.stats.stale++; spentFire(st, f); st.ev.push({ e: 'land', id: 0, result: 'stale', x: f.x, z: f.z }); sayOnce(st, 'q5c3'); return; }
+        if (f.cloud) { st.stats.stale++; st.ev.push({ e: 'land', id: 0, result: 'stale', x: f.x, z: f.z }); sayOnce(st, 'q5c3'); return; }
         const p = f.id ? st.prai[f.id - 1] : null;
         let result = 'empty';
         if (p && f.ai) {
@@ -6770,13 +6742,7 @@
             if (st.stage === 'learn') sayOnce(st, 'ph5f2');
           }
         }
-        if (result === 'empty' || result === 'slipped') spentFire(st, f);
         st.ev.push({ e: 'land', id: f.id, result, x: f.x, z: f.z });
-      }
-      function spentFire(st, f) {                                // a ball that found nothing: the fire is slower to gather again
-        const n = st.n;
-        if (f.ai || !(n.fireSpent > 0) || st.stage !== 'fight') return;
-        st.pho.fireWait = Math.max(st.pho.fireWait, n.fireSpent); st.stats.spent++;
       }
       function flightsTick(st, dt) {
         let w = 0;
@@ -6992,13 +6958,7 @@
         if (c.lent > 0) {
           timed(st, 'lend', n.lendSecs - c.lent + dt);
           c.lent -= dt;
-          if (c.lent <= 0) {
-            c.lent = 0; st.ev.push({ e: 'lendEnd' });
-            if (!st.lendGold && n.lendLapse >= 0 && c.str > n.lendLapse && st.stage === 'fight') {   // lent for nothing: it comes back thin
-              c.str = n.lendLapse; st.stats.lapses++; st.ev.push({ e: 'lendLapse', to: c.str });
-              if (c.str <= 0) { c.str = 0; c.broken = true; st.stats.breaks++; st.ev.push({ e: 'cageBreak' }); }
-            }
-          }
+          if (c.lent <= 0) { c.lent = 0; st.ev.push({ e: 'lendEnd' }); }
           return;                                                 // round his teacher it is neither worn nor mended
         }
         let pressing = 0, busy = false;
@@ -7170,7 +7130,7 @@
         st.t += dt; st.stageT += dt;
         // the waits run on whoever is played (the switch is rewarded: what one began goes on while the other works)
         const ph = st.pho, z = st.zav;
-        if (st.lock > 0) { st.lock = st.lockUntil - st.t; if (!(st.lock > 1e-9)) st.lock = 0; timed(st, 'lock', st.lockLen - st.lock); }
+        if (st.lock > 0) { st.lock = st.lockUntil - st.t; if (!(st.lock > 1e-9)) st.lock = 0; timed(st, 'lock', n.switchLock - st.lock); }
         if (st.drawT > 0) st.drawT = Math.max(0, st.drawT - dt);
         if (ph.fireWait > 0) ph.fireWait = Math.max(0, ph.fireWait - dt);
         if (z.bindWait > 0) z.bindWait = Math.max(0, z.bindWait - dt);
@@ -7227,7 +7187,7 @@
           second: btn('second', s.second, st.stage === 'fight' ? (P ? st.seen.shock : st.seen.smell) : (st.stage === 'learn' && !P && st.seen.smell)),
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
-                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lockLen > 0 ? Math.min(1, st.lock / st.lockLen) : 0, pulse: !!(nd && nd.act === 'SWITCH') },
+                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },
           together: { shown: st.stage === 'surge', live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
           retry: { shown: st.stage === 'lost', lead: st.stage === 'lost' && st.losses >= 3 },
           bubbles: bubbles(st)
@@ -9475,7 +9435,9 @@
       return { g, set(i) { g.visible = i >= 0; nums.forEach((q, j) => { q.visible = j === i; }); } };
     })();
     /* the lift car's own places (LIFT: x -0.8..0.8, z 1.35..2.85; its doors at z 1.26, in the walkway's end wall) */
-    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.70], ton: [-0.44, 2.10], jun: [0.45, 2.16] };
+    /* (Jun and Ton a step forward of him, 0.85 to 0.95 m off, each half-turned to speak back to him: at 0.56 m Jun filled
+       the phone's frame edge as a face looking up past the lens: open-phone film-00011, 21 Nov) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.5, 1.85], jun: [0.5, 1.9] };
 
     /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
        draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
@@ -9668,14 +9630,14 @@
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
           if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI); fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
-            lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85); }
+            lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry);
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
           STICK5.carry(P); });
         /* Jun, at his right, the duffel in his hand: his line, then out last before him */
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
           if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI); fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
-            lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85); }
+            lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry);
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
@@ -9689,10 +9651,10 @@
           { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
-          { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
-          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
-          { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
-          { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
+          { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
+          { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
           { t: T.chime, name: 'doors', eye: CAR5.eye, at: [0.03, 1.45, 0.6], fp: 70, fd: 60 },
           { t: T.step, name: 'doors', eye: CAR5.eye, at: [0.02, 1.48, -2.0], fp: 70, fd: 60 },
           /* (his two steps out, one move at a walk's pace: 2.3 m over 1.9 s; a key between them made it stop and lurch, the
@@ -9729,23 +9691,33 @@
     function handHold5(P, sd, g, off, o = {}) {
       const hb = boneOf(P, sd + 'Hand'); if (!hb || !g) return off;
       if (!off && !g.userData.model) return off;                               // (not landed yet: its size is not known, nothing is kept)
+      /* A THING THAT HANGS OR STANDS IN A HAND (a staff carried upright, a bag by its handles) keeps itself upright, turned
+         with the body, its grip at the palm's middle: it goes where the hand goes and never takes the hand's swing (laid on the
+         hand bone, the wrapped staff swung 35 degrees off upright with every step: open-phone film-024_5, 21 Nov). Only a
+         thing worked by the hand (the fan, `base`) turns with it */
+      const world5 = !!o.upright || o.base == null;
       if (!off) {
         const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
         const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;
         const R0 = o.rest || ['Idle_3', 2.0]; pose(P, R0[0], R0[1], true); P.group.updateWorldMatrix(true, true);
         const pm = palmOf(P, sd, _hhA);
-        let pos, q;
         /* (upright: its length, which lies along its own x, stood up by a quarter turn about z, and raised so that its LOWEST
            point is `foot` over the floor: the wrapped staff's file is centred on its length (x -0.75 .. 0.75), so stood up from
            its middle half of it was under the paving, and the photographs showed a stump from the floor to his hand) */
-        if (o.upright) { const bx = localBox5(g); pos = new THREE.Vector3(pm.x, (o.foot != null ? o.foot : 0.04) - (bx ? bx.min.x : 0), pm.z); q = _hhQ.setFromEuler(new THREE.Euler(0, gr + (o.ry || 0), Math.PI / 2, 'YXZ')); }
-        else if (o.base != null) { pos = new THREE.Vector3(pm.x, pm.y - o.base, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
-        else { const was = g.visible; g.visible = true; g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(g, true), hgt = bb.isEmpty() ? 0.3 : bb.max.y - bb.min.y; g.visible = was;
-          pos = new THREE.Vector3(pm.x, pm.y - (o.hang || 0) - hgt, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
-        _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
-        off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM);
+        if (o.upright) { const bx = localBox5(g); off = { grip: pm.y - ((o.foot != null ? o.foot : 0.04) - (bx ? bx.min.x : 0)) }; }
+        else if (world5) { const bx = localBox5(g), hgt = bx ? bx.max.y - bx.min.y : 0.3; off = { grip: (o.hang || 0) + hgt + (bx ? bx.min.y : 0) }; }
+        else { const pos = new THREE.Vector3(pm.x, pm.y - o.base, pm.z), q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0));
+          _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
+          off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM); }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.w[k] = keep[k][1]; P.acts[k].setEffectiveWeight(keep[k][1]); }
         P.cur = cur; P.filmT = ft; P.group.position.copy(gp); P.group.rotation.y = gr; P.mixer.update(0);
+      }
+      if (world5) {
+        if (g.parent !== world) world.attach(g);
+        P.group.updateWorldMatrix(true, true); const pm = palmOf(P, sd, _hhA); if (!pm) return off;
+        g.position.set(pm.x, pm.y - off.grip, pm.z);
+        if (o.upright) g.rotation.set(0, P.group.rotation.y + (o.ry || 0), Math.PI / 2, 'YXZ'); else g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0);
+        g.visible = true; return off;
       }
       if (g.parent !== hb) hb.add(g);
       off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
