@@ -19,7 +19,11 @@ metadata stripped."""
 import json, os, shutil, subprocess, sys, tempfile
 import numpy as np
 R = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(R, '..', '..', '..'))
-A = os.path.join(ROOT, 'assets', 'audio'); O = os.path.join(ROOT, 'assets', 'audio-opus'); M = os.path.join(ROOT, 'masters')
+# (the lead's rule: encode into a scratch folder, OUT=<dir> with audio/ and audio-opus/ in it, then move the batch into
+#  assets/ and save it in the same step; with no OUT, assets/ itself. A copy's source is read from assets/ always)
+SA = os.path.join(ROOT, 'assets', 'audio'); SO = os.path.join(ROOT, 'assets', 'audio-opus')
+OUT = os.environ.get('OUT'); A = os.path.join(OUT, 'audio') if OUT else SA; O = os.path.join(OUT, 'audio-opus') if OUT else SO
+os.makedirs(A, exist_ok=True); os.makedirs(O, exist_ok=True); M = os.path.join(ROOT, 'masters')
 PICKS = json.load(open(os.path.join(R, 'picks.json'))); only = set(sys.argv[1:])
 HARM = "[0:a]asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0"
 TMP = tempfile.mkdtemp(prefix='u5enc_', dir=os.environ.get('TMPDIR', '/tmp'))
@@ -72,8 +76,8 @@ for n, o in PICKS.items():
     k = o['kind']; src = os.path.join(R, 'raw', o['take'] + '.mp3') if o.get('take') else None
     af = o.get('af'); fc = HARM if o.get('harm') else None
     if k == 'copy':
-        shutil.copyfile(os.path.join(A, o['from'] + '.mp3'), os.path.join(A, n + '.mp3'))
-        shutil.copyfile(os.path.join(O, o['from'] + '.ogg'), os.path.join(O, n + '.ogg')); print(f'{n:14s} copy of {o["from"]}')
+        shutil.copyfile(os.path.join(SA, o['from'] + '.mp3'), os.path.join(A, n + '.mp3'))
+        shutil.copyfile(os.path.join(SO, o['from'] + '.ogg'), os.path.join(O, n + '.ogg')); print(f'{n:14s} copy of {o["from"]}')
     elif k == 'fx': fx(n, src, o.get('level', -14), af, fc)
     elif k == 'loop': fx(n, src, o.get('level', -14), af, fc, loop=True)
     elif k == 'bed': bed(n, src, fc=fc)
