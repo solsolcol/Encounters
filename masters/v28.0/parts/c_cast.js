@@ -300,6 +300,22 @@
       const mRing = new THREE.MeshBasicMaterial({ map: ringTex, color: COL, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mRing);
       const gRing = new THREE.PlaneGeometry(2.7 * R, 2.7 * R); gRing.rotateX(-Math.PI / 2); owned.push(gRing);
       const ring = add(new THREE.Mesh(gRing, mRing)); ring.position.y = 0.012; g.add(ring);
+      /* R25 (Chad: "zavier's cage you can make the light pillars of his cage spin around him in a circular motion to make it
+         look more defensive"): asked with `spin` (radians a second), the bars TURN ROUND HIM at that pace, eased to it and
+         from it over a third of a second, each drawing a wake of its own violet behind it round the circle (an arc of the
+         cage's own wall, a third of a radian, brightest at the bar and gone at its end, soft at its top and foot), as
+         bright as the turn is fast. Without `spin`, its slow turn exactly as it was (a bar a 9 s) and no wake drawn */
+      const wakeTex = (() => { const [c, x] = canvas(128, 64); const gr = x.createLinearGradient(0, 0, 128, 0);
+        gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.65, 'rgba(255,255,255,0.35)'); gr.addColorStop(1, 'rgba(255,255,255,1)');
+        x.fillStyle = gr; x.fillRect(0, 0, 128, 64);
+        x.globalCompositeOperation = 'destination-in'; const gv = x.createLinearGradient(0, 0, 0, 64);
+        gv.addColorStop(0, 'rgba(0,0,0,0)'); gv.addColorStop(0.18, 'rgba(0,0,0,1)'); gv.addColorStop(0.82, 'rgba(0,0,0,1)'); gv.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = gv; x.fillRect(0, 0, 128, 64); return tex(done(THREE, c, false)); })();
+      const WAKE = 0.62;
+      for (const B of bars) { const a = Math.atan2(B.b.position.x, B.b.position.z), gw = new THREE.CylinderGeometry(R, R, H * 0.94, 12, 1, true, a - WAKE, WAKE); owned.push(gw);
+        const mw = new THREE.MeshBasicMaterial({ map: wakeTex, color: COL, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(mw);
+        const w = add(new THREE.Mesh(gw, mw)); w.position.y = H / 2 + 0.02; w.visible = false; spin.add(w); B.w = w; B.mw = mw; }
+      let ang = 0, rate = 0, lastT = null;
       const _cv = new THREE.Vector3(), _cl = new THREE.Vector3();
       return {
         group: g, R,
@@ -309,7 +325,10 @@
         set(o) {
           if (!o || !(o.k > 0.001)) { g.visible = false; return; }
           g.visible = true; g.position.set(o.x, o.y || 0, o.z);
-          spin.rotation.y = o.held ? spin.rotation.y : (o.t || 0) * (Math.PI * 2 / (N * 9));
+          let wk = 0;
+          if (o.spin != null) { const t = o.t || 0, dt = lastT == null ? 0 : Math.max(0, Math.min(0.1, t - lastT)); lastT = t;
+            rate += ((o.held ? 0 : +o.spin || 0) - rate) * (1 - Math.exp(-dt / 0.33)); ang += rate * dt; spin.rotation.y = ang; wk = Math.min(1, Math.abs(rate) / 2.4); }
+          else { lastT = null; rate = 0; spin.rotation.y = o.held ? spin.rotation.y : (o.t || 0) * (Math.PI * 2 / (N * 9)); ang = spin.rotation.y; }
           camera.getWorldPosition(_cl);
           for (const B of bars) { B.b.getWorldPosition(_cv);
             /* a bar between the lens and him (nearer the lens than his middle, and inside the line to him) drawn fainter */
@@ -317,7 +336,8 @@
             const front = dl < dm - 0.3 ? 0.35 : 1;
             const cr = o.crack ? 0.55 + 0.45 * Math.sin((o.t || 0) * 37 + B.b.position.x * 9) : 1;
             B.mb.opacity = 0.85 * o.k * front * cr; B.mg.opacity = 0.22 * o.k * front * cr;
-            B.b.scale.set(0.7 + 0.6 * o.k, 1, 0.7 + 0.6 * o.k); }
+            B.b.scale.set(0.7 + 0.6 * o.k, 1, 0.7 + 0.6 * o.k);
+            B.w.visible = wk > 0.01; B.mw.opacity = 0.3 * wk * o.k * front * cr; }
           mRing.opacity = 0.7 * o.k;
         }
       };

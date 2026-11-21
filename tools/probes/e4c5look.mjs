@@ -29,13 +29,14 @@ await frames(3);
 let n = 0;
 const shot = async (name) => { const f = `${OUT}/look-${String(++n).padStart(2, '0')}-${name}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); };
 await shot('court');
-const ALL = [['labBall', 0.32], ['labLand', 0.12], ['labTired', 0.15], ['labBind', 0.5], ['labGather', 0.7], ['labWheel', 0.35], ['labStreak', 0.45]];
+/* (R25: the fireball at three moments of its flight, 4 to 9 m from the fight's lens, and its burst twice) */
+const ALL = [['labBall', 0.08], ['labBall', 0.32], ['labBall', 0.55], ['labLand', 0.08], ['labLand', 0.3], ['labTired', 0.15], ['labBind', 0.5], ['labGather', 0.7], ['labWheel', 0.35], ['labStreak', 0.45]];
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
 for (const [m, secs] of ALL) {
   if (ONLY.length && !ONLY.includes(m)) continue;
   const ok = await p.evaluate(([m, secs]) => window.__enc.stage.snap().story.fight.lab.moment(m, secs), [m, secs]);
   if (!ok) { say('no moment', m); continue; }
-  await frames(3); await shot(m);
+  await frames(3); await shot(m + '-' + secs);
 }
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.clear());
 for (const e of errs.slice(0, 10)) say(e);

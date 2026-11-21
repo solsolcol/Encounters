@@ -68,14 +68,82 @@
     const fsSprite = (col, add, ro = 5) => { const s = new THREE.Sprite(fsSpriteMat(col, add)); s.visible = false; s.renderOrder = ro; FSG.add(s); return s; };
     const fsGround = (map, col, add, y = 0.014) => { const m = new THREE.Mesh(fsQuad, fsGroundMat(map, col, add)); m.visible = false; m.position.y = y; m.renderOrder = 2; FSG.add(m); return m; };
 
-    /* THE FIREBALLS: a ruby light round a pale core, rising out of the Naga's mouth, arcing over and coming down on the Prai
-       (never across a person: it rises), a short trail of ruby behind it and a ruby pool on the paving under it; a bloom
-       where it lands. Four in the air at most (his own, and his teacher's when he is not played) */
+    /* THE FIREBALLS (R25, Chad: "make the fireball look more like a real orange flaming fireball, think diablo style"): a
+       FLAME, not a light. A white-gold heart in a body of orange fire whose edge licks and tears in a moving noise, its
+       tongues streaming back along the flight into a tail of fire: one card facing the lens, drawn by its own shader and
+       laid along the flight AS THE LENS SEES IT (fsFlameLay: a ball coming at the lens is round, one going across shows
+       its whole tail). Round it a soft orange halo, and an orange glow on the paving under it; behind it a short trail of
+       fire, embers shed (most rising, as hot things rise; the brightest falling) and a thin smoke left in the air; a flare
+       and a spit of sparks at the Naga's mouth as it is let go; and where it lands a BURST: a white flash, a roiling ball of
+       fire swelling and thinning (the same shader, round), embers and smoke, a ring of light along the paving and a scorch
+       that fades. Orange, the Naga stick's ruby only at the fire's outer tips and in a few embers (the plan's 11: the
+       stick's fire; gold stays his alone). It still rises over whoever stands between (never across a person), lower than
+       before: a fireball's flight, not a lob. Four in the air at most (his own, and his teacher's when he is not played) */
+    const FS_FIRE = { core: 0xfff3cf, yel: 0xffc23a, orange: 0xff7417, deep: 0xff4a0e, ember: 0xffa640, smoke: 0x2e2119, scorch: 0x050302 };
+    const FS_FLAME_FS = [
+      'varying vec2 vUv; uniform float uT, uA, uW, uL, uSeed, uRound, uFlow;',
+      'float h2(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }',
+      'float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);',
+      '  return mix(mix(h2(i), h2(i + vec2(1.0, 0.0)), u.x), mix(h2(i + vec2(0.0, 1.0)), h2(i + vec2(1.0, 1.0)), u.x), u.y); }',
+      'float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return v; }',
+      'void main(){',
+      /* (in the head's radii from the head's centre, +y the way it flies; the tail's length behind it) */
+      '  float r = 0.5 * uW, tl = max(0.0, uL - uW) / max(r, 1e-4);',
+      '  vec2 q = ((vUv - 0.5) * vec2(uW, uL) - vec2(0.0, 0.5 * uL - r)) / max(r, 1e-4);',
+      '  float al = clamp(-q.y / max(tl, 1e-3), 0.0, 1.0);',
+      '  float w = 0.62 * pow(1.0 - al, 0.85) + 0.02;',
+      '  float d = q.y >= 0.0 || uRound > 0.5 ? length(q) / 0.62 : (q.y < -tl ? 9.0 : abs(q.x) / w + 0.3 * al);',
+      /* (the flames flow back along the flight: the noise drawn along it on the clock; a finer one flickers the heat) */
+      '  float n = fbm(vec2(q.x * 1.7 + uSeed, q.y * 1.15 + uT * uFlow)), n2 = fbm(vec2(q.x * 3.6 - uT * 1.1, q.y * 2.6 + uT * uFlow * 1.7) + uSeed * 1.9);',
+      '  float shape = 1.0 - smoothstep(0.5, 1.12, d + (n - 0.5) * 1.05);',
+      '  float heat = shape * (1.0 - 0.6 * al) * (0.72 + 0.56 * n2);',
+      '  float core = uRound > 0.5 ? 0.0 : exp(-dot(q, q) * 7.0);',
+      '  vec3 c = mix(vec3(0.62, 0.05, 0.03), vec3(1.0, 0.30, 0.04), smoothstep(0.08, 0.42, heat));',
+      '  c = mix(c, vec3(1.0, 0.62, 0.10), smoothstep(0.42, 0.72, heat));',
+      '  c = mix(c, vec3(1.0, 0.94, 0.74), clamp(smoothstep(0.72, 1.0, heat) + core * 0.85, 0.0, 1.0));',
+      '  float a = clamp(shape * (0.28 + 0.95 * heat) + core * 0.9, 0.0, 1.0) * uA;',
+      '  if (a < 0.003) discard;',
+      '  gl_FragColor = vec4(c, a); }'].join('\n');
+    const fsFlameGeo = (() => { const g = new THREE.PlaneGeometry(1, 1); owned.push(g); return g; })();
+    function fsFlame(round = false, ro = 6) {
+      const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false,
+        uniforms: { uT: { value: 0 }, uA: { value: 0 }, uW: { value: 0.5 }, uL: { value: 0.5 }, uSeed: { value: 0 }, uRound: { value: round ? 1 : 0 }, uFlow: { value: round ? -3.5 : 6.5 } },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }', fragmentShader: FS_FLAME_FS });
+      mats.push(m); const me = new THREE.Mesh(fsFlameGeo, m); me.visible = false; me.renderOrder = ro; me.frustumCulled = false; FSG.add(me); return me;
+    }
+    /* a flame card at x, facing the lens, its head there and its tail streaming back against `dir` as the lens sees it
+       (`dir` a unit; a flight straight at the lens leaves it round); W its head's width, `tail` the most its tail runs */
+    const _fbF = new THREE.Vector3(), _fbX = new THREE.Vector3(), _fbY = new THREE.Vector3(), _fbZ = new THREE.Vector3(), _fbC = new THREE.Vector3(), _fbM = new THREE.Matrix4();
+    function fsFlameLay(me, x, dir, W, tail) {
+      camera.getWorldPosition(_fbC); _fbF.subVectors(x, _fbC); const fl = _fbF.length(); if (fl < 1e-4) return; _fbF.multiplyScalar(1 / fl);
+      _fbY.copy(dir).addScaledVector(_fbF, -dir.dot(_fbF)); const vp = _fbY.length();
+      if (vp < 1e-3) { _fbY.set(0, 1, 0).addScaledVector(_fbF, -_fbF.y); if (_fbY.lengthSq() < 1e-8) _fbY.set(0, 0, 1); _fbY.normalize(); } else _fbY.multiplyScalar(1 / vp);
+      _fbZ.copy(_fbF).negate(); _fbX.crossVectors(_fbY, _fbZ).normalize(); _fbY.crossVectors(_fbZ, _fbX);
+      const L = W + tail * Math.min(1, vp);
+      _fbM.makeBasis(_fbX, _fbY, _fbZ); me.quaternion.setFromRotationMatrix(_fbM);
+      me.position.copy(x).addScaledVector(_fbY, -(L - W) / 2); me.scale.set(W, L, 1);
+      const U = me.material.uniforms; U.uW.value = W; U.uL.value = L;
+    }
     const FS_TRAIL = 6;
-    const fsBalls = [0, 1, 2, 3].map(() => ({ on: false, core: fsSprite(FS_COL.rubyCore, true, 6), glow: fsSprite(FS_COL.ruby, true, 6), halo: fsSprite(FS_COL.ruby, true, 5),
-      trail: Array.from({ length: FS_TRAIL }, () => fsSprite(FS_COL.ruby, true, 5)), pool: fsGround(fsDot, FS_COL.ruby, true, 0.016),
-      a: new THREE.Vector3(), b: new THREE.Vector3(), t: 0, T: 0.7, ai: false, id: 0, hist: [] }));
-    const fsBlooms = [0, 1, 2, 3].map(() => ({ on: false, s: fsSprite(FS_COL.ruby, true, 6), g: fsGround(fsDot, FS_COL.ruby, true, 0.017), t: 0, col: FS_COL.ruby, k: 1 }));
+    const fsBalls = [0, 1, 2, 3].map((i) => ({ on: false, flame: fsFlame(false, 6), core: fsSprite(FS_FIRE.core, true, 7), glow: fsSprite(FS_FIRE.orange, true, 6), halo: fsSprite(FS_FIRE.deep, true, 5),
+      trail: Array.from({ length: FS_TRAIL }, () => fsSprite(FS_FIRE.orange, true, 5)), pool: fsGround(fsDot, FS_FIRE.orange, true, 0.016),
+      a: new THREE.Vector3(), b: new THREE.Vector3(), d: new THREE.Vector3(), t: 0, T: 0.7, ai: false, id: 0, hist: [], smokeT: 0, seed: 3.1 * i + 0.7 }));
+    /* where it lands: the white flash and the roiling ball of fire (fire's), the light along the paving, and the scorch
+       left under it (painted dark, fading over 2.4 s) */
+    const fsBlooms = [0, 1, 2, 3].map(() => ({ on: false, s: fsSprite(FS_FIRE.orange, true, 6), g: fsGround(fsDot, FS_FIRE.orange, true, 0.017), t: 0, col: FS_FIRE.orange, k: 1,
+      fire: false, y: 1.3, ball: fsFlame(true, 7), flash: fsSprite(FS_FIRE.core, true, 8) }));
+    const fsScorches = [0, 1, 2, 3].map(() => { const m = fsGround(fsDot, FS_FIRE.scorch, false, 0.0155); return { m, t: -1, k: 1 }; });
+    /* THE FIRE'S SMOKE: soft dark puffs left in the air behind a ball and rising from where it lands (dealt from twenty-
+       four; the oldest goes) */
+    const fsSmokes = Array.from({ length: 24 }, () => { const m = new THREE.SpriteMaterial({ map: fsSmokeTex, color: FS_FIRE.smoke, transparent: true, opacity: 0, depthWrite: false, fog: false, toneMapped: false }); mats.push(m);
+      const s = new THREE.Sprite(m); s.visible = false; s.renderOrder = 4; FSG.add(s); return { s, t: -1, T: 1, s0: 0.1, s1: 0.5, a: 0.3, vy: 0.2, rot: 0 }; });
+    let fsSmokeI = 0;
+    function fsSmoke(x, y, z, o = {}) { const P = fsSmokes[fsSmokeI++ % fsSmokes.length], r = FS5.srand || Math.random;
+      P.t = 0; P.T = o.life || 0.9; P.s0 = o.s0 || 0.12; P.s1 = o.s1 || 0.5; P.a = o.a != null ? o.a : 0.3; P.vy = o.vy != null ? o.vy : 0.25; P.rot = (r() - 0.5) * 1.2;
+      P.s.position.set(x, y, z); P.s.material.rotation = r() * Math.PI * 2; P.s.visible = true; }
+    /* the flare at the Naga's mouth as a ball is let go */
+    const fsFlares = [0, 1].map(() => ({ s: fsSprite(FS_FIRE.yel, true, 8), t: -1 }));
+    function fsFlare(p, k = 1) { const F = fsFlares.find(f => f.t < 0) || fsFlares[0]; F.t = 0; F.k = k; F.s.position.copy(p); }
     /* THE BUBBLES (BIND): violet light round the Prai, brighter at its edge (a fresnel), thinning as its time runs; three */
     const fsBubbleMat = () => {
       const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.FrontSide,
@@ -373,38 +441,73 @@
       B.on = true; B.t = 0; B.wait = Math.max(0, wait); B.T = Math.max(0.25, (FN5.flight || 0.7) - B.wait); B.ai = !!f.ai; B.id = f.id || 0; B.hist.length = 0;
       fsMouth(B.a); const w = fsW(f.x, f.z); B.b.set(w.x, 1.3, w.z);
       if (!f.id && !f.cloud) B.b.y = 0.05;
-      if (!B.wait) fsBallSound(B);
+      if (!B.wait) fsBallGo(B);
     }
+    /* let go: its sound, a flare at the Naga's mouth and a spit of sparks off it */
+    function fsBallGo(B) { fsBallSound(B); fsFlare(B.a, B.ai ? 0.7 : 1);
+      fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 8 : 16, { sp: 2.2, up: 0.1, life: 0.4, s0: 0.09, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.5, grav: -1.5, drag: 3 }); }
     function fsBallSound(B) { const m = B.a; fsFx(fsDeal('ball'), B.ai ? 0.45 : 0.8, m.x, m.z); fsFx('u5flight', B.ai ? 0.32 : 0.6, m.x, m.z); }
-    function fsBloom(x, z, col, k = 1) { const L = fsBlooms.find(b => !b.on) || fsBlooms[0]; L.on = true; L.t = 0; L.col = col; L.k = k;
-      L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, 1.3, z); L.g.position.set(x, 0.017, z); }
+    /* (a bloom of light where something lands: of fire (`fire`), with its flash, its roiling ball, its smoke and its scorch) */
+    function fsBloom(x, z, col, k = 1, fire = false, y = 1.3) { const L = fsBlooms.find(b => !b.on) || fsBlooms[0]; L.on = true; L.t = 0; L.col = col; L.k = k; L.fire = fire; L.y = y;
+      L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, y, z); L.g.position.set(x, 0.017, z);
+      if (!fire) return;
+      L.ball.position.set(x, y, z); L.flash.position.set(x, y, z); L.ball.material.uniforms.uSeed.value = Math.abs(x * 7.3 + z * 3.1) % 10;
+      const S = fsScorches.find(q => q.t < 0) || fsScorches[0]; S.t = 0; S.k = Math.min(1.2, k); S.m.position.set(x, 0.0155, z); S.m.scale.set(1.1 * k, 1, 1.1 * k);
+      const r = FS5.srand || Math.random;
+      for (let i = 0; i < 4; i++) fsSmoke(x + (r() - 0.5) * 0.3 * k, y + (r() - 0.3) * 0.3, z + (r() - 0.5) * 0.3 * k, { s0: 0.25 * k, s1: 0.9 * k, life: 1.2 + 0.4 * r(), a: 0.34, vy: 0.45 }); }
+    const _fsUp = new THREE.Vector3(0, 1, 0);
     function fsFxFrame(wdt0, ft) {
       const st = FS5.st, wdt = FS5.labHold ? 0 : wdt0;
-      /* the fireballs: up out of the mouth, over, and down (a parabola above the line between them; it rises 1.6 m) */
+      /* the fireballs: out of the mouth, over, and down (a parabola above the line between them: it rises 0.8 m, his
+         teacher's when he is not played 0.6 m: over whoever stands between, and a fireball's flight, not a lob) */
       for (const B of fsBalls) {
-        if (!B.on) { if (B.core.visible) { B.core.visible = B.glow.visible = B.halo.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
-        if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallSound(B);   // (let go now, from the stick's head)
-          fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 6 : 12, { sp: 1.6, up: 0.2, life: 0.45, s0: 0.1, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.4, grav: -2 }); }
-        B.t += wdt; const u = c01(B.t / B.T), h = (B.ai ? 1.1 : 1.6) * 4 * u * (1 - u);
+        if (!B.on) { if (B.flame.visible || B.core.visible) { B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
+        if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallGo(B); }   // (let go now, from the stick's head)
+        B.t += wdt; const u = c01(B.t / B.T), H = B.ai ? 0.6 : 0.8, h = H * 4 * u * (1 - u);
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
-        const sz = B.ai ? 0.62 : 1, fl = 0.88 + 0.08 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67);
-        B.core.visible = B.glow.visible = B.halo.visible = true; B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
-        B.core.scale.setScalar(0.26 * sz * (0.95 + 0.1 * fl)); B.glow.scale.setScalar(0.9 * sz * fl); B.halo.scale.setScalar(1.7 * sz * (0.9 + 0.1 * fl));
-        B.core.material.opacity = 1; B.glow.material.opacity = 0.9; B.halo.material.opacity = 0.28;
-        /* (its sparks: shed behind it, ruby and its pale heart, falling away) */
-        if (wdt > 0) { const r = FS5.srand || Math.random, n = B.ai ? 2 : 3;
-          for (let k = 0; k < n; k++) fsSpark(_fsA.x + (r() - 0.5) * 0.12, _fsA.y + (r() - 0.5) * 0.12, _fsA.z + (r() - 0.5) * 0.12,
-            { vx: (r() - 0.5) * 0.8, vy: (r() - 0.3) * 0.8, vz: (r() - 0.5) * 0.8, life: 0.32 + 0.25 * r(), s0: (B.ai ? 0.08 : 0.11) * (0.7 + 0.6 * r()), col: r() < 0.35 ? FS_COL.rubyCore : FS_COL.ruby, grav: -2.2, drag: 2.5 }); }
+        B.d.subVectors(B.b, B.a); B.d.y += H * 4 * (1 - 2 * u); if (B.d.lengthSq() > 1e-8) B.d.normalize(); else B.d.set(0, 0, 1);   // (its way now: the path's own)
+        const sz = B.ai ? 0.72 : 1, fl = 0.9 + 0.07 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67 + B.seed);
+        fsFlameLay(B.flame, _fsA, B.d, 0.5 * sz * fl, 1.25 * sz);
+        const U = B.flame.material.uniforms; U.uT.value = ft; U.uA.value = 1; U.uSeed.value = B.seed;
+        B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = true;
+        B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
+        B.core.scale.setScalar(0.2 * sz * fl); B.glow.scale.setScalar(0.7 * sz * fl); B.halo.scale.setScalar(1.6 * sz * (0.92 + 0.08 * fl));
+        B.core.material.opacity = 0.95; B.glow.material.opacity = 0.5; B.halo.material.opacity = 0.26;
+        /* (its embers: shed behind it, most rising as hot things rise, the brightest falling, a few of the stick's ruby;
+           and a puff of thin smoke left in the air every 45 ms) */
+        if (wdt > 0) { const r = FS5.srand || Math.random, n = B.ai ? 2 : 4;
+          for (let k = 0; k < n; k++) { const hot = r() < 0.28, red = !hot && r() < 0.18;
+            fsSpark(_fsA.x - B.d.x * 0.12 + (r() - 0.5) * 0.14, _fsA.y - B.d.y * 0.12 + (r() - 0.5) * 0.14, _fsA.z - B.d.z * 0.12 + (r() - 0.5) * 0.14,
+              { vx: -B.d.x * 0.6 + (r() - 0.5) * 0.9, vy: hot ? (r() - 0.6) * 0.8 : 0.3 + r() * 0.7, vz: -B.d.z * 0.6 + (r() - 0.5) * 0.9,
+                life: 0.4 + 0.5 * r(), s0: (hot ? 0.07 : 0.09) * (B.ai ? 0.8 : 1) * (0.7 + 0.6 * r()), col: hot ? FS_FIRE.core : (red ? FS_COL.ruby : FS_FIRE.ember),
+                grav: hot ? -3 : 0.7, drag: 1.4 }); }
+          B.smokeT -= wdt; if (B.smokeT <= 0) { B.smokeT = B.ai ? 0.07 : 0.045; fsSmoke(_fsA.x - B.d.x * 0.25, _fsA.y - B.d.y * 0.25, _fsA.z - B.d.z * 0.25, { s0: 0.12 * sz, s1: 0.5 * sz, life: 0.75, a: 0.3, vy: 0.3 }); } }
         if (wdt > 0) { B.hist.unshift(_fsA.clone()); if (B.hist.length > FS_TRAIL * 2) B.hist.length = FS_TRAIL * 2; }
-        B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; s.position.copy(q); s.scale.setScalar(0.52 * sz * (1 - j / FS_TRAIL)); s.material.opacity = 0.6 * (1 - j / FS_TRAIL); });
-        B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.1 * sz, 1, 1.1 * sz); B.pool.material.opacity = 0.32 * (0.4 + 0.6 * (1 - h / 1.6));
+        /* (the trail of fire behind: orange, deepening, the stick's ruby at its end) */
+        B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; const v = 1 - j / FS_TRAIL;
+          s.position.copy(q); s.scale.setScalar(0.42 * sz * v); s.material.opacity = 0.5 * v * v; s.material.color.setHex(j < 2 ? FS_FIRE.orange : (j < 4 ? FS_FIRE.deep : FS_COL.ruby)); });
+        B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.3 * sz, 1, 1.3 * sz); B.pool.material.opacity = 0.38 * (0.35 + 0.65 * (1 - Math.min(1, Math.max(0, _fsA.y - 0.3) / 2.2)));
         if (u >= 1) B.on = false;
       }
+      /* the fire's smoke, its flares at the Naga's mouth, and the scorches fading off the paving */
+      for (const P of fsSmokes) { if (P.t < 0) continue; P.t += wdt; const u = P.t / P.T; if (u >= 1) { P.t = -1; P.s.visible = false; continue; }
+        P.s.position.y += P.vy * wdt; P.s.material.rotation += P.rot * wdt; P.s.scale.setScalar(P.s0 + (P.s1 - P.s0) * Math.sqrt(u)); P.s.material.opacity = P.a * Math.min(1, u / 0.15) * (1 - u); }
+      for (const F of fsFlares) { if (F.t < 0) continue; F.t += wdt; const u = F.t / 0.22; if (u >= 1) { F.t = -1; F.s.visible = false; continue; }
+        F.s.visible = true; F.s.scale.setScalar((0.35 + 0.7 * u) * F.k); F.s.material.opacity = 0.95 * (1 - u); }
+      for (const S of fsScorches) { if (S.t < 0) continue; S.t += wdt; const u = S.t / 2.4; if (u >= 1) { S.t = -1; S.m.visible = false; continue; }
+        S.m.visible = true; S.m.material.opacity = 0.55 * S.k * (1 - u) * Math.min(1, S.t / 0.1); }
       for (const L of fsBlooms) {
-        if (!L.on) { if (L.s.visible) L.s.visible = L.g.visible = false; continue; }
+        if (!L.on) { if (L.s.visible || L.ball.visible || L.flash.visible) L.s.visible = L.g.visible = L.ball.visible = L.flash.visible = false; continue; }
         L.t += wdt; const u = c01(L.t / 0.6); L.s.visible = L.g.visible = true;
-        L.s.scale.setScalar((0.5 + 1.3 * u) * L.k); L.s.material.opacity = 0.95 * (1 - u);
+        L.s.scale.setScalar((0.5 + 1.3 * u) * L.k); L.s.material.opacity = (L.fire ? 0.6 : 0.95) * (1 - u);
         L.g.scale.set((0.8 + 1.8 * u) * L.k, 1, (0.8 + 1.8 * u) * L.k); L.g.material.opacity = 0.55 * (1 - u);
+        /* (fire's: the white flash, 0.16 s, and the ball of fire swelling and thinning as it rises, 0.5 s) */
+        if (L.fire) { const ub = c01(L.t / 0.5), uf = c01(L.t / 0.16);
+          L.ball.visible = ub < 1; L.flash.visible = uf < 1;
+          L.ball.position.y = L.y + 0.25 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.35 + 1.25 * Math.sqrt(ub)) * L.k, 0);
+          const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.4);
+          L.flash.scale.setScalar((0.5 + 1.1 * uf) * L.k); L.flash.material.opacity = 1 - uf; }
+        else { L.ball.visible = L.flash.visible = false; }
         if (u >= 1) L.on = false;
       }
       /* the bubbles: one on each bound (and bound and tired) Prai, thinning as its time runs; ruby for a moment when the
@@ -739,13 +842,15 @@
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
             const y0 = 1.3 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
-            if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
-              fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.35, grav: -4 }); }
-            else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_COL.ruby, e.result === 'setback' ? 0.7 : 1); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
-              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.12, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.3, grav: -4 }); }
-            else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_COL.ruby, 0.5); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_COL.ruby, grav: -4 }); }
+            if (e.result === 'tired') { fsBloom(w.x, w.z, FS_FIRE.orange, 1.2, true, y0); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
+              fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
+              fsBurst(w.x, y0, w.z, 8, { sp: 2.4, up: 0.3, life: 0.7, s0: 0.1, col: FS_COL.ruby, grav: -3 }); }
+            else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_FIRE.orange, e.result === 'setback' ? 0.7 : 1, true, y0); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.12, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.35, grav: -4 });
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 4 : 7, { sp: 2, up: 0.3, life: 0.6, s0: 0.09, col: FS_COL.ruby, grav: -3 }); }
+            else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_FIRE.orange, 0.5, true, 0.6); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.3, grav: -4 }); }
             else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); fsBurst(w.x, 0.5, w.z, 8, { sp: 0.9, up: 0.5, life: 0.7, s0: 0.06, col: FS_COL.sour, grav: 0.3, a: 0.5 }); }
-            else { fsBloom(w.x, w.z, FS_COL.ruby, 0.6); fsFx(fsDeal('land'), 0.6, w.x, w.z); fsBurst(w.x, 0.1, w.z, 10, { sp: 2, up: 0.45, life: 0.5, s0: 0.065, col: FS_COL.ruby, grav: -5 }); }
+            else { fsBloom(w.x, w.z, FS_FIRE.orange, 0.6, true, 0.35); fsFx(fsDeal('land'), 0.6, w.x, w.z); fsBurst(w.x, 0.1, w.z, 10, { sp: 2, up: 0.45, life: 0.5, s0: 0.065, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.3, grav: -5 }); }
             break; }
           case 'bind': { const zw = cast.zav ? cast.zav.group.position : null;
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
@@ -870,6 +975,7 @@
     function fsFxClear() {
       for (const B of fsBalls) B.on = false; for (const L of fsBlooms) L.on = false; for (const S of fsStreaks) S.on = false;
       fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false; fsPtsClear();
+      for (const P of fsSmokes) P.t = -1; for (const F of fsFlares) F.t = -1; for (const S of fsScorches) S.t = -1;
       for (const o of FSG.children) o.visible = false;
     }
 
@@ -987,7 +1093,9 @@
       /* (lent, it lifts off him and closes round his teacher: it travels there, 0.4 s, and back) */
       if (at) { const C0 = FS5.cageAt || (FS5.cageAt = { x: at.x, z: at.z }), q = 1 - Math.exp(-wdt / 0.12);
         C0.x += (at.x - C0.x) * q; C0.z += (at.z - C0.z) * q;
-        CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: C0.x, z: C0.z, t: FS5.wall, crack: c.broken || st.stage === 'surge' }); }
+        /* (R25: its bars TURN ROUND HIM, a turn in 2.2 s, each with its wake: "to make it look more defensive"; broken, they
+           drag round at a fifth of that) */
+        CAGE5.set({ k: c.broken ? 0.12 : Math.max(0.12, c.str / (FN5.cageMax || 100)), x: C0.x, z: C0.z, t: FS5.wall, crack: c.broken || st.stage === 'surge', spin: c.broken ? 0.55 : 2.85 }); }
       TRANCE5.set(1, FS5.wall); TRANCE5.pools(c.lent > 0 ? null : zw, pw, 1, 1);
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
       TRANCE5.gold(0.35 + 0.65 * wind);                   // (the fight's lens is behind him: the card lies over his back, so a glow, full only as the gold gathers)
