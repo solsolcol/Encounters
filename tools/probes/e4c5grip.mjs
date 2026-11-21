@@ -34,7 +34,9 @@ const grip = await p.evaluate(() => { const L = window.__enc.stage.snap().story.
 say('grip', JSON.stringify(grip)); say('page', JSON.stringify(logs));
 await p.evaluate(() => { const k = window.__enc.kit; if (k.tag().on) k.tag(null, null); });
 /* (his place for the pictures: the court's middle, clear of its walls on both sides; the court's frame: c_cast.js COURT5) */
-await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; P.group.position.x = -8.5; P.group.position.z = -9.7; });
+await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; P.group.position.x = -8.5; P.group.position.z = -9.7;
+  /* (his student stood 0.3 m before him there: set aside, clear of every view, at the court's far corner on his left) */
+  const Z = E.stage.plan.FLOOR.cast.zav; if (Z) { Z.group.position.x = -6.9; Z.group.position.z = -11.4; } });
 const res = { grip, poses: [] };
 for (const [name, t] of POSES) {
   await p.evaluate(([n, t]) => window.__enc.stage.snap().story.fight.lab.pose(n === 'rest' ? null : n, t), [name, t]);
@@ -78,9 +80,12 @@ for (const [name, t] of POSES) {
       const fist = new V(); { let mb = null; for (const n in P.bone) if (/^(mixamorig:?)?RightHandMiddle1$/.test(n)) mb = P.bone[n]; if (mb) { mb.getWorldPosition(fist); fist.lerp(h, 0.35); } else fist.copy(h); }
       if (view === 'front') { c = new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); tg = new V(g.x, 1.0, g.z); }
       else if (view === 'side') { c = new V(g.x - lx * 1.45, 1.3, g.z - lz * 1.45); tg = new V(g.x, 0.95, g.z); }   // (his right side, inside the court's wall)
-      else if (view === 'hand') { c = new V(fist.x + fx * 0.85, fist.y, fist.z + fz * 0.85); tg = fist.clone(); }
-      else { c = new V(fist.x - lx * 0.85, fist.y, fist.z - lz * 0.85); tg = fist.clone(); }
+      else if (view === 'hand') { c = new V(fist.x + fx * 0.9, fist.y + 0.12, fist.z + fz * 0.9); tg = fist.clone(); }   // (a little above: as a man standing before him sees it)
+      else { c = new V(fist.x - lx * 0.9, fist.y + 0.12, fist.z - lz * 0.9); tg = fist.clone(); }
       E.yaw.position.copy(c); window.__aim = tg;
+      /* (the hand's two views through a narrower lens, 22 degrees: a detail taken with a lens, never by enlarging; the body's
+         two through the game's own) */
+      if (E.kit.lens) E.kit.lens(view === 'hand' || view === 'handout' ? 22 : null, { secs: 0 });
       return { cam: c.toArray().map(x => +x.toFixed(3)), hand: h.toArray().map(x => +x.toFixed(3)), fist: fist.toArray().map(x => +x.toFixed(3)) }; }, [view]);
     await frames(2);
     await p.evaluate(() => { const E = window.__enc, tg = window.__aim, c = E.yaw.position, d = tg.clone().sub(c);

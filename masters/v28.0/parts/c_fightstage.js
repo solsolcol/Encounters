@@ -1425,6 +1425,12 @@
           let best = null; const es = []; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q(b).distanceTo(P0) - l[0]); es.push([t, e]); if (!best || e < best.e) best = { b, e }; }
           /* (where the circle meets the metacarpal's reach: each place it comes nearest, said in the report, the one taken first) */
           const roots = es.filter((q, i) => i > 0 && i < es.length - 1 && q[1] <= es[i - 1][1] && q[1] <= es[i + 1][1]).map(q => [q[0], +(q[1] * s * 100).toFixed(2)]);
+          /* (the circle meets that reach twice, above the shaft toward his wrist and under it: the one his metacarpal turns
+             least to reach is taken (his thumb at rest lies along it nearly; under it the thumb swung round beneath the
+             shaft, its first joint at 56 degrees, its skin 2.4 cm into the shaft), the nearer to exact where it is alone) */
+          const rest0 = seg[0].clone().normalize(); let pick = best.b, least = Infinity;
+          for (const [t, e] of roots) if (e < 0.4) { const d = Q(t * D2R).sub(P0).normalize(), turn = Math.acos(Math.max(-1, Math.min(1, d.dot(rest0)))); if (turn < least) { least = turn; pick = t * D2R; } }
+          best.b = pick; best.e = Math.abs(Q(pick).distanceTo(P0) - l[0]);
           let be = best.b; const tg = [P0.clone(), Q(be)];
           for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q(be)); }       // (round the shaft's near side and under it)
           return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots };
