@@ -182,7 +182,7 @@
          once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */
       wrapOff: null,
       carry(P) { if (this.who !== 'tonWrap' || !P || !P.ready || !things.staffWrap) return;
-        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2 }); }
+        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0.07 }); }
     };
     /* the nine as the play reaches them (c_play.js praiOf: cast.prai) */
     Object.defineProperty(cast, 'prai', { get: () => PRAI5.list, enumerable: false });
