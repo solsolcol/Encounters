@@ -155,6 +155,16 @@
               heart: { bpm: 112, rest: 76, sound: 'u5heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u5vison', off: 'u5visoff', vol: 0.85, bed: ['u5visbed', 0.56], music: ['u5vismus', 0.32], duck: 0.6 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
+    /* THE TAG MODE (the sixtieth seam, docs/V28.0-SEAMS.md; the fight's camera, the plan's 5.6 and Chad's "Behind and
+       above"): the lens 4.0 m behind and 3.1 m above the one he plays, 26 degrees down, always facing down the court
+       toward the house (the court's heading: c_cast.js COURT5); it never passes the gate (the storey above's walkway slab
+       begins at z -14.0, docs/V28.0-WORLD.md 4, so the lens stops there and he comes nearer it) and keeps inside the side
+       walls; it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
+       paces and discs are the fight's (c_fightstage.js names them as it opens the mode). c_cast.js boomAt reads this same
+       declaration, so the preparation's film ends on exactly the mode's first picture */
+    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
+           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           radius: 0.45, speed: 1.2, turn: 9, eye: 1.62, keys: { switch: 'KeyF' } },
 
     /* TODO-PLAY, each an engine seam declared when its play is built (the plan's 12): SPIRIT VISION (chapter 4's fiftieth
        seam, with this chapter's own sounds: another chapter's sound named here would leave that chapter's pack), SMELL (a
@@ -259,6 +269,8 @@
       whyGold: 'Only the gold now',
       whyLendFirst: 'Lend the cage first',
       whyBindFirst: 'Bind one first',
+      // (the switch, said and never pressed, until the lesson's first chase shows it: the engine shows it from the first frame)
+      whySwitchFirst: 'Fire first',
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
       btnTogether: 'TOGETHER',

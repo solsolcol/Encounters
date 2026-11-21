@@ -14,7 +14,7 @@
      his teacher out first, then Ton, then Jun; his step out; the sour; his thought; black, the title over it */
   const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [0.6],
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
-  OP5.num2 = 10.6; OP5.num3 = OP5.chime - 0.5;                                  // the number over the doors: 2, then 3 as the car arrives
+  OP5.num2 = 6.0; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
   function intro(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.open, T = OP5;
     step(0, () => F.begin(api, s));

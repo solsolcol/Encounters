@@ -48,6 +48,9 @@ async function tapEl(sel) {
   await p.touchscreen.tap(r.x, r.y); log('  tapped', sel); await frames(3); return true;
 }
 const SMELL = '.cBtn';
+/* SMELL, pressed once its last breath is out (its wait runs on the chapter's clock, which a slow box draws slowly) */
+async function smellNow() { await wait(() => window.__enc.stage.snap().story.smellT < 0, null, 120).catch(() => log('  smell still busy'));
+  await tapEl(SMELL); await wait(() => window.__enc.stage.snap().story.smellT > 1.2, null, 120).catch(() => log('  no smell')); }
 await p.goto(PAGE + '?ch=e4c5', { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
@@ -62,11 +65,11 @@ if (PART.includes('walk')) {
   await wait(() => window.__enc.stage.info().heard.includes('ph5w2'), null); await pic('walk-pho-smell');
   await idle(); await frames(4); await pic('walk-follow');
   await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('ph5w3'), null, 60).catch(() => log('  no ph5w3')); await pic('walk-eye-notyet');
-  await idle(); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('walk-smell-lift');
-  await at(0.1, -6.6, -0.3, -0.35); await new Promise(r => setTimeout(r, 7000)); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('walk-smell-drain');
+  await idle(); await smellNow(); await pic('walk-smell-lift');
+  await at(0.2, -7.3, -0.25, -0.42); await smellNow(); await pic('walk-smell-drain');
   await tapMark('drain'); await wait(() => window.__enc.stage.info().heard.includes('q5w2'), null); await pic('walk-drain');
-  await idle(); await at(0.0, -12.0, 0.35, -0.22); await new Promise(r => setTimeout(r, 6000)); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1600)); await pic('walk-smell-turn');
-  await at(-6.6, -14.85, Math.PI / 2, -0.2); await new Promise(r => setTimeout(r, 6000)); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1600)); await pic('walk-smell-gate');
+  await idle(); await at(0.0, -12.0, 0.35, -0.22); await smellNow(); await pic('walk-smell-turn');
+  await at(-6.6, -14.85, Math.PI / 2, -0.2); await smellNow(); await pic('walk-smell-gate');
   await at(-8.5, -15.1, Math.PI, -0.1); await tapMark('gate'); await wait(() => window.__enc.stage.info().heard.includes('ph5w5'), null); await pic('walk-gate');
   await wait(() => window.__enc.stage.snap().story.phase === 'hunt', null);
   log('walk done');
@@ -75,15 +78,15 @@ if (PART.includes('hunt')) {
   if (!PART.includes('walk')) { await p.evaluate(() => window.__enc.stage.setPhase('hunt')); }
   await wait(() => window.__enc.getState() === 'play' && window.__enc.stage.snap().story.phase === 'hunt', null); await frames(6);
   await pic('hunt-start');
-  await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('hunt-smell-door');
+  await smellNow(); await pic('hunt-smell-door');
   await at(-8.9, -4.75, -0.55, -0.55); await pic('hunt-shoecab-mark');
   await tapMark('stain1'); await pic('hunt-stain1-ask');
   await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('q5h1'), null); await new Promise(r => setTimeout(r, 1500)); await pic('hunt-stain1-seen');
   await idle(); await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 2500));
-  await at(-7.4, -2.9, Math.PI + 0.1, -0.35); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('hunt-smell-armchair');
+  await at(-7.4, -2.9, Math.PI + 0.1, -0.35); await smellNow(); await pic('hunt-smell-armchair');
   await tapMark('armchair'); await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('ph5h4'), null); await pic('hunt-armchair');
   await idle(); await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 2500));
-  await at(-7.5, -10.4, -0.2, -0.3); await new Promise(r => setTimeout(r, 6000)); await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('hunt-smell-court');
+  await at(-7.5, -10.4, -0.2, -0.3); await smellNow(); await pic('hunt-smell-court');
   await tapEl('#visionBtn'); await wait(() => window.__enc.stage.info().heard.includes('ph5h1'), null); await new Promise(r => setTimeout(r, 1800)); await pic('hunt-nine');
   await idle(); await pic('hunt-after-nine');
   await at(-7.6, -11.6, Math.PI / 2 + 0.3, -0.5); await tapMark('stain2'); await wait(() => window.__enc.stage.info().heard.includes('q5h2'), null); await pic('hunt-stain2');
@@ -96,7 +99,7 @@ if (PART.includes('table')) {
   await p.evaluate(() => window.__enc.stage.setPhase('table'));
   await wait(() => window.__enc.getState() === 'play' && window.__enc.stage.snap().story.phase === 'table', null); await frames(6);
   await pic('table-start');
-  await tapEl(SMELL); await new Promise(r => setTimeout(r, 1500)); await pic('table-smell');
+  await smellNow(); await pic('table-smell');
   await wait(() => window.__enc.stage.snap().story.found.includes('m'), null); await pic('table-look-order');
   await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 3000)); await pic('table-vision');
   for (const [id, line] of [['look1', 'ph5t1'], ['look2', 'ph5t2'], ['look3', 'ph5t3']]) {

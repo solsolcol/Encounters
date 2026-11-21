@@ -182,12 +182,12 @@
        offered here: dimmed, and pressed it says why in his teacher's voice, once ("Not yet. First your nose."). The decoy,
        the drain, nine metres on; the true trail on round the turn to the gate; at the gate, the gate's two lines, and the
        devotee's film. RECEIPTS on the phase string: t Ton asked, j Jun asked, d the drain smelled, e the eye's line said */
-    const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null };
+    const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null, drain: false };
     const asked = () => play.found.has('t') && play.found.has('j');
     function walkBegin() {
       lookAt0(LOOK_OF.walk); castPhase('walk'); warm5('walk');
-      if (kit && kit.vision) { kit.vision(null); kit.vision(false); if (play.found.has('e')) kit.vision({ r: 0 }); }
-      Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null });
+      if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
+      Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, wp: false, tonCalled: false, nag: null, drain: false });
       smellButton(false);
       if (asked()) giveSmell();
       objectiveFor();
@@ -229,8 +229,12 @@
        the rest of it; a press after that is answered by the engine with the same words: words.visionHeld) */
     function walkEye() {
       if (!kit || !kit.vision) return;
-      kit.vision(false); kit.vision({ r: 0 });
-      if (!play.found.has('e')) { got('e'); say('ph5w3'); }  // "Not yet. First your nose."
+      kit.vision(false);
+      if (!play.found.has('e')) { got('e'); say('ph5w3'); return; }   // "Not yet. First your nose."
+      /* (after his word, a press is answered with the same words on the screen: a lock always says why, v8.1. Not the
+         engine's hold, kit.vision({ r }): held, the world is drawn through the vision's own pass at a radius of nothing,
+         every frame of the walkway, and his teacher's gold showed through it) */
+      if (kit.captions && !lineBusy()) kit.captions([{ at: 0, end: 2.2, text: W.visionHeld, sub: WHO.pho || '' }]);
     }
     function atDrain() {
       if (phase !== 'walk' || play.busy || play.found.has('d')) return false;
@@ -322,19 +326,22 @@
       andThen(() => { play.busy = false; smellButton(false); book('fight'); film('prepare', () => fightBegin()); });
     }
 
-    /* ================================================================ THE CLEANSING (the plan's 4.5 and 5) · TODO-FIGHT
-       To be built on the engine's third-person seams (the tracker's M4) and the fight's rules (c_fightrules.js, the
-       tracker's M3a, when it is here): the brief with its looping picture and START (W.fightTitle, W.fightBrief1 to 3);
-       the camera behind and above the played one; Grandmaster Pho with the Naga stick and Master Zavier in his cage;
-       the nine; the switch; every prompt of the script's fight lines, each also a caption; the film `together` (the
-       Naga) inside it; the loss, which begins the FIGHT again and never the chapter (W.lostSay, W.lostAgain); the mode
-       holding the save from its opening until it is left for good, so a Continue lands at the brief.
-       THE STAND-IN: one thing to press in the middle of the floor. It passes the fight, says nothing (every line of
-       the fight is a draft), and hands to the film of the bag tied, the card of the next afternoon and the collector's
-       film in. */
-    function fightBegin() { lookAt0(LOOK_OF.fight); objectiveFor({ complete: false }); }
+    /* ================================================================ THE CLEANSING (the plan's 4.5 and 5; the tracker's M8)
+       The tag-team fight in third person: masters/v28.0/parts/c_fightstage.js drives the fight's rules (c_fightrules.js,
+       docs/V28.0-FIGHT.md) on the engine's tag mode (seams 60 to 65, docs/V28.0-SEAMS.md). Here are its hand-offs: the
+       court set out and the mode opened behind the brief (whichever way he came: the preparation's film, or a Continue
+       landing at the fight's phase, at its brief, since the mode holds the save from its opening), START, the Naga's film
+       inside it, the loss that begins the FIGHT again (never the chapter: Chad's R14), and at the last bag the bag tied,
+       the card of the next afternoon and the collector's film in. If the mode cannot open (no kit, no bodies), the
+       skeleton's stand-in is offered instead (one thing to press in the court), so nothing soft-locks (v7.4) */
+    function fightBegin() {
+      lookName = 'TRANCE';
+      if (!fightOpen()) { lookAt0(LOOK_OF.fight); objectiveFor({ complete: false }); return; }
+      fightBrief();
+    }
     function cleanse() {
       if (phase !== 'fight' || play.busy) return false;
+      if (FS5.on) fightLeave();
       book('table');
       film('bagtied', () => film('collector', () => tableBegin([])));
       return true;
@@ -441,14 +448,14 @@
       enabled: () => phase === 'table' && !play.busy && play.found.has('m') && visOpen() && !play.found.has(c), onInteract() { return lookPresence(c, line); } });
     const hotspots = [hsTon, hsJun,
       { id: 'drain', pos: { x: FLOOR.DRAIN.x, y: 0.9, z: FLOOR.DRAIN.z }, radius: 1.9, prompt: W.hotDrain, markY: 0.1, hits: markHit5(() => ({ x: FLOOR.DRAIN.x, y: 0.05, z: FLOOR.DRAIN.z }), 0.1),
-        enabled: () => phase === 'walk' && !play.busy && walk5.given >= 0 && !play.found.has('d'), onInteract() { return atDrain(); } },
+        enabled: () => phase === 'walk' && !play.busy && walk5.drain && !play.found.has('d'), onInteract() { return atDrain(); } },
       { id: 'gate', pos: SPOT.gate, radius: 2.0, prompt: W.hotGate,
         enabled: () => phase === 'walk' && !play.busy && walk5.given >= 0, onInteract() { return atGate(); } },
       stainSpot('s1', HUNT5.s1, 0.9), stainSpot('s2', HUNT5.s2, 0.9), stainSpot('s3', HUNT5.s3, 0.9),
       { id: 'armchair', pos: { x: HUNT5.arm.x, y: 1.0, z: HUNT5.arm.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT, hits: markHit5(() => ({ x: HUNT5.arm.x, y: 0.7, z: HUNT5.arm.z }), 0.1),
         enabled: () => phase === 'hunt' && !play.busy && !play.found.has('a') && hunt5.shown.has('a') && hunt5.pending !== 'a', onInteract() { return lookHere('a'); } },
       { id: 'cleanse', pos: SPOT.court, radius: 2.0, prompt: W.hotCleanse,
-        enabled: () => phase === 'fight' && !play.busy, onInteract() { return cleanse(); } },
+        enabled: () => phase === 'fight' && !play.busy && FS5.fallback, onInteract() { return cleanse(); } },   // (only if the mode could not open)
       lookSpot5('k1', 'angry', 'ph5t1'), lookSpot5('k2', 'hungry', 'ph5t2'), lookSpot5('k3', 'energy', 'ph5t3')
     ];
 
@@ -459,11 +466,13 @@
       if (phase === 'walk') walkTick(wdt);
       else if (phase === 'hunt') huntTick();
       else if (phase === 'table') tableTick();
+      else if (phase === 'fight') fightTick(wdt);               // (the cleansing's frame: c_fightstage.js)
     }
     /* what a press of SMELL means in each phase (c_play.js smellPress tells it) */
     smell.onPress = () => {
       if (phase === 'walk') {
         const sp = wayS(myX(), myZ());
+        if (distTo(FLOOR.DRAIN.x, FLOOR.DRAIN.z) < 8) walk5.drain = true;     // (the drain is offered once a SMELL has shown it)
         if (walk5.maxS - sp > 4 && sp < 4.5 && !heard.has('q5w4') && !lineBusy()) { say('q5w4'); if (worldSfx) worldSfx('u5weaker', 0.6, 1, 0); }   // "Weaker here." (once)
       } else if (phase === 'hunt') huntSmelled();
       else if (phase === 'table') tableSmelled();
@@ -480,6 +489,7 @@
     function setPhase(p) { applyPhase(PHASES.includes(p) ? p : 'walk'); saveMark(); }
     function applyPhase(saved) {
       const R = readMark(saved);
+      fightReset();                                            // (a fight left open is left: its mode, its brief, its loops)
       /* (a jump from one phase to another drops what the last one had queued: its lines, its timers, its busy hand-off:
          the v21.25 law, a phase jump leaves the line queue full) */
       phase = R.p; play.run++; play.busy = false; play.found = new Set(R.found); decOpen = false;
@@ -496,8 +506,9 @@
       else askBegin();
     }
     function storyReset() {
+      fightReset();                                            // (the cleansing's own reset: c_fightstage.js)
       play.run++; play.busy = false; play.found = new Set(); decOpen = false;
       if (kit && kit.captions) kit.captions(null);
       lookAt0('DUSK');
     }
-    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName, smell: smell.presses, heat: +sight.heat.toFixed(3), pending: hunt5.pending, wp: walk5.wp || hunt5.wp }; }
+    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName, smell: smell.presses, smellT: +smell.t.toFixed(2), heat: +sight.heat.toFixed(3), pending: hunt5.pending, wp: walk5.wp || hunt5.wp, fight: fightSnap() }; }

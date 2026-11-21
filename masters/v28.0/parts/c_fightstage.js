@@ -156,7 +156,7 @@
     function fsPan(x, z, y = 1.0) { _fsP.set(x, y, z).project(camera); return Math.max(-0.8, Math.min(0.8, (_fsP.z > 1 ? -_fsP.x : _fsP.x) * 0.8)); }
     function fsFx(name, vol, x, z) {
       if (!worldSfx || (soundOff && soundOff())) return null;
-      return worldSfx(name, vol, 0.97 + 0.06 * (FS5.rand ? FS5.rand() : 0.5), x == null ? 0 : fsPan(x, z));
+      return worldSfx(name, vol, 0.97 + 0.06 * (FS5.srand ? FS5.srand() : 0.5), x == null ? 0 : fsPan(x, z));   // (a stream of its own: the rules' is theirs)
     }
     /* THE LOOPS the fight holds (the cage's hum and its thinning, his murmur, each Prai's voice, each bubble's held note, the
        tall shape, M7's five stems, M10): each a source the part keeps, its gain aimed each frame (eased over `tau`) and, a
@@ -246,7 +246,8 @@
         const w = fsW(p.x, p.z); let tY = 0, tA = 1, tS = 1, tL = 0, ry = faceTo(w.x, w.z, zw.x, zw.z), shake = 0, ease = 0.35;
         switch (p.st) {
           case 'waiting': case 'gathered': tY = FS_SUNK; tA = 0; ease = 0.4; break;
-          case 'entering': { const u = smo(c01(p.t / Math.max(0.05, FN5.enterSecs || 1))); V.y = FS_SUNK * (1 - u); V.a = u; tY = V.y; tA = V.a; ease = 0; break; }
+          case 'entering': { if (V.a > 0.9 && V.y > -0.1) break;                 // (already standing there: the lesson's, from the brief)
+            const u = smo(c01(p.t / Math.max(0.05, FN5.enterSecs || 1))); V.y = FS_SUNK * (1 - u); V.a = u; tY = V.y; tA = V.a; ease = 0; break; }
           case 'coming': tL = 0.14; if (p.kind === 'slip') tL = 0.2; break;
           case 'pressing': tL = 0.24; shake = 0.035; break;
           case 'through': tL = 0.3; shake = 0.05; tA = 1; break;
@@ -269,7 +270,9 @@
         if (!vis) { V.was = p.st; return; }
         V.sh += wdt;
         const jx = shake ? Math.sin(V.sh * 31 + i) * shake : 0, jz = shake ? Math.cos(V.sh * 27 + i * 2) * shake : 0;
-        put(P, w.x + jx, w.z + jz, ry, V.y);
+        /* (one waiting its turn, or gathered, has no place in the rules: it sinks where it stood) */
+        if (p.st === 'waiting' || p.st === 'gathered') put(P, P.group.position.x, P.group.position.z, P.group.rotation.y, V.y);
+        else put(P, w.x + jx, w.z + jz, ry, V.y);
         P.group.rotation.order = 'YXZ'; P.group.rotation.x = V.lean; P.group.scale.setScalar(V.s);
         PRAI5.alpha(P, V.a);
         V.was = p.st;
@@ -729,7 +732,7 @@
       /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
       if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }
       PRAI5.tick(wdt);
-      if (st.stage === 'surge') fsSurgeFrame(wdt); else fsPraiFrame(wdt);
+      if (st.stage === 'surge') fsSurgeFrame(wdt); else if (st.stage !== 'brief') fsPraiFrame(wdt);   // (under the brief the nine stand as the film left them)
       fsFxFrame(wdt, ft);
       FSG.visible = true;
       /* the reach line: him to the one the bag will take, while its button shows */
@@ -831,7 +834,7 @@
        whichever way he came (the film, or a Continue landing at the brief) */
     function fightOpen() {
       const F = fightStart(), W5 = fsWords();
-      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100 }); FS5.rand = rng(0x2858);
+      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100 }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
       if (warmSounds) warmSounds(FS_WARM.concat(FIGHT.LINES));
       /* the court */
       if (kit && kit.daylight && PRESETS.TRANCE) kit.daylight(PRESETS.TRANCE, 0);

@@ -350,7 +350,7 @@
         const D = [0, 2.2, LIFT.z0], W = [0, 1.45, -8.0];
         fmTrack(t, [
           { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
-          { t: T.num3 - 1.2, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
+          { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
           { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
           { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
@@ -358,8 +358,9 @@
           { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
           { t: T.chime, name: 'doors', eye: CAR5.eye, at: [0.03, 1.45, 0.6], fp: 70, fd: 60 },
           { t: T.step, name: 'doors', eye: CAR5.eye, at: [0.02, 1.48, -2.0], fp: 70, fd: 60 },
-          { t: T.step + 1.2, name: 'step', eye: [0.02, EYE - 0.03, 1.2], at: [0.0, 1.5, -6.0], fp: 68, fd: 60 },
-          { t: T.sour, name: 'out', eye: [0.0, EYE, 0.3], at: W, fp: 66, fd: 60 },
+          /* (his two steps out, one move at a walk's pace: 2.3 m over 1.9 s; a key between them made it stop and lurch, the
+             eye 45 cm in a tenth of a second, measured: lensread.py) */
+          { t: T.sour + 0.5, name: 'out', eye: [0.0, EYE, 0.3], at: W, fp: 66, fd: 60 },
           { t: T.q5o2, name: 'out', eye: [0.0, EYE, 0.27], at: [0.0, 1.5, -9.0], fp: 64, fd: 60 },
           fmSnapKey(T.end - 0.3, 'play') || { t: T.end - 0.3, name: 'play', eye: [0, EYE, 0.25], yaw: 0, pitch: -0.04, fp: PLAYFOV5, fd: PLAYFOV5 }
         ]);
