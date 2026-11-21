@@ -1379,7 +1379,7 @@
          on through the fight's lab, gripOn) */
       let GRIP_ON = false;
       const STICK_R = 0.036, STICK_C = [0.082, -0.003], FING_R = 0.008, GAP = 0.003;
-      let TILT = 0, STICK_Y = 1.05, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
+      let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -1482,13 +1482,18 @@
       /* HIS ARM HOLDING IT UPRIGHT while he rests, walks, runs and talks (his takes' arms hang and swing: a stick through a hanging
          fist would lie across his path). His right arm solved as an arm (armHinge: the elbow on its pole's side, its hinge
          the one ALL his takes bend about, (0.805, 0, 0.593) in his upper arm's frame, read from ten of them), the fist where
-         a man stands holding a staff (in his own frame 0.30 m out to his right, 1.10 m up, 0.36 m before him: the forearm a
-         little under level, the elbow near a right angle), turned thumb-up so the stick stands upright with its Naga's head
-         toward where he faces, turned 15 degrees out; the hand's turn along the forearm carried by the forearm (thumb-up is
-         a forearm's middle), the wrist bent only toward the little finger by the shaft's slope across the palm; lifted 6 cm
-         as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). In every take but a cast, by
-         the casts' weights: in a cast (the throw, the gold, the bag, the Naga's planting) his own take's arm carries it */
-      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593], lean: 0,
+         a man stands holding a staff (in his own frame 0.30 m out to his right and 0.28 m before him, as high as the stick
+         standing on the paving puts his hand: STICK_Y up it), turned thumb-up so the stick stands upright with its Naga's
+         head toward where he faces, turned 15 degrees out; his elbow on the side that hangs it lowest, under his shoulder
+         (to his left, down and back of the line from his shoulder to his wrist: his upper arm is 0.233 m, so with his hand
+         at the stick's neck his forearm comes 21 degrees down to it and his wrist turns as much toward his thumb, a real
+         wrist's range 25; elbows put out and back, as first, held it 40 and more: tools/probes/e4c5gripfit.mjs, two rounds
+         in the game, every number jointscan's own); the hand's turn along the forearm carried by the forearm (thumb-up is a
+         forearm's middle); a step nearer him (0.22 m) the stick's line crossed his robe; leaned, its top forward, it met
+         his shins; lifted 6 cm as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). In
+         every take but a cast, by the casts' weights: in a cast (the throw, the gold, the bag, the Naga's planting) his own
+         take's arm carries it */
+      const STAFF = { fist: [-0.30, 1.10, 0.28], lift: 0.06, out: 15 * D2R, pole: [0.36, -0.65, -0.66], hm: [0.805, 0, 0.593], lean: 0,
                       casts: /^(Charged_Spell_Cast|mage_soell_cast|Right_Hand_Sword_Slash)/ };
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];

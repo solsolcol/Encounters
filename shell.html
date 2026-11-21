@@ -273,6 +273,10 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
   white-space:nowrap;background:rgba(8,10,14,.82);pointer-events:none}
 .visionBtn.urge::after{content:attr(data-open);color:#E2CCFF;box-shadow:0 0 12px rgba(201,162,255,.55)}
 .visionBtn.urgeClose::after{content:attr(data-close);color:#FFC3A6;box-shadow:0 0 12px rgba(255,142,94,.55)}
+/* v28.0 (21 Nov, PLAY's finding): with a chapter's own button under the eye in the column (body.hasCBtn: episode 4
+   chapter 5's SMELL), the eye's ask stands to its LEFT, level with it. Below it, the ask lay over that button's top (the
+   column's buttons stand 10 px apart). A chapter with no button of its own keeps the ask below, as it always was */
+body.hasCBtn .visionBtn.urge::after,body.hasCBtn .visionBtn.urgeClose::after{top:50%;left:auto;right:calc(100% + 9px);transform:translateY(-50%)}
 /* (18 Nov) held shut by the chapter: the eye dimmed and still; pressed, it shakes once and the words say why (visionHeldSay) */
 .visionBtn.held{opacity:.48;border-color:rgba(190,200,210,.4);background:rgba(16,20,26,.55);animation:none}
 .visionBtn.held .rays{opacity:0}
