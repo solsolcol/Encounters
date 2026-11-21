@@ -82,10 +82,13 @@ untouched as v12.4 asks of his), at no credits, and is put to Chad with the rest
 10. The red of the wood, above.
 
 ## Not made, and why
-- **The collector's three new pieces** (plan 9.4): amulets a believer would recognise must begin from photographs of real
-  pieces of their kind (CLAUDE.md); no such photographs were gathered, so none was made (PROMPTS.py says so). The case is
-  made EMPTY for them; the seven Yin pieces of episode 3 chapter 4 stay the declared reuse.
-- **The fan of the rite**: waits for his photograph (plan 9.4).
+- **The collector's three new pieces**: not made in the first pass (no photographs gathered then); MADE on 21 Nov 2026,
+  each from photographs of real pieces first: the section below.
+- **The fan of the rite: NOT MADE, by decision.** Chad was asked for his photograph of the fan (plan 9.4, R4) and none
+  came; he had been told it would be made from real photographs unless he sent his own, and the research found the
+  peacock-feather fan in his own Wai Kru photographs (plan 2, item 5). So the default is episode 4 chapter 3's own
+  peacock fan, `w3fan`, as a DECLARED REUSE in case three's rite. No new fan is generated. If he sends a photograph, it
+  is made from that.
 - **The holy-water bowl**: chapter 4's, his own model, a declared reuse.
 
 ## Sacred things: how their pictures were made
@@ -93,3 +96,29 @@ No statue, image or amulet was made here. The rite's things (the bags, the threa
 covered table) are plain cloth and thread drawn from words; the black bag is the casebook's own and found in no source
 (docs/research/V28.0-RITE.md 3), so it is a plain cotton bag. The altar shelf was drawn and made EMPTY (no image on it).
 The Naga staff was made from his photograph (make.sh §2-3).
+
+## The collector's three pieces (21 Nov 2026, plan 4.7 and 9.4)
+
+Each began as photographs of REAL pieces of its kind (docs/research/V28.0-PIECES.md: why these three, what makes each
+kind recognisable, every source and each photograph's checksum; nothing of a maker, a temple, a name or a price is in
+any picture or model). The reference picture was made WITH those photographs as its references (GPT Image 2.6 through
+Higgsfield, 2k, high: refs.tsv, PROMPTS.py `PIECES`), looked at full size against them, and made once (no picture was
+made again). Then Meshy at the recipe's highest (jobs-p6.json; 40 credits each), its remesh to 20,000 (5 each), prepmeshy
+(real metres on the base centre, every triangle kept, 2048 sheets: seen close on his cloth), photographed alone at 1100 px
+through tools/bslot.sh, every picture opened full size. Which presence sits on which piece is the game's own picture,
+never said as belief (V28.0-VERDICTS item 12).
+
+| piece | key | kind (presence) | image-to-3D job | remesh job | size m (w x h x l) | tris | what is wrong |
+|---|---|---|---|---|---|---|---|
+| wuathanu | w5wuathanu | Wua Thanu, the cast humped bull (angry) | 01a1fcd1-c686-7314-8e26-8a7404a11f3b | 01a1fcd6-f8cb-7321-9748-bf7438192d30 | 0.021 x 0.033 x 0.054* | 20750 | nothing broken; the patina is blotchier and a little redder than the reference's even brown (shots/wuathanu-q.jpg, -side.jpg); its head points along z (turn it where placed) |
+| rakyom | w5rakyom | Rak Yom, two small carved figures in a bottle of oil (hungry) | 01a1fcd1-d43a-7360-b0dc-0fe995d262d4 | 01a1fcf3-1b8a-74e0-a808-3c1e3a231ee7 | 0.027 x 0.060* x 0.028 | 20370 | **FAULT**: the glass came back OPAQUE grey, and the two figures are only a raised relief on its FRONT face: from the back and the sides nothing is inside, and the red figure's head bulges out through the bottle's left side (shots/rakyom-front.jpg, -side.jpg, -back.jpg). From the front, at the table's distance, it reads as the kind. The scrawled mark on the red figure follows the reference photograph's (not read; a few millimetres) |
+| hunphayon | w5hunphayon | Hun Phayon, the bound black effigy (looking for energy) | 01a1fcd1-e34d-7109-b7f7-234234c3c8c4 | 01a1fcf3-2769-7375-8e16-1dde8563bd90 | 0.063 x 0.100* x 0.024 | 20936 | nothing broken; the white marks are letter-like (the picture made them so where abstract marks were asked: they follow the photograph's yant-like strokes, not read, no maker's or temple's mark); its back has a few invented marks, one like a question mark (shots/hunphayon-back.jpg); it leans a little forward in profile |
+
+What it cost: Meshy 3 x 40 + 3 x 5 = 135 (balance 1,370 before, 1,235 after, read from the service); Higgsfield 3
+pictures, 6 credits (367.5 before, 361.5 after).
+
+**Put to Chad (v28.0: no model is made again without his yes):** the Rak Yom bottle's opaque glass and front-only
+figures. Mend here at no credits: lay it on the cloth with its front to the player and the collector (the side and back
+are not seen from either seat), and darken the grey glass a little at runtime so it reads as old glass; a see-through
+bottle would need another job (45 credits) and the generator may well come back opaque again, or a bottle built here
+with the figures as their own model inside (free, a few hours, untried). Default: the mend.

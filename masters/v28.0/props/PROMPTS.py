@@ -4,7 +4,7 @@
 # Mr Koh's home is a 1980s Singapore condominium with entrance courts (plan 8.1, C), furnished unlike chapter 4's teak
 # and doilies: brown leather, marble and dark rosewood-coloured wood, a Chinese Singaporean businessman's home.
 # NO SACRED IMAGE IS HERE: the altar shelf is drawn EMPTY, the collector's case is drawn EMPTY (its pieces are real
-# models laid in by the chapter), and the collector's three new pieces and the fan are not made (RECORD.md says why).
+# models laid in by the chapter), the fan is not made (chapter 3's w3fan, declared: RECORD.md); the collector's three pieces are PIECES below.
 # The black bag is the casebook's own thing (docs/research/V28.0-RITE.md, 3: "A BAG, and BLACK: NOT FOUND in any
 # source"), so it is a plain cotton bag; the thread is a plain ball of raw white cotton thread.
 # `q` the quality: high (a thing seen close), medium (seen across a room); `ar` the picture's shape.
@@ -54,6 +54,15 @@ P = [
  ('cushion', 'medium', '1:1', "one square floor sitting cushion about 50 cm across and 10 cm thick, covered in plain dark maroon cotton with piped edges, a little flattened in the middle from use."),
  ('altarshelf', 'high', '3:2', "a small plain wall shelf for a home altar, about 70 cm wide, 30 cm deep and 25 cm tall, shown alone: one thick board of dark varnished wood on two carved wooden brackets, with a low wooden rail along its front edge, and a plain folded white cloth laid flat on it; completely EMPTY otherwise: no statue, no picture, no candle, no bowl, nothing on it."),
  ('ceilfan', 'medium', '1:1', "a ceiling fan hanging from a short brass rod: a round brass motor housing and four wide blades of dark brown wood about 60 cm long, a small round brass ceiling cup at the top of the rod; no light under it. Seen from below at an angle."),
+ # ---- the collector's three pieces (21 Nov 2026): each began as photographs of REAL pieces of its kind, sent with the
+ # prompt as the picture's references (docs/research/V28.0-PIECES.md: the kinds, the sources, the checksums; refs.tsv:
+ # the jobs). These three are made WITH the references, so their own HEAD names the view; the text is as sent.
+]
+
+PIECES = [
+ ('wuathanu', 'high', '4:3', "the HEAD as above but 'seen from its front-left three-quarter side and slightly above'; references: the dealer's copper Wua Thanu, side and front three-quarter. THE OBJECT: a small Thai folk charm of a humped bull, about 5 cm long, of the same kind and simple handmade form as the bull in the reference photographs: cast copper-bronze with a smooth, hand-burnished, worn brown patina, a little darker in the hollows; a stylised body standing firmly on four short tapering legs; a pronounced hump over the shoulders; the head lowered as if about to charge, with two short horns pointing forward; a short tail hanging down at the back; rustic and slightly uneven like a village casting. No writing, no inscription, no marks, no base, nothing else in the picture."),
+ ('rakyom', 'high', '3:4', "the HEAD as above; reference: Wikimedia Commons 'รักยม.jpg' (CC BY 4.0). THE OBJECT: a small old glass bottle about 6 cm tall of the same kind as in the reference photograph: a squat clear apothecary bottle with rounded shoulders and a short neck, closed with a plain yellow stopper; filled to about half with a translucent amber-orange oil; standing inside it, side by side, two tiny crudely hand-carved wooden child figures about 3 cm tall, each a simple rounded head with a small topknot on a plain stubby body, one lacquered glossy BLACK and one painted RED-ORANGE, their lower halves under the oil. No label, no writing, no inscription anywhere, nothing else in the picture."),
+ ('hunphayon', 'high', '3:4', "the HEAD as above; reference: the dealer's black lacquered Hun Phayon, front. THE OBJECT: a small Thai folk effigy figure about 10 cm tall, of the same kind and crude handmade form as in the reference photograph: a simple doll-like human shape with a round head, both arms held out stiffly downward to the sides, and two short separate legs, made of reed bound round and round with cord and coated with glossy black lacquer, so the ridges of the cord wrapping show through the shiny black surface; on it, painted in thin white lines, a few plain circles round the face and a few small abstract swirls and dots on the body, arms and legs (decorative marks only, NOT letters, no readable script, no words); standing upright on its two feet. Nothing else in the picture."),
 ]
 
 if __name__ == '__main__':

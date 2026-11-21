@@ -521,8 +521,13 @@
   }
  },
  "hunphayon": {
+  "credits": 40,
+  "expires_at": 1795502428437,
   "image": "masters/v28.0/props/refs/hunphayon-2k.png",
   "image_to_3d": "01a1fcd1-e34d-7109-b7f7-234234c3c8c4",
+  "remesh": {
+   "20000": "01a1fcf3-2769-7375-8e16-1dde8563bd90"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -540,6 +545,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 53604604
   }
  },
  "jun": {
@@ -1122,8 +1130,13 @@
   }
  },
  "rakyom": {
+  "credits": 40,
+  "expires_at": 1795502456524,
   "image": "masters/v28.0/props/refs/rakyom-2k.png",
   "image_to_3d": "01a1fcd1-d43a-7360-b0dc-0fe995d262d4",
+  "remesh": {
+   "20000": "01a1fcf3-1b8a-74e0-a808-3c1e3a231ee7"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1141,6 +1154,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 51747852
   }
  },
  "shoecab": {
@@ -1504,8 +1520,13 @@
   }
  },
  "wuathanu": {
+  "credits": 40,
+  "expires_at": 1795502444298,
   "image": "masters/v28.0/props/refs/wuathanu-2k.png",
   "image_to_3d": "01a1fcd1-c686-7314-8e26-8a7404a11f3b",
+  "remesh": {
+   "20000": "01a1fcd6-f8cb-7321-9748-bf7438192d30"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1523,6 +1544,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 66874780
   }
  },
  "zavier": {

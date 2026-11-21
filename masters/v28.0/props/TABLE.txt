@@ -46,3 +46,8 @@ duffel        w5duffel      0.60  w  12000  1024  0
 cushion       w5cushion     0.50  w   6000   512  0
 altarshelf    w5altarshelf  0.70  w  16000  1024  0
 ceilfan       w5ceilfan     1.30  w  12000  1024  0
+# ---- 21 Nov 2026: the collector's three pieces (plan 4.7, 9.4), each from photographs of real pieces of its kind first
+# (docs/research/V28.0-PIECES.md). Real sizes from the dealers' measures; seen close on his cloth: 2048, every triangle.
+wuathanu      w5wuathanu    0.054 l  20000  2048  0
+rakyom        w5rakyom      0.060 h  20000  2048  0
+hunphayon     w5hunphayon   0.100 h  20000  2048  0
