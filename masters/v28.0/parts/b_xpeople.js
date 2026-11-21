@@ -43,10 +43,13 @@
       if (!block0.has(solid)) block0.set(solid, b.clone());
       if (on) b.copy(block0.get(solid)); else b.makeEmpty();
     }
+    /* (feetscan, LEVEL=1, at every phase: both bodies' lowest skin 1.7 to 1.8 cm under the floor where their takes are set
+       down for -0.3 cm; lifted 1.2 cm, a sole sinks half a centimetre, as a body on a floor does: v9.3) */
+    const FEET_LIFT = 0.012;
     function standAt(P, st) {
       if (!P) return;
       if (!st) { P.hidden = true; P.group.visible = false; return; }
-      P.hidden = false; put(P, st.x, st.z, st.ry);
+      P.hidden = false; put(P, st.x, st.z, st.ry, FEET_LIFT);
       if (P.ready) P.group.visible = true;
     }
     function worldPhase(p, place = true) {

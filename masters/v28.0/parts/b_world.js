@@ -427,7 +427,7 @@
       bar(mSteel, [Lf.x0 + 0.1, 0.92, Lf.z1 - 0.06], [Lf.x1 - 0.1, 0.92, Lf.z1 - 0.06], 0.02, 8);
       /* the doors: two steel leaves in the end wall's opening, each LIFT.door wide; liftDoors(k) slides them apart */
       for (const [g, s] of [[liftDoorL, -1], [liftDoorR, 1]]) {
-        const m = new THREE.Mesh(new THREE.BoxGeometry(LIFT.door + 0.02, 2.1, 0.04), mSteel); m.position.set(s * LIFT.door / 2, 1.05, 0); g.add(m);
+        const m = new THREE.Mesh(new THREE.BoxGeometry(LIFT.door - 0.004, 2.1, 0.04), mSteel); m.position.set(s * LIFT.door / 2, 1.05, 0); g.add(m);
         g.position.set(0, 0, WALK.z1 + 0.06); world.add(g); owned.push(m.geometry); }
       stand('w5liftpanel', Lf.x1 - 0.03, 0.55, Lf.z0 + 0.35, -Math.PI / 2);
     }
@@ -534,7 +534,7 @@
       for (let z = -0.8; z > WALK.z0 + 0.5; z -= 4.0) L.push({ x: 0.0, y: WALK.soffit - 0.168, z, ry: 0 });
       for (let x = -3.2; x > WALK.endX + 0.5; x -= 4.0) L.push({ x, y: WALK.soffit - 0.168, z: (WALK.z0 + WALK.turnZ) / 2, ry: 0 });
       many('w5walklight', L, world, 0.2); things.walkLights = L; }
-    const DRAIN = { x: WALK.edge - 0.33, z: -8.7 };
+    const DRAIN = { x: WALK.edge - 0.42, z: -8.7 };                      // (clear of the balustrade's plinth: clipscan)
     things.grating = place('w5grating', DRAIN.x, 0.0, DRAIN.z, Math.PI / 2, { name: 'grating' });
     /* --- his gate between its posts (the gate swings on its left post into the court: shut on the walkway, open from the
        hunt on: gateOpen); the posts' caps a bright terracotta, as made */
@@ -562,11 +562,16 @@
     place('w5slippers', DOOR_FRONT.x0 - 0.12, 0.0, HOUSE.face - 0.55, Math.PI + 12 * DEG, { name: 'slippers' });
     /* --- his front door, hung in its frame: the leaf's hinge edge (its +x, ragged) on the frame's west jamb, which covers
        it; shut on the walkway, open from the hunt (doorOpen) */
-    const doorHinge = new THREE.Group(); doorHinge.position.set(DOOR_FRONT.x0 + 0.005, 0, HOUSE.face - 0.1); world.add(doorHinge);
+    /* (hinged at the wall's inner face, so it swings into the room clear of the wall: clipscan found the leaf, hinged in the
+       wall's middle, back through the wall and into the shoe cabinet) */
+    const doorHinge = new THREE.Group(); doorHinge.position.set(DOOR_FRONT.x0 + 0.005, 0, LIVING.z0 - 0.05); world.add(doorHinge);
+    { const mStop = M({ color: 0x3a2618, roughness: 0.6 }), zs = LIVING.z0 - 0.115;      // the door stops, on the court side of the leaf: 3.5 cm over each edge
+      box(mStop, DOOR_FRONT.x0 + 0.035, DOOR_FRONT.h / 2, zs, 0.07, DOOR_FRONT.h, 0.03); box(mStop, DOOR_FRONT.x1 - 0.035, DOOR_FRONT.h / 2, zs, 0.07, DOOR_FRONT.h, 0.03);
+      box(mStop, (DOOR_FRONT.x0 + DOOR_FRONT.x1) / 2, DOOR_FRONT.h - 0.035, zs, DOOR_FRONT.x1 - DOOR_FRONT.x0, 0.07, 0.03); }
     things.door = place('w5frontdoor', 0.395, 0, 0, Math.PI, { name: 'frontdoor', wood: true });
     world.remove(things.door); doorHinge.add(things.door);
-    function doorOpen(k) { doorHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 100 * DEG; }
-    solidXZ(DOOR_FRONT.x0 - 0.05, HOUSE.face - 0.05, DOOR_FRONT.x0 + 0.08, HOUSE.face + 0.75);                 // the leaf, open, along the wall
+    function doorOpen(k) { doorHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 90 * DEG; }
+    solidXZ(DOOR_FRONT.x0 - 0.05, LIVING.z0 - 0.05, DOOR_FRONT.x0 + 0.07, LIVING.z0 + 0.75);                 // the leaf, open, along the wall                 // the leaf, open, along the wall
     /* --- inside, by the door: the shoe cabinet against the front wall, west of the door, scaled to 0.35 m deep and
        darkened (RECORD.md 4; its ragged edges stay); the place under it is the first stain's */
     const SHOE = { x: (WIN_A.x1 + DOOR_FRONT.x0) / 2, z: LIVING.z0 + 0.175 + 0.01 };
@@ -578,8 +583,9 @@
     /* (a drawn curtain is lit from the room: its back glows a little in the lamps' warmth, seen from the court at dusk) */
     const lamplit = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if (mt && mt.emissive) { mt.emissive.set(0x2a2824); if (mt.map) mt.emissiveMap = mt.map; } });
     for (const Wn of [WIN_A, WIN_B]) { const xm = (Wn.x0 + Wn.x1) / 2;
-      place('w5curtain', xm - 0.07, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.16, 0, { sx: 0.82, done: lamplit });
-      place('w5curtain', xm + 0.09, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.26, 0, { sx: 0.80, done: lamplit }); }
+      /* (clipscan: 10 cm apart in z the two cloths crossed; each is 0.195 deep, so 0.22 apart) */
+      place('w5curtain', xm - 0.04, HOUSE.ceil - 2.40 - 0.05 + 0.04, LIVING.z0 + 0.10, 0, { sx: 0.72, done: lamplit });
+      place('w5curtain', xm + 0.04, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.32, 0, { sx: 0.70, done: lamplit }); }
     place('w5curtain', LIVING.x0 + 0.2, HOUSE.ceil - 2.40 - 0.05, TERRACE.z1 + 0.42, Math.PI / 2, { sx: 0.55 });
     /* --- the living room: the sofa facing the television across the low table, the old armchair at the table's north
        end (where his nose is once behind the truth: 4.3), the floor lamp by the sofa's end, the television's console on
@@ -595,20 +601,25 @@
     solidXZ(ARM.x - 0.47, ARM.z - 0.42, ARM.x + 0.47, ARM.z + 0.42, 0.82);
     things.floorLamp = place('w5floorlamp', SOFA.x - 0.05, 0, SOFA.z + 1.38, 0, { name: 'floorlamp' });
     solidXZ(SOFA.x - 0.3, SOFA.z + 1.12, SOFA.x + 0.2, SOFA.z + 1.64, 1.5);
-    const CON_TOP = 0.40;                                                                                     // the console's top (photographed)
-    things.lampTV1 = place('w5tablelamp', TV.x, CON_TOP, TV.z - 0.72, 0, { name: 'tablelamp1' });
-    things.lampTV2 = place('w5tablelamp', TV.x, CON_TOP, TV.z + 0.72, 0, { name: 'tablelamp2' });
+    /* (the console's top is 0.45 and its television fills it to 0.65 m either side of its middle, measured from the file:
+       no table lamp fits on it. The armchair's reading lamp stands beside it; the table lamp is on the sideboard) */
+    const ARMLAMP = { x: ARM.x + 0.78, z: ARM.z + 0.12 };
+    things.floorLamp2 = place('w5floorlamp', ARMLAMP.x, 0, ARMLAMP.z, 0, { name: 'floorlamp2' });
+    solidXZ(ARMLAMP.x - 0.25, ARMLAMP.z - 0.25, ARMLAMP.x + 0.25, ARMLAMP.z + 0.25, 1.5);
     place('w5wallclock', -6.15, 1.42, LIVING.z1 - 0.06 - 0.062, Math.PI, { name: 'wallclock', wood: true });
     /* --- the dining room: the table (scaled to 0.75 m tall) and four chairs round it, the pendant over it, the sideboard
        against its north wall, a framed picture over it */
-    const DT = { x: -10.4, z: 0.0 };
+    const DT = { x: -10.4, z: -0.15 };
     place('w5dintable', DT.x, 0, DT.z, 0, { name: 'dintable', wood: true, sy: 0.75 / 0.873 });
     solidXZ(DT.x - 0.75, DT.z - 0.75, DT.x + 0.75, DT.z + 0.75, 0.75);
-    for (const [dx, dz, ry] of [[0, -0.78, 0], [0, 0.78, Math.PI], [-0.78, 0, Math.PI / 2], [0.78, 0, -Math.PI / 2]])
+    for (const [dx, dz, ry] of [[0, -0.80, 0], [0, 0.70, Math.PI], [-0.80, 0, Math.PI / 2], [0.80, 0, -Math.PI / 2]])
       place('w5dinchair', DT.x + dx, 0, DT.z + dz, ry, { wood: true });
     things.pendant = place('w5pendant', DT.x, HOUSE.ceil - 0.45 - 0.35, DT.z, 0, { name: 'pendant' });
-    place('w5sideboard', DT.x, 0, DINING.z1 - 0.06 - 0.283, Math.PI, { name: 'sideboard', wood: true });
-    solidXZ(DT.x - 0.85, DINING.z1 - 0.65, DT.x + 0.85, DINING.z1, 1.0);
+    const SB = { x: -10.4, z: DINING.z1 - 0.06 - 0.283, top: 0.77 };
+    place('w5sideboard', SB.x, 0, SB.z, Math.PI, { name: 'sideboard', wood: true });
+    /* the table lamp at its east end, clear of the vase (the sideboard's top 0.77 m: the file's measure; turned, its own -x is the world's +x) */
+    things.tableLamp = place('w5tablelamp', SB.x + 0.62, SB.top, SB.z + 0.02, 0, { name: 'tablelamp' });
+    solidXZ(SB.x - 0.85, DINING.z1 - 0.65, SB.x + 0.85, DINING.z1, 1.0);
     /* the pictures in their frames (w5frame's white card is the chapter's to fill): ink landscapes, mountains and water,
        painted here (a Chinese home of the period; nobody in them: no face is drawn into the world) */
     function inkLandscape(seed) {
@@ -627,7 +638,7 @@
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.33), inkLandscape(seed)); m.position.set(0, 0.2305, 0.0255); g.add(m); owned.push(m.geometry);
     }
     framed(ARM.x, 1.45, LIVING.z1 - 0.06 - 0.024, Math.PI, 28561);
-    framed(DT.x, 1.5, DINING.z1 - 0.06 - 0.024, Math.PI, 28562);
+    framed(SB.x, 1.5, DINING.z1 - 0.06 - 0.024, Math.PI, 28562);
     /* --- THE RITE'S THINGS, made ready and put away (the films and the play show them where their story puts them; each
        a handle on the stage: stage.things): the black bag open and tied, the reel of white thread (set down on its ball:
        RECORD.md 6, its loose end into the paving), the wrapped staff, its cloth, the Naga stick, Jun's duffel */
@@ -666,11 +677,11 @@
       const L = { sp, mat, pm, k: 1, o0: mat.opacity, p0: pm ? pm.opacity : 0 }; lights.push(L); return L;
     }
     lightAt(SOFA.x - 0.05, 1.42, SOFA.z + 1.38, 0.55, { x: SOFA.x, y: 0.006, z: SOFA.z + 1.2, w: 2.4, h: 2.4, rx: -Math.PI / 2 });
-    lightAt(TV.x, CON_TOP + 0.38, TV.z - 0.72, 0.42, { x: TV.x - 0.02, y: 1.3, z: TV.z - 0.72, w: 1.4, h: 1.4, ry: -Math.PI / 2 });
-    lightAt(TV.x, CON_TOP + 0.38, TV.z + 0.72, 0.42, { x: TV.x - 0.02, y: 1.3, z: TV.z + 0.72, w: 1.4, h: 1.4, ry: -Math.PI / 2 });
+    lightAt(ARMLAMP.x, 1.42, ARMLAMP.z, 0.55, { x: ARMLAMP.x - 0.2, y: 0.006, z: ARMLAMP.z - 0.1, w: 2.2, h: 2.2, rx: -Math.PI / 2 });
+    lightAt(SB.x + 0.62, SB.top + 0.38, SB.z + 0.02, 0.42, { x: SB.x + 0.62, y: 1.4, z: DINING.z1 - 0.062, w: 1.4, h: 1.4, ry: Math.PI });
     lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 });
-    const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6 }),
-                    lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6 })];
+    const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI }),
+                    lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI })];
     function lamp(i, k) { const L = lights[i]; if (!L) return; L.k = k; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
     function courtLamps(k) { for (const L of courtL) { L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; } }
 
