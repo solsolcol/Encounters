@@ -15819,8 +15819,9 @@ creditsLayer?.addEventListener('click', e => {
 
 // every plain button answers with the same soft click (the mute button stays
 // silent — a click under a button that just silenced everything is a bug)
+/* (v27.0, seam 66: and the loss card's Restart chapter) */
 for (const id of ['startBtn', 'creditsLink', 'credClose', 'stepBack',
-                  'nextBtn', 'againBtn', 'retryBtn', 'restartChBtn', 'cineSkip']) {   // (v27.0, seam 66: and the loss card's Restart chapter)
+                  'nextBtn', 'againBtn', 'retryBtn', 'restartChBtn', 'cineSkip']) {
   $(id)?.addEventListener('click', () => snd('uiclick', 0.5));
 }
 
