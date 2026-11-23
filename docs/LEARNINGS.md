@@ -8908,3 +8908,19 @@ an edge, tanh between, so a swinging arm slows into its edge and never stops dea
 wrist's four bends and the collarbone's shrug, the shrug's edge rising with the arm (10 degrees over its bind hanging, 25
 level, 41 overhead), the same edge jointscan now holds a collarbone to. A take's value is kept as the mixer last wrote it
 and taken back before each frame's limit (v11.5's law), so nothing stacks.
+
+**A lens a wall holds keeps its height and looks down** (v28.0, R41; main.js `tag.crane`, tagPitchFor). Drawn in along its
+own line toward his head, a follow lens held at a wall comes DOWN as it comes in (the line runs from his head up to the
+boom): at the yard's gate end it stood half a metre behind his head at 1.8 m and his head filled the picture. Held by a box
+alone, with its pitch fixed, it stood where it stopped while he walked on under it, out of the bottom of the picture. The
+cure is both halves together: hold it over the ground (its height kept) and turn it down by exactly the angle its hold adds
+to the line down to his head, so his head stays where the whole boom puts it on the screen, with a cap (50 here) past which
+he is let sink in the frame rather than the court ahead be lost. During a switch's glide each body's pitch is its own and
+the two are blended by the glide's own share: the angle from a gliding lens to the new head is not either one's.
+
+**A hand turned by what it holds sets its wrist by where its forearm comes from** (v28.0, R41; c_fightstage.js swing5).
+With a staff upright in a thumb-up fist, the hand's turn is the staff's; its wrist's bend (jointscan's own two angles, read
+against the forearm's line) is then fixed by the elbow's place on the circle every elbow for that wrist lies on. Swing it
+there (every few degrees, then finer) to the least swing whose wrist, forearm turn and elbow stand inside a margin of the
+check's lines, each degree past costing its square and the swing a hundredth of its degrees squared, and where the elbow's
+own place already holds them, do not move it at all: what was right stays bit for bit as it was.

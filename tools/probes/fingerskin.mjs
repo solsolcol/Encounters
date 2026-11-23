@@ -29,7 +29,12 @@ for (const F of process.argv.slice(2)) {
   const ibm = skin.getInverseBindMatrices(), at = (i) => { const m = []; for (let k = 0; k < 16; k++) m.push(ibm.getArray()[i * 16 + k]); return mul(inv(m), [0, 0, 0]); };
   const J = (nm) => { const i = names.indexOf(nm); return i < 0 ? null : at(i); };
   const fingers = {};
-  for (const f of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) { const p = [1, 2, 3, 4].map(k => J(SIDE + 'Hand' + f + k)); if (p.every(Boolean)) fingers[f] = p; }
+  /* (a finger's fourth joint may be an END SITE under another name: Meshy's rigs end the middle finger at 'Hand_End' or, once
+     glTF has stripped the underscore, 'HandEnd' (Grandmaster Pho's, R39; Ton's, chapter 3's). A finger skipped for a name
+     it lacks is a finger never read (R40): its end site stands in for the fourth joint, and a finger still lacking one is said) */
+  const end4 = (f) => J(SIDE + 'Hand' + f + 4) || (f === 'Middle' ? (J(SIDE + 'Hand_End') || J(SIDE + 'HandEnd')) : null);
+  for (const f of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) { const p = [1, 2, 3].map(k => J(SIDE + 'Hand' + f + k)).concat([end4(f)]);
+    if (p.every(Boolean)) fingers[f] = p; else if (p[0]) console.log(F, SIDE, f, 'has no end joint by any name: not read'); }
   if (!Object.keys(fingers).length) { console.log(F, 'no', SIDE, 'finger bones'); continue; }
   const out = {};
   for (const node of root.listNodes()) { const mesh = node.getMesh(); if (!mesh || !node.getSkin()) continue; const M = node.getWorldMatrix();
