@@ -381,9 +381,10 @@
       for (let i = 0; i < 9; i++) { const q = new THREE.PlaneGeometry(2.4 + r() * 1.6, 1.6 + r() * 1.0); q.rotateX(-Math.PI / 2); owned.push(q);
         const me = new THREE.Mesh(q, mMist); me.position.set(COURT.x0 + 0.6 + r() * (COURT.x1 - COURT.x0 - 1.2), 0.05 + r() * 0.12, COURT.z0 + 1.0 + r() * (HOUSE.face - COURT.z0 - 2.0));
         me.userData.base = me.position.clone(); me.userData.ph = r() * 6.28; me.renderOrder = 2; g.add(me); mist.push(me); }
-      /* his gold, at his shoulders: a soft warm light behind them (gold is his alone, v25.5), drawn over what stands at its
-         depth (v25.5's law for a card of light among a body) */
-      const mGold = new THREE.SpriteMaterial({ map: soft, color: 0xffc860, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending }); mats.push(mGold);
+      /* his gold, at his shoulders: a soft warm light behind them (gold is his alone, v25.5), behind him as the lens sees him
+         (below, in gold()) */
+      const mGold = new THREE.SpriteMaterial({ map: soft, color: 0xffc860, transparent: true, opacity: 0, depthWrite: false, depthTest: true, blending: THREE.AdditiveBlending }); mats.push(mGold);
+      const _gC = new THREE.Vector3(), _gD = new THREE.Vector3();
       const gold = new THREE.Sprite(mGold); gold.scale.set(1.3, 1.0, 1); gold.renderOrder = 4; world.add(gold); gold.visible = false;
       let k0 = 0, gk = 0;
       return {
@@ -400,7 +401,15 @@
         /* his gold at his shoulders, by k, where his body stands (his neck's height, a little behind) */
         gold(k, P = cast.pho) { gk = k; gold.visible = k > 0.001 && P && P.ready && P.group.visible;
           if (!gold.visible) return; const nb = boneOf(P, 'Neck') || P.head; if (nb) nb.getWorldPosition(gold.position); else gold.position.set(P.group.position.x, 1.45, P.group.position.z);
-          const ry = P.group.rotation.y; gold.position.x -= Math.sin(ry) * 0.12; gold.position.z -= Math.cos(ry) * 0.12; gold.position.y -= 0.08;
+          /* (BEHIND HIM AS THE LENS SEES HIM, R28/R33: 0.35 m on the far side of his neck from the camera, and tested against
+             depth, so his body stands in front of the card and the gold is a light round his shoulders and head. Laid behind his
+             neck by his own facing and drawn over everything, it lay OVER his back whenever the lens was behind him, as the
+             fight's boom always is: the add summed his white robe to a blown-out white and his skin to yellow (the review's
+             picture, R28; v8.8: additive colour over a bright surface sums to white). 0.35 m keeps the card behind his body's
+             own depth, so it is never cut through him along a hard line, which was v25.5's reason for drawing it untested) */
+          camera.getWorldPosition(_gC); _gD.subVectors(gold.position, _gC); _gD.y = 0; const dl = _gD.length();
+          if (dl > 1e-3) gold.position.addScaledVector(_gD, 0.35 / dl); else { const ry = P.group.rotation.y; gold.position.x -= Math.sin(ry) * 0.35; gold.position.z -= Math.cos(ry) * 0.35; }
+          gold.position.y -= 0.08;
           mGold.opacity = 0.55 * k; }
       };
     })();

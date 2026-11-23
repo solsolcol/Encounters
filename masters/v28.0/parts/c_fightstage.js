@@ -1386,7 +1386,7 @@
       const STAFF_ON = true;
       /* (held OFF until photographed and measured: the stick stands as it did, and his hand is his file's; a probe turns it
          on through the fight's lab, gripOn) */
-      let GRIP_ON = false;
+      let GRIP_ON = true;
       const STICK_C = [0.082, -0.003];
       let STICK_R = 0.036, FING_R = 0.008, GAP = 0.003;
       /* (the shaft is carved, not turned: round its middle line its ridges stand 3.7 to 4.0 cm out and its grooves 3.2 to 3.6,
