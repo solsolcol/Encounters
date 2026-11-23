@@ -10,7 +10,7 @@
      GOLD   Grandmaster Pho played, held in his gold's take; the gold gathering (labGather) and the wheel going out (labWheel
             at 0.1, 0.35 and 0.7 s);
      BIND   the bind's bolt, its snap and its cage (labBind at 0.12, 0.35, 0.8 and 1.6 s), Master Zavier held in his push;
-     SIDE   the tag mode left, and his run and his three casts photographed from 3 m at his side and at his front;
+     SIDE   the tag mode left, and his run and his three casts photographed from his side at 1.45 m (inside the court's wall: from 3 m the lens stood in the wall) and from 3 m at his front;
      SHAKE  the wheel let go and the lens's place in the world read every drawn frame for 1.6 s: how far it moves from where
             it stood, and for how long.
    OUT/r34.json holds every picture's place and the shake's curve; the pictures are OUT/<n>-<what>.png.
@@ -110,7 +110,7 @@ if (ONLY.includes('side')) {
   await frames(6);
   const aim = async (view) => { const at = await p.evaluate((view) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.zav, V = P.group.position.constructor;
       P.group.updateWorldMatrix(true, true); const g = P.group.position, ry = P.group.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), lx = Math.cos(ry), lz = -Math.sin(ry);
-      const c = view === 'front' ? new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0) : new V(g.x - lx * 3.0, 1.3, g.z - lz * 3.0), tg = new V(g.x, 1.0, g.z);
+      const c = view === 'front' ? new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0) : new V(g.x - lx * 1.45, 1.3, g.z - lz * 1.45), tg = new V(g.x, 1.0, g.z);
       E.yaw.position.copy(c); const d = tg.clone().sub(c); E.yaw.rotation.y = Math.atan2(-d.x, -d.z); E.pitch.rotation.x = Math.atan2(d.y, Math.hypot(d.x, d.z));
       return { cam: c.toArray().map(x => +x.toFixed(2)), at: [g.x, g.z].map(x => +x.toFixed(2)) }; }, view); await frames(4); return at; };
   const sets = [['Running', [0, 0.25, 0.5, 0.75].map(u => u * (ZT.Running || 0)), 'side']].concat(CASTS.map(([m, take, mid, top]) => [take, [mid, top], 'front']));
