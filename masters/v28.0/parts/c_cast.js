@@ -150,12 +150,22 @@
        when his fingers close round the stick, that fingertip stays where his open hand held it, straight out past the others.
        Every other finger's tip is its own last bone's. The end site is made a child of the middle finger's last bone where it
        stands (attach keeps its place in the world, at rest the same as it was): open, nothing moves; closed, the tip goes
-       with its finger) */
+       with its finger. FIRST its tracks come out of his takes: all nineteen hold it still at its rest, 0.000 cm and 0.00
+       degrees from it at every key (measured on his file), but each of them writes it again every frame as the HAND's child,
+       and under the finger those same numbers threw it 14.6 cm out along the finger and dragged the tip's skin through the
+       stick (the first try, measured by e4c5grip.mjs before it went anywhere: 124 points of his fingers inside the shaft) */
+    const END5 = /RightHandEnd\./;
     whenReady(cast.pho, (P) => {
       const end = boneOf(P, 'RightHandEnd'), m3 = boneOf(P, 'RightHandMiddle3');
       if (!end || !m3 || end.parent === m3) return;
+      let n = 0;
+      for (const name of Object.keys(P.acts)) { const A = P.acts[name], clip = A.getClip(), keep = clip.tracks.filter(t => !END5.test(t.name));
+        if (keep.length === clip.tracks.length) continue;
+        const w = P.w[name] || 0, time = A.time; A.stop(); P.mixer.uncacheAction(clip);
+        const A2 = P.mixer.clipAction(new THREE.AnimationClip(clip.name, clip.duration, keep)); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); A2.time = time;
+        P.acts[name] = A2; n += clip.tracks.length - keep.length; }
       m3.updateWorldMatrix(true, false); end.updateWorldMatrix(true, false); m3.attach(end);
-      console.log('HANDS5: ' + P.key + "'s middle fingertip carried by its own last bone (RightHandEnd under RightHandMiddle3)");
+      console.log('HANDS5: ' + P.key + "'s middle fingertip carried by its own last bone (RightHandEnd under RightHandMiddle3; " + n + ' still tracks of it out of his takes)');
     });
 
     /* (R35, 23 Nov: THE ARMS HELD TO A REAL BODY'S RANGE, after every take, in every pose: the class, never pose by pose. The
@@ -165,7 +175,8 @@
        Grandmaster Pho's left shoulder back 66 to 71 in his run and his gold. Each frame, after the takes and his grip, each
        arm is read by jointscan's own measures (the same formulas, so the check and the limit never differ) and, only where
        it is near or past them, eased inside: the upper arm turned forward toward the body's front to LIM5.back (the forearm
-       and hand going with it), and the hand turned on the wrist inside LIM5's bends (its twist and its fingers kept). A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
+       and hand going with it), and the hand turned on the wrist inside LIM5's bends (its twist and its fingers kept).
+       A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
        v11.5), so nothing stacks, and given back where the arm is inside its range. Grandmaster Pho's right arm is his grip's
        (PHOGRIP5 lays it) while the stick is in his hand) */
     /* (each limit SOFT: [the knee where it begins to give, the edge it never passes], degrees; between them the take's bend is
