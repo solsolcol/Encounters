@@ -36,6 +36,7 @@
 
     const world = new THREE.Group(); world.name = 'e4c5'; scene.add(world);
     const solids = [];
+    let LIFT_SHUT5 = null;                    // (the lift's doors as a solid: shut in play, open in the opening's picture: c_nav.js navFilmOpen)
     const matProxy = M({ color: 0x8d7a66, roughness: 0.9 });
     /* a thing he cannot walk through: a box, never drawn (collision is a column from the floor: v5.03) */
     const solidBox = (w, h, d, x, y, z, ry = 0) => {
@@ -283,7 +284,7 @@
       wallZ(mFace, W.endX - 0.1, 0.2, W.z0, W.turnZ + 0.2, [], 0, s);                                          // the walkway's west end
       /* the end wall at the lift (z 1.2): the lift's doors in it (LIFT.door each side of the middle) */
       wallX(mFace, W.z1 + 0.075, 0.15, W.x0 - 0.2, W.edge + 0.12, [{ x0: -LIFT.door, x1: LIFT.door, y0: 0, y1: 2.1 }], 0, s);
-      solidXZ(-LIFT.door, W.z1, LIFT.door, W.z1 + 0.15);                                                         // the doors, shut in play
+      LIFT_SHUT5 = solidXZ(-LIFT.door, W.z1, LIFT.door, W.z1 + 0.15);                                            // the doors, shut in play
       /* the lift's hall: its call button and the storey's number over the doors (painted, as a builder's plate is) */
       const plate = (() => { const [c, x] = canvas(256, 128); x.fillStyle = '#9aa0a5'; x.fillRect(0, 0, 256, 128);
         x.fillStyle = '#1e2024'; x.fillRect(84, 14, 88, 100); x.fillStyle = '#d65b2c'; x.font = 'bold 80px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('3', 128, 66);

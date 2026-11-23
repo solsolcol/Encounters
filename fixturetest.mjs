@@ -2887,6 +2887,33 @@ K.tagCraneOpen = await tagCheckSrc('craneOpen', `
   E.tagCrane(null); await frames(1);
   return R;`);
 
+/* v28.0 (R76): a body's own WALL clearance (kit.tag's bodies[].wall): absent, a step beside a blocker is as it was; declared,
+   a step that would bring the body within `wall` of a blocker is stopped, one beyond it is not, and one that takes it no
+   nearer to a blocker it already stands too near is allowed */
+K.tagWallSeam = await tagCheckSrc('wall', `
+  const R = {}, A = st.fightBodies.a, o = A.position;
+  const boxes = (st.blockers || []).filter(b => !b.isEmpty() && b.min.y < 1.2 && b.max.y > 1.2);
+  const dist = (b, x, z) => Math.hypot(Math.max(b.min.x - x, 0, x - b.max.x), Math.max(b.min.z - z, 0, z - b.max.z));
+  const b = boxes.slice().sort((p, q) => dist(p, o.x, o.z) - dist(q, o.x, o.z)).find(q => dist(q, o.x, o.z) > 0.6);
+  R.found = !!b; if (!b) return R;
+  /* (the face of it that looks toward the body: points out from it on the body's side) */
+  const sx = o.x > b.max.x ? 1 : o.x < b.min.x ? -1 : 0, sz = sx ? 0 : (o.z > b.max.z ? 1 : -1);
+  const fx = sx > 0 ? b.max.x : b.min.x, fz = sz > 0 ? b.max.z : b.min.z;
+  const at = (d, side = 0) => sx ? [fx + sx * d, Math.max(b.min.z + 0.15, Math.min(b.max.z - 0.15, o.z)) + side] : [Math.max(b.min.x + 0.15, Math.min(b.max.x - 0.15, o.x)) + side, fz + sz * d];
+  const [p0, p1] = [at(0.2), at(0.45)];
+  const lone = (q) => boxes.every(c => c === b || dist(c, q[0], q[1]) > 0.5);
+  R.free = !E.tagBlocked(p0[0], p0[1]) && !E.tagBlocked(p1[0], p1[1]) && lone(p0) && lone(p1);
+  R.absentAsBefore = E.tagWall('a', 0, p0[0], p0[1]) === false && E.tagWall('a', 0, p1[0], p1[1]) === false;
+  R.stopsWithin = E.tagWall('a', 0.3, p0[0], p0[1]) === true;
+  R.passesBeyond = E.tagWall('a', 0.3, p1[0], p1[1]) === false;
+  /* (stood too near already: a step along the face, no nearer, is allowed; a step nearer is not) */
+  const ox = o.x, oz = o.z, s0 = at(0.1); o.x = s0[0]; o.z = s0[1];
+  const along = at(0.1, 0.05), nearer = at(0.05);
+  R.alongAllowed = E.tagWall('a', 0.3, along[0], along[1]) === false;
+  R.nearerStopped = E.tagWall('a', 0.3, nearer[0], nearer[1]) === true;
+  o.x = ox; o.z = oz;
+  return R;`);
+
 /* the walk BY THE SCREEN (W is away down the court, D to its right), the other body still; the look dead */
 const walkKey = async (key, body, ms = 40000) => { await p.keyboard.down(key); const ok = await tagUntil(body, ms); await p.keyboard.up(key); return ok; };
 await tagEval(`window.__w0 = { a: st.fightBodies.a.position.clone(), b: st.fightBodies.b.position.clone(), y: E.yaw.rotation.y, p: E.pitch.rotation.x }; return true;`);

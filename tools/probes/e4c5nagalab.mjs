@@ -50,6 +50,9 @@ log('film started', await p.evaluate(() => window.__enc.kit.film('together')));
 await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.getState() === 'cine' && window.__enc.cine.t() > 0.2, null, { timeout: 1500000, polling: 250 });
 await p.waitForFunction(() => { try { return !!window.__enc.stage.ready() && window.__enc.stage.films.NAGA5.ready(); } catch { return false; } }, null, { timeout: 300000, polling: 500 });
 await p.addStyleTag({ content: '#caption{display:none !important}' }).catch(() => {});
+/* the film held where it stands the moment it is up (a seek pauses it): a job that runs long (an eval) must not let it play
+   on to its end, where every later seek lands on play (lab-naga2's first run: every picture at the fight's camera) */
+await p.evaluate(() => window.__enc.cine.seek(Math.max(0.25, window.__enc.cine.t())));
 /* the Naga against the lens, in the page */
 await p.evaluate(() => {
   window.__nagaMeasure = () => {

@@ -1759,12 +1759,12 @@
           /* (R49: each a tile of the party list: its portrait (the game's own render of him, masters/v28.0/props/portraits.py),
              the small line over its name, and its colour: his gold, his student's violet, the cage's own) */
           { id: 'pho', obj: pho.group, name: W5.btnPho, title: W5.btnPhoTitle, color: '#FFC860', pic: have('p5portpho') ? 'p5portpho' : null,
-            speed: FN5.phoWalk || 1.2, radius: 0.45, acts: [
+            speed: FN5.phoWalk || 1.2, radius: 0.45, wall: footOf(pho).a - NAV5.grow, acts: [
             { id: 'flame', slot: 'main', label: W5.btnFire, icon: FS_ICON.flame, key: 'Space' },
             { id: 'shock', slot: 'second', label: W5.btnShockwave, icon: FS_ICON.shock, key: 'KeyQ' },
             { id: 'bag', slot: 'third', label: W5.btnBag, icon: FS_ICON.bag, key: 'KeyE' }] },
           { id: 'zavier', obj: zav.group, name: W5.btnZavier, title: W5.btnZavierTitle, color: '#9B6BFF', pic: have('p5portzav') ? 'p5portzav' : null,
-            speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
+            speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, wall: footOf(zav).a - NAV5.grow, acts: [
             { id: 'bind', slot: 'main', label: W5.btnBind, icon: FS_ICON.bind, key: 'Space' },
             { id: 'lend', slot: 'third', label: W5.btnLend, icon: FS_ICON.lend, key: 'KeyE' }] }
         ],

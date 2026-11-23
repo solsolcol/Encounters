@@ -440,6 +440,9 @@
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
            party: {},
+           /* (R60, 23 Nov: "Show a floating arrow pointing downwards at the character that is currently under control": the
+              engine's seventy-first seam, 2.35 m over his feet, half a metre over either head) */
+           arrow: { y: 2.35 },
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
@@ -526,14 +529,15 @@
       // THE CLEANSING (the plan's 5.2, 5.5 and 5.8), as the fight's specification gives them (docs/V28.0-FIGHT.md 11,
       // 21 Nov: R14's kit, BIND, SMELL and LEND beside FIRE, SHOCKWAVE and BAG). Every objective is true whoever is played
       fightTitle: 'THE CLEANSING',
-      fightBrief1: 'You play Grandmaster Pho and Master Zavier. Switch between them.',
-      fightBrief2: 'Master Zavier binds the Prai and smells out the hidden. Grandmaster Pho fires at the bound and bags the tired.',
-      fightBrief3: 'Keep Master Zavier safe. Nine Prai.',
+      // (R66, 23 Nov: his own two sentences, "bounded" written "bound", "or" written "and" and "prai" with the game's
+      //  capital, each said to him; R67: then the controls of the device he is on, one to a line, in very direct terms)
+      fightBrief1: 'Switch between Grandmaster Pho and Zavier.',
+      fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
-      fightInTouch: 'Tap the buttons to act, the face to switch. The stick walks.',
-      fightInKey: 'Space or a click, Q and E act. F switches. WASD or the arrows walk.',
+      fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nBag: E.',
       objFight1: 'Grandmaster Pho: fire at the Prai.',
-      objFight1b: 'It hid. Master Zavier: smell it out.',
+      objFight1b: 'It hid. Master Zavier smells it out.',
       objFight2: 'Master Zavier: bind it.',
       objFight2b: 'Grandmaster Pho: fire at it, then bag it.',
       objFight3: 'Bag the Prai: {n} left',
@@ -756,6 +760,7 @@
 
     const world = new THREE.Group(); world.name = 'e4c5'; scene.add(world);
     const solids = [];
+    let LIFT_SHUT5 = null;                    // (the lift's doors as a solid: shut in play, open in the opening's picture: c_nav.js navFilmOpen)
     const matProxy = M({ color: 0x8d7a66, roughness: 0.9 });
     /* a thing he cannot walk through: a box, never drawn (collision is a column from the floor: v5.03) */
     const solidBox = (w, h, d, x, y, z, ry = 0) => {
@@ -1381,7 +1386,7 @@
       wallZ(mFace, W.endX - 0.1, 0.2, W.z0, W.turnZ + 0.2, [], 0, s);                                          // the walkway's west end
       /* the end wall at the lift (z 1.2): the lift's doors in it (LIFT.door each side of the middle) */
       wallX(mFace, W.z1 + 0.075, 0.15, W.x0 - 0.2, W.edge + 0.12, [{ x0: -LIFT.door, x1: LIFT.door, y0: 0, y1: 2.1 }], 0, s);
-      solidXZ(-LIFT.door, W.z1, LIFT.door, W.z1 + 0.15);                                                         // the doors, shut in play
+      LIFT_SHUT5 = solidXZ(-LIFT.door, W.z1, LIFT.door, W.z1 + 0.15);                                            // the doors, shut in play
       /* the lift's hall: its call button and the storey's number over the doors (painted, as a builder's plate is) */
       const plate = (() => { const [c, x] = canvas(256, 128); x.fillStyle = '#9aa0a5'; x.fillRect(0, 0, 256, 128);
         x.fillStyle = '#1e2024'; x.fillRect(84, 14, 88, 100); x.fillStyle = '#d65b2c'; x.font = 'bold 80px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('3', 128, 66);
@@ -6126,6 +6131,63 @@
        where his hand goes in every take); and Ton again in both hands after. Never levelled at a person (the plan's 5.3) */
     const STICK_LEN = 1.40;
     const _stA = new THREE.Vector3(), _stB = new THREE.Vector3(), _stM = new THREE.Matrix4(), _stQ = new THREE.Quaternion(), _stS = new THREE.Vector3();
+    const _stC = new THREE.Vector3(), _stD = new THREE.Vector3(), _stE = new THREE.Vector3(), _stF = new THREE.Vector3();
+    /* R65 (23 Nov 2026, Chad: "when ton hands over the naga stick, it does not properly sit in his hands, instead it is
+       floating higher. Fix it properly"). Measured (tools/probes/e4c5palms.mjs, the preparation film at 4.6 to 7.6 s): its
+       underside stood 1.1 cm over the skin of his right palm and 5.5 cm over his left. The cause is the stick's own file: its
+       shaft does not run along its origin's line. Prep set the origin on the middle of its box's foot, and the carved head at
+       its top leans 0.17 m to one side, so the shaft stands 0.066 to 0.134 m off that line along its local x (its slices every
+       5 cm, read from the file); laid by its origin with that x turned up, the whole shaft rode 9 cm high. It is laid now by
+       ITS OWN UNDERSIDE (the lowest of its drawn points within a palm's width of each palm, read once from its mesh: STICKUNDER5)
+       on EACH PALM'S OWN TOP: of the hand's own points (those its hand bone carries, no finger) within 3 cm of the palm's middle
+       across the palm, the farthest out on the palm's side, in the hand bone's own frame so the hand carries it (PALMSKIN5:
+       Ton's, read at 4.6 and 7.6 s, the same at both). And laid on it only once HIS WRISTS ARE A REAL OFFERING HOLD: read as
+       tools/probes/jointscan.mjs reads a wrist, his 'give' bends them back 30 to 38 degrees and toward the thumb 35 to 44 (a
+       real wrist stops near 25 that way, and an offering hand holds it near straight), so his hands pointed down 21 to 35
+       degrees at the fingers and a stick on them could rest only on their heels, which from the films' lenses read as his
+       wrists. palmsHold5 turns each hand on its wrist alone (the swing that carries its fingers' line, keeping the turn the
+       forearm gives it) until the fingers' line stands 12 degrees back and 6 toward the thumb from the forearm's, a hand held
+       out to offer; the forearm, the elbow and the shoulder are the take's. Laid after the mixer on the turn the mixer last
+       wrote (a hand it did not write again this frame keeps its base: nothing stacks, v11.5) */
+    const PALMSKIN5 = { e4ton: { Left: [0.0472, 0.0588, -0.0064], Right: [-0.0366, 0.0649, -0.0006] } };
+    const PALMHOLD5 = { e4ton: { flex: -12, dev: 6 } };            // (degrees: + toward the palm, + toward the thumb)
+    function palmSkin5(P, sd, out) {
+      const o = PALMSKIN5[P.key] && PALMSKIN5[P.key][sd], hb = o && boneOf(P, sd + 'Hand');
+      return hb ? hb.localToWorld(out.set(o[0], o[1], o[2])) : null;
+    }
+    const _phE = new THREE.Vector3(), _phF = new THREE.Vector3(), _phA = new THREE.Vector3(), _phN = new THREE.Vector3(), _phT = new THREE.Vector3(), _phQ = new THREE.Quaternion(), _qI5 = new THREE.Quaternion();
+    function palmsHold5(P, k = 1) {
+      const def = P && P.ready && PALMHOLD5[P.key]; if (!def || !(k > 1e-4)) return;
+      const keep = P.__hold5 || (P.__hold5 = {}), D = Math.PI / 180;
+      for (const [sd, side] of [['Left', 1], ['Right', -1]]) {
+        const hb = boneOf(P, sd + 'Hand'), m1 = boneOf(P, sd + 'HandMiddle1'), i1 = boneOf(P, sd + 'HandIndex1'), k1 = boneOf(P, sd + 'HandPinky1') || boneOf(P, sd + 'HandRing1');
+        if (!hb || !m1 || !i1 || !k1) continue;
+        const r = keep[sd] || (keep[sd] = { base: new THREE.Quaternion(), wrote: new THREE.Quaternion(), has: false });
+        if (!r.has || !hb.quaternion.equals(r.wrote)) r.base.copy(hb.quaternion);
+        /* (all in the forearm's frame, the hand bone's parent: its long line toward the wrist is the hand bone's own place) */
+        _phE.copy(hb.position).normalize();
+        _phF.copy(m1.position).normalize().applyQuaternion(r.base);                       // (the fingers' line as the take holds it)
+        _phA.copy(i1.position).sub(k1.position).applyQuaternion(r.base); _phA.addScaledVector(_phF, -_phA.dot(_phF)).normalize();   // (across the knuckles, toward the thumb)
+        _phN.crossVectors(_phF, _phA).multiplyScalar(side).normalize();                   // (the way the palm faces)
+        const ne = _phN.addScaledVector(_phE, -_phN.dot(_phE)).normalize(), re = _phA.addScaledVector(_phE, -_phA.dot(_phE)).normalize();
+        _phT.copy(_phE).addScaledVector(ne, Math.tan(def.flex * D)).addScaledVector(re, Math.tan(def.dev * D)).normalize();
+        _phQ.setFromUnitVectors(_phF, _phT); if (k < 1) _phQ.slerp(_qI5, 1 - k);
+        hb.quaternion.copy(_phQ).multiply(r.base);
+        r.wrote.copy(hb.quaternion); r.has = true; hb.updateMatrixWorld(true); }
+    }
+    const STICKUNDER5 = new WeakMap();
+    function stickUnder5(g) {
+      if (STICKUNDER5.has(g)) return STICKUNDER5.get(g);
+      const N = Math.round(STICK_LEN * 100) + 1, lo = new Float32Array(N).fill(Infinity), M = new THREE.Matrix4(), v = new THREE.Vector3();
+      g.updateWorldMatrix(true, true); const inv = new THREE.Matrix4().copy(g.matrixWorld).invert(); let any = false;
+      g.traverse(m => { if (!m.isMesh || !m.geometry || !m.geometry.attributes.position) return; any = true;
+        M.multiplyMatrices(inv, m.matrixWorld); const A = m.geometry.attributes.position;
+        for (let i = 0; i < A.count; i++) { v.fromBufferAttribute(A, i).applyMatrix4(M); const j = Math.round(v.y * 100); if (j >= 0 && j < N && v.x < lo[j]) lo[j] = v.x; } });
+      if (!any) return null;                                     // (not landed yet: nothing is drawn, read it when it is)
+      const out = { under(y, w = 0.035) { let m = Infinity; for (let j = Math.max(0, Math.round((y - w) * 100)); j <= Math.min(N - 1, Math.round((y + w) * 100)); j++) m = Math.min(m, lo[j]);
+                                           return isFinite(m) ? m : 0.09; } };
+      STICKUNDER5.set(g, out); return out;
+    }
     /* each palm's middle (halfway from its wrist to its middle finger's root, as chapter 3 laid the roll: e4c3 matOnArms) */
     function palmOf(P, sd, out) {
       const hb = boneOf(P, sd + 'Hand'), kb = boneOf(P, sd + 'HandMiddle1');
@@ -6164,15 +6226,25 @@
       onPalms(P, which = 'stick') {
         const g = which === 'wrap' ? things.staffWrap : things.nagaStaff; if (!g || !P || !P.ready) return false;
         if (g.parent !== world) world.attach(g);
+        palmsHold5(P);                                              // (R65: his wrists an offering hold under it first)
         P.group.updateWorldMatrix(true, true);
         const L = palmOf(P, 'Left', _stA), R = palmOf(P, 'Right', _stB); if (!L || !R) return false;
         const dx = R.x - L.x, dz = R.z - L.z, dy = R.y - L.y, hl = Math.hypot(dx, dz), yaw = Math.atan2(-dz, dx);
         const mid = L.clone().add(R).multiplyScalar(0.5); mid.y += 0.02;
         if (which === 'wrap') { g.position.copy(mid); g.rotation.set(0, yaw, Math.atan2(dy, hl), 'YXZ'); }
-        else { /* the stick's length is its y: laid down along the palms' line, its head to his left hand's side */
-          g.position.set(mid.x, mid.y, mid.z); g.rotation.set(0, yaw, Math.PI / 2 + Math.atan2(dy, hl), 'YXZ');
+        else { /* the stick's length is its y: laid down along the palms' line, its head to his left hand's side; its underside
+                  on each palm's skin (R65: the line its origin runs along set under each palm by the stick's own underside there;
+                  3 mm over the skin's highest points, resting on them) */
+          const pr = stickUnder5(g), sL = palmSkin5(P, 'Left', _stC), sR = palmSkin5(P, 'Right', _stD);
+          let aL = L, aR = R, lift = 0.02;
+          if (pr && sL && sR) { const d = Math.hypot(dx, dy, dz);
+            aL = _stE.set(L.x, sL.y - pr.under(STICK_LEN * 0.5 + d * 0.5), L.z); aR = _stF.set(R.x, sR.y - pr.under(STICK_LEN * 0.5 - d * 0.5), R.z); lift = 0.003; }
+          const ex = aR.x - aL.x, ez = aR.z - aL.z, ey = aR.y - aL.y, el = Math.hypot(ex, ez);
+          g.position.set((aL.x + aR.x) * 0.5, (aL.y + aR.y) * 0.5 + lift, (aL.z + aR.z) * 0.5); g.rotation.set(0, Math.atan2(-ez, ex), Math.PI / 2 + Math.atan2(ey, el), 'YXZ');
           g.translateY(-STICK_LEN * 0.5); }
         g.visible = true; navCarried(P, g); return true; },
+      /* (R65: its underside read from its mesh once it has landed: stickUnder5) */
+      warm() { const g = things.nagaStaff; if (g) stickUnder5(g); },
       /* stood upright by itself at a point (the Naga's film: planted, "the stick stands by itself once planted") */
       plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; },
       /* the wrapped stick carried upright in Ton's right hand, its foot a hand over the floor (laid from his standing rest
@@ -6769,7 +6841,7 @@
         lessonAt: [0.6, -1.6],                // where the lesson's Prai stands and strains toward him (0.6 to the side, 21 Nov:
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
                                               // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
-        laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
+        laidAt: [[-1.8, -1.12], [0, -1.7], [1.8, -1.12]],   // where the Naga lays the last three (stage 6): FIXED (R64), on its arc across the house side
         entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45, 0.09], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3, 0.39], [0.86, -2.09, 0.58], [-0.51, -2.6]],
                                               // (R25, 21 Nov: spread so no two touch: each body's own ground at every 20 cm
                                               // of height (tools/probes/footprint.mjs), turned to face him, 12 cm apart or
@@ -6796,11 +6868,16 @@
         aiFar: 3.0, aiHome: [1.15, 1.3],      // the unplayed Grandmaster Pho walks back beside his student once this far
         // THE CAGE (his Lersi's, round him from the first moment to the last, never pressed for: the case file)
         cageR: 1.0, pressR: 1.3, himR: 0.55, waitR: 2.5, pressMax: 3,
-        cageMax: 100, wear: 4, mend: 6, whole: 30,
+        // (R73, 23 Nov 2026: his question, too easy now? With the smell his own and the bag reaching the court (R62, R71) the
+        //  careful first-timer of fightsim won 100 of 100 fights at the first try; this morning 69 %. A shorter bind alone
+        //  changed nothing (100 % at 6, 7, 8 and 10 s). His option 2, the default until he picks: the bind 7 s (was 10), the
+        //  Prai a little faster, two free from the start and three from 24 s (were one and two), the cage worn a little
+        //  faster (6, was 4): 95 of 100 at the first try, 100 within two, 3:07)
+        cageMax: 100, wear: 6, mend: 6, whole: 30,
         // HIS SANITY (the game's own stat)
         drain: 2, gather: 2.0, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
         // THE PRAI
-        paceCome: 0.6, paceSlip: 0.8, paceHide: 0.55, paceHidden: 0.5, rush: 2.2,
+        paceCome: 0.75, paceSlip: 0.95, paceHide: 0.7, paceHidden: 0.6, rush: 2.2,   // (R73: were 0.6, 0.8, 0.55, 0.5)
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
         /* (R43, 23 Nov: Chad, "The prais also have some automatic walking logic that slowly walks around, taking into account
@@ -6824,22 +6901,26 @@
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
-        bagReach: 2.5, bagSecs: 1.0,
+        bagReach: 2.5, bagSecs: 1.0,           // (R71: bagReach no longer read by the rules: the bag reaches the whole court)
+        bagStagger: 0.18,                      // (R71: when one press takes several, each is in the bag this long after the one before)
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown"); its wait a fifth
         // shorter at his R34 (23 Nov: "make it slightly easier to charge up the shockwave skill, it takes too long to
         // charge it up"): 40 s, was 50 (the holds' own waits below likewise; the wait after a break is a penalty, kept)
         waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 7, ringMax: 8.5, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
-        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 10, bubbleMax: 3,
+        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 7, bubbleMax: 3,   // (R73: the bind 7 s, was 10)
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
-        bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
+        bubbleLongest: 27,                    // so a bubble's longest stand: bubbleSecs + stillMax (R73: 7 + 20)
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
         // A SMELL OPENED FOR NOTHING COSTS HIM (Chad's R21: "A button masher should not win so easily"): with nothing hidden,
         // they feel him open, and it costs his sanity, seen on its bar (and said once: ph5fg)
         smellCost: 4,
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
+        // (R62: his smell goes out BY ITSELF: a hidden one that has begun to come on is found once it has lain smellBeat under
+        //  the paving, so its sinking is seen first; the lesson's after smellLesson, so "It hid." is read first)
+        smellBeat: 0.8, smellLesson: 1.6,
         drawSecs: 3.0, drawPace: 2.5, drawWear: 3.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
         // LEND (his cage over his teacher while the gold is gathered)
         lendSecs: 6.0, lendAfter: 0.3,           // (pressed with the cage lent, the gold keeps the cage round him until it has gone out)
@@ -6847,7 +6928,7 @@
         // allows are free on the court (one at a time once he asks his teacher to lead: after three losses)
         kinds3: ['come', 'slip', 'hide', 'come', 'slip', 'hide', 'slip', 'hide'],
         due3: [0, 12, 26, 42, 58, 74, 90, 106], entryGap: 1.5, leadMax: 1, breather: 8,
-        freeAt: [[0, 1], [24, 2]],             // how many may be free on the court at once: one, then two from 24 s
+        freeAt: [[0, 2], [24, 3]],             // how many may be free on the court at once: two, then three from 24 s (R73: were one and two)
         // HOLD THE LINE, twice: at six left and at four the bag no longer takes them, the gold gathers itself anew
         // (holdSecs), and only it can take them; after a wave that took none, holdRetry. The first hold ends when the gold
         // has gathered; the last, at three. While a hold stands they come on at holdPace (the gathering gold weighs on
@@ -6858,7 +6939,7 @@
         // and 92.3: at 300 fights the rates are noisy, the first hold's losses are not. The long wait at 40 changes
         // nothing for him: the holds set the wait before it runs out. TAKEN: 34, the shortest of the three that keeps the
         // careful player as sure within two tries as he was (97.3), still 6 s quicker than 40: Chad's "slightly easier")
-        holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.45, goldGrace: 8,
+        holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.62, goldGrace: 8,   // (R73: holdPace 0.62, was 0.45)
         // STAGES 4 TO 6
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
@@ -6904,10 +6985,9 @@
         Lfire:    { pho: ['ph5f1', 'ph5f1', 'ph5f1'] },
         // the lesson's needs and the fight's are the SAME needs: what the lesson taught, the fight goes on asking in other
         // words (its first wordings are the lesson's own lines, said once there)
-        hidden:   { pho: ['ph5f3', 'ph5ny2', 'ph5ns3'], zav: ['ph5f7', 'ph5nf2', 'ph5nf3'] },
         shown:    { pho: ['ph5nt1', 'ph5nt2', 'ph5ns3'], zav: ['ph5f8', 'ph5ns2', 'ph5f4'] },
         bound:    { pho: ['ph5f6', 'ph5nq1', 'ph5f1'], zav: ['ph5f5', 'ph5nc2', 'ph5nc3'] },
-        tired:    { pho: ['ph5nd1', 'ph5nd2', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },
+        tired:    { pho: ['ph5nd2', 'ph5nd3', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },   // (R71: no "Go to it")
         keep:     { zav: ['ph5nr1', 'ph5nr2', 'ph5f4'] },
         slip:     { pho: ['ph5nw1', 'ph5nw2', 'ph5ns3'], zav: ['ph5nx1', 'ph5nx2', 'ph5f4'] },
         come:     { pho: ['ph5nk2', 'ph5nt2', 'ph5ns3'], zav: ['ph5ng1', 'ph5ng2', 'ph5f4'] },
@@ -6918,7 +6998,6 @@
         athimS:   { pho: ['ph5nk1', 'ph5nw2', 'ph5ns3'] },
         athimB:   { zav: ['ph5nl1', 'ph5nl2', 'ph5f4'] },
         athimSw:  { zav: ['ph5nl3', 'ph5no2', 'ph5no2'] },
-        beneath:  { pho: ['ph5nm1', 'ph5ny2', 'ph5ns3'], zav: ['ph5nn1', 'ph5nn2', 'ph5nf3'] },
         // the golden shockwave
         waveL:    { pho: ['ph5f9', 'ph5nu1', 'ph5ns3'], zav: ['ph5f9', 'ph5nv1', 'ph5nv3'] },
         waveB:    { pho: ['ph5fd', 'ph5nt2', 'ph5ns3'], zav: ['ph5fd', 'ph5f4', 'ph5f4'] },
@@ -6929,7 +7008,7 @@
         last:     { pho: ['ph5nd3', 'ph5nd3', 'ph5nd3'] }
       };
       const ONCE = {
-        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fg: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
+        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
         ph5g1: 2, ph5g2: 2, ph5g3: 2, ph5g4: 2,
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
         tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
@@ -6946,8 +7025,11 @@
       })();
 
       /* the three buttons each of them has, and the switch (the plan's 5.6: the same places for both; the pictures change) */
-      const SLOT = { pho: { main: 'FIRE', second: 'SHOCKWAVE', third: 'BAG' }, zav: { main: 'BIND', second: 'SMELL', third: 'LEND' } };
-      const PHO_ACTS = { FIRE: 1, SHOCKWAVE: 1, BAG: 1 }, ZAV_ACTS = { BIND: 1, SMELL: 1, LEND: 1 };
+      /* (R62, 23 Nov 2026: Chad, "removing the manual smell button. Have Zavier auto smell throughout the fight whenever
+         needed so player does not have to micromanage the smell button": his second button is gone, and his SMELL goes out
+         by itself whenever it is needed, whoever is played: smellTick) */
+      const SLOT = { pho: { main: 'FIRE', second: 'SHOCKWAVE', third: 'BAG' }, zav: { main: 'BIND', third: 'LEND' } };
+      const PHO_ACTS = { FIRE: 1, SHOCKWAVE: 1, BAG: 1 }, ZAV_ACTS = { BIND: 1, LEND: 1 };
 
       /* ------------------------------------------------------------------ small things */
       const dist = (ax, az, bx, bz) => { const dx = ax - bx, dz = az - bz; return Math.sqrt(dx * dx + dz * dz); };
@@ -7144,7 +7226,7 @@
           if (bubbles(st) >= n.bubbleMax) return 'full';
           return bindTarget(st, 0) ? '' : 'none';
         }
-        if (act === 'SMELL') { if (!st.seen.smell) return 'stage'; return z.smellWait > 0 ? 'wait' : ''; }
+        if (act === 'SMELL') return 'stage';                       // (R62: never a press: smellTick)
         if (act === 'LEND') {
           if (!st.seen.shock || st.stage !== 'fight') return 'stage';
           if (ph.wind > 0 || ph.ring) return 'busy';
@@ -7224,8 +7306,7 @@
         for (const p of st.prai) {
           if (pick && p.id !== pick) continue;
           if (p.st !== 'tired' && p.st !== 'held' && p.st !== 'laid') continue;
-          const d = dist(ph.x, ph.z, p.x, p.z);
-          if (d > n.bagReach) continue;
+          const d = dist(ph.x, ph.z, p.x, p.z);                    // (R71: no reach: the court is his; the nearest named first)
           if (d < bs) { bs = d; best = p; }
         }
         return best;
@@ -7267,10 +7348,16 @@
             return;
           }
           case 'BAG': {
-            const ask = askOf(st, 'BAG');
-            const p = (input && input.pick ? bagTarget(st, input.pick) : null) || (ask ? bagTarget(st, ask) : null) || bagTarget(st, 0);
-            setSt(st, p, 'drawn', 'bag'); p.hold = ''; ph.draw = n.bagSecs; st.stats.bags++;
-            st.ev.push({ e: 'bag', id: p.id });
+            /* (R71, 23 Nov 2026: Chad, "make pho's bag ability have unlimited aoe and range, he should not have to walk so
+               close to the prai to bag it": one press draws EVERY Prai that can be bagged, wherever it stands on the court,
+               from wherever he stands; the nearest first in the events, so the stage's first draw is the nearest one's) */
+            const all = [];
+            for (const p of st.prai) if (p.st === 'tired' || p.st === 'held' || p.st === 'laid') all.push(p);
+            all.sort((a, b) => dist(ph.x, ph.z, a.x, a.z) - dist(ph.x, ph.z, b.x, b.z));
+            ph.draw = n.bagSecs + Math.max(0, all.length - 1) * n.bagStagger;
+            /* (in the bag one after another, the nearest first, bagStagger apart: so each is seen and heard going in, and the
+               count falls by one at a time, as the gold's does) */
+            all.forEach((p, i) => { setSt(st, p, 'drawn', 'bag'); p.t = -i * n.bagStagger; p.hold = ''; st.stats.bags++; st.ev.push({ e: 'bag', id: p.id, n: all.length }); });
             return;
           }
           case 'SHOCKWAVE':
@@ -7295,21 +7382,6 @@
             if (lessonShown) sayOnce(st, 'ph5g4');
             st.ev.push({ e: 'bind', id: p.id });
             if (st.stats.binds === 1) sayOnce(st, 'q5c5');
-            return;
-          }
-          case 'SMELL': {
-            z.smellWait = n.smellWait; st.stats.smells++;
-            let k = 0;
-            for (const p of st.prai) if (p.st === 'hidden' || p.st === 'beneath') {
-              p.show = n.showSecs; if (p.hold === 'hide') p.hold = 'show';
-              setSt(st, p, 'shown', 'smell'); k++;
-            }
-            st.ev.push({ e: 'smell', found: k });
-            if (!k && st.stage === 'fight') {                       // opened for nothing, he draws them on: faster and harder, a while
-              st.drawT = n.drawSecs; st.ev.push({ e: 'drawn', secs: n.drawSecs });
-              if (n.smellCost > 0) { st.owe += n.smellCost; st.stats.emptySmell++; }
-              sayOnce(st, 'ph5fg');                                 // "Do not open yourself for nothing. They feel it."
-            }
             return;
           }
           case 'LEND':
@@ -7378,28 +7450,18 @@
         st.ev.push({ e: 'surge' });
       }
       /* (R47, 23 Nov: Chad, "The naga should pierce through all the prai's bodies ... As it pierces through each prai, the fire
-         of each prai is extinguished and it cools them down": the Naga's film flings the three apart onto ONE STRAIGHT LINE
-         and its head goes through all three in one low pass, so where they are laid is chosen here, from where the two stand
-         as the Naga is called: three places 1.8 m apart on a line, with a level run of 2.0 m before the first and 1.0 m after
-         the last for its head, all of it 0.95 m inside the court's walls and the house and clear of the planters, and the
-         whole run at least 1.6 m from both of them (its body passes at their knees, his student's cage round him); of every
-         line tried (twelve ways, its middle on a grid of the court), the one farthest from them, a little nearer the house;
-         NUM.laidAt if none fits. The film reads them (c_fightstage.js fsNagaGo) and the last stage lays them there) */
-      function spotsFor(st) {
-        const n = st.n, B = [st.pho, st.zav], gap = 1.8, pre = 2.0, post = 1.0;
-        const inside = (x, z) => Math.abs(x) <= n.courtX - 0.95 && z >= n.courtZ0 + 0.95 && z <= n.courtZ1 - 0.95 && !(z >= n.notch.z - 0.5 && Math.abs(x) > n.notch.x - 0.6);
-        let best = null;
-        for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, ux = Math.sin(a), uz = Math.cos(a);
-          for (let gx = -2.4; gx <= 2.4001; gx += 0.6) for (let gz = -1.6; gz <= 5.0001; gz += 0.6) {
-            let ok = true, dmin = Infinity;
-            for (let s = -(gap + pre); s <= gap + post + 1e-6; s += 0.25) { const x = gx + ux * s, z = gz + uz * s;
-              if (!inside(x, z)) { ok = false; break; }
-              for (const b of B) dmin = Math.min(dmin, Math.hypot(x - b.x, z - b.z)); }
-            if (!ok || dmin < 1.6) continue;
-            const score = Math.min(dmin, 3.0) - 0.06 * Math.max(0, gz - 0.5);
-            if (!best || score > best.score + 1e-9) best = { score, gx, gz, ux, uz }; } }
-        if (!best) return n.laidAt.map(q => q.slice());
-        return [-gap, 0, gap].map(s => [best.gx + best.ux * s, best.gz + best.uz * s]);
+         of each prai is extinguished and it cools them down": the Naga's film flings the three apart and its head goes through
+         all three in one low pass; the film reads their places (c_fightstage.js fsNagaGo) and the last stage lays them there) */
+      /* R64 (23 Nov 2026, Chad: "it needs to properly rearrange all the characters, prai, and the naga for proper staging for
+         the cutscene so that the positions are always reliably fixed during the cutscene no matter how the player plays it"):
+         as the Naga is called, the two of them are set at the fight's first marks (NUM.phoAt, NUM.zavAt) and the three's places
+         are the fixed ones on its arc (NUM.laidAt); the film begins on them under its white, and the last stage after it begins
+         from them too. (Through R47 the places were chosen from where the two happened to stand: spotsFor, retired) */
+      function nagaMarks(st) {
+        const n = st.n;
+        st.pho.x = n.phoAt[0]; st.pho.z = n.phoAt[1]; st.zav.x = n.zavAt[0]; st.zav.z = n.zavAt[1];
+        for (const p of st.prai) if (p.st === 'shape') { p.x = st.zav.x; p.z = st.zav.z; }
+        st.three = n.laidAt.map(q => q.slice());
       }
       function layThree(st) {                                    // the Naga's film is over: stage 6
         const n = st.n, at3 = st.three && st.three.length === 3 ? st.three : n.laidAt;
@@ -7467,7 +7529,7 @@
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.three = spotsFor(st); st.ev.push({ e: 'naga' });
+            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
               if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
           }
         } else if (st.stage === 'naga') {
@@ -7645,6 +7707,8 @@
           if (dist(circle.x, circle.z, p.x, p.z) > circle.r) continue;
           if (took && (p.st === 'bound' || p.st === 'held')) continue;
           circle.touched |= bit;
+          // (R61: each one the gold reaches is STRUCK, told once each, in the order it reaches them: the stage's blast, sound, shake)
+          st.ev.push({ e: 'waveHit', id: p.id, gathers: p.st === 'bound' || p.st === 'held' });
           if (p.st === 'bound' || p.st === 'held') {
             // gathered at once: never past the three the surge waits on, and never the count jumped (the plan's 5.5)
             if (st.stage === 'fight' && st.left - 1 < 3) { if (p.st === 'bound') { p.ring = n.ringSecs; setSt(st, p, 'held', 'the gold'); } continue; }
@@ -7903,7 +7967,8 @@
               break;
             case 'drawn':
               if (p.t >= n.bagSecs) {
-                setSt(st, p, 'gathered', 'into the bag'); st.left--; st.pho.draw = 0;
+                setSt(st, p, 'gathered', 'into the bag'); st.left--;
+                if (!st.prai.some(q => q.st === 'drawn')) st.pho.draw = 0;   // (R71: his draw ends with the last of them)
                 st.ev.push({ e: 'gathered', id: p.id, by: 'bag', left: st.left });
                 leftLines(st);
               }
@@ -7923,7 +7988,7 @@
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
-        if (st.stage === 'fight' && st.left === 5) sayOnce(st, 'q5c1');
+        if (st.stage === 'fight' && st.left <= 5 && st.left > 3) sayOnce(st, 'q5c1');   // (R71: a bag of two may pass five)
         if (st.stage === 'last' && st.left === 0) sayOnce(st, 'ph5c4');
       }
 
@@ -7993,7 +8058,7 @@
             const p = st.prai[0];
             if (p.st === 'entering' || p.st === 'fleeing' || p.st === 'drawn' || p.st === 'gathered') return null;
             if (p.st === 'coming') return P ? mk('Lfire', 'FIRE', p, ph.fireWait <= 0 && !onFlight(st, p.id) && !lock) : null;
-            if (p.st === 'hidden') return P ? mk('hidden', 'SWITCH', p, !lock) : mk('hidden', 'SMELL', p, z.smellWait <= 0 && !lock);
+            if (p.st === 'hidden') return null;                    // (R62: his smell finds it by itself)
             if (p.st === 'shown') return P ? mk('shown', 'SWITCH', p, !lock) : mk('shown', 'BIND', p, z.bindWait <= 0 && !lock);
             if (p.st === 'bound') return P ? mk('bound', 'FIRE', p, ph.fireWait <= 0 && !onFlight(st, p.id) && !lock) : mk('bound', 'SWITCH', p, !lock);
             if (p.st === 'held') return P ? (ph.draw > 0 ? null : bagNeed(st, 'tired', p, mk)) : mk('tired', 'SWITCH', p, !lock);
@@ -8029,8 +8094,8 @@
         // the gold first, the moment it is ready with something bound (the lesson's own wave aside): it gathers what is
         // bound and throws back everything else, what is at him included, so nothing else the moment holds is worth more
         const goldFirst = waveReady && bound > 0 && !st.lesson.wave.startsWith('pend');
-        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && !full, smellOk = z.smellWait <= 0;
-        const bindSoon = !full && z.bindWait <= 1.5, smellSoon = z.smellWait <= 1.5;
+        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && !full;   // (R62: no smell to ask for)
+        const bindSoon = !full && z.bindWait <= 1.5;
         if (P) {
           // GRANDMASTER PHO, PLAYED: what only he can do, first (chase off what is at his student, tire the bound, bag the
           // tired, loose the gold under the lent cage); then send him to his student for what only his student can do
@@ -8039,7 +8104,6 @@
           if (goldFirst) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aHim) return mk('athimF', 'FIRE', aHim, fireOk && !lock);                    // chase it off him
           if (aHimSlip && !full) return mk('athimS', 'SWITCH', aHimSlip, !lock);
-          if (aBen) return mk('beneath', 'SWITCH', aBen, !lock);
           if (waveReady && bound && !st.lesson.wave.startsWith('pend')) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (st.lesson.wave === 'pending' && bound) return mk('waveL', 'SWITCH', null, !lock);
           // (in the hold a bound Prai is left bound: still, harmless, and the gold's to gather. Fire would tire it, and a
@@ -8053,7 +8117,6 @@
           if (aShown && !full) return mk('shown', 'SWITCH', aShown, !lock);
           if (waveReady && worth) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aSlip && !full) return mk('slip', 'SWITCH', aSlip, !lock);
-          if (aHid) return mk('hidden', 'SWITCH', aHid, !lock);
           if (aCome && !full) return mk('come', 'SWITCH', aCome, !lock);
           return null;
         }
@@ -8068,7 +8131,6 @@
         if (aHim) return mk('athimSw', 'SWITCH', aHim, !lock);                // his BIND is far off: his teacher's fire chases it off
         if (aHimSlip && !full) return mk('athimB', 'BIND', aHimSlip, false);   // the fire cannot touch it: his BIND, as soon as it is back
         // (three bubbles already stand: his hands are full, and what frees one is his teacher's fire and bag, below)
-        if (aBen && smellSoon) return mk('beneath', 'SMELL', aBen, smellOk && !lock);
         if (waveReady && bound && !(st.cage.lent > 0)) return mk(st.lesson.wave === 'pending' ? 'waveL' : 'waveLend', 'LEND', null, !lock);   // the gold, the way out
         if (aPress && bindSoon) return bindAsk('press', aPress, bindOk && !lock);
         if (aShown && (bindOk || (bindSoon && z.bindWait < aShown.show))) return bindAsk('shown', aShown, bindOk && !lock);
@@ -8076,7 +8138,6 @@
           if (!bound) { const t = bindTarget(st, 0); if (t && bindSoon) return mk('waveB', 'BIND', t, bindOk && !lock); }
           else if (!(st.cage.lent > 0)) return mk('waveL', 'LEND', null, !lock);
         }
-        if (aHid && smellSoon) return mk('hidden', 'SMELL', aHid, smellOk && !lock);
         if (aSlip && bindSoon) return bindAsk('slip', aSlip, bindOk && !lock);
         if (aBound && !(st.hold > 0)) return mk('bound', 'SWITCH', aBound, !lock);
         if (aTired) {
@@ -8092,7 +8153,34 @@
       function bagNeed(st, id, p, mk) {
         const n = st.n, ph = st.pho;
         const d = dist(ph.x, ph.z, p.x, p.z);
-        return d <= n.bagReach ? mk(id, 'BAG', p, st.lock <= 0 && !ph.ring) : mk(id, 'BAG', p, false, true);
+        return mk(id, 'BAG', p, st.lock <= 0 && !ph.ring && !(d < 0));   // (R71: no reach: never 'walk to it')
+      }
+
+      /* R62 (23 Nov 2026, Chad: "Have Zavier auto smell throughout the fight whenever needed so player does not have to
+         micromanage the smell button"): HIS SMELL GOES OUT BY ITSELF, whoever is played, the moment it is needed: one under
+         him at once; a hidden one that has begun to come on (its lurk over) once it has lain smellBeat under the paving, so
+         its sinking is seen before it is found; the lesson's smellLesson after it sank. Never sooner than smellWait after the
+         last (one under him aside), so each is one breath drawn in, never a flicker. It finds every hidden one at once, as the
+         press did; with nothing hidden it never goes out, so nothing is opened for nothing (the draw and its cost are held at
+         zero: v8.6) */
+      function smellTick(st) {
+        if (st.stage !== 'learn' && st.stage !== 'fight') return;
+        const n = st.n, z = st.zav;
+        let due = false;
+        for (const p of st.prai) {
+          if (p.st === 'beneath') { due = true; break; }
+          if (p.st !== 'hidden' || z.smellWait > 0) continue;
+          if (p.hold === 'hide') { if (p.t >= n.smellLesson) { due = true; break; } continue; }
+          if (!(p.lurk > 0) && p.t >= n.smellBeat) { due = true; break; }
+        }
+        if (!due) return;
+        z.smellWait = n.smellWait; st.stats.smells++;
+        let k = 0;
+        for (const p of st.prai) if (p.st === 'hidden' || p.st === 'beneath') {
+          p.show = n.showSecs; if (p.hold === 'hide') p.hold = 'show';
+          setSt(st, p, 'shown', 'smell'); k++;
+        }
+        st.ev.push({ e: 'smell', found: k, auto: true });
       }
 
       /* ------------------------------------------------------------------ ONE STEP OF THE FIGHT */
@@ -8136,6 +8224,7 @@
         windTick(st, dt);
         ringTick(st, dt);
         praiTick(st, dt);
+        smellTick(st);
         cageTick(st, dt);
         sanityTick(st, dt, fed);
         if (st.stage !== 'lost') stageTick(st, dt, io);
@@ -8169,7 +8258,7 @@
           cage: { str: st.cage.str / n.cageMax, broken: st.cage.broken, lent: st.cage.lent > 0 },
           objective: objectiveOf(st),
           main: btn('main', s.main, inPlay && (P ? st.stage !== 'last' : st.seen.bind)),
-          second: btn('second', s.second, st.stage === 'fight' ? (P ? st.seen.shock : st.seen.smell) : (st.stage === 'learn' && !P && st.seen.smell)),
+          second: btn('second', s.second, !!s.second && st.stage === 'fight' && st.seen.shock),   // (R62: his teacher's alone)
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
                   live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },
@@ -8236,9 +8325,10 @@
     }
     const fsL = (wx, wz) => ({ x: COURT5.x - wx, z: COURT5.z - wz });
     /* which of the rules' acts each body's buttons carry (FIGHT.SLOT), and the engine's id for each */
-    const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
-    const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', second: 'smell', third: 'lend' } };
-    const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', smell: 'second', lend: 'third' };
+    /* (R62, 23 Nov 2026: Master Zavier's SMELL is no longer a button: it goes out by itself, FIGHT's smellTick) */
+    const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', lend: 'LEND' };
+    const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', third: 'lend' } };
+    const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
@@ -8369,6 +8459,64 @@
       mats.push(m); return m; };
     const fsBubbleGeo = (() => { const g = new THREE.SphereGeometry(1, 28, 18); owned.push(g); return g; })();
     const fsBubbles = [0, 1, 2].map(() => { const me = new THREE.Mesh(fsBubbleGeo, fsBubbleMat()); me.visible = false; me.renderOrder = 4; FSG.add(me); return { me, id: 0, fl: 0 }; });
+    /* R74 (23 Nov 2026, Chad: "When the bind ends on the prai, i want a visual effect to show the binding cage break like glass
+       and shatters into pieces, with sound effects too"): THE BUBBLE SHATTERS. Where a bind RUNS OUT (never where the gold or
+       the bag takes the one inside), a crack of white-violet light, then its glass bursts outward in shards: thin glass
+       triangles from all over its skin, spinning, thrown out and up, falling to the paving, skidding and glinting out in about
+       a second and a half; its own shatter sound from where it stood. One instanced mesh drawn adding light (the bubble's own
+       pale violet), so a shard's fading is its colour going down to black; each glints as it turns */
+    const FS_SHARDN = 96;
+    const fsShards = (() => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([-0.5, -0.32, 0, 0.55, -0.22, 0, 0.04, 0.62, 0], 3)); owned.push(g);
+      const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+                                              depthWrite: false, fog: false, toneMapped: false }); owned.push(m);
+      const M = new THREE.InstancedMesh(g, m, FS_SHARDN); M.frustumCulled = false; M.renderOrder = 5; M.visible = false;
+      M.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      const k0 = new THREE.Color(0, 0, 0); for (let i = 0; i < FS_SHARDN; i++) M.setColorAt(i, k0);
+      FSG.add(M);
+      return { M, next: 0, O: new THREE.Object3D(), C: new THREE.Color(),
+               P: Array.from({ length: FS_SHARDN }, () => ({ on: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, rx: 0, ry: 0, rz: 0, wx: 0, wy: 0, wz: 0, s: 0.08, t: 0, T: 1.3 })) };
+    })();
+    function fsShatter(x, y, z, sc) {
+      const R = FS5.srand || Math.random, S = fsShards, rx = 0.62 * sc, ry = 1.0 * sc;
+      for (let i = 0; i < 34; i++) {
+        const k = S.P[S.next]; S.next = (S.next + 1) % FS_SHARDN;
+        const u = R() * 2 - 1, th = R() * Math.PI * 2, q = Math.sqrt(1 - u * u), nx = q * Math.cos(th), ny = u, nz = q * Math.sin(th), sp = 1.5 + 2.4 * R();
+        k.on = true; k.t = 0; k.T = 1.1 + 0.6 * R();
+        k.x = x + nx * rx; k.y = y + ny * ry; k.z = z + nz * rx;
+        k.vx = nx * sp; k.vy = ny * sp * 0.8 + 1.3 + 0.9 * R(); k.vz = nz * sp;
+        k.rx = R() * 6.28; k.ry = R() * 6.28; k.rz = R() * 6.28; k.wx = (R() - 0.5) * 20; k.wy = (R() - 0.5) * 20; k.wz = (R() - 0.5) * 20;
+        k.s = (0.05 + 0.1 * R()) * Math.max(0.7, sc);
+      }
+      fsBloom(x, z, 0xe6dcff, 1.25);
+      fsBurst(x, y, z, 22, { sp: 2.8, up: 0.25, life: 0.5, s0: 0.06, col: 0xffffff, col2: 0xd8c8ff, mix: 0.55, grav: -3, drag: 2.2 });
+      fsFx('u5bindshatter', 0.95, x, z);
+    }
+    function fsShardFrame(wdt) {
+      const S = fsShards, M = S.M, O = S.O, C = S.C; let any = false;
+      for (let i = 0; i < FS_SHARDN; i++) {
+        const k = S.P[i];
+        if (k.on && wdt > 0) {
+          k.t += wdt;
+          if (k.t >= k.T) k.on = false;
+          else {
+            k.vy -= 9.0 * wdt; const dr = Math.exp(-1.1 * wdt); k.vx *= dr; k.vz *= dr;
+            k.x += k.vx * wdt; k.y += k.vy * wdt; k.z += k.vz * wdt;
+            if (k.y < 0.015) { k.y = 0.015; if (k.vy < 0) { k.vy = -k.vy * 0.25; k.vx *= 0.45; k.vz *= 0.45; k.wx *= 0.35; k.wy *= 0.35; k.wz *= 0.35; } }
+            k.rx += k.wx * wdt; k.ry += k.wy * wdt; k.rz += k.wz * wdt;
+          }
+        }
+        if (!k.on) { O.position.set(0, -50, 0); O.scale.setScalar(1e-4); O.updateMatrix(); M.setMatrixAt(i, O.matrix); C.setRGB(0, 0, 0); M.setColorAt(i, C); continue; }
+        any = true;
+        O.position.set(k.x, k.y, k.z); O.rotation.set(k.rx, k.ry, k.rz); O.scale.setScalar(k.s); O.updateMatrix(); M.setMatrixAt(i, O.matrix);
+        const u = k.t / k.T, glint = 0.5 + 0.5 * Math.abs(Math.sin(k.rx * 1.7 + k.ry * 0.9)), f = (1 - u * u) * (0.55 + 0.45 * glint) * (k.t < 0.08 ? 1.4 : 1);
+        C.setRGB(0.84 * f, 0.78 * f, 1.0 * f); M.setColorAt(i, C);
+      }
+      M.instanceMatrix.needsUpdate = true; if (M.instanceColor) M.instanceColor.needsUpdate = true;
+      M.visible = any;
+    }
+    function fsShardsClear() { for (const k of fsShards.P) k.on = false; fsShards.M.visible = false; }
     /* THE TIRED ONES' RINGS, closing on the paving over the rules' ring time (the clock of its rising is on the screen) */
     const fsRings = Array.from({ length: 6 }, () => fsGround(fsRingTex, FS_COL.pale, true, 0.015));
     /* THE SMELL: its ripple out from him along the paving; a dark cloud where each hidden one is shown (rising into
@@ -8487,6 +8635,8 @@
     const fsStreaks = [0, 1, 2].map(() => ({ on: false, id: 0, t: 0, T: 1, gold: false, a: new THREE.Vector3(), m: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(),
       dots: Array.from({ length: FS_STREAK }, () => fsSprite(0x2a2f38, false, 5)), glints: Array.from({ length: 9 }, () => fsSprite(FS_COL.pale, true, 6)) }));
     const fsReach = (() => { const m = new THREE.Mesh(fsQuad, fsGroundMat(null, FS_COL.pale, true)); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; })();
+    /* (R71: the bag takes every one at once, so a line to each it will take: three more like the first, sharing its paint) */
+    const fsReachAll = [fsReach].concat([0, 1, 2].map(() => { const m = new THREE.Mesh(fsQuad, fsReach.material); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; }));
     /* where a Prai presses his cage's bars: a violet flare on the bars, flickering */
     const fsPress = [0, 1, 2].map(() => fsSprite(FS_COL.violet, true, 5));
     /* THE SPARKS AND MOTES: one cloud of points for every glint the fight throws (the fire's sparks and its burst where it
@@ -8521,7 +8671,10 @@
     function fsBurst(x, y, z, n, o) {
       const r = FS5.srand || Math.random;
       for (let i = 0; i < n; i++) { const th = r() * Math.PI * 2, ph = Math.asin(Math.min(1, (o.up != null ? o.up : 0.25) + r() * (1 - (o.up != null ? o.up : 0.25)))), sp = (o.sp || 2) * (0.45 + 0.55 * r());
-        fsSpark(x, y, z, { vx: Math.cos(th) * Math.cos(ph) * sp, vy: Math.sin(ph) * sp, vz: Math.sin(th) * Math.cos(ph) * sp, life: (o.life || 0.6) * (0.6 + 0.4 * r()),
+        /* (R61: `dir`, a way the burst is thrown along (the gold's own way out from him), `spread` the share of its speed that
+           stays its own; absent, as every burst before it) */
+        const dk = o.dir ? 1 - (o.spread != null ? o.spread : 0.5) : 0, dvx = o.dir ? o.dir[0] * sp * 1.6 * dk : 0, dvz = o.dir ? o.dir[2] * sp * 1.6 * dk : 0;
+        fsSpark(x, y, z, { vx: Math.cos(th) * Math.cos(ph) * sp + dvx, vy: Math.sin(ph) * sp, vz: Math.sin(th) * Math.cos(ph) * sp + dvz, life: (o.life || 0.6) * (0.6 + 0.4 * r()),
           s0: (o.s0 || 0.07) * (0.7 + 0.6 * r()), col: o.col2 != null && r() < (o.mix || 0) ? o.col2 : o.col, grav: o.grav, drag: o.drag, a: o.a }); }
     }
     function fsPtsFrame(wdt) {
@@ -8561,9 +8714,6 @@
         x.beginPath(); x.moveTo(26, 24); x.quadraticCurveTo(48, 38, 70, 24); x.stroke(); x.beginPath(); x.moveTo(40, 8); x.lineTo(38, 26); x.moveTo(56, 8); x.lineTo(58, 26); x.stroke(); }),
       bind: fsIcon((x) => { const g = x.createRadialGradient(40, 38, 6, 48, 48, 44); g.addColorStop(0, 'rgba(230,220,255,0.95)'); g.addColorStop(0.45, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(201,176,255,1)');
         x.fillStyle = g; x.beginPath(); x.arc(48, 48, 42, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#e6dcff'; x.lineWidth = 7; x.stroke(); }),
-      smell: fsIcon((x) => { x.strokeStyle = '#d4e2b4'; x.lineWidth = 8;
-        x.beginPath(); x.moveTo(34, 6); x.bezierCurveTo(32, 30, 18, 50, 14, 62); x.bezierCurveTo(10, 76, 24, 84, 36, 80); x.bezierCurveTo(40, 88, 50, 88, 54, 80); x.stroke();
-        x.lineWidth = 7; for (let i = 0; i < 3; i++) { const y0 = 30 + i * 20; x.beginPath(); x.moveTo(60, y0); x.bezierCurveTo(68, y0 - 9, 78, y0 + 9, 90, y0); x.stroke(); } }),
       lend: fsIcon((x) => { x.strokeStyle = '#c9b0ff'; x.lineWidth = 8; for (let i = 0; i < 5; i++) { const px = 14 + i * 17; x.beginPath(); x.moveTo(px, 8); x.lineTo(px, 78); x.stroke(); }
         x.lineWidth = 6; x.beginPath(); x.ellipse(48, 82, 40, 9, 0, 0, Math.PI * 2); x.stroke(); }),
       together: fsIcon((x) => { x.lineWidth = 9; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(34, 48, 26, 0, Math.PI * 2); x.stroke();
@@ -8590,7 +8740,8 @@
       'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5tagsweep', 'u5plant', 'u5shape', 'u5shapeloop',
       'u5togfill', 'u5done', 'u5broken', 'u5start', 'u5ready', 'u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9',
       'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last',
-      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2'];
+      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2',
+      'u5shockhit', 'u5bindshatter', 'u5togrise', 'u5togloop', 'u5togpress'];   // (R61, R74, R68)
     const _fsP = new THREE.Vector3();
     function fsPan(x, z, y = 1.0) { _fsP.set(x, y, z).project(camera); return Math.max(-0.8, Math.min(0.8, (_fsP.z > 1 ? -_fsP.x : _fsP.x) * 0.8)); }
     function fsFx(name, vol, x, z) {
@@ -8915,6 +9066,7 @@
           fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.075, s1: 0.03, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
         void P;
       });
+      fsShardFrame(wdt);                                                  // (R74: the shattered bubbles' glass)
       /* the tired ones' rings, closing */
       const tired = st.prai.filter(p => p.st === 'tired');
       fsRings.forEach((m, j) => { const p = tired[j]; if (!p) { m.visible = false; return; }
@@ -9230,13 +9382,19 @@
     function fsHud() {
       const st = FS5.st, H = FIGHT.hud(st), W5 = fsWords(), played = H.who === 'pho' ? 'pho' : 'zavier';
       const surge = st.stage === 'surge';
+      if (!surge) FS5.callAt = 0;                                       // (R68: the call's rise is heard once each surge)
       for (const who of ['pho', 'zavier']) for (const slot of ['main', 'second', 'third']) {
         const id = FS_ID[who][slot];
-        if (who !== played) continue;                                     // (only the one played has buttons on the screen)
+        if (who !== played || !id) continue;                              // (only the one played has buttons on the screen; R62: his second slot is empty)
         if (surge) {
-          if (slot === 'main') kit.tagAct(id, { hidden: false, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                                                label: W5.btnTogether, icon: FS_ICON.together });
-          else kit.tagAct(id, { hidden: true, pulse: false });
+          /* (R68: TOGETHER is THE CALL, in the middle of the screen a little below its centre (the engine's seventieth seam),
+             there from the moment it can be pressed, with its rising sound; held, it glows while its fill runs) */
+          if (slot === 'main') {
+            const callOn = H.together.live || H.together.fill > 0;
+            kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
+                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together });
+            if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
+          } else kit.tagAct(id, { hidden: true, pulse: false, call: false });
           continue;
         }
         const o = fsActState(H[slot]);
@@ -9244,8 +9402,8 @@
         const Wt = FS5.waits[id] || (FS5.waits[id] = { on: false, at: 0 });
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
-        const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, label: o.label || base, icon: FS_ICON[id] });
+        const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id] });
       }
       /* the switch: free once taught; said, never pressed, otherwise (the engine shows it whenever there are two) */
       const sw = H.swap, swWhy = FIGHT.why(st, 'SWITCH');
@@ -9283,7 +9441,7 @@
         let col = null, dim = false;
         if (P) {
           if (s === 'bound') col = '#ff4a62';
-          else if (s === 'held' || s === 'tired' || s === 'laid') { col = '#e8ecf4'; dim = true; }
+          else if (s === 'held' || s === 'tired' || s === 'laid') { col = '#e8ecf4'; dim = !(nd && nd.act === 'BAG'); }   // (R71: the bag takes them all)
           else if ((s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown') && p.kind !== 'slip') { col = '#ff8a96'; dim = true; }
         } else if (s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown' || s === 'rushing') col = '#b896ff';
         else if (s === 'tired') { col = '#b896ff'; dim = true; }
@@ -9333,11 +9491,16 @@
                 fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
                 fsBindCast(p, w); } }
             break; }
-          case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5bindpop', 0.8, w ? w.x : null, w ? w.z : null); break; }
+          case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null, V = p ? fsVis[p.id - 1] : null, sc = V ? V.s : 1;
+            if (w) fsShatter(w.x, 0.92 * sc, w.z, sc);                                 // (R74: its bubble breaks like glass, with its own sound)
+            else fsFx('u5bindpop', 0.8, null); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
-            fsZavAct('smell'); fsSmellCast();                                           // (R34: the crouch and the look round; the breath drawn in)
+            /* (R62: it goes out by itself now, whoever is played and while he walks: his crouch and look round only while he
+               stands, so a walking body never slides through a crouch; the breath, the ripple and the sounds always) */
+            if (!(fsTake.zav && fsTake.zav.pace > 0.08)) fsZavAct('smell');
+            fsSmellCast();                                                              // (R34: the breath drawn in)
             fsFx(fsDeal('sniff'), 0.8, null); fsFx('u5sournote', 0.8, null); fsFx('u5ripple', 0.8, null);
-            if (kit && kit.chill) { kit.chill(0.3, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.9; }
+            if (kit && kit.chill) { kit.chill(0.22, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.8; }
             break; }
           case 'drawn': for (const p of st.prai) if (p.st === 'coming' || p.st === 'pressing') { const w = fsW(p.x, p.z); fsFx(fsDeal('strain'), 0.55, w.x, w.z); break; } break;
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null);
@@ -9353,18 +9516,38 @@
               if (pw) fsWaveCast(pw); }
             break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
+          /* R61 (23 Nov 2026, Chad: "the shockwave does not have much visual impact when hitting the prais, make it more
+             impactful, with sound effects as it hits each prai. With screen shake every time it hits one prai"): WHERE THE
+             GOLD STRIKES EACH ONE, on the frame it reaches it: a blast of gold on its body (a flash, a ring along the paving, a
+             spray of sparks thrown away from him), its own hit sound from where it stands, its body knocked (its hit take and
+             its cry, unless the gold takes it: the 'gathered' strike follows), and the screen knocked, once each */
+          case 'waveHit': { const p = st.prai[e.id - 1]; if (!p) break; const w = fsW(p.x, p.z), V = fsVis[p.id - 1], y0 = 1.15 * (V ? V.s : 1);
+            const pw = cast.pho ? cast.pho.group.position : null, ax = pw ? w.x - pw.x : 0, az = pw ? w.z - pw.z : 1, aL = Math.hypot(ax, az) || 1;
+            fsFx('u5shockhit', 0.95, w.x, w.z);
+            fsBloom(w.x, w.z, FS_COL.gold, 1.5);
+            fsBurst(w.x, y0, w.z, 26, { sp: 4.2, up: 0.15, life: 0.55, s0: 0.13, col: 0xfff3cc, col2: FS_COL.gold, mix: 0.5, grav: -1.5, drag: 2.2, dir: [ax / aL, 0, az / aL], spread: 0.45 });
+            fsBurst(w.x, 0.12, w.z, 18, { sp: 3.0, up: 0.0, life: 0.45, s0: 0.1, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.4, grav: 0, drag: 3.0 });
+            if (!e.gathers) fsPraiHit(p, 'setback', w);
+            fsShake(0.085, 0.34, 0.022);
+            break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
-            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
+            if (e.by === 'bag') { if (FS5.snapAt !== FS5.wall) { FS5.snapAt = FS5.wall; fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }   // (R71: once a press)
+              fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
             else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.11, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 });
               /* (R34: the gold STRIKES each one it takes: a flash and a column of gold where it stood, a wider burst) */
               fsBloom(w.x, w.z, FS_COL.gold, 1.3); fsBurst(w.x, 1.0, w.z, 22, { sp: 3.0, up: 0.05, life: 0.7, s0: 0.12, col: 0xfff0c8, col2: FS_COL.gold, mix: 0.5, grav: -1, drag: 1.8 }); fsHitPillar(w.x, w.z); } }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
-          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null);
-            { const w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); } fsPhoAct('bag'); break; }
+          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null;
+            /* (R71: one press takes every one at once: its great breath and his act once a press, each one its own streak, and
+               its draw heard from where it stands, the nearest first) */
+            const first = !(FS5.bagRun > 0); FS5.bagRun = first ? (e.n || 1) - 1 : FS5.bagRun - 1;
+            if (first) { fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoAct('bag'); }
+            { const w = p ? fsW(p.x, p.z) : null; if (first || !w) fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); else fsFx(fsDeal('drawn'), 0.5, w.x, w.z); }
+            break; }
           case 'enter': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; if (w) fsFx(fsDeal('rise'), 0.8, w.x, w.z); break; }
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
@@ -9377,7 +9560,10 @@
           case 'stage': fsStage(e.to); break;
           case 'surge': fsFx('u5shape', 0.8, null); { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
             FS5.m8 = fsFx('u5m8surge', 0.7, null); for (const V of fsVis) V.from = null; break;
-          case 'together': fsFx('u5togfill', 0.8, null); break;
+          case 'together': fsFx('u5togfill', 0.8, null);
+            /* (R68: pressed, the call BURSTS: its own sound, a flash of gold over the whole screen, the screen knocked) */
+            fsFx('u5togpress', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFE6A8', secs: 0.28 }); fsShake(0.07, 0.45, 0.025);
+            break;
           case 'won': fsFx('u5done', 0.8, null); FS5.wonAt = FS5.wall; break;
           case 'lost': fsFx('u5broken', 0.8, null); FS5.lostAt = FS5.wall; break;
         }
@@ -9391,6 +9577,8 @@
       else if (e.to === 'shown') { fsFx('u5shown', 0.8, w.x, w.z); const Pf = fsPuffs.find(q => q.t < 0) || fsPuffs[0]; Pf.t = 0; Pf.x = w.x; Pf.z = w.z;
         const V = fsVis[e.id - 1]; if (V && V.y < -1) V.y = -1.0; }
       if (e.to === 'fleeing' || e.to === 'gathered' || e.to === 'drawn') { if (FS5.pick === 'p' + e.id) FS5.pick = null; }
+      /* (R74: a tired one's bubble running out shatters too: held to tired, 'the bubble ends') */
+      if (e.from === 'held' && e.to === 'tired' && e.why === 'the bubble ends') { const V = fsVis[e.id - 1], sc = V ? V.s : 1; fsShatter(w.x, 0.92 * sc, w.z, sc); }
     }
     function fsStreak(p, gold) {
       if (!p) return;
@@ -9425,6 +9613,11 @@
       FS5.nagaAt = null; if (kit && kit.captions) kit.captions(null);
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
       if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three.length === 3 ? three : null; FILMS5.together.spots = st.three || null; }   // (R47: and where the rules lay them)
+      /* (R64: THE STAGING FIXED. The rules have put the two of them at the fight's first marks as the Naga is called; the mode's
+         bodies are set there too, under the film's opening white, so the film and the last stage after it begin from the same
+         places whatever the play was; the mode's lens is the film's until it ends) */
+      { const F0 = fightStart(); kit.tagPlace('pho', F0.pho.x, F0.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F0.zav.x, F0.zav.z, { ry: COURT5.heading + Math.PI });
+        FS5.last.pho = null; FS5.last.zav = null; }
       FS5.film = true;
       /* M8 under the surge goes down as the film comes in (the film plays M9 over everything; the fight's loops go quiet by
          themselves under it, their frame stopped) */
@@ -9470,7 +9663,7 @@
       fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false; fsPtsClear();
       for (const P of fsSmokes) P.t = -1; for (const F of fsFlares) F.t = -1; for (const S of fsScorches) S.t = -1;
       for (const C of fsPillars) C.t = -1; fsWaveFlash.t = -1; fsRayState.t = -1; for (const B of fsBeams) B.t = -1; for (const L of fsLockRings) L.t = -1; fsBreath.t = -1;
-      for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null;
+      for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null; fsShardsClear();
       for (const o of FSG.children) o.visible = false;
     }
 
@@ -9639,21 +9832,24 @@
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
       TRANCE5.gold(0.35 + 0.65 * wind);                   // (the fight's lens is behind him: the card lies over his back, so a glow, full only as the gold gathers)
       if (FS5.flare > 0) courtLamps(0.15 + 0.85 * FS5.flare);
-      /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
-      if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }
+      /* (R63: the Naga's film ends with it gone home into the stick, so the last stage draws none of it: through R47 it lay
+         round the court here, dimmed, "lingering in an awkward position") */
       PRAI5.tick(wdt);
       if (st.stage === 'surge') fsSurgeFrame(wdt); else if (st.stage !== 'brief') fsPraiFrame(wdt);   // (under the brief the nine stand as the film left them)
       fsFxFrame(wdt, ft);
       FSG.visible = true;
-      /* the reach line: him to the one the bag will take, while its button shows */
+      /* the reach lines: him to every one the bag will take (R71: all of them, wherever they stand), while its button shows */
       const H3 = st.who === 'pho' && (st.stage === 'fight' || st.stage === 'last' || st.stage === 'learn') ? FIGHT.hud(st).third : null;
       const nd = st.cur;
-      let tgt = null;
-      if (H3 && H3.shown && nd && nd.act === 'BAG' && nd.target) tgt = st.prai[nd.target - 1];
-      if (!tgt && H3 && H3.shown) { let bd = 1e9; for (const p of st.prai) if ((p.st === 'tired' || p.st === 'held' || p.st === 'laid') && Math.hypot(p.x - st.pho.x, p.z - st.pho.z) <= (FN5.bagReach || 2.5)) { const d = Math.hypot(p.x - st.pho.x, p.z - st.pho.z); if (d < bd) { bd = d; tgt = p; } } }
-      if (tgt && pw) { const w = fsW(tgt.x, tgt.z), dx = w.x - pw.x, dz = w.z - pw.z, L = Math.hypot(dx, dz);
-        fsReach.visible = L > 0.3; fsReach.position.set((w.x + pw.x) / 2, 0.019, (w.z + pw.z) / 2); fsReach.rotation.y = Math.atan2(dx, dz); fsReach.scale.set(0.04, 1, L); fsReach.material.opacity = 0.5; }
-      else fsReach.visible = false;
+      let ri = 0;
+      if (H3 && H3.shown && pw) for (const p of st.prai) {
+        if (ri >= fsReachAll.length) break;
+        if (p.st !== 'tired' && p.st !== 'held' && p.st !== 'laid') continue;
+        const R = fsReachAll[ri++], w = fsW(p.x, p.z), dx = w.x - pw.x, dz = w.z - pw.z, L = Math.hypot(dx, dz);
+        R.visible = L > 0.3; R.position.set((w.x + pw.x) / 2, 0.019, (w.z + pw.z) / 2); R.rotation.y = Math.atan2(dx, dz); R.scale.set(0.04, 1, L);
+      }
+      fsReach.material.opacity = 0.5;
+      for (; ri < fsReachAll.length; ri++) fsReachAll[ri].visible = false;
       /* reached: the picture's edges sour (the engine's red edge is held off in the mode) */
       let n = 0; for (const p of st.prai) if (p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2)) n++;
       FS5.reached = n;
@@ -9679,6 +9875,7 @@
       const bound = st.prai.filter(p => p.st === 'bound' || p.st === 'held');
       for (let j = 0; j < 3; j++) { const p = bound[j], w = p ? fsW(p.x, p.z) : null; fsLoop('bub' + j, 'u5bindhold', live && p ? 0.35 : 0, { pan: true, x: w ? w.x : 0, z: w ? w.z : 0, tau: 0.15 }); }
       fsLoop('shape', 'u5shapeloop', live && st.stage === 'surge' ? 0.5 : 0, { tau: 0.3 });
+      fsLoop('togcall', 'u5togloop', live && st.stage === 'surge' && FS5.callAt && !(st.together > 0) ? 0.35 : 0, { tau: 0.25 });   // (R68: the call's hum while it waits)
       /* M7: the floor always; the teacher's two up while he is played, the student's while he is; a hold a step down */
       if (fighting && live) fsStemsStart();
       const P = played === 'pho', hold = st.stage === 'fight' && st.hold > 0, m = fighting && live ? FS_M7 : 0;
@@ -9852,14 +10049,13 @@
           /* (R49: each a tile of the party list: its portrait (the game's own render of him, masters/v28.0/props/portraits.py),
              the small line over its name, and its colour: his gold, his student's violet, the cage's own) */
           { id: 'pho', obj: pho.group, name: W5.btnPho, title: W5.btnPhoTitle, color: '#FFC860', pic: have('p5portpho') ? 'p5portpho' : null,
-            speed: FN5.phoWalk || 1.2, radius: 0.45, acts: [
+            speed: FN5.phoWalk || 1.2, radius: 0.45, wall: footOf(pho).a - NAV5.grow, acts: [
             { id: 'flame', slot: 'main', label: W5.btnFire, icon: FS_ICON.flame, key: 'Space' },
             { id: 'shock', slot: 'second', label: W5.btnShockwave, icon: FS_ICON.shock, key: 'KeyQ' },
             { id: 'bag', slot: 'third', label: W5.btnBag, icon: FS_ICON.bag, key: 'KeyE' }] },
           { id: 'zavier', obj: zav.group, name: W5.btnZavier, title: W5.btnZavierTitle, color: '#9B6BFF', pic: have('p5portzav') ? 'p5portzav' : null,
-            speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
+            speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, wall: footOf(zav).a - NAV5.grow, acts: [
             { id: 'bind', slot: 'main', label: W5.btnBind, icon: FS_ICON.bind, key: 'Space' },
-            { id: 'smell', slot: 'second', label: W5.btnSmell, icon: FS_ICON.smell, key: 'KeyQ' },
             { id: 'lend', slot: 'third', label: W5.btnLend, icon: FS_ICON.lend, key: 'KeyE' }] }
         ],
         played: 'pho', targets: fsMarks, onAct: fsOnAct }));
@@ -9875,7 +10071,9 @@
       const W5 = fsWords(), run = FS5.run;
       FS5.brief = true;
       if (kit && kit.objective) kit.objective(null, { complete: false });
-      const brief = [W5.fightBrief1, W5.fightBrief2, W5.fightBrief3, TOUCHY ? W5.fightInTouch : W5.fightInKey].filter(Boolean).join(' ');
+      /* (R66/R67: his two sentences, then a blank line and the controls of this device, one to a line: the brief keeps its
+         line breaks, shell.html's #event.brief #evPrompt) */
+      const brief = [[W5.fightBrief1, W5.fightBrief2].filter(Boolean).join(' '), TOUCHY ? W5.fightInTouch : W5.fightInKey].filter(Boolean).join('\n\n');
       kit.event({ kind: 'guard', label: W5.fightTitle, demo: 'tag', brief }).then((r) => {
         if (run !== FS5.run || !FS5.st) return;
         FS5.brief = false;
@@ -10584,73 +10782,120 @@
        (the Prai: whether one may pass through a body or a wall is the plan's, put to Chad, R30) and the Naga; and
        everything while the fight is on (FS5.on: its two played bodies slide on the blockers already). He (the player) is
        a body walkers in play go round; a still one is never shoved by him.
-       THE MAP: each solid is a column from the floor (S.blockers, grown 0.14 m for his eye: taken back off), grown by the
-       body's disc; a blocker made empty (the gate, the leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
+       THE MAP: each solid is a column from the floor (S.blockers, grown 0.14 m for his eye: taken back off), met by each
+       body's own measured reach (R76: FOOT5, below; it was one disc of 0.18 m for all); a blocker made empty (the gate, the
+       leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
        READ by tools/probes/e4c5bodies.py on the films' rows (stage.nav5: the counts): every shown standing body against the
        solids as they stand at each row and against each other, at every 0.1 s of every film. */
-    const NAV5 = { on: true, r: 0.18, rOf: { p5koh: 0.21 }, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1,
-                   standY: 0.65, me: 0.25, deep: 0.12, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0 };
+    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35,
+                   standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set() };
     const NAV_FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/;   // (who stands on the floor; the spirits are not here)
-    const navR = (P) => NAV5.rOf[P.key] || NAV5.r;
-    /* the solids round a body's disc: [x0, x1, z0, z1], kept while the blockers are the same (a cheap signature each call) */
+    /* EACH BODY'S OWN REACH OVER THE FLOOR (R76, Chad, 23 Nov 2026: "why isn't there some kind of universal fix to this?"
+       ... "characters still walking into walls, arms of characters clipping through each other"). The map held every body
+       as one disc 0.18 m round its hips (Mr Koh 0.21): a man's shoulders and hanging hands are some 0.27 m either side of
+       his middle, so a body kept 0.18 off a wall had a shoulder in it, and two men side by side 0.38 apart had their arms
+       through each other. Each body's reach is MEASURED from its own skin (tools/probes/e4c5foot.mjs: every sixth point of
+       its skin, at twelve moments of each take it plays, about its hips, in its own frame): `a` half its width across
+       (shoulders, arms, hands), `b` half its depth front to back standing, `bw` walking (the arms' and the legs' swing). It
+       is an ellipse turned with the body: its reach toward a way u is sqrt((a u_across)^2 + (b u_front)^2), so two men face
+       to face may stand as close as their chests allow and side by side no closer than their arms. A route keeps
+       NAV5.comfort (0.10 m) more than a body's half-width off every solid where the place has the room, and only the bare
+       half-width where it has not, within NAV5.near of either end (a station by a wall stays where it is) */
+    /* (measured 23 Nov 2026 on build 43, the 99th hundredth of every sixth skin point over twelve moments of each take: across
+       the higher of the shoulders' band and the hands' band, standing and walking; b the standing take's front and back;
+       bw the walk's (the hands' swing). Grandmaster Pho's robe flares to 0.38 across at the hands; Mr Koh is the broadest
+       man and stands with his belly 0.23 forward) */
+    const FOOT5 = { p5pho: { a: 0.37, b: 0.24, bw: 0.39 }, e4ton: { a: 0.26, b: 0.17, bw: 0.34 }, p5jun: { a: 0.27, b: 0.19, bw: 0.32 },
+                    p5koh: { a: 0.33, b: 0.23, bw: 0.37 }, p5zavier: { a: 0.26, b: 0.16, bw: 0.38 }, def: { a: 0.27, b: 0.20, bw: 0.36 } },
+          FOOT_ME5 = { a: 0.25, b: 0.25, bw: 0.25 };
+    const footOf = (P) => (P && FOOT5[P.key]) || FOOT5.def;
+    const discF = (r) => ({ a: r, b: r, bw: r });
+    /* a body's reach (f, turned ry, walking or still) toward the unit way (ux, uz) in the world */
+    function footReach(f, ry, walking, ux, uz) {
+      const c = Math.cos(ry), sn = Math.sin(ry), ac = ux * c - uz * sn, fw = ux * sn + uz * c, b = walking ? f.bw : f.b;
+      return Math.sqrt(f.a * f.a * ac * ac + b * b * fw * fw);
+    }
+    const navR = (P) => footOf(P).a;                               // (a route's disc: the body's half-width across)
+    /* THE SOLIDS, each [x0, x1, z0, z1] (the blockers taken back by the 0.14 m they were grown for his eye), kept while the
+       blockers are the same (a cheap signature each call). INSIDE A FILM'S PICTURE (navFilmOn) a solid the film has open
+       (navFilmOpen: the lift's doors as they slide open in the opening) is no solid: play's map holds those doors shut */
+    let navFilmOn = false;
+    function navFilmOpen(solid, open) { if (!solid) return; if (open) NAV5.open.add(solid); else NAV5.open.delete(solid); }
     function navBoxes() {
       /* (signed at most once in 30 ms: within one picture the blockers are the same, and a nearest-point search makes up to
          1,536 calls, each of which signed every blocker again: R33's L4-11) */
-      const now = performance.now(); if (navBoxes.list && now - (navBoxes.t || 0) < 30) return navBoxes.list;
-      navBoxes.t = now;
-      const B = (S && S.blockers) || [], g = NAV5.r - NAV5.grow;
+      const film = navFilmOn && NAV5.open.size > 0, C = film ? navBoxes.F : navBoxes.P, now = performance.now();
+      if (C.list && now - (C.t || 0) < 30) return C.list;
+      C.t = now;
+      const B = (S && S.blockers) || [], g = NAV5.grow, skip = new Set();
+      if (film) for (const q of NAV5.open) { const i = solids.indexOf(q); if (i >= 0) skip.add(i); }
       let sig = B.length;
       for (const b of B) sig = (Math.imul(sig, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13))) | 0;
-      if (navBoxes.list && navBoxes.sig === sig) return navBoxes.list;
+      for (const i of skip) sig = (Math.imul(sig, 31) + i + 1) | 0;
+      if (C.list && C.sig === sig) return C.list;
       const L = [];
-      for (const b of B) { if (b.isEmpty()) continue; L.push([b.min.x - g, b.max.x + g, b.min.z - g, b.max.z + g]); }
-      navBoxes.sig = sig; navBoxes.list = L; navBoxes.memo = new Map(); navRoute.memo = new Map();
+      B.forEach((b, i) => { if (b.isEmpty() || skip.has(i)) return; L.push([b.min.x + g, b.max.x - g, b.min.z + g, b.max.z - g]); });
+      C.sig = sig; C.list = L; C.memo = new Map(); C.routes = new Map();
       if (S && !S.nav5) S.nav5 = NAV5API;
       return L;
     }
-    const navInBox = (L, x, z, extra) => { for (const b of L) if (x > b[0] - extra && x < b[1] + extra && z > b[2] - extra && z < b[3] + extra) return true; return false; };
-    /* clear for a disc of radius r at (x, z): no solid (the boxes are grown by NAV5.r; a larger body grows them by the rest),
-       no body of `others` ([x, z, r]) nearer than the two discs and a gap */
-    function navClear(x, z, r, others) {
-      if (navInBox(navBoxes(), x, z, r - NAV5.r)) return false;
-      if (others) for (const o of others) { const m = r + o[2] + NAV5.gap; if ((x - o[0]) * (x - o[0]) + (z - o[1]) * (z - o[1]) < m * m) return false; }
+    navBoxes.P = {}; navBoxes.F = {};
+    const navMemo = () => { navBoxes(); return (navFilmOn && NAV5.open.size > 0 ? navBoxes.F : navBoxes.P); };
+    /* how far a body reaches INTO the solid b (> 0: it does), and out[] the way out of it: [ux, uz, hips inside the solid] */
+    function footInBox(b, x, z, f, ry, walking, out) {
+      const qx = Math.max(b[0], Math.min(b[1], x)), qz = Math.max(b[2], Math.min(b[3], z)), dx = x - qx, dz = z - qz, d = Math.hypot(dx, dz);
+      if (d > 1e-6) { const ux = dx / d, uz = dz / d; if (out) { out[0] = ux; out[1] = uz; out[2] = false; } return footReach(f, ry, walking, ux, uz) - d; }
+      const dl = x - b[0], dr = b[1] - x, dn = z - b[2], df = b[3] - z, m = Math.min(dl, dr, dn, df);
+      const ux = m === dl ? -1 : m === dr ? 1 : 0, uz = ux ? 0 : (m === dn ? -1 : 1);
+      if (out) { out[0] = ux; out[1] = uz; out[2] = true; }
+      return m + footReach(f, ry, walking, ux, uz);
+    }
+    /* how far two bodies' reaches overlap along the line between them (> 0: they do); o is { x, z, f, ry, w } */
+    function footApart(x, z, f, ry, w, o) {
+      const dx = o.x - x, dz = o.z - z, d = Math.hypot(dx, dz);
+      if (d < 1e-6) return 1;
+      return footReach(f, ry, w, dx / d, dz / d) + footReach(o.f, o.ry, o.w, -dx / d, -dz / d) + NAV5.gap - d;
+    }
+    /* clear for a body (f, ry, w) at (x, z): no solid within its reach, and no body of `others` within the two reaches */
+    function navClear(x, z, f, ry, w, others) {
+      for (const b of navBoxes()) { if (x < b[0] - 1 || x > b[1] + 1 || z < b[2] - 1 || z > b[3] + 1) continue; if (footInBox(b, x, z, f, ry, w, null) > 0) return false; }
+      if (others) for (const o of others) if (footApart(x, z, f, ry, w, o) > 0) return false;
       return true;
     }
-    /* the nearest clear point to (x, z) for a disc of radius r, or null when there is none within reach */
-    function navStand(x, z, r, others) {
-      if (navClear(x, z, r, others)) return [x, z];
-      const key = Math.round(x * 100) + ',' + Math.round(z * 100) + ',' + Math.round(r * 100) + (others && others.length ? '|' + others.map(o => Math.round(o[0] * 100) + ',' + Math.round(o[1] * 100)).join(';') : '');
-      const M = navBoxes.memo || (navBoxes.memo = new Map());
+    /* the nearest clear point to (x, z) for a body, or null when there is none within reach */
+    function navStand(x, z, f, ry, w, others) {
+      if (navClear(x, z, f, ry, w, others)) return [x, z];
+      const key = Math.round(x * 100) + ',' + Math.round(z * 100) + ',' + Math.round(f.a * 100) + ',' + Math.round((w ? f.bw : f.b) * 100) + ',' + Math.round(ry * 50) + (others && others.length ? '|' + others.map(o => Math.round(o.x * 100) + ',' + Math.round(o.z * 100)).join(';') : '');
+      const M = navMemo().memo;
       if (M.has(key)) return M.get(key);
       let best = null;
       for (let k = 1; k * NAV5.ring <= NAV5.far + 1e-9 && !best; k++) { const rr = k * NAV5.ring;
         for (let i = 0; i < NAV5.dirs; i++) { const a = i / NAV5.dirs * Math.PI * 2, px = x + Math.sin(a) * rr, pz = z + Math.cos(a) * rr;
-          if (navClear(px, pz, r, others)) { best = [px, pz]; break; } } }
+          if (navClear(px, pz, f, ry, w, others)) { best = [px, pz]; break; } } }
       if (M.size > 20000) M.clear();
       M.set(key, best); return best;
     }
-    /* the SMALLEST move that clears a disc of radius r at (x, z): out of each solid it is in, across the side it is least
-       far in by, and out of each body of `others` along the line between them, a few rounds until nothing is met. It is
-       continuous where a body only brushes a solid (as a still body's breathing does: the rings above move in 2.5 cm
-       steps). A solid it stands more than `deep` (12 cm) into is left as it is and counted (deepIn): only a picture that
-       means it puts a body that far in (a doorway the film has open, which play's map still holds shut), and the check
-       reports it, to be read with its picture */
-    function navPush(x, z, r, others, deep = NAV5.deep) {
-      const L = navBoxes(), ex = r - NAV5.r;
+    /* the SMALLEST move that clears a body (f, ry, w) at (x, z): out of each solid its reach is in, along the way out of
+       that solid (exact on a face, the nearest corner's way at a corner), and out of each body of `others` along the line
+       between them, a few rounds until nothing is met. It is continuous where a body only brushes a solid (as a still
+       body's breathing does). A body whose HIPS stand inside a solid is left as it is and counted (deepIn): only a picture
+       that means it puts him there (a doorway the film has open and has not said so, navFilmOpen), and the check reports
+       it, to be read with its picture */
+    function navPush(x, z, f, ry, w, others) {
+      const L = navBoxes(), o3 = [0, 0, false];
       for (let it = 0; it < 6; it++) {
         let met = false;
         for (const b of L) {
-          const x0 = b[0] - ex, x1 = b[1] + ex, z0 = b[2] - ex, z1 = b[3] + ex;
-          if (!(x > x0 && x < x1 && z > z0 && z < z1)) continue;
-          const dl = x - x0, dr = x1 - x, dn = z - z0, df = z1 - z, m = Math.min(dl, dr, dn, df);
-          if (m > deep) { NAV5.deepIn++; continue; }       // (stood in it by design: a door the picture has open, a gateway)
-          if (m === dl) x = x0 - 1e-4; else if (m === dr) x = x1 + 1e-4; else if (m === dn) z = z0 - 1e-4; else z = z1 + 1e-4;
-          met = true;
+          if (x < b[0] - 1 || x > b[1] + 1 || z < b[2] - 1 || z > b[3] + 1) continue;
+          const pen = footInBox(b, x, z, f, ry, w, o3);
+          if (pen <= 0) continue;
+          if (o3[2]) { NAV5.deepIn++; continue; }       // (stood in it by design: a door the picture has open, a gateway)
+          x += o3[0] * (pen + 1e-4); z += o3[1] * (pen + 1e-4); met = true;
         }
         if (others) for (const o of others) {
-          const m = r + o[2] + NAV5.gap, dx = x - o[0], dz = z - o[1], d = Math.hypot(dx, dz);
-          if (d >= m) continue;
-          if (d < 1e-6) x = o[0] + m + 1e-4; else { x = o[0] + dx / d * (m + 1e-4); z = o[1] + dz / d * (m + 1e-4); }
+          const pen = footApart(x, z, f, ry, w, o); if (pen <= 0) continue;
+          const dx = x - o.x, dz = z - o.z, d = Math.hypot(dx, dz);
+          if (d < 1e-6) x += pen + 1e-4; else { x += dx / d * (pen + 1e-4); z += dz / d * (pen + 1e-4); }
           met = true;
         }
         if (!met) return [x, z];
@@ -10671,8 +10916,8 @@
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); }
-          try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) navSettle('film'); } };
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); navFilmOn = true; }
+          try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) { try { navSettle('film'); } finally { navFilmOn = false; } } } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
     }
@@ -10699,15 +10944,16 @@
       if (L < 1e-6) { const ry = P.group.rotation.y; return [Math.sin(ry), Math.cos(ry)]; }
       return [dx / L, dz / L];
     }
-    /* round one body o ([x, z, r]) on the side the way already passes it: the distance along the way kept, the distance
-       across grown to the two discs and a gap (an arc round it, continuous where the way enters and leaves the disc; a way
-       through its very middle always passes on the same side) */
-    function navRound(x, z, r, o, f) {
-      const R = r + o[2] + NAV5.gap, dx = x - o[0], dz = z - o[1];
-      if (dx * dx + dz * dz >= R * R) return null;
-      const nx = f[1], nz = -f[0], a = dx * f[0] + dz * f[1], b = dx * nx + dz * nz, sd = b >= -1e-3 ? 1 : -1;
+    /* round one body o ({ x, z, f, ry, w }) on the side the way fd already passes it: the distance along the way kept, the
+       distance across grown to the two reaches and a gap, read along the line between them (an arc round it, continuous
+       where the way enters and leaves it; a way through its very middle always passes on the same side) */
+    function navRound(x, z, it, o, fd) {
+      const dx = x - o.x, dz = z - o.z, d0 = Math.hypot(dx, dz), ux = d0 > 1e-6 ? dx / d0 : fd[1], uz = d0 > 1e-6 ? dz / d0 : -fd[0];
+      const R = footReach(it.f, it.ry, true, -ux, -uz) + footReach(o.f, o.ry, o.w, ux, uz) + NAV5.gap;
+      if (d0 >= R) return null;
+      const nx = fd[1], nz = -fd[0], a = dx * fd[0] + dz * fd[1], b = dx * nx + dz * nz, sd = b >= -1e-3 ? 1 : -1;
       const aa = Math.max(-R, Math.min(R, a)), bb = Math.sqrt(Math.max(0, R * R - aa * aa));
-      return [o[0] + f[0] * aa + nx * bb * sd, o[1] + f[1] * aa + nz * bb * sd];
+      return [o.x + fd[0] * aa + nx * bb * sd, o.z + fd[1] * aa + nz * bb * sd];
     }
     const navPlayWalk = new Map();                 // (play: the walkers walking this frame, and where to)
     /* THE SETTLE (the header): 'film' moves only the bodies the film put in this picture; 'play' any body on the floor */
@@ -10722,23 +10968,23 @@
         const b = navBody(P), stands = b[2] >= NAV5.standY;
         const e = film ? navFrame.put.get(P) : (navPlayWalk.has(P) ? { walk: true, to: navPlayWalk.get(P) } : null);
         const may = stands && (!film || !!e), walking = may && !!(e && e.walk);
-        list.push({ P, x: b[0], z: b[1], r: navR(P), may, walking, e, rank: may ? (walking ? 2 : 1) : 0 });
+        list.push({ P, x: b[0], z: b[1], f: footOf(P), ry: P.group.rotation.y, may, walking, e, rank: may ? (walking ? 2 : 1) : 0 });
       }
       list.sort((p, q) => p.rank - q.rank);         // (stable: within a rank, the order the chapter made them)
       const done = [];
       for (const it of list) {
         let x = it.x, z = it.z;
         if (it.may && !it.walking) {
-          const q = navPush(x, z, it.r, done);
+          const q = navPush(x, z, it.f, it.ry, false, done);
           if (q) { x = q[0]; z = q[1]; } else NAV5.missed++;
         } else if (it.walking) {
-          const f = navWay(it.P, x, z, it.e), obs = film ? done : done.concat([[myX(), myZ(), NAV5.me]]);
-          for (const o of obs) { const q = navRound(x, z, it.r, o, f); if (q) { x = q[0]; z = q[1]; } }
-          if (!film) { const q = navPush(x, z, it.r, null); if (q) { x = q[0]; z = q[1]; } }
+          const fd = navWay(it.P, x, z, it.e), obs = film ? done : done.concat([{ x: myX(), z: myZ(), f: FOOT_ME5, ry: 0, w: false }]);
+          for (const o of obs) { const q = navRound(x, z, it, o, fd); if (q) { x = q[0]; z = q[1]; } }
+          if (!film) { const q = navPush(x, z, it.f, it.ry, true, null); if (q) { x = q[0]; z = q[1]; } }
         }
         if (x !== it.x || z !== it.z) { const g = it.P.group.position, dx = x - it.x, dz = z - it.z; g.x += dx; g.z += dz; NAV5.moved++;
           const cs = navCarry.get(it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += dx; c.position.z += dz; } }
-        done.push([x, z, it.r]);
+        done.push({ x, z, f: it.f, ry: it.ry, w: it.walking });
       }
     }
     /* THE WRAPS (each the original, called as it was) */
@@ -10747,15 +10993,21 @@
       if (navFrame.depth && P && !navFrame.put.has(P)) navFrame.put.set(P, { walk: false, pts: null });
       return navPut0(P, x, z, ry, y);
     };
-    /* A FILM'S WALK ROUTED ROUND THE SOLIDS: the path itself unchanged where every leg is clear */
-    function navLegClear(a, b, r) { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 0.05));
-      for (let i = 0; i <= n; i++) { const u = i / n; if (!navClear(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, r, null)) return false; } return true; }
-    function navAstar(a, b, r) {
-      const C = NAV5.cell, pad = 3, x0 = Math.min(a[0], b[0]) - pad, z0 = Math.min(a[1], b[1]) - pad;
+    /* A FILM'S WALK ROUTED ROUND THE SOLIDS: the path itself unchanged where every leg is clear. A route keeps the body's
+       half-width and the comfort (rr) off every solid, but within NAV5.near of the route's two ends (E: [start, goal]) only
+       the bare half-width (r0): a station by a wall is reached, never moved */
+    const navRad = (x, z, rr, r0, E) => (E && r0 < rr && (Math.hypot(x - E[0][0], z - E[0][1]) < NAV5.near || Math.hypot(x - E[1][0], z - E[1][1]) < NAV5.near)) ? r0 : rr;
+    function navLegClear(a, b, r, r0, E) { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 0.05));
+      for (let i = 0; i <= n; i++) { const u = i / n, x = a[0] + (b[0] - a[0]) * u, z = a[1] + (b[1] - a[1]) * u;
+        if (!navClear(x, z, discF(navRad(x, z, r, r0 == null ? r : r0, E)), 0, false, null)) return false; } return true; }
+    function navAstar(a, b, r, r0) {
+      const E = [a, b];
+      /* (the grid on the world's own 10 cm lines: a doorway's middle is a cell, wherever the route began) */
+      const C = NAV5.cell, pad = 3, x0 = Math.floor((Math.min(a[0], b[0]) - pad) / C) * C, z0 = Math.floor((Math.min(a[1], b[1]) - pad) / C) * C;
       const W = Math.ceil((Math.abs(b[0] - a[0]) + 2 * pad) / C) + 1, H = Math.ceil((Math.abs(b[1] - a[1]) + 2 * pad) / C) + 1;
       const ix = (x) => Math.max(0, Math.min(W - 1, Math.round((x - x0) / C))), iz = (z) => Math.max(0, Math.min(H - 1, Math.round((z - z0) / C)));
       const cx = (i) => x0 + i * C, cz = (j) => z0 + j * C, N = W * H, free = new Int8Array(N).fill(-1);
-      const ok = (i, j) => { const k = j * W + i; if (free[k] < 0) free[k] = navClear(cx(i), cz(j), r, null) ? 1 : 0; return free[k] === 1; };
+      const ok = (i, j) => { const k = j * W + i; if (free[k] < 0) free[k] = navClear(cx(i), cz(j), discF(navRad(cx(i), cz(j), r, r0, E)), 0, false, null) ? 1 : 0; return free[k] === 1; };
       const si = ix(a[0]), sj = iz(a[1]), gi = ix(b[0]), gj = iz(b[1]);
       const g = new Float32Array(N).fill(Infinity), from = new Int32Array(N).fill(-1), shut = new Uint8Array(N), open = [];
       const h = (i, j) => Math.hypot(i - gi, j - gj);
@@ -10775,29 +11027,28 @@
       cells.reverse(); cells[0] = [a[0], a[1]]; cells[cells.length - 1] = [b[0], b[1]];
       /* pulled straight: from each kept point, the furthest later point the line reaches clear */
       const out = [cells[0]]; let at = 0;
-      while (at < cells.length - 1) { let nx = cells.length - 1; while (nx > at + 1 && !navLegClear(cells[at], cells[nx], r)) nx--; out.push(cells[nx]); at = nx; }
+      while (at < cells.length - 1) { let nx = cells.length - 1; while (nx > at + 1 && !navLegClear(cells[at], cells[nx], r, r0, E)) nx--; out.push(cells[nx]); at = nx; }
       return out;
     }
     function navRoute(pts, r) {
       if (!NAV5.on || !pts || pts.length < 2) return pts;
-      navBoxes();
+      const M = navMemo().routes, rr = r + NAV5.comfort;
       const key = pts.map(p => Math.round(p[0] * 1000) + ',' + Math.round(p[1] * 1000)).join(';') + '|' + Math.round(r * 100);
-      const M = navRoute.memo || (navRoute.memo = new Map());
       if (M.has(key)) return M.get(key);
-      let out = pts, changed = false;
-      if (!pts.every((p, i) => i === 0 || navLegClear(pts[i - 1], p, r))) {
+      let out = pts;
+      if (!pts.every((p, i) => i === 0 || navLegClear(pts[i - 1], p, rr, r, [pts[i - 1], p]))) {
         out = [];
         for (let i = 0; i < pts.length; i++) {
-          const p = navStand(pts[i][0], pts[i][1], r, null) || pts[i];
+          const p = navStand(pts[i][0], pts[i][1], discF(r), 0, false, null) || pts[i];
           if (i === 0) { out.push(p); continue; }
           const a = out[out.length - 1];
-          if (navLegClear(a, p, r)) { out.push(p); continue; }
-          const via = navAstar(a, p, r);
+          if (navLegClear(a, p, rr, r, [a, p])) { out.push(p); continue; }
+          const via = navAstar(a, p, rr, r) || navAstar(a, p, r, r);
           if (via) { for (let k = 1; k < via.length; k++) out.push(via[k]); } else { out.push(p); NAV5.missed++; }
         }
-        changed = true; NAV5.routed++;
+        NAV5.routed++;
       }
-      M.set(key, out); void changed;
+      M.set(key, out);
       return out;
     }
     const navWalk0 = fmWalk;
@@ -10809,10 +11060,11 @@
       return moving;
     };
     /* PLAY'S WALKERS: told to the settle (walking, and where to); the settle runs once the play's frame has moved them */
+    function navTellWalk(P, moving, tx, tz) { if (!P) return; if (moving) navPlayWalk.set(P, [tx, tz]); else navPlayWalk.delete(P); }
     const navWalkerMove0 = walkerMove;
     walkerMove = function (W0, tx, tz, wdt, pace) {
       const moving = navWalkerMove0(W0, tx, tz, wdt, pace);
-      if (W0 && W0.P) { if (moving) navPlayWalk.set(W0.P, [tx, tz]); else navPlayWalk.delete(W0.P); }
+      if (W0 && W0.P) navTellWalk(W0.P, moving, tx, tz);
       return moving;
     };
     const navPlayFrame0 = playFrame;
@@ -10826,10 +11078,11 @@
     };
     /* the probe's read (stage.nav5): the solids as boxes, each body's disc, and the counts */
     const NAV5API = {
-      get on() { return NAV5.on; }, set on(v) { NAV5.on = !!v; if (navBoxes.memo) navBoxes.memo.clear(); if (navRoute.memo) navRoute.memo.clear(); },
-      boxes: () => navBoxes().map(b => b.slice()), r: NAV5.r, rOf: Object.assign({}, NAV5.rOf), floor: NAV_FLOOR.source,
+      get on() { return NAV5.on; }, set on(v) { NAV5.on = !!v; for (const C of [navBoxes.P, navBoxes.F]) { if (C.memo) C.memo.clear(); if (C.routes) C.routes.clear(); } },
+      boxes: () => navBoxes().map(b => b.slice()), r: FOOT5.def.a, rOf: Object.fromEntries(Object.keys(FOOT5).filter(k => k !== 'def').map(k => [k, FOOT5[k].a])),
+      foot: (key) => Object.assign({}, FOOT5[key] || FOOT5.def), feet: () => JSON.parse(JSON.stringify(FOOT5)), comfort: NAV5.comfort, floor: NAV_FLOOR.source,
       counts: () => ({ moved: NAV5.moved, routed: NAV5.routed, missed: NAV5.missed, passes: NAV5.passes, deepIn: NAV5.deepIn }),
-      clear: (x, z, r) => navClear(x, z, r || NAV5.r, null), stand: (x, z, r) => navStand(x, z, r || NAV5.r, null)
+      clear: (x, z, r) => navClear(x, z, discF(r || FOOT5.def.a), 0, false, null), stand: (x, z, r) => navStand(x, z, discF(r || FOOT5.def.a), 0, false, null)
     };
     /* R33 (23 Nov 2026; R28, the brown bits on his robe). WRITTEN BY tools/phodark.py from his body sheet (texture_0,
        sha1 2410efbf776b5dbf2145e67647ec0415ba08b5d8, the same bytes in assets/pho.glb and assets/p5pho.glb), never by hand: 249 small dark specks lying
@@ -11120,12 +11373,29 @@
        toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
     /* (R46: read from the walkway itself, its second run's middle line WAY_Z; was -14.95, turnS 15.2) */
     const WAY_Z = (WALK.z0 + WALK.turnZ) / 2;
-    const WAY = { turnS: 0.25 - WAY_Z, gateS: 0.25 - WAY_Z + 8.5 };
-    function wayS(x, z) { return z > WAY_Z ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
-    const wayLat = (x, z) => z > WAY_Z ? -x : z - WAY_Z;
+    /* THE TURN IS ROUND (R76, Chad, 23 Nov 2026: "Pathfinding at the start of the chapter at the corridor is still too tight
+       and characters are clipping into the edge of the wall"). The line was two straight runs meeting at a point: a
+       follower's lane `lat` in from the middle ran on past the corner's inside to the second run's middle line and then
+       JUMPED 0.78 m back to start the second run (its target leapt behind him), and a follower walked straight at a target
+       round the corner, through the wall's inside edge. The middle line now turns round the inside corner (WALK.x0,
+       WALK.turnZ) on a quarter circle of its own distance from both inner walls (WAY_RHO, 0.95 m), so a lane `lat` in from
+       it keeps its distance from the inner walls the whole way round (a lane of 0.55 passes the corner 0.40 m off); and
+       the followers walk the lane itself (walkLane), never a straight line across it. `s` is unchanged along the first
+       run; the second run's is the arc's length shorter than the corner's two legs were (gateS is still x -8.5) */
+    const WAY_C = { x: WALK.x0, z: WALK.turnZ }, WAY_RHO = (WALK.x0 + WALK.x1) / 2 - WALK.x0;
+    const WAY_SA = 0.25 - WAY_C.z, WAY_SB = WAY_SA + WAY_RHO * Math.PI / 2;
+    const WAY = { turnS: WAY_SA + WAY_RHO * Math.PI / 4, arcS: [WAY_SA, WAY_SB], gateS: WAY_SB + (WAY_C.x + 8.5) };
+    function wayS(x, z) {
+      if (z >= WAY_C.z) return Math.max(0, 0.25 - z);
+      if (x <= WAY_C.x) return WAY_SB + (WAY_C.x - x);
+      return WAY_SA + WAY_RHO * Math.max(0, Math.min(Math.PI / 2, Math.atan2(WAY_C.z - z, x - WAY_C.x)));
+    }
+    const wayLat = (x, z) => z >= WAY_C.z ? -x : x <= WAY_C.x ? z - WAY_Z : WAY_RHO - Math.hypot(x - WAY_C.x, z - WAY_C.z);
     function wayAt(s, lat, out) {
-      if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
-      return out.set(-(s - WAY.turnS), 0, WAY_Z + lat);
+      if (s <= WAY_SA) return out.set(-lat, 0, 0.25 - s);
+      if (s >= WAY_SB) return out.set(WAY_C.x - (s - WAY_SB), 0, WAY_Z + lat);
+      const th = (s - WAY_SA) / WAY_RHO, rr = WAY_RHO - lat;
+      return out.set(WAY_C.x + rr * Math.cos(th), 0, WAY_C.z - rr * Math.sin(th));
     }
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
@@ -11349,6 +11619,28 @@
       P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
       return true;
     }
+    /* A FOLLOWER WALKS THE LANE (R76): his step is taken along the walkway's line (`s`) and across it (`lat`) and laid back on
+       the walkway by wayAt, so every step keeps the lane's distance from the inner walls, round the turn as well (a
+       straight line at a target round the corner went through the wall's inside edge); he faces the way his feet go. The
+       walk's take, its pace and its rate as walkerMove's; the walkable map is told he walks and which way (navTellWalk) */
+    function walkLane(W0, ts, tl, wdt, pace) {
+      const P = W0.P, g = P.group.position;
+      const s0 = wayS(g.x, g.z), l0 = wayLat(g.x, g.z), ds = ts - s0, dl = tl - l0, d = Math.hypot(ds, dl);
+      if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } navTellWalk(P, false); return false; }
+      if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
+      else if (P.cur !== 'Walking') { P.actN++; take(P, 'Walking', 0.3); }
+      const want = Math.min(pace, 0.6 + d * 1.2);
+      W0.v += (want - W0.v) * Math.min(1, wdt * 3.5);
+      const st = Math.min(d, W0.v * wdt);
+      wayAt(s0 + ds / d * st, l0 + dl / d * st, _pw5);
+      const mx = _pw5.x - g.x, mz = _pw5.z - g.z;
+      g.x = _pw5.x; g.z = _pw5.z;
+      if (mx * mx + mz * mz > 1e-10) P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(mx, mz)) * Math.min(1, wdt * 5.5);
+      P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
+      wayAt(s0 + Math.sign(ds || 1) * Math.min(Math.abs(ds), 0.6), tl, _pw5);
+      navTellWalk(P, true, _pw5.x, _pw5.z);
+      return true;
+    }
     function walkersTick(wdt) {
       if (phase !== 'walk' || !walkers.list.length) return;
       const sp = wayS(myX(), myZ());
@@ -11363,10 +11655,11 @@
         /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
         if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
         else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
+        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side) */
+        tl = Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06);
         ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
-        wayAt(ts, tl, _pv5);
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
-        const moving = walkerMove(W0, _pv5.x, _pv5.z, wdt, pace);
+        const moving = walkLane(W0, ts, tl, wdt, pace);
         if (!moving && distTo(g.x, g.z) < 7) {
           /* standing, he turns to the one he walks with (his whole body: v14.5), and looks at him */
           const want = faceTo(g.x, g.z, myX(), myZ()), d0 = angTo(W0.P.group.rotation.y, want);
@@ -11378,12 +11671,11 @@
       /* his teacher walks on ahead and waits at the gate */
       const ph = walkers.list.find(W0 => W0.n === 'pho' && W0.ahead);
       if (ph && ph.P.ready) { const P = ph.P, pace = (P.pace && P.pace.Walking) || 1.1, g = P.group.position;
+        /* (R76: along the lane to the gate, its last point PHO_GATE itself: wayAt(gateS - 0.75, 0.45)) */
         const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
-        wayAt(ts, s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, _pv5);
-        if (s >= WAY.gateS - 1.1) _pv5.set(PHO_GATE.x, 0, PHO_GATE.z);
         /* arrived, he turns to face him, his whole body eased round as the followers turn (v14.5: a turn, never a snap; set in
            one frame, it swung him up to half a circle while the player watched him go), and looks at him */
-        if (!walkerMove(ph, _pv5.x, _pv5.z, wdt, pace)) {
+        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.06), wdt, pace)) {
           const d0 = angTo(P.group.rotation.y, faceTo(g.x, g.z, myX(), myZ()));
           if (!ph.turned) { ph.turned = true; ph.turning = true; gaze(P, 'lens', { secs: 1, reach: 0.7 }); }
           if (ph.turning || Math.abs(d0) > 0.5) { ph.turning = Math.abs(d0) > 0.05; P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); } } }
@@ -12651,12 +12943,15 @@
       const ARC = PHI * NK.R * HS;                                                                      // the arc's length at full size
       BODY.d0 = -(ARC + 0.07);                                                                          // the body's first rings: up the curve and 7 cm into the head
       const FACE = [0, 2.45 - J0[1], 3.9 - J0[2]], SNOUT = [0, 2.28 - J0[1], 4.21 - J0[2]];             // from the foot, in the model's metres
+      /* (R70: its eyes, read from the file: each side's eye is its paint's dark red at (0.352, 2.262, 3.507) and the mirror, its
+         ball standing out to x 0.36 (masters/v28.0 nagaeye: its points drawn from the side by their colours). From the foot) */
+      const EYE = [[0.352, 2.262 - J0[1], 3.507 - J0[2]], [-0.352, 2.262 - J0[1], 3.507 - J0[2]]];
       const U = { uNA: { value: 0 }, uNT: { value: 0 }, uNGW: { value: 0.115 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x03163a) }, uNCol: { value: new THREE.Color(0x0d63d8) }, uNRim: { value: new THREE.Color(0x86ecff) },
                   uNBelly: { value: new THREE.Color(0xa8dcff) }, uNGlowC: { value: new THREE.Color(0x2aa6ff) }, uNGold: { value: new THREE.Color(0xffc860) },
                   uNLook: { value: new THREE.Vector4(1.0, 2.4, 0.62, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
-      const st = { ready: false, head: null, tube: null, tgeo: null, plan: null, uH: 0, grow: 0, laid: '', fw: null, sw: null, emb: null };
+      const st = { ready: false, head: null, tube: null, tgeo: null, plan: null, uH: 0, grow: 0, laid: '', fw: null, sw: null, emb: null, eyes: null, eyeN: null, hs: 1, eyeG: null };
       const SH5 = {};
       SH5.vsHead = `attribute float aS; attribute float aReg; attribute vec2 aCS; attribute float aW; attribute float aF;
 uniform float uNGW;
@@ -12845,6 +13140,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
               sh.fragmentShader = 'uniform float uNA; varying float vEA;\n' + out; };
             em.customProgramCacheKey = () => 'e4c5nagaMist';
             const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => 2.8, set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
+          /* R70: ITS EYES' LIGHT. On each eye a white core and a blue halo, and behind each a trail of eight where the eye was a
+             moment before, seen only at speed (light streaming off it as it climbs); painted light, added, drawn over its head
+             (a card of light among a body is drawn over what stands at its depth: v25.5) and faded out where the eye turns
+             away from the lens. The film says how bright (eyeFrame) */
+          { const NE = 20, eg = new THREE.BufferGeometry(), at = (a, k) => new THREE.BufferAttribute(a, k).setUsage(THREE.DynamicDrawUsage);
+            eg.setAttribute('position', at(new Float32Array(NE * 3), 3)); eg.setAttribute('aC', at(new Float32Array(NE * 3), 3));
+            eg.setAttribute('aS', at(new Float32Array(NE), 1)); eg.setAttribute('aA', at(new Float32Array(NE), 1)); owned.push(eg);
+            const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, uniforms: { uScale: { value: 500 } },
+              vertexShader: 'attribute vec3 aC; attribute float aS; attribute float aA; varying vec3 vC; varying float vA; uniform float uScale; void main(){ vC = aC; vA = aA; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+              fragmentShader: 'varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float f = pow(1.0 - d, 1.7); gl_FragColor = vec4(vC, vA * f); }' });
+            mats.push(m);
+            const pts = new THREE.Points(eg, m); pts.frustumCulled = false; pts.visible = false;
+            Object.defineProperty(pts, 'renderOrder', { get: () => 2.95, set: () => {}, configurable: true }); world.add(pts); st.eyeG = { eg, m, pts, NE }; }
           st.ready = true;
           if (st.plan && st.want) layAt(st.want.t, st.want.a);
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
@@ -12896,7 +13204,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         for (let i = 0; i < m - 1; i++) { if (Math.abs(dd[i]) < 1e-9) { mm[i] = mm[i + 1] = 0; continue; }
           const a = mm[i] / dd[i], b = mm[i + 1] / dd[i], s = a * a + b * b; if (s > 9) { const tau = 3 / Math.sqrt(s); mm[i] = tau * a * dd[i]; mm[i + 1] = tau * b * dd[i]; } }
         if (spec.restSecs > 0 && m > 0) mm[m - 1] = 0;
-        st.plan = { cv, len, T, NT, ds, uAt, K, mm, stick: spec.stick || [pts[0].x, pts[0].y, pts[0].z], spec };
+        /* (R64: where along it the stick's head is on its way home, metres; past it the creature is inside the stick) */
+        const home = typeof spec.home === 'number' && spec.home % 1 === 0 && spec.home < n ? uAt[spec.home] : null;
+        st.plan = { cv, len, T, NT, ds, uAt, K, mm, stick: spec.stick || [pts[0].x, pts[0].y, pts[0].z], spec, home };
         st.laid = '';
         return { len, uAt: uAt.slice() };
       }
@@ -12908,7 +13218,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const h = K[i + 1][0] - K[i][0], s = (t - K[i][0]) / h, s2 = s * s, s3 = s2 * s;
         return (2 * s3 - 3 * s2 + 1) * K[i][1] + (s3 - 2 * s2 + s) * h * mm[i] + (-2 * s3 + 3 * s2) * K[i + 1][1] + (s3 - s2) * h * mm[i + 1];
       }
-      const FR = new Float32Array(12);
+      const FR = new Float32Array(12), FRE = new Float32Array(12), _ev = new THREE.Vector3();
       function frameAt(u, out) {
         const P = st.plan, x = Math.max(0, Math.min(P.NT - 1, u / P.ds)), j = Math.min(P.NT - 2, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
         for (let q = 0; q < 12; q++) out[q] = P.T[a + q] + (P.T[b + q] - P.T[a + q]) * w;
@@ -12923,13 +13233,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         st.uH = uH; st.speed = sp;
         if (st.laid === key) return true; st.laid = key;
         const grow = smo(c01(uH / 1.4)); st.grow = grow;
+        /* (R64: on its way home it goes INTO the stick's head: the head drawn smaller over its last 1.6 m and gone once in,
+           each ring of its body the same as it reaches the stick, those past it inside) */
+        const H = st.plan.home, sinkOf = (u) => (H == null ? 1 : smo(c01((H - u) / 1.6))), sink = sinkOf(uH);
         /* THE HEAD on the leader, its along the path's along, its up the path's banked up */
-        const F = frameAt(uH, FR), s = Math.max(0.02, grow);
+        const F = frameAt(uH, FR), s = Math.max(0.02, grow * sink); st.hs = s;
+        st.head.visible = sink > 0.02;
         const bx = F[9], by = F[10], bz = F[11], nx = F[6], ny = F[7], nz = F[8], tx = F[3], ty = F[4], tz = F[5];
         HM.set(bx * s, nx * s, tx * s, F[0], by * s, ny * s, ty * s, F[1], bz * s, nz * s, tz * s, F[2], 0, 0, 0, 1);
         st.head.matrix.copy(HM); st.head.matrixWorldNeedsUpdate = true;
         const fw = (p) => [F[0] + (bx * p[0] + nx * p[1] + tx * p[2]) * HS * s, F[1] + (by * p[0] + ny * p[1] + ty * p[2]) * HS * s, F[2] + (bz * p[0] + nz * p[1] + tz * p[2]) * HS * s];
-        st.fw = fw(FACE); st.sw = fw(SNOUT);
+        st.fw = sink > 0.02 ? fw(FACE) : null; st.sw = sink > 0.02 ? fw(SNOUT) : null;
+        st.eyes = sink > 0.02 ? EYE.map(fw) : null;
+        st.eyeN = [1, -1].map(sg => { const x = bx * sg + tx * 0.35, y = by * sg + ty * 0.35, z = bz * sg + tz * 0.35, l = Math.hypot(x, y, z) || 1; return [x / l, y / l, z / l]; });
         /* THE BODY: each ring where the leader was; thin where it is still coming out of the stick; a wave travelling down it
            while it flies (none while it lies still), across and a little up and down */
         const NR = BODY.NR, NS = BODY.NS, pa = st.tgeo.attributes.position.array, na = st.tgeo.attributes.normal.array, wa = st.tgeo.attributes.aW.array;
@@ -12947,11 +13263,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             const sn = Math.sin(th), cs = Math.cos(th), k = smo(c01(th / PHI));
             Tx = nx * sn + tx * cs; Ty = ny * sn + ty * cs; Tz = nz * sn + tz * cs;
             Nx = nx * cs - tx * sn; Ny = ny * cs - ty * sn; Nz = nz * cs - tz * sn; Bx = bx; By = by; Bz = bz;
-            rx = lp(BODY.rStub, NK.HX * HS * 1.03, k) * grow; ry = lp(BODY.rStub, NK.HN * HS * 1.03 / 0.9, k) * grow; r = rx;
+            rx = lp(BODY.rStub, NK.HX * HS * 1.03, k) * grow * sink; ry = lp(BODY.rStub, NK.HN * HS * 1.03 / 0.9, k) * grow * sink; r = rx;
             const off = -0.11 * ry * k;                                   // (the cross-section's keel lifts its middle 0.11 of it: set back on the cut's middle)
             cx = F[0] + (nx * ly + tx * lz) * s + Nx * off; cy = F[1] + (ny * ly + ty * lz) * s + Ny * off; cz = F[2] + (nz * ly + tz * lz) * s + Nz * off; }
           else if (u <= 0) { r = 0; cx = stick[0]; cy = stick[1]; cz = stick[2]; Tx = 0; Ty = 1; Tz = 0; Nx = 0; Ny = 0; Nz = 1; Bx = 1; By = 0; Bz = 0; }
-          else { frameAt(u, G); r *= smo(c01(u / 0.9)); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11];
+          else if (H != null && u >= H) { r = 0; frameAt(H, G); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11]; }
+          else { frameAt(u, G); r *= smo(c01(u / 0.9)) * sinkOf(u); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11];
             const A = 0.14 * mov * smo(c01((d - 0.6) / 2.8)) * (1 - 0.45 * d / BODY.L) * smo(c01(u / 1.5)), wv = Math.sin(6.2832 * (d / 3.4) - 5.2 * t), wv2 = Math.sin(6.2832 * (d / 4.6) - 3.6 * t + 1.3);
             cx += Bx * A * wv + Nx * A * 0.45 * wv2; cy += By * A * wv + Ny * A * 0.45 * wv2; cz += Bz * A * wv + Nz * A * 0.45 * wv2;
             cy = Math.max(cy, r * BODY.ay + 0.015); }
@@ -12968,7 +13285,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         return true;
       }
       return {
-        g, U,
+        g, U, bodyLen: BODY.L,
         ready: () => st.ready,
         /* the film's path and timing (FILMS5.together: { stick, pts, keys: [[t, point index or metres]], restSecs }) */
         plan,
@@ -12976,12 +13293,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            another moment) */
         fly(t, a) {
           st.want = { t, a };
-          if (!st.ready || !st.plan || !(a > 0.001)) { g.visible = false; st.fw = null; st.sw = null; return; }
+          if (!st.ready || !st.plan || !(a > 0.001)) { g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; return; }
           g.visible = true; U.uNA.value = a; U.uNT.value = t; layAt(t, a);
         },
         /* (kept for the callers that only ever hid it: set(0, ...)) */
-        set(k, a) { if (!(a > 0.001)) { st.want = null; g.visible = false; st.fw = null; st.sw = null; } },
-        hide() { st.want = null; g.visible = false; st.fw = null; st.sw = null; },
+        set(k, a) { if (!(a > 0.001)) { st.want = null; g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; } },
+        hide() { st.want = null; g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; },
         /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none) */
         light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
         /* the middle of its face as last laid, and its snout's tip (films aim at them), or null */
@@ -12991,6 +13308,31 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         uAt: (t) => uOf(t),
         pointAt(u) { if (!st.plan) return null; const F = frameAt(u, new Float32Array(12)); return [F[0], F[1], F[2]]; },
         stickAt: () => (st.plan ? st.plan.stick.slice() : null),
+        /* (R64, R70) the leader's frame at film time t, from its plan alone ([x, y, z, along, up, side]: a tracking shot rides it) */
+        pose(t, out) { if (!st.plan) return null; return frameAt(uOf(t), out || new Float32Array(12)); },
+        /* one eye's place at film time t, from the plan alone (its trail) */
+        eyeAt(t, e) { if (!st.plan) return null; const u = uOf(t), H = st.plan.home, F = frameAt(u, FRE);
+          const s = Math.max(0.02, smo(c01(u / 1.4)) * (H == null ? 1 : smo(c01((H - u) / 1.6)))), p = EYE[e];
+          return [F[0] + (F[9] * p[0] + F[6] * p[1] + F[3] * p[2]) * HS * s, F[1] + (F[10] * p[0] + F[7] * p[1] + F[4] * p[2]) * HS * s, F[2] + (F[11] * p[0] + F[8] * p[1] + F[5] * p[2]) * HS * s]; },
+        /* its eyes' light at film time t, k bright (0 none; over 1 they flare): after fly(), each frame */
+        eyeFrame(t, k) {
+          const E = st.eyeG; if (!E) return;
+          if (!(k > 0.002) || !st.ready || !st.plan || !g.visible || !st.eyes || !st.head.visible) { E.pts.visible = false; return; }
+          E.pts.visible = true;
+          E.m.uniforms.uScale.value = Math.min(devicePixelRatio || 1, LOW ? 1.6 : 2) * innerHeight / (2 * Math.tan(camera.fov * Math.PI / 360));
+          const A = E.eg.attributes, Pp = A.position.array, Cc = A.aC.array, Ss = A.aS.array, Aa = A.aA.array;
+          camera.getWorldPosition(_ev);
+          const trail = smo(c01(((st.speed || 0) - 2.5) / 4)), s = st.hs || 1;
+          for (let e = 0; e < 2; e++) {
+            const p = st.eyes[e], nr = st.eyeN[e], vx = _ev.x - p[0], vy = _ev.y - p[1], vz = _ev.z - p[2], vl = Math.hypot(vx, vy, vz) || 1;
+            const face = smo(c01(((nr[0] * vx + nr[1] * vy + nr[2] * vz) / vl + 0.2) / 0.4));
+            for (let j = 0; j < 10; j++) { const i = e * 10 + j; let q = p, a, sz, c0, c1, c2;
+              if (j === 0) { a = Math.min(1, k) * face; sz = 0.075 * s * (0.8 + 0.25 * k); c0 = 1.0; c1 = 1.0; c2 = 1.0; }
+              else if (j === 1) { a = 0.6 * Math.min(1.4, k) * face; sz = 0.3 * s * (0.75 + 0.3 * k); c0 = 0.3; c1 = 0.82; c2 = 1.0; }
+              else { const f = (j - 2) / 8; q = this.eyeAt(t - (j - 1) * 0.028, e) || p; a = 0.55 * Math.min(1, k) * trail * (1 - f) * face; sz = 0.11 * s * (1 - 0.6 * f); c0 = 0.42; c1 = 0.88; c2 = 1.0; }
+              Pp[i * 3] = q[0]; Pp[i * 3 + 1] = q[1]; Pp[i * 3 + 2] = q[2]; Cc[i * 3] = c0; Cc[i * 3 + 1] = c1; Cc[i * 3 + 2] = c2; Ss[i] = sz; Aa[i] = a; } }
+          A.position.needsUpdate = true; A.aC.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true;
+        },
         /* (a probe's lab: its state, its draws; tools/probes/e4c5nagalab.mjs) */
         lab: () => Object.assign(st, { SH: SH5, U, BODY, HS, J0, FACE, SNOUT, geo: st.tgeo, meshes: [st.head, st.tube && st.tube[1]] })
       };
@@ -13137,6 +13479,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
+        /* (R76: the doors open in this picture are open to the walkable map's routes: the three are routed through the
+           doorway's middle, their shoulders clear of its jambs; play's map keeps them shut) */
+        navFilmOpen(LIFT_SHUT5, t >= T.open + 1.0);
         /* his teacher: before him, facing the doors, his eyes on the number; out first, down the walkway to where he waits */
         /* (his look on the number let go over his first steps out, never dropped in one frame: R25) */
         whenReady(cast.pho, (P) => { fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry, { ry0: Math.PI });
@@ -13517,7 +13862,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (api && api.handsRoot) api.handsRoot.visible = false;
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
         fmShow(cast.pho, true); fmShow(cast.ton, true); fmShow(cast.zav, false); whenReady(cast.jun, (P) => fmShow(P, true)); whenReady(cast.koh, (P) => fmShow(P, true));
-        STICK5.to('tonWrap'); DUFFEL5.to('away');
+        STICK5.to('tonWrap'); DUFFEL5.to('away'); STICK5.warm();                // (R65: its underside read now, on the film's first frame, not as he unwraps it)
         const N = NINE5(); PRAI5.list.forEach((P, i) => { const a = N[i % N.length]; P.hidden = false; put(P, a[0], a[1], faceTo(a[0], a[1], a[0], HOUSE.face)); if (P.ready) P.group.visible = true; });
         PRAI5.look('vision');
         if (things.staffCloth) things.staffCloth.visible = false;
@@ -13659,279 +14004,294 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (kit && kit.captions) kit.captions(null); }
     };
 
-    /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock NG5): the
-       ONE film inside the fight, which cannot be skipped the first time (the forty-first seam: the fight plays it with
-       kit.film('together', { noSkip: !ctx.sealedBefore(...) })). It begins on the fight's own picture (the boom behind the
-       one played, pulled back since the surge: c_cast.js PULL5), the tall dark shape over his student. Grandmaster Pho
-       plants the Naga stick (his Charged_Spell_Cast_1: the plan's 9.1). R47 (23 Nov 2026, Chad: "change the naga to a blue
-       one, and it needs to look more natural as it flies around and wraps the prai ... The naga should pierce through all
-       the prai's bodies with a water sound as it pierces through each. As it pierces through each prai, the fire of each prai
-       is extinguished and it cools them down. This entire sequence needs to have a very cinematic framing and angling"): THE
-       NAGA OF WATER spirals up out of the stick's head, hangs a moment over the court looking down ("The Naga guards. It
-       always has."), and dives: it sweeps low over the tall shape and the shape bursts apart, its three flung onto one line
-       across the court (where the rules lay them: c_fightrules.js spotsFor), still burning. It comes round and down onto that
-       line and goes through all three in one low pass, head first, slowing as it goes through: each one's water bursts out of
-       it, its fire goes out in steam and it is cool, dark and wet (seen side on, head on, and from above, a cut each). It
-       climbs out and lays its whole body round the court's three walls, its head rising at the end facing the house; the
-       three sink low and lie where the fight's last stage finds them. Mr Koh at the door, behind the thread: "It is... warm.
-       Why is it warm?" (what he feels, never what it was). It ends on the boom behind Grandmaster Pho, played */
+    /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock is the film's
+       own, FILMS5.together.tl()): the ONE film inside the fight, which cannot be skipped the first time (the forty-first seam:
+       the fight plays it with kit.film('together', { noSkip: !ctx.sealedBefore(...) })). R47 (23 Nov 2026) made the Naga one
+       of WATER: it spirals up out of the stick's head, comes down on the tall shape, and goes through the three, each one's
+       fire put out in steam with a water sound.
+       R63, R64, R69, R70 (23 Nov 2026, Chad: "the naga sequence is still not good enough. The camera framing and panning on
+       both desktop and mobile does not properly frame it for the best cinematoc effect. Also it feels weak. When the naga
+       pierces through each prai, there needs to be visual impact and physical feedback, with screen shake effect, and the sound
+       effect needs to be much more powerful. Also somehow the ending of the naga part is very anticlimactic as it just stays
+       there lingering in an awkward position, what was that for?"; "it needs to properly rearrange all the characters, prai,
+       and the naga for proper staging for the cutscene so that the positions are always reliably fixed during the cutscene no
+       matter how the player plays it ... this rearranging should not be seen by the player ... The camera should look at the
+       naga head, and track it from different angles as it flies up high in the sky and go downwards to hit the prais, and as
+       it hits each prai, look and pan and track from different angles for the most powerful cinematic effect. Be like a
+       creative director."; "the way the naga circles around dont feel smooth enough ... it goes in weird boxy ways"; "show one
+       part that zooms in on the naga head showing its eyes glow with energy and it lets out a naga sound, as it flies at high
+       speed up into the air, before going down to hit the prais"). REBUILT as one film:
+         THE STAGING IS FIXED (R64). It opens on the white of the press, and under it everyone is set at fixed marks: the two of
+         them at the fight's own first places, facing the house; the tall shape over his student; the stick in his teacher's
+         hand; the three's places fixed on an arc before them toward the house (FIGHT.NUM.laidAt). The fight's last stage
+         begins from those same marks (c_fightrules.js, c_fightstage.js fsNagaGo), so nothing is seen to move.
+         THE FLIGHT IS MADE OF CURVES MEANT TO BE SMOOTH (R69): out of the stick's head straight up, a widening spiral up over
+         his teacher, one slow circle high over the court (above its walls) while he says his line, a stoop straight down
+         onto the tall shape's head, a swoop round the west of the court, a long arc across the court's house side through the
+         three, a climb into one wide ring round the whole court, a tightening spiral down, and INTO the stick's head (its
+         body pours in after it): every piece sampled every 30 cm, each joined where its way meets the next (circles eased one
+         into the next by their middles and their sizes, a cubic for the stoop and the swoop with its ends along the ways they
+         join), and its pace a smooth function of how far it has flown, so it never turns a corner nor steps its speed.
+         THE PICTURE (R63, R64, R70): from behind his teacher, low, facing the shape as he raises the stick and plants it; from
+         the paving beside the stick as it bursts up out of its head; RIDING UP WITH ITS HEAD, below it and close, the night
+         behind it, as its eyes kindle and it cries out; low behind his teacher looking up at it circling over the court while
+         he says his line; down the stoop over its head; the shape bursting, from the court's east side; THE THREE PIERCES, each
+         from its own side (beside the first as it goes through, head on at the second, from over the third), and at each A
+         HIT: the moment held (the film's clock at a twelfth for 0.16 s), the screen flashed white-blue, shaken, the phone
+         buzzed, a struck sound over the water and the hiss; the god's eye on its ring round the whole court; low by the stick
+         as it spirals down and pours itself in, and the stick's head bursts with light: its guard kept, it goes home. Then
+         Mr Koh at the doorway, and the fight's own picture again. */
+    /* (R64: the film's fixed marks, in the court's frame (c_cast.js courtWorld): the two of them where the fight began
+       (NUM.phoAt, NUM.zavAt), facing the house, and the three's places (NUM.laidAt): on an arc across the house side of the
+       court, 1.89 m apart, each 2.4 m and more from his student and 3.2 from his teacher) */
+    function nagaMarks5() {
+      const F = fightStart(), n = (typeof FIGHT === 'object' && FIGHT.NUM) || {};
+      const laid = n.laidAt && n.laidAt.length === 3 ? n.laidAt : [[-1.8, -1.12], [0, -1.7], [1.8, -1.12]];
+      return { pho: { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zav: { x: F.zav.x, z: F.zav.z }, spots: laid.map(q => q.slice()),
+               spotsW: laid.map(q => courtWorld(q[0], q[1])), za: n.zavAt || [0, 0.7], pa: n.phoAt || [1.15, 2.0] };
+    }
+    /* (each pierce HELD: the film's story clock at a twelfth of its pace for 0.16 s of its real one) */
+    const NAGA_HIT5 = { H: 0.16, r: 1 / 12 };
+    /* (where the stick, planted, carries the Naga's way out: the top of its carved head, in its own frame, read from its file:
+       the head's slices at 1.30 to 1.35 m up it stand 0.09 to 0.15 m to its -x) */
+    const STICK_HEAD5 = [-0.11, 1.36, 0];
     FILMS5.together = {
-      three: null, spots: null,                                                // the last three (the fight says which) and where they are laid (court frame)
+      three: null, spots: null,
+      /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
+      build() {
+        if (this.B) return this.B;
+        const M = nagaMarks5(), pz = M.pho, cwp = (q) => [COURT5.x - q[0], q[1], COURT5.z - q[2]];
+        /* the stick, planted at his front right (as his cast brings it down: 0.38 m before him and 0.40 to his right), turned
+           as the planted hold turns it; its carved head's top, in the court's frame */
+        const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
+        const yw = (typeof PHOGRIP5 === 'object' && PHOGRIP5.plantYaw) ? PHOGRIP5.plantYaw(pz.ry) : pz.ry, cy = Math.cos(yw), sy = Math.sin(yw);
+        const hx = sx + STICK_HEAD5[0] * cy + STICK_HEAD5[2] * sy, hz = sz - STICK_HEAD5[0] * sy + STICK_HEAD5[2] * cy;
+        const S = [COURT5.x - hx, STICK_HEAD5[1], COURT5.z - hz];
+        const Z = { x: M.za[0], z: M.za[1] }, sp = M.spots;
+        const P = [], NM = {};
+        const add = (q, nm) => { const L = P[P.length - 1]; if (!(L && Math.hypot(q[0] - L[0], q[1] - L[1], q[2] - L[2]) < 0.04)) P.push(q); if (nm) NM[nm] = P.length - 1; };
+        const run = (f, len, nm0, nm1) => { const k = Math.max(2, Math.ceil(len / 0.3)); for (let i = 0; i <= k; i++) add(f(i / k), i === 0 ? nm0 : i === k ? nm1 : null); };
+        const bez = (a, b, c, d) => (t) => { const u = 1 - t; return [0, 1, 2].map(k => u * u * u * a[k] + 3 * u * u * t * b[k] + 3 * u * t * t * c[k] + t * t * t * d[k]); };
+        const lenOf = (f) => { let L = 0, p = f(0); for (let i = 1; i <= 64; i++) { const q = f(i / 64); L += Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]); p = q; } return L; };
+        const circ = (c, r, a, y) => [c.x + r * Math.sin(a), y, c.z + r * Math.cos(a)];        // (its way round: the angle falling, as everywhere here)
+        const D2R = Math.PI / 180, sm = (u) => u * u * (3 - 2 * u);
+        /* 1. OUT OF THE STICK'S HEAD, straight up 0.55 m, then A WIDENING SPIRAL round a line over his teacher (between him and the
+           stick), a turn and a half, 0.45 m out at the start to 1.6 at the top, rising from 1.9 to 9.5 m (over the court's walls,
+           8.85), level at its top; its turning begins from nothing, so it leaves the straight rise without a corner */
+        const HA = { x: 1.35, z: 1.95 }, r0 = Math.hypot(S[0] - HA.x, S[2] - HA.z), a0 = Math.atan2(S[0] - HA.x, S[2] - HA.z), y0 = S[1] + 0.55, TURN = 3 * Math.PI;
+        add(S, 's0'); add([S[0], S[1] + 0.55, S[2]], 'out');
+        const helix = (u) => { const a = a0 - TURN * Math.pow(u, 1.5), r = r0 + (1.6 - r0) * u * u, y = y0 + (9.5 - y0) * (1 - (1 - u) * (1 - u)); return circ(HA, r, a, y); };
+        run(helix, 16, null, 'top0'); NM.helixMid = NM.out + ((NM.top0 - NM.out) >> 1);
+        /* 2. THE HIGH CIRCLE over the court (centre (1.0, -0.6), 2.2 m round, at 9.5 m), eased in from the spiral's top by its
+           middle and its size over its first 120 degrees, round to its gate side, where its way is straight across the court */
+        const a1 = a0 - TURN, TC = { x: 1.0, z: -0.6 }; let aE = 0; while (aE > a1) aE -= 2 * Math.PI;    // (the gate side, past the spiral's top)
+        const top = (u) => { const a = a1 + (aE - a1) * u, k = sm(Math.min(1, (a1 - a) / (120 * D2R))); return circ({ x: HA.x + (TC.x - HA.x) * k, z: HA.z + (TC.z - HA.z) * k }, 1.6 + 0.6 * k, a, 9.5 + 0.15 * Math.sin(u * Math.PI)); };
+        run(top, (a1 - aE) * 2.0, null, 'top1');
+        /* 3. THE STOOP: over, and straight down onto the tall shape (its head through the shape's head at 2.6 m, over his
+           student), pulled out level toward the west (a cubic each, its ends along the ways it joins) */
+        const E = top(1), V = [Z.x + 0.4, 3.7, Z.z + 0.04], A = [Z.x - 0.3, 2.65, Z.z + 0.02];
+        run(bez(E, [E[0] - 0.55, E[1], E[2]], [V[0], V[1] + 1.6, V[2]], V), lenOf(bez(E, [E[0] - 0.55, E[1], E[2]], [V[0], V[1] + 1.6, V[2]], V)), null, 'V');
+        const st2 = bez(V, [V[0], V[1] - 0.6, V[2]], [A[0] + 0.5, A[1] + 0.03, A[2]], A); run(st2, lenOf(st2), null, 'A');
+        /* 4. THE SWOOP round the west of the court (above his cage's bars, 2.05 m, until it is out past them) and down to the
+           arc's start, low, its way along the arc */
+        const RC = { x: Z.x, z: Z.z + 0.7 }, RR = Math.hypot(sp[1][0] - RC.x, sp[1][1] - RC.z);   // (the arc's circle: through the middle place)
+        const phiOf = (q) => { const a = Math.atan2(q[0] - RC.x, q[1] - RC.z); return a < 0 ? a + 2 * Math.PI : a; };   // (0 to a full turn: the arc runs from 250 degrees down to 130)
+        let aW = phiOf(sp[0]) + 34.5 * D2R; const W = circ(RC, RR, aW, 0.62), dW = [-Math.cos(aW), 0, Math.sin(aW)];
+        /* (its first control 2.75 m up: where it crosses his cage's ring, 1.35 m out, its leading line stands 2.37 m up and its
+           body's underside over the bars' 2.05) */
+        const sw = bez(A, [A[0] - 1.4, 2.75, A[2]], [W[0] - dW[0] * 1.1, 0.62, W[2] - dW[2] * 1.1], W); run(sw, lenOf(sw), null, 'W');
+        /* 5. THE ARC THROUGH THE THREE, low (its body's line 0.62 m up, its face through each one's chest), its face 0.95 m
+           ahead of its leading point: each pierce is named where the leading point is 0.95 m short of its place */
+        const LEAD = 0.95 / RR, a3e = phiOf(sp[2]) - 14.5 * D2R;
+        const arc = (u) => circ(RC, RR, aW + (a3e - aW) * u, 0.62);
+        run(arc, (aW - a3e) * RR, null, 'arcEnd');
+        const nearA = (a) => { let best = -1, bd = 1e9; for (let i = NM.W; i <= NM.arcEnd; i++) { const d = Math.abs(phiOf([P[i][0], P[i][2]]) - a); if (d < bd) { bd = d; best = i; } } return best; };
+        NM.p1 = nearA(phiOf(sp[0]) + LEAD); NM.p2 = nearA(phiOf(sp[1]) + LEAD); NM.p3 = nearA(phiOf(sp[2]) + LEAD);
+        /* 6. UP INTO ONE WIDE RING round the whole court (centre (0.2, 2.2), 2.95 m round, at 4.5 m), eased in from the arc by its
+           middle, its size and its height over 80 degrees, once round */
+        const GC = { x: 0.2, z: 2.2 }, aR0 = a3e, aR1 = aR0 - 80 * D2R;
+        const climb = (u) => { const k = sm(u), a = aR0 + (aR1 - aR0) * u; return circ({ x: RC.x + (GC.x - RC.x) * k, z: RC.z + (GC.z - RC.z) * k }, RR + (2.95 - RR) * k, a, 0.62 + (4.5 - 0.62) * k); };
+        run(climb, 80 * D2R * 3.0 + 3.0, null, 'ringIn');
+        const ring = (u) => circ(GC, 2.95, aR1 - 2 * Math.PI * u, 4.5 + 0.12 * Math.sin(u * 2 * Math.PI));
+        run(ring, 2 * Math.PI * 2.95, null, 'ringOut');
+        /* 7. HOME: a tightening spiral down round the stick's head (its middle drawn from the ring's to the stick's, its size to
+           nothing, a turn and a quarter), arriving straight down, and into the stick's head; then on down inside it, its body
+           pouring in after it */
+        const aH0 = aR1 - 2 * Math.PI, HC = { x: S[0], z: S[2] };
+        const spiral = (u) => { const k = sm(u), a = aH0 - 2.5 * Math.PI * u, r = 2.95 * Math.pow(1 - u, 1.5); return circ({ x: GC.x + (HC.x - GC.x) * k, z: GC.z + (HC.z - GC.z) * k }, r, a, 4.5 - (4.5 - (S[1] + 0.6)) * u); };
+        run(spiral, 15, null, 'down');
+        add([S[0], S[1], S[2]], 'home');
+        for (let i = 1; i <= 24; i++) add([S[0], S[1] - i, S[2]], i === 24 ? 'end' : null);
+        /* ---- ITS PACE, metres a second at the named places and eased between them by distance; its moment at every point is
+           the distance over that pace, from its rise (the high circle's pace is its own: long enough for his line) */
+        const cum = [0]; for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1], P[i][2] - P[i - 1][2]));
+        const vTop = (cum[NM.top1] - cum[NM.top0]) / 3.55;
+        const KN = [['s0', 1.2], ['out', 5], ['helixMid', 9.5], ['top0', vTop], ['top1', vTop], ['V', 14], ['A', 12], ['W', 5], ['p1', 3.4], ['p2', 3.2], ['p3', 3.2],
+                    ['arcEnd', 6], ['ringIn', 8.5], ['ringOut', 8.5], ['down', 10.5], ['home', 11], ['end', 11]].map(([k, v]) => [cum[NM[k]], v]);
+        const vAt = (s) => { let j = 0; while (j < KN.length - 2 && s > KN[j + 1][0]) j++; const [s0, v0] = KN[j], [s1, v1] = KN[j + 1]; return v0 + (v1 - v0) * Math.max(0, Math.min(1, (s - s0) / Math.max(1e-6, s1 - s0))); };
+        const RISE = 2.0, tm = [RISE];
+        for (let i = 1; i < P.length; i++) { const v = 0.5 * (vAt(cum[i - 1]) + vAt(cum[i])); tm.push(tm[i - 1] + (cum[i] - cum[i - 1]) / Math.max(0.2, v)); }
+        /* the timing keys: every third point, and every named one */
+        const keys = []; for (let i = 0; i < P.length; i++) if (i % 3 === 0 || Object.values(NM).includes(i) || i === P.length - 1) keys.push([tm[i], i]);
+        /* the tall shape bursts as its face (0.95 m ahead of the leading point, its head riding over its line) passes over the
+           shape's head, where the stoop pulls out over him */
+        let iA = NM.V; { let bd = 1e9; for (let i = NM.V; i <= NM.W; i++) { let j = i; while (j < P.length - 1 && cum[j] - cum[i] < 0.95) j++; const d = Math.hypot(P[j][0] - Z.x, P[j][2] - Z.z); if (d < bd) { bd = d; iA = i; } } }
+        const T = { plant: 0.2, rise: RISE, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
+                    swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
+                    tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
+        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 1.5; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
+        this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW,
+                   dirAt: (i) => { const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)]; const d = [-(b[0] - a[0]), 0, -(b[2] - a[2])], l = Math.hypot(d[0], d[2]) || 1; return [d[0] / l, 0, d[2] / l]; } };
+        return this.B;
+      },
+      /* the story clock against the real one: marks and the flight are in story seconds; a cue is laid at real ones */
+      tl() { return this.build().T; },
+      real(tau) { const T = this.tl(), { H, r } = NAGA_HIT5; let add = 0; for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; } return tau + add; },
+      story(t) { const T = this.tl(), { H, r } = NAGA_HIT5; let sub = 0; for (const p of [T.p1, T.p2, T.p3]) { const h = p + sub; if (t <= h) break; const d = t - h; if (d < H) return p + d * r; sub += (1 - r) * H; } return t - sub; },
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
         if (api && api.handsRoot) api.handsRoot.visible = false;
         const L = this.three && this.three.length === 3 ? this.three : PRAI5.list.map((P, i) => i).filter(i => PRAI5.list[i].group.visible).slice(-3);
         this.L = L.length === 3 ? L : [6, 7, 8];
-        /* where the two stand as the film begins (the fight's last frame) */
-        this.pho = cast.pho ? { x: cast.pho.group.position.x, z: cast.pho.group.position.z, ry: cast.pho.group.rotation.y } : null;
-        this.zav = cast.zav ? { x: cast.zav.group.position.x, z: cast.zav.group.position.z } : null;
-        this.fl = null; this.eyes = null; this.bow = null;
+        const B = this.build(); this.pho = B.M.pho; this.zav = B.M.zav; this.W = B.spotsW;
+        this.planned = false; this.eyes = null;
         PRAI5.look('trance');
       },
-      /* THE FLIGHT, once a run (from where the stick is planted, where the two stand and where the three will lie), in the
-         court's frame (x across, + to his bedroom's wall; z down the court, + to the gate; y up); NAGA5.plan makes its path */
-      flight(sx, sz, pz, zz) {
-        const T = NG5, n = (typeof FIGHT === 'object' && FIGHT.NUM) || {}, loc = (w) => ({ x: COURT5.x - w.x, z: COURT5.z - w.z });
-        const cw = (x, y, z) => [COURT5.x - x, y, COURT5.z - z];
-        const S = loc({ x: sx, z: sz }), Z = loc(zz), P = loc(pz);
-        const XM = (n.courtX || 3.85) - 0.85, Z0 = (n.courtZ0 || -3.0) + 0.9, Z1 = (n.courtZ1 || 7.3) - 1.0;
-        const cx = (x) => Math.max(-XM, Math.min(XM, x)), cz = (z) => Math.max(Z0, Math.min(Z1, z));
-        const sp = (this.spots && this.spots.length === 3 ? this.spots : (n.laidAt || [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]])).map(q => ({ x: q[0], z: q[1] }));
-        const A = sp[0], B = sp[1], C = sp[2]; let ux = C.x - A.x, uz = C.z - A.z; const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
-        const pts = [], keys = [], at = (x, y, z, t) => { pts.push(cw(x, y, z)); if (t != null) keys.push([t, pts.length - 1]); };
-        /* 1. up out of the stick's head: a turn and a quarter of a rising spiral round a point a little toward the court's
-           middle, widening as it climbs (its first 1.4 m straight up beside him, out of reach of his shoulder) */
-        /* (leaning away from him as it comes out: its first 1.3 m rises 19 degrees off upright, away from his shoulder; the
-           spiral turns round a point 0.9 m away from him the same way, toward the court's middle where that is room) */
-        at(S.x, 1.45, S.z, T.rise);
-        let ax = S.x - P.x, az = S.z - P.z; const al = Math.hypot(ax, az) || 1; ax /= al; az /= al;
-        const mx = 0 - S.x, mz = 2.1 - S.z, ml = Math.hypot(mx, mz) || 1; ax = ax * 0.7 + 0.3 * mx / ml; az = az * 0.7 + 0.3 * mz / ml; const al2 = Math.hypot(ax, az) || 1; ax /= al2; az /= al2;
-        at(S.x + ax * 0.45, 2.75, S.z + az * 0.45, null);
-        const C0 = { x: cx(S.x + ax * 1.0), z: cz(S.z + az * 1.0) }, a0 = Math.atan2(S.x + ax * 0.45 - C0.x, S.z + az * 0.45 - C0.z), turn = 2.3 * Math.PI;
-        for (let k = 1; k <= 6; k++) { const f = k / 6, r = 0.6 + 0.75 * f, a = a0 + turn * f;
-          at(cx(C0.x + r * Math.sin(a)), 2.9 + 3.1 * Math.pow(f, 0.9), cz(C0.z + r * Math.cos(a)), k === 6 ? T.apex - 0.6 : null); }
-        /* 2. it rears over the court, then arches on and BOWS: its head carried on the way it rose, over and down, to hang
-           4.9 m up with its face turned down 50 degrees to the court while he says his line, all but still (R47, the lab's
-           first pictures: it had hung level 6.5 m up, its face away, its jaw all the low lens could see). Its way on is the
-           spiral's own way out, turned half toward the court's middle, so the bow lands over the open court */
-        const pe = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }), pq = loc({ x: pts[pts.length - 2][0], z: pts[pts.length - 2][2] });
-        const AP = { x: cx(pe.x * 0.5), z: cz(pe.z * 0.5 + 1.1) };
-        at(AP.x, 6.6, AP.z, T.apex);
-        let ex = (AP.x - pq.x), ez = (AP.z - pq.z); { const l = Math.hypot(ex, ez) || 1; ex /= l; ez /= l; }
-        { let mx2 = 0 - AP.x, mz2 = 2.1 - AP.z; const l = Math.hypot(mx2, mz2) || 1; ex = ex * 0.5 + 0.5 * mx2 / l; ez = ez * 0.5 + 0.5 * mz2 / l; const l2 = Math.hypot(ex, ez) || 1; ex /= l2; ez /= l2; }
-        at(cx(AP.x + ex * 1.0), 6.35, cz(AP.z + ez * 1.0), T.apex + 0.5);
-        const HV = { x: cx(AP.x + ex * 1.75), z: cz(AP.z + ez * 1.75) };
-        at(HV.x, 5.15, HV.z, T.apex + 1.0);
-        at(cx(HV.x + ex * 0.16), 4.9, cz(HV.z + ez * 0.16), T.dive);
-        this.bow = { x: HV.x, z: HV.z, ex, ez };
-        /* 3. down over the tall shape: its lowest over his student, high enough that its body passes over the shape's head and
-           his cage (3.8 m: the shape stands 2.6 m, the cage's light 2.4 m) */
-        const ap = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }); let dx = Z.x - ap.x, dz = Z.z - ap.z; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
-        at(cx(Z.x - dx * 1.6), 4.6, cz(Z.z - dz * 1.6), null);
-        at(Z.x, 3.8, Z.z, T.apart);
-        at(cx(Z.x + dx * 2.2), 3.4, cz(Z.z + dz * 2.2), T.apart + 0.55);
-        /* 4. round and down onto the line of the three: high behind where its run begins, then level along it */
-        const E2 = { x: A.x - ux * 2.0, z: A.z - uz * 2.0 }, E1 = { x: cx(A.x - ux * 4.2), z: cz(A.z - uz * 4.2) };
-        const q2 = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] });
-        at(cx((q2.x + E1.x) / 2 * 0.8), 3.4, cz((q2.z + E1.z) / 2), null);
-        at(E1.x, 2.2, E1.z, T.p1 - 1.45);
-        at(E2.x, 0.7, E2.z, T.p1 - 0.7);
-        /* 5. THROUGH THE THREE: its face (0.95 m before its body's leading point, 0.69 over it: the head rides over its body's
-           line, R57) through each one's chest at T.p1, T.p2, T.p3, its body after it through each one's hips; slowing
-           through them */
-        at(A.x - ux * 0.95, 0.62, A.z - uz * 0.95, T.p1); at(A.x, 0.6, A.z, null);
-        at(B.x - ux * 0.95, 0.6, B.z - uz * 0.95, T.p2); at(B.x, 0.6, B.z, null);
-        at(C.x - ux * 0.95, 0.6, C.z - uz * 0.95, T.p3); at(C.x, 0.62, C.z, null);
-        at(cx(C.x + ux * 1.1), 0.75, cz(C.z + uz * 1.1), null);
-        /* 6. up and out, to the near end of the court's three walls, and round all three (a little inside them: over the two
-           planters in the gate's corners), its head rising at the end, facing the house */
-        const sg = C.x + ux * 1.4 >= 0 ? 1 : -1;
-        const X2 = { x: cx(C.x + ux * 2.4), z: cz(C.z + uz * 2.4) };
-        at(X2.x, 2.3, X2.z, T.p3 + 1.15);
-        const xs = 3.38, zh = -1.55, zg = 6.75, PZ = (typeof PLANT_Z === 'number' ? COURT5.z - PLANT_Z : 6.65), HY = 1.12, yb = 0.32;
-        /* (the U in the court's frame, from the side `sg` at the house end, round the gate end, to the other side; each planter
-           crossed as the ruby Naga's loop crossed it, the hump's numbers by the planter it goes over: the west one's, then the
-           east's, mirrored when it begins on the east side) */
-        const hump = (side) => side > 0 ? [1.75, 2.6] : [1.25, 2.1];
-        const U = [];
-        { const s0 = sg, s1 = -sg, h0 = hump(s0), h1 = hump(s1);
-          U.push([s0 * xs * 0.85, 1.4, zh - 0.3], [s0 * xs, yb, zh + 0.6], [s0 * xs, yb, PZ - h0[1]], [s0 * (xs - 0.02), HY, PZ - h0[0]], [s0 * (xs - 0.14), HY, zg - 0.25],
-                 [s0 * (xs - 0.9), HY * 0.9, zg], [s0 * (xs - 1.6), yb, zg], [s1 * (xs - 1.6), yb, zg], [s1 * (xs - 0.9), HY * 0.9, zg], [s1 * (xs - 0.14), HY, zg - 0.25],
-                 [s1 * (xs - 0.02), HY, PZ - h1[0]], [s1 * xs, yb, PZ - h1[1]], [s1 * xs, yb, 2.3], [s1 * (xs - 0.12), 0.75, 1.35], [s1 * (xs - 0.24), 1.22, 0.7], [s1 * (xs - 0.27), 1.26, 0.42]); }
-        U.forEach((p, i) => at(p[0], p[1], p[2], i === 1 ? T.wrap : i === U.length - 1 ? T.rest : null));
-        return { stick: cw(S.x, 1.45, S.z), pts, keys, restSecs: 1, spots: sp, u: [ux, uz] };
+      /* ITS LIGHT AT THE END: a burst of white and blue out of the stick's head as the last of it goes in (painted light, one
+         card, drawn over all at its depth) */
+      burst(t, T, at) {
+        if (!this.bs) { const [c, x] = canvas(128, 128), gd = x.createRadialGradient(64, 64, 2, 64, 64, 63);
+          gd.addColorStop(0, 'rgba(255,255,255,1)'); gd.addColorStop(0.25, 'rgba(190,240,255,0.85)'); gd.addColorStop(0.6, 'rgba(70,170,255,0.25)'); gd.addColorStop(1, 'rgba(40,120,255,0)');
+          x.fillStyle = gd; x.fillRect(0, 0, 128, 128);
+          const m = new THREE.SpriteMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m);
+          this.bs = new THREE.Sprite(m); this.bs.renderOrder = 4.5; this.bs.visible = false; world.add(this.bs); }
+        const u = t - T.tail;
+        if (u < -0.05 || u > 1.4) { this.bs.visible = false; return; }
+        const k = u < 0 ? 0 : u < 0.12 ? u / 0.12 : Math.pow(1 - (u - 0.12) / 1.28, 2);
+        this.bs.visible = k > 0.003; this.bs.position.set(at[0], at[1] + 0.05, at[2]); this.bs.scale.setScalar(0.4 + 3.2 * Math.sqrt(Math.max(0, u)));
+        this.bs.material.opacity = Math.min(1, k);
       },
       frame(t) {
-        const T = NG5, F = fightStart(), pz = this.pho || { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zz = this.zav || F.zav;
-        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((t - T.rise) / 2)));
+        const T = this.tl(), B = this.build(), tau = this.story(t), pz = this.pho, zz = this.zav, F = fightStart();
+        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6));
         /* the court low under the trance; the smell of the tall shape until it comes apart */
-        fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
-        /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted (0.38 m before
-           him and 0.40 m to his right, FIGHT-IN's measure of the strike) */
+        fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((tau - T.apart) / 2.5))) });
+        /* the stick planted where his cast brings it down (B.S: its carved head) */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
-        /* THE NAGA: its flight made once a run, then laid at this moment (first in the frame: his look and the lens aim at
-           its head as this moment lays it) */
-        if (!this.fl) { this.fl = this.flight(sx, sz, pz, zz); NAGA5.plan(this.fl);
-          const sp = this.fl.spots, w = (q) => ({ x: COURT5.x - q.x, z: COURT5.z - q.z }), dW = [-this.fl.u[0], 0, -this.fl.u[1]];
-          this.W = sp.map(w); this.dW = dW;
-          SPLASH5.set([T.p1, T.p2, T.p3].map((t0, j) => ({ t0, p: [this.W[j].x, 1.15, this.W[j].z], d: dW }))); }
-        const aN = smo(c01((t - T.rise) / 1.0)) * lp(1, 0.3 / 0.75, smo(c01((t - T.back - 0.1) / 1.8))) * (1 - 0.25 * smo(c01((t - T.rest) / 2.5)));
-        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.fly(t, aN);
-        SPLASH5.frame(t);
-        const HEADAT = () => NAGA5.headAt() || [sx, 1.45, sz];
+        /* THE NAGA: its flight laid at this moment (first in the frame: every look and lens aims where this lays it) */
+        if (!this.planned) { this.planned = true; NAGA5.plan({ stick: B.S, pts: B.pts, keys: B.keys, restSecs: 0, home: B.NM.home });
+          const W = this.W; SPLASH5.set([T.p1, T.p2, T.p3].map((t0, j) => ({ t0, p: [W[j].x, 1.15, W[j].z], d: B.dirAt(B.NM['p' + (j + 1)]) }))); }
+        const aN = smo(c01((tau - T.rise) / 0.5)) * (tau < T.tail + 0.05 ? 1 : 0);
+        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.fly(tau, aN);
+        /* ITS EYES (R70): kindled as it climbs (a swell past full as it cries), bright from then, flaring at each pierce */
+        const flare = [T.p1, T.p2, T.p3, T.apart].reduce((m, p) => Math.max(m, Math.max(0, 1 - Math.abs(tau - p) / 0.35)), 0);
+        const eyeK = smo(c01((tau - T.kindle) / 0.45)) * (1 + 0.7 * Math.max(0, 1 - Math.abs(tau - T.cry - 0.35) / 0.8)) + 0.6 * flare;
+        NAGA5.eyeFrame(tau, eyeK);
+        SPLASH5.frame(tau);
+        this.burst(tau, T, B.S);
+        const HEADAT = () => NAGA5.headAt() || [B.S[0], B.S[1], B.S[2]];
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
-             its time going on at a twentieth, his hand on the stick as the Naga rises out of it; then he is handed to his rest
-             over 0.9 s) */
-          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.6) / 0.9)), ct = Math.max(0, t - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
-          if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', t);
-          if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, [sx, 1.45, sz]], [T.rise + 0.2, HEADAT], [T.wrap + 1.0, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
-        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
+             his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
+          const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
+          if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', tau);
+          if (tau < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.tail - 0.4, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again once it has come apart */
-        const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart - 0.4) / 2.0));
-        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart + 0.4 });
-        TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
-        /* THE THREE: the tall shape over him, leaning in; as the Naga sweeps over it, it bursts apart and each is flung onto
-           its place on the line, landing burning; each struggles there until the Naga's head goes through it (its take of
-           being struck, its fire put out in steam, its dark turned cool and wet), then sinks low where the fight's last stage
-           finds it */
+        const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
+        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t: tau, crack: tau < T.apart + 0.4 });
+        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
+        /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
+           place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
+           in steam, cool and dark and wet), then sinks low where the fight's last stage finds it */
         const tp = [T.p1, T.p2, T.p3], Wsp = this.W || F.laid;
         this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P) return; whenReady(P, () => { fmShow(P, true);
-          const kA = smo(c01((t - T.apart - 0.1 - j * 0.12) / 1.15)), hop = Math.sin(Math.PI * kA) * 1.1 * (1 - kA * 0.2);
+          const kA = smo(c01((tau - T.apart - 0.05 - j * 0.1) / 0.85)), hop = Math.sin(Math.PI * kA) * 1.3 * (1 - kA * 0.2);
           const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j], to = Wsp[j] || { x: zz.x, z: zz.z };
           const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
-          const hit = t - tp[j], kL = smo(c01((hit - 1.1) / 1.3));
-          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - this.dW[0], to.z - this.dW[2]));
+          const hit = tau - tp[j], kL = smo(c01((tau - T.low - j * 0.15) / 1.4));
+          const d = B.dirAt(B.NM['p' + (j + 1)]);
+          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - d[0], to.z - d[2]));
           P.group.position.y = hop * (kA < 1 ? 1 : 0);
           P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
-          if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + t * 0.6, true);
-          PRAI5.burn(P, 1 - smo(c01((hit - 0.04) / 0.6)));
-          PRAI5.cool(P, smo(c01((hit - 0.1) / 0.9)));
+          if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + tau * 0.6, true);
+          PRAI5.burn(P, 1 - smo(c01((hit - 0.02) / 0.5)));
+          PRAI5.cool(P, smo(c01((hit - 0.06) / 0.8)));
           PRAI5.alpha(P, 1 - 0.35 * kL); }); });
         PRAI5.tick(0.016);
         /* Mr Koh, at the doorway behind the thread, at its end */
-        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', t, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
-        /* THE LENS. The fight's picture; down low beside him, on its head as it spirals up out of the stick; on the court's
-           floor before it as it bows, looking up into its face; a cut to high over the gate end as it dives on the tall
-           shape and the shape bursts apart, easing in as it comes round onto the line; then the three pierces, a cut each:
-           SIDE ON (across the line at the first, as the head goes through it), AHEAD (before the second and round to one
-           side, the head coming at the lens through it), FROM ABOVE (over the third, looking down, as it goes through and
-           climbs out); the god's eye over the court as it lays itself round the walls; low before its raised head at rest;
-           down to the three, cooled; the doorway; the boom again */
-        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), W = this.W || [], dW = this.dW || [0, 0, 1];
-        const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
-        const sideX = -dW[2], sideZ = dW[0];
-        const A = W[0] || { x: zz.x, z: zz.z }, Bp = W[1] || A, Cc = W[2] || A;
-        const sd = ((A.x - zz.x) * sideX + (A.z - zz.z) * sideZ) >= 0 ? 1 : -1;
-        /* WHERE A LENS MAY STAND (R47, the lab's pictures: each pierce's lens had been set a fixed way off the line and pushed
-           back inside the court by its walls, so the first stood 0.3 m off the house and 2 m from its Prai and the Naga's head
-           filled the frame; turned instead to find room, a lens stood on the Naga's own way in and its body passed 0.9 m from
-           it, and another saw only a Prai's back). Tried from the wanted way round (OFF degrees from it, in that order) and from
-           the wanted distance in, 0.25 m at a time: the first place 0.35 m inside the court, 0.75 m clear of everyone standing,
-           1.4 m clear of every point of the way the Naga will have flown by the shot's end (its body lies along it, its crest
-           stands 1.6 m over it), and with neither of the other two between it and what it looks at (a lens over their heads
-           minds only the walls and the Naga); none, null */
-        /* (everyone standing and how far a lens keeps from each: his student 2.3 m, his cage's ring (1.35 m round him) and its
-           bars 2.05 m tall with room past them; his teacher 0.9. At 1.5 m the lab's rest shot stood 1.06 m from a bar, a violet
-           column down a phone's right edge: build 39's pictures) */
-        const NOW = [[pz, 0.9], [zz, 2.3], [A, 0.75], [Bp, 0.75], [Cc, 0.75]];
-        const segD = (p, a0, a1) => { const vx = a1.x - a0.x, vz = a1.z - a0.z, l2 = vx * vx + vz * vz || 1, k = Math.max(0, Math.min(1, ((p.x - a0.x) * vx + (p.z - a0.z) * vz) / l2));
-          return Math.hypot(p.x - a0.x - vx * k, p.z - a0.z - vz * k); };
-        const flown = (t1) => { const out = [], u1 = NAGA5.uAt(t1); for (let u = 0; u <= u1; u += 0.3) { const q = NAGA5.pointAt(u); if (q) out.push(q); } return out; };
-        const fits = (e, h, tg, way) => {
-          if (e.x < COURT.x0 + 0.35 || e.x > COURT.x1 - 0.35 || e.z < COURT.z0 + 0.35 || e.z > HOUSE.face - 0.35) return false;
-          if (h < 2.2 && NOW.some(([p, r]) => p !== tg && Math.hypot(e.x - p.x, e.z - p.z) < r)) return false;
-          if (h < 2.2 && [A, Bp, Cc].some(p => p !== tg && segD(p, e, tg) < 0.5)) return false;
-          /* (nor through his cage's bars, unless what it looks at stands by them) */
-          if (h < 2.2 && Math.hypot(tg.x - zz.x, tg.z - zz.z) > 1.6 && segD(zz, e, tg) < 1.55) return false;
-          return !way.some(q => Math.hypot(q[0] - e.x, q[1] - h, q[2] - e.z) < 1.4); };
-        const eyeFor = (tg, ang, dist, minD, h, t1, OFF = [0, 15, -15, 30, -30]) => {
-          const way = flown(t1);
-          for (const o of OFF) for (let d = dist; d >= minD - 1e-6; d -= 0.25) {
-            const a = ang + o * Math.PI / 180, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
-            if (fits(e, h, tg, way)) return [e.x, h, e.z]; }
-          return null; };
-        /* (a lens no wanted place could hold: any way round, every 30 degrees, from a little further, higher and lower; at the
-           last, 8.5 m straight over it, above anything the Naga's flight reaches: the lab's third layout found its lens over
-           the third standing inside the Naga's body, the fallback never checked) */
-        const anyEye = (tg, ang, dist, minD, h, t1) => {
-          const way = flown(t1);
-          for (const hh of [h, h + 0.9, Math.max(1.0, h - 0.8), h + 1.8]) for (let q = 0; q < 12; q++) for (let d = dist + 0.6; d >= minD - 1e-6; d -= 0.3) {
-            const a = ang + q * Math.PI / 6, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
-            if (fits(e, hh, tg, way)) return [e.x, hh, e.z]; }
-          return [tg.x, 8.5, tg.z + 0.01]; };
-        const angOf = (x, z) => Math.atan2(x, z);
-        if (!this.eyes) {
-          const bw = this.bow ? { x: COURT5.x - this.bow.x, z: COURT5.z - this.bow.z, ex: -this.bow.ex, ez: -this.bow.ez } : null;
-          const RP = this.fl && this.fl.pts.length ? this.fl.pts[this.fl.pts.length - 1] : [pz.x, 1.2, pz.z];
-          const LC = { x: (A.x + Bp.x + Cc.x) / 3, z: (A.z + Bp.z + Cc.z) / 3 };
-          /* THE THREE PIERCES, every lens on ONE side of the line (a cut across it would turn the Naga's way round on the
-             screen), the side with room for both: SIDE ON to the first, 3.6 m off, its whole body and the head through it;
-             AHEAD of the second, 50 degrees round from the side toward where it goes, 4 m off and low (1.3 m), the head
-             coming out of her at the lens; OVER the third from ahead and to that side, 3.2 m up and 2.8 m off, the head
-             bursting out of her and climbing past. (The lab's pictures of build 39: the second's lens 2.7 m off and 20
-             degrees toward where it came from held one Prai's back across the whole of a phone's frame; the third's, 4 m
-             straight up from behind the head, saw only its crest laid over her) */
-          const sideAt = (ss, tw) => { const x = sideX * ss, z = sideZ * ss, c = Math.cos(tw), sn = Math.sin(tw); return angOf(x * c - dW[0] * sn, z * c - dW[2] * sn); };
-          let P1 = null, P2 = null, ssUsed = sd;
-          for (const ss of [sd, -sd]) { const a1 = eyeFor(A, sideAt(ss, 0), 3.6, 2.8, 1.25, T.p2), a2 = eyeFor(Bp, sideAt(ss, -0.87), 4.0, 2.8, 1.3, T.p3);
-            if (a1 && a2) { P1 = a1; P2 = a2; ssUsed = ss; break; } if (!P1 && a1) { P1 = a1; ssUsed = ss; } if (!P2 && a2) P2 = a2; }
-          const P3a = angOf(dW[0] * 0.6 + sideX * ssUsed, dW[2] * 0.6 + sideZ * ssUsed);
-          this.eyes = {
-            P1: P1 || anyEye(A, sideAt(ssUsed, 0), 3.6, 2.4, 1.25, T.p2), P2: P2 || anyEye(Bp, sideAt(ssUsed, -0.87), 4.0, 2.4, 1.3, T.p3),
-            P3: eyeFor(Cc, P3a, 2.8, 1.8, 3.2, T.p3 + 1.1, [0, 20, -20, 40, -40]) || anyEye(Cc, P3a, 2.8, 1.6, 3.2, T.p3 + 1.1),
-            /* the bow: 4.2 m out from where it hangs, at 1.9 m, and 35 degrees round from its way on, looking up into its
-               face from a quarter turn (straight on, its crest stood as one tall spike over its face; from 2.6 m and 1.15 m up
-               it was seen from under its jaw: the lab's pictures) */
-            BOW: (bw && (eyeFor({ x: bw.x, z: bw.z }, angOf(bw.ex, bw.ez) + 0.61, 4.2, 2.6, 1.9, T.dive, [0, -100, 15, -115, 30])))
-                 || LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]),
-            /* the god's eye: 12.5 m over the court, a little to the gate's side of its middle, looking down on it, the house at
-               the top of the frame (a phone's third of the width holds the court's 8 m from this high: R47, the court's walls
-               where it lays itself round them) */
-            GOD: [COURT5.x, 12.5, COURT5.z - 3.4], GODAT: [COURT5.x, 0, COURT5.z - 1.2],
-            /* at rest: low and before its raised head (it rests facing the house), up to 3 m off, toward the court's middle
-               (2.4 m off, its head bowing to the lens filled a phone's frame with its crest; asked for 3.4 m it found no room
-               between its head and the house, and its old fallback, a fixed place, stood beside his cage's bars: the lab's
-               pictures of builds 39 and 40). Any way round next, and every place by the same rules */
-            REST: eyeFor({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 2.0, 1.1, T.rest, [0, 20, -20, 40, -40, 60, -60])
-                  || anyEye({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 1.8, 1.2, T.rest),
-            /* the three, cooled: from over the gate's side of their line, 5 m up */
-            THREE: eyeFor(LC, angOf(0, -1), 4.5, 2.5, 5.0, 0, [0, 25, -25, 50, -50, 75, -75]) || [LC.x, 6.0, LC.z - 2.0], LC };
-        }
-        const E = this.eyes, LC = E.LC;
-        fmTrack(t, [
-          { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
-          { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
-          { t: T.rise + 0.3, name: 'low', eye: LOWEYE([pz.x - 1.2, 0.9, pz.z - 1.4]), at: HEADAT, fp: 70, fd: 62 },
-          { t: T.apex + 0.4, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 74, fd: 66 },
-          { t: T.apex + 0.45, name: 'bow', eye: E.BOW, at: HEADAT, fp: 62, fd: 52, cut: true },
-          { t: T.dive - 0.05, name: 'bow', eye: [E.BOW[0], E.BOW[1] - 0.1, E.BOW[2]], at: HEADAT, fp: 58, fd: 48 },
-          { t: T.dive, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.4, -9.0], fp: 66, fd: 56, cut: true },
-          { t: T.apart + 0.8, name: 'high', eye: [COURT5.x + 0.1, 8.8, COURT.z0 + 0.35], at: [LC.x * 0.5 + COURT5.x * 0.5, 0.5, LC.z * 0.5 - 9.0 * 0.5], fp: 64, fd: 54 },
-          { t: T.p1 - 0.75, name: 'high', eye: [COURT5.x + 0.15, 8.0, COURT.z0 + 0.6], at: [LC.x, 0.6, LC.z], fp: 60, fd: 50 },
-          { t: T.p1 - 0.7, name: 'side', eye: E.P1, at: [A.x - dW[0] * 0.3, 1.15, A.z - dW[2] * 0.3], fp: 52, fd: 44, cut: true },
-          { t: T.p1 + 0.5, name: 'side', eye: E.P1, at: [A.x + dW[0] * 0.2, 1.1, A.z + dW[2] * 0.2], fp: 50, fd: 42 },
-          { t: T.p2 - 0.55, name: 'ahead', eye: E.P2, at: [Bp.x, 1.1, Bp.z], fp: 50, fd: 42, cut: true },
-          { t: T.p2 + 0.42, name: 'ahead', eye: E.P2, at: [Bp.x * 0.7 + Cc.x * 0.3, 1.1, Bp.z * 0.7 + Cc.z * 0.3], fp: 50, fd: 42 },
-          { t: T.p3 - 0.45, name: 'above', eye: E.P3, at: [Cc.x, 1.2, Cc.z], fp: 56, fd: 48, cut: true },
-          { t: T.p3 + 1.0, name: 'above', eye: [E.P3[0], E.P3[1] + 0.3, E.P3[2]], at: [Cc.x + dW[0] * 0.8, 1.5, Cc.z + dW[2] * 0.8], fp: 60, fd: 52 },
-          { t: T.p3 + 1.05, name: 'god', eye: E.GOD, at: E.GODAT, fp: 72, fd: 54, cut: true },
-          { t: T.rest - 0.75, name: 'god', eye: [E.GOD[0], E.GOD[1] - 0.6, E.GOD[2]], at: E.GODAT, fp: 70, fd: 52 },
-          { t: T.rest - 0.7, name: 'rest', eye: E.REST, at: HEADAT, fp: 58, fd: 48, cut: true },
-          { t: T.rest + 1.3, name: 'rest', eye: E.REST, at: HEADAT, fp: 55, fd: 45 },
-          { t: T.rest + 1.35, name: 'three', eye: E.THREE, at: [LC.x, 0.3, LC.z], fp: 56, fd: 50, cut: true },
-          { t: T.ko5c2 - 0.05, name: 'three', eye: [E.THREE[0], E.THREE[1] - 0.2, E.THREE[2]], at: [LC.x, 0.3, LC.z], fp: 55, fd: 49 },
+        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
+        /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
+        this.lens(tau, T, B, HEADAT);
+        /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
+           shakes): a few sines of their own, falling away over half a second */
+        const hitsR = [[this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
+        let sh = 0; for (const [h, a] of hitsR) { const u = t - h; if (u >= 0 && u < 0.6) sh += a * Math.pow(1 - u / 0.6, 2); }
+        if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
+      },
+      /* THE LENS, shot by shot (R63, R64, R70). Every place a lens stands is in the court (0.35 m in from its walls and the
+         house), clear of everyone standing and of every point the Naga flies through during its shot (the lab's pictures and
+         tools/probes/framecheck.mjs measure each on a phone and a desk) */
+      lens(tau, T, B, HEADAT) {
+        const cw = (x, y, z) => [COURT5.x - x, y, COURT5.z - z], Pc = B.M.pa, Sc = B.Sc, sp = B.spots;
+        const F12 = new Float32Array(12);
+        /* the ride (R70): close below its head on the spiral's inside, a little ahead, looking up into its face with the night
+           behind it; the lens a smooth function of its frame, so it climbs and turns with it */
+        const RIDE = () => { const f = NAGA5.pose(tau, F12); if (!f) return cw(Sc[0] + 0.9, 1.0, Sc[2]);
+          const hx = COURT5.x - B.HA.x, hz = COURT5.z - B.HA.z; let ix = hx - f[0], iz = hz - f[2]; const il = Math.hypot(ix, iz) || 1; ix /= il; iz /= il;
+          return [f[0] + ix * 1.05 + f[3] * 0.55, f[1] - 0.85, f[2] + iz * 1.05 + f[5] * 0.55]; };
+        /* the stoop: over its head, behind it, looking down its way */
+        const RIDER = () => { const f = NAGA5.pose(tau, F12); if (!f) return HEADAT(); return [f[0] - f[3] * 2.1 + f[6] * 0.55, f[1] - f[4] * 2.1 + f[7] * 0.55 + 0.25, f[2] - f[5] * 2.1 + f[8] * 0.55]; };
+        const AHEAD = () => { const f = NAGA5.pose(tau, F12); if (!f) return HEADAT(); return [f[0] + f[3] * 4.0, f[1] + f[4] * 4.0, f[2] + f[5] * 4.0]; };
+        const PHO_BACK = cw(Pc[0] + 0.85, 0.95, Pc[1] + 2.0), PHO_HEAD = cw(Pc[0], 1.7, Pc[1]), SHAPE = cw(B.M.za[0], 2.1, B.M.za[1]);
+        const UPTO = () => { const h = HEADAT(); return lp3(PHO_HEAD, h, 0.72); };
+        const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
+        const s1 = cw(sp[0][0], 1.1, sp[0][1]), s2 = cw(sp[1][0], 1.1, sp[1][1]), s3 = cw(sp[2][0], 1.0, sp[2][1]);
+        /* (the first, side on from the house-west corner, 1.45 m out from its place across the arc; the second head on, 2.2 m
+           along its way past it and 0.45 m toward the house; the third from over it, 3.9 m up and behind it) */
+        const out1 = (() => { const dx = sp[0][0] - B.RC.x, dz = sp[0][1] - B.RC.z, l = Math.hypot(dx, dz) || 1; return cw(sp[0][0] + dx / l * 1.45, 0.95, sp[0][1] + dz / l * 1.45); })();
+        const P2EYE = cw(sp[1][0] + 2.2, 0.85, sp[1][1] - 0.45), P3EYE = cw(sp[2][0] - 1.0, 3.9, sp[2][1] - 0.9);
+        const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
+        const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
+        const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
+        const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
+        fmTrack(tau, [
+          { t: 0, name: 'plant', eye: PHO_BACK, at: lp3(PHO_HEAD, SHAPE, 0.45), fp: 62, fd: 52 },
+          { t: T.rise - 0.06, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
+          { t: T.rise - 0.05, name: 'erupt', eye: STICK_LOW, at: STICK_UP, fp: 74, fd: 64, cut: true },
+          { t: T.rise + 0.55, name: 'erupt', eye: STICK_LOW, at: HEADAT, fp: 76, fd: 66 },
+          { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
+          { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
+          { t: T.top + 0.2, name: 'top', eye: PHO_BACK, at: UPTO, fp: 78, fd: 66, cut: true },
+          { t: T.stoop + 0.1, name: 'top', eye: PHO_BACK, at: UPTO, fp: 76, fd: 64 },
+          { t: T.stoop + 0.15, name: 'stoop', eye: RIDER, at: AHEAD, fp: 64, fd: 56, cut: true },
+          { t: T.apart - 0.08, name: 'stoop', eye: RIDER, at: AHEAD, fp: 64, fd: 56 },
+          { t: T.apart - 0.07, name: 'burst', eye: BURST_EYE, at: BURST_AT, fp: 66, fd: 56, cut: true },
+          { t: T.p1 - 0.5, name: 'burst', eye: BURST_EYE, at: SWOOP_AT, fp: 64, fd: 54 },
+          { t: T.p1 - 0.45, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58, cut: true },
+          { t: T.p2 - 0.36, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58 },
+          { t: T.p2 - 0.35, name: 'pierce2', eye: P2EYE, at: s2, fp: 58, fd: 50, cut: true },
+          { t: T.p3 - 0.36, name: 'pierce2', eye: P2EYE, at: lp3(s2, s3, 0.35), fp: 58, fd: 50 },
+          { t: T.p3 - 0.35, name: 'pierce3', eye: P3EYE, at: s3, fp: 60, fd: 52, cut: true },
+          { t: T.ring + 0.25, name: 'pierce3', eye: [P3EYE[0], P3EYE[1] + 0.3, P3EYE[2]], at: HEADAT, fp: 62, fd: 54 },
+          { t: T.ring + 0.3, name: 'ring', eye: GOD, at: GODAT, fp: 64, fd: 50, cut: true },
+          { t: T.ringOut + 0.2, name: 'ring', eye: [GOD[0], GOD[1] - 0.8, GOD[2]], at: GODAT, fp: 62, fd: 48 },
+          { t: T.ringOut + 0.25, name: 'home', eye: STICK_LOW, at: lp3(STICK_UP, [B.S[0], B.S[1] + 2.4, B.S[2]], 0.6), fp: 72, fd: 62, cut: true },
+          { t: T.tail + 1.2, name: 'home', eye: STICK_LOW, at: STICK_UP, fp: 66, fd: 58 },
+          { t: T.tail + 1.25, name: 'three', eye: THREE_EYE, at: THREE_AT, fp: 56, fd: 50, cut: true },
+          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_AT, fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
-      end() { fmLens(PLAYFOV5); SPLASH5.off();
-        /* what the last stage finds: the three laid at their places, small, dim and cool, the Naga lying round the court */
+      end() { fmLens(PLAYFOV5); SPLASH5.off(); NAGA5.hide(); if (this.bs) this.bs.visible = false;
+        /* what the last stage finds: the three laid at their places, small, dim and cool; the Naga home in the stick */
         const W = this.W || fightStart().laid;
         this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !W[j]) return; put(P, W[j].x, W[j].z, P.group.rotation.y); P.group.position.y = 0; PRAI5.burn(P, 0); PRAI5.cool(P, 1); });
+        this.B = null;
         if (kit && kit.captions) kit.captions(null); }
     };
 
@@ -14692,39 +15052,58 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   }
 
   /* TOGETHER (the plan's 5.5, stage 5): the ONE film inside the fight; it cannot be skipped the first time (the fight asks
-     for it with kit.film's noSkip). The stick planted; the Naga rises and lays its body round the court; the tall shape
-     comes apart into its three, laid low; Mr Koh's warmth; the boom again */
-  /* (R47, 23 Nov 2026: the water Naga's film. Up out of the stick in a spiral, hanging over the court as Grandmaster Pho
-     says the line, down over the tall shape as it bursts apart (apart), round onto the line of three and through them, its
-     head through each at p1, p2 and p3, slowing as it goes; out and round the court's three walls (wrap) to rest with its
-     head raised (rest); the three sunk low (low); Mr Koh; the boom again) */
-  const NG5 = tl(0, [[0.2], ['@plant'], [2.0], ['@rise'], [2.8], ['@apex'], [0.1], ['ph5c2', -1.9], ['@dive'], [1.3], ['@apart'], [3.3],
-                     ['@p1'], [1.15], ['@p2'], [1.15], ['@p3'], [2.2], ['@wrap'], [3.5], ['@rest'], [-3.0], ['@low'], [6.4], ['ko5c2', 0.5], ['@back'], [1.8], ['@end']]);
+     for it with kit.film's noSkip). The stick planted; the Naga rises out of it, stoops on the tall shape and goes through the
+     three it bursts into, rings the court and goes home into the stick; the three laid low; Mr Koh's warmth; the boom again */
+  /* (R63, R64, R69, R70, 23 Nov 2026: the film rebuilt, its clock now the film's own (c_yfilm.js FILMS5.together.tl(): every
+     mark read from where the flight reaches it, in STORY seconds); each pierce HOLDS the picture a moment, so a cue is laid at
+     the REAL second its mark falls on (F.real). Its sounds: the score from the first frame; the stick planted; the Naga of
+     water surging up, its climb at speed and its CRY as its eyes kindle (R70); his line over the court; the stoop down onto
+     the shape and the shape bursting; each pierce a stack of sound: the struck blow (u5nagahit1-3), its own water through it
+     (u5pierce1-3) and the fire hissing out (u5douse), with a flash in the water's white-blue, the screen shaken and the phone
+     buzzed; its ring round the court; its rush home into the stick and the stick's head bursting with light (the together
+     press's burst again, its call answered); the three laid; Mr Koh; the boom) */
   function filmTogether(c, s, api) {
-    const { tr, step, sfx, sfxFade, rawK, stage } = api, F = stage.films.together, T = NG5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together, T = F.tl(), R = (x) => F.real(x), END = R(T.end);
+    const FLASH = '#DFF5FF';
     step(0, () => F.begin(api, s));
-    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    tr(0, END, (k, t) => F.frame(t), rawK);
+    /* (R64: it opens on the white of the press, everyone set at their marks under it) */
+    fade(0, 0.5, 0.85, 0, FLASH);
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
-    sfx(T.rise, 'u5nagawater', 1.0);                                           // the Naga of water surging up out of its head
-    sfx(T.rise + 0.6, 'u5mist', 0.32); sfx(T.rise + 6.6, 'u5mist', 0.3); sfx(T.rise + 12.6, 'u5mist', 0.28); sfx(T.rise + 18.6, 'u5mist', 0.26);   // the mist off it
+    sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
+    sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
+    sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
+    sfx(T.rise + 0.6, 'u5mist', 0.3);
     sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
-    sfx(T.dive, 'u5nagapass', 0.85);                                           // down over the tall shape
+    sfx(T.stoop - 0.1, 'u5nagadive', 0.9);                                     // over, and down onto the shape
     sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
-    sfx(T.apart, 'u5shapebreak', 0.85);                                        // the tall shape bursts into its three
-    sfx(T.apart + 1.8, 'u5cagewhole', 0.7);                                    // his cage whole again
-    sfx(T.p1 - 1.4, 'u5nagapass', 0.7);                                        // round and down onto their line
-    sfx(T.p1 - 0.06, 'u5pierce1', 1.0); sfx(T.p1 + 0.12, 'u5douse', 0.8);     // through the first: its water bursts, its fire hisses out
-    sfx(T.p2 - 0.06, 'u5pierce2', 1.0); sfx(T.p2 + 0.12, 'u5douse', 0.8);     // the second
-    sfx(T.p3 - 0.06, 'u5pierce3', 1.0); sfx(T.p3 + 0.12, 'u5douse', 0.8);     // the third
-    sfx(T.wrap - 0.3, 'u5nagawrap', 0.85);                                     // round the court's three walls
-    sfx(T.rest - 0.4, 'u5nagabreathw', 0.5); sfx(T.rest + 5.6, 'u5nagabreathw', 0.45);   // its breath, its head raised
-    sfx(T.low, 'u5laid', 0.8);                                                 // the three sunk low, cool
-    sfx(T.ko5c2, 'ko5c2', 1);                                                  // "It is... warm. Why is it warm?"
-    sfxFade(T.back - 0.2, T.end - 0.1, 'u5m9naga'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5mist'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5nagabreathw');
-    step(T.end, () => F.end());
+    sfx(T.apart - 0.04, 'u5shockhit', 0.75);                                   // the shape struck by its passing
+    sfx(T.apart, 'u5shapebreak', 0.9);                                         // and bursting into its three
+    fade(T.apart, T.apart + 0.05, 0, 0.35, FLASH); fade(T.apart + 0.05, T.apart + 0.35, 0.35, 0, FLASH);
+    sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
+    sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
+    [[T.p1, 'u5nagahit1', 'u5pierce1', [40, 30, 70]], [T.p2, 'u5nagahit2', 'u5pierce2', [45, 30, 80]], [T.p3, 'u5nagahit3', 'u5pierce3', [60, 30, 120]]].forEach(([p, hit, wat, buzz], j) => {
+      const h = R(p);
+      sfx(h - 0.04, hit, 1.0);                                                 // the blow
+      sfx(h, wat, 0.85);                                                       // its water through it
+      sfx(h + 0.14, 'u5douse', 0.75);                                          // its fire hissing out
+      fade(h, h + 0.04, 0, 0.6 + 0.1 * j, FLASH); fade(h + 0.04, h + 0.42, 0.6 + 0.1 * j, 0, FLASH);
+      step(h, () => { if (api.kit && api.kit.buzz) api.kit.buzz(buzz); });
+    });
+    sfx(R(T.low), 'u5laid', 0.8);                                              // the three sunk low, cool
+    sfx(R(T.climb) + 0.1, 'u5nagawrap', 0.85);                                 // up into its ring round the court
+    sfx(R(T.ring) + 0.4, 'u5mist', 0.28);
+    sfx(R(T.ringOut) - 0.3, 'u5nagapass', 0.75);                               // the spiral down
+    sfx(R(T.home) - 0.35, 'u5nagadive', 0.85);                                 // its rush home into the stick
+    sfx(R(T.tail) - 0.05, 'u5togpress', 1.0);                                  // the stick's head bursting with light: its call answered
+    fade(R(T.tail), R(T.tail) + 0.06, 0, 0.7, FLASH); fade(R(T.tail) + 0.06, R(T.tail) + 0.6, 0.7, 0, FLASH);
+    step(R(T.tail), () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
+    sfx(R(T.ko5c2), 'ko5c2', 1);                                               // "It is... warm. Why is it warm?"
+    sfxFade(R(T.back) - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
+    step(END, () => F.end());
     c.keep.view = true;
   }
 

@@ -30,12 +30,29 @@
        toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
     /* (R46: read from the walkway itself, its second run's middle line WAY_Z; was -14.95, turnS 15.2) */
     const WAY_Z = (WALK.z0 + WALK.turnZ) / 2;
-    const WAY = { turnS: 0.25 - WAY_Z, gateS: 0.25 - WAY_Z + 8.5 };
-    function wayS(x, z) { return z > WAY_Z ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
-    const wayLat = (x, z) => z > WAY_Z ? -x : z - WAY_Z;
+    /* THE TURN IS ROUND (R76, Chad, 23 Nov 2026: "Pathfinding at the start of the chapter at the corridor is still too tight
+       and characters are clipping into the edge of the wall"). The line was two straight runs meeting at a point: a
+       follower's lane `lat` in from the middle ran on past the corner's inside to the second run's middle line and then
+       JUMPED 0.78 m back to start the second run (its target leapt behind him), and a follower walked straight at a target
+       round the corner, through the wall's inside edge. The middle line now turns round the inside corner (WALK.x0,
+       WALK.turnZ) on a quarter circle of its own distance from both inner walls (WAY_RHO, 0.95 m), so a lane `lat` in from
+       it keeps its distance from the inner walls the whole way round (a lane of 0.55 passes the corner 0.40 m off); and
+       the followers walk the lane itself (walkLane), never a straight line across it. `s` is unchanged along the first
+       run; the second run's is the arc's length shorter than the corner's two legs were (gateS is still x -8.5) */
+    const WAY_C = { x: WALK.x0, z: WALK.turnZ }, WAY_RHO = (WALK.x0 + WALK.x1) / 2 - WALK.x0;
+    const WAY_SA = 0.25 - WAY_C.z, WAY_SB = WAY_SA + WAY_RHO * Math.PI / 2;
+    const WAY = { turnS: WAY_SA + WAY_RHO * Math.PI / 4, arcS: [WAY_SA, WAY_SB], gateS: WAY_SB + (WAY_C.x + 8.5) };
+    function wayS(x, z) {
+      if (z >= WAY_C.z) return Math.max(0, 0.25 - z);
+      if (x <= WAY_C.x) return WAY_SB + (WAY_C.x - x);
+      return WAY_SA + WAY_RHO * Math.max(0, Math.min(Math.PI / 2, Math.atan2(WAY_C.z - z, x - WAY_C.x)));
+    }
+    const wayLat = (x, z) => z >= WAY_C.z ? -x : x <= WAY_C.x ? z - WAY_Z : WAY_RHO - Math.hypot(x - WAY_C.x, z - WAY_C.z);
     function wayAt(s, lat, out) {
-      if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
-      return out.set(-(s - WAY.turnS), 0, WAY_Z + lat);
+      if (s <= WAY_SA) return out.set(-lat, 0, 0.25 - s);
+      if (s >= WAY_SB) return out.set(WAY_C.x - (s - WAY_SB), 0, WAY_Z + lat);
+      const th = (s - WAY_SA) / WAY_RHO, rr = WAY_RHO - lat;
+      return out.set(WAY_C.x + rr * Math.cos(th), 0, WAY_C.z - rr * Math.sin(th));
     }
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
@@ -259,6 +276,28 @@
       P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
       return true;
     }
+    /* A FOLLOWER WALKS THE LANE (R76): his step is taken along the walkway's line (`s`) and across it (`lat`) and laid back on
+       the walkway by wayAt, so every step keeps the lane's distance from the inner walls, round the turn as well (a
+       straight line at a target round the corner went through the wall's inside edge); he faces the way his feet go. The
+       walk's take, its pace and its rate as walkerMove's; the walkable map is told he walks and which way (navTellWalk) */
+    function walkLane(W0, ts, tl, wdt, pace) {
+      const P = W0.P, g = P.group.position;
+      const s0 = wayS(g.x, g.z), l0 = wayLat(g.x, g.z), ds = ts - s0, dl = tl - l0, d = Math.hypot(ds, dl);
+      if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } navTellWalk(P, false); return false; }
+      if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
+      else if (P.cur !== 'Walking') { P.actN++; take(P, 'Walking', 0.3); }
+      const want = Math.min(pace, 0.6 + d * 1.2);
+      W0.v += (want - W0.v) * Math.min(1, wdt * 3.5);
+      const st = Math.min(d, W0.v * wdt);
+      wayAt(s0 + ds / d * st, l0 + dl / d * st, _pw5);
+      const mx = _pw5.x - g.x, mz = _pw5.z - g.z;
+      g.x = _pw5.x; g.z = _pw5.z;
+      if (mx * mx + mz * mz > 1e-10) P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(mx, mz)) * Math.min(1, wdt * 5.5);
+      P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
+      wayAt(s0 + Math.sign(ds || 1) * Math.min(Math.abs(ds), 0.6), tl, _pw5);
+      navTellWalk(P, true, _pw5.x, _pw5.z);
+      return true;
+    }
     function walkersTick(wdt) {
       if (phase !== 'walk' || !walkers.list.length) return;
       const sp = wayS(myX(), myZ());
@@ -273,10 +312,11 @@
         /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
         if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
         else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
+        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side) */
+        tl = Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06);
         ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
-        wayAt(ts, tl, _pv5);
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
-        const moving = walkerMove(W0, _pv5.x, _pv5.z, wdt, pace);
+        const moving = walkLane(W0, ts, tl, wdt, pace);
         if (!moving && distTo(g.x, g.z) < 7) {
           /* standing, he turns to the one he walks with (his whole body: v14.5), and looks at him */
           const want = faceTo(g.x, g.z, myX(), myZ()), d0 = angTo(W0.P.group.rotation.y, want);
@@ -288,12 +328,11 @@
       /* his teacher walks on ahead and waits at the gate */
       const ph = walkers.list.find(W0 => W0.n === 'pho' && W0.ahead);
       if (ph && ph.P.ready) { const P = ph.P, pace = (P.pace && P.pace.Walking) || 1.1, g = P.group.position;
+        /* (R76: along the lane to the gate, its last point PHO_GATE itself: wayAt(gateS - 0.75, 0.45)) */
         const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
-        wayAt(ts, s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, _pv5);
-        if (s >= WAY.gateS - 1.1) _pv5.set(PHO_GATE.x, 0, PHO_GATE.z);
         /* arrived, he turns to face him, his whole body eased round as the followers turn (v14.5: a turn, never a snap; set in
            one frame, it swung him up to half a circle while the player watched him go), and looks at him */
-        if (!walkerMove(ph, _pv5.x, _pv5.z, wdt, pace)) {
+        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.06), wdt, pace)) {
           const d0 = angTo(P.group.rotation.y, faceTo(g.x, g.z, myX(), myZ()));
           if (!ph.turned) { ph.turned = true; ph.turning = true; gaze(P, 'lens', { secs: 1, reach: 0.7 }); }
           if (ph.turning || Math.abs(d0) > 0.5) { ph.turning = Math.abs(d0) > 0.05; P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); } } }

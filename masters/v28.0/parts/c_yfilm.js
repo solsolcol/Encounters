@@ -850,6 +850,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
+        /* (R76: the doors open in this picture are open to the walkable map's routes: the three are routed through the
+           doorway's middle, their shoulders clear of its jambs; play's map keeps them shut) */
+        navFilmOpen(LIFT_SHUT5, t >= T.open + 1.0);
         /* his teacher: before him, facing the doors, his eyes on the number; out first, down the walkway to where he waits */
         /* (his look on the number let go over his first steps out, never dropped in one frame: R25) */
         whenReady(cast.pho, (P) => { fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry, { ry0: Math.PI });

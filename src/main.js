@@ -8298,10 +8298,25 @@ function tagCamZero(force) {
   tag.wrote = false;
 }
 /* would this body be stopped stepping to (nx, nz)? The engine's own test from where IT stands, and never closer to the other
-   body than their two discs (stepping away from him is always allowed) */
+   body than their two discs (stepping away from him is always allowed). A body declared with `wall` (metres: R76, its own
+   half-width beyond what the blockers were grown by, which is the eye's) is also kept that much further off every blocker:
+   its shoulders out of the walls. A step that takes it no nearer to a blocker it already stands too near is allowed (a body
+   set down close to one is never stuck there). Absent, nothing is tested: bit for bit as before */
+function tagWallHit(A, nx, nz) {
+  const o = A.obj.position, w = A.wall, p = new THREE.Vector3(nx, 1.0 + groundAt(nx, nz), nz);
+  for (const b of BLOCKERS) {
+    if (b.isEmpty() || p.y < b.min.y || p.y > b.max.y) continue;
+    const d1 = Math.hypot(Math.max(b.min.x - nx, 0, nx - b.max.x), Math.max(b.min.z - nz, 0, nz - b.max.z));
+    if (d1 >= w) continue;
+    const d0 = Math.hypot(Math.max(b.min.x - o.x, 0, o.x - b.max.x), Math.max(b.min.z - o.z, 0, o.z - b.max.z));
+    if (d0 >= w || d1 < d0 - 1e-9) return true;
+  }
+  return false;
+}
 function tagBlocked(A, nx, nz) {
   const o = A.obj.position;
   if (collideFrom(o.x, o.z, nx, nz)) return true;
+  if (A.wall > 0 && tagWallHit(A, nx, nz)) return true;
   for (const B of tag.bodies) {
     if (B === A) continue;
     const b = B.obj.position, r = A.radius + B.radius, dn = Math.hypot(nx - b.x, nz - b.z);
@@ -8530,6 +8545,7 @@ function tagOpen(o) {
                   title: b.title == null ? '' : String(b.title), color: typeof b.color === 'string' && /^#[0-9a-f]{6}$/i.test(b.color) ? b.color : null,
                   speed: Number.isFinite(+b.speed) && +b.speed >= 0 ? +b.speed : null,
                   radius: Number.isFinite(+b.radius) && +b.radius >= 0 ? +b.radius : null, faceOff: +b.faceOff || 0,
+                  wall: Number.isFinite(+b.wall) && +b.wall > 0 ? +b.wall : 0,
                   slots, vx: 0, vz: 0, cov: 0, gy: NaN, y0: 0, place: null, face: null, root: false, share: null });
   }
   if (!bodies.length) return false;
@@ -20148,6 +20164,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  },
                  tagCrane: (v) => { if (!tag.cfg) return false; tag.cfg.crane = v || null; return true; },   // v28.0 (R41): the fixture's crane, live
                  tagBlocked: (x, z) => collideFrom(x, z, x, z),
+                 /* v28.0 (R76): would body `id`, declared with `wall` w, be stopped stepping to (x, z)? (its own wall put back) */
+                 tagWall: (id, w, x, z) => { const A = tag.bodies && tag.bodies.find(b => b.id === id); if (!A) return null;
+                   const w0 = A.wall; A.wall = w; try { return tagBlocked(A, x, z); } finally { A.wall = w0; } },
                  tagSave0: () => (tag.save0 ? JSON.parse(JSON.stringify(tag.save0)) : null),
                  vmPasses: () => vmPassN,
                  checkpointData: (extra) => checkpointData(extra),
