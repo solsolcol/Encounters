@@ -113,6 +113,27 @@
     cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Idle_3', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
+    /* (R35, 23 Nov: Chad, "The fingers, wrists, and arms of both zavier and pho models still look very wrong in many of the
+       poses". HIS FINGERS HELD AS MODELLED. Measured on his file (tools/probes/fingerweights.mjs, fingershape.mjs): his rig's
+       finger bones are 1.3 to 1.8 cm long where a man's are 2 to 4.5 (the generator's rig bunched each finger's joints toward
+       its tip), and each finger's skin is tied almost all to its LAST bone (the middle bones lead 1 to 20 points, the last 50 to
+       229; his thumbs' last bones 143 and 188 of their 150 and 210), so every bend his takes put in a finger turns its skin
+       about the wrong places. His hands were modelled open and relaxed, as a man's hang at rest; so his takes' finger tracks
+       are taken out of every take as he loads (76 of 132 channels in his walk, run and rest, 114 of 198 in his acts) and his
+       fingers stand as modelled in every pose: his wrists and arms are still his takes'. A take's own time and weight are
+       kept as it is made again) */
+    const FING5 = /(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d\./;
+    whenReady(cast.zav, (P) => {
+      let n = 0;
+      for (const name of Object.keys(P.acts)) { const A = P.acts[name], clip = A.getClip(), keep = clip.tracks.filter(t => !FING5.test(t.name));
+        if (keep.length === clip.tracks.length) continue;
+        const w = P.w[name] || 0, time = A.time; A.stop(); P.mixer.uncacheAction(clip);
+        const A2 = P.mixer.clipAction(new THREE.AnimationClip(clip.name, clip.duration, keep)); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); A2.time = time;
+        P.acts[name] = A2; n += clip.tracks.length - keep.length; }
+      for (const b in P.bone) if (/(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d$/.test(b)) { const q = bindLocal(P, P.bone[b]); if (q) P.bone[b].quaternion.copy(q); }
+      if (n) console.log('HANDS5: ' + P.key + "'s fingers held as modelled (" + n + ' finger tracks out of his takes)');
+    });
+
     /* until he has a rest, the moment of his own walk where he most nearly stands (measured on his file, 21 Nov: at 0.03 s
        his feet 17 cm apart and level within 6 cm, his hands at his sides; the 0.27 s first held was mid-stride, his feet
        68 cm apart) */

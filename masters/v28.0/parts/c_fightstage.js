@@ -1659,7 +1659,7 @@
           let al = Math.atan2(p1[1] - c[1], p1[0] - c[0]);                           // (round the shaft from there, the way the fingers close)
           const pts = [[0, 0], p1];
           for (const li of [l[1], l[2]]) { al -= arc(li, rho); pts.push([c[0] + rho * Math.cos(al), c[1] + rho * Math.sin(al)]); }
-          return { P0, x3, y3, w, l, pts, rest: seg.map(v => v.clone().normalize()), lim: LIM.f };
+          return { P0, x3, y3, w, l, pts, c, rho, rest: seg.map(v => v.clone().normalize()), lim: LIM.f };
         };
         /* the thumb: the other way round the shaft, in the plane square to it through his thumb's knuckle */
         const thumb = () => {
@@ -1695,10 +1695,68 @@
           }
           out.q[nm] = qs; out.report[nm] = rep;
         };
-        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm);
-          const dir = (i) => { const a0 = F.pts[i], a1 = F.pts[i + 1]; return F.x3.clone().multiplyScalar(a1[0] - a0[0]).addScaledVector(F.y3, a1[1] - a0[1]).normalize(); };
-          chainQ(nm, [dir(0), dir(1), dir(2)], F.lim); }
-        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim); out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots; }
+        /* (R35 and R36, 23 Nov: Chad, "Do you see one finger going the other way on pho's hands?": the joint check read his
+           little finger bent BACKWARD 15.4 degrees at every moment of every act, because chainQ turned each bone onto its target
+           by the SHORTEST ARC, whatever its direction, and held only the size of the turn. A finger's three joints are HINGES:
+           each turns only about the axis square to the finger and to the palm's facing (w), only toward the palm, and only as
+           far as a hand's own range (MCP 90, PIP 110, DIP 85). So each finger is solved in its own plane as a hinged chain
+           WRAPPED ROUND the shaft: its three bends searched (a 3 degree grid, then half a degree round the best) for the chain
+           whose every bone stays outside the shaft's circle (the finger's own thickness on it) while its knuckles and tip lie on
+           that circle, its end joint bending with its middle one as a real finger's does (about two thirds of it: one tendon
+           works both), and no more bend than that needs; then each bone turned about its own hinge by its bend) */
+        const wrapFinger = (F) => {
+          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l;
+          const segD = (ax, ay, bx, by) => { const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let t = L2 > 0 ? ((c[0] - ax) * dx + (c[1] - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(ax + dx * t - c[0], ay + dy * t - c[1]); };
+          const k2 = (0.25 * rho) * (0.25 * rho);
+          const cost = (f0, f1, f2) => {
+            let x = 0, y = 0, cum = 0, J = 0; const fs = [f0, f1, f2];
+            for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
+              if (segD(x, y, nx, ny) < rho * 0.99) return Infinity;
+              const e = Math.hypot(nx - c[0], ny - c[1]) - rho; J += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
+            return J + k2 * ((f2 - 0.67 * f1) * (f2 - 0.67 * f1) + 0.05 * (f0 * f0 + f1 * f1 + f2 * f2)); };
+          let best = [0, 0, 0], bc = cost(0, 0, 0);
+          const grid = (st, a, b) => { for (let f0 = a[0]; f0 <= b[0] + 1e-9; f0 += st) for (let f1 = a[1]; f1 <= b[1] + 1e-9; f1 += st) for (let f2 = a[2]; f2 <= b[2] + 1e-9; f2 += st) { const v = cost(f0, f1, f2); if (v < bc) { bc = v; best = [f0, f1, f2]; } } };
+          grid(3 * D2R, [0, 0, 0], hi);
+          const b0 = best.slice(), r = 3 * D2R; grid(0.5 * D2R, b0.map(v => Math.max(0, v - r)), b0.map((v, i) => Math.min(hi[i], v + r)));
+          /* (the clearance it keeps and how near its tip comes to the wood, for the report) */
+          let x = 0, y = 0, cum = 0, clear = Infinity, tip = 0;
+          for (let i = 0; i < 3; i++) { cum += best[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th); clear = Math.min(clear, segD(x, y, nx, ny) - rho); x = nx; y = ny; }
+          tip = Math.hypot(x - c[0], y - c[1]) - rho;
+          return { f: best, clear, tip };
+        };
+        /* each bone turned about its own hinge by its bend: the hinge (w, in the hand's frame) carried into the bone's parent's
+           rest frame, the turn laid onto the bone's own rest turn; which way about w closes the finger is read from the plane
+           (toward -y3, the palm) */
+        const hingeQ = (nm, ax3, bends, rep) => {
+          const L = chains[nm], qs = [], acc = new THREE.Quaternion();
+          for (let i = 0; i < 3; i++) {
+            const Li = bindLocal(P, L[i]) || L[i].quaternion.clone();
+            const ax = ax3[i].clone().applyQuaternion(acc.clone().invert()).normalize();
+            qs.push(new THREE.Quaternion().setFromAxisAngle(ax, bends[i]).multiply(Li)); acc.multiply(Li);
+          }
+          out.q[nm] = qs; out.report[nm] = rep;
+        };
+        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = wrapFinger(F);
+          const sg = Math.sign(F.y3.dot(new THREE.Vector3().crossVectors(F.w, F.x3))) || -1;   // (+ about w lifts toward +y3: closing is the other way)
+          hingeQ(nm, [F.w, F.w, F.w], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
+          out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2); }
+        /* THE THUMB: its root (the metacarpal, a saddle) onto its line by the shortest turn within its range, as before; its
+           two hinges (MCP and IP) only about the shaft's line, only toward the palm, within their range */
+        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim);
+          const L = chains.Thumb, q0 = out.q.Thumb[0], acc = new THREE.Quaternion().copy(q0), rep = [out.report.Thumb[0]];
+          for (let i = 1; i < 3; i++) {
+            const Li = bindLocal(P, L[i]) || L[i].quaternion.clone();
+            const restDir = L[i + 1].position.clone().normalize().applyQuaternion(Li).applyQuaternion(acc);   // (its line as the bones above it stand, in the hand's frame)
+            const want = T.tg[i + 1].clone().sub(T.tg[i]).normalize(), Ax = A.clone();
+            const p1 = restDir.clone().addScaledVector(Ax, -restDir.dot(Ax)).normalize(), p2 = want.clone().addScaledVector(Ax, -want.dot(Ax)).normalize();
+            const ang = Math.atan2(new THREE.Vector3().crossVectors(p1, p2).dot(Ax), p1.dot(p2));
+            const close = Math.sign(new THREE.Vector3().crossVectors(Ax, restDir).dot(nL)) || 1;   // (+ about the shaft carries it toward the palm when this is +)
+            const bend = Math.max(0, Math.min(T.lim[i] * D2R, ang * close));
+            const ax = Ax.applyQuaternion(acc.clone().invert()).normalize();
+            const q = new THREE.Quaternion().setFromAxisAngle(ax, close * bend).multiply(Li);
+            out.q.Thumb[i] = q; acc.multiply(q); rep.push(+(bend / D2R).toFixed(1));
+          }
+          out.report.Thumb = rep; out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots; }
         /* the stick in this hand: its shaft's middle at 1.00 m up it on C, its length along A, the Naga's head facing as his knuckles do */
         const yA = A.clone(), xA = fL.clone().addScaledVector(A, -fL.dot(A)).normalize().negate(), zA = xA.clone().cross(yA).normalize();
         const R = new THREE.Matrix4().makeBasis(xA, yA, zA), sc = 1 / s;
