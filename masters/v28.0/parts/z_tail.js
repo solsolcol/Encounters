@@ -55,6 +55,13 @@
     fade(0, 0.8, 1, 0);
     sfx(T.door, 'u5doors', 0.6);                                               // his front doors, across the court
     sfx(T.door + 0.6, 'u5m3room', 0.7);                                        // M3: a figure like a clock that does not quite keep time
+    /* (R33: M3's body ends 36.9 s into its file, and the film runs 52.9 s: from 38.3 s its sound had gone, under "I know I
+       have a mouth" and both of his teacher's lines, and the fade at the end faded nothing. The piece again, da capo, on
+       its own clock: its last note sounds 36.0 s into the file, its pulse 0.375 s, and the second copy's first note (0.37
+       s into it) lands one pulse after the first copy's last, so no beat is doubled; measured in the mix, the joint holds
+       -19 to -32 dBFS through its first second, and the piece goes on at its own quiet opening (-29 to -44 between its
+       notes), about 9 dB under its ending, under the voices. The fade below takes it down with the film's last second) */
+    sfx(T.door + 0.6 + 36.0, 'u5m3room', 0.7);
     sfx(T.walk + 0.4, 'u5step1', 0.18); sfx(T.walk + 1.0, 'u5step2', 0.2); sfx(T.walk + 1.6, 'u5step1', 0.22); sfx(T.walk + 2.2, 'u5step2', 0.24);
     sfx(T.walk + 2.8, 'u5step1', 0.26); sfx(T.walk + 3.4, 'u5step2', 0.28); sfx(T.walk + 4.0, 'u5step1', 0.3); sfx(T.walk + 4.6, 'u5step2', 0.32);
     sfx(T.walk + 5.2, 'u5step1', 0.34); sfx(T.walk + 5.8, 'u5step2', 0.36);   // his steps down his court, nearer
@@ -113,6 +120,10 @@
     sfx(T.q5p1, 'q5p1', 1);                                                    // "And then I was not alone in my body."
     sfx(T.leave + 0.3, 'u5cagehum', 0.4);                                      // his cage of light, whole
     sfx(T.leave + 0.9, 'u5murmur1', 0.45);                                     // his lips moving: his murmur
+    /* (R33: both were still sounding at full when the film handed to the fight's brief, 0.65 and 1.25 s before their own
+       ends, and the engine cut them there in 0.3 s; the fight's own murmur and cage hum begin at START, and nothing moves
+       under the brief. So both go down as the picture comes to rest on the fight's camera) */
+    sfxFade(T.rest, T.end - 0.1, 'u5murmur1'); sfxFade(T.rest, T.end - 0.1, 'u5cagehum');
     fade(T.violet, T.violet + 0.6, 0, 1, VIOLET5);
     fade(T.leave, T.leave + 2.2, 1, 0, VIOLET5);
     sfxFade(T.end - 1.6, T.end - 0.1, 'u5m6prep');
@@ -166,6 +177,13 @@
     sfx(T.eyes + 0.1, 'u5zbreath', 0.7);                                       // his own breath, in his own body
     sfx(T.eyes + 0.6, 'u5heart', 0.55); sfx(T.eyes + 1.3, 'u5heart', 0.5);
     sfx(T.eyes + 0.5, 'u5m11light', 0.7);                                      // M11: the house lighter, plain and warm
+    /* (R33: M11 runs 39.3 s, full to 38.1 s of its file and then a second's fall, so it ended inside "Mend what you
+       can..." and "see a doctor" had no music, and its fade at the lift faded nothing. The piece again, da capo: its pulse
+       0.84 s, and the second copy laid so its first notes fall on the first copy's own beat (its first sound with the first
+       copy's last, 38.13 s into the file; its first pulse, 0.64 s into it, on the next beat), over the first one's fall;
+       measured in the mix, the joint holds -23 to -32 dBFS and the piece goes on at its opening, about 5 dB under its
+       body, until the black at the lift takes it down with the picture) */
+    sfx(T.eyes + 0.5 + 38.1, 'u5m11light', 0.7);
     sfx(T.lamp1, 'u5lampflare', 0.35); sfx(T.lamp2, 'u5lampflare', 0.35);      // the court's lamps come back, one, then the other
     sfx(T.room1 + 0.35, 'u5baginhale', 0.7); sfx(T.room1 + 2.3, 'u5bagblow', 0.7);   // the living room: his breath drawn, blown into the bag
     sfx(T.room2 + 0.3, 'u5baginhale', 0.7); sfx(T.room2 + 2.2, 'u5bagblow', 0.7);    // the dining room
@@ -183,6 +201,11 @@
     fade(T.lift - 0.4, T.lift, 0, 1); fade(T.lift + 0.1, T.lift + 0.6, 1, 0);   // (a scene change happens in the black: v16.1)
     sfxFade(T.lift - 0.4, T.lift, 'u5m11light');
     sfx(T.lift + 0.4, 'u5m12lift', 0.7);                                       // M12: at the lift, his teacher's lesson: almost nothing
+    /* (R33: M12 falls under -35 dBFS 20.5 s into its 24.8, so Jun's news, "Tomorrow.", the doors and the hum on the black
+       had none, and its fade with the black faded nothing. A held chord with no beat: the second copy comes in as the
+       first begins its fall, its own second of rising laid over it; measured in the mix, the joint holds -31 to -38 dBFS
+       (the body before it -29 to -34), and the black takes it down with the picture) */
+    sfx(T.lift + 0.4 + 20.2, 'u5m12lift', 0.7);
     sfx(T.q5b2, 'q5b2', 1);                                                    // "Grandmaster. The smell. Was it real?"
     sfx(T.ph5b4, 'ph5b4', 1);                                                  // "You smelled it. They did not. That is a fact about you. ..."
     sfx(T.ph5b5, 'ph5b5', 1);                                                  // "Your nose is open. Last time it was your sight. An open door is not a skill."
@@ -223,7 +246,11 @@
 
   /* THE FOUR ENDINGS (the plan's 4.9): each its own beats, THE RITE at its `rite` (its own beats RT5, from there), the
      smell gone ("I feel lighter. My head is quieter."), its own close, and THE LAST PICTURE at its `close` (CL5) */
-  const RT5 = { see: 0.3, dip: 1.4, away: 2.4, unsee: 11.0, bag: 11.6, string: 12.2, end: 14.4 };
+  /* (R33: his sight shuts over the film's 1.4 s, c_yfilm.js fmVision, so from `unsee` 11.0 it was still shutting across
+     the cut to the bag at 11.6: the room stayed inside the vision's edge, its look whole (vis.k 1, the edge's first six
+     metres) until about 12.0 and gone at 12.4, so the bag's close shot opened in Spirit Vision's look and lost it half a
+     second after the cut. From 10.2 it is shut exactly on the cut, and the bag is seen in plain daylight) */
+  const RT5 = { see: 0.3, dip: 1.4, away: 2.4, unsee: 10.2, bag: 11.6, string: 12.2, end: 14.4 };
   const CL5 = { q: 0.5, black: 4.4, end: 5.6 };
   const RITELEN5 = RT5.end + 0.3;
   const EN5 = {
@@ -260,6 +287,12 @@
         sfxFade(c0 - 0.3, c0 + 0.8, 'u5m15endA');
       } else if (k === 'B') {
         sfx(0.2, 'u5m16endB', 0.6);                                            // M16: a man finding out, plain warmth
+        /* (R33: M16 falls from 45.5 s of its 49.7 and is under -45 dBFS by 47, so the end of his teacher's words and "He
+           put them down himself." had no music until M19, and its fade with the close faded nothing. The piece again, da
+           capo: its pulse 0.42 s, its last note 45.13 s into the file, and the second copy's first (0.05 s into it) one
+           pulse after it; measured in the mix, the joint holds -27 to -38 dBFS, as the body before it, and the close takes
+           it down under M19) */
+        sfx(0.2 + 45.5, 'u5m16endB', 0.6);
         sfx(E.co5B1, 'co5B1', 1); sfx(E.co5B2, 'co5B2', 1); sfx(E.co5B3, 'co5B3', 1); sfx(E.co5B4, 'co5B4', 1);
         sfx(E.lid + 0.15, 'u5lid', 0.75);                                      // the case's lid shut by his own hand
         sfx(E.lid + 0.85, 'u5slide', 0.65);                                    // and the case pushed across
@@ -297,7 +330,9 @@
       sfx(r0 + R.dip + 4.75, 'u5whisk1', 0.7); sfx(r0 + R.dip + 5.35, 'u5drops', 0.6);
       sfx(r0 + R.dip + 6.95, 'u5whisk2', 0.7); sfx(r0 + R.dip + 7.55, 'u5drops', 0.6);
       sfx(r0 + R.dip + 9.15, 'u5whisk1', 0.65); sfx(r0 + R.dip + 9.75, 'u5drops', 0.5);
-      sfx(r0 + R.dip + 11.35, 'u5whisk2', 0.6); sfx(r0 + R.dip + 11.95, 'u5drops', 0.45);
+      /* (R33: five throws, as the picture draws them: c_yfilm.js throws while the rite's clock is between RT5.dip and
+         RT5.bag, every 2.2 s from 1.4. A sixth whisk and its water were heard at 12.75 and 13.35 s, after the cut to the
+         tied bag, over the string being wound) */
       sfx(r0 + R.away, 'u5pcangry', 0.7); sfx(r0 + R.away + 0.3, 'u5pcry1', 0.6);                     // the angry one, as the water reaches it
       sfx(r0 + R.away + 0.7, 'u5pchungry', 0.7); sfx(r0 + R.away + 1.1, 'u5pcry2', 0.55);              // the hungry one
       sfx(r0 + R.away + 1.4, 'u5pcwarm', 0.65);                                                       // the one looking for energy
