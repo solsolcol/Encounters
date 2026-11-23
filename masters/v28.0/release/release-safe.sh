@@ -45,11 +45,11 @@ node tools/probes/usebefore.mjs $OTHERS $C4 $C5 src/main.js > $S/e4c5/safe-check
   && node tools/probes/dupfuncs.mjs $OTHERS $C4 $C5 src/main.js >> $S/e4c5/safe-checks.log 2>&1 \
   || { echo "STATIC CHECKS FAILED on the safe chapters"; tail -20 $S/e4c5/safe-checks.log; exit 1; }
 echo "static checks: clean"
-rm -rf $S/e4c5/snap-release
+rm -rf $S/e4c5/${SNAPNAME:-snap-release}
 ENC_CHAPTER_FROM="e4c5=$C5,e4c4=$C4" ENC_NOZIP=1 npm run build > $S/e4c5/release-build.log 2>&1 || { echo "BUILD FAILED"; tail -30 $S/e4c5/release-build.log; exit 1; }
 grep "ENC_CHAPTER_FROM" $S/e4c5/release-build.log | head -3; tail -3 $S/e4c5/release-build.log
-rm -rf $S/e4c5/snap-release && cp -al dist $S/e4c5/snap-release && echo "snapshot ready: $(du -sh $S/e4c5/snap-release | cut -f1)"
-G5=$(sha1sum $S/e4c5/snap-release/assets/$(ls $S/e4c5/snap-release/assets/ | grep -E '^e4c5\.[0-9a-f]+\.js$' | head -1) | cut -c1-12)
-G4=$(sha1sum $S/e4c5/snap-release/assets/$(ls $S/e4c5/snap-release/assets/ | grep -E '^e4c4\.[0-9a-f]+\.js$' | head -1) | cut -c1-12)
+rm -rf $S/e4c5/${SNAPNAME:-snap-release} && cp -al dist $S/e4c5/${SNAPNAME:-snap-release} && echo "snapshot ready: $(du -sh $S/e4c5/${SNAPNAME:-snap-release} | cut -f1)"
+G5=$(sha1sum $S/e4c5/${SNAPNAME:-snap-release}/assets/$(ls $S/e4c5/${SNAPNAME:-snap-release}/assets/ | grep -E '^e4c5\.[0-9a-f]+\.js$' | head -1) | cut -c1-12)
+G4=$(sha1sum $S/e4c5/${SNAPNAME:-snap-release}/assets/$(ls $S/e4c5/${SNAPNAME:-snap-release}/assets/ | grep -E '^e4c4\.[0-9a-f]+\.js$' | head -1) | cut -c1-12)
 if [ "$G5" = "$W5" ] && [ "$G4" = "$W4" ]; then echo "PROOF: e4c5 $G5 and e4c4 $G4 are the safe assemblies (base $H; pins: $(tr '\n' ' ' < $PINS))"
 else echo "PROOF FAILED: e4c5 built $G5 want $W5, e4c4 built $G4 want $W4"; exit 1; fi
