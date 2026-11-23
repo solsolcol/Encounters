@@ -19,10 +19,10 @@
     const PHASES = ['walk', 'hunt', 'fight', 'table', 'ask'];
     /* THE RECEIPTS a phase can carry on the phase string (the plan's 4.1, 4.3, 4.7). The skeleton writes the three
        stains; the others are named so that the play built here finds its letters waiting:
-         walk   t Ton asked, j Jun asked, d the drain smelled
+         walk   t Ton asked, j Jun asked, d the drain smelled, e the eye's line said, w his teacher's two lines heard (SMELL his)
          hunt   s1 s2 s3 the three stains (the shoe cabinet, the planter's foot, the threshold), a the armchair, n the nine seen
          table  m he has smelled the pieces, k1 k2 k3 the three presences looked at (angry, hungry, looking for energy) */
-    const RECEIPTS = { walk: ['t', 'j', 'd', 'e'], hunt: ['s1', 's2', 's3', 'a', 'n'], fight: [], table: ['m', 'k1', 'k2', 'k3'], ask: [] };
+    const RECEIPTS = { walk: ['t', 'j', 'd', 'e', 'w'], hunt: ['s1', 's2', 's3', 'a', 'n'], fight: [], table: ['m', 'k1', 'k2', 'k3'], ask: [] };
     const STAINS = ['s1', 's2', 's3'];
     const play = { run: 0, busy: false, found: new Set() };
     let phase = null, booted = false, decOpen = false, lookName = 'DUSK';
@@ -135,10 +135,17 @@
       } else if (phase === 'fight') { o = W.hotCleanse; wp = SPOT.court; }
       else if (phase === 'table') {
         if (!play.found.has('m')) o = W.objSmell + '  ·  ' + smellIn();
-        else if (lookedN() < 3) o = W.objLook;
+        else if (lookedN() < 3) o = visOpen() ? lookOpenWords() : W.objLook;
       }
       kit.objective(o, opts);
       kit.waypoint(wp);
+    }
+    /* the table's order once his sight is open: his line after its first sentence, which is the hunt's own order to open
+       it (W.objOpen), so an open eye is never told to open (the hunt splits the same pair; onVision runs this at every open
+       and shut). His words as they stand; the whole line if the sheet ever words the two otherwise */
+    function lookOpenWords() {
+      const a = String(W.objOpen || ''), b = String(W.objLook || '');
+      return a && b.startsWith(a) && b.length > a.length ? b.slice(a.length).trim() : b;
     }
     /* what his sight is asked for: the eye asks to OPEN for it (urgeTick), and "When you feel better" is said only while
        there is still something to look at (strainTick) */
@@ -181,7 +188,8 @@
        order), his teacher: "Your nose has opened..." and "Follow it. SMELL." and the SMELL button is his. The eye is not
        offered here: dimmed, and pressed it says why in his teacher's voice, once ("Not yet. First your nose."). The decoy,
        the drain, nine metres on; the true trail on round the turn to the gate; at the gate, the gate's two lines, and the
-       devotee's film. RECEIPTS on the phase string: t Ton asked, j Jun asked, d the drain smelled, e the eye's line said */
+       devotee's film. RECEIPTS on the phase string: t Ton asked, j Jun asked, d the drain smelled, e the eye's line said,
+       w his teacher's two lines heard */
     const walk5 = { given: -1, best: 0, maxS: 0, idle: 0, since: null, wp: false, tonCalled: false, nag: null, drain: false };
     const asked = () => play.found.has('t') && play.found.has('j');
     function walkBegin() {
@@ -189,21 +197,31 @@
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
       Object.assign(walk5, { given: -1, best: wayS(myX(), myZ()), maxS: 0, idle: 0, since: null, wp: false, tonCalled: false, nag: null, drain: false });
       smellButton(false);
-      if (asked()) giveSmell();
+      if (asked()) { if (play.found.has('w')) giveSmell(); else smellLines(); }
       objectiveFor();
     }
     function askOne(c, P, lines) {
       if (phase !== 'walk' || play.busy || play.found.has(c)) return false;
       play.busy = true;
-      if (P) { P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, myX(), myZ()); gaze(P, 'lens', { secs: 0.6, reach: 0.75 }); }
+      /* (the one asked turns his whole body to him, eased round as the followers turn, c_play.js walkersTick: set in one
+         frame it was a snap, v14.5) */
+      if (P) { const W0 = walkers.list.find(w => w.P === P);
+        if (W0) W0.turning = true; else P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, myX(), myZ());
+        gaze(P, 'lens', { secs: 0.6, reach: 0.75 }); }
       for (const L of lines) { if (typeof L === 'number') queueGap(L); else say(L); }
       andThen(() => { play.busy = false; got(c);
         if (!asked()) { objectiveFor(); return; }
-        play.busy = true;
-        say('ph5w1');                                          // "Your nose has opened. They cannot smell it. You can."
-        say('ph5w2');                                          // "Do not say what it is yet. Follow it. SMELL."
-        andThen(() => { play.busy = false; giveSmell(); objectiveFor(); }); });
+        smellLines(); });
       return true;
+    }
+    /* both asked: his teacher's two lines, and only then the SMELL button. Their receipt, w, is banked after the lines, so a
+       game closed while they are said hears them on its Continue before the button is his (a Continue gave SMELL with
+       neither: v7.3, a beat spanning a save is tagged as played; v21.21, nothing offered before the line handing off to it) */
+    function smellLines() {
+      play.busy = true;
+      say('ph5w1');                                            // "Your nose has opened. They cannot smell it. You can."
+      say('ph5w2');                                            // "Do not say what it is yet. Follow it. SMELL."
+      andThen(() => { play.busy = false; got('w'); giveSmell(); objectiveFor(); });
     }
     function giveSmell() {
       smellButton(true); walk5.given = dayClock.t;
@@ -266,6 +284,9 @@
        RECEIPTS: s1 s2 s3 the stains, a the armchair, n the nine seen. The count is derived on the frame, never stored */
     const hunt5 = { pending: null, since: 0, wp: false, shown: new Set(), hints: new Set(), nag: null };
     const PLACE_OF = { s1: { line: 'q5h1', hint: 'ph5h6' }, s2: { line: 'q5h2', hint: 'ph5h5' }, s3: { line: 'q5h3', hint: 'ph5h7' } };
+    /* (the shoe cabinet's stain is inside his house: offered, and looked at, only from the doorway in, never from the court
+       through the front wall, where its mark stood within reach of the paving outside and its line was said facing a wall) */
+    const hereFor = (c) => c !== 's1' || myZ() > HOUSE.face;
     function huntBegin(found) {
       play.found = new Set(found); lookAt0(LOOK_OF.hunt); castPhase('hunt'); warm5('hunt');
       if (kit && kit.vision) kit.vision(null);
@@ -286,7 +307,10 @@
     }
     function resolveLook(c) {
       hunt5.pending = null; play.busy = true; if (kit) kit.waypoint(null);
-      const nineNow = !play.found.has('n') && (inCourt(myX(), myZ(), 0.8) || c === 's2' || c === 's3');
+      /* (standing in the court, not within 0.8 m of it: the pad reached 0.8 m into the living room, so the shoe cabinet's
+         stain, found from inside, said "Nine Prai." over a cabinet, against 4.3's "Indoors the court is not in view". Seen
+         through the open door, the beat comes from huntTick's own look, once this place's line is said) */
+      const nineNow = !play.found.has('n') && (inCourt(myX(), myZ()) || c === 's2' || c === 's3');
       if (nineNow) nineLines(false);
       if (c === 'a') { say('ph5h4'); say('q5h5'); }           // "Nothing is there now. A smell stays after what made it has gone." / "My nose was sure."
       else say(PLACE_OF[c].line);
@@ -310,7 +334,7 @@
       /* a place pressed with his sight shut: it is looked at once his sight is open there; walked away from, let go */
       if (hunt5.pending) { const q = hunt5.pending === 'a' ? HUNT5.arm : HUNT5[hunt5.pending];
         if (distTo(q.x, q.z) > 4.2) { hunt5.pending = null; objectiveFor(); }
-        else if (open && !play.busy && !lineBusy()) resolveLook(hunt5.pending); }
+        else if (open && !play.busy && !lineBusy() && hereFor(hunt5.pending)) resolveLook(hunt5.pending); }
       if (open && !play.busy && !play.found.has('n') && (inCourt() || nineInView()) && !lineBusy()) nineLines(true);
       /* the order keeps up with his sight (the ask to open is the order while a place waits for it) */
       if (!play.busy) objectiveFor();
@@ -339,6 +363,9 @@
        skeleton's stand-in is offered instead (one thing to press in the court), so nothing soft-locks (v7.4) */
     function fightBegin() {
       lookName = 'TRANCE';
+      /* (the play's placing for the phase, as every other phase's begin makes it: from the hunt's film it was never made, so
+         the nine's sheen ran twice a frame in a played fight, the play's tick and the fight's, and once after a Continue) */
+      castPhase('fight');
       if (!fightOpen()) { lookAt0(LOOK_OF.fight); objectiveFor({ complete: false }); return; }
       fightBrief();
     }
@@ -448,7 +475,7 @@
       enabled: () => phase === 'walk' && !play.busy && !play.found.has('j'), onInteract() { return askOne('j', castOf('jun'), ['q5w1', 'ju5w1']); } };
     const stainSpot = (c, at, y) => ({ id: 'stain' + c.slice(1), pos: { x: at.x, y, z: at.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT,
       hits: markHit5(() => ({ x: at.x, y: 0.1, z: at.z }), 0.1),
-      enabled: () => phase === 'hunt' && !play.busy && !play.found.has(c) && hunt5.shown.has(c) && hunt5.pending !== c, onInteract() { return lookHere(c); } });
+      enabled: () => phase === 'hunt' && !play.busy && !play.found.has(c) && hunt5.shown.has(c) && hunt5.pending !== c && hereFor(c), onInteract() { return lookHere(c); } });
     const lookSpot5 = (c, k, line) => ({ id: 'look' + c.slice(1), pos: { x: TABLE5.P[k].x, y: TABLE5.P[k].y, z: TABLE5.P[k].z }, radius: 3, aim: 0.13, pressAim: true,
       markFar: 3, markY: 0.12, prompt: W.hotLook, ground: G_TABLE, hits: markHit5(presAt(k), 0.07),
       enabled: () => phase === 'table' && !play.busy && play.found.has('m') && visOpen() && !play.found.has(c), onInteract() { return lookPresence(c, line); } });

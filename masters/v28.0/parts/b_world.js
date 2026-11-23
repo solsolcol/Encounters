@@ -715,7 +715,10 @@
        the hunt and every film open it through here) */
     const DOOR_OPEN_DEG = 85.5;
     function doorOpen(k) { doorHinge.rotation.y = -Math.max(0, Math.min(1, k)) * DOOR_OPEN_DEG * DEG; }
-    solidXZ(DOOR_FRONT.x0 - 0.05, LIVING.z0 - 0.05, DOOR_FRONT.x0 + 0.07, LIVING.z0 + 0.75);                 // the leaf, open, along the wall                 // the leaf, open, along the wall
+    /* (the open leaf's footprint along the wall's inside: its solid here, and what stops a line of sight from the room to
+       the court through the doorway, c_play.js nineInView: one table, v16.7) */
+    const DOOR_LEAF = { x0: DOOR_FRONT.x0 - 0.05, z0: LIVING.z0 - 0.05, x1: DOOR_FRONT.x0 + 0.07, z1: LIVING.z0 + 0.75 };
+    solidXZ(DOOR_LEAF.x0, DOOR_LEAF.z0, DOOR_LEAF.x1, DOOR_LEAF.z1);                 // the leaf, open, along the wall
     /* --- inside, by the door: the shoe cabinet against the front wall, west of the door, scaled to 0.35 m deep and
        darkened (RECORD.md 4; its ragged edges stay); the place under it is the first stain's */
     const SHOE = { x: (WIN_A.x1 + DOOR_FRONT.x0) / 2, z: LIVING.z0 + 0.175 + 0.01 };

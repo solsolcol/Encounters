@@ -289,7 +289,12 @@
         const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
         wayAt(ts, s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, _pv5);
         if (s >= WAY.gateS - 1.1) _pv5.set(PHO_GATE.x, 0, PHO_GATE.z);
-        if (!walkerMove(ph, _pv5.x, _pv5.z, wdt, pace) && !ph.turned) { ph.turned = true; P.group.rotation.y = faceTo(g.x, g.z, myX(), myZ()); gaze(P, 'lens', { secs: 1, reach: 0.7 }); } }
+        /* arrived, he turns to face him, his whole body eased round as the followers turn (v14.5: a turn, never a snap; set in
+           one frame, it swung him up to half a circle while the player watched him go), and looks at him */
+        if (!walkerMove(ph, _pv5.x, _pv5.z, wdt, pace)) {
+          const d0 = angTo(P.group.rotation.y, faceTo(g.x, g.z, myX(), myZ()));
+          if (!ph.turned) { ph.turned = true; ph.turning = true; gaze(P, 'lens', { secs: 1, reach: 0.7 }); }
+          if (ph.turning || Math.abs(d0) > 0.5) { ph.turning = Math.abs(d0) > 0.05; P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); } } }
     }
     function phoWalksAhead() { const W0 = walkers.list.find(w => w.n === 'pho'); if (W0 && !W0.ahead) { W0.ahead = true; W0.turned = false; } }
 
@@ -392,11 +397,25 @@
         gaze(Q, [g.x + Math.sin(ry) * 1.1, 0.0, g.z + Math.cos(ry) * 1.1], { secs: 0.1, reach: 0.9, down: 0 }); });
     }
     /* whether any of the nine is in the picture within reach: the wave runs out and they are there (4.3: seen the first
-       time his sight is open in the court, or with them in front of him through the open door) */
+       time his sight is open in the court, or with them in front of him through the open door). Only where his eyes reach
+       them: from inside his house by a line through the front door's opening, clear of its open leaf (the walls stop his
+       sight's wave, 4.3; the windows' curtains are drawn, 4.2), never through the wall, as the frustum alone let it (the
+       beat was said in the living room turned to the front wall); from the walkway not at all (the plan's one road is the
+       court, where his teacher can be beside him) */
+    const _ce5 = new THREE.Vector3();
+    function nineSightFrom(e, x, z) {
+      if (inCourt(e.x, e.z)) return true;
+      if (e.z < HOUSE.face || e.x < LIVING.x0 || e.x > LIVING.x1) return false;
+      const u = (HOUSE.face - e.z) / (z - e.z), wx = e.x + (x - e.x) * u;
+      if (!(wx > DOOR_FRONT.x0 + 0.05 && wx < DOOR_FRONT.x1 - 0.05)) return false;
+      const L = DOOR_LEAF, lx = (L.x0 + L.x1) / 2;
+      if ((e.x - lx) * (wx - lx) < 0) { const zl = e.z + (HOUSE.face - e.z) * (lx - e.x) / (wx - e.x); if (zl > L.z0 && zl < L.z1) return false; }
+      return true;
+    }
     function nineInView() {
-      camera.updateMatrixWorld();
+      camera.updateMatrixWorld(); camera.getWorldPosition(_ce5);
       for (const a of nineAt()) { if (distTo(a[0], a[1]) > 9) continue; _hv5.set(a[0], 1.1, a[1]).project(camera);
-        if (_hv5.z < 1 && Math.abs(_hv5.x) < 0.95 && Math.abs(_hv5.y) < 0.95) return true; }
+        if (_hv5.z < 1 && Math.abs(_hv5.x) < 0.95 && Math.abs(_hv5.y) < 0.95 && nineSightFrom(_ce5, a[0], a[1])) return true; }
       return false;
     }
 
@@ -482,7 +501,33 @@
          away, so nothing a fight left stands there on a Continue or a phase set: clipscan found them by the door at the table) */
       if (p === 'hunt') nineStand(true); else { nineOn = false; if (p !== 'fight') PRAI5.home(p); }
       if (p === 'walk') walkersInit(); else walkers.list = [];
+      /* the things they carry, as the film that hands to each phase leaves them (c_yfilm.js endPhase5), so a Continue lands
+         on what play shows (v22.2: after a Continue Ton had no staff and Jun no bag): Ton's wrapped staff on the walkway and
+         in the hunt, Jun's duffel on the walkway, both put away from the fight on (the fight's stick is the fight's: fightOpen) */
+      if (p === 'walk' || p === 'hunt') { STICK5.to('tonWrap'); DUFFEL5.to(p === 'walk' ? 'jun' : 'away'); }
+      else { DUFFEL5.to('away'); if (p !== 'fight') STICK5.to('away'); }
+      carryNow(true);
     }
+    /* THE THINGS THEY CARRY IN PLAY (4.0: Ton with the long thing wrapped in cloth, Jun with the duffel), in the carrier's
+       hand every frame of the walkway and the hunt, by the films' own hold (c_cast.js STICK5.carry, c_yfilm.js DUFFEL5.carry):
+       only the films carried them, so in play they hung where the opening left them while their carriers walked on (the
+       build's clipscan: "Jun's duffel through his body in the walk"). Drawn only while its carrier is, never where he is not.
+       Each hold is made ONCE from its carrier's standing rest (handHold5), a measure that leaves his pose as the mixer
+       writes it; `made` lays only a hold already made (after the people's tick, whose own laying the measure would undo for
+       the frame), and a hold not yet made (a Continue, with no film before it) is made at the frame's start, carryPrime */
+    function carryNow(made) {
+      if (phase !== 'walk' && phase !== 'hunt') return;
+      const one = (g, held, P, has, fn) => { if (!g || !held) return;
+        if (P && P.ready && P.group.visible && (has || !made)) fn(P); else g.visible = false; };
+      one(things.staffWrap, STICK5.who === 'tonWrap', castOf('ton'), !!STICK5.wrapOff, (P) => STICK5.carry(P));
+      one(things.duffel, DUFFEL5.who === 'jun', castOf('jun'), !!DUFFEL5.off, (P) => DUFFEL5.carry(P));
+    }
+    /* (d_play.js: carryPrime before the people's tick, carryTick after the play's frame and the settle that may move a body
+       in it, c_nav.js's wrap of playFrame; a film carries them itself) */
+    function carryPrime(st) {
+      if (st !== 'cine' && ((STICK5.who === 'tonWrap' && !STICK5.wrapOff) || (DUFFEL5.who === 'jun' && !DUFFEL5.off))) carryNow(false);
+    }
+    function carryTick(st) { if (st !== 'cine') carryNow(true); }
     /* his teacher, quietly, already beside him (4.3: "Nine Prai."): a step behind his shoulder, out of the picture, where
        the court has room (a change made where no shot sees it: v24.12) */
     function phoBeside() {

@@ -15,7 +15,9 @@
     function pileScreen() { camera.updateMatrixWorld(); return _ndc.set(PILE_POS.x, PILE_POS.y + 1.0, PILE_POS.z).project(camera); }
     function pileInView() { if (!pileLive()) return false; const n = pileScreen(); return n.z < 1 && Math.abs(n.x) < 1.1 && Math.abs(n.y) < 1.1; }
     function pointerHitsPile() { return pileLive() && pileDist() < INTERACT_R; }
-    function interactPile() { if (!pileLive() || getState() !== 'play') return false; startDecision(); return true; }
+    /* (opened again after a step back by the same door as the first time, c_story.js openDecision, so the window shuts his
+       sight here too: the plan's 6.2, v11.4; straight to startDecision it opened over an open eye, its bed and music on) */
+    function interactPile() { if (!pileLive() || getState() !== 'play') return false; openDecision(); return true; }
 
     /* THE FRAME (chapter 4's): the chapter's clock runs in play only; a voice plays on under a panel while the clock
        stands still, so its booking comes forward by the time the panel was up, as far as the voice's own end (e3c3's
@@ -24,8 +26,10 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       wallClock.t += wdt;
+      carryPrime(st);                                          // (a carried thing's hold, made before the people's tick: c_play.js)
       worldFrame(wdt, st);                                     // (the world's hook: its people and levels)
       playFrame(wdt, st);                                      // (the play's: SMELL's threads, the walkers, the strain: c_play.js)
+      carryTick(st);                                           // (what Ton and Jun carry, laid after the play's frame and its settle: c_play.js)
       if (st === 'decide') askPatience(wdt);                   // (the collector's patience runs on wall time under the window)
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
@@ -47,6 +51,12 @@
       phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       dayClock.t = 0; wallClock.t = 0; lastWall0 = 0; lastWall = 0; pausedAt = 0;
       storyReset(); playReset(); worldReset();
+      /* the rite's things a run sets down or carries, put away as build() leaves them (a replay began with the reel of thread
+         and the staff's cloth on the court's paving where the fight set them: nothing took them up again), and whatever of
+         the fight a run's last film left standing (as a film that hands to the play clears it: c_yfilm.js endPhase5) */
+      for (const n of ['threadReel', 'staffCloth', 'bagOpen', 'bagTied']) if (things[n]) things[n].visible = false;
+      STICK5.to('away'); DUFFEL5.to('away'); fmShow(cast.zav, false);
+      THREAD5.set(false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); NAGA5.set(0, 0, 0, 0, 0);
     }
 
     /* what he cannot walk through: every solid of the place, a column from the floor (v5.03). TODO-WORLD: none yet */
