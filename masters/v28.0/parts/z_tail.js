@@ -124,10 +124,9 @@
     sfx(T.q5p1, 'q5p1', 1);                                                    // "And then I was not alone in my body."
     sfx(T.leave + 0.3, 'u5cagehum', 0.4);                                      // his cage of light, whole
     sfx(T.leave + 0.9, 'u5murmur1', 0.45);                                     // his lips moving: his murmur
-    /* (R33: both were still sounding at full when the film handed to the fight's brief, 0.65 and 1.25 s before their own
-       ends, and the engine cut them there in 0.3 s; the fight's own murmur and cage hum begin at START, and nothing moves
-       under the brief. So both go down as the picture comes to rest on the fight's camera) */
-    sfxFade(T.rest, T.end - 0.1, 'u5murmur1'); sfxFade(T.rest, T.end - 0.1, 'u5cagehum');
+    /* (R33 took both down over the film's last 1.9 s, when nothing sounded under the brief. Since then the brief has his
+       murmur and the cage's hum of its own (c_fightstage.js fsSoundFrame), which came straight back: a dip. R75's debug,
+       V4: so they play to the hand-off, where the engine takes the film's down in 0.3 s as the brief's come up) */
     fade(T.violet, T.violet + 0.6, 0, 1, VIOLET5);
     fade(T.leave, T.leave + 2.2, 1, 0, VIOLET5);
     sfxFade(T.end - 1.6, T.end - 0.1, 'u5m6prep');
@@ -184,6 +183,9 @@
     sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
     sfx(T.rise + 0.6, 'u5mist', 0.3);
     sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
+    /* (R75's debug, V6: his one line stood only 4 dB over the water's surge (full, 5 s from the rise), M9 and the cry's tail,
+       where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
+    sfxFade(T.ph5c2 - 0.3, T.ph5c2 + 0.35, 'u5nagawater');
     sfx(T.stoop - 0.1, 'u5nagadive', 0.9);                                     // over, and down onto the shape
     sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
     sfx(T.apart - 0.04, 'u5shockhit', 0.75);                                   // the shape struck by its passing

@@ -21,6 +21,8 @@
   const seen = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
   const boneOf = (Q, nm) => { Q.__lb = Q.__lb || {}; if (nm in Q.__lb) return Q.__lb[nm];
     const re = new RegExp('^(mixamorig:?)?' + nm + '$'); let f = null; for (const k in (Q.bone || {})) if (re.test(k)) { f = Q.bone[k]; break; }
+    /* (R75's debug, B3: and in any case, as the game's own navBone: four bodies name the neck `neck`) */
+    if (!f) { const ri = new RegExp('^(mixamorig:?)?' + nm + '$', 'i'); for (const k in (Q.bone || {})) if (ri.test(k)) { f = Q.bone[k]; break; } }
     Q.__lb[nm] = f; return f; };
   /* [name, from bone, to bone (or null: along the bone's own +Y, len), len, radius] */
   const LIMB = [['torso', 'Hips', 'Neck', 0, 0.13], ['head', 'Head', null, 0.2, 0.1]];

@@ -1345,7 +1345,9 @@
            three lie low and dim as its last picture laid them */
         const st2 = FS5.st, ts = kit.tagState();
         for (const b of ts.bodies) { const R2 = b.id === 'pho' ? st2.pho : st2.zav, l = fsL(b.x, b.z); R2.x = l.x; R2.z = l.z; FS5.last[b.id === 'pho' ? 'pho' : 'zav'] = l; }
-        st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; } });
+        /* (R75's debug, B5: and turned as the film left them, so the last stage eases each toward him from there: its heading
+           was the one it had before the surge, and each snapped round on play's first frame) */
+        st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i], B = PRAI5.list[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; V.ry = B ? B.group.rotation.y : null; } });
         FS5.nagaDim = true; };
       const sealed = !!(ctx.sealedBefore && ctx.sealedBefore('e4c5'));
       if (!kit || !kit.film || !kit.film('together', { noSkip: !sealed, onDone: back, layFirst: true })) back();
@@ -1597,9 +1599,11 @@
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
       const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = (FS5.live || FS5.brief) && st.stage !== 'lost';
       const fighting = st.stage === 'learn' || st.stage === 'fight', zw = cast.zav ? cast.zav.group.position : null;
-      fsLoop('cagehum', 'u5cagehum', live && st.stage !== 'won' ? 0.4 * str : 0, { tau: 0.2 });
+      /* (R75's debug, V4: the cage's hum and his murmur go on through the win to the bag-tied film, which takes them over
+         (its murmur "stops in the middle of a breath"): cut at the win, they were silent 2.8 to 6 s, then begun again) */
+      fsLoop('cagehum', 'u5cagehum', live ? 0.4 * str : 0, { tau: 0.2 });
       fsLoop('cagethin', 'u5cagethin', live && fighting ? (1 - str) * 0.45 : 0, { tau: 0.2 });
-      fsLoop('murmur', 'u5murmur3', live && st.stage !== 'won' ? (c.lent > 0 ? 0.15 : 0.45) : 0, { tau: 0.3 });
+      fsLoop('murmur', 'u5murmur3', live ? (c.lent > 0 ? 0.15 : 0.45) : 0, { tau: 0.3 });
       st.prai.forEach((p, i) => { const s = p.st, V = fsVis[i], w = fsW(p.x, p.z);
         const on = live && (s === 'entering' || s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown' || s === 'rushing' || s === 'bound' || s === 'held');
         fsLoop('n' + p.id, FS_VOICE[p.kind] || 'u5ncome', on ? 0.4 * Math.min(1, (V ? V.a : 1) + 0.2) : 0, { pan: true, x: w.x, z: w.z, tau: 0.2 }); });
@@ -1760,8 +1764,28 @@
     /* THE FIGHT SET OUT, and the mode opened behind the brief: the court as the preparation's turn leaves it (the two of
        them at the fight's places, his cage, the trance, the nine at the far end facing him, the household behind the thread),
        whichever way he came (the film, or a Continue landing at the brief) */
+    /* (R75's debug, B1: Master Zavier's run was played at his teacher's pace, 2.31 m a second (the fight's constant for a
+       body whose file is not read for it), where his own take covers 4.19: played for 2.6 m a second, his legs went at
+       4.7 and his planted feet slid back two metres a second in every fight. His run is read from his own file, once, as
+       the chapter's people's walks are read (the planted foot's way back over thirty-two moments of the take) */
+    const _fsRunV = new THREE.Vector3();
+    function fsRunPace(P) {
+      if (!P || !P.ready || !P.acts || !P.acts.Running || (P.pace && P.pace.Running)) return;
+      const LF = boneOf(P, 'LeftFoot'), RF = boneOf(P, 'RightFoot'); if (!LF || !RF) return;
+      const A = P.acts.Running, d = A.getClip().duration, N = 32, F = [[], []], keep = {};
+      for (const k in P.acts) keep[k] = [P.acts[k].time, P.acts[k].getEffectiveWeight()];
+      for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Running' ? 1 : 0);
+      for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+        [LF, RF].forEach((b, j) => { b.getWorldPosition(_fsRunV); P.group.worldToLocal(_fsRunV); F[j].push([_fsRunV.y, _fsRunV.z]); }); }
+      let lo = Infinity; for (const f of F) for (const q of f) lo = Math.min(lo, q[0]);
+      let back = 0, n = 0; for (const f of F) for (let i = 0; i < N; i++) if (f[i][0] < lo + 0.035 && f[i + 1][0] < lo + 0.035) { back += f[i][1] - f[i + 1][1]; n++; }
+      for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+      P.mixer.update(0);
+      if (n > 2 && back > 0) (P.pace = P.pace || {}).Running = back / (n * d / N);
+    }
     function fightOpen() {
       const F = fightStart(), W5 = fsWords();
+      whenReady(cast.zav, fsRunPace);
       fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100, num: { props: fsProps() } }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
       if (warmSounds) warmSounds(FS_WARM.concat(FIGHT.LINES));
       /* the court */

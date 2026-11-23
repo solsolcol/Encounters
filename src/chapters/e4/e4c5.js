@@ -1241,15 +1241,16 @@
     /* A WALL'S PIECE with its picture laid by the world's own metres on every face (box() starts each face's picture at
        its own corner, so where two pieces of one wall met round an opening the paint jumped: the thin vertical lines
        up the house's front and the court's walls). u runs along the face as the next piece's does, v is the height */
-    function boxW(mat, cx, cy, cz, w, h, d) {
+    /* (`faces`, which of its six to draw: 1 +z, 2 -z, 4 +x, 8 -x, 16 the top, 32 the bottom; all unless said) */
+    function boxW(mat, cx, cy, cz, w, h, d, faces = 63) {
       const hw = w / 2, hh = h / 2, hd = d / 2, y0 = cy - hh, y1 = cy + hh;
       const P = (x, y, z) => [x, y, z];
-      quad(mat, P(cx - hw, y0, cz + hd), P(cx + hw, y0, cz + hd), P(cx + hw, y1, cz + hd), P(cx - hw, y1, cz + hd), cx - hw, y0);        // +z face
-      quad(mat, P(cx + hw, y0, cz - hd), P(cx - hw, y0, cz - hd), P(cx - hw, y1, cz - hd), P(cx + hw, y1, cz - hd), -(cx + hw), y0);     // -z face
-      quad(mat, P(cx + hw, y0, cz + hd), P(cx + hw, y0, cz - hd), P(cx + hw, y1, cz - hd), P(cx + hw, y1, cz + hd), -(cz + hd), y0);     // +x face
-      quad(mat, P(cx - hw, y0, cz - hd), P(cx - hw, y0, cz + hd), P(cx - hw, y1, cz + hd), P(cx - hw, y1, cz - hd), cz - hd, y0);        // -x face
-      quad(mat, P(cx - hw, y1, cz + hd), P(cx + hw, y1, cz + hd), P(cx + hw, y1, cz - hd), P(cx - hw, y1, cz - hd), cx - hw, -(cz + hd)); // top
-      quad(mat, P(cx - hw, y0, cz - hd), P(cx + hw, y0, cz - hd), P(cx + hw, y0, cz + hd), P(cx - hw, y0, cz + hd), cx - hw, cz - hd);    // bottom
+      if (faces & 1) quad(mat, P(cx - hw, y0, cz + hd), P(cx + hw, y0, cz + hd), P(cx + hw, y1, cz + hd), P(cx - hw, y1, cz + hd), cx - hw, y0);        // +z face
+      if (faces & 2) quad(mat, P(cx + hw, y0, cz - hd), P(cx - hw, y0, cz - hd), P(cx - hw, y1, cz - hd), P(cx + hw, y1, cz - hd), -(cx + hw), y0);     // -z face
+      if (faces & 4) quad(mat, P(cx + hw, y0, cz + hd), P(cx + hw, y0, cz - hd), P(cx + hw, y1, cz - hd), P(cx + hw, y1, cz + hd), -(cz + hd), y0);     // +x face
+      if (faces & 8) quad(mat, P(cx - hw, y0, cz - hd), P(cx - hw, y0, cz + hd), P(cx - hw, y1, cz + hd), P(cx - hw, y1, cz - hd), cz - hd, y0);        // -x face
+      if (faces & 16) quad(mat, P(cx - hw, y1, cz + hd), P(cx + hw, y1, cz + hd), P(cx + hw, y1, cz - hd), P(cx - hw, y1, cz - hd), cx - hw, -(cz + hd)); // top
+      if (faces & 32) quad(mat, P(cx - hw, y0, cz - hd), P(cx + hw, y0, cz - hd), P(cx + hw, y0, cz + hd), P(cx - hw, y0, cz + hd), cx - hw, cz - hd);    // bottom
     }
     /* ---------------------------------------------- walls with their openings (chapter 4's wallX / wallZ: a wall's
        thickness drawn, so an opening shows its reveal; each piece a solid where it stands on walkable floor) */
@@ -1259,21 +1260,40 @@
        pieces over and under an opening now reach LAP into their neighbours, their faces the same paint at the same world
        place (a face's texture runs on the world's metres), so nothing can show between; what stops him is as it was) */
     const LAP = 0.004;
+    /* (R75's debug, the second look: build 51's pictures still showed them, one pixel wide and 13 % brighter than the wall:
+       a full-height piece's END face, drawn its whole height though the pieces under and over the opening cover it below
+       the sill and above the head, meets the front face edge-on in the front's own plane, and the depth test drew it
+       there. So no piece draws its ends inside the wall: the wall's two true ends are drawn, and each opening's two
+       reveals only between its sill and its head, where they are seen) */
     function wallX(mat, zc, d, x0, x1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.x0 - b.x0); let at = x0;
-      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a + 2 * lap, yb - ya, d);
+      const hd = d / 2, SIDES = 4 | 8;
+      const piece = (a, b, ya, yb, sol, lap = 0, ends = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a + 2 * lap, yb - ya, d, (63 & ~SIDES) | ends);
         if (sol && solid) solidBox(b - a, Math.max(1.2, yb - ya), d, (a + b) / 2, Math.max(0.6, (ya + yb) / 2), zc); };
-      for (const o of cuts) { piece(at, o.x0, y0, y1, true); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.x0, o.x1, o.y1, y1, false, LAP); at = o.x1; }
-      piece(at, x1, y0, y1, true);
+      cuts.forEach((o, i) => {
+        piece(at, o.x0, y0, y1, true, 0, at === x0 ? 8 : 0); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.x0, o.x1, o.y1, y1, false, LAP);
+        const ya = Math.max(y0, o.y0), yb = Math.min(y1, o.y1), nx = i + 1 < cuts.length ? cuts[i + 1].x0 : x1;
+        if (yb - ya > 0.005) {
+          if (o.x0 - at >= 0.005) quad(mat, [o.x0, ya, zc + hd], [o.x0, ya, zc - hd], [o.x0, yb, zc - hd], [o.x0, yb, zc + hd], -(zc + hd), ya);   // its left reveal (+x)
+          if (nx - o.x1 >= 0.005) quad(mat, [o.x1, ya, zc - hd], [o.x1, ya, zc + hd], [o.x1, yb, zc + hd], [o.x1, yb, zc - hd], zc - hd, ya); }   // its right reveal (-x)
+        at = o.x1; });
+      piece(at, x1, y0, y1, true, 0, (at === x0 ? 8 : 0) | 4);
     }
     function wallZ(mat, xc, d, z0, z1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.z0 - b.z0); let at = z0;
-      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a + 2 * lap);
+      const hw = d / 2, SIDES = 1 | 2;
+      const piece = (a, b, ya, yb, sol, lap = 0, ends = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a + 2 * lap, (63 & ~SIDES) | ends);
         if (sol && solid) solidBox(d, Math.max(1.2, yb - ya), b - a, xc, Math.max(0.6, (ya + yb) / 2), (a + b) / 2); };
-      for (const o of cuts) { piece(at, o.z0, y0, y1, true); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.z0, o.z1, o.y1, y1, false, LAP); at = o.z1; }
-      piece(at, z1, y0, y1, true);
+      cuts.forEach((o, i) => {
+        piece(at, o.z0, y0, y1, true, 0, at === z0 ? 2 : 0); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.z0, o.z1, o.y1, y1, false, LAP);
+        const ya = Math.max(y0, o.y0), yb = Math.min(y1, o.y1), nz = i + 1 < cuts.length ? cuts[i + 1].z0 : z1;
+        if (yb - ya > 0.005) {
+          if (o.z0 - at >= 0.005) quad(mat, [xc - hw, ya, o.z0], [xc + hw, ya, o.z0], [xc + hw, yb, o.z0], [xc - hw, yb, o.z0], xc - hw, ya);   // its near reveal (+z)
+          if (nz - o.z1 >= 0.005) quad(mat, [xc + hw, ya, o.z1], [xc - hw, ya, o.z1], [xc - hw, yb, o.z1], [xc + hw, yb, o.z1], -(xc + hw), ya); }   // its far reveal (-z)
+        at = o.z1; });
+      piece(at, z1, y0, y1, true, 0, (at === z0 ? 2 : 0) | 1);
     }
     /* a window's aluminium frame and its glass, in a wall along x (z its middle) or along z (x its middle) */
     const glass = [];
@@ -2032,6 +2052,8 @@
       scene.onBeforeRender = onBR; }
     function lamp(i, k) { const L = lights[i]; if (!L) return; L.k = k; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
     function courtLamps(k) { for (const L of courtL) { L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; } }
+    /* (one of the court's two lamps by itself: the bag-tied film's "one, then the other", R75's debug V10) */
+    function courtLamp(i, k) { const L = courtL[i]; if (!L) return; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
 
     /* ================================================================ WHERE EACH PHASE PUTS THINGS AND PEOPLE
        (the plan's 4: each phase a save, and a Continue lands at its start). Every place is named here, so a film, the
@@ -9676,7 +9698,9 @@
            three lie low and dim as its last picture laid them */
         const st2 = FS5.st, ts = kit.tagState();
         for (const b of ts.bodies) { const R2 = b.id === 'pho' ? st2.pho : st2.zav, l = fsL(b.x, b.z); R2.x = l.x; R2.z = l.z; FS5.last[b.id === 'pho' ? 'pho' : 'zav'] = l; }
-        st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; } });
+        /* (R75's debug, B5: and turned as the film left them, so the last stage eases each toward him from there: its heading
+           was the one it had before the surge, and each snapped round on play's first frame) */
+        st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i], B = PRAI5.list[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; V.ry = B ? B.group.rotation.y : null; } });
         FS5.nagaDim = true; };
       const sealed = !!(ctx.sealedBefore && ctx.sealedBefore('e4c5'));
       if (!kit || !kit.film || !kit.film('together', { noSkip: !sealed, onDone: back, layFirst: true })) back();
@@ -9928,9 +9952,11 @@
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
       const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = (FS5.live || FS5.brief) && st.stage !== 'lost';
       const fighting = st.stage === 'learn' || st.stage === 'fight', zw = cast.zav ? cast.zav.group.position : null;
-      fsLoop('cagehum', 'u5cagehum', live && st.stage !== 'won' ? 0.4 * str : 0, { tau: 0.2 });
+      /* (R75's debug, V4: the cage's hum and his murmur go on through the win to the bag-tied film, which takes them over
+         (its murmur "stops in the middle of a breath"): cut at the win, they were silent 2.8 to 6 s, then begun again) */
+      fsLoop('cagehum', 'u5cagehum', live ? 0.4 * str : 0, { tau: 0.2 });
       fsLoop('cagethin', 'u5cagethin', live && fighting ? (1 - str) * 0.45 : 0, { tau: 0.2 });
-      fsLoop('murmur', 'u5murmur3', live && st.stage !== 'won' ? (c.lent > 0 ? 0.15 : 0.45) : 0, { tau: 0.3 });
+      fsLoop('murmur', 'u5murmur3', live ? (c.lent > 0 ? 0.15 : 0.45) : 0, { tau: 0.3 });
       st.prai.forEach((p, i) => { const s = p.st, V = fsVis[i], w = fsW(p.x, p.z);
         const on = live && (s === 'entering' || s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown' || s === 'rushing' || s === 'bound' || s === 'held');
         fsLoop('n' + p.id, FS_VOICE[p.kind] || 'u5ncome', on ? 0.4 * Math.min(1, (V ? V.a : 1) + 0.2) : 0, { pan: true, x: w.x, z: w.z, tau: 0.2 }); });
@@ -10091,8 +10117,28 @@
     /* THE FIGHT SET OUT, and the mode opened behind the brief: the court as the preparation's turn leaves it (the two of
        them at the fight's places, his cage, the trance, the nine at the far end facing him, the household behind the thread),
        whichever way he came (the film, or a Continue landing at the brief) */
+    /* (R75's debug, B1: Master Zavier's run was played at his teacher's pace, 2.31 m a second (the fight's constant for a
+       body whose file is not read for it), where his own take covers 4.19: played for 2.6 m a second, his legs went at
+       4.7 and his planted feet slid back two metres a second in every fight. His run is read from his own file, once, as
+       the chapter's people's walks are read (the planted foot's way back over thirty-two moments of the take) */
+    const _fsRunV = new THREE.Vector3();
+    function fsRunPace(P) {
+      if (!P || !P.ready || !P.acts || !P.acts.Running || (P.pace && P.pace.Running)) return;
+      const LF = boneOf(P, 'LeftFoot'), RF = boneOf(P, 'RightFoot'); if (!LF || !RF) return;
+      const A = P.acts.Running, d = A.getClip().duration, N = 32, F = [[], []], keep = {};
+      for (const k in P.acts) keep[k] = [P.acts[k].time, P.acts[k].getEffectiveWeight()];
+      for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Running' ? 1 : 0);
+      for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+        [LF, RF].forEach((b, j) => { b.getWorldPosition(_fsRunV); P.group.worldToLocal(_fsRunV); F[j].push([_fsRunV.y, _fsRunV.z]); }); }
+      let lo = Infinity; for (const f of F) for (const q of f) lo = Math.min(lo, q[0]);
+      let back = 0, n = 0; for (const f of F) for (let i = 0; i < N; i++) if (f[i][0] < lo + 0.035 && f[i + 1][0] < lo + 0.035) { back += f[i][1] - f[i + 1][1]; n++; }
+      for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+      P.mixer.update(0);
+      if (n > 2 && back > 0) (P.pace = P.pace || {}).Running = back / (n * d / N);
+    }
     function fightOpen() {
       const F = fightStart(), W5 = fsWords();
+      whenReady(cast.zav, fsRunPace);
       fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100, num: { props: fsProps() } }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
       if (warmSounds) warmSounds(FS_WARM.concat(FIGHT.LINES));
       /* the court */
@@ -11043,9 +11089,17 @@
       ['thigh', sd + 'UpLeg', sd + 'Leg', 0, 0.075], ['shin', sd + 'Leg', sd + 'Foot', 0, 0.05], ['foot', sd + 'Foot', sd + 'ToeBase', 0, 0.045]);
     const TORSO5 = { p5koh: 0.17, p5pho: 0.15 }, _lnA = new THREE.Vector3(), _lnB = new THREE.Vector3(), _lnQ = new THREE.Quaternion();
     const navLimbBones = new WeakMap();
+    /* (R75's debug, B3: Ton, Jun, Mr Koh and Master Zavier name the neck `neck`, Grandmaster Pho `mixamorig:Neck`, and the
+       name was matched in its own case: their torsos were never one of the capsules, so no arm was ever kept out of their
+       chests or backs, and nothing said so. A bone is looked for in its own case first, then in any; a capsule that still
+       finds no bone is said once a body, never dropped in silence: R40) */
+    const navBone = (P, nm) => { const b = boneOf(P, nm); if (b || !P || !P.bone) return b;
+      const re = new RegExp('^(mixamorig:?)?' + nm + '$', 'i'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     function navCaps(P) {
       let bs = navLimbBones.get(P);
-      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, boneOf(P, b0), b1 ? boneOf(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs); }
+      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, navBone(P, b0), b1 ? navBone(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs);
+        const lost = bs.filter(([nm, A, B, len], i) => !A || (len === 0 && !B)).map(([nm], i) => nm);
+        if (lost.length) console.warn('e4c5 limbs: ' + (P.key || '?') + ' has no bones for ' + lost.join(', ') + ': those capsules are not read'); }
       P.group.updateWorldMatrix(true, true);
       const out = [];
       for (const [nm, A, B, len, r] of bs) { if (!A || (len === 0 && !B)) continue;
@@ -12240,7 +12294,11 @@
                     hunt: ['u5courtbed', 'u5roombed', 'u5clock', 'u5lampbuzz', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5os1', 'u5os2', 'u5os3', 'u5os4',
                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m4hunt', 'u5m5nine', 'u5kettle'],
                     table: ['u5fanroom', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5shutter', 'u5farchime', 'u5pcangry', 'u5pchungry', 'u5pcwarm',
-                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m14sight'] };
+                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m14sight',
+                            /* (R75's debug, V12: and the four endings' music, each the ending's one music cue at 0.2 s: left to the
+                               decision's own warming, among sixty others, a quick answer could begin its ending before its music
+                               had decoded, and a cue never comes again) */
+                            'u5m15endA', 'u5m16endB', 'u5m17endC', 'u5m18endD'] };
     function warm5(p) { if (warmSounds && WARM5[p]) warmSounds(WARM5[p]); }
     function soundReset5() { for (const k of BED5_NAMES) BED5.mix[k] = 0; BED5.film = null; ambSeed5 = 0x2805; ambAt5 = 0; ambLast5 = ''; sniffN5 = 0;
       kettleAt5 = 0; kettleDone5 = false;
@@ -14351,7 +14409,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       },
       frame(t) {
         const T = this.tl(), B = this.build(), tau = this.story(t), pz = this.pho, zz = this.zav, F = fightStart();
-        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6));
+        /* (R75's debug, V9: its lamps' curve laid after TRANCE5.set, below, which set them back to 0.15 every frame) */
+        fmLook('TRANCE'); const lampK = 0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6);
         /* the court low under the trance; the smell of the tall shape until it comes apart */
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((tau - T.apart) / 2.5))) });
         /* the stick planted where his cast brings it down (B.S: its carved head) */
@@ -14384,7 +14443,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
         CAGE5.set({ k: kc, x: zz.x, z: zz.z, t: tau, crack: tau < T.apart + 0.4 });
-        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
+        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1); courtLamps(lampK);
         /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
            place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
            in steam, cool and dark and wet), then sinks low where the fight's last stage finds it */
@@ -14395,7 +14454,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
           const hit = tau - tp[j], kL = smo(c01((tau - T.low - j * 0.15) / 1.4));
           const d = B.dirAt(B.NM['p' + (j + 1)]);
-          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - d[0], to.z - d[2]));
+          /* (R75's debug, B5: turned from the shape's middle to its laid heading over the last fifth of its flight, where it
+             had turned 63 to 82 degrees in one frame as it landed, under the pierce's own shot) */
+          { const hA = faceTo(x, z, zz.x, zz.z), hB = faceTo(to.x, to.z, to.x - d[0], to.z - d[2]), kh = smo(c01((kA - 0.8) / 0.2));
+            put(P, x, z, hA + angTo(hA, hB) * kh); }
           P.group.position.y = hop * (kA < 1 ? 1 : 0);
           P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
           if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + tau * 0.6, true);
@@ -14536,13 +14598,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         fmBeds(atLift ? { walk: 0.35 } : !inEyes ? { court: 0.25, sour: 0.25 } : t < T.room1 ? { court: 0.5, buzz: 0.15, sour: 0.25 }
              : t < T.knot ? { room: 0.5, tick: 0.2, sour: Math.max(0, sourLeft) }
              : { room: 0.45, tick: 0.2, court: t >= T.window ? 0.32 : 0.12 });
-        /* the court's lamps come back, one, then the other */
-        if (!atLift) { if (!inEyes) courtLamps(0.15); else for (const [i, L] of [[0, T.lamp1], [1, T.lamp2]]) void i, void L; }
-        if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
+        /* the court's lamps come back, one, then the other (R75's debug, V10: each by itself, where both had risen together in
+           two half-steps; and held low under the trance, which raised them as it thinned: set after it, below) */
+        if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamp(0, 0.15 + 0.85 * k1); courtLamp(1, 0.15 + 0.85 * k2); }
         /* the cage thins; Master Zavier seen until the violet */
         const kc = 1 - smo(c01((t - T.thin) / 1.4));
         if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.eyes); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
           CAGE5.set({ k: kc, x: zz.x, z: zz.z, t }); TRANCE5.set(1 - smo(c01((t - T.thin) / 2.0)), t); TRANCE5.pools(zz, pz, kc, kc); TRANCE5.gold(kc); }
+        if (!inEyes) courtLamps(0.15);
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
         /* his own hands before him, shaking, as his sight comes home to them */
         if (api && api.handPose) { const kh = inEyes && t < T.room1 - 0.3 ? smo(c01((t - T.eyes) / 0.6)) * (1 - smo(c01((t - T.room1 + 1.0) / 0.7))) : 0;
@@ -15248,10 +15311,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.q5p1, 'q5p1', 1);                                                    // "And then I was not alone in my body."
     sfx(T.leave + 0.3, 'u5cagehum', 0.4);                                      // his cage of light, whole
     sfx(T.leave + 0.9, 'u5murmur1', 0.45);                                     // his lips moving: his murmur
-    /* (R33: both were still sounding at full when the film handed to the fight's brief, 0.65 and 1.25 s before their own
-       ends, and the engine cut them there in 0.3 s; the fight's own murmur and cage hum begin at START, and nothing moves
-       under the brief. So both go down as the picture comes to rest on the fight's camera) */
-    sfxFade(T.rest, T.end - 0.1, 'u5murmur1'); sfxFade(T.rest, T.end - 0.1, 'u5cagehum');
+    /* (R33 took both down over the film's last 1.9 s, when nothing sounded under the brief. Since then the brief has his
+       murmur and the cage's hum of its own (c_fightstage.js fsSoundFrame), which came straight back: a dip. R75's debug,
+       V4: so they play to the hand-off, where the engine takes the film's down in 0.3 s as the brief's come up) */
     fade(T.violet, T.violet + 0.6, 0, 1, VIOLET5);
     fade(T.leave, T.leave + 2.2, 1, 0, VIOLET5);
     sfxFade(T.end - 1.6, T.end - 0.1, 'u5m6prep');
@@ -15308,6 +15370,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
     sfx(T.rise + 0.6, 'u5mist', 0.3);
     sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
+    /* (R75's debug, V6: his one line stood only 4 dB over the water's surge (full, 5 s from the rise), M9 and the cry's tail,
+       where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
+    sfxFade(T.ph5c2 - 0.3, T.ph5c2 + 0.35, 'u5nagawater');
     sfx(T.stoop - 0.1, 'u5nagadive', 0.9);                                     // over, and down onto the shape
     sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
     sfx(T.apart - 0.04, 'u5shockhit', 0.75);                                   // the shape struck by its passing

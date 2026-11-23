@@ -218,9 +218,17 @@
       ['thigh', sd + 'UpLeg', sd + 'Leg', 0, 0.075], ['shin', sd + 'Leg', sd + 'Foot', 0, 0.05], ['foot', sd + 'Foot', sd + 'ToeBase', 0, 0.045]);
     const TORSO5 = { p5koh: 0.17, p5pho: 0.15 }, _lnA = new THREE.Vector3(), _lnB = new THREE.Vector3(), _lnQ = new THREE.Quaternion();
     const navLimbBones = new WeakMap();
+    /* (R75's debug, B3: Ton, Jun, Mr Koh and Master Zavier name the neck `neck`, Grandmaster Pho `mixamorig:Neck`, and the
+       name was matched in its own case: their torsos were never one of the capsules, so no arm was ever kept out of their
+       chests or backs, and nothing said so. A bone is looked for in its own case first, then in any; a capsule that still
+       finds no bone is said once a body, never dropped in silence: R40) */
+    const navBone = (P, nm) => { const b = boneOf(P, nm); if (b || !P || !P.bone) return b;
+      const re = new RegExp('^(mixamorig:?)?' + nm + '$', 'i'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     function navCaps(P) {
       let bs = navLimbBones.get(P);
-      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, boneOf(P, b0), b1 ? boneOf(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs); }
+      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, navBone(P, b0), b1 ? navBone(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs);
+        const lost = bs.filter(([nm, A, B, len], i) => !A || (len === 0 && !B)).map(([nm], i) => nm);
+        if (lost.length) console.warn('e4c5 limbs: ' + (P.key || '?') + ' has no bones for ' + lost.join(', ') + ': those capsules are not read'); }
       P.group.updateWorldMatrix(true, true);
       const out = [];
       for (const [nm, A, B, len, r] of bs) { if (!A || (len === 0 && !B)) continue;

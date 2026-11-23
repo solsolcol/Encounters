@@ -1553,7 +1553,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       },
       frame(t) {
         const T = this.tl(), B = this.build(), tau = this.story(t), pz = this.pho, zz = this.zav, F = fightStart();
-        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6));
+        /* (R75's debug, V9: its lamps' curve laid after TRANCE5.set, below, which set them back to 0.15 every frame) */
+        fmLook('TRANCE'); const lampK = 0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6);
         /* the court low under the trance; the smell of the tall shape until it comes apart */
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((tau - T.apart) / 2.5))) });
         /* the stick planted where his cast brings it down (B.S: its carved head) */
@@ -1586,7 +1587,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
         CAGE5.set({ k: kc, x: zz.x, z: zz.z, t: tau, crack: tau < T.apart + 0.4 });
-        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
+        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1); courtLamps(lampK);
         /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
            place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
            in steam, cool and dark and wet), then sinks low where the fight's last stage finds it */
@@ -1597,7 +1598,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
           const hit = tau - tp[j], kL = smo(c01((tau - T.low - j * 0.15) / 1.4));
           const d = B.dirAt(B.NM['p' + (j + 1)]);
-          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - d[0], to.z - d[2]));
+          /* (R75's debug, B5: turned from the shape's middle to its laid heading over the last fifth of its flight, where it
+             had turned 63 to 82 degrees in one frame as it landed, under the pierce's own shot) */
+          { const hA = faceTo(x, z, zz.x, zz.z), hB = faceTo(to.x, to.z, to.x - d[0], to.z - d[2]), kh = smo(c01((kA - 0.8) / 0.2));
+            put(P, x, z, hA + angTo(hA, hB) * kh); }
           P.group.position.y = hop * (kA < 1 ? 1 : 0);
           P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
           if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + tau * 0.6, true);
@@ -1738,13 +1742,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         fmBeds(atLift ? { walk: 0.35 } : !inEyes ? { court: 0.25, sour: 0.25 } : t < T.room1 ? { court: 0.5, buzz: 0.15, sour: 0.25 }
              : t < T.knot ? { room: 0.5, tick: 0.2, sour: Math.max(0, sourLeft) }
              : { room: 0.45, tick: 0.2, court: t >= T.window ? 0.32 : 0.12 });
-        /* the court's lamps come back, one, then the other */
-        if (!atLift) { if (!inEyes) courtLamps(0.15); else for (const [i, L] of [[0, T.lamp1], [1, T.lamp2]]) void i, void L; }
-        if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
+        /* the court's lamps come back, one, then the other (R75's debug, V10: each by itself, where both had risen together in
+           two half-steps; and held low under the trance, which raised them as it thinned: set after it, below) */
+        if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamp(0, 0.15 + 0.85 * k1); courtLamp(1, 0.15 + 0.85 * k2); }
         /* the cage thins; Master Zavier seen until the violet */
         const kc = 1 - smo(c01((t - T.thin) / 1.4));
         if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.eyes); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
           CAGE5.set({ k: kc, x: zz.x, z: zz.z, t }); TRANCE5.set(1 - smo(c01((t - T.thin) / 2.0)), t); TRANCE5.pools(zz, pz, kc, kc); TRANCE5.gold(kc); }
+        if (!inEyes) courtLamps(0.15);
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
         /* his own hands before him, shaking, as his sight comes home to them */
         if (api && api.handPose) { const kh = inEyes && t < T.room1 - 0.3 ? smo(c01((t - T.eyes) / 0.6)) * (1 - smo(c01((t - T.room1 + 1.0) / 0.7))) : 0;

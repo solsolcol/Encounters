@@ -123,7 +123,11 @@
                     hunt: ['u5courtbed', 'u5roombed', 'u5clock', 'u5lampbuzz', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5os1', 'u5os2', 'u5os3', 'u5os4',
                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m4hunt', 'u5m5nine', 'u5kettle'],
                     table: ['u5fanroom', 'u5sour', 'u5threads', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sniffout', 'u5shutter', 'u5farchime', 'u5pcangry', 'u5pchungry', 'u5pcwarm',
-                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m14sight'] };
+                            'u5vison', 'u5visoff', 'u5visbed', 'u5vismus', 'u5heart', 'u5m14sight',
+                            /* (R75's debug, V12: and the four endings' music, each the ending's one music cue at 0.2 s: left to the
+                               decision's own warming, among sixty others, a quick answer could begin its ending before its music
+                               had decoded, and a cue never comes again) */
+                            'u5m15endA', 'u5m16endB', 'u5m17endC', 'u5m18endD'] };
     function warm5(p) { if (warmSounds && WARM5[p]) warmSounds(WARM5[p]); }
     function soundReset5() { for (const k of BED5_NAMES) BED5.mix[k] = 0; BED5.film = null; ambSeed5 = 0x2805; ambAt5 = 0; ambLast5 = ''; sniffN5 = 0;
       kettleAt5 = 0; kettleDone5 = false;

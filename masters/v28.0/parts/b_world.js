@@ -148,15 +148,16 @@
     /* A WALL'S PIECE with its picture laid by the world's own metres on every face (box() starts each face's picture at
        its own corner, so where two pieces of one wall met round an opening the paint jumped: the thin vertical lines
        up the house's front and the court's walls). u runs along the face as the next piece's does, v is the height */
-    function boxW(mat, cx, cy, cz, w, h, d) {
+    /* (`faces`, which of its six to draw: 1 +z, 2 -z, 4 +x, 8 -x, 16 the top, 32 the bottom; all unless said) */
+    function boxW(mat, cx, cy, cz, w, h, d, faces = 63) {
       const hw = w / 2, hh = h / 2, hd = d / 2, y0 = cy - hh, y1 = cy + hh;
       const P = (x, y, z) => [x, y, z];
-      quad(mat, P(cx - hw, y0, cz + hd), P(cx + hw, y0, cz + hd), P(cx + hw, y1, cz + hd), P(cx - hw, y1, cz + hd), cx - hw, y0);        // +z face
-      quad(mat, P(cx + hw, y0, cz - hd), P(cx - hw, y0, cz - hd), P(cx - hw, y1, cz - hd), P(cx + hw, y1, cz - hd), -(cx + hw), y0);     // -z face
-      quad(mat, P(cx + hw, y0, cz + hd), P(cx + hw, y0, cz - hd), P(cx + hw, y1, cz - hd), P(cx + hw, y1, cz + hd), -(cz + hd), y0);     // +x face
-      quad(mat, P(cx - hw, y0, cz - hd), P(cx - hw, y0, cz + hd), P(cx - hw, y1, cz + hd), P(cx - hw, y1, cz - hd), cz - hd, y0);        // -x face
-      quad(mat, P(cx - hw, y1, cz + hd), P(cx + hw, y1, cz + hd), P(cx + hw, y1, cz - hd), P(cx - hw, y1, cz - hd), cx - hw, -(cz + hd)); // top
-      quad(mat, P(cx - hw, y0, cz - hd), P(cx + hw, y0, cz - hd), P(cx + hw, y0, cz + hd), P(cx - hw, y0, cz + hd), cx - hw, cz - hd);    // bottom
+      if (faces & 1) quad(mat, P(cx - hw, y0, cz + hd), P(cx + hw, y0, cz + hd), P(cx + hw, y1, cz + hd), P(cx - hw, y1, cz + hd), cx - hw, y0);        // +z face
+      if (faces & 2) quad(mat, P(cx + hw, y0, cz - hd), P(cx - hw, y0, cz - hd), P(cx - hw, y1, cz - hd), P(cx + hw, y1, cz - hd), -(cx + hw), y0);     // -z face
+      if (faces & 4) quad(mat, P(cx + hw, y0, cz + hd), P(cx + hw, y0, cz - hd), P(cx + hw, y1, cz - hd), P(cx + hw, y1, cz + hd), -(cz + hd), y0);     // +x face
+      if (faces & 8) quad(mat, P(cx - hw, y0, cz - hd), P(cx - hw, y0, cz + hd), P(cx - hw, y1, cz + hd), P(cx - hw, y1, cz - hd), cz - hd, y0);        // -x face
+      if (faces & 16) quad(mat, P(cx - hw, y1, cz + hd), P(cx + hw, y1, cz + hd), P(cx + hw, y1, cz - hd), P(cx - hw, y1, cz - hd), cx - hw, -(cz + hd)); // top
+      if (faces & 32) quad(mat, P(cx - hw, y0, cz - hd), P(cx + hw, y0, cz - hd), P(cx + hw, y0, cz + hd), P(cx - hw, y0, cz + hd), cx - hw, cz - hd);    // bottom
     }
     /* ---------------------------------------------- walls with their openings (chapter 4's wallX / wallZ: a wall's
        thickness drawn, so an opening shows its reveal; each piece a solid where it stands on walkable floor) */
@@ -166,21 +167,40 @@
        pieces over and under an opening now reach LAP into their neighbours, their faces the same paint at the same world
        place (a face's texture runs on the world's metres), so nothing can show between; what stops him is as it was) */
     const LAP = 0.004;
+    /* (R75's debug, the second look: build 51's pictures still showed them, one pixel wide and 13 % brighter than the wall:
+       a full-height piece's END face, drawn its whole height though the pieces under and over the opening cover it below
+       the sill and above the head, meets the front face edge-on in the front's own plane, and the depth test drew it
+       there. So no piece draws its ends inside the wall: the wall's two true ends are drawn, and each opening's two
+       reveals only between its sill and its head, where they are seen) */
     function wallX(mat, zc, d, x0, x1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.x0 - b.x0); let at = x0;
-      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a + 2 * lap, yb - ya, d);
+      const hd = d / 2, SIDES = 4 | 8;
+      const piece = (a, b, ya, yb, sol, lap = 0, ends = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a + 2 * lap, yb - ya, d, (63 & ~SIDES) | ends);
         if (sol && solid) solidBox(b - a, Math.max(1.2, yb - ya), d, (a + b) / 2, Math.max(0.6, (ya + yb) / 2), zc); };
-      for (const o of cuts) { piece(at, o.x0, y0, y1, true); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.x0, o.x1, o.y1, y1, false, LAP); at = o.x1; }
-      piece(at, x1, y0, y1, true);
+      cuts.forEach((o, i) => {
+        piece(at, o.x0, y0, y1, true, 0, at === x0 ? 8 : 0); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.x0, o.x1, o.y1, y1, false, LAP);
+        const ya = Math.max(y0, o.y0), yb = Math.min(y1, o.y1), nx = i + 1 < cuts.length ? cuts[i + 1].x0 : x1;
+        if (yb - ya > 0.005) {
+          if (o.x0 - at >= 0.005) quad(mat, [o.x0, ya, zc + hd], [o.x0, ya, zc - hd], [o.x0, yb, zc - hd], [o.x0, yb, zc + hd], -(zc + hd), ya);   // its left reveal (+x)
+          if (nx - o.x1 >= 0.005) quad(mat, [o.x1, ya, zc - hd], [o.x1, ya, zc + hd], [o.x1, yb, zc + hd], [o.x1, yb, zc - hd], zc - hd, ya); }   // its right reveal (-x)
+        at = o.x1; });
+      piece(at, x1, y0, y1, true, 0, (at === x0 ? 8 : 0) | 4);
     }
     function wallZ(mat, xc, d, z0, z1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.z0 - b.z0); let at = z0;
-      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a + 2 * lap);
+      const hw = d / 2, SIDES = 1 | 2;
+      const piece = (a, b, ya, yb, sol, lap = 0, ends = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a + 2 * lap, (63 & ~SIDES) | ends);
         if (sol && solid) solidBox(d, Math.max(1.2, yb - ya), b - a, xc, Math.max(0.6, (ya + yb) / 2), (a + b) / 2); };
-      for (const o of cuts) { piece(at, o.z0, y0, y1, true); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.z0, o.z1, o.y1, y1, false, LAP); at = o.z1; }
-      piece(at, z1, y0, y1, true);
+      cuts.forEach((o, i) => {
+        piece(at, o.z0, y0, y1, true, 0, at === z0 ? 2 : 0); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.z0, o.z1, o.y1, y1, false, LAP);
+        const ya = Math.max(y0, o.y0), yb = Math.min(y1, o.y1), nz = i + 1 < cuts.length ? cuts[i + 1].z0 : z1;
+        if (yb - ya > 0.005) {
+          if (o.z0 - at >= 0.005) quad(mat, [xc - hw, ya, o.z0], [xc + hw, ya, o.z0], [xc + hw, yb, o.z0], [xc - hw, yb, o.z0], xc - hw, ya);   // its near reveal (+z)
+          if (nz - o.z1 >= 0.005) quad(mat, [xc + hw, ya, o.z1], [xc - hw, ya, o.z1], [xc - hw, yb, o.z1], [xc + hw, yb, o.z1], -(xc + hw), ya); }   // its far reveal (-z)
+        at = o.z1; });
+      piece(at, z1, y0, y1, true, 0, (at === z0 ? 2 : 0) | 1);
     }
     /* a window's aluminium frame and its glass, in a wall along x (z its middle) or along z (x its middle) */
     const glass = [];
@@ -939,6 +959,8 @@
       scene.onBeforeRender = onBR; }
     function lamp(i, k) { const L = lights[i]; if (!L) return; L.k = k; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
     function courtLamps(k) { for (const L of courtL) { L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; } }
+    /* (one of the court's two lamps by itself: the bag-tied film's "one, then the other", R75's debug V10) */
+    function courtLamp(i, k) { const L = courtL[i]; if (!L) return; L.mat.opacity = L.o0 * k; if (L.pm) L.pm.opacity = L.p0 * k; L.sp.visible = k > 0.01; }
 
     /* ================================================================ WHERE EACH PHASE PUTS THINGS AND PEOPLE
        (the plan's 4: each phase a save, and a Continue lands at its start). Every place is named here, so a film, the
