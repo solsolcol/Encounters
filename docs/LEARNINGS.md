@@ -8924,3 +8924,16 @@ against the forearm's line) is then fixed by the elbow's place on the circle eve
 there (every few degrees, then finer) to the least swing whose wrist, forearm turn and elbow stand inside a margin of the
 check's lines, each degree past costing its square and the swing a hundredth of its degrees squared, and where the elbow's
 own place already holds them, do not move it at all: what was right stays bit for bit as it was.
+
+**A shell swelled along a skinned body's normals is swelled in that body's own units** (v28.0, R43; c_cast.js praiFlameMat).
+After the skinning chunk, `transformed` and `objectNormal` are in the mesh's own space, and a Meshy body is built in
+centimetres under an armature of 0.01: the flame's 3.5 cm swell came out at 0.35 mm, the shell lay on the body, and the
+flame's band (meant for the silhouette) lit every thin limb across its whole width: a glowing orange body, not a black
+one in a burning outline. Divide a swell meant in metres by the mesh's own world scale in the shader
+(`length(modelMatrix[0].xyz)`), and make the edge band a narrow one (a smoothstep on how far the surface has turned from
+the lens, squared), so a limb's middle stays the body's colour.
+
+**The fight's lab leaves the rules in the brief** (v28.0, R43; c_fightstage.js FS_LAB). `lab.open()` takes the brief's
+window away but not its stage: in 'brief' the rules do not step and the nine are not drawn at all, so a Prai the lab set
+walking stood where it was put, in whatever take it last had, and its picture proved nothing. A probe that wants the court
+alive begins the lesson the way START does (`lab.start()`); a probe that only places bodies (lab.place) does not need it.
