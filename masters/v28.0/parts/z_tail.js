@@ -147,8 +147,29 @@
      (u5pierce1-3) and the fire hissing out (u5douse), with a flash in the water's white-blue, the screen shaken and the phone
      buzzed; its ring round the court; its rush home into the stick and the stick's head bursting with light (the together
      press's burst again, its call answered); the three laid; Mr Koh; the boom) */
+  /* THE FILM'S CLOCK WRITTEN OUT (R75's harness run, 23 Nov 2026). The film's marks come from its flight at run time
+     (FILMS5.together.tl(): the court's fixed marks, the flight's pace, the Naga's made length), so chaptertest's walk of
+     every film's cues, made without a world, read each mark as nothing and the film as one second long. These are the same
+     marks in story seconds, read off build 48's live clock; the film draws from its live clock, is walked from these when
+     there is no world, and says so on the console the moment the two part by more than a fiftieth of a second. Each pierce
+     is held a moment (c_yfilm.js NAGA_HIT5: a twelfth of its pace for 0.16 s), which TOG5_REAL carries the same way */
+  const TOG5 = { plant: 0.2, rise: 2, kindle: 2.55, cry: 2.75, top: 4.2333, ph5c2: 4.3533, stoop: 7.7833, apart: 8.5259, swoop: 8.6344,
+                 p1: 9.3315, p2: 9.9579, p3: 10.5114, climb: 10.9086, ring: 11.8067, low: 12.1114, ringOut: 13.9873, home: 15.1729,
+                 tail: 17.1729, ko5c2: 18.6729, back: 23.2029, end: 24.8029 };
+  const TOG5_REAL = (T, tau) => { const H = 0.16, r = 1 / 12; let add = 0;
+    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; }
+    return tau + add; };
   function filmTogether(c, s, api) {
-    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together, T = F.tl(), R = (x) => F.real(x), END = R(T.end);
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together;
+    const L0 = F && F.tl ? F.tl() : null, live = !!L0 && typeof L0.end === 'number' && isFinite(L0.end);
+    const T = live ? L0 : TOG5, R = (x) => (live ? F.real(x) : TOG5_REAL(TOG5, x)), END = R(T.end);
+    if (live) { const off = Object.keys(TOG5).filter(k => !(Math.abs(L0[k] - TOG5[k]) < 0.02) || !(Math.abs(F.real(TOG5[k]) - TOG5_REAL(TOG5, TOG5[k])) < 0.02));
+      if (off.length) console.error('e4c5: the Naga film\'s live clock has parted from TOG5 (z_tail.js) at ' + off.join(', ') + ': write its new marks there'); }
+    /* (every cue below written out whole, its sound's own name in quotes and a time that holds no call: the engine warms a film's sounds by reading its
+       own source, and a name passed through a list, or a time written with a call in it, is not read: the pierces' blows and
+       waters, the three laid, the ring, the burst and Mr Koh's line were cold the first time the film played) */
+    const P1 = R(T.p1), P2 = R(T.p2), P3 = R(T.p3), LOW = R(T.low), CLIMB = R(T.climb), RING = R(T.ring), RINGOUT = R(T.ringOut),
+          HOME = R(T.home), TAIL = R(T.tail), KO = R(T.ko5c2), BACK = R(T.back);
     const FLASH = '#DFF5FF';
     step(0, () => F.begin(api, s));
     tr(0, END, (k, t) => F.frame(t), rawK);
@@ -170,24 +191,25 @@
     fade(T.apart, T.apart + 0.05, 0, 0.35, FLASH); fade(T.apart + 0.05, T.apart + 0.35, 0.35, 0, FLASH);
     sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
     sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
-    [[T.p1, 'u5nagahit1', 'u5pierce1', [40, 30, 70]], [T.p2, 'u5nagahit2', 'u5pierce2', [45, 30, 80]], [T.p3, 'u5nagahit3', 'u5pierce3', [60, 30, 120]]].forEach(([p, hit, wat, buzz], j) => {
-      const h = R(p);
-      sfx(h - 0.04, hit, 1.0);                                                 // the blow
-      sfx(h, wat, 0.85);                                                       // its water through it
-      sfx(h + 0.14, 'u5douse', 0.75);                                          // its fire hissing out
+    /* each pierce: the blow, its own water through it, its fire hissing out */
+    sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
+    sfx(P2 - 0.04, 'u5nagahit2', 1.0); sfx(P2, 'u5pierce2', 0.85); sfx(P2 + 0.14, 'u5douse', 0.75);
+    sfx(P3 - 0.04, 'u5nagahit3', 1.0); sfx(P3, 'u5pierce3', 0.85); sfx(P3 + 0.14, 'u5douse', 0.75);
+    /* with a flash in the water's white-blue and the phone buzzed, each harder than the last */
+    [[P1, [40, 30, 70]], [P2, [45, 30, 80]], [P3, [60, 30, 120]]].forEach(([h, buzz], j) => {
       fade(h, h + 0.04, 0, 0.6 + 0.1 * j, FLASH); fade(h + 0.04, h + 0.42, 0.6 + 0.1 * j, 0, FLASH);
       step(h, () => { if (api.kit && api.kit.buzz) api.kit.buzz(buzz); });
     });
-    sfx(R(T.low), 'u5laid', 0.8);                                              // the three sunk low, cool
-    sfx(R(T.climb) + 0.1, 'u5nagawrap', 0.85);                                 // up into its ring round the court
-    sfx(R(T.ring) + 0.4, 'u5mist', 0.28);
-    sfx(R(T.ringOut) - 0.3, 'u5nagapass', 0.75);                               // the spiral down
-    sfx(R(T.home) - 0.35, 'u5nagadive', 0.85);                                 // its rush home into the stick
-    sfx(R(T.tail) - 0.05, 'u5togpress', 1.0);                                  // the stick's head bursting with light: its call answered
-    fade(R(T.tail), R(T.tail) + 0.06, 0, 0.7, FLASH); fade(R(T.tail) + 0.06, R(T.tail) + 0.6, 0.7, 0, FLASH);
-    step(R(T.tail), () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
-    sfx(R(T.ko5c2), 'ko5c2', 1);                                               // "It is... warm. Why is it warm?"
-    sfxFade(R(T.back) - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
+    sfx(LOW, 'u5laid', 0.8);                                                   // the three sunk low, cool
+    sfx(CLIMB + 0.1, 'u5nagawrap', 0.85);                                      // up into its ring round the court
+    sfx(RING + 0.4, 'u5mist', 0.28);
+    sfx(RINGOUT - 0.3, 'u5nagapass', 0.75);                                    // the spiral down
+    sfx(HOME - 0.35, 'u5nagadive', 0.85);                                      // its rush home into the stick
+    sfx(TAIL - 0.05, 'u5togpress', 1.0);                                       // the stick's head bursting with light: its call answered
+    fade(TAIL, TAIL + 0.06, 0, 0.7, FLASH); fade(TAIL + 0.06, TAIL + 0.6, 0.7, 0, FLASH);
+    step(TAIL, () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
+    sfx(KO, 'ko5c2', 1);                                                       // "It is... warm. Why is it warm?"
+    sfxFade(BACK - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
     step(END, () => F.end());
     c.keep.view = true;
   }

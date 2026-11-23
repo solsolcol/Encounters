@@ -11469,6 +11469,11 @@
       const th = (s - WAY_SA) / WAY_RHO, rr = WAY_RHO - lat;
       return out.set(WAY_C.x + rr * Math.cos(th), 0, WAY_C.z - rr * Math.sin(th));
     }
+    /* the walkway's heading at `s`, the way `s` grows (down the first run, round the turn, along the second) */
+    const wayHead = (s) => s <= WAY_SA ? Math.PI : s >= WAY_SB ? -Math.PI / 2 : (() => { const th = (s - WAY_SA) / WAY_RHO; return Math.atan2(-Math.sin(th), -Math.cos(th)); })();
+    /* (R76: the outer side's line, `lat` from the middle: the balustrade's solid stands at x 0.80 on the first run and z
+       -18.40 on the second, 0.80 and 0.85 out from the middle; the nearer is kept) */
+    const WAY_OUT = 0.80;
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
        the edges of the picture darken a little, for about three seconds dark threads drift in the air FROM where the
@@ -11698,7 +11703,11 @@
     function walkLane(W0, ts, tl, wdt, pace) {
       const P = W0.P, g = P.group.position;
       const s0 = wayS(g.x, g.z), l0 = wayLat(g.x, g.z), ds = ts - s0, dl = tl - l0, d = Math.hypot(ds, dl);
-      if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } navTellWalk(P, false); return false; }
+      /* (R76, build 46's walk: a man standing does not take a step for a few centimetres; Grandmaster Pho, five short of his
+         lane, walked sideways at the wall and his hand went into it. Once walking, he walks on to his mark) */
+      const small = !W0.moving && Math.abs(ds) < 0.1 && Math.abs(dl) < 0.15;
+      if (d < 0.06 || small) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); W0.still = 0; } W0.still = (W0.still || 0) + wdt; navTellWalk(P, false); return false; }
+      W0.still = 0;
       if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
       else if (P.cur !== 'Walking') { P.actN++; take(P, 'Walking', 0.3); }
       const want = Math.min(pace, 0.6 + d * 1.2);
@@ -11707,7 +11716,18 @@
       wayAt(s0 + ds / d * st, l0 + dl / d * st, _pw5);
       const mx = _pw5.x - g.x, mz = _pw5.z - g.z;
       g.x = _pw5.x; g.z = _pw5.z;
-      if (mx * mx + mz * mz > 1e-10) P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(mx, mz)) * Math.min(1, wdt * 5.5);
+      /* (R76, the walkway walked by the real keys on build 45: a follower stepping aside turned his whole body to face the
+         inner wall and walked at it, his stride's front toe 0.50 m before his hips, into the wall (Jun 11.4 cm, Grandmaster
+         Pho 6.4). A man who steps aside in a corridor keeps his body along it: his heading is the walkway's (whichever way
+         along it is nearer the way he goes, or, for a step straight across, nearer the way he already faces), turned at most
+         20 degrees toward his step (35 on build 46 still swung a hand into the wall) */
+      if (mx * mx + mz * mz > 1e-10) {
+        const hm = Math.atan2(mx, mz); let ax = wayHead(s0);
+        const across = Math.abs(Math.cos(angTo(ax, hm))) < 0.35, ref = across ? P.group.rotation.y : hm;
+        if (Math.abs(angTo(ax, ref)) > Math.PI / 2) ax += Math.PI;
+        const want = ax + Math.max(-0.35, Math.min(0.35, angTo(ax, hm)));
+        P.group.rotation.y += angTo(P.group.rotation.y, want) * Math.min(1, wdt * 5.5);
+      }
       P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
       wayAt(s0 + Math.sign(ds || 1) * Math.min(Math.abs(ds), 0.6), tl, _pw5);
       navTellWalk(P, true, _pw5.x, _pw5.z);
@@ -11725,14 +11745,22 @@
         let ts = W0.s, tl = W0.lat;
         const near = Math.abs(sp - W0.s) < 1.1 && Math.abs(wayLat(myX(), myZ()) - W0.lat) < 0.9;
         /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
-        if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
-        else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
-        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side) */
-        tl = Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06);
+        if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; W0.side = null; }
+        else if (near) {
+          /* (he comes up to him: a step aside. R76: to the side he already stands on from him, kept until he has passed:
+             Jun, on the rail's side of him, crossed the walkway in front of him to the wall's) */
+          if (W0.side == null) W0.side = wayLat(g.x, g.z) >= wayLat(myX(), myZ()) - 0.05 ? 1 : -1;
+          tl = W0.side > 0 ? FOLLOW.wall : -(WAY_OUT - footOf(W0.P).a - 0.10);
+        } else W0.side = null;
+        /* (R76: never nearer the inner wall than his own half-width and a hand's swing: Grandmaster Pho's robe is 0.37 either
+           side; nor nearer the rail's side. 0.06 on build 46: a walking arm still reached the wall) */
+        tl = Math.max(-(WAY_OUT - footOf(W0.P).a - 0.14), Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.14));
         ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
         const moving = walkLane(W0, ts, tl, wdt, pace);
-        if (!moving && distTo(g.x, g.z) < 7) {
+        /* (his turn to the one he walks with waits until his feet have come together under him: turned in the half second
+           after a stop, a stride across the walkway's width put a foot in the wall, build 46's walk) */
+        if (!moving && (W0.still || 0) > 0.45 && distTo(g.x, g.z) < 7) {
           /* standing, he turns to the one he walks with (his whole body: v14.5), and looks at him */
           const want = faceTo(g.x, g.z, myX(), myZ()), d0 = angTo(W0.P.group.rotation.y, want);
           if (Math.abs(d0) > 0.5 || W0.turning) { W0.turning = Math.abs(d0) > 0.05; W0.P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); }
@@ -11747,7 +11775,7 @@
         const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
         /* arrived, he turns to face him, his whole body eased round as the followers turn (v14.5: a turn, never a snap; set in
            one frame, it swung him up to half a circle while the player watched him go), and looks at him */
-        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.06), wdt, pace)) {
+        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.14), wdt, pace) && (ph.still || 0) > 0.45) {
           const d0 = angTo(P.group.rotation.y, faceTo(g.x, g.z, myX(), myZ()));
           if (!ph.turned) { ph.turned = true; ph.turning = true; gaze(P, 'lens', { secs: 1, reach: 0.7 }); }
           if (ph.turning || Math.abs(d0) > 0.5) { ph.turning = Math.abs(d0) > 0.05; P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); } } }
@@ -14277,7 +14305,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', tau);
           if (tau < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.tail - 0.4, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
+          /* (home: his eyes on the stick's head as the head goes in and its body pours after it; following the head on into
+             the stick he looked at the lens, the lab's picture of the new home shot) */
+          fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
@@ -14302,7 +14332,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           PRAI5.alpha(P, 1 - 0.35 * kL); }); });
         PRAI5.tick(0.016);
         /* Mr Koh, at the doorway behind the thread, at its end */
-        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
+        /* (R76's limbs check: talking with his hands open, a step behind the two in his doorway, his hands went into Ton's thigh
+           and Jun's arm (7 cm); his chatting take keeps them nearer him) */
+        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Stand_and_Chat'); });
         /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
         this.lens(tau, T, B, HEADAT);
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
@@ -14328,15 +14360,25 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const PHO_BACK = cw(Pc[0] + 0.85, 0.95, Pc[1] + 2.0), PHO_HEAD = cw(Pc[0], 1.7, Pc[1]), SHAPE = cw(B.M.za[0], 2.1, B.M.za[1]);
         const UPTO = () => { const h = HEADAT(); return lp3(PHO_HEAD, h, 0.72); };
         const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
-        const s1 = cw(sp[0][0], 1.1, sp[0][1]), s2 = cw(sp[1][0], 1.1, sp[1][1]), s3 = cw(sp[2][0], 1.0, sp[2][1]);
-        /* (the first, side on from the house-west corner, 1.45 m out from its place across the arc; the second head on, 2.2 m
-           along its way past it and 0.45 m toward the house; the third from over it, 3.9 m up and behind it) */
-        const out1 = (() => { const dx = sp[0][0] - B.RC.x, dz = sp[0][1] - B.RC.z, l = Math.hypot(dx, dz) || 1; return cw(sp[0][0] + dx / l * 1.45, 0.95, sp[0][1] + dz / l * 1.45); })();
-        const P2EYE = cw(sp[1][0] + 2.2, 0.85, sp[1][1] - 0.45), P3EYE = cw(sp[2][0] - 1.0, 3.9, sp[2][1] - 0.9);
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
         const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
         const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
+        /* (R75's lab, 23 Nov, each candidate photographed full size on a phone before it was written here: the three pierces
+           were each from too close or through another body (the first from 1.45 m behind her back, its head cut at the
+           frame's foot; the second with the third one in front of the lens; the third from over her, where the head seemed
+           to pass beside her), and home looked up from under the stick with his teacher cut at the frame's edge. Now: the
+           FIRST HEAD ON, the lens 1.6 m on along its way past her and 0.45 m out toward the house, low, so the head comes
+           through her straight at it; the SECOND from a crane over the court's middle, her whole and the head coming in at
+           her chest, the doorway behind; the THIRD from the paving before her, looking up past her at the head and then
+           with it as it climbs away, the block's walkways and the night behind; HOME from before his teacher, him and the
+           stick whole and the coil coming down out of the sky into its head) */
+        const a0 = Math.atan2(sp[0][0] - B.RC.x, sp[0][1] - B.RC.z), d0 = [-Math.cos(a0), Math.sin(a0)], o0 = [Math.sin(a0), Math.cos(a0)];
+        const P1EYE = cw(sp[0][0] + d0[0] * 1.6 + o0[0] * 0.45, 1.1, sp[0][1] + d0[1] * 1.6 + o0[1] * 0.45);
+        const chestOf = (j) => cw(sp[j][0], 1.05, sp[j][1]);
+        const P1AT = () => lp3(chestOf(0), HEADAT(), 0.25), P2AT = () => lp3(chestOf(1), HEADAT(), 0.3), P3AT = () => lp3(chestOf(2), HEADAT(), 0.2);
+        const P2CRANE = cw(sp[1][0] - 1.3, 3.4, sp[1][1] + 1.9), P3LOW = cw(sp[2][0] - 0.15, 0.35, sp[2][1] - 1.34);
+        const HOME_EYE = cw(Pc[0] + 0.75, 1.25, Pc[1] - 2.3), HOME_UP = cw(Pc[0] + 0.2, 2.6, Pc[1] - 0.2), HOME_AT = cw(Pc[0] + 0.23, 1.45, Pc[1] - 0.2);
         fmTrack(tau, [
           { t: 0, name: 'plant', eye: PHO_BACK, at: lp3(PHO_HEAD, SHAPE, 0.45), fp: 62, fd: 52 },
           { t: T.rise - 0.06, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
@@ -14350,16 +14392,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.apart - 0.08, name: 'stoop', eye: RIDER, at: AHEAD, fp: 64, fd: 56 },
           { t: T.apart - 0.07, name: 'burst', eye: BURST_EYE, at: BURST_AT, fp: 66, fd: 56, cut: true },
           { t: T.p1 - 0.5, name: 'burst', eye: BURST_EYE, at: SWOOP_AT, fp: 64, fd: 54 },
-          { t: T.p1 - 0.45, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58, cut: true },
-          { t: T.p2 - 0.36, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58 },
-          { t: T.p2 - 0.35, name: 'pierce2', eye: P2EYE, at: s2, fp: 58, fd: 50, cut: true },
-          { t: T.p3 - 0.36, name: 'pierce2', eye: P2EYE, at: lp3(s2, s3, 0.35), fp: 58, fd: 50 },
-          { t: T.p3 - 0.35, name: 'pierce3', eye: P3EYE, at: s3, fp: 60, fd: 52, cut: true },
-          { t: T.ring + 0.25, name: 'pierce3', eye: [P3EYE[0], P3EYE[1] + 0.3, P3EYE[2]], at: HEADAT, fp: 62, fd: 54 },
+          { t: T.p1 - 0.45, name: 'pierce1', eye: P1EYE, at: P1AT, fp: 62, fd: 54, cut: true },
+          { t: T.p2 - 0.36, name: 'pierce1', eye: P1EYE, at: P1AT, fp: 62, fd: 54 },
+          { t: T.p2 - 0.35, name: 'pierce2', eye: P2CRANE, at: P2AT, fp: 56, fd: 50, cut: true },
+          { t: T.p3 - 0.36, name: 'pierce2', eye: P2CRANE, at: P2AT, fp: 56, fd: 50 },
+          { t: T.p3 - 0.35, name: 'pierce3', eye: P3LOW, at: P3AT, fp: 62, fd: 54, cut: true },
+          { t: T.p3 + 0.1, name: 'pierce3', eye: P3LOW, at: P3AT, fp: 62, fd: 54 },
+          { t: T.p3 + 0.7, name: 'pierce3', eye: P3LOW, at: HEADAT, fp: 70, fd: 62 },
+          { t: T.ring + 0.25, name: 'pierce3', eye: P3LOW, at: HEADAT, fp: 70, fd: 62 },
           { t: T.ring + 0.3, name: 'ring', eye: GOD, at: GODAT, fp: 64, fd: 50, cut: true },
           { t: T.ringOut + 0.2, name: 'ring', eye: [GOD[0], GOD[1] - 0.8, GOD[2]], at: GODAT, fp: 62, fd: 48 },
-          { t: T.ringOut + 0.25, name: 'home', eye: STICK_LOW, at: lp3(STICK_UP, [B.S[0], B.S[1] + 2.4, B.S[2]], 0.6), fp: 72, fd: 62, cut: true },
-          { t: T.tail + 1.2, name: 'home', eye: STICK_LOW, at: STICK_UP, fp: 66, fd: 58 },
+          { t: T.ringOut + 0.25, name: 'home', eye: HOME_EYE, at: HOME_UP, fp: 70, fd: 60, cut: true },
+          { t: T.home, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
+          { t: T.tail + 1.2, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
           { t: T.tail + 1.25, name: 'three', eye: THREE_EYE, at: THREE_AT, fp: 56, fd: 50, cut: true },
           { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_AT, fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
@@ -14391,8 +14436,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     /* (every place measured against the rooms' solids, b_world.js: the sofa x -9.06..-8.18, z -4.67..-2.57; the low table
        x -7.66..-6.9, z -4.22..-3.02; the floor lamp by the sofa x -8.92..-8.42, z -2.5..-1.98; the dining table and its
        chairs x -11.6..-9.2, z -1.18..1.0. As first written, his teacher stood in the sofa's edge and on a dining chair, the
-       eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
-    const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
+       eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it. R76's limbs check,
+       23 Nov: at (-7.92, -4.0), in the 0.52 m between the sofa and the low table, his cast's right foot went 22 cm into the
+       sofa; he stands east of the table now, between it and the television (0.34 m clear of each at his cast's widest), facing
+       the room, the lens behind him in its south-east corner) */
+    const BT5AT = { live: [-6.36, -3.62], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-5.5, EYE, -5.1], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -4.75], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
                     liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
@@ -14440,7 +14488,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           STICK5.to(t < T.eyes ? 'pho' : 'ton');
           if (!inEyes) { put(P, pz.x, pz.z, COURT5.heading + Math.PI); fmRest(P, 'pho', t); }
           else if (t < T.room1) { put(P, -8.6, -7.4, Math.PI * 0.95); fmRest(P, 'pho', t); }
-          else if (t < T.room2) { put(P, A.live[0], A.live[1], faceTo(A.live[0], A.live[1], -6.0, -2.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room1 + 0.4, T.room1 + 3.2, 0.2, 2.9)); }
+          else if (t < T.room2) { put(P, A.live[0], A.live[1], faceTo(A.live[0], A.live[1], -8.3, -2.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room1 + 0.4, T.room1 + 3.2, 0.2, 2.9)); }
           else if (t < T.room3) { put(P, A.dine[0], A.dine[1], faceTo(A.dine[0], A.dine[1], -11.6, 0.9)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room2 + 0.3, T.room2 + 3.0, 0.2, 2.9)); }
           else if (t < T.knot) { put(P, A.terr[0], A.terr[1], faceTo(A.terr[0], A.terr[1], -12.4, -3.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room3 + 0.3, T.room3 + 3.0, 0.2, 2.9)); }
           else if (!atLift) { put(P, A.phoKoh[0], A.phoKoh[1], faceTo(A.phoKoh[0], A.phoKoh[1], A.kohWin[0], A.kohWin[1]));
@@ -14455,7 +14503,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
         whenReady(cast.ton, (P) => {
           if (!inEyes) { const s0 = STATION.fight.ton; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'ton', t); }
-          else if (t < T.knot) { const at = t < T.room2 ? [-7.02, -4.8] : t < T.room3 ? [-9.35, -2.1] : [-10.0, -3.9];   // (behind his teacher, each clear of the furniture)
+          else if (t < T.knot) { const at = t < T.room2 ? [-7.02, -4.8] : t < T.room3 ? [-9.1, -2.0] : [-10.5, -2.9];   // (behind his teacher, each clear of the furniture; R76: and of Mr Koh and Jun, whose places the second and third stood on)
             put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); giveFix5(P); STICK5.onPalms(P, 'stick');
             lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
           else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); giveFix5(P); STICK5.onPalms(P, 'stick');
@@ -14463,7 +14511,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
           else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
             put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7));
-            if (t > T.in + 0.45) fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.3, 1.65]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
+            if (t > T.in + 0.45) fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.02, 1.0], [-0.28, 2.05]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
             giveFix5(P); STICK5.onPalms(P, 'stick'); }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
@@ -14481,7 +14529,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (0.87 m from his teacher: at 0.54 his body was in Grandmaster Pho's robe, clipscan 920 to 9826 crossings) */
           else if (!atLift) { put(P, -10.15, -3.9, faceTo(-10.15, -3.9, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
-            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, [0.25, 1.75]], 0.9, restOf5('jun', t), Math.PI); }
+            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, [0.3, 2.35]], 0.9, restOf5('jun', t), Math.PI); }
         });
         /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
            flickers (the pendant: R42) flickers once, and holds */
@@ -14502,8 +14550,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.violet + 0.3, name: 'into', eye: [ZH[0], ZH[1] + 0.35, ZH[2] - 0.9], at: [ZH[0], 1.4, ZH[2] + 2.5], fp: 60, fd: 54 },
           { t: T.eyes, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [ZH[0], 1.05, ZH[2] + 1.6], fp: 62, fd: 56, cut: true },
           { t: T.room1 - 0.3, name: 'eyes', eye: [ZH[0], EYE, ZH[2] + 0.02], at: [-8.6, 1.4, -7.0], fp: 60, fd: 54 },
-          { t: T.room1, name: 'living', eye: A.eyeLive, at: [A.live[0] - 0.4, 1.5, A.live[1] + 1.4], fp: 56, fd: 50, cut: true },
-          { t: T.room2 - 0.05, name: 'living', eye: [A.eyeLive[0] - 0.1, EYE, A.eyeLive[2] + 0.1], at: [A.live[0] - 0.6, 1.45, A.live[1] + 1.6], fp: 54, fd: 48 },
+          { t: T.room1, name: 'living', eye: A.eyeLive, at: [A.live[0] - 1.4, 1.5, A.live[1] + 1.0], fp: 56, fd: 50, cut: true },
+          { t: T.room2 - 0.05, name: 'living', eye: [A.eyeLive[0] - 0.1, EYE, A.eyeLive[2] + 0.1], at: [A.live[0] - 1.5, 1.45, A.live[1] + 1.1], fp: 54, fd: 48 },
           { t: T.room2, name: 'dining', eye: A.eyeDine, at: [A.dine[0] - 0.5, 1.45, A.dine[1] + 1.4], fp: 56, fd: 50, cut: true },
           { t: T.room3 - 0.05, name: 'dining', eye: [A.eyeDine[0], EYE, A.eyeDine[2] + 0.1], at: [A.dine[0] - 0.7, 1.45, A.dine[1] + 1.6], fp: 54, fd: 48 },
           { t: T.room3, name: 'terrace', eye: A.eyeTerr, at: [A.terr[0] - 1.2, 1.45, A.terr[1]], fp: 56, fd: 50, cut: true },
@@ -15147,8 +15195,29 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      (u5pierce1-3) and the fire hissing out (u5douse), with a flash in the water's white-blue, the screen shaken and the phone
      buzzed; its ring round the court; its rush home into the stick and the stick's head bursting with light (the together
      press's burst again, its call answered); the three laid; Mr Koh; the boom) */
+  /* THE FILM'S CLOCK WRITTEN OUT (R75's harness run, 23 Nov 2026). The film's marks come from its flight at run time
+     (FILMS5.together.tl(): the court's fixed marks, the flight's pace, the Naga's made length), so chaptertest's walk of
+     every film's cues, made without a world, read each mark as nothing and the film as one second long. These are the same
+     marks in story seconds, read off build 48's live clock; the film draws from its live clock, is walked from these when
+     there is no world, and says so on the console the moment the two part by more than a fiftieth of a second. Each pierce
+     is held a moment (c_yfilm.js NAGA_HIT5: a twelfth of its pace for 0.16 s), which TOG5_REAL carries the same way */
+  const TOG5 = { plant: 0.2, rise: 2, kindle: 2.55, cry: 2.75, top: 4.2333, ph5c2: 4.3533, stoop: 7.7833, apart: 8.5259, swoop: 8.6344,
+                 p1: 9.3315, p2: 9.9579, p3: 10.5114, climb: 10.9086, ring: 11.8067, low: 12.1114, ringOut: 13.9873, home: 15.1729,
+                 tail: 17.1729, ko5c2: 18.6729, back: 23.2029, end: 24.8029 };
+  const TOG5_REAL = (T, tau) => { const H = 0.16, r = 1 / 12; let add = 0;
+    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; }
+    return tau + add; };
   function filmTogether(c, s, api) {
-    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together, T = F.tl(), R = (x) => F.real(x), END = R(T.end);
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together;
+    const L0 = F && F.tl ? F.tl() : null, live = !!L0 && typeof L0.end === 'number' && isFinite(L0.end);
+    const T = live ? L0 : TOG5, R = (x) => (live ? F.real(x) : TOG5_REAL(TOG5, x)), END = R(T.end);
+    if (live) { const off = Object.keys(TOG5).filter(k => !(Math.abs(L0[k] - TOG5[k]) < 0.02) || !(Math.abs(F.real(TOG5[k]) - TOG5_REAL(TOG5, TOG5[k])) < 0.02));
+      if (off.length) console.error('e4c5: the Naga film\'s live clock has parted from TOG5 (z_tail.js) at ' + off.join(', ') + ': write its new marks there'); }
+    /* (every cue below written out whole, its sound's own name in quotes and a time that holds no call: the engine warms a film's sounds by reading its
+       own source, and a name passed through a list, or a time written with a call in it, is not read: the pierces' blows and
+       waters, the three laid, the ring, the burst and Mr Koh's line were cold the first time the film played) */
+    const P1 = R(T.p1), P2 = R(T.p2), P3 = R(T.p3), LOW = R(T.low), CLIMB = R(T.climb), RING = R(T.ring), RINGOUT = R(T.ringOut),
+          HOME = R(T.home), TAIL = R(T.tail), KO = R(T.ko5c2), BACK = R(T.back);
     const FLASH = '#DFF5FF';
     step(0, () => F.begin(api, s));
     tr(0, END, (k, t) => F.frame(t), rawK);
@@ -15170,24 +15239,25 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     fade(T.apart, T.apart + 0.05, 0, 0.35, FLASH); fade(T.apart + 0.05, T.apart + 0.35, 0.35, 0, FLASH);
     sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
     sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
-    [[T.p1, 'u5nagahit1', 'u5pierce1', [40, 30, 70]], [T.p2, 'u5nagahit2', 'u5pierce2', [45, 30, 80]], [T.p3, 'u5nagahit3', 'u5pierce3', [60, 30, 120]]].forEach(([p, hit, wat, buzz], j) => {
-      const h = R(p);
-      sfx(h - 0.04, hit, 1.0);                                                 // the blow
-      sfx(h, wat, 0.85);                                                       // its water through it
-      sfx(h + 0.14, 'u5douse', 0.75);                                          // its fire hissing out
+    /* each pierce: the blow, its own water through it, its fire hissing out */
+    sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
+    sfx(P2 - 0.04, 'u5nagahit2', 1.0); sfx(P2, 'u5pierce2', 0.85); sfx(P2 + 0.14, 'u5douse', 0.75);
+    sfx(P3 - 0.04, 'u5nagahit3', 1.0); sfx(P3, 'u5pierce3', 0.85); sfx(P3 + 0.14, 'u5douse', 0.75);
+    /* with a flash in the water's white-blue and the phone buzzed, each harder than the last */
+    [[P1, [40, 30, 70]], [P2, [45, 30, 80]], [P3, [60, 30, 120]]].forEach(([h, buzz], j) => {
       fade(h, h + 0.04, 0, 0.6 + 0.1 * j, FLASH); fade(h + 0.04, h + 0.42, 0.6 + 0.1 * j, 0, FLASH);
       step(h, () => { if (api.kit && api.kit.buzz) api.kit.buzz(buzz); });
     });
-    sfx(R(T.low), 'u5laid', 0.8);                                              // the three sunk low, cool
-    sfx(R(T.climb) + 0.1, 'u5nagawrap', 0.85);                                 // up into its ring round the court
-    sfx(R(T.ring) + 0.4, 'u5mist', 0.28);
-    sfx(R(T.ringOut) - 0.3, 'u5nagapass', 0.75);                               // the spiral down
-    sfx(R(T.home) - 0.35, 'u5nagadive', 0.85);                                 // its rush home into the stick
-    sfx(R(T.tail) - 0.05, 'u5togpress', 1.0);                                  // the stick's head bursting with light: its call answered
-    fade(R(T.tail), R(T.tail) + 0.06, 0, 0.7, FLASH); fade(R(T.tail) + 0.06, R(T.tail) + 0.6, 0.7, 0, FLASH);
-    step(R(T.tail), () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
-    sfx(R(T.ko5c2), 'ko5c2', 1);                                               // "It is... warm. Why is it warm?"
-    sfxFade(R(T.back) - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
+    sfx(LOW, 'u5laid', 0.8);                                                   // the three sunk low, cool
+    sfx(CLIMB + 0.1, 'u5nagawrap', 0.85);                                      // up into its ring round the court
+    sfx(RING + 0.4, 'u5mist', 0.28);
+    sfx(RINGOUT - 0.3, 'u5nagapass', 0.75);                                    // the spiral down
+    sfx(HOME - 0.35, 'u5nagadive', 0.85);                                      // its rush home into the stick
+    sfx(TAIL - 0.05, 'u5togpress', 1.0);                                       // the stick's head bursting with light: its call answered
+    fade(TAIL, TAIL + 0.06, 0, 0.7, FLASH); fade(TAIL + 0.06, TAIL + 0.6, 0.7, 0, FLASH);
+    step(TAIL, () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
+    sfx(KO, 'ko5c2', 1);                                                       // "It is... warm. Why is it warm?"
+    sfxFade(BACK - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
     step(END, () => F.end());
     c.keep.view = true;
   }
