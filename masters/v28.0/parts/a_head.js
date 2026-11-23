@@ -300,6 +300,7 @@
       whyBindFirst: 'Bind one first',
       // (the switch, said and never pressed, until the lesson's first chase shows it: the engine shows it from the first frame)
       whySwitchFirst: 'Fire first',
+      whySwitchNow: 'Not now',
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
       // (R49: the small line over each name on the party list's tiles)

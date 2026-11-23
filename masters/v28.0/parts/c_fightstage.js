@@ -1124,7 +1124,10 @@
       /* the switch: free once taught; said, never pressed, otherwise (the engine shows it whenever there are two) */
       const sw = H.swap, swWhy = FIGHT.why(st, 'SWITCH');
       let swBlock = null;
-      if (st.stage === 'surge') swBlock = W5.objFight4;
+      /* (R75's debug, GP: after the win, after a loss and while the Naga is called, a tap on the other one's tile said "Fire
+         first", which was not why) */
+      if (st.stage === 'won' || st.stage === 'lost' || st.stage === 'naga' || st.stage === 'brief') swBlock = W5.whySwitchNow || W5.objFight4;
+      else if (st.stage === 'surge') swBlock = W5.objFight4;
       else if (st.stage === 'last') swBlock = W5.objFight6;
       else if (!sw.shown || (swWhy && swWhy !== 'lock')) swBlock = W5.whySwitchFirst || W5.objFight1;
       kit.tagAct('switch', { blocked: swBlock, pulse: !!sw.pulse && !swBlock });

@@ -313,7 +313,11 @@
         const want = ax + Math.max(-0.35, Math.min(0.35, angTo(ax, hm)));
         P.group.rotation.y += angTo(P.group.rotation.y, want) * Math.min(1, wdt * 5.5);
       }
-      P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
+      /* (R75's debug, B4: his walk's rate from the ground his feet really cover: the step is taken along the walkway's middle
+         line, and round the turn's inside that line's metre is 0.42 to 0.54 of his, so a rate read from it had his feet
+         sliding 0.7 m a second for a second and more. v7.1: a body moved on wall time takes its walk's rate from the ground) */
+      const cov = wdt > 0 ? Math.hypot(mx, mz) / wdt : 0;
+      P.rate = Math.max(0.5, Math.min(1.35, cov / pace));
       wayAt(s0 + Math.sign(ds || 1) * Math.min(Math.abs(ds), 0.6), tl, _pw5);
       navTellWalk(P, true, _pw5.x, _pw5.z);
       return true;
@@ -323,7 +327,7 @@
       const sp = wayS(myX(), myZ());
       /* the order of the file along the way: whoever is furthest along goes first (no two in one place) */
       const lst = walkers.list.filter(W0 => W0.P.ready && !W0.ahead).sort((a, b) => b.s - a.s);
-      let cap = Infinity;
+      let cap = Infinity, front = null;
       for (const W0 of lst) {
         const g = W0.P.group.position;
         W0.s = wayS(g.x, g.z);
@@ -340,7 +344,12 @@
         /* (R76: never nearer the inner wall than his own half-width and a hand's swing: Grandmaster Pho's robe is 0.37 either
            side; nor nearer the rail's side. 0.06 on build 46: a walking arm still reached the wall) */
         tl = Math.max(-(WAY_OUT - footOf(W0.P).a - 0.14), Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.14));
-        ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
+        ts = Math.min(ts, cap);
+        /* (R75's debug, B4: and the step kept on the ground between them, not only along the middle line: round the turn's
+           inside the file's 1.05 m along the line was 0.42 to 0.54 m between two bodies, inside two walking reaches) */
+        if (front) for (let k = 0; k < 8; k++) { wayAt(ts, tl, _pw5); const dd = Math.hypot(_pw5.x - front.x, _pw5.z - front.z);
+          if (dd >= FOLLOW.step - 0.02) break; const nt = Math.max(Math.min(ts, W0.s), ts - (FOLLOW.step - dd)); if (nt >= ts - 1e-4) break; ts = nt; }   // (never a step back: he waits)
+        cap = ts - FOLLOW.step; front = { x: g.x, z: g.z };
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
         const moving = walkLane(W0, ts, tl, wdt, pace);
         /* (his turn to the one he walks with waits until his feet have come together under him: turned in the half second

@@ -1720,7 +1720,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        the room, the lens behind him in its south-east corner) */
     const BT5AT = { live: [-6.36, -3.62], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-5.5, EYE, -5.1], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -4.75], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
-                    liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
+                    /* (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058) */
+                    liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55],
+                    /* (R75's debug, F8: their places in the car, 1.6 by 1.5 m: Jun and Ton at its back, his teacher at the doors' right,
+                       his own eye at their left, each 0.6 m and more from the next) */
+                    inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -1735,6 +1739,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       },
       frame(t, api) {
         const T = BT5, A = BT5AT, zz = this.zav, pz = this.pho, inEyes = t >= T.eyes, atLift = t >= T.lift;
+        /* (R76: the lift's doors open to the routes while they stand open. R75's debug, B10: told before the walks below are
+           routed, not after them: told last, both walks into the car were routed with the doors shut, missed, and fell back
+           to their written lines) */
+        navFilmOpen(LIFT_SHUT5, atLift && t >= T.doors + 0.7 && t < T.close + 0.5);
         fmLook(!inEyes ? 'TRANCE' : 'NIGHT');
         /* the court in the trance, then after dark with its lamp's buzz; his rooms and their clock, the smell thinning room
            by room and gone at the knot; the night air through the open window; the walkway at the lift */
@@ -1774,6 +1782,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             /* (his three lines to Mr Koh one talk, never cut 0.1 s after each: R25) */
             fmSpeak(P, 'pho', t, [[T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open'], [T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open'], [T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open']]);
             lookNow(P, fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), 0.8, 0.7); }
+          else if (t > T.in + 0.9) fmWalk(P, t, T.in + 0.9, [A.liftPho, [0.1, 1.05], A.inPho], 0.8, restOf5('pho', t), Math.PI,
+                                          { ry0: faceTo(A.liftPho[0], A.liftPho[1], A.liftEye[0], A.liftEye[2]) });   // (in after Ton, and turned to the doors: F8)
           else { put(P, A.liftPho[0], A.liftPho[1], faceTo(A.liftPho[0], A.liftPho[1], A.liftEye[0], A.liftEye[2]));
             fmSpeak(P, 'pho', t, [[T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open'], [T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open'], [T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open']]);
             /* (to Jun for his news and back, each carried over 0.6 s) */
@@ -1790,8 +1800,16 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
           else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
             put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7));
-            if (t > T.in + 0.45) fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.02, 1.0], [-0.28, 2.05]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
-            giveFix5(P); STICK5.onPalms(P, 'stick'); }
+            const walking = t > T.in + 0.45 && fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.02, 1.0], A.inTon], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
+            giveFix5(P);
+            /* (R75's debug, B2: from his palms to his right fist as he turns to walk, eased over a third of a second, and held so
+               inside the car; at the walk's end his rest is the offering's again, the stick still upright in his fist) */
+            const kc = t > T.in + 0.45 ? smo(c01((t - T.in - 0.45) / 0.35)) : 0;
+            if (kc <= 0) STICK5.onPalms(P, 'stick');
+            else if (kc >= 1) STICK5.carryUp(P);
+            else { const g = things.nagaStaff; if (g) { STICK5.onPalms(P, 'stick'); const p0 = g.position.clone(), q0 = g.quaternion.clone();
+              STICK5.carryUp(P); if (kc < 1) { g.position.lerpVectors(p0, g.position.clone(), kc); g.quaternion.slerpQuaternions(q0, g.quaternion.clone(), kc); } } }
+            void walking; }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
         whenReady(cast.koh, (P) => {
@@ -1808,7 +1826,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (0.87 m from his teacher: at 0.54 his body was in Grandmaster Pho's robe, clipscan 920 to 9826 crossings) */
           else if (!atLift) { put(P, -10.15, -3.9, faceTo(-10.15, -3.9, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
-            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, [0.3, 2.35]], 0.9, restOf5('jun', t), Math.PI); }
+            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, A.inJun], 0.9, restOf5('jun', t), Math.PI); }
         });
         /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
            flickers (the pendant: R42) flickers once, and holds */
@@ -1821,7 +1839,6 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (R76, limbread on build 44: Jun beside his teacher at x 0.6 stood in the walkway's railing and went round him into it
            (35 cm), and Ton and Jun went into the car through its jamb: Jun nearer the doors and in first, Ton after him, both
            marks clear of the railing and of each other; the doors open to the routes while they stand open) */
-        navFilmOpen(LIFT_SHUT5, atLift && t >= T.doors + 0.7 && t < T.close + 0.5);
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
         const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), ZH = [zz.x, 1.66, zz.z];   // (R46: begun on the end's pulled-back lens)
         fmTrack(t, [
@@ -1857,8 +1874,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.ph5b6 + 0.05, name: 'pho', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 48, fd: 42 },
           { t: T.ph5b6 + SECS.ph5b6 + 0.1, name: 'pho', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 48, fd: 42 },
           { t: T.in, name: 'doors', eye: A.liftEye, at: [0.0, 1.45, 1.6], fp: 62, fd: 54 },
-          { t: T.close + 0.4, name: 'in', eye: [0.0, EYE, 0.9], at: [0.0, 1.4, 1.6], fp: 66, fd: 58 },
-          { t: T.end, name: 'in', eye: [0.0, EYE, 1.0], at: [0.0, 1.4, 1.8], fp: 66, fd: 58 }
+          /* (R75's debug, F8: his eye goes after his teacher toward the doors, then, cut, he is in the car with them, turned to
+             the doors as they close on the walkway: "The lift doors close on black", the plan's 4.6) */
+          { t: T.in + 2.45, name: 'doors', eye: [-0.15, EYE, -0.35], at: [0.1, 1.45, 1.9], fp: 62, fd: 54 },
+          { t: T.in + 2.5, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
+          { t: T.end, name: 'in', eye: [A.inEye[0], EYE, A.inEye[2] + 0.05], at: [A.inEye[0], 1.33, -1.6], fp: 66, fd: 58 }
         ]);
       },
       end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1);

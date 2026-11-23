@@ -428,6 +428,16 @@
       /* (R65: its underside read from its mesh once it has landed: stickUnder5) */
       warm() { const g = things.nagaStaff; if (g) stickUnder5(g); },
       /* stood upright by itself at a point (the Naga's film: planted, "the stick stands by itself once planted") */
+      /* (R75's debug, B2: carried upright in his right fist while he walks, its foot clear of the floor and drawn out from his
+         hips by a hand's width, as the wrapped staff is in the opening (CARRY5): laid palm to palm while his hands swung at
+         his sides, it went level through his hips at every stride into the lift) */
+      carryUp(P) { const g = things.nagaStaff; if (!g || !P || !P.ready) return false;
+        if (g.parent !== world) world.attach(g);
+        P.group.updateWorldMatrix(true, true); const pm = palmOf(P, 'Right', _stA); if (!pm) return false;
+        let x = pm.x, z = pm.z;
+        if (P.hips) { P.hips.getWorldPosition(_stB); const dx = pm.x - _stB.x, dz = pm.z - _stB.z, dl = Math.hypot(dx, dz); if (dl > 1e-4) { x += dx / dl * 0.05; z += dz / dl * 0.05; } }
+        g.position.set(x, Math.max(P.group.position.y + 0.03, pm.y - 0.78), z); g.rotation.set(0, P.group.rotation.y, 0);
+        g.visible = true; navCarried(P, g); return true; },
       plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; },
       /* the wrapped stick carried upright in Ton's right hand, its foot a hand over the floor (laid from his standing rest
          once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */

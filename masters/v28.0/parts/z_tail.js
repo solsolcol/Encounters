@@ -221,7 +221,7 @@
      film begins on it, with the card) */
   const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [0.9], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
-                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [1.5], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
+                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.0], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.bagtied, T = BT5;
     step(0, () => F.begin(api, s));
@@ -269,7 +269,9 @@
     sfx(T.doors - 0.55, 'u5chime', 0.75); sfx(T.doors - 0.05, 'u5liftopen', 0.75);   // the car arrives; its doors
     sfx(T.ju5b1, 'ju5b1', 1);                                                  // "Master, the man with the collection. He called again. Tomorrow, three o'clock?"
     sfx(T.ph5b6, 'ph5b6', 1);                                                  // "Tomorrow."
-    sfx(T.in + 0.3, 'u5phostep', 0.35); sfx(T.in + 0.5, 'u5step1', 0.3); sfx(T.in + 0.9, 'u5phostep', 0.3); sfx(T.in + 1.1, 'u5step2', 0.35);   // in
+    /* (R75's debug, F8: everyone goes in now, his teacher after Ton, he last, the doors closing in front of him: their steps
+       where their feet go. The doors had closed between him and the two inside while these steps walked him in) */
+    sfx(T.in + 1.25, 'u5phostep', 0.35); sfx(T.in + 1.85, 'u5phostep', 0.3); sfx(T.in + 2.2, 'u5step1', 0.3); sfx(T.in + 2.45, 'u5phostep', 0.3); sfx(T.in + 2.75, 'u5step2', 0.35);   // in
     sfx(T.close - 0.05, 'u5liftshut', 0.75);                                   // the doors close
     sfx(T.close + 0.4, 'u5lifthum', 0.4);                                      // the car's hum again, on the black
     fade(T.black, T.end - 0.1, 0, 1);
