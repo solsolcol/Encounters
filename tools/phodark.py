@@ -26,7 +26,7 @@ from scipy import ndimage as nd
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 GLB = os.path.join(ROOT, 'assets/p5pho.glb')
 OUT = os.path.join(ROOT, 'masters/v28.0/parts/c_phodark.js')
-SIZE, DARK, AMAX, CHART_ROBE, STEP, RING, BIG, CLEAR, GROW = 1024, 0.55, 400, 0.5, 0.25, 0.8, 600, 16, 2
+SIZE, DARK, AMAX, CHART_ROBE, STEP, RING, BIG, CLEAR, GROW = 1024, 0.55, 400, 0.2, 0.25, 0.8, 600, 16, 2
 LINE = 5.0                                                     # (an island this many times longer than wide is a line)
 if os.environ.get('PHODARK'):                                  # (a variant measured before it is written in: k=v,...)
     for kv in os.environ['PHODARK'].split(','):
@@ -135,11 +135,13 @@ def main():
         rows.append('[%d, %d, %d, [%s]]' % (F['c'][0], F['c'][1], F['c'][2], ','.join(map(str, flat))))
     js = ('    /* R33 (23 Nov 2026; R28, the brown bits on his robe). WRITTEN BY tools/phodark.py from his body sheet (texture_0,\n'
           '       sha1 %s, the same bytes in assets/pho.glb and assets/p5pho.glb), never by hand: %d small dark specks lying\n'
-          '       inside the white of his robe (%d x %d), each on a piece that paints mostly robe, clear of the bead strands, grown\n'
-          '       by %d texels, as runs [row, first cell, cells] of a %d x %d mask, each in the colour of the robe round it (sRGB).\n'
+          '       inside the white of his robe (%d x %%d), robe all round each, on pieces that paint %%d%%%% robe or more, clear of the bead\n'
+          '       strands, never a line (a seam), grown by %d texels, as runs [row, first cell, cells] of a %d x %d mask, each in the\n'
+          '       colour of the robe round it (sRGB).\n'
           '       c_cast.js paints them over chapter 4\'s own cover (PHO_FLECKS) once; his file is unchanged. */\n'
           '    const PHO_DARK5 = { size: %d, f: [\n      %s\n    ] };\n') % (
-        imsha, len(specks), W, H, GROW, SIZE, SIZE, SIZE, ',\n      '.join(rows))
+        imsha, len(specks), W, GROW, SIZE, SIZE, SIZE, ',\n      '.join(rows))
+    js = js % (H, round(CHART_ROBE * 100))
     open(OUT, 'w').write(js)
     print('wrote', os.path.relpath(OUT, ROOT), len(js), 'bytes;', len(specks), 'specks,', cells, 'cells,',
           sum(len(r) for r in runs.values()), 'runs')
