@@ -41,7 +41,7 @@
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
-                  hudSig: '', obj: null, objKey: '', objStep: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
+                  hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
                   reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
@@ -1050,7 +1050,14 @@
       else if (!sw.shown || (swWhy && swWhy !== 'lock')) swBlock = W5.whySwitchFirst || W5.objFight1;
       kit.tagAct('switch', { blocked: swBlock, pulse: !!sw.pulse && !swBlock });
       /* the objective (true whoever is played), the count, his cage's strength on his mark */
-      const ob = H.objective, txt = ob ? String(W5[ob.key] || '').replace('{n}', String(ob.n != null ? ob.n : st.left)) : null;
+      const ob = H.objective, txt0 = ob ? String(W5[ob.key] || '').replace('{n}', String(ob.n != null ? ob.n : st.left)) : null;
+      /* R33 F8 (23 Nov, build 36's pictures on a phone): the objective's box stands right over the far end of the court, where
+         the nine come from, so through the whole of the fight the ones walking in were hidden behind "Bag the Prai: 8 left".
+         That line only counts, and the count is on the screen anyway (the dots, kit.tagCount): it is shown for four seconds
+         whenever its words change (the fight's first, every bag) and then folds away, the dots holding the count. Every
+         line that tells him what to do (the lessons, the surge, the last three) stays up as it was */
+      if (txt0 !== FS5.objTxt) { FS5.objTxt = txt0; FS5.objAt = FS5.wall; }
+      const txt = ob && ob.key === 'objFight3' && FS5.wall - (FS5.objAt || 0) > 4.0 ? null : txt0;
       if (txt !== FS5.obj) {
         const lessonStep = FS5.objStep > 0 && FS5.objStep < 5 && !!ob && (ob.step || 0) > FS5.objStep;
         kit.objective(txt, { complete: lessonStep });
@@ -1583,7 +1590,7 @@
       if (FS5.on) fightLeave();
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
-        hudSig: '', obj: null, objKey: '', objStep: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
+        hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
         swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;

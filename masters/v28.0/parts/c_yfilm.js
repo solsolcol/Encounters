@@ -1051,7 +1051,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (he leads them in: on the cut into the court he is already halfway up it (a moment passed), and is inside his
              doors before the slippers' shot looks there; walked from his gate in the shot it stood him in the doorway with
              the lens in his back) */
-          else if (!inside) fmWalk(P, t, T.in, [[-8.5, -8.0], [-8.5, -5.05]], 1.4, restOf5('koh', t), Math.PI);   // (to just inside his door: the sofa begins at z -4.67)
+          /* (R33 F5: stood at x -8.5 his left hand went 4 cm into the open leaf, which stands along x -8.94..-8.79 (clipscan, 52
+             crossings at 17 and 18 s, on build 36): 8 cm east, his hand clear of it by 4 cm, his right side still 6 cm off the
+             east jamb's line) */
+          else if (!inside) fmWalk(P, t, T.in, [[-8.5, -8.0], [-8.42, -5.05]], 1.4, restOf5('koh', t), Math.PI);   // (to just inside his door: the sofa begins at z -4.67)
           else { put(P, A.kohRoom[0], A.kohRoom[1], STATION.hunt.koh.ry);
             /* (his three lines one talk: the second begins 0.35 s after the first ends, the third's gesture crossfaded in) */
             fmSpeak(P, 'koh', t, [[T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open'], [T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open'], [T.ko5d4, SECS.ko5d4, 'Listening_Gesture']]);
