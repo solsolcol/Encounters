@@ -164,12 +164,16 @@
        and his right wrist turned 41 to 49 degrees toward his little finger through his bind (a real wrist's 30 to 40), and
        Grandmaster Pho's left shoulder back 66 to 71 in his run and his gold. Each frame, after the takes and his grip, each
        arm is read by jointscan's own measures (the same formulas, so the check and the limit never differ) and, only where
-       it is past them, brought back to the edge: the upper arm turned forward to LIM5.back from the body's front (the
-       forearm and hand going with it), and the hand turned on the wrist back inside LIM5's bends (its twist and its fingers
-       kept). A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
+       it is near or past them, eased inside: the upper arm turned forward toward the body's front to LIM5.back (the forearm
+       and hand going with it), and the hand turned on the wrist inside LIM5's bends (its twist and its fingers kept). A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
        v11.5), so nothing stacks, and given back where the arm is inside its range. Grandmaster Pho's right arm is his grip's
        (PHOGRIP5 lays it) while the stick is in his hand) */
-    const LIM5 = { back: 55, toLittle: 35, toThumb: 20, flex: 65, bentBack: 55 }, D2R5 = Math.PI / 180;
+    /* (each limit SOFT: [the knee where it begins to give, the edge it never passes], degrees; between them the take's bend is
+       eased toward the edge (tanh), so an arm swinging through it slows into it and comes back, never stops dead on a line:
+       a hard stop holds a runner's arm still for a tenth of a second at the back of every swing) */
+    const LIM5 = { back: [42, 54], toLittle: [-28, -38], toThumb: [14, 22], flex: [55, 68], bentBack: [-45, -57] }, D2R5 = Math.PI / 180;
+    const softHi = (x, k, m) => (x <= k ? x : k + (m - k) * Math.tanh((x - k) / (m - k)));
+    const softLo = (x, k, m) => (x >= k ? x : k - (k - m) * Math.tanh((k - x) / (k - m)));
     const _l = { a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3(), e: new THREE.Vector3(), f: new THREE.Vector3(), g: new THREE.Vector3(),
       h: new THREE.Vector3(), i: new THREE.Vector3(), j: new THREE.Vector3(), q: new THREE.Quaternion(), r: new THREE.Quaternion(), s: new THREE.Quaternion() };
     function limKeep(L, b) { const S = L.get(b) || (L.set(b, { take: new THREE.Quaternion(), wrote: null }), L.get(b));
@@ -192,7 +196,8 @@
         /* THE SHOULDER thrown back (read on an arm below the level, as jointscan reads it) */
         { up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
           const sh = up.getWorldPosition(_l.g), u = fo.getWorldPosition(_l.h).sub(sh).normalize(), dn = -u.dot(U), ext = Math.atan2(-u.dot(F), dn) / D2R5;
-          if (ext > LIM5.back && dn > 0.2) { const lat = u.dot(Lf), k = Math.sqrt(Math.max(0, 1 - lat * lat)), a = LIM5.back * D2R5;
+          const ext1 = softHi(ext, LIM5.back[0], LIM5.back[1]);
+          if (ext1 < ext - 0.05 && dn > 0.2) { const lat = u.dot(Lf), k = Math.sqrt(Math.max(0, 1 - lat * lat)), a = ext1 * D2R5;
             const want = _l.i.copy(Lf).multiplyScalar(lat).addScaledVector(U, -Math.cos(a) * k).addScaledVector(F, -Math.sin(a) * k).normalize();
             limTurn(L.get(up), up, _l.q.setFromUnitVectors(u, want)); } }
         /* THE WRIST: the fingers' line against the forearm's, toward the palm or the back, toward the thumb or the little finger */
@@ -203,8 +208,8 @@
         const n = _l.b.crossVectors(f, ac).multiplyScalar(side).normalize(), ne = n.addScaledVector(e, -n.dot(e)).normalize(), re = ac.addScaledVector(e, -ac.dot(e)).normalize();
         const fe = f.dot(e); if (fe < 0.05) continue;
         const wf = Math.atan2(f.dot(ne), fe) / D2R5, wd = Math.atan2(f.dot(re), fe) / D2R5;
-        const wf1 = Math.max(-LIM5.bentBack, Math.min(LIM5.flex, wf)), wd1 = Math.max(-LIM5.toLittle, Math.min(LIM5.toThumb, wd));
-        if (wf1 === wf && wd1 === wd) continue;
+        const wf1 = softLo(softHi(wf, LIM5.flex[0], LIM5.flex[1]), LIM5.bentBack[0], LIM5.bentBack[1]), wd1 = softLo(softHi(wd, LIM5.toThumb[0], LIM5.toThumb[1]), LIM5.toLittle[0], LIM5.toLittle[1]);
+        if (Math.abs(wf1 - wf) < 0.05 && Math.abs(wd1 - wd) < 0.05) continue;
         const want = _l.c.copy(e).addScaledVector(ne, Math.tan(wf1 * D2R5)).addScaledVector(re, Math.tan(wd1 * D2R5)).normalize();
         limTurn(L.get(hd), hd, _l.q.setFromUnitVectors(f, want));
       }
