@@ -27,6 +27,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 GLB = os.path.join(ROOT, 'assets/p5pho.glb')
 OUT = os.path.join(ROOT, 'masters/v28.0/parts/c_phodark.js')
 SIZE, DARK, AMAX, CHART_ROBE, STEP, RING, BIG, CLEAR, GROW = 1024, 0.55, 400, 0.5, 0.25, 0.8, 600, 16, 2
+LINE = 5.0                                                     # (an island this many times longer than wide is a line)
+if os.environ.get('PHODARK'):                                  # (a variant measured before it is written in: k=v,...)
+    for kv in os.environ['PHODARK'].split(','):
+        k, v = kv.split('='); globals()[k] = type(globals()[k])(float(v))
 
 
 def sheet():
@@ -79,6 +83,11 @@ def main():
         sub = lab[Y0:Y1, X0:X1] == i
         if near_big[Y0:Y1, X0:X1][sub].any():
             why['strand'] += 1; continue
+        ys_, xs_ = np.nonzero(sub)
+        if len(ys_) > 8:
+            ev = np.linalg.eigvalsh(np.cov(np.vstack([ys_, xs_]).astype(float)) + 1e-6 * np.eye(2))
+            if np.sqrt(ev[1] / max(ev[0], 1e-6)) > LINE and np.sqrt(ev[1]) * 4 > 20:
+                why['line'] = why.get('line', 0) + 1; continue      # (a seam, a fold's edge: a line, never a speck)
         o = own[Y0:Y1, X0:X1][sub]
         c = int(np.bincount(o).argmax())
         if crobe[c] < CHART_ROBE:

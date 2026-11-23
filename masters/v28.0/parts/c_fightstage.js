@@ -1451,12 +1451,17 @@
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
         const st = FS5.st; if (!st) return false; this.clear();
-        const L = st.prai[0], w = fsW(L.x, L.z);
+        const L = st.prai[0];
+        /* (a Prai still waiting has no place on the court yet (its rules stand it at the court's middle, where Master Zavier
+           is): the lab's own is set two metres before him, toward the doorway, and shown coming, so what is drawn on it is
+           drawn where it stands: e4c5bindat.mjs found the bind's bubble on his own body) */
+        if (L.st === 'waiting') { L.x = Math.max(-2.2, Math.min(2.2, st.zav.x + 0.5)); L.z = Math.max(-2.5, st.zav.z - 2.0); L.st = 'coming'; L.labWas = 'waiting'; }
+        const w = fsW(L.x, L.z);
         if (name === 'labBall') fsBallStart({ x: L.x, z: L.z, id: L.id }, 0);
         else if (name === 'labLand') fsEvents([{ e: 'land', result: 'chased', id: L.id, x: L.x, z: L.z }]);
-        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
+        else if (name === 'labTired') { L.labWas = L.labWas || L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
           fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
-        else if (name === 'labBind') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
+        else if (name === 'labBind') { L.labWas = L.labWas || L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
         else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
         else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
         else if (name === 'labStreak') fsStreak(L, false);
