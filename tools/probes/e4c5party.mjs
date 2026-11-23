@@ -10,9 +10,9 @@
    are never touched (build 38's first pictures set EVERY animation to 150 ms, so the list's entrance was rewound with the
    switch and the tiles stood half off the screen, which the game never does):
      01 idle (Grandmaster Pho played: his tile lit), 02 a REAL TAP on Master Zavier's tile, frozen 0.15 s into the switch
-     (the flash, the sweep, the sparks, the edge's glow), 03 the same 0.45 s in, 04 settled (his tile lit), 05 the call (the
-     switch's ask: the other tile's beat and chevrons, frozen at the beat's height), then on a desktop 06 idle with the Tab
-     chip and 07 after Tab.
+     (the flash, the sweep, the sparks, the edge's glow), 03 settled (his tile lit), 04 the call (the switch's ask: the
+     other tile's beat and chevrons, frozen at the beat's height), then on a desktop 05 idle with the Tab chip and 06 after
+     Tab.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... [CHFILE=<chapter.js>] [OUT=dir] [DESK=0] node tools/probes/e4c5party.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -43,6 +43,9 @@ async function open(ctxOpts) {
   await p.waitForFunction(() => { const s = window.__enc.kit.tagState(); return s.party && s.party.tiles.length === 2 && !s.party.tiles[1].blocked; }, null, { timeout: 120000, polling: 300 });
   /* (the list's entrance played out, then held still for the pictures) */
   await p.waitForFunction(() => { const s = window.__enc.kit.tagState(); return s.party && s.party.tiles.length === 2; }, null, { timeout: 120000, polling: 300 });
+  /* (and its entrance played out: on a box that draws a frame a second, 1.5 s after the tiles exist the slide-in can still be
+     running, and a picture or a tap then catches the tiles half off the screen: build 38's first pictures) */
+  await p.waitForFunction(() => { const a = document.getAnimations().filter(x => x.animationName === 'tpIn'); return a.length > 0 && a.every(x => x.playState === 'finished'); }, null, { timeout: 120000, polling: 200 });
   await p.waitForTimeout(1500);
   return { ctx, p, lab };
 }
@@ -58,12 +61,17 @@ const FREEZE = `window.__freezeAt = (ms) => { window.__newA = [];
   window.__frozen = true; return window.__newA.length; };`;
 const armFreeze = (p, ms) => p.evaluate(([ms, F]) => { (0, eval)(F); window.__frozen = false;
   window.__preA = new Set(document.getAnimations());
+  /* (the switch's sparks and glow are taken off 0.95 s after they are laid, on the wall's clock; a picture here takes longer
+     than that, so while the moment is held they are kept: their removal waits for the thaw) */
+  if (!window.__rm0) { window.__rm0 = Element.prototype.remove; window.__held = [];
+    Element.prototype.remove = function () { if (window.__frozen && this.parentNode && this.parentNode.id === 'tagPartyFx') { window.__held.push(this); return; } return window.__rm0.call(this); }; }
   const fx = document.getElementById('tagPartyFx');
   const mo = new MutationObserver(() => { if (!fx.children.length) return; mo.disconnect(); window.__freezeAt(ms); });
   mo.observe(fx, { childList: true }); return true; }, [ms, FREEZE]);
 /* the same moment's animations moved on to `ms` (the rest stay as they were frozen) */
 const freezeNow = (p, ms) => p.evaluate((ms) => { for (const a of window.__newA || []) { try { const end = (a.effect && a.effect.getComputedTiming().endTime) || ms; a.currentTime = Math.min(ms, Number.isFinite(end) ? end : ms); } catch {} } return (window.__newA || []).length; }, ms);
-const thaw = (p) => p.evaluate(() => { for (const a of document.getAnimations()) { if (a.playState === 'paused') { try { a.play(); } catch {} } } return true; });
+const thaw = (p) => p.evaluate(() => { window.__frozen = false; for (const a of document.getAnimations()) { if (a.playState === 'paused') { try { a.play(); } catch {} } }
+  for (const e of (window.__held || []).splice(0)) window.__rm0.call(e); return true; });
 
 /* THE PHONE */
 { const { ctx, p } = await open({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -75,7 +83,10 @@ const thaw = (p) => p.evaluate(() => { for (const a of document.getAnimations())
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await p.waitForFunction(() => window.__frozen, null, { timeout: 60000, polling: 50 });
   await pic(p, 'phone-switch-150ms');
-  await freezeNow(p, 450); await pic(p, 'phone-switch-450ms');
+  /* (no picture at 0.45 s: moved on while frozen for a second time, a box with no graphics card drew the second tile and the
+     buttons' faces as empty, 13 s after the tap, though every one of them stood in the page whole, at full opacity and
+     visible: dbgpartyflip.mjs read the real game frame by frame through a switch and found no frame without them, and no
+     switch animation touches opacity or visibility. A frozen picture is the probe's; the samples are the game's) */
   await thaw(p); await p.waitForTimeout(2500);
   await pic(p, 'phone-zavier');
   /* the call: the switch asks for the other one (his teacher's tile). The fight writes the switch's ask every frame from its
