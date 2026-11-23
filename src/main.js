@@ -8098,6 +8098,14 @@ function kitFilm(key, opts = {}) {
      ctx.sealedBefore — for the three possessions and the counter's two films, the purpose's own words). A
      probe's __enc.cine.skip() still ends it. Absent, every film is exactly as it was. */
   c.noSkip = !!opts.noSkip;
+  /* v28.0 · THE SEVENTY-THIRD SEAM: `layFirst` (R75's debug, the films lens's V5). A film from play is begun inside the
+     chapter's frame, after that frame's cineUpdate, so the frame drawn next shows the world before any of the film's tracks
+     have run: the play lens (the tag mode's boom already let go), the fade still play's, and whatever the chapter set at
+     the film's start (episode 4 chapter 5's Naga marks, laid "under its white") seen for that one frame. With `layFirst`
+     the film's first instant is laid at once: every track that begins at 0 (its lens, its fade, its first steps), as
+     cineUpdate would lay it a frame later; stings are not fired here (cineUpdate fires those from 0 as always). Opt-in:
+     absent, a film begins exactly as it always has (every other chapter's films; episode 1 never calls kit.film) */
+  if (opts.layFirst) cineSeek(0);
   return true;
 }
 /* ══ v28.0 · THE SIXTIETH SEAM: THE TAG MODE (a chapter's `tag` declaration, and kit.tag) ═════════════════════════════

@@ -577,6 +577,11 @@ body.tagOn.cardup #tagHud,body.tagOn.evopen #tagHud,body.tagOn.cine #tagHud,body
 #tagHud .tagBtn.call.on{animation:tagCallHeld .5s ease-in-out infinite;filter:brightness(1.3)}
 @keyframes tagCallHeld{0%,100%{transform:scale(1.14);box-shadow:0 0 60px 26px rgba(255,236,170,1),0 0 130px 60px rgba(176,128,255,.8)}50%{transform:scale(1.2);box-shadow:0 0 80px 34px rgba(255,244,200,1),0 0 150px 70px rgba(186,140,255,.85)}}
 #tagHud:has(.tagBtn.call:not(.hide)) .tagBtn:not(.call){opacity:0 !important;pointer-events:none}
+/* (v28.0, R75's debug GC: the call stands where a phone's caption does, upright or on its side, and over it: its words hid
+   behind it while the lines that ask for it were said. While it stands, the caption goes above it, 12 px clear) */
+@media (max-width:640px),(max-height:600px){
+  body.tagOn:not(.cine):has(#tagHud .tagBtn.call:not(.hide)) #caption{bottom:calc(39vh + 82px)}
+}
 @media (max-height:500px){#tagHud .tagBtn.call{top:58%;width:112px;height:112px;margin:-56px 0 0 -56px}}
 @media (prefers-reduced-motion:reduce){#tagHud .tagBtn.call,#tagHud .tagBtn.call::before,#tagHud .tagBtn.call::after{animation:none}}
 .tagSw .tgFace{display:block;width:30px;height:30px;border-radius:50%;overflow:hidden;pointer-events:none}

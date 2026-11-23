@@ -333,6 +333,11 @@
       /* each ending's own colour, from its first picture to its close (M15 to M18), and its own beats */
       if (k === 'A') {
         sfx(0.2, 'u5m15endA', 0.6);                                            // M15: an order obeyed, unresolved
+        /* (R75's debug, V2: M15's body holds to 41 s of its 49.3 and is under -32 dBFS from 41.5, so his teacher's last words
+           and "He will buy again..." had no music until M19, and the close's fade faded nothing. The piece again, da capo, as
+           B's (R33): its pulse 0.417 s, its last strong note 40.90 s into the file, the second copy's first (0.05 s into
+           it) one pulse after it) */
+        sfx(0.2 + 41.27, 'u5m15endA', 0.6);
         sfx(E.co5A1, 'co5A1', 1);                                              // "All? Even the ones that did nothing?"
         sfx(E.q5A1, 'q5A1', 1);                                                // "All."
         sfx(E.push + 0.25, 'u5slide', 0.7);                                    // the case pushed across the cloth, as a man pays a fine

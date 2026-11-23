@@ -526,7 +526,7 @@
       fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
       fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
-      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nBag: E.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and lend: E.',
       objFight1: 'Grandmaster Pho: fire at the Prai.',
       objFight1b: 'It hid. Master Zavier smells it out.',
       objFight2: 'Master Zavier: bind it.',
@@ -6903,6 +6903,9 @@
            fsProps); these are the same numbers, for the simulation, which has no world) */
         props: [[-0.35, -1.75, 0.22], [0.35, -1.9, 0.12], [0.52, -2.55, 0.18]],
         // FIRE (Grandmaster Pho's main act)
+        // (R75's GE: R21's guard against a masher, the smell's price gone with its button: fightsim, 300 a player, masher
+        // 74.7 % to 15.3 % first try, careful 95.7 % both, slow, late and optimal unchanged)
+        emptyFire: 3, switchCost: 2, switchSpam: 1.0,
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
@@ -6992,7 +6995,9 @@
         // words (its first wordings are the lesson's own lines, said once there)
         shown:    { pho: ['ph5nt1', 'ph5nt2', 'ph5ns3'], zav: ['ph5f8', 'ph5ns2', 'ph5f4'] },
         bound:    { pho: ['ph5f6', 'ph5nq1', 'ph5f1'], zav: ['ph5f5', 'ph5nc2', 'ph5nc3'] },
-        tired:    { pho: ['ph5nd2', 'ph5nd3', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },   // (R71: no "Go to it")
+        // (R71: no "Go to it". R75's debug, GK: its first wording is the lesson's, whose Prai is held and cannot rise: "BAG it."
+        // there, and "before it rises" from the next, in the fight, where a tired one does)
+        tired:    { pho: ['ph5nd3', 'ph5nd2', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },
         keep:     { zav: ['ph5nr1', 'ph5nr2', 'ph5f4'] },
         slip:     { pho: ['ph5nw1', 'ph5nw2', 'ph5ns3'], zav: ['ph5nx1', 'ph5nx2', 'ph5f4'] },
         come:     { pho: ['ph5nk2', 'ph5nt2', 'ph5ns3'], zav: ['ph5ng1', 'ph5ng2', 'ph5f4'] },
@@ -7108,7 +7113,7 @@
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, waveFrom: n.waveWait, wind: 0, ring: null, draw: 0 },
           zav: { x: n.zavAt[0], z: n.zavAt[1], cx: n.zavAt[0], cz: n.zavAt[1], bindWait: 0, smellWait: 0, look: 0 },
           cage: { str: n.cageMax, broken: false, lent: 0 },
-          prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, film: 0,
+          prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
           said: {}, cur: null,
@@ -7159,6 +7164,7 @@
         st.voice.q.push({ key, prio, by: st.t + (late !== undefined ? late : (prio >= 2 ? st.n.lessonLate : st.n.colourLate)) });
       }
       function voiceTick(st, io) {
+        if (st.joined) return;                                   // (joined: the line in the air is the last before the Naga)
         const v = st.voice, n = st.n, nd = st.cur;
         const id = nd && NEEDLINES[nd.id] && NEEDLINES[nd.id][isP(st) ? 'pho' : 'zav'] ? nd.id : '';
         if (id !== v.need) { v.need = id; v.needSince = st.t; v.needSaid = -99; }
@@ -7202,7 +7208,7 @@
         if (act === 'RETRY') return st.stage === 'lost' ? '' : 'stage';
         if (act === 'LEAD') return st.stage === 'lost' && st.losses >= 3 ? '' : 'stage';
         if (act === 'FILMDONE') return st.stage === 'naga' ? '' : 'stage';
-        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together &&
+        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together && !st.joined &&
                                        wallGap(n, st.pho) >= n.wallOff - 0.01 && wallGap(n, st.zav) >= n.wallOff - 0.01 ? '' : 'stage';
         if (st.stage !== 'learn' && st.stage !== 'fight' && st.stage !== 'last') return 'stage';
         if (st.lock > 0) return 'lock';
@@ -7272,7 +7278,10 @@
           else continue;
           if (onFlight(st, p.id)) r += 20;                       // a ball already on its way to it comes last
           const dP = dist(ph.x, ph.z, p.x, p.z);
-          if (dP > n.fireReach) continue;
+          /* (R75's debug, GI: a bound Prai stands still, and his fire reaches it wherever it stands on the court, as the
+             lesson's one does: the reach was the court's when it was set (6.5 m on a court 7 m across) and R46 doubled the
+             court, so "FIRE" was said, and the button asked, at one he could not reach) */
+          if (dP > n.fireReach && p.st !== 'bound' && st.stage !== 'learn') continue;
           const s = r * 100 + (r === 0 ? dP : dist(z.x, z.z, p.x, p.z));
           if (s < bs) { bs = s; best = p; }
         }
@@ -7333,6 +7342,11 @@
           case 'FILMDONE': layThree(st); return;
           case 'TOGETHER': st.together = n.togetherSecs; st.ev.push({ e: 'together' }); return;
           case 'SWITCH':
+            /* (R75's debug, GE: R21's guard against a button masher (an empty smell's price) went with the smell button at
+               R62. A switch made straight back, inside switchSpam of the last, is the masher's own signature and costs him
+               switchCost of his sanity: a careful pair switches, acts, and switches back well outside it) */
+            if (n.switchCost > 0 && st.stage === 'fight' && st.t - (st.lastSw == null ? -99 : st.lastSw) < n.switchSpam) { st.owe += n.switchCost; st.stats.spam = (st.stats.spam || 0) + 1; }
+            st.lastSw = st.t;
             st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
             st.ev.push({ e: 'switch', to: st.who });
@@ -7344,6 +7358,9 @@
             const ask = askOf(st, 'FIRE');
             if (!cloud) target = (input && input.pick ? fireTarget(st, input.pick) : null) || (ask ? fireTarget(st, ask) : null) || fireTarget(st, 0);
             const f = { id: target ? target.id : 0, cloud, t: n.flight, ai: false, x: 0, z: 0 };
+            /* (R75's debug, GE: and a fireball thrown at nothing at all (no Prai and no cloud for it) costs him emptyFire: the
+               screen never asks for one, so only a masher throws it) */
+            if (!target && !cloud && n.emptyFire > 0 && st.stage === 'fight') { st.owe += n.emptyFire; st.stats.emptyFire = (st.stats.emptyFire || 0) + 1; }
             if (target) { f.x = target.x; f.z = target.z; }
             else if (cloud) { for (const c of st.clouds) if (c.id === cloud) { f.x = c.x; f.z = c.z; } }
             else { f.x = ph.x * 0.5; f.z = ph.z - 2.2; }       // nothing to aim at: it rises and falls on the open paving
@@ -7534,9 +7551,15 @@
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
-              if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
+            if (st.together <= 0) { st.together = 0; st.joined = 1; st.voice.q.length = 0; }
           }
+          /* (R75's debug, the fight lens's GA: the fill done while a line was still being said, the Naga was called at once
+             and its film held back for the line: the two set at their marks in plain play, held there, the boom easing in.
+             Joined, the fight now plays on as it was, no new line begun, until the line in the air has been said; then the
+             Naga is called, and the marks are laid under the film's opening white (R64: "this rearranging should not be seen
+             by the player") */
+          if (st.joined && st.t >= st.voice.until) { st.joined = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
+            if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
         } else if (st.stage === 'naga') {
           st.film += dt; timed(st, 'naga', st.film);
           if (st.film >= n.filmGuard) layThree(st);               // a film that never says it ended cannot hold the fight
@@ -7687,7 +7710,11 @@
              sim never sets it), else from where he stands) */
           const sx = ph.strike ? ph.strike.x : ph.x, sz = ph.strike ? ph.strike.z : ph.z;
           ph.ring = { r: 0, x: sx, z: sz, touched: 0, gathered: 0 };
-          for (const p of st.prai) if (p.st === 'rushing') { ph.ring.touched |= 1 << p.id; throwBack(st, p, ph.ring); }   // crowded round him: the ring's first instant
+          /* (crowded round him: the ring's first instant. R75's debug, GB: these were thrown with no word to the stage, so the
+             ones nearest him, the most seen, had no blast, no flinch, no shake and no sound of R61's; each is told now, a
+             moment apart (`after`), so each is heard and felt as its own hit) */
+          let nh = 0;
+          for (const p of st.prai) if (p.st === 'rushing') { ph.ring.touched |= 1 << p.id; st.ev.push({ e: 'waveHit', id: p.id, gathers: false, after: 0.07 * nh++ }); throwBack(st, p, ph.ring); }
           st.ev.push({ e: 'wave', x: sx, z: sz });
           if (!st.firsts.waveOut) { st.firsts.waveOut = true; sayOnce(st, 'ju5c1', 5.0); }
         }
@@ -7837,6 +7864,13 @@
               const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
           else for (let r = 0.04; r <= 1.5 && !best; r += 0.04) for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12, qx = p.x + Math.cos(a) * r, qz = p.z + Math.sin(a) * r;
               const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } }
+          /* (R75's debug, GN: his ring all taken (his teacher on it and three bubbles round his bars), a pressing one found no
+             clear place on it and was left standing in a body. It stands, still pressing, just outside the ring instead, on
+             the nearest clear place out from it along its own line first) */
+          if (ring && !best) { const a0 = Math.atan2(p.z - z.z, p.x - z.x);
+            for (let r = ring + 0.04; r <= ring + 1.5 && !best; r += 0.04) for (let k = 0; k <= 36 && !best; k++) for (const sg of k ? [1, -1] : [1]) {
+              const a = a0 + sg * k * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
           if (best) { p.x = best.x; p.z = best.z; }
         }
       }
@@ -8050,7 +8084,7 @@
           case 'brief': return mk('start', 'START');
           case 'lost': return mk('retry', 'RETRY');
           case 'won': case 'naga': return null;
-          case 'surge': return st.stageT >= n.togetherAfter && !st.together ? mk('together', 'TOGETHER') : null;
+          case 'surge': return st.stageT >= n.togetherAfter && !st.together && !st.joined ? mk('together', 'TOGETHER') : null;
           case 'last': {
             if (ph.draw > 0) return null;
             const b = bagTarget(st, 0);
@@ -8113,7 +8147,7 @@
           if (st.lesson.wave === 'pending' && bound) return mk('waveL', 'SWITCH', null, !lock);
           // (in the hold a bound Prai is left bound: still, harmless, and the gold's to gather. Fire would tire it, and a
           // tired one rises again and hides; and the bag is closed)
-          if (aBound && !(st.hold > 0)) return dist(ph.x, ph.z, aBound.x, aBound.z) <= n.fireReach ? mk('bound', 'FIRE', aBound, fireOk && !lock) : mk('bound', 'FIRE', aBound, false, true);
+          if (aBound && !(st.hold > 0)) return mk('bound', 'FIRE', aBound, fireOk && !lock);   // (his fire reaches a bound one anywhere: GI)
           if (aTired && !(st.hold > 0)) return bagNeed(st, 'tired', aTired, mk);
           if (aPressCome && st.cage.str < 35) return mk('cage', 'FIRE', aPressCome, fireOk && !lock);   // the cage nearly gone: chase it off
           if (pending) return bound ? mk('waveL', 'SWITCH', null, !lock) : mk('waveB', 'SWITCH', null, !lock);
@@ -8255,7 +8289,9 @@
           act === 'SMELL' ? z.smellWait / n.smellWait : (act === 'SHOCKWAVE' || act === 'LEND') ? ph.waveWait / (ph.waveFrom > 0 ? ph.waveFrom : n.waveWait) : 0;
         const btn = (slot, act, shown) => {
           const w = shown ? why(st, act) : 'stage';
-          return { slot, act, shown: !!shown, live: !w, why: w, wait: Math.max(0, Math.min(1, waitOf(act))), pulse: !!(nd && nd.act === act) };
+          /* (R75's debug, GI: a button asks only when pressing it now does what is asked: never through its wait or a lock,
+             nor while the need is to walk to it first) */
+          return { slot, act, shown: !!shown, live: !w, why: w, wait: Math.max(0, Math.min(1, waitOf(act))), pulse: !!(nd && nd.act === act && nd.ready && !nd.move) };
         };
         const s = SLOT[P ? 'pho' : 'zav'];
         return {
@@ -8266,8 +8302,8 @@
           second: btn('second', s.second, !!s.second && st.stage === 'fight' && st.seen.shock),   // (R62: his teacher's alone)
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
-                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },
-          together: { shown: st.stage === 'surge', live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
+                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH' && nd.ready && !nd.move) },
+          together: { shown: st.stage === 'surge' && !st.joined, live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
           retry: { shown: st.stage === 'lost', lead: st.stage === 'lost' && st.losses >= 3 },
           bubbles: bubbles(st)
         };
@@ -8335,7 +8371,7 @@
     const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', third: 'lend' } };
     const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
-    const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
+    const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0, hitQ: [],
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
                   reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {},
@@ -9326,6 +9362,7 @@
       if (!P || !P.ready) return;
       const T = fsTake[who]; T.pace = pace;
       if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
+      if (who === 'zav' && pace > 0.08 && FS5.zact && FS5.zact.kind === 'smell' && fsZavActing()) fsZavBack(0.15);   // (a walk ends the smell's crouch: GH)
       if (who === 'zav' && (fsZavActing() || FS5.labZPose)) return;     // (his student's act holds him the same way: R34)
       const moving = pace > 0.08;
       if (moving) { T.t = 0; const g = fsGait(P, who, pace); if (!T.walking || g !== T.gait) fsGaitTo(P, who, g, 0.15); }
@@ -9410,6 +9447,11 @@
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
         kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id] });
       }
+      /* (R75's debug, GD: the other one's tile shows his main act's readiness as it is now: only the played one's acts were
+         told, so his gauge stood where it was left when he was last played, and showed BIND ready before he had any) */
+      if (!surge) { const other = played === 'pho' ? 'zavier' : 'pho', oid = FS_ID[other] && FS_ID[other].main;
+        if (oid) { const w = other === 'zavier' ? st.zav.bindWait / Math.max(0.1, FN5.bindWait || 1) : st.pho.fireWait / Math.max(0.1, FN5.fireWait || 1);
+          kit.tagAct(oid, { hidden: other === 'zavier' && !st.seen.bind, wait: w > 0.0005 ? Math.max(0.002, Math.min(1, w)) : 0, pulse: false }); } }
       /* the switch: free once taught; said, never pressed, otherwise (the engine shows it whenever there are two) */
       const sw = H.swap, swWhy = FIGHT.why(st, 'SWITCH');
       let swBlock = null;
@@ -9502,7 +9544,8 @@
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
             /* (R62: it goes out by itself now, whoever is played and while he walks: his crouch and look round only while he
                stands, so a walking body never slides through a crouch; the breath, the ripple and the sounds always) */
-            if (!(fsTake.zav && fsTake.zav.pace > 0.08)) fsZavAct('smell');
+            /* (R75's debug, GH: and never over an act of his in hand (a BIND's push, a LEND), which it cut) */
+            if (!(fsTake.zav && fsTake.zav.pace > 0.08) && !fsZavActing()) fsZavAct('smell');
             fsSmellCast();                                                              // (R34: the breath drawn in)
             fsFx(fsDeal('sniff'), 0.8, null); fsFx('u5sournote', 0.8, null); fsFx('u5ripple', 0.8, null);
             if (kit && kit.chill) { kit.chill(0.22, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.8; }
@@ -9526,7 +9569,8 @@
              GOLD STRIKES EACH ONE, on the frame it reaches it: a blast of gold on its body (a flash, a ring along the paving, a
              spray of sparks thrown away from him), its own hit sound from where it stands, its body knocked (its hit take and
              its cry, unless the gold takes it: the 'gathered' strike follows), and the screen knocked, once each */
-          case 'waveHit': { const p = st.prai[e.id - 1]; if (!p) break; const w = fsW(p.x, p.z), V = fsVis[p.id - 1], y0 = 1.15 * (V ? V.s : 1);
+          case 'waveHit': { if (e.after > 0) { FS5.hitQ.push({ at: FS5.wall + e.after, e }); break; }   // (a crowd's hits, a moment apart: fightTick)
+            const p = st.prai[e.id - 1]; if (!p) break; const w = fsW(p.x, p.z), V = fsVis[p.id - 1], y0 = 1.15 * (V ? V.s : 1);
             const pw = cast.pho ? cast.pho.group.position : null, ax = pw ? w.x - pw.x : 0, az = pw ? w.z - pw.z : 1, aL = Math.hypot(ax, az) || 1;
             fsFx('u5shockhit', 0.95, w.x, w.z);
             fsBloom(w.x, w.z, FS_COL.gold, 1.5);
@@ -9635,7 +9679,7 @@
         st2.prai.forEach((p, i) => { if (p.st === 'laid') { const V = fsVis[i]; V.y = 0; V.s = 0.55; V.lean = 0.55; V.a = 0.65; V.from = null; } });
         FS5.nagaDim = true; };
       const sealed = !!(ctx.sealedBefore && ctx.sealedBefore('e4c5'));
-      if (!kit || !kit.film || !kit.film('together', { noSkip: !sealed, onDone: back })) back();
+      if (!kit || !kit.film || !kit.film('together', { noSkip: !sealed, onDone: back, layFirst: true })) back();
     }
     /* lost: his teacher's line (the rules said it), the card; BEGIN AGAIN begins the FIGHT again (Chad's R14), at stage 3 */
     function fsLost() {
@@ -9660,7 +9704,7 @@
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
       FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
-      FS5.cageAt = null;
+      FS5.cageAt = null; FS5.hitQ = [];
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
       NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
@@ -9699,8 +9743,12 @@
       if (FS5.labZPose && cast.zav && cast.zav.ready) pose(cast.zav, FS5.labZPose.name, FS5.labZPose.t);   // (a probe's: lab.zpose)
       if (!ts.on) return;
       /* the card after a loss waits a moment of the court going dark */
-      if (FS5.card && FS5.wall >= FS5.cardAt) { const c = FS5.card; FS5.card = null; c(); }
+      /* (R75's debug, GJ: and for the loss's own line, "Enough. Breathe. We begin again." (3.9 s): a BEGIN AGAIN pressed under
+         it began the fight over it, and a new prompt took its caption) */
+      if (FS5.card && FS5.wall >= Math.max(FS5.cardAt, (FS5.lineEnd || 0) + 0.25)) { const c = FS5.card; FS5.card = null; c(); }
       if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
+      /* (the gold's hits on a crowd, each told a moment after the last: R75's GB) */
+      if (FS5.hitQ.length) { const due = FS5.hitQ.filter(h => FS5.wall >= h.at); if (due.length) { FS5.hitQ = FS5.hitQ.filter(h => FS5.wall < h.at); fsEvents(due.map(h => Object.assign({}, h.e, { after: 0 }))); } }
       if (FS5.wonAt >= 0) { fsWonTick(); }
       FS5.live = ts.live;
       const dt = Math.max(0, Math.min(0.1, ts.t - FS5.lastT)); FS5.lastT = ts.t;
@@ -9709,7 +9757,8 @@
       /* 1. the walk the engine made, handed to the rules from where they last had him */
       let mx = 0, mz = 0;
       const P = played === 'pho' ? phoB : zavB, key = played === 'pho' ? 'pho' : 'zav', R = played === 'pho' ? st.pho : st.zav;
-      if (P && st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won') {
+      const nagaHeld = st.stage === 'naga' && !FS5.film;          // (the Naga called, its film not yet begun: the court held as it stands)
+      if (P && st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won' && !nagaHeld) {
         const now = fsL(P.x, P.z), was = FS5.last[key] || now, sp = played === 'pho' ? (FN5.phoWalk || 1.2) : (FN5.zavWalk || 0.6);
         const dx = now.x - was.x, dz = now.z - was.z, m = dt > 0 ? Math.hypot(dx, dz) / (sp * dt) : 0;
         R.x = was.x; R.z = was.z;
@@ -9747,12 +9796,14 @@
          it is live (FIGHT.NUM togetherAfter) always lets finish before its film begins on it, and held through the win, whose
          film (bagtied) begins on it too; eased back over 0.8 s if the fight begins again. Asked only when it changes; the
          engine lets go of it as the mode is left */
-      { const want = st.stage === 'surge' || st.stage === 'last' || st.stage === 'won';
+      /* (R75's debug, GA: and through the Naga's film, which ends on the pulled boom: left out, the boom eased in under the
+         film and play's first frame after it jumped in and slid out again) */
+      { const want = st.stage === 'surge' || st.stage === 'naga' || st.stage === 'last' || st.stage === 'won';
         if (want !== FS5.pulled && kit && kit.tagBoom && kit.tagBoom(want ? PULL5 : null, { secs: want ? 1.4 : 0.8 })) FS5.pulled = want; }
       /* 4. where the rules stopped him, he stops: the played one set back to the rules' place; the other moved by the rules */
       const playedNow = kit.tagState().played === 'zavier' ? 'zavier' : 'pho';
       for (const who of ['pho', 'zavier']) {
-        const B = who === 'pho' ? phoB : zavB, R2 = who === 'pho' ? st.pho : st.zav, k2 = who === 'pho' ? 'pho' : 'zav'; if (!B) continue;
+        const B = who === 'pho' ? phoB : zavB, R2 = who === 'pho' ? st.pho : st.zav, k2 = who === 'pho' ? 'pho' : 'zav'; if (!B || nagaHeld) continue;
         const w = fsW(R2.x, R2.z), off = Math.hypot(w.x - B.x, w.z - B.z);
         /* (the played one kept in by the rules keeps walking along what kept him (R25): only the push into it is lost) */
         if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z, { keep: true }); }
@@ -9770,7 +9821,8 @@
       /* (his teacher stands still while the gold gathers and while the bag draws: the rules' own; and for his swing) */
       const still = !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last');
       kit.tagBody('pho', { root: still || st.pho.wind > 0 || st.pho.draw > 0 || (!!FS5.act && FS5.act.kind === 'phoFire' && fsActing()) });
-      kit.tagBody('zavier', { root: still || fsZavActing() });
+      /* (R75's debug, GH: the smell's crouch, which comes by itself, roots no one: a walk begun under it ends it) */
+      kit.tagBody('zavier', { root: still || (fsZavActing() && FS5.zact.kind !== 'smell') });
       fsZavActTick();
       fsFaces(wdt, playedNow);
       /* 5. the screen and the court */
@@ -10023,7 +10075,7 @@
          line (the Naga's film waiting for it, minutes after a replay), his act's span (rooted until it passed), the shake,
          the Naga's wait, the bag's run, the call's rise, the bag's snap. Each back to what a fresh build has) */
       FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
-      FS5.nagaDim = false; FS5.windT = 0;
+      FS5.nagaDim = false; FS5.windT = 0; FS5.hitQ = [];
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
@@ -12359,7 +12411,7 @@
        the engine will not play (not in play, or no such film) costs the film, never the story: its hand-off runs */
     function film(key, next) {
       const run = play.run, go = () => { if (live(run)) next(); };
-      if (!kit || !kit.film || !kit.film(key, { onDone: go })) go();
+      if (!kit || !kit.film || !kit.film(key, { onDone: go, layFirst: true })) go();
     }
     /* A NEED'S PROMPTS (the plan's 7.1): while a need stands its line comes round again, never over another voice, in
        turn through its wordings; the times are seconds since the need began, the last one's gap repeating */
@@ -12657,7 +12709,8 @@
     function askPatience(wdt) {
       if (phase !== 'ask' || !decOpen || heard.has('co5t7')) return;
       ask5.wall += wdt;
-      if (ask5.wall > 30) { heard.add('co5t7'); if (worldSfx && !(soundOff && soundOff())) worldSfx('co5t7', 1, 1, 0); }
+      /* (R75's debug, V1: its source kept, so the ending an answer begins stops it: a world line is never stopped by a film) */
+      if (ask5.wall > 30) { heard.add('co5t7'); if (worldSfx && !(soundOff && soundOff())) play.patSrc = worldSfx('co5t7', 1, 1, 0); }
     }
 
     /* ---------------------------------------------------------------- THE THINGS HE CAN PRESS (each offered only in its
@@ -14320,7 +14373,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
           const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', tau);
-          if (tau < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          /* (R75's debug, V3: and back in his hand under the cut to the door (Mr Koh's line), so the film's last shot, the
+             fight's own lens, and the last stage after it find it where his walk and his bag need it: it stood planted on
+             the court through the whole last stage, and jumped into his hand on the bag-tied film's first frame) */
+          if (tau < T.plant + 1.7 || tau >= T.ko5c2) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
           /* (home: his eyes on the stick's head as the head goes in and its body pours after it; following the head on into
              the stick he looked at the lens, the lab's picture of the new home shot) */
           fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
@@ -14714,6 +14770,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     FILMS5.ending = {
       begin(k, api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
+        /* (R75's debug, V1: "Take your time. I am not going anywhere." answered while it is said was said on under the ending's
+           first line, the same voice twice: it is brought down in a tenth of a second as the ending begins) */
+        { const ps = typeof play === 'object' && play ? play.patSrc : null; if (ps) { play.patSrc = null;
+          try { const c = ps.context, g = ps.__g && ps.__g.gain; if (g && c) { const t = c.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.1); ps.stop(t + 0.12); } else ps.stop(); } catch (e) { } } }
         if (api && api.handsRoot) api.handsRoot.visible = false;
         fmShow(cast.phoS, true); fmShow(cast.col, true); PIECES5.set(true);
         RITE5.bowl.visible = true;
@@ -15397,6 +15457,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* each ending's own colour, from its first picture to its close (M15 to M18), and its own beats */
       if (k === 'A') {
         sfx(0.2, 'u5m15endA', 0.6);                                            // M15: an order obeyed, unresolved
+        /* (R75's debug, V2: M15's body holds to 41 s of its 49.3 and is under -32 dBFS from 41.5, so his teacher's last words
+           and "He will buy again..." had no music until M19, and the close's fade faded nothing. The piece again, da capo, as
+           B's (R33): its pulse 0.417 s, its last strong note 40.90 s into the file, the second copy's first (0.05 s into
+           it) one pulse after it) */
+        sfx(0.2 + 41.27, 'u5m15endA', 0.6);
         sfx(E.co5A1, 'co5A1', 1);                                              // "All? Even the ones that did nothing?"
         sfx(E.q5A1, 'q5A1', 1);                                                // "All."
         sfx(E.push + 0.25, 'u5slide', 0.7);                                    // the case pushed across the cloth, as a man pays a fine

@@ -542,7 +542,7 @@ async function main() {
   if (T.slow) req(tw('slow') >= 90, `a slow human (400 ms, 15% wrong) wins within two tries in 90% or more (${tw('slow').toFixed(1)}%)`);
   if (T.late) req(tw('late') >= 90, `the pair played a second and a half late on every press wins within two tries in 90% or more (${tw('late').toFixed(1)}%)`);
   if (T.optimal) req(fw('optimal') >= 99.5, `the optimal player wins at the first try (${fw('optimal').toFixed(1)}%)`);
-  for (const w of ['never', 'onlyPho', 'onlyZav', 'nothing']) if (T[w]) req(fw(w) === 0 && T[w].firstLossAt.length === T[w].n, `${w}: never wins the fight and always loses it, never stalls (${fw(w).toFixed(1)}% won, ${T[w].firstLossAt.length} of ${T[w].n} lost)`);
+  for (const w of ['never', 'onlyPho', 'onlyZav', 'nothing']) if (T[w]) req(fw(w) === 0 && T[w].firstLossAt.length === T[w].n, `${w}: never wins the fight and always loses its first try (${fw(w).toFixed(1)}% won, ${T[w].firstLossAt.length} of ${T[w].n} lost; once led, one free at a time, a player who will not switch may stand on the switch the screen asks for: R75's GF)`);
   if (T.masher && T.careful) req(fw('masher') < fw('careful') - 20, `the button masher wins far less often than the careful player (${fw('masher').toFixed(1)}% against ${fw('careful').toFixed(1)}%)`);
   if (T.masher && T.optimal && T.masher.lens.length) req(median(T.masher.lens) > median(T.optimal.lens), `the button masher never wins faster than the pair played well (${mmss(median(T.masher.lens))} against ${mmss(median(T.optimal.lens))})`);
   req(!Object.keys(illegal).length, 'every move a Prai made is in the state list');

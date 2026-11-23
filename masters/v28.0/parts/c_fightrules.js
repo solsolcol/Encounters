@@ -140,6 +140,9 @@
            fsProps); these are the same numbers, for the simulation, which has no world) */
         props: [[-0.35, -1.75, 0.22], [0.35, -1.9, 0.12], [0.52, -2.55, 0.18]],
         // FIRE (Grandmaster Pho's main act)
+        // (R75's GE: R21's guard against a masher, the smell's price gone with its button: fightsim, 300 a player, masher
+        // 74.7 % to 15.3 % first try, careful 95.7 % both, slow, late and optimal unchanged)
+        emptyFire: 3, switchCost: 2, switchSpam: 1.0,
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
@@ -229,7 +232,9 @@
         // words (its first wordings are the lesson's own lines, said once there)
         shown:    { pho: ['ph5nt1', 'ph5nt2', 'ph5ns3'], zav: ['ph5f8', 'ph5ns2', 'ph5f4'] },
         bound:    { pho: ['ph5f6', 'ph5nq1', 'ph5f1'], zav: ['ph5f5', 'ph5nc2', 'ph5nc3'] },
-        tired:    { pho: ['ph5nd2', 'ph5nd3', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },   // (R71: no "Go to it")
+        // (R71: no "Go to it". R75's debug, GK: its first wording is the lesson's, whose Prai is held and cannot rise: "BAG it."
+        // there, and "before it rises" from the next, in the fight, where a tired one does)
+        tired:    { pho: ['ph5nd3', 'ph5nd2', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },
         keep:     { zav: ['ph5nr1', 'ph5nr2', 'ph5f4'] },
         slip:     { pho: ['ph5nw1', 'ph5nw2', 'ph5ns3'], zav: ['ph5nx1', 'ph5nx2', 'ph5f4'] },
         come:     { pho: ['ph5nk2', 'ph5nt2', 'ph5ns3'], zav: ['ph5ng1', 'ph5ng2', 'ph5f4'] },
@@ -345,7 +350,7 @@
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, waveFrom: n.waveWait, wind: 0, ring: null, draw: 0 },
           zav: { x: n.zavAt[0], z: n.zavAt[1], cx: n.zavAt[0], cz: n.zavAt[1], bindWait: 0, smellWait: 0, look: 0 },
           cage: { str: n.cageMax, broken: false, lent: 0 },
-          prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, film: 0,
+          prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
           said: {}, cur: null,
@@ -396,6 +401,7 @@
         st.voice.q.push({ key, prio, by: st.t + (late !== undefined ? late : (prio >= 2 ? st.n.lessonLate : st.n.colourLate)) });
       }
       function voiceTick(st, io) {
+        if (st.joined) return;                                   // (joined: the line in the air is the last before the Naga)
         const v = st.voice, n = st.n, nd = st.cur;
         const id = nd && NEEDLINES[nd.id] && NEEDLINES[nd.id][isP(st) ? 'pho' : 'zav'] ? nd.id : '';
         if (id !== v.need) { v.need = id; v.needSince = st.t; v.needSaid = -99; }
@@ -439,7 +445,7 @@
         if (act === 'RETRY') return st.stage === 'lost' ? '' : 'stage';
         if (act === 'LEAD') return st.stage === 'lost' && st.losses >= 3 ? '' : 'stage';
         if (act === 'FILMDONE') return st.stage === 'naga' ? '' : 'stage';
-        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together &&
+        if (act === 'TOGETHER') return st.stage === 'surge' && st.stageT >= n.togetherAfter && !st.together && !st.joined &&
                                        wallGap(n, st.pho) >= n.wallOff - 0.01 && wallGap(n, st.zav) >= n.wallOff - 0.01 ? '' : 'stage';
         if (st.stage !== 'learn' && st.stage !== 'fight' && st.stage !== 'last') return 'stage';
         if (st.lock > 0) return 'lock';
@@ -509,7 +515,10 @@
           else continue;
           if (onFlight(st, p.id)) r += 20;                       // a ball already on its way to it comes last
           const dP = dist(ph.x, ph.z, p.x, p.z);
-          if (dP > n.fireReach) continue;
+          /* (R75's debug, GI: a bound Prai stands still, and his fire reaches it wherever it stands on the court, as the
+             lesson's one does: the reach was the court's when it was set (6.5 m on a court 7 m across) and R46 doubled the
+             court, so "FIRE" was said, and the button asked, at one he could not reach) */
+          if (dP > n.fireReach && p.st !== 'bound' && st.stage !== 'learn') continue;
           const s = r * 100 + (r === 0 ? dP : dist(z.x, z.z, p.x, p.z));
           if (s < bs) { bs = s; best = p; }
         }
@@ -570,6 +579,11 @@
           case 'FILMDONE': layThree(st); return;
           case 'TOGETHER': st.together = n.togetherSecs; st.ev.push({ e: 'together' }); return;
           case 'SWITCH':
+            /* (R75's debug, GE: R21's guard against a button masher (an empty smell's price) went with the smell button at
+               R62. A switch made straight back, inside switchSpam of the last, is the masher's own signature and costs him
+               switchCost of his sanity: a careful pair switches, acts, and switches back well outside it) */
+            if (n.switchCost > 0 && st.stage === 'fight' && st.t - (st.lastSw == null ? -99 : st.lastSw) < n.switchSpam) { st.owe += n.switchCost; st.stats.spam = (st.stats.spam || 0) + 1; }
+            st.lastSw = st.t;
             st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
             st.ev.push({ e: 'switch', to: st.who });
@@ -581,6 +595,9 @@
             const ask = askOf(st, 'FIRE');
             if (!cloud) target = (input && input.pick ? fireTarget(st, input.pick) : null) || (ask ? fireTarget(st, ask) : null) || fireTarget(st, 0);
             const f = { id: target ? target.id : 0, cloud, t: n.flight, ai: false, x: 0, z: 0 };
+            /* (R75's debug, GE: and a fireball thrown at nothing at all (no Prai and no cloud for it) costs him emptyFire: the
+               screen never asks for one, so only a masher throws it) */
+            if (!target && !cloud && n.emptyFire > 0 && st.stage === 'fight') { st.owe += n.emptyFire; st.stats.emptyFire = (st.stats.emptyFire || 0) + 1; }
             if (target) { f.x = target.x; f.z = target.z; }
             else if (cloud) { for (const c of st.clouds) if (c.id === cloud) { f.x = c.x; f.z = c.z; } }
             else { f.x = ph.x * 0.5; f.z = ph.z - 2.2; }       // nothing to aim at: it rises and falls on the open paving
@@ -771,9 +788,15 @@
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
-              if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
+            if (st.together <= 0) { st.together = 0; st.joined = 1; st.voice.q.length = 0; }
           }
+          /* (R75's debug, the fight lens's GA: the fill done while a line was still being said, the Naga was called at once
+             and its film held back for the line: the two set at their marks in plain play, held there, the boom easing in.
+             Joined, the fight now plays on as it was, no new line begun, until the line in the air has been said; then the
+             Naga is called, and the marks are laid under the film's opening white (R64: "this rearranging should not be seen
+             by the player") */
+          if (st.joined && st.t >= st.voice.until) { st.joined = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
+            if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
         } else if (st.stage === 'naga') {
           st.film += dt; timed(st, 'naga', st.film);
           if (st.film >= n.filmGuard) layThree(st);               // a film that never says it ended cannot hold the fight
@@ -924,7 +947,11 @@
              sim never sets it), else from where he stands) */
           const sx = ph.strike ? ph.strike.x : ph.x, sz = ph.strike ? ph.strike.z : ph.z;
           ph.ring = { r: 0, x: sx, z: sz, touched: 0, gathered: 0 };
-          for (const p of st.prai) if (p.st === 'rushing') { ph.ring.touched |= 1 << p.id; throwBack(st, p, ph.ring); }   // crowded round him: the ring's first instant
+          /* (crowded round him: the ring's first instant. R75's debug, GB: these were thrown with no word to the stage, so the
+             ones nearest him, the most seen, had no blast, no flinch, no shake and no sound of R61's; each is told now, a
+             moment apart (`after`), so each is heard and felt as its own hit) */
+          let nh = 0;
+          for (const p of st.prai) if (p.st === 'rushing') { ph.ring.touched |= 1 << p.id; st.ev.push({ e: 'waveHit', id: p.id, gathers: false, after: 0.07 * nh++ }); throwBack(st, p, ph.ring); }
           st.ev.push({ e: 'wave', x: sx, z: sz });
           if (!st.firsts.waveOut) { st.firsts.waveOut = true; sayOnce(st, 'ju5c1', 5.0); }
         }
@@ -1074,6 +1101,13 @@
               const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
           else for (let r = 0.04; r <= 1.5 && !best; r += 0.04) for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12, qx = p.x + Math.cos(a) * r, qz = p.z + Math.sin(a) * r;
               const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } }
+          /* (R75's debug, GN: his ring all taken (his teacher on it and three bubbles round his bars), a pressing one found no
+             clear place on it and was left standing in a body. It stands, still pressing, just outside the ring instead, on
+             the nearest clear place out from it along its own line first) */
+          if (ring && !best) { const a0 = Math.atan2(p.z - z.z, p.x - z.x);
+            for (let r = ring + 0.04; r <= ring + 1.5 && !best; r += 0.04) for (let k = 0; k <= 36 && !best; k++) for (const sg of k ? [1, -1] : [1]) {
+              const a = a0 + sg * k * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
           if (best) { p.x = best.x; p.z = best.z; }
         }
       }
@@ -1287,7 +1321,7 @@
           case 'brief': return mk('start', 'START');
           case 'lost': return mk('retry', 'RETRY');
           case 'won': case 'naga': return null;
-          case 'surge': return st.stageT >= n.togetherAfter && !st.together ? mk('together', 'TOGETHER') : null;
+          case 'surge': return st.stageT >= n.togetherAfter && !st.together && !st.joined ? mk('together', 'TOGETHER') : null;
           case 'last': {
             if (ph.draw > 0) return null;
             const b = bagTarget(st, 0);
@@ -1350,7 +1384,7 @@
           if (st.lesson.wave === 'pending' && bound) return mk('waveL', 'SWITCH', null, !lock);
           // (in the hold a bound Prai is left bound: still, harmless, and the gold's to gather. Fire would tire it, and a
           // tired one rises again and hides; and the bag is closed)
-          if (aBound && !(st.hold > 0)) return dist(ph.x, ph.z, aBound.x, aBound.z) <= n.fireReach ? mk('bound', 'FIRE', aBound, fireOk && !lock) : mk('bound', 'FIRE', aBound, false, true);
+          if (aBound && !(st.hold > 0)) return mk('bound', 'FIRE', aBound, fireOk && !lock);   // (his fire reaches a bound one anywhere: GI)
           if (aTired && !(st.hold > 0)) return bagNeed(st, 'tired', aTired, mk);
           if (aPressCome && st.cage.str < 35) return mk('cage', 'FIRE', aPressCome, fireOk && !lock);   // the cage nearly gone: chase it off
           if (pending) return bound ? mk('waveL', 'SWITCH', null, !lock) : mk('waveB', 'SWITCH', null, !lock);
@@ -1492,7 +1526,9 @@
           act === 'SMELL' ? z.smellWait / n.smellWait : (act === 'SHOCKWAVE' || act === 'LEND') ? ph.waveWait / (ph.waveFrom > 0 ? ph.waveFrom : n.waveWait) : 0;
         const btn = (slot, act, shown) => {
           const w = shown ? why(st, act) : 'stage';
-          return { slot, act, shown: !!shown, live: !w, why: w, wait: Math.max(0, Math.min(1, waitOf(act))), pulse: !!(nd && nd.act === act) };
+          /* (R75's debug, GI: a button asks only when pressing it now does what is asked: never through its wait or a lock,
+             nor while the need is to walk to it first) */
+          return { slot, act, shown: !!shown, live: !w, why: w, wait: Math.max(0, Math.min(1, waitOf(act))), pulse: !!(nd && nd.act === act && nd.ready && !nd.move) };
         };
         const s = SLOT[P ? 'pho' : 'zav'];
         return {
@@ -1503,8 +1539,8 @@
           second: btn('second', s.second, !!s.second && st.stage === 'fight' && st.seen.shock),   // (R62: his teacher's alone)
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
-                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },
-          together: { shown: st.stage === 'surge', live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
+                  live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH' && nd.ready && !nd.move) },
+          together: { shown: st.stage === 'surge' && !st.joined, live: !why(st, 'TOGETHER'), fill: st.together ? 1 - st.together / n.togetherSecs : 0 },
           retry: { shown: st.stage === 'lost', lead: st.stage === 'lost' && st.losses >= 3 },
           bubbles: bubbles(st)
         };

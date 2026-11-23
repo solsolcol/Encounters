@@ -277,7 +277,7 @@
       fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
       fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
-      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nBag: E.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and lend: E.',
       objFight1: 'Grandmaster Pho: fire at the Prai.',
       objFight1b: 'It hid. Master Zavier smells it out.',
       objFight2: 'Master Zavier: bind it.',

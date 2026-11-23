@@ -164,7 +164,7 @@
        the engine will not play (not in play, or no such film) costs the film, never the story: its hand-off runs */
     function film(key, next) {
       const run = play.run, go = () => { if (live(run)) next(); };
-      if (!kit || !kit.film || !kit.film(key, { onDone: go })) go();
+      if (!kit || !kit.film || !kit.film(key, { onDone: go, layFirst: true })) go();
     }
     /* A NEED'S PROMPTS (the plan's 7.1): while a need stands its line comes round again, never over another voice, in
        turn through its wordings; the times are seconds since the need began, the last one's gap repeating */
@@ -462,7 +462,8 @@
     function askPatience(wdt) {
       if (phase !== 'ask' || !decOpen || heard.has('co5t7')) return;
       ask5.wall += wdt;
-      if (ask5.wall > 30) { heard.add('co5t7'); if (worldSfx && !(soundOff && soundOff())) worldSfx('co5t7', 1, 1, 0); }
+      /* (R75's debug, V1: its source kept, so the ending an answer begins stops it: a world line is never stopped by a film) */
+      if (ask5.wall > 30) { heard.add('co5t7'); if (worldSfx && !(soundOff && soundOff())) play.patSrc = worldSfx('co5t7', 1, 1, 0); }
     }
 
     /* ---------------------------------------------------------------- THE THINGS HE CAN PRESS (each offered only in its

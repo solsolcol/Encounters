@@ -1575,7 +1575,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
           const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', tau);
-          if (tau < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          /* (R75's debug, V3: and back in his hand under the cut to the door (Mr Koh's line), so the film's last shot, the
+             fight's own lens, and the last stage after it find it where his walk and his bag need it: it stood planted on
+             the court through the whole last stage, and jumped into his hand on the bag-tied film's first frame) */
+          if (tau < T.plant + 1.7 || tau >= T.ko5c2) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
           /* (home: his eyes on the stick's head as the head goes in and its body pours after it; following the head on into
              the stick he looked at the lens, the lab's picture of the new home shot) */
           fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
@@ -1969,6 +1972,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     FILMS5.ending = {
       begin(k, api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api; this.k = k;
+        /* (R75's debug, V1: "Take your time. I am not going anywhere." answered while it is said was said on under the ending's
+           first line, the same voice twice: it is brought down in a tenth of a second as the ending begins) */
+        { const ps = typeof play === 'object' && play ? play.patSrc : null; if (ps) { play.patSrc = null;
+          try { const c = ps.context, g = ps.__g && ps.__g.gain; if (g && c) { const t = c.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.1); ps.stop(t + 0.12); } else ps.stop(); } catch (e) { } } }
         if (api && api.handsRoot) api.handsRoot.visible = false;
         fmShow(cast.phoS, true); fmShow(cast.col, true); PIECES5.set(true);
         RITE5.bowl.visible = true;
