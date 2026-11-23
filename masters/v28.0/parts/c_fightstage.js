@@ -1445,6 +1445,7 @@
       gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
       gripTune(o) { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.tune(o) : null; },
       gripMove() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.move() : null; },
+      gripDiag() { return typeof PHOGRIP5 === 'object' && PHOGRIP5.diag ? PHOGRIP5.diag() : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -1683,7 +1684,7 @@
           best.b = pick; best.e = Math.abs(Q(pick).distanceTo(P0) - l[0]);
           let be = best.b; const tg = [P0.clone(), Q(be)];
           for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q(be)); }       // (round the shaft's near side and under it)
-          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots };
+          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots, rho, cs };
         };
         /* each chain's turns: each bone's rest line turned onto its target line, down the chain (each in its parent's frame) */
         const chainQ = (nm, tgDirs, lim) => {
@@ -1708,24 +1709,23 @@
            that circle, its end joint bending with its middle one as a real finger's does (about two thirds of it: one tendon
            works both), and no more bend than that needs; then each bone turned about its own hinge by its bend) */
         const wrapFinger = (F) => {
-          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l;
+          /* (R35, the first pass's lesson, 23 Nov: searched over all three bends freely, the finger met the wood with 65 to 70
+             degrees at its knuckle and its middle joint all but straight (6 to 24): a hook of straight sticks, touching the
+             shaft with its tip, the claw the pictures showed. A hand closing round a bar bends its three joints together, the
+             middle joint as much as the knuckle and the end joint about half of it (one tendon works the two last; the
+             knuckle is driven with them): so the finger's whole bend T is shared out so, 0.40, 0.40 and 0.20, each joint held
+             in its range, and only T is searched, every hundredth of a radian to 2.8: the T whose chain lies nearest the
+             circle at its joints and tip and enters it nowhere) */
+          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l, SPLIT = [0.40, 0.40, 0.20];
           const segD = (ax, ay, bx, by) => { const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let t = L2 > 0 ? ((c[0] - ax) * dx + (c[1] - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(ax + dx * t - c[0], ay + dy * t - c[1]); };
-          const k2 = (0.25 * rho) * (0.25 * rho);
-          const cost = (f0, f1, f2) => {
-            let x = 0, y = 0, cum = 0, J = 0; const fs = [f0, f1, f2];
-            for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
-              if (segD(x, y, nx, ny) < rho * 0.99) return Infinity;
-              const e = Math.hypot(nx - c[0], ny - c[1]) - rho; J += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
-            return J + k2 * ((f2 - 0.67 * f1) * (f2 - 0.67 * f1) + 0.05 * (f0 * f0 + f1 * f1 + f2 * f2)); };
-          let best = [0, 0, 0], bc = cost(0, 0, 0);
-          const grid = (st, a, b) => { for (let f0 = a[0]; f0 <= b[0] + 1e-9; f0 += st) for (let f1 = a[1]; f1 <= b[1] + 1e-9; f1 += st) for (let f2 = a[2]; f2 <= b[2] + 1e-9; f2 += st) { const v = cost(f0, f1, f2); if (v < bc) { bc = v; best = [f0, f1, f2]; } } };
-          grid(3 * D2R, [0, 0, 0], hi);
-          const b0 = best.slice(), r = 3 * D2R; grid(0.5 * D2R, b0.map(v => Math.max(0, v - r)), b0.map((v, i) => Math.min(hi[i], v + r)));
-          /* (the clearance it keeps and how near its tip comes to the wood, for the report) */
-          let x = 0, y = 0, cum = 0, clear = Infinity, tip = 0;
-          for (let i = 0; i < 3; i++) { cum += best[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th); clear = Math.min(clear, segD(x, y, nx, ny) - rho); x = nx; y = ny; }
-          tip = Math.hypot(x - c[0], y - c[1]) - rho;
-          return { f: best, clear, tip };
+          const bendsOf = (T) => SPLIT.map((k, i) => Math.min(hi[i], k * T));
+          const lay = (fs) => { let x = 0, y = 0, cum = 0, J = 0, clear = Infinity; for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
+              clear = Math.min(clear, segD(x, y, nx, ny) - rho); const e = Math.hypot(nx - c[0], ny - c[1]) - rho; J += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
+            return { J, clear, tip: Math.hypot(x - c[0], y - c[1]) - rho }; };
+          let best = null;
+          for (let T = 0; T <= 2.8 + 1e-9; T += 0.01) { const fs = bendsOf(T), r = lay(fs); if (r.clear < -0.01 * rho) continue; if (!best || r.J < best.J) best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T }; }
+          if (!best) { const fs = bendsOf(0), r = lay(fs); best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T: 0 }; }
+          return best;
         };
         /* each bone turned about its own hinge by its bend: the hinge (w, in the hand's frame) carried into the bone's parent's
            rest frame, the turn laid onto the bone's own rest turn; which way about w closes the finger is read from the plane
@@ -1742,7 +1742,11 @@
         for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = wrapFinger(F);
           const sg = Math.sign(F.y3.dot(new THREE.Vector3().crossVectors(F.w, F.x3))) || -1;   // (+ about w lifts toward +y3: closing is the other way)
           hingeQ(nm, [F.w, F.w, F.w], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
-          out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2); }
+          out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2);
+          /* (a probe's: the finger's plane and the joints the solve meant, so diag() can set them beside the joints drawn) */
+          { const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), pred = [[0, 0]]; let x = 0, y = 0, cum = 0;
+            for (let i = 0; i < 3; i++) { cum += W.f[i]; const th = th0[i] - cum; x += F.l[i] * Math.cos(th); y += F.l[i] * Math.sin(th); pred.push([x, y]); }
+            (out.plane = out.plane || {})[nm] = { P0: F.P0.clone(), x3: F.x3.clone(), y3: F.y3.clone(), w: F.w.clone(), c: F.c.slice(), rho: F.rho, pred, l: F.l.slice(), th0 }; } }
         /* THE THUMB: its root (the metacarpal, a saddle) onto its line by the shortest turn within its range, as before; its
            two hinges (MCP and IP) only about the shaft's line, only toward the palm, within their range */
         { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim);
@@ -1759,7 +1763,8 @@
             const q = new THREE.Quaternion().setFromAxisAngle(ax, close * bend).multiply(Li);
             out.q.Thumb[i] = q; acc.multiply(q); rep.push(+(bend / D2R).toFixed(1));
           }
-          out.report.Thumb = rep; out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots; }
+          out.report.Thumb = rep; out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots;
+          out.thumbAt = { tg: T.tg.map(v => v.clone()), rho: T.rho, cs: T.cs.clone() }; }
         /* the stick in this hand: its shaft's middle at 1.00 m up it on C, its length along A, the Naga's head facing as his knuckles do */
         const yA = A.clone(), xA = fL.clone().addScaledVector(A, -fL.dot(A)).normalize().negate(), zA = xA.clone().cross(yA).normalize();
         const R = new THREE.Matrix4().makeBasis(xA, yA, zA), sc = 1 / s;
@@ -1836,7 +1841,11 @@
            his arm holds the stick as at rest through every step; nothing else of the acts: his collarbone his take's, and no
            guard) */
         Walking: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] },
-        Running: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] }
+        Running: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] },
+        /* (R35, 23 Nov: his talk too: its body sways and turns while his fist stood where his rest put it, so his wrist was
+           turned 27 to 35 degrees toward his thumb as he spoke (the joint check; a real wrist's range is 25): his fist carried
+           where his shoulder goes, as in his walk) */
+        Talk_with_Hands_Open: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] }
       };
       /* where the Naga's film stands the stick: 0.38 m before him and 0.40 to his right (c_yfilm.js TOGETHER's own two numbers,
          sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
@@ -1896,6 +1905,11 @@
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       let wroteArm = null;
+      /* (the turn, about the stick, from the line his shoulder makes to his fist at his rest to the line his knuckles make
+         there: his rest's own, so a planted hold reads as his standing one) */
+      const _pv = V(), _pq = new THREE.Quaternion();
+      const plantTurn = () => { const sx = HIPS.rest ? HIPS.rest[0] : -0.17, sz = HIPS.rest ? HIPS.rest[2] : 0;
+        return Math.atan2(-Math.sin(STAFF.out), Math.cos(STAFF.out)) - Math.atan2(STAFF.fist[0] - sx, STAFF.fist[2] - sz); };
       /* THE STICK KEPT CLEAR OF HIM IN HIS ACTS, whatever his take does (the first pass measured it: the gold's gather bent
          his trunk over the place the stick stood, his face 2 cm from it; the throw's step brought his right leg and its robe
          across its foot): its line held off the line of his trunk, of his head, of his right thigh and shin in their robe
@@ -1976,7 +1990,13 @@
            rises from its head under his hand) */
         if (planted) { const g = things.nagaStaff; g.updateWorldMatrix(true, false);
           Ct.set(STICK_C[0], STICK_Y + 0.004, STICK_C[1]).applyMatrix4(g.matrixWorld);
-          up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); front.setFromMatrixColumn(g.matrixWorld, 0).normalize().negate(); }
+          up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); front.setFromMatrixColumn(g.matrixWorld, 0).normalize().negate();
+          /* (R35, 23 Nov: his hand turns about the planted shaft as his cast turns him, its knuckles' line led by the line from
+             his shoulder to the stick as at his rest (PLANT_TURN), so his wrist stays in its range: the joint check read it
+             bent 176 degrees and turned 171 toward his thumb at 2.2 s of the planting cast, his hand left facing the way the
+             stick was planted while his body turned from it. A hand on an upright pole holds it from any side) */
+          a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(_pv); _pv.subVectors(Ct, _pv); _pv.addScaledVector(up, -_pv.dot(up));
+          if (_pv.lengthSq() > 1e-6) { _pv.normalize(); front.copy(_pv).applyQuaternion(_pq.setFromAxisAngle(up, plantTurn())); } }
         else {
         /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it; in his own frame) */
         if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fz = front.z;
@@ -2032,6 +2052,20 @@
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },
+        /* (a probe's: each finger's joints as DRAWN, in the plane the solve worked in (cm: along the finger's rest line, toward
+           the back of his hand, and out of the plane), beside the joints it meant, and each one's distance from the shaft's
+           circle there (the finger's own thickness on the wood): a solve that is laid as it was meant reads the same twice) */
+        diag() { const P = cast.pho; if (!G || !G.plane || !P || !P.ready) return null; const As = armsOf(P), a = As && As.R; if (!a) return null;
+          a.hand.updateWorldMatrix(true, true); const inv = new THREE.Matrix4().copy(a.hand.matrixWorld).invert(), cm = (v) => +(v * G.s * 100).toFixed(2), out = { s: G.s };
+          for (const nm in G.plane) { const D = G.plane[nm], drawn = G.chains[nm].map(b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv));
+            out[nm] = { rho: cm(D.rho), c: D.c.map(cm), l: D.l.map(cm), th0: D.th0.map(t => +(t / D2R).toFixed(1)),
+              j: drawn.map((q, i) => { const r = q.clone().sub(D.P0), x = r.dot(D.x3), y = r.dot(D.y3), z = r.dot(D.w), p = D.pred[i];
+                return { at: [cm(x), cm(y), cm(z)], want: [cm(p[0]), cm(p[1])], off: cm(Math.hypot(x - D.c[0], y - D.c[1]) - D.rho), wantOff: cm(Math.hypot(p[0] - D.c[0], p[1] - D.c[1]) - D.rho) }; }) }; }
+          /* (the thumb: each joint drawn against its target, both as far from the shaft's line as they stand, less its circle) */
+          if (G.thumbAt) { const T = G.thumbAt, ofl = (q) => { const r = q.clone().sub(T.cs); r.addScaledVector(G.A, -r.dot(G.A)); return cm(r.length() - T.rho); };
+            const drawn = G.chains.Thumb.map(b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv));
+            out.Thumb = { rho: cm(T.rho), j: drawn.map((q, i) => ({ miss: cm(q.distanceTo(T.tg[i])), off: ofl(q), wantOff: ofl(T.tg[i]) })) }; }
+          return out; },
         /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
         plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },

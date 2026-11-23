@@ -79,6 +79,8 @@ await p.evaluate(() => {
           else { if (d < 0) bodyIn++; if (d < bodyGap) { bodyGap = d; bodyAt = +v.y.toFixed(2); } } } });
       out.handIn = handIn; out.handDeepCm = +(handDeep * 100).toFixed(1); out.bodyIn = bodyIn; out.bodyGapCm = +(bodyGap * 100).toFixed(1); out.bodyGapAtY = bodyAt;
       out.fingers = Object.fromEntries(Object.entries(fing).map(([k, F]) => [k, [+(F.gap * 100).toFixed(1), F.on]])); }
+    /* (the solve's own joints set beside the joints drawn, where the chapter can say them: lab.gripDiag) */
+    { const L = E.stage.snap().story.fight.lab; if (L.gripDiag) out.diag = L.gripDiag(); }
     return out;
   };
 });
