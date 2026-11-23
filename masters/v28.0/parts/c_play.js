@@ -288,7 +288,11 @@
     function walkLane(W0, ts, tl, wdt, pace) {
       const P = W0.P, g = P.group.position;
       const s0 = wayS(g.x, g.z), l0 = wayLat(g.x, g.z), ds = ts - s0, dl = tl - l0, d = Math.hypot(ds, dl);
-      if (d < 0.06) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); } navTellWalk(P, false); return false; }
+      /* (R76, build 46's walk: a man standing does not take a step for a few centimetres; Grandmaster Pho, five short of his
+         lane, walked sideways at the wall and his hand went into it. Once walking, he walks on to his mark) */
+      const small = !W0.moving && Math.abs(ds) < 0.1 && Math.abs(dl) < 0.15;
+      if (d < 0.06 || small) { if (W0.moving) { W0.moving = false; W0.v = 0; P.rate = 1; rest(P, 0.35); W0.still = 0; } W0.still = (W0.still || 0) + wdt; navTellWalk(P, false); return false; }
+      W0.still = 0;
       if (!W0.moving) { W0.moving = true; P.actN++; take(P, 'Walking', 0.3); gaze(P, null, { secs: 0.5 }); }
       else if (P.cur !== 'Walking') { P.actN++; take(P, 'Walking', 0.3); }
       const want = Math.min(pace, 0.6 + d * 1.2);
@@ -301,12 +305,12 @@
          inner wall and walked at it, his stride's front toe 0.50 m before his hips, into the wall (Jun 11.4 cm, Grandmaster
          Pho 6.4). A man who steps aside in a corridor keeps his body along it: his heading is the walkway's (whichever way
          along it is nearer the way he goes, or, for a step straight across, nearer the way he already faces), turned at most
-         35 degrees toward his step) */
+         20 degrees toward his step (35 on build 46 still swung a hand into the wall) */
       if (mx * mx + mz * mz > 1e-10) {
         const hm = Math.atan2(mx, mz); let ax = wayHead(s0);
         const across = Math.abs(Math.cos(angTo(ax, hm))) < 0.35, ref = across ? P.group.rotation.y : hm;
         if (Math.abs(angTo(ax, ref)) > Math.PI / 2) ax += Math.PI;
-        const want = ax + Math.max(-0.61, Math.min(0.61, angTo(ax, hm)));
+        const want = ax + Math.max(-0.35, Math.min(0.35, angTo(ax, hm)));
         P.group.rotation.y += angTo(P.group.rotation.y, want) * Math.min(1, wdt * 5.5);
       }
       P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
@@ -333,13 +337,15 @@
           if (W0.side == null) W0.side = wayLat(g.x, g.z) >= wayLat(myX(), myZ()) - 0.05 ? 1 : -1;
           tl = W0.side > 0 ? FOLLOW.wall : -(WAY_OUT - footOf(W0.P).a - 0.10);
         } else W0.side = null;
-        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side;
-           nor nearer the rail's side) */
-        tl = Math.max(-(WAY_OUT - footOf(W0.P).a - 0.06), Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06));
+        /* (R76: never nearer the inner wall than his own half-width and a hand's swing: Grandmaster Pho's robe is 0.37 either
+           side; nor nearer the rail's side. 0.06 on build 46: a walking arm still reached the wall) */
+        tl = Math.max(-(WAY_OUT - footOf(W0.P).a - 0.14), Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.14));
         ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
         const moving = walkLane(W0, ts, tl, wdt, pace);
-        if (!moving && distTo(g.x, g.z) < 7) {
+        /* (his turn to the one he walks with waits until his feet have come together under him: turned in the half second
+           after a stop, a stride across the walkway's width put a foot in the wall, build 46's walk) */
+        if (!moving && (W0.still || 0) > 0.45 && distTo(g.x, g.z) < 7) {
           /* standing, he turns to the one he walks with (his whole body: v14.5), and looks at him */
           const want = faceTo(g.x, g.z, myX(), myZ()), d0 = angTo(W0.P.group.rotation.y, want);
           if (Math.abs(d0) > 0.5 || W0.turning) { W0.turning = Math.abs(d0) > 0.05; W0.P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); }
@@ -354,7 +360,7 @@
         const s = wayS(g.x, g.z), ts = Math.min(WAY.gateS - 0.75, s + 2.0);
         /* arrived, he turns to face him, his whole body eased round as the followers turn (v14.5: a turn, never a snap; set in
            one frame, it swung him up to half a circle while the player watched him go), and looks at him */
-        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.06), wdt, pace)) {
+        if (!walkLane(ph, ts, Math.min(s > WAY.turnS - 0.5 ? 0.45 : FOLLOW.wall, WAY_RHO - footOf(P).a - 0.14), wdt, pace) && (ph.still || 0) > 0.45) {
           const d0 = angTo(P.group.rotation.y, faceTo(g.x, g.z, myX(), myZ()));
           if (!ph.turned) { ph.turned = true; ph.turning = true; gaze(P, 'lens', { secs: 1, reach: 0.7 }); }
           if (ph.turning || Math.abs(d0) > 0.5) { ph.turning = Math.abs(d0) > 0.05; P.group.rotation.y += d0 * Math.min(1, wdt * 2.5); } } }
