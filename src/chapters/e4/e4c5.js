@@ -1253,20 +1253,26 @@
     }
     /* ---------------------------------------------- walls with their openings (chapter 4's wallX / wallZ: a wall's
        thickness drawn, so an opening shows its reveal; each piece a solid where it stands on walkable floor) */
+    /* (R75's debug: the films' phone pictures showed hair-thin light lines down the house fronts at every opening's sides:
+       the piece over or under an opening met the full-height piece beside it along an edge whose corners were not the
+       other's (a T-junction), and the rasteriser left a crack there through which the pieces' own lit sides showed. The
+       pieces over and under an opening now reach LAP into their neighbours, their faces the same paint at the same world
+       place (a face's texture runs on the world's metres), so nothing can show between; what stops him is as it was) */
+    const LAP = 0.004;
     function wallX(mat, zc, d, x0, x1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.x0 - b.x0); let at = x0;
-      const piece = (a, b, ya, yb, sol) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a, yb - ya, d);
+      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, (a + b) / 2, (ya + yb) / 2, zc, b - a + 2 * lap, yb - ya, d);
         if (sol && solid) solidBox(b - a, Math.max(1.2, yb - ya), d, (a + b) / 2, Math.max(0.6, (ya + yb) / 2), zc); };
-      for (const o of cuts) { piece(at, o.x0, y0, y1, true); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6); piece(o.x0, o.x1, o.y1, y1, false); at = o.x1; }
+      for (const o of cuts) { piece(at, o.x0, y0, y1, true); piece(o.x0, o.x1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.x0, o.x1, o.y1, y1, false, LAP); at = o.x1; }
       piece(at, x1, y0, y1, true);
     }
     function wallZ(mat, xc, d, z0, z1, opens = [], y0 = 0, y1 = 2.7, solid = true) {
       const cuts = opens.slice().sort((a, b) => a.z0 - b.z0); let at = z0;
-      const piece = (a, b, ya, yb, sol) => { if (b - a < 0.005 || yb - ya < 0.005) return;
-        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a);
+      const piece = (a, b, ya, yb, sol, lap = 0) => { if (b - a < 0.005 || yb - ya < 0.005) return;
+        boxW(mat, xc, (ya + yb) / 2, (a + b) / 2, d, yb - ya, b - a + 2 * lap);
         if (sol && solid) solidBox(d, Math.max(1.2, yb - ya), b - a, xc, Math.max(0.6, (ya + yb) / 2), (a + b) / 2); };
-      for (const o of cuts) { piece(at, o.z0, y0, y1, true); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6); piece(o.z0, o.z1, o.y1, y1, false); at = o.z1; }
+      for (const o of cuts) { piece(at, o.z0, y0, y1, true); piece(o.z0, o.z1, y0, o.y0, o.y0 > 0.6, LAP); piece(o.z0, o.z1, o.y1, y1, false, LAP); at = o.z1; }
       piece(at, z1, y0, y1, true);
     }
     /* a window's aluminium frame and its glass, in a wall along x (z its middle) or along z (x its middle) */
