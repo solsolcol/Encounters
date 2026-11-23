@@ -951,8 +951,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                                                     : { room: 0.5, tick: 0.22, sour: 0.18 });
         /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
         gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
-        /* the fourth lamp, by the armchair, flickering (an ordinary fault: the electrician came three times, 4.0) */
-        lamp(1, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
+        /* the lamp that flickers, the dining room's pendant (an ordinary fault: the electrician came three times, 4.0; R42: it
+           was the armchair's reading lamp, out of the room at Chad's word) */
+        lamp(LAMP_FLICK, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
         whenReady(cast.koh, (P) => {
           if (t < T.walk) { put(P, A.kohDoor[0], A.kohDoor[1], Math.PI); fmRest(P, 'koh', t); }
           /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
@@ -1027,7 +1028,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         if (t > T.in && t < T.slip) yaw.position.y += -0.016 * Math.abs(Math.sin((t - T.in) * Math.PI / 0.55));
       },
-      end() { fmLens(PLAYFOV5); lamp(1, 1); endPhase5('hunt'); }
+      end() { fmLens(PLAYFOV5); lamp(LAMP_FLICK, 1); endPhase5('hunt'); }
     };
 
     /* ================================================================ THE PREPARATION, AND THE TURN (the plan's 4.4; PR5)
@@ -1416,10 +1417,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
             if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
         });
-        /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the fourth lamp
-           flickers once, and holds */
+        /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
+           flickers (the pendant: R42) flickers once, and holds */
         CURTAINS5.set(t >= T.knot ? 1 : 0);
-        lamp(1, t > T.window + 0.6 && t < T.window + 1.0 ? 0.25 : 1);
+        lamp(LAMP_FLICK, t > T.window + 0.6 && t < T.window + 1.0 ? 0.25 : 1);
         /* what is drawn out of each room's air into the bag: dark threads gathering to the bag's mouth before him */
         WISPS5.set(t, [[T.room1 + 0.6, A.live], [T.room2 + 0.5, A.dine], [T.room3 + 0.5, A.terr]]);
         /* the lift: the doors at the end */
@@ -1463,7 +1464,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.end, name: 'in', eye: [0.0, EYE, 1.0], at: [0.0, 1.4, 1.8], fp: 66, fd: 58 }
         ]);
       },
-      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(1, 1);
+      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1);
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
         if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (FM5.api && FM5.api.handsRoot) FM5.api.handsRoot.position.set(0, 0, 0);
         endPhase5('table'); }

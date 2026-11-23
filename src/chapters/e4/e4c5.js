@@ -418,12 +418,22 @@
     /* THE TAG MODE (the sixtieth seam, docs/V28.0-SEAMS.md; the fight's camera, the plan's 5.6 and Chad's "Behind and
        above"): the lens 4.0 m behind and 3.1 m above the one he plays, 26 degrees down, always facing down the court
        toward the house (the court's heading: c_cast.js COURT5); it never passes the gate (the storey above's walkway slab
-       begins at z -14.0, docs/V28.0-WORLD.md 4, so the lens stops there and he comes nearer it) and keeps inside the side
-       walls; it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
+       begins at z -14.0, docs/V28.0-WORLD.md 4: the fight's stop there draws it in along its line, R37) and keeps inside the side
+       walls (R41: where the box holds it short of its boom it keeps its height and looks down at him, his head kept where the
+       whole boom puts it on the screen, 50 degrees at most: the engine's crane); it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
        paces and discs are the fight's (c_fightstage.js names them as it opens the mode). c_cast.js boomAt reads this same
        declaration, so the preparation's film ends on exactly the mode's first picture */
     tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
-           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
+              z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
+              out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws
+              the lens in along its line toward his head instead, the mode's own wall rule: was minZ -13.9) */
+           /* (R41, 23 Nov: drawn in along its line, the lens came down half a metre behind his head at the gate end and his
+              head filled the picture (the live check of build 30: 1.8 m up). The box's z line is the gate's again (the
+              walkway's slab begins at -14.0), the stop R37 put there is retired, and the crane keeps the held lens's height
+              and turns it down to him, never past 50 degrees: at the court's gate end his whole body stands in the picture
+              and the court before him to the house wall. Was minZ -16.6 with the stop) */
+           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
@@ -444,10 +454,10 @@
       'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
       'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
       'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole',
-      'w5oldchair', 'w5floorlamp', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant',
-      'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel',
-      'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
-      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
+      'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
+      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
+      'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
@@ -1767,11 +1777,17 @@
     world.remove(things.gate); gateHinge.add(things.gate);
     const gateShut = solidXZ(GATE.x - GATE.w / 2, WALK.turnZ, GATE.x + GATE.w / 2, WALK.turnZ + 0.2);
     const gateOpenLeaf = solidXZ(GATE.x - GATE.w / 2 - 0.08, WALK.turnZ + 0.15, GATE.x - GATE.w / 2 + 0.12, WALK.turnZ + 0.15 + GATE.w);
+    /* (R41, 23 Nov: R37's stop for the fight's lens at the gate is retired. Drawn in along its line by it, the lens came down
+       to half a metre behind his head at the yard's gate end and his head filled the picture (the live check of build 30:
+       1.8 m up). The lens is held at the gate's line by the mode's box again and keeps its height there, looking down at him:
+       the engine's crane, a_head.js) */
     function gateOpen(k) { gateHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 92 * DEG; }
     /* --- the court: the two planters along its sides near the gate (each 2 m long, turned to run along the court),
        SUNK into the paving until their ragged bottoms are hidden (RECORD.md 3: the first 15 cm, the second 25 cm); the
        two wall lamps either side of his door; a pair of slippers by it */
-    const PLANT_Z = -11.7;
+    /* (R37, 23 Nov: the fight's court made the yard itself (c_fightrules.js NUM): the planters moved 1.05 m toward the gate,
+       into its two corners, their far ends 5 cm off the low wall's inner face (z -13.8); was -11.7) */
+    const PLANT_Z = -12.75;
     place('w5planter', COURT.x1 - 0.373 - 0.02, -0.15, PLANT_Z, Math.PI / 2, { name: 'planterL' });        // (his LEFT, walking in)
     place('w5planter2', COURT.x0 + 0.413 + 0.02, -0.25, PLANT_Z, -Math.PI / 2, { name: 'planterR' });
     solidXZ(COURT.x1 - 0.76, PLANT_Z - 1.0, COURT.x1, PLANT_Z + 1.0, 1.4);
@@ -1814,8 +1830,10 @@
       place('w5curtain', xm + 0.04, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.32, 0, { sx: 0.70, done: lamplit }); }
     place('w5curtain', LIVING.x0 + 0.2, HOUSE.ceil - 2.40 - 0.05, TERRACE.z1 + 0.42, Math.PI / 2, { sx: 0.55 });
     /* --- the living room: the sofa facing the television across the low table, the old armchair at the table's north
-       end (where his nose is once behind the truth: 4.3), the floor lamp by the sofa's end, the television's console on
-       the east wall with a table lamp at each end, the wall clock and a framed picture on the north wall */
+       end (where his nose is once behind the truth: 4.3), the television's console on the east wall, the wall clock and a
+       framed picture on the north wall (R42, 23 Nov, Chad: "Remove the 2 standing lamps from inside the living room as it
+       blocks the path of the player and i unnecessary": the floor lamp by the sofa's end and the armchair's reading lamp
+       are gone, with their solids; the room's light was always painted, v9.4, so nothing of it changes) */
     const SOFA = { x: -8.62, z: -3.62 }, TV = { x: LIVING.x1 - 0.36, z: -3.62 }, TABLE = { x: -7.28, z: -3.62 }, ARM = { x: -7.25, z: -2.18 };
     things.sofa = place('w5sofa', SOFA.x, 0, SOFA.z, Math.PI / 2, { name: 'sofa' });
     solidXZ(SOFA.x - 0.44, SOFA.z - 1.05, SOFA.x + 0.44, SOFA.z + 1.05, 0.8);
@@ -1825,13 +1843,8 @@
     solidXZ(TV.x - 0.36, TV.z - 0.9, LIVING.x1, TV.z + 0.9, 1.2);
     things.armchair = place('w5oldchair', ARM.x, 0, ARM.z, Math.PI, { name: 'armchair' });
     solidXZ(ARM.x - 0.47, ARM.z - 0.42, ARM.x + 0.47, ARM.z + 0.42, 0.82);
-    things.floorLamp = place('w5floorlamp', SOFA.x - 0.05, 0, SOFA.z + 1.38, 0, { name: 'floorlamp' });
-    solidXZ(SOFA.x - 0.3, SOFA.z + 1.12, SOFA.x + 0.2, SOFA.z + 1.64, 1.5);
     /* (the console's top is 0.45 and its television fills it to 0.65 m either side of its middle, measured from the file:
-       no table lamp fits on it. The armchair's reading lamp stands beside it; the table lamp is on the sideboard) */
-    const ARMLAMP = { x: ARM.x + 0.78, z: ARM.z + 0.12 };
-    things.floorLamp2 = place('w5floorlamp', ARMLAMP.x, 0, ARMLAMP.z, 0, { name: 'floorlamp2' });
-    solidXZ(ARMLAMP.x - 0.25, ARMLAMP.z - 0.25, ARMLAMP.x + 0.25, ARMLAMP.z + 0.25, 1.5);
+       no table lamp fits on it. The table lamp is on the sideboard) */
     place('w5wallclock', -6.15, 1.42, LIVING.z1 - 0.06 - 0.062, Math.PI, { name: 'wallclock', wood: true });
     /* --- the dining room: the table (scaled to 0.75 m tall) and four chairs round it, the pendant over it, the sideboard
        against its north wall, a framed picture over it */
@@ -1888,7 +1901,7 @@
 
     /* ================================================================ THE LAMPS' LIGHT (painted: v9.4, v15.1)
        Each lamp's glow (a soft card over its shade, drawn over what stands at its depth: v25.5) and its pool on the floor,
-       wall or ceiling; lamp(i, k) sets one by k (0 off, 1 on: the fourth lamp of 4.2 flickers by the play's hand); the
+       wall or ceiling; lamp(i, k) sets one by k (0 off, 1 on: the one of 4.2 that flickers, LAMP_FLICK, by the play's hand); the
        court's two wall lamps are lit for the night (courtLamps(k)) */
     const glowTex = (() => { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 64, 2, 64, 64, 62);
       g.addColorStop(0, 'rgba(255,236,196,1)'); g.addColorStop(0.35, 'rgba(255,214,150,0.45)'); g.addColorStop(1, 'rgba(255,200,130,0)');
@@ -1902,10 +1915,10 @@
         const q = new THREE.Mesh(new THREE.PlaneGeometry(pool.w, pool.h), pm); q.position.set(pool.x, pool.y, pool.z); q.rotation.set(pool.rx || 0, pool.ry || 0, 0); world.add(q); owned.push(q.geometry); }
       const L = { sp, mat, pm, k: 1, o0: mat.opacity, p0: pm ? pm.opacity : 0 }; lights.push(L); return L;
     }
-    lightAt(SOFA.x - 0.05, 1.42, SOFA.z + 1.38, 0.55, { x: SOFA.x, y: 0.006, z: SOFA.z + 1.2, w: 2.4, h: 2.4, rx: -Math.PI / 2 });
-    lightAt(ARMLAMP.x, 1.42, ARMLAMP.z, 0.55, { x: ARMLAMP.x - 0.2, y: 0.006, z: ARMLAMP.z - 0.1, w: 2.2, h: 2.2, rx: -Math.PI / 2 });
+    /* (R42: the two standing lamps' glows went with them; the light that flickers (Mr Koh's "the lights keep going off",
+       the plan's 4.2 and 5) is the dining room's pendant now, LAMP_FLICK: it was the armchair's reading lamp) */
     lightAt(SB.x + 0.62, SB.top + 0.38, SB.z + 0.02, 0.42, { x: SB.x + 0.62, y: 1.4, z: DINING.z1 - 0.062, w: 1.4, h: 1.4, ry: Math.PI });
-    lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 });
+    const LAMP_FLICK = lights.indexOf(lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 }));
     const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI }),
                     lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI })];
     /* (the rooms' holders, tested before each draw: see INSIDE) */
@@ -5859,7 +5872,23 @@
         if (Number.isFinite(cb.minZ) && Number.isFinite(cb.maxZ)) o.z = boomSoft(o.z, cb.minZ, cb.maxZ, soft);
         if (Number.isFinite(cb.minY) && Number.isFinite(cb.maxY)) o.y = boomSoft(o.y, cb.minY, cb.maxY, soft); }
       o.x = Math.max(DATA.bounds.minX, Math.min(DATA.bounds.maxX, o.x)); o.z = Math.max(DATA.bounds.minZ, Math.min(DATA.bounds.maxZ, o.z));
-      return { eye: [o.x, o.y, o.z], heading: h, pitch: -(+b.pitch || 0) * Math.PI / 180, fov: Math.max(20, Math.min(110, +(b.fov || d.fov) || 72)) };
+      /* (R37: then drawn in toward his head where a solid stands between them, as the mode does it (main.js tagBoomFor: the
+         head 1.6 m over his feet, every solid that does not hold the head, the nearest hit less 0.22 m); R41: with the
+         chapter's crane, over the ground with its height kept (tagPull), and turned down to keep his head where the whole
+         boom puts it on the screen, never past the crane's max (tagPitchFor): the same numbers, so the film's last picture is
+         the mode's first) */
+      const H = new THREE.Vector3(feet.x, (feet.y || 0) + 1.6, feet.z), cr = d.crane || null;
+      { const L = new THREE.Vector3(o.x, o.y, o.z).sub(H), len = L.length();
+        if (len > 1e-4) {
+          const ray = new THREE.Ray(H, L.divideScalar(len)), hit = new THREE.Vector3(), B = (S && S.blockers) || [];
+          let near = len;
+          for (let i = 0; i < B.length; i++) { const bx = B[i];
+            if (bx.isEmpty() || bx.containsPoint(H)) continue; const q = ray.intersectBox(bx, hit); if (q) { const dd = q.distanceTo(H) - 0.22; if (dd < near) near = Math.max(0, dd); } }
+          if (near < len) { const k = near / len; o.x = H.x + (o.x - H.x) * k; if (!cr) o.y = H.y + (o.y - H.y) * k; o.z = H.z + (o.z - H.z) * k; } } }
+      let pd = +b.pitch || 0;
+      if (cr) { const e0 = Math.atan2((+b.up || 0) - 1.6, +b.back || 0), e = Math.atan2(o.y - H.y, Math.hypot(o.x - H.x, o.z - H.z));
+        if (e - e0 > 1e-6) pd = Math.max(pd, Math.min(Number.isFinite(+cr.max) ? +cr.max : 60, pd + (e - e0) * 180 / Math.PI)); }
+      return { eye: [o.x, o.y, o.z], heading: h, pitch: -pd * Math.PI / 180, fov: Math.max(20, Math.min(110, +(b.fov || d.fov) || 72)) };
     }
 
     /* ---------------------------------------------------------------- THE CAST */
@@ -5899,6 +5928,152 @@
     cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Idle_3', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
+    /* (R35, 23 Nov: Chad, "The fingers, wrists, and arms of both zavier and pho models still look very wrong in many of the
+       poses". HIS FINGERS HELD AS MODELLED. Measured on his file (tools/probes/fingerweights.mjs, fingershape.mjs): his rig's
+       finger bones are 1.3 to 1.8 cm long where a man's are 2 to 4.5 (the generator's rig bunched each finger's joints toward
+       its tip), and each finger's skin is tied almost all to its LAST bone (the middle bones lead 1 to 20 points, the last 50 to
+       229; his thumbs' last bones 143 and 188 of their 150 and 210), so every bend his takes put in a finger turns its skin
+       about the wrong places. His hands were modelled open and relaxed, as a man's hang at rest; so his takes' finger tracks
+       are taken out of every take as he loads (76 of 132 channels in his walk, run and rest, 114 of 198 in his acts) and his
+       fingers stand as modelled in every pose: his wrists and arms are still his takes'. A take's own time and weight are
+       kept as it is made again) */
+    const FING5 = /(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d\./;
+    whenReady(cast.zav, (P) => {
+      let n = 0;
+      for (const name of Object.keys(P.acts)) { const A = P.acts[name], clip = A.getClip(), keep = clip.tracks.filter(t => !FING5.test(t.name));
+        if (keep.length === clip.tracks.length) continue;
+        const w = P.w[name] || 0, time = A.time; A.stop(); P.mixer.uncacheAction(clip);
+        const A2 = P.mixer.clipAction(new THREE.AnimationClip(clip.name, clip.duration, keep)); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); A2.time = time;
+        P.acts[name] = A2; n += clip.tracks.length - keep.length; }
+      for (const b in P.bone) if (/(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d$/.test(b)) { const q = bindLocal(P, P.bone[b]); if (q) P.bone[b].quaternion.copy(q); }
+      if (n) console.log('HANDS5: ' + P.key + "'s fingers held as modelled (" + n + ' finger tracks out of his takes)');
+    });
+    /* (R39, 23 Nov: Chad, "Why does the middle finger keep sticking out like that". MEASURED on his file, never guessed
+       (tools/probes/fingerskin.mjs, each finger's skin against its own bones): the end of Grandmaster Pho's right MIDDLE
+       finger, 86 points of its skin from its last joint to its tip and past it, is carried by RightHandEnd, his rig's old end
+       site under his hand (the finger graft renamed it and took it to carry nothing), never by the finger's own last bone; so
+       when his fingers close round the stick, that fingertip stays where his open hand held it, straight out past the others.
+       It pulls on the other fingertips too, as a second bone (made to follow the middle finger, it drew the ring finger's tip
+       into the stick by 0.7 cm: measured before it went anywhere). So EACH POINT IT CARRIES IS GIVEN TO ITS OWN FINGER: the
+       finger whose line (its first joint to its end, past it a third) is nearest the point at bind takes the end site's share
+       on that finger's last bone, the point's other shares kept, its sum the same. The end site then carries nothing; at rest
+       every point stands where it stood (the end site and each finger's last bone are both at their bind there), and closed,
+       every tip goes with its own finger. On the geometry once, for every copy of him) */
+    whenReady(cast.pho, (P) => {
+      let moved = 0, meshes = 0;
+      P.group.traverse(o => {
+        if (!o.isSkinnedMesh || !o.skeleton) return;
+        const sk = o.skeleton, g = o.geometry, bi = sk.bones.findIndex(b => /RightHandEnd$/.test(b.name));
+        if (bi < 0 || !g || g.userData.end5) return; g.userData.end5 = true; meshes++;
+        const lines = [];
+        for (const f of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) {
+          const idx = [1, 2, 3, 4].map(k => sk.bones.findIndex(b => new RegExp('RightHand' + f + k + '$').test(b.name))); if (idx.some(i => i < 0)) continue;
+          const at = idx.map(i => new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(sk.boneInverses[i]).invert()));
+          lines.push({ a: at[0], ab: at[3].clone().sub(at[0]), last: idx[2] }); }
+        if (!lines.length) return;
+        const si = g.attributes.skinIndex, sw = g.attributes.skinWeight, pos = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3();
+        for (let i = 0; i < si.count; i++) {
+          let slot = -1; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bi && sw.getComponent(i, q) > 0) slot = q;
+          if (slot < 0) continue;
+          v.fromBufferAttribute(pos, i).applyMatrix4(o.bindMatrix);
+          let best = null, bd = Infinity;
+          for (const L of lines) { const t = Math.max(0, Math.min(1.33, v.clone().sub(L.a).dot(L.ab) / L.ab.lengthSq())), d = c.copy(L.a).addScaledVector(L.ab, t).distanceTo(v); if (d < bd) { bd = d; best = L; } }
+          const w = sw.getComponent(i, slot); let to = -1; for (let q = 0; q < 4; q++) if (q !== slot && si.getComponent(i, q) === best.last) to = q;
+          if (to >= 0) { sw.setComponent(i, to, sw.getComponent(i, to) + w); sw.setComponent(i, slot, 0); } else si.setComponent(i, slot, best.last);
+          moved++; }
+        si.needsUpdate = true; sw.needsUpdate = true; });
+      if (meshes) console.log('HANDS5: ' + P.key + "'s fingertips each carried by their own finger (" + moved + ' points from the old end site RightHandEnd)');
+    });
+
+    /* (R35, 23 Nov: THE ARMS HELD TO A REAL BODY'S RANGE, after every take, in every pose: the class, never pose by pose. The
+       joint check (tools/probes/jointscan.mjs, run over every take both men play here: e4c5hands.mjs) read Master Zavier's
+       right shoulder thrown back 71 to 75 degrees in his run (a real shoulder's limit is near 60, a runner's back swing 45)
+       and his right wrist turned 41 to 49 degrees toward his little finger through his bind (a real wrist's 30 to 40), and
+       Grandmaster Pho's left shoulder back 66 to 71 in his run and his gold. Each frame, after the takes and his grip, each
+       arm is read by jointscan's own measures (the same formulas, so the check and the limit never differ) and, only where
+       it is near or past them, eased inside: the upper arm turned forward toward the body's front to LIM5.back (the forearm
+       and hand going with it), and the hand turned on the wrist inside LIM5's bends (its twist and its fingers kept).
+       A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
+       v11.5), so nothing stacks, and given back where the arm is inside its range. Grandmaster Pho's right arm is his grip's
+       (PHOGRIP5 lays it) while the stick is in his hand) */
+    /* (each limit SOFT: [the knee where it begins to give, the edge it never passes], degrees; between them the take's bend is
+       eased toward the edge (tanh), so an arm swinging through it slows into it and comes back, never stops dead on a line:
+       a hard stop holds a runner's arm still for a tenth of a second at the back of every swing) */
+    const LIM5 = { back: [42, 54], toLittle: [-28, -38], toThumb: [14, 22], flex: [55, 68], bentBack: [-45, -57] }, D2R5 = Math.PI / 180;
+    const softHi = (x, k, m) => (x <= k ? x : k + (m - k) * Math.tanh((x - k) / (m - k)));
+    const softLo = (x, k, m) => (x >= k ? x : k - (k - m) * Math.tanh((k - x) / (k - m)));
+    const _l = { a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3(), e: new THREE.Vector3(), f: new THREE.Vector3(), g: new THREE.Vector3(),
+      h: new THREE.Vector3(), i: new THREE.Vector3(), j: new THREE.Vector3(), q: new THREE.Quaternion(), r: new THREE.Quaternion(), s: new THREE.Quaternion() };
+    function limKeep(L, b) { const S = L.get(b) || (L.set(b, { take: new THREE.Quaternion(), wrote: null }), L.get(b));
+      if (!S.wrote || !b.quaternion.equals(S.wrote)) S.take.copy(b.quaternion); else b.quaternion.copy(S.take); return S; }
+    function limTurn(S, b, rot) { b.parent.getWorldQuaternion(_l.r); b.getWorldQuaternion(_l.s);
+      b.quaternion.copy(_l.r.invert().multiply(rot).multiply(_l.s)); S.wrote = b.quaternion.clone(); b.updateWorldMatrix(false, true); }
+    function armLimit(P, skip) {
+      const L = P.limState || (P.limState = new Map()), B = P.limBones || (P.limBones = {});
+      const bo = (n) => (n in B ? B[n] : (B[n] = boneOf(P, n)));
+      const lh = bo('LeftUpLeg'), rh = bo('RightUpLeg'), la = bo('LeftArm'), ra = bo('RightArm'); if (!lh || !rh || !la || !ra) return;
+      /* (each arm's bones as the take left them, read afresh: what was written last frame and not written again is taken back) */
+      for (const S0 of ['Left', 'Right']) { if (skip === S0) continue; for (const n of ['Shoulder', 'Arm', 'Hand']) { const b = bo(S0 + n); if (b) limKeep(L, b); } }
+      /* (each collarbone's rise at bind, jointscan's neutral, read once from the skin's bind) */
+      if (!P.limBind) { P.limBind = {}; const bp = (b) => { let at = null; P.group.traverse(o => { if (at || !o.isSkinnedMesh || !o.skeleton) return; const i = o.skeleton.bones.indexOf(b);
+            if (i >= 0) at = new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(o.skeleton.boneInverses[i]).invert()); }); return at; };
+        const blh = bp(lh), brh = bp(rh), bla = bp(la), bra = bp(ra);
+        if (blh && brh && bla && bra) { const bU = bla.clone().add(bra).multiplyScalar(0.5).sub(blh.clone().add(brh).multiplyScalar(0.5)).normalize();
+          for (const S0 of ['Left', 'Right']) { const c0 = bo(S0 + 'Shoulder') && bp(bo(S0 + 'Shoulder')), s0 = bp(bo(S0 + 'Arm')); if (!c0 || !s0) continue;
+            const d = s0.sub(c0), u0 = d.dot(bU); P.limBind[S0] = Math.atan2(u0, d.addScaledVector(bU, -u0).length()) / D2R5; } } }
+      P.group.updateWorldMatrix(true, false); for (const b of [lh, rh, la, ra]) b.updateWorldMatrix(true, false);
+      const pa = la.getWorldPosition(_l.a), pb = ra.getWorldPosition(_l.b), mid = _l.c.copy(pa).add(pb).multiplyScalar(0.5);
+      const U = _l.d.copy(mid).sub(_l.e.copy(lh.getWorldPosition(_l.e)).add(rh.getWorldPosition(_l.f)).multiplyScalar(0.5)).normalize();
+      const Lf = _l.e.copy(pa).sub(pb); Lf.addScaledVector(U, -Lf.dot(U)).normalize(); const F = _l.f.crossVectors(Lf, U).normalize();
+      for (const [S0, side] of [['Left', 1], ['Right', -1]]) {
+        if (skip === S0) continue;
+        const up = bo(S0 + 'Arm'), fo = bo(S0 + 'ForeArm'), hd = bo(S0 + 'Hand'); if (!up || !fo || !hd) continue;
+        /* THE COLLARBONE raised (jointscan's 'raised': its rise from its root out to the shoulder joint over the plane square to
+           the torso's up, against its bind): a shrug, lowered softly to its edge, allowed more as the arm is raised (a raised
+           arm lifts its collarbone with it, about a sixth of its own rise: jointscan's edge 10 degrees over its bind with the
+           arm hanging, 25 with it level, 41 overhead; eased from 5 under that edge) */
+        { const cl = bo(S0 + 'Shoulder'), el1 = P.limBind[S0];
+          if (cl && el1 != null) { cl.updateWorldMatrix(true, false); up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
+            const d = up.getWorldPosition(_l.g).sub(cl.getWorldPosition(_l.h)), u0 = d.dot(U), el0 = Math.atan2(u0, Math.sqrt(Math.max(0, d.lengthSq() - u0 * u0))) / D2R5;
+            const ua = fo.getWorldPosition(_l.i).sub(up.getWorldPosition(_l.j)).normalize(), rise = Math.acos(Math.max(-1, Math.min(1, -ua.dot(U)))) / D2R5;
+            const edge = 10 + 0.17 * rise, ex = el0 - el1, ex1 = softHi(ex, edge - 5, edge);
+            /* (lowered EXACTLY by what is over: turned about the line square to the collarbone and the torso's up, which moves
+               its rise and nothing else; eased toward its bind turn instead, the live build's check still read Master Zavier's
+               bind 30 to 32 degrees over, the edge 28: a blend toward a turn is not a share of an angle) */
+            if (ex1 < ex - 0.05) { const ax = _l.a.crossVectors(d, U); if (ax.lengthSq() > 1e-10) limTurn(L.get(cl), cl, _l.q.setFromAxisAngle(ax.normalize(), -(ex - ex1) * D2R5)); } } }
+        /* THE SHOULDER thrown back (read on an arm below the level, as jointscan reads it) */
+        { up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
+          const sh = up.getWorldPosition(_l.g), u = fo.getWorldPosition(_l.h).sub(sh).normalize(), dn = -u.dot(U), ext = Math.atan2(-u.dot(F), dn) / D2R5;
+          const ext1 = softHi(ext, LIM5.back[0], LIM5.back[1]);
+          if (ext1 < ext - 0.05 && dn > 0.2) { const lat = u.dot(Lf), k = Math.sqrt(Math.max(0, 1 - lat * lat)), a = ext1 * D2R5;
+            const want = _l.i.copy(Lf).multiplyScalar(lat).addScaledVector(U, -Math.cos(a) * k).addScaledVector(F, -Math.sin(a) * k).normalize();
+            limTurn(L.get(up), up, _l.q.setFromUnitVectors(u, want)); } }
+        /* THE WRIST: the fingers' line against the forearm's, toward the palm or the back, toward the thumb or the little finger */
+        const i1 = bo(S0 + 'HandIndex1'), m1 = bo(S0 + 'HandMiddle1'), k1 = bo(S0 + 'HandPinky1') || bo(S0 + 'HandRing1'); if (!i1 || !m1 || !k1) continue;
+        fo.updateWorldMatrix(true, false); for (const b of [hd, i1, m1, k1]) b.updateWorldMatrix(true, false);
+        const el = fo.getWorldPosition(_l.g), wr = hd.getWorldPosition(_l.h), e = _l.i.copy(wr).sub(el).normalize();
+        const f = m1.getWorldPosition(_l.j).sub(wr).normalize(), ac = i1.getWorldPosition(_l.a).sub(k1.getWorldPosition(_l.b)); ac.addScaledVector(f, -ac.dot(f)).normalize();
+        const n = _l.b.crossVectors(f, ac).multiplyScalar(side).normalize(), ne = n.addScaledVector(e, -n.dot(e)).normalize(), re = ac.addScaledVector(e, -ac.dot(e)).normalize();
+        const fe = f.dot(e); if (fe < 0.05) continue;
+        const wf = Math.atan2(f.dot(ne), fe) / D2R5, wd = Math.atan2(f.dot(re), fe) / D2R5;
+        const wf1 = softLo(softHi(wf, LIM5.flex[0], LIM5.flex[1]), LIM5.bentBack[0], LIM5.bentBack[1]), wd1 = softLo(softHi(wd, LIM5.toThumb[0], LIM5.toThumb[1]), LIM5.toLittle[0], LIM5.toLittle[1]);
+        if (Math.abs(wf1 - wf) < 0.05 && Math.abs(wd1 - wd) < 0.05) continue;
+        const want = _l.c.copy(e).addScaledVector(ne, Math.tan(wf1 * D2R5)).addScaledVector(re, Math.tan(wd1 * D2R5)).normalize();
+        limTurn(L.get(hd), hd, _l.q.setFromUnitVectors(f, want));
+      }
+      /* (where an arm is in its range again, its take's own values stand: limKeep has put them back, and nothing was written) */
+      for (const [b, S] of L) if (S.wrote && !b.quaternion.equals(S.wrote)) S.wrote = null;
+    }
+    const limHook = new THREE.Object3D(); limHook.name = 'the arms held to a real range';
+    limHook.updateMatrixWorld = function (force) {
+      try {
+        for (const [P, skip] of [[cast.zav, null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
+          if (P && P.ready && P.group.visible) armLimit(P, skip);
+      } catch (e) { if (!limHook.failed) { limHook.failed = true; console.warn('LIM5 threw: ' + (e && e.message)); } }
+      THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+    };
+    world.children.unshift(limHook); limHook.parent = world;
+
     /* until he has a rest, the moment of his own walk where he most nearly stands (measured on his file, 21 Nov: at 0.03 s
        his feet 17 cm apart and level within 6 cm, his hands at his sides; the 0.27 s first held was mid-stride, his feet
        68 cm apart) */
@@ -6260,11 +6435,29 @@
       const NUM = {
         // THE COURT, in metres: x across it, z down it (the house's doorway, and the thread across it, at z -3.0; the
         // gate, and the camera behind and above the one he plays, at +3.0). The play area of the plan's 8.1
-        courtX: 1.95, courtZ0: -3.0, courtZ1: 3.0,
+        /* (R37, 23 Nov: Chad, "increase the total walkable area size of the entire fight sequence area by at least 50% bigger
+           ... the current area feels too restrictive to walk in". The court was 3.9 by 6.0 m inside the yard's 5.2 by 8.4,
+           and the two of them walked 3.2 by 4.9 m of it (15.7 square metres), held 0.65 m off each side wall and 2.3 m short
+           of the gate by lines nobody could see. Now the court is the yard: 0.15 m off its side walls (x 2.45) and 0.4 m
+           short of the gate's low wall (its inner face at the yard's z -13.8; the two planters moved into the gate's corners
+           to give the room: b_world.js PLANT_Z), 4.9 by 7.7 m; the two of them walk 4.2 by 6.6 m of it, 27.7 square metres
+           less the planters' corners, 1.7 times what they had. Was courtX 1.95, courtZ1 3.0) */
+        courtX: 2.45, courtZ0: -3.0, courtZ1: 4.7,
         praiIn: 0.2,                          // a Prai keeps this far inside the court's walls
+        notch: { z: 2.75, x: 1.45 },          // (R37) and out of the planters in the gate's corners: past z 2.75 it keeps
+                                              // within x 1.45 of the middle (their inner faces x 1.76 and -1.84 from
+                                              // z 3.05: a Prai's own half-width, 0.3, to spare)
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
-        bodyX: 1.6, bodyZ0: -2.3, bodyZ1: 2.6, // where the two of them may stand
-        wallOff: 1.1, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
+        bodyX: 2.1, bodyZ0: -2.3, bodyZ1: 4.3, // where the two of them may stand (R37: was 1.6 and 2.6; the planters in the
+                                              // gate's corners stop them as every solid does, the mode's own slide)
+        wallOff: 1.6, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
+        offZ1: 1.9,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
+                                              // loop as before, which lies 0.62 m in from the yard's walls: x 0.85 as before;
+                                              // and toward the gate no further than the old court let them, z 1.9 (offZ1):
+                                              // with the court's length let out to 4.7 the simulator's careful player could
+                                              // end the surge on the gate side of his student, and in the lane inside the
+                                              // Naga (1.7 m wide, the cage 2.9 across) never got round him to the last three:
+                                              // 6 campaigns of 300 stalled, none with offZ1. Was wallOff 1.1 in the smaller court)
                                               // pace where the surge finds one nearer (never a snap): the Naga's body lies
                                               // 0.27 to 0.97 m off them round the court, and passed through whoever stood
                                               // within about a metre of one (FILMS-2, 21 Nov)
@@ -6307,16 +6500,16 @@
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
         // FIRE (Grandmaster Pho's main act)
-        fireWait: 1.1, flight: 0.7, fireReach: 5.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
+        fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
         bagReach: 2.5, bagSecs: 1.0,
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown"); its wait a fifth
         // shorter at his R34 (23 Nov: "make it slightly easier to charge up the shockwave skill, it takes too long to
         // charge it up"): 40 s, was 50 (the holds' own waits below likewise; the wait after a break is a penalty, kept)
-        waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
+        waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 7, ringMax: 8.5, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
-        bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
+        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 10, bubbleMax: 3,
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
@@ -6448,13 +6641,15 @@
         const xm = n.courtX - n.praiIn, z0 = Math.max(n.courtZ0 + n.praiIn, n.threadZ), z1 = n.courtZ1 - n.praiIn;
         if (p.x < -xm) p.x = -xm; else if (p.x > xm) p.x = xm;
         if (p.z < z0) p.z = z0; else if (p.z > z1) p.z = z1;
+        if (n.notch && p.z > n.notch.z) { if (p.x < -n.notch.x) p.x = -n.notch.x; else if (p.x > n.notch.x) p.x = n.notch.x; }
       }
       /* (FROM THE SURGE ON: off the walls. How far the nearer wall is; each body eased in where it is nearer; and no step
          taking it nearer again) */
       const offWalls = (st) => st.stage === 'surge' || st.stage === 'naga' || st.stage === 'last';
-      const wallGap = (n, b) => Math.min(n.courtX - Math.abs(b.x), b.z - n.courtZ0, n.courtZ1 - b.z);
+      const farZ = (n) => Math.min(n.courtZ1, (n.offZ1 != null ? n.offZ1 : Infinity) + n.wallOff);   // (R37: offZ1)
+      const wallGap = (n, b) => Math.min(n.courtX - Math.abs(b.x), b.z - n.courtZ0, farZ(n) - b.z);
       function wallEase(st, b, dt) {
-        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, s = n.wallSlide * dt, ox = b.x, oz = b.z;
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff, s = n.wallSlide * dt, ox = b.x, oz = b.z;
         if (b.x > xm) b.x = Math.max(xm, b.x - s); else if (b.x < -xm) b.x = Math.min(-xm, b.x + s);
         if (b.z < z0) b.z = Math.min(z0, b.z + s); else if (b.z > z1) b.z = Math.max(z1, b.z - s);
         return [b.x - ox, b.z - oz];
@@ -6465,14 +6660,14 @@
         const n = st.n, ph = st.pho, z = st.zav; let dx = ph.x - z.x, dz = ph.z - z.z, d = Math.sqrt(dx * dx + dz * dz);
         if (d >= n.apart) return;
         if (d < 1e-6) { dx = -z.x || 1; dz = -z.z; d = Math.sqrt(dx * dx + dz * dz) || 1; }
-        const xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, a0 = Math.atan2(dz, dx), r = n.apart + 1e-3;
+        const xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff, a0 = Math.atan2(dz, dx), r = n.apart + 1e-3;
         for (let i = 0; i <= 36; i++) for (const sg of i ? [1, -1] : [1]) { const a = a0 + sg * i * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
           if (Math.abs(qx) <= xm + 1e-6 && qz >= z0 - 1e-6 && qz <= z1 + 1e-6) { ph.x = qx; ph.z = qz; return; } }
         ph.x = z.x + dx / d * r; ph.z = z.z + dz / d * r;
       }
       function wallHold(st, b, ox, oz) {
         if (!offWalls(st)) return;
-        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff;
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff;
         if (Math.abs(b.x) > xm && Math.abs(b.x) > Math.abs(ox)) b.x = Math.sign(b.x) * Math.max(xm, Math.abs(ox));
         if (b.z < z0 && b.z < oz) b.z = Math.min(z0, oz); else if (b.z > z1 && b.z > oz) b.z = Math.max(z1, oz);
       }
@@ -7140,7 +7335,7 @@
         const a0 = Math.atan2(dz, dx);
         for (let i = 0; i <= 36; i++) for (const sg of i ? [1, -1] : [1]) {
           const a = a0 + sg * i * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
-          if (Math.abs(qx) <= xm && qz >= z0 && qz <= z1) { p.x = qx; p.z = qz; return; }
+          if (Math.abs(qx) <= xm && qz >= z0 && qz <= z1 && !(n.notch && qz > n.notch.z && Math.abs(qx) > n.notch.x)) { p.x = qx; p.z = qz; return; }
         }
         p.x = z.x + Math.cos(a0) * r; p.z = z.z + Math.sin(a0) * r; clampPrai(n, p);
       }
@@ -8835,6 +9030,8 @@
       const st = FS5.st; if (!st || !(dt > 0) || !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last')) return;
       const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
       if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
+      /* (R41: the lens is held at the gate by the mode's box again, its z line -13.9, court z 5.2: R37's stop, which drew it in
+         to court z 4.96, is retired) */
       const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
       if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
       const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
@@ -8990,6 +9187,8 @@
       gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
       gripTune(o) { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.tune(o) : null; },
       gripMove() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.move() : null; },
+      gripDiag() { return typeof PHOGRIP5 === 'object' && PHOGRIP5.diag ? PHOGRIP5.diag() : null; },
+      gripSwing(on) { return typeof PHOGRIP5 === 'object' && PHOGRIP5.swing ? PHOGRIP5.swing(on) : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -8999,12 +9198,17 @@
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
         const st = FS5.st; if (!st) return false; this.clear();
-        const L = st.prai[0], w = fsW(L.x, L.z);
+        const L = st.prai[0];
+        /* (a Prai still waiting has no place on the court yet (its rules stand it at the court's middle, where Master Zavier
+           is): the lab's own is set two metres before him, toward the doorway, and shown coming, so what is drawn on it is
+           drawn where it stands: e4c5bindat.mjs found the bind's bubble on his own body) */
+        if (L.st === 'waiting') { L.x = Math.max(-2.2, Math.min(2.2, st.zav.x + 0.5)); L.z = Math.max(-2.5, st.zav.z - 2.0); L.st = 'coming'; L.labWas = 'waiting'; }
+        const w = fsW(L.x, L.z);
         if (name === 'labBall') fsBallStart({ x: L.x, z: L.z, id: L.id }, 0);
         else if (name === 'labLand') fsEvents([{ e: 'land', result: 'chased', id: L.id, x: L.x, z: L.z }]);
-        else if (name === 'labTired') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
+        else if (name === 'labTired') { L.labWas = L.labWas || L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsFxFrame(1 / 30, st.t || 0);   // (its bubble first, then the fire on it)
           fsEvents([{ e: 'land', result: 'tired', id: L.id, x: L.x, z: L.z }]); }
-        else if (name === 'labBind') { L.labWas = L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
+        else if (name === 'labBind') { L.labWas = L.labWas || L.st; L.st = 'bound'; L.bub = FN5.bubbleSecs || 10; fsEvents([{ e: 'bind', id: L.id }]); }
         else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
         else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
         else if (name === 'labStreak') fsStreak(L, false);
@@ -9162,7 +9366,16 @@
       let BYH = false, FGAP = {};
       const shaftR = (y) => { const f = Math.max(0, Math.min(SHAFT_P90.length - 1, (y - 0.96) * 100)), i = Math.min(SHAFT_P90.length - 2, Math.floor(f));
         return (SHAFT_P90[i] + (SHAFT_P90[i + 1] - SHAFT_P90[i]) * (f - i)) / 100; };
-      let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.022, BACK = 0.025, PALM = 0.03;     // (a probe may try others: tune)
+      /* (R35, 23 Nov, measured by e4c5gripfit with the solve's own joints beside the drawn (lab.gripDiag): with the shaft 2.5 cm
+         back from his knuckles and 3 cm under his hand's line, his knuckles stood 2.4 to 3.0 cm off the wood and a finger
+         bent as a hand bends could touch it only with its tip, the rest of it curled in the air 1.5 to 2 cm off (the pictures'
+         floating fist); under his knuckles (BACK 0) and 1.8 cm under his hand's line his fingers lie on it (their skin 0.1 to
+         0.2 cm in its carving) and his palm meets it. And the shaft runs ACROSS his palm on the slant a staff takes in a
+         closed hand, from the heel of his hand under his little finger up between his thumb and his first finger (TILT -22:
+         his fingers' line 22 degrees down from square to it), so his forearm, which comes down to his fist, meets a straight
+         wrist: square to it, his wrist stood 20 to 27 degrees toward his thumb at rest and 25 to 35 as he talked (a real
+         wrist's range 25), on the slant 0 to 2; his thumb's skin 2.1 to 2.3 cm inside the shaft square to it, 0.3 on it) */
+      let TILT = -22 * Math.PI / 180, STICK_Y = 1.07, THUMB_R = 0.022, BACK = 0, PALM = 0.018;     // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -9202,7 +9415,7 @@
           let al = Math.atan2(p1[1] - c[1], p1[0] - c[0]);                           // (round the shaft from there, the way the fingers close)
           const pts = [[0, 0], p1];
           for (const li of [l[1], l[2]]) { al -= arc(li, rho); pts.push([c[0] + rho * Math.cos(al), c[1] + rho * Math.sin(al)]); }
-          return { P0, x3, y3, w, l, pts, rest: seg.map(v => v.clone().normalize()), lim: LIM.f };
+          return { P0, x3, y3, w, l, pts, c, rho, rest: seg.map(v => v.clone().normalize()), lim: LIM.f };
         };
         /* the thumb: the other way round the shaft, in the plane square to it through his thumb's knuckle */
         const thumb = () => {
@@ -9223,7 +9436,7 @@
           best.b = pick; best.e = Math.abs(Q(pick).distanceTo(P0) - l[0]);
           let be = best.b; const tg = [P0.clone(), Q(be)];
           for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q(be)); }       // (round the shaft's near side and under it)
-          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots };
+          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots, rho, cs };
         };
         /* each chain's turns: each bone's rest line turned onto its target line, down the chain (each in its parent's frame) */
         const chainQ = (nm, tgDirs, lim) => {
@@ -9238,10 +9451,76 @@
           }
           out.q[nm] = qs; out.report[nm] = rep;
         };
-        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm);
-          const dir = (i) => { const a0 = F.pts[i], a1 = F.pts[i + 1]; return F.x3.clone().multiplyScalar(a1[0] - a0[0]).addScaledVector(F.y3, a1[1] - a0[1]).normalize(); };
-          chainQ(nm, [dir(0), dir(1), dir(2)], F.lim); }
-        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim); out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots; }
+        /* (R35 and R36, 23 Nov: Chad, "Do you see one finger going the other way on pho's hands?": the joint check read his
+           little finger bent BACKWARD 15.4 degrees at every moment of every act, because chainQ turned each bone onto its target
+           by the SHORTEST ARC, whatever its direction, and held only the size of the turn. A finger's three joints are HINGES:
+           each turns only about the axis square to the finger and to the palm's facing (w), only toward the palm, and only as
+           far as a hand's own range (MCP 90, PIP 110, DIP 85). So each finger is solved in its own plane as a hinged chain
+           WRAPPED ROUND the shaft: its three bends searched (a 3 degree grid, then half a degree round the best) for the chain
+           whose every bone stays outside the shaft's circle (the finger's own thickness on it) while its knuckles and tip lie on
+           that circle, its end joint bending with its middle one as a real finger's does (about two thirds of it: one tendon
+           works both), and no more bend than that needs; then each bone turned about its own hinge by its bend) */
+        const wrapFinger = (F) => {
+          /* (R35, the first pass's lesson, 23 Nov: searched over all three bends freely, the finger met the wood with 65 to 70
+             degrees at its knuckle and its middle joint all but straight (6 to 24): a hook of straight sticks, touching the
+             shaft with its tip, the claw the pictures showed. A hand closing round a bar bends its three joints together, the
+             middle joint as much as the knuckle and the end joint about half of it (one tendon works the two last; the
+             knuckle is driven with them): so the finger's whole bend T is shared out so, 0.40, 0.40 and 0.20, each joint held
+             in its range, and T is searched, every hundredth of a radian to 2.8 (with the knuckle's share, below): the T whose
+             chain lies nearest the circle at its joints and tip and enters it nowhere) */
+          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l;
+          const segD = (ax, ay, bx, by) => { const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let t = L2 > 0 ? ((c[0] - ax) * dx + (c[1] - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(ax + dx * t - c[0], ay + dy * t - c[1]); };
+          /* (the knuckle's share r searched too, within a hand's own: 0.30 to 0.48 of the whole bend, the rest shared two to one
+             between the middle and the end joint (one tendon works both), a little cost for leaving 0.40, so a finger whose
+             knuckle stands off the wood can lie on it as a hand would, and one that can already does as before) */
+          const bendsOf = (T, r = 0.40) => [r, (1 - r) * 2 / 3, (1 - r) / 3].map((k, i) => Math.min(hi[i], k * T));
+          const lay = (fs) => { let x = 0, y = 0, cum = 0, J = 0, clear = Infinity; for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
+              clear = Math.min(clear, segD(x, y, nx, ny) - rho); const e = Math.hypot(nx - c[0], ny - c[1]) - rho; J += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
+            return { J, clear, tip: Math.hypot(x - c[0], y - c[1]) - rho }; };
+          let best = null;
+          for (let rr = 0.30; rr <= 0.48 + 1e-9; rr += 0.02) for (let T = 0; T <= 2.8 + 1e-9; T += 0.01) { const fs = bendsOf(T, rr), r = lay(fs); if (r.clear < -0.01 * rho) continue;
+            const J = r.J + 0.5 * rho * rho * (rr - 0.40) * (rr - 0.40); if (!best || J < best.J) best = { f: fs, J, clear: r.clear, tip: r.tip, T, r: rr }; }
+          if (!best) { const fs = bendsOf(0), r = lay(fs); best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T: 0 }; }
+          return best;
+        };
+        /* each bone turned about its own hinge by its bend: the hinge (w, in the hand's frame) carried into the bone's parent's
+           rest frame, the turn laid onto the bone's own rest turn; which way about w closes the finger is read from the plane
+           (toward -y3, the palm) */
+        const hingeQ = (nm, ax3, bends, rep) => {
+          const L = chains[nm], qs = [], acc = new THREE.Quaternion();
+          for (let i = 0; i < 3; i++) {
+            const Li = bindLocal(P, L[i]) || L[i].quaternion.clone();
+            const ax = ax3[i].clone().applyQuaternion(acc.clone().invert()).normalize();
+            qs.push(new THREE.Quaternion().setFromAxisAngle(ax, bends[i]).multiply(Li)); acc.multiply(Li);
+          }
+          out.q[nm] = qs; out.report[nm] = rep;
+        };
+        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = wrapFinger(F);
+          const sg = Math.sign(F.y3.dot(new THREE.Vector3().crossVectors(F.w, F.x3))) || -1;   // (+ about w lifts toward +y3: closing is the other way)
+          hingeQ(nm, [F.w, F.w, F.w], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
+          out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2);
+          /* (a probe's: the finger's plane and the joints the solve meant, so diag() can set them beside the joints drawn) */
+          { const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), pred = [[0, 0]]; let x = 0, y = 0, cum = 0;
+            for (let i = 0; i < 3; i++) { cum += W.f[i]; const th = th0[i] - cum; x += F.l[i] * Math.cos(th); y += F.l[i] * Math.sin(th); pred.push([x, y]); }
+            (out.plane = out.plane || {})[nm] = { P0: F.P0.clone(), x3: F.x3.clone(), y3: F.y3.clone(), w: F.w.clone(), c: F.c.slice(), rho: F.rho, pred, l: F.l.slice(), th0 }; } }
+        /* THE THUMB: its root (the metacarpal, a saddle) onto its line by the shortest turn within its range, as before; its
+           two hinges (MCP and IP) only about the shaft's line, only toward the palm, within their range */
+        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim);
+          const L = chains.Thumb, q0 = out.q.Thumb[0], acc = new THREE.Quaternion().copy(q0), rep = [out.report.Thumb[0]];
+          for (let i = 1; i < 3; i++) {
+            const Li = bindLocal(P, L[i]) || L[i].quaternion.clone();
+            const restDir = L[i + 1].position.clone().normalize().applyQuaternion(Li).applyQuaternion(acc);   // (its line as the bones above it stand, in the hand's frame)
+            const want = T.tg[i + 1].clone().sub(T.tg[i]).normalize(), Ax = A.clone();
+            const p1 = restDir.clone().addScaledVector(Ax, -restDir.dot(Ax)).normalize(), p2 = want.clone().addScaledVector(Ax, -want.dot(Ax)).normalize();
+            const ang = Math.atan2(new THREE.Vector3().crossVectors(p1, p2).dot(Ax), p1.dot(p2));
+            const close = Math.sign(new THREE.Vector3().crossVectors(Ax, restDir).dot(nL)) || 1;   // (+ about the shaft carries it toward the palm when this is +)
+            const bend = Math.max(0, Math.min(T.lim[i] * D2R, ang * close));
+            const ax = Ax.applyQuaternion(acc.clone().invert()).normalize();
+            const q = new THREE.Quaternion().setFromAxisAngle(ax, close * bend).multiply(Li);
+            out.q.Thumb[i] = q; acc.multiply(q); rep.push(+(bend / D2R).toFixed(1));
+          }
+          out.report.Thumb = rep; out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots;
+          out.thumbAt = { tg: T.tg.map(v => v.clone()), rho: T.rho, cs: T.cs.clone() }; }
         /* the stick in this hand: its shaft's middle at 1.00 m up it on C, its length along A, the Naga's head facing as his knuckles do */
         const yA = A.clone(), xA = fL.clone().addScaledVector(A, -fL.dot(A)).normalize().negate(), zA = xA.clone().cross(yA).normalize();
         const R = new THREE.Matrix4().makeBasis(xA, yA, zA), sc = 1 / s;
@@ -9318,7 +9597,11 @@
            his arm holds the stick as at rest through every step; nothing else of the acts: his collarbone his take's, and no
            guard) */
         Walking: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] },
-        Running: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] }
+        Running: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] },
+        /* (R35, 23 Nov: his talk too: its body sways and turns while his fist stood where his rest put it, so his wrist was
+           turned 27 to 35 degrees toward his thumb as he spoke (the joint check; a real wrist's range is 25): his fist carried
+           where his shoulder goes, as in his walk) */
+        Talk_with_Hands_Open: { follow: [1, 0, 1], from: 'rest', clav: false, clear: 0, keys: [[0, 0, 0, 0, 0, 0]] }
       };
       /* where the Naga's film stands the stick: 0.38 m before him and 0.40 to his right (c_yfilm.js TOGETHER's own two numbers,
          sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
@@ -9346,7 +9629,8 @@
         /* (and where it stands at his standing rest, the place every act's follow is measured from) */
         const R0 = P.acts.Sit_to_Stand_Transition_M; if (R0) { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Sit_to_Stand_Transition_M' ? 1 : 0);
           R0.time = Math.min(R0.getClip().duration - 1e-3, 5.85); P.mixer.update(0); P.group.updateMatrixWorld(true); hb.getWorldPosition(v); P.group.worldToLocal(v); HIPS.rest = [v.x, v.y, v.z];
-          const cb = boneOf(P, 'RightShoulder'); if (cb) HIPS.restClav = cb.quaternion.clone(); }
+          const cb = boneOf(P, 'RightShoulder'); if (cb) HIPS.restClav = cb.quaternion.clone();
+          const cbL = boneOf(P, 'LeftShoulder'); if (cbL) HIPS.restClavL = cbL.quaternion.clone(); }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
         P.mixer.update(0); personSettle(P);
       });
@@ -9378,6 +9662,11 @@
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       let wroteArm = null;
+      /* (the turn, about the stick, from the line his shoulder makes to his fist at his rest to the line his knuckles make
+         there: his rest's own, so a planted hold reads as his standing one) */
+      const _pv = V(), _pq = new THREE.Quaternion();
+      const plantTurn = () => { const sx = HIPS.rest ? HIPS.rest[0] : -0.17, sz = HIPS.rest ? HIPS.rest[2] : 0;
+        return Math.atan2(-Math.sin(STAFF.out), Math.cos(STAFF.out)) - Math.atan2(STAFF.fist[0] - sx, STAFF.fist[2] - sz); };
       /* THE STICK KEPT CLEAR OF HIM IN HIS ACTS, whatever his take does (the first pass measured it: the gold's gather bent
          his trunk over the place the stick stood, his face 2 cm from it; the throw's step brought his right leg and its robe
          across its foot): its line held off the line of his trunk, of his head, of his right thigh and shin in their robe
@@ -9435,6 +9724,85 @@
         if (w > 0.001) { clB.quaternion.copy(clTake).slerp(HIPS.restClav, w); clWrote = clB.quaternion.clone(); clB.updateWorldMatrix(false, true); }
         else if (clWrote) { clB.quaternion.copy(clTake); clWrote = null; clB.updateWorldMatrix(false, true); }
       }
+      /* (R35, 23 Nov: HIS FREE SHOULDER LET HALF DOWN IN HIS ACTS. The joint check read his left collarbone raised 44 to 56
+         degrees over his rest at the gold's top and 22 to 30 through the throw: his shoulder at his ear. A raised arm lifts
+         its collarbone a quarter of its own rise, about 35 degrees overhead; his takes shrug it near twice that. Half the
+         take's turn of it is kept, eased toward his standing rest by the act's weight, as the right one is: clavLay) */
+      const CLAV_L = 0.5;
+      let clL = null, clLWrote = null; const clLTake = new THREE.Quaternion();
+      function clavLayL(P, w) {
+        if (!clL) clL = boneOf(P, 'LeftShoulder'); if (!clL || !HIPS.restClavL) return;
+        if (!clLWrote || !clL.quaternion.equals(clLWrote)) clLTake.copy(clL.quaternion);
+        if (w > 0.001) { clL.quaternion.copy(clLTake).slerp(HIPS.restClavL, w); clLWrote = clL.quaternion.clone(); clL.updateWorldMatrix(false, true); }
+        else if (clLWrote) { clL.quaternion.copy(clLTake); clLWrote = null; clL.updateWorldMatrix(false, true); }
+      }
+      /* (R41, 23 Nov: HIS ELBOW GOES WHERE HIS WRIST CAN HOLD THE STICK. With the stick in a thumb-up fist his hand's turn is
+         the stick's, so his wrist's bend is set by where his forearm comes from, and his forearm by where his elbow hangs: the
+         live check of build 30 read his wrist 41 to 65 degrees toward his little finger in the gold, the fire and the bag
+         (jointscan's line is 40, a real wrist's range about 30 to 40), his fist lifted out to his right with his elbow hung
+         low under it. A man lifting a staff lifts his elbow with it. So his elbow is swung about the line from his shoulder to
+         his wrist (every 3 degrees to 90 either way, then by half degrees) to the least swing that holds jointscan's own
+         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 30 (40),
+         bent 60 toward his palm (70) and 50 back (60); his forearm turned 90 (100); his elbow no more than 1.5 cm behind his
+         shoulder while his hand is before it (2.5), 3 cm in toward his middle or 5 cm over his shoulder; each degree or
+         centimetre past its margin costing its square, a swing a hundredth of its degrees squared. Where his elbow's own
+         place already holds all of them it is not moved at all (his rest, his walk, his run and his talk stand as they were) */
+      const _w5 = { S: V(), T: V(), P0: V(), B: V(), Pp: V(), U: V(), Vf: V(), E: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), h: V(), dn: V(),
+                    Ut: V(), Lf: V(), F: V(), a1: V(), a2: V(), h1: V(), h2: V(), W0: V(), E0: V() };
+      let SWING_ON = true, swingLast = null;
+      function swingCost(w, th, la, lb, d, ca, sa, side) {
+        const c = Math.cos(th), s = Math.sin(th);
+        w.Pp.copy(w.P0).multiplyScalar(c).addScaledVector(w.B, s);
+        w.U.copy(w.T).multiplyScalar(ca).addScaledVector(w.Pp, sa);
+        w.E.copy(w.U).multiplyScalar(la);                                    // (the elbow, from his shoulder)
+        w.Vf.copy(w.T).multiplyScalar(d).addScaledVector(w.U, -la).normalize();
+        w.re.copy(w.ac).addScaledVector(w.Vf, -w.ac.dot(w.Vf)).normalize(); w.ne.copy(w.n).addScaledVector(w.Vf, -w.n.dot(w.Vf)).normalize();
+        const fe = w.f.dot(w.Vf), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
+        const q = (x) => (x > 0 ? x * x : 0);
+        let cost = q(wd - 22) + q(-wd - 30) + q(wf - 60) + q(-wf - 50), tw = 0;
+        const phi = Math.acos(Math.max(-1, Math.min(1, w.U.dot(w.Vf)))) / D2R;
+        if (phi > 25) { w.h.crossVectors(w.U, w.Vf).normalize().multiplyScalar(side); w.dn.copy(w.U).addScaledVector(w.Vf, -w.U.dot(w.Vf)).normalize();
+          tw = Math.atan2(w.ne.dot(w.dn), w.ne.dot(w.h)) / D2R; cost += q(Math.abs(tw) - 90); }
+        const eb = w.E.dot(w.F), hf = w.W0.dot(w.F), ey = w.E.dot(w.Ut), lat = -w.E.dot(w.Lf);
+        if (hf > 0.1) cost += q((-eb - 0.015) * 100);
+        cost += q((ey - 0.05) * 100) + q((-lat - 0.03) * 100);
+        return { cost: cost + 0.01 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
+      }
+      function swing5(P, a, Wr, pole, Qh) {
+        swingLast = null; if (!SWING_ON) return;
+        const w = _w5;
+        if (!a.f5) {                                                         // (the hand's own lines, from his rig: they never change)
+          const m1 = boneOf(P, 'RightHandMiddle1'), i1 = boneOf(P, 'RightHandIndex1'), k1 = boneOf(P, 'RightHandPinky1') || boneOf(P, 'RightHandRing1');
+          if (!m1 || !i1 || !k1) a.f5 = { none: true };
+          else { const f = m1.position.clone().normalize(), ac = i1.position.clone().sub(k1.position); ac.addScaledVector(f, -ac.dot(f)).normalize();
+            a.f5 = { f, ac, n: new THREE.Vector3().crossVectors(f, ac).multiplyScalar(-1).normalize() }; } }
+        const legL = boneOf(P, 'LeftUpLeg'), legR = boneOf(P, 'RightUpLeg'), armL = boneOf(P, 'LeftArm');
+        if (a.f5.none || !legL || !legR || !armL) return;
+        a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(w.S);
+        a.fore.updateWorldMatrix(true, false); a.fore.getWorldPosition(w.E0); a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(w.h1);
+        if (!a.l5) a.l5 = [w.S.distanceTo(w.E0), w.E0.distanceTo(w.h1)];
+        const la = a.l5[0], lb = a.l5[1];
+        /* (his torso's own frame, as jointscan reads it: up from his hips' middle to his shoulders', across from his right
+           shoulder to his left, forward square to both) */
+        legL.updateWorldMatrix(true, false); legR.updateWorldMatrix(true, false); armL.updateWorldMatrix(true, false);
+        legL.getWorldPosition(w.a1); legR.getWorldPosition(w.a2); armL.getWorldPosition(w.h2);
+        w.Ut.copy(w.h2).add(w.S).multiplyScalar(0.5).sub(w.a1.add(w.a2).multiplyScalar(0.5)).normalize();
+        w.Lf.copy(w.h2).sub(w.S); w.Lf.addScaledVector(w.Ut, -w.Lf.dot(w.Ut)).normalize(); w.F.crossVectors(w.Lf, w.Ut).normalize();
+        w.T.copy(Wr).sub(w.S); const d0 = w.T.length(); if (!(d0 > 1e-5)) return; w.T.divideScalar(d0); w.W0.copy(Wr).sub(w.S);
+        const d = Math.max(Math.abs(la - lb) + 1e-3, Math.min(la + lb - 1e-3, d0));
+        w.P0.copy(pole).addScaledVector(w.T, -pole.dot(w.T)); if (w.P0.lengthSq() < 1e-10) return; w.P0.normalize(); w.B.crossVectors(w.T, w.P0);
+        const ca = Math.max(-1, Math.min(1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
+        w.f.copy(a.f5.f).applyQuaternion(Qh); w.ac.copy(a.f5.ac).applyQuaternion(Qh); w.n.copy(a.f5.n).applyQuaternion(Qh);
+        const r0 = swingCost(w, 0, la, lb, d, ca, sa, -1);
+        if (!(r0.cost > 0)) { swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        let best = 0, bc = r0.cost;
+        for (let dg = -90; dg <= 90; dg += 3) { if (!dg) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        const lo = best - 3, hi = best + 3;
+        for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        const rb = swingCost(w, best * D2R, la, lb, d, ca, sa, -1);
+        swingLast = { th: best, ...rb, at0: r0 };
+        if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -9451,14 +9819,20 @@
         /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear;
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
-        clavLay(P, Math.min(1, m.clav) * share);
+        clavLay(P, Math.min(1, m.clav) * share); clavLayL(P, CLAV_L * Math.min(1, m.clav) * share);
         const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
            rises from its head under his hand) */
         if (planted) { const g = things.nagaStaff; g.updateWorldMatrix(true, false);
           Ct.set(STICK_C[0], STICK_Y + 0.004, STICK_C[1]).applyMatrix4(g.matrixWorld);
-          up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); front.setFromMatrixColumn(g.matrixWorld, 0).normalize().negate(); }
+          up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); front.setFromMatrixColumn(g.matrixWorld, 0).normalize().negate();
+          /* (R35, 23 Nov: his hand turns about the planted shaft as his cast turns him, its knuckles' line led by the line from
+             his shoulder to the stick as at his rest (PLANT_TURN), so his wrist stays in its range: the joint check read it
+             bent 176 degrees and turned 171 toward his thumb at 2.2 s of the planting cast, his hand left facing the way the
+             stick was planted while his body turned from it. A hand on an upright pole holds it from any side) */
+          a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(_pv); _pv.subVectors(Ct, _pv); _pv.addScaledVector(up, -_pv.dot(up));
+          if (_pv.lengthSq() > 1e-6) { _pv.normalize(); front.copy(_pv).applyQuaternion(_pq.setFromAxisAngle(up, plantTurn())); } }
         else {
         /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it; in his own frame) */
         if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fz = front.z;
@@ -9476,6 +9850,7 @@
         /* the wrist, where the fist's middle comes onto its place */
         const Wr = _sf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_sq2).negate().add(Ct);
         const pole = _sd.set(STAFF.pole[0], STAFF.pole[1], STAFF.pole[2]).normalize().applyQuaternion(_sq);
+        swing5(P, a, Wr, pole, _sq2);                                        // (R41: the elbow where his wrist can hold it)
         armHinge(a, Wr, pole);
         /* the forearm turned along its own line by the hand's turn about it (swing and twist: the twist to the forearm) */
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
@@ -9503,7 +9878,7 @@
                                  (STICK5.who === 'pho' || (STICK5.who === 'planted' && heldPlanted(P))));
             k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
           if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
-          else if (clWrote && P && P.ready) clavLay(P, 0);
+          else if ((clWrote || clLWrote) && P && P.ready) { clavLay(P, 0); clavLayL(P, 0); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
         THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
       };
@@ -9514,6 +9889,26 @@
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },
+        /* (R41, a probe's: the elbow's swing this frame (degrees), the wrist's measures it left and those at no swing; and the
+           swing switched off and on, so the same frame can be read both ways) */
+        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null }; },
+        /* (a probe's: each finger's joints as DRAWN, in the plane the solve worked in (cm: along the finger's rest line, toward
+           the back of his hand, and out of the plane), beside the joints it meant, and each one's distance from the shaft's
+           circle there (the finger's own thickness on the wood): a solve that is laid as it was meant reads the same twice) */
+        diag() { const P = cast.pho; if (!G || !G.plane || !P || !P.ready) return null; const As = armsOf(P), a = As && As.R; if (!a) return null;
+          a.hand.updateWorldMatrix(true, true); const inv = new THREE.Matrix4().copy(a.hand.matrixWorld).invert(), cm = (v) => +(v * G.s * 100).toFixed(2), out = { s: G.s };
+          for (const nm in G.plane) { const D = G.plane[nm], drawn = G.chains[nm].map(b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv));
+            out[nm] = { rho: cm(D.rho), c: D.c.map(cm), l: D.l.map(cm), th0: D.th0.map(t => +(t / D2R).toFixed(1)),
+              j: drawn.map((q, i) => { const r = q.clone().sub(D.P0), x = r.dot(D.x3), y = r.dot(D.y3), z = r.dot(D.w), p = D.pred[i];
+                return { at: [cm(x), cm(y), cm(z)], want: [cm(p[0]), cm(p[1])], off: cm(Math.hypot(x - D.c[0], y - D.c[1]) - D.rho), wantOff: cm(Math.hypot(p[0] - D.c[0], p[1] - D.c[1]) - D.rho) }; }) }; }
+          /* (the thumb: each joint drawn against its target, both as far from the shaft's line as they stand, less its circle) */
+          if (G.thumbAt) { const T = G.thumbAt, ofl = (q) => { const r = q.clone().sub(T.cs); r.addScaledVector(G.A, -r.dot(G.A)); return cm(r.length() - T.rho); };
+            const drawn = G.chains.Thumb.map(b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv));
+            out.Thumb = { rho: cm(T.rho), j: drawn.map((q, i) => ({ miss: cm(q.distanceTo(T.tg[i])), off: ofl(q), wantOff: ofl(T.tg[i]) })) }; }
+          /* (R39: the old end site that carries his middle fingertip, against that finger's end: as near closed as open) */
+          { const e = boneOf(P, 'RightHandEnd'), m4 = boneOf(P, 'RightHandMiddle4');
+            if (e && m4) { out.endGap = +(e.getWorldPosition(new THREE.Vector3()).distanceTo(m4.getWorldPosition(new THREE.Vector3())) * 100).toFixed(2); out.endParent = e.parent && e.parent.name; } }
+          return out; },
         /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
         plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },
@@ -9820,35 +10215,56 @@
       clear: (x, z, r) => navClear(x, z, r || NAV5.r, null), stand: (x, z, r) => navStand(x, z, r || NAV5.r, null)
     };
     /* R33 (23 Nov 2026; R28, the brown bits on his robe). WRITTEN BY tools/phodark.py from his body sheet (texture_0,
-       sha1 2410efbf776b5dbf2145e67647ec0415ba08b5d8, the same bytes in assets/pho.glb and assets/p5pho.glb), never by hand: 211 small dark specks lying
-       inside the white of his robe (4096 x 4096), each on a piece that paints mostly robe, clear of the bead strands, grown
-       by 2 texels, as runs [row, first cell, cells] of a 1024 x 1024 mask, each in the colour of the robe round it (sRGB).
+       sha1 2410efbf776b5dbf2145e67647ec0415ba08b5d8, the same bytes in assets/pho.glb and assets/p5pho.glb), never by hand: 249 small dark specks lying
+       inside the white of his robe (4096 x 4096), robe all round each, on pieces that paint 20% robe or more, clear of the bead
+       strands, never a line (a seam), grown by 2 texels, as runs [row, first cell, cells] of a 1024 x 1024 mask, each in the
+       colour of the robe round it (sRGB).
        c_cast.js paints them over chapter 4's own cover (PHO_FLECKS) once; his file is unchanged. */
     const PHO_DARK5 = { size: 1024, f: [
+      [189, 180, 178, [4,44,1,5,43,2,6,43,1,7,43,2,8,44,1]],
+      [218, 219, 224, [4,297,1,5,296,3,6,296,2]],
+      [230, 227, 227, [5,360,2,6,360,2,7,360,2,8,360,2]],
       [208, 197, 198, [5,334,2]],
+      [218, 209, 211, [5,199,2,6,199,3,7,199,2,8,199,2]],
       [198, 192, 192, [5,444,1,6,444,2]],
       [210, 206, 205, [5,477,2,6,476,3,7,476,2,8,476,2]],
+      [234, 233, 232, [5,641,1,6,641,2,7,642,1,8,642,1]],
+      [215, 212, 208, [6,663,2,7,663,2]],
+      [185, 177, 172, [6,749,2,7,749,1]],
+      [157, 154, 146, [6,766,1]],
+      [224, 223, 220, [6,858,2,7,858,1]],
+      [244, 244, 240, [5,916,1,6,916,1,7,916,1,8,916,1]],
       [219, 223, 220, [6,139,1,7,138,2,8,138,1]],
       [236, 238, 236, [6,93,2,7,93,2]],
       [227, 225, 221, [6,377,1,7,377,1,8,377,1]],
       [221, 218, 220, [6,769,1,7,769,1,8,769,1]],
-      [241, 239, 239, [6,201,2,7,201,2]],
+      [241, 239, 239, [6,202,1,7,201,2]],
       [182, 178, 176, [6,335,1,7,334,2,8,334,2]],
       [180, 180, 182, [6,412,2,7,412,2,8,412,2]],
+      [200, 199, 200, [6,459,2,7,459,2,8,459,2]],
+      [196, 194, 188, [6,91,1,7,91,2,8,90,3]],
       [190, 189, 187, [7,444,2,8,444,2]],
+      [204, 200, 193, [6,765,1,7,765,2,8,765,2]],
       [243, 245, 243, [6,1006,1,7,1006,2]],
+      [211, 208, 208, [7,296,2]],
+      [185, 177, 174, [7,578,1,8,578,1]],
       [244, 246, 246, [7,835,2,8,836,1]],
       [224, 222, 223, [7,880,1,8,880,1]],
+      [228, 225, 221, [8,664,1]],
+      [235, 233, 232, []],
       [192, 189, 189, [9,465,2,10,465,2,11,465,1]],
       [214, 214, 213, [10,28,2,11,28,1]],
       [208, 212, 211, [10,862,1,11,861,2,12,861,2,13,861,2,14,862,1]],
       [164, 160, 159, [10,467,1,11,466,2,12,466,2]],
+      [163, 161, 159, [11,714,4,12,714,4,13,716,1]],
       [224, 224, 222, [12,27,3,13,27,3,14,28,1]],
       [242, 246, 246, [12,167,2]],
       [228, 230, 227, [11,860,1,12,860,1]],
+      [194, 192, 195, [13,714,2,14,715,2,15,713,4,16,713,5,17,715,1,18,714,3,19,713,4,20,713,4,21,714,2]],
       [224, 222, 223, [13,733,1,14,733,2,15,733,3,16,733,3,17,733,2,18,733,2]],
       [216, 214, 211, [14,27,1]],
       [208, 208, 211, [13,184,1,14,184,1]],
+      [236, 237, 235, [14,358,3,15,358,3,16,358,2,17,358,3,18,357,3,19,357,3,20,356,5,21,357,4,22,357,5,23,357,5,24,358,4,25,361,1]],
       [221, 225, 228, [14,860,2,15,861,1]],
       [227, 232, 232, [15,862,2,16,861,3,17,861,2,18,861,2]],
       [198, 196, 193, [15,185,1,16,184,3,17,184,3,18,184,4,19,184,4,20,185,2,21,185,2]],
@@ -9858,6 +10274,7 @@
       [190, 190, 192, [20,860,2,21,860,2,22,860,1]],
       [246, 247, 244, [23,862,1]],
       [236, 238, 237, [23,733,1,24,733,2,25,733,2,26,734,1]],
+      [240, 242, 241, [24,357,1,25,357,1]],
       [228, 226, 224, [44,115,2]],
       [231, 232, 231, [45,114,2,46,114,3,47,114,3,48,115,2]],
       [235, 236, 233, [46,111,1]],
@@ -9873,17 +10290,19 @@
       [221, 222, 221, [99,68,2,100,68,2,101,67,3,102,68,1]],
       [219, 222, 224, [103,976,2,104,975,6,105,975,7,106,977,5]],
       [216, 214, 213, [114,419,1,115,416,5,116,416,6,117,417,5,118,418,4,119,419,2]],
+      [196, 193, 195, [115,1011,1,116,1011,2,117,1011,2]],
+      [216, 216, 218, [117,1013,1,118,1012,2]],
+      [206, 204, 204, [119,1012,2,120,1011,3,121,1011,2]],
       [235, 237, 237, [143,238,3,144,238,3]],
       [237, 239, 237, [182,504,3,183,504,3,184,505,2]],
       [240, 242, 241, [186,505,1,187,505,1]],
       [215, 213, 212, [189,51,2,190,51,3,191,51,3,192,52,2,193,52,1]],
       [198, 197, 196, [193,53,1,194,52,3,195,52,4,196,52,4,197,53,2]],
-      [220, 218, 217, [197,52,1,198,52,3,199,52,3,200,53,2,201,53,3,202,53,3,203,54,2,204,54,3,205,55,3,206,55,3,207,56,2,208,56,3,209,57,2,210,57,2]],
-      [206, 206, 206, [198,55,2,199,55,3,200,55,2]],
+      [206, 206, 206, [198,54,3,199,54,4,200,54,3]],
       [244, 244, 241, [201,652,2,202,652,3,203,652,3,204,653,2,205,653,2,206,653,1]],
-      [210, 209, 210, [201,56,1,202,56,3,203,56,3,204,57,2]],
-      [214, 214, 214, [203,53,1,204,52,2,205,53,2,206,53,2]],
-      [211, 208, 207, [205,58,1,206,58,1,207,58,1]],
+      [210, 209, 210, [201,56,1,202,56,3,203,56,3,204,56,3,205,57,1]],
+      [214, 214, 214, [203,53,1,204,52,3,205,53,2,206,53,2]],
+      [211, 208, 207, [205,58,1,206,57,2,207,57,2,208,57,2]],
       [234, 233, 232, [215,27,3,216,23,7,217,19,10,218,19,9]],
       [207, 207, 206, [217,29,3,218,28,3,219,29,1]],
       [237, 238, 236, [217,32,2,218,32,2]],
@@ -9908,8 +10327,14 @@
       [250, 248, 246, [306,152,1]],
       [215, 217, 216, [341,562,1,342,562,1,343,562,1]],
       [250, 248, 250, [393,1015,1,394,1015,1]],
+      [228, 222, 220, [501,1005,4,502,1006,3,503,1006,2,504,1006,3,505,1006,3,506,1006,4,507,1006,4,508,1007,3,509,1006,4,510,1005,6,511,1005,5]],
+      [223, 215, 213, [512,1007,3,513,1007,3,514,1007,3,515,1007,3,516,1007,2,517,1006,4,518,1006,5,519,1006,4,520,1007,3,521,1007,3,522,1008,3]],
+      [215, 213, 212, [523,1007,3,524,1007,4,525,1007,4,526,1008,3,527,1010,1]],
+      [200, 195, 193, [528,1008,2,529,1008,3,530,1008,3,531,1009,2]],
+      [230, 225, 224, [531,1008,1,532,1008,2,533,1007,3,534,1006,4]],
       [223, 223, 221, [537,571,1,538,571,2,539,571,2,540,571,2,541,571,1]],
       [229, 230, 229, [541,572,1,542,571,2,543,572,1]],
+      [218, 220, 221, [541,1007,2,542,1006,4,543,1008,1]],
       [224, 221, 219, [546,572,1,547,572,1]],
       [208, 207, 208, [546,568,2,547,568,4,547,573,1,548,567,7,549,567,7,550,569,5,551,571,2,552,571,3,553,571,3,554,573,1]],
       [212, 210, 210, [555,573,2,556,573,3,557,572,4,558,573,4,559,573,4,560,573,5,561,574,5,562,577,2]],
@@ -9919,7 +10344,6 @@
       [238, 239, 237, [573,728,2,574,729,1,575,730,1,576,730,1]],
       [241, 240, 240, [579,729,2,580,729,2]],
       [210, 208, 209, [587,588,1,588,588,1,589,588,1]],
-      [219, 218, 215, [593,587,1,594,587,3,595,587,3,596,586,4,597,586,3,598,586,3,599,585,4,600,585,4,601,584,4,602,584,4,603,585,2,604,585,2,605,585,2,606,585,2]],
       [225, 229, 228, [594,276,1,595,276,2,596,276,2]],
       [220, 222, 221, [597,275,2,598,275,2]],
       [224, 219, 217, [598,282,1,599,281,3,600,282,1]],
@@ -9960,7 +10384,6 @@
       [226, 229, 231, [644,934,2,645,932,5,646,932,4,647,932,5,648,933,5,649,935,2]],
       [227, 229, 232, [650,935,2,651,935,2]],
       [202, 207, 207, [658,935,1,659,934,2,660,934,2,661,934,2,662,934,2,663,935,1]],
-      [235, 236, 236, [664,912,1,665,911,3,666,911,4,667,913,2,668,913,4,669,914,3]],
       [239, 240, 241, [666,904,1,667,903,2,668,904,1]],
       [236, 239, 238, [670,908,2,671,908,3]],
       [235, 238, 237, [673,911,1,674,910,3]],
@@ -9968,12 +10391,16 @@
       [209, 209, 210, [683,979,3,684,979,4,685,979,3,686,979,3,687,979,3,688,979,3,689,980,2]],
       [216, 218, 219, [685,987,2,686,987,3,687,987,5,688,987,9,689,989,8,690,989,8,691,991,5]],
       [231, 234, 233, [686,920,3,687,920,4,688,922,1]],
+      [217, 218, 223, [689,1011,3,690,1011,3]],
       [244, 247, 247, [689,979,1,690,979,1]],
       [235, 236, 235, [690,1004,2,691,1003,3,692,1003,2,693,1003,2]],
       [241, 239, 237, [691,761,4,692,761,4,693,760,4,694,760,4,695,760,3,696,760,2]],
+      [210, 210, 214, [691,1011,3,692,1011,3,693,1011,3,694,1011,3,695,1011,2]],
       [246, 251, 251, [694,766,2,695,767,1]],
       [211, 207, 205, [699,1007,2,700,1007,3,701,1007,3,702,1007,1,702,1009,1]],
+      [219, 211, 207, [699,994,1,700,993,4,701,993,4,702,993,4,703,995,2]],
       [210, 204, 207, [702,1008,1,703,1007,3,704,1007,3,705,1007,2]],
+      [225, 218, 214, [703,994,1,704,993,3,705,993,4,706,994,3,707,995,2]],
       [219, 214, 216, [706,1007,3,707,1007,3,708,1007,2,709,1007,1]],
       [234, 231, 224, [710,1007,2]],
       [191, 190, 189, [710,1009,1,711,1009,1]],
@@ -9984,10 +10411,9 @@
       [241, 243, 242, [717,762,1,718,761,2,719,762,1]],
       [232, 233, 232, [720,762,3,721,762,3,722,763,1]],
       [191, 187, 187, [721,1008,2]],
-      [197, 196, 199, [722,1007,2,723,1007,2,724,1007,3,725,1007,3,726,1007,3,727,1007,3,728,1008,3,729,1008,3,730,1008,2]],
       [232, 230, 227, [722,762,1,723,762,2]],
-      [209, 206, 209, [722,1006,1,723,1006,1]],
-      [230, 222, 224, [729,1006,2,730,1006,2]],
+      [209, 206, 209, [722,1006,2,723,1006,2]],
+      [230, 222, 224, [729,1006,2,730,1006,3]],
       [244, 242, 236, [730,762,1,731,761,3]],
       [233, 229, 229, [731,756,2,732,755,3,733,755,2]],
       [211, 212, 214, [731,1008,3,732,1008,3,733,1008,2]],
@@ -9995,6 +10421,11 @@
       [231, 229, 225, [732,761,1,733,760,3,734,759,3]],
       [230, 228, 221, [734,1016,1,735,1016,1]],
       [239, 240, 238, [734,755,1,735,754,2]],
+      [225, 222, 221, [810,960,2,811,959,3,812,959,3,813,960,1]],
+      [208, 206, 205, []],
+      [230, 228, 228, [815,959,3,816,959,3,817,959,2,818,959,2,819,959,3,820,959,3,821,959,3,822,958,4,823,957,4,824,957,5,825,960,2]],
+      [229, 228, 228, [825,958,2,826,957,4,827,957,4,828,958,3,829,959,2]],
+      [226, 225, 225, [829,958,1,830,957,3,831,957,3,832,957,3,833,957,3,834,957,3,835,957,4,836,957,4,837,957,4,838,957,3,839,957,4,840,957,4]],
       [238, 241, 236, [886,205,1,887,204,2,888,204,3]],
       [231, 233, 232, [887,396,2,888,396,2,889,396,2]],
       [230, 232, 231, [888,398,2,889,398,2]],
@@ -10002,13 +10433,13 @@
       [196, 199, 198, [890,388,3,891,388,3]],
       [241, 244, 244, [891,394,3,892,395,1]],
       [197, 203, 203, [891,392,2,892,391,4,893,392,3]],
-      [234, 235, 232, [891,403,2,892,403,3,893,403,3,894,403,3,895,403,2,896,403,2,897,402,3,898,402,3,899,402,2]],
       [240, 241, 240, [893,397,4,894,398,3,895,399,1]],
-      [241, 243, 240, [893,402,1,894,402,1,895,402,1]],
+      [241, 243, 240, [893,402,2,894,402,2,895,402,2]],
       [230, 231, 228, [893,376,2,894,375,3]],
       [235, 234, 232, [894,407,1,895,406,2,896,406,2,897,406,2,898,405,3,899,405,3,900,406,1]],
-      [232, 234, 233, [897,401,1,898,401,1]],
-      [196, 194, 194, [898,376,2,899,374,6,900,373,7,901,373,6,902,373,5,903,374,3,904,374,3,905,374,3,906,375,2]],
+      [220, 222, 219, [896,376,3,897,376,2,898,376,2]],
+      [232, 234, 233, [897,401,3,898,401,2]],
+      [196, 194, 194, [899,374,6,900,373,7,901,373,6,902,373,5,903,374,3,904,374,3,905,374,3,906,375,2]],
       [238, 240, 239, [899,396,2,900,396,2,901,397,1]],
       [230, 232, 230, [900,621,1,901,620,2,902,619,4,903,619,5,904,621,3]],
       [224, 227, 225, [901,176,2,902,176,3,903,176,3]],
@@ -10028,6 +10459,7 @@
       [238, 237, 236, [963,851,2,964,851,2]],
       [229, 232, 231, [966,849,1,967,849,2,968,849,1]],
       [226, 228, 226, [967,848,1,968,848,1]],
+      [243, 243, 241, [968,734,1]],
       [237, 240, 240, [971,849,3,972,849,2]],
       [223, 224, 223, [973,851,3,974,851,3,975,851,4,976,850,5,977,850,3,978,850,5,979,851,4,980,853,1]],
       [213, 212, 213, [974,850,1,975,850,1]],
@@ -10035,7 +10467,9 @@
       [219, 224, 222, [981,851,2,982,852,1]],
       [232, 234, 235, [983,853,2,984,853,2,985,854,1]],
       [238, 240, 239, [985,853,1,985,855,1,986,853,3,987,853,3,988,853,3,989,854,2]],
-      [223, 224, 224, [988,856,1]]
+      [223, 224, 224, [988,856,1]],
+      [227, 227, 222, [992,1015,1,993,1015,2]],
+      [201, 200, 202, [1022,945,2,1023,945,3]]
     ] };
     /* ================================================================ THE PLAY'S OWN MACHINERY (the tracker's M7; the plan's
        4.1 the walkway, 4.3 the hunt, 4.7 the collector's table). The phases' logic, their orders and their lines are in
@@ -10383,7 +10817,7 @@
        faint sheen moving on it; the threshold's with spots in a trail across the court to his doors. */
     const HUNT5 = {
       s1: { x: -9.45, z: -5.12 },                                   // under the shoe cabinet by the doors (inside)
-      s2: { x: -6.82, z: -11.7 },                                   // the court, at the left planter's foot (his left as he comes in)
+      s2: { x: -6.82, z: PLANT_Z },                                 // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's)
       s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
       arm: { x: -7.25, z: -2.18 }                                   // the old armchair
     };
@@ -11674,8 +12108,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            0.42 m deep, 2143 and 2863 crossings in the film's clipscan. The body is lifted over each, 1.12 m, from 0.85 m
            before it to round the gate end's corner, as a serpent goes over a box: measured at 32 stick places, every
            twentieth of the way, none of it in a planter, a wall or the house) */
-        const r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, -9.1], [x0 + 0.02, HY, -9.95], [x0 + 0.14, HY, -12.6], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
-                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, -12.6], [x1 - 0.02, HY, -10.45], [x1, y, -9.6], [x1, y, zm + 1.0]];
+        /* (R37, 23 Nov: the planters moved 1.05 m into the gate's corners (b_world.js PLANT_Z, -11.7 to -12.75): each hump now
+           read from where they stand, as it was laid against them: up 1.75 m before a planter's house end on his left,
+           1.25 m on his right, down from them 2.6 and 2.1 m before it, over the turn at the gate end (z0 + 0.25). With
+           PLANT_Z -11.7 these are the numbers the clipscan passed: -9.1, -9.95, -12.6, -10.45, -9.6) */
+        const PZ = PLANT_Z, r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, PZ + 2.6], [x0 + 0.02, HY, PZ + 1.75], [x0 + 0.14, HY, z0 + 0.25], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
+                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, z0 + 0.25], [x1 - 0.02, HY, PZ + 1.25], [x1, y, PZ + 2.1], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {
@@ -12231,8 +12669,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                                                     : { room: 0.5, tick: 0.22, sour: 0.18 });
         /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
         gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
-        /* the fourth lamp, by the armchair, flickering (an ordinary fault: the electrician came three times, 4.0) */
-        lamp(1, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
+        /* the lamp that flickers, the dining room's pendant (an ordinary fault: the electrician came three times, 4.0; R42: it
+           was the armchair's reading lamp, out of the room at Chad's word) */
+        lamp(LAMP_FLICK, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
         whenReady(cast.koh, (P) => {
           if (t < T.walk) { put(P, A.kohDoor[0], A.kohDoor[1], Math.PI); fmRest(P, 'koh', t); }
           /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
@@ -12307,7 +12746,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         if (t > T.in && t < T.slip) yaw.position.y += -0.016 * Math.abs(Math.sin((t - T.in) * Math.PI / 0.55));
       },
-      end() { fmLens(PLAYFOV5); lamp(1, 1); endPhase5('hunt'); }
+      end() { fmLens(PLAYFOV5); lamp(LAMP_FLICK, 1); endPhase5('hunt'); }
     };
 
     /* ================================================================ THE PREPARATION, AND THE TURN (the plan's 4.4; PR5)
@@ -12696,10 +13135,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
             if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
         });
-        /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the fourth lamp
-           flickers once, and holds */
+        /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
+           flickers (the pendant: R42) flickers once, and holds */
         CURTAINS5.set(t >= T.knot ? 1 : 0);
-        lamp(1, t > T.window + 0.6 && t < T.window + 1.0 ? 0.25 : 1);
+        lamp(LAMP_FLICK, t > T.window + 0.6 && t < T.window + 1.0 ? 0.25 : 1);
         /* what is drawn out of each room's air into the bag: dark threads gathering to the bag's mouth before him */
         WISPS5.set(t, [[T.room1 + 0.6, A.live], [T.room2 + 0.5, A.dine], [T.room3 + 0.5, A.terr]]);
         /* the lift: the doors at the end */
@@ -12743,7 +13182,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.end, name: 'in', eye: [0.0, EYE, 1.0], at: [0.0, 1.4, 1.8], fp: 66, fd: 58 }
         ]);
       },
-      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(1, 1);
+      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1);
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
         if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (FM5.api && FM5.api.handsRoot) FM5.api.handsRoot.position.set(0, 0, 0);
         endPhase5('table'); }

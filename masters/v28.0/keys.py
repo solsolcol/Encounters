@@ -54,7 +54,7 @@ group("e4c5: THE HOME'S AND THE ROOM'S THINGS (M5b), each made once: a checked p
        ('w5frontdoor', 'w5frontdoor.glb', 'his front door'), ('w5shoecab', 'w5shoecab.glb', 'the shoe cabinet inside it'),
        ('w5curtain', 'w5curtain.glb', 'the curtains'), ('w5sofa', 'w5sofa.glb', 'the sofa'),
        ('w5lowtable', 'w5lowtable.glb', 'the low table'), ('w5tvconsole', 'w5tvconsole.glb', "the television's console"),
-       ('w5oldchair', 'w5oldchair.glb', 'the old armchair'), ('w5floorlamp', 'w5floorlamp.glb', 'the floor lamp'),
+       ('w5oldchair', 'w5oldchair.glb', 'the old armchair'),   # (R42, 23 Nov: the floor lamp retired: the two in the living room blocked his path)
        ('w5tablelamp', 'w5tablelamp.glb', 'the table lamps'), ('w5wallclock', 'w5wallclock.glb', 'the wall clock'),
        ('w5dintable', 'w5dintable.glb', 'the dining table'), ('w5dinchair', 'w5dinchair.glb', 'its chairs'),
        ('w5pendant', 'w5pendant.glb', 'the pendant over it'), ('w5sideboard', 'w5sideboard.glb', 'the sideboard'),

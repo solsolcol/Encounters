@@ -741,8 +741,10 @@
       place('w5curtain', xm + 0.04, HOUSE.ceil - 2.40 - 0.05, LIVING.z0 + 0.32, 0, { sx: 0.70, done: lamplit }); }
     place('w5curtain', LIVING.x0 + 0.2, HOUSE.ceil - 2.40 - 0.05, TERRACE.z1 + 0.42, Math.PI / 2, { sx: 0.55 });
     /* --- the living room: the sofa facing the television across the low table, the old armchair at the table's north
-       end (where his nose is once behind the truth: 4.3), the floor lamp by the sofa's end, the television's console on
-       the east wall with a table lamp at each end, the wall clock and a framed picture on the north wall */
+       end (where his nose is once behind the truth: 4.3), the television's console on the east wall, the wall clock and a
+       framed picture on the north wall (R42, 23 Nov, Chad: "Remove the 2 standing lamps from inside the living room as it
+       blocks the path of the player and i unnecessary": the floor lamp by the sofa's end and the armchair's reading lamp
+       are gone, with their solids; the room's light was always painted, v9.4, so nothing of it changes) */
     const SOFA = { x: -8.62, z: -3.62 }, TV = { x: LIVING.x1 - 0.36, z: -3.62 }, TABLE = { x: -7.28, z: -3.62 }, ARM = { x: -7.25, z: -2.18 };
     things.sofa = place('w5sofa', SOFA.x, 0, SOFA.z, Math.PI / 2, { name: 'sofa' });
     solidXZ(SOFA.x - 0.44, SOFA.z - 1.05, SOFA.x + 0.44, SOFA.z + 1.05, 0.8);
@@ -752,13 +754,8 @@
     solidXZ(TV.x - 0.36, TV.z - 0.9, LIVING.x1, TV.z + 0.9, 1.2);
     things.armchair = place('w5oldchair', ARM.x, 0, ARM.z, Math.PI, { name: 'armchair' });
     solidXZ(ARM.x - 0.47, ARM.z - 0.42, ARM.x + 0.47, ARM.z + 0.42, 0.82);
-    things.floorLamp = place('w5floorlamp', SOFA.x - 0.05, 0, SOFA.z + 1.38, 0, { name: 'floorlamp' });
-    solidXZ(SOFA.x - 0.3, SOFA.z + 1.12, SOFA.x + 0.2, SOFA.z + 1.64, 1.5);
     /* (the console's top is 0.45 and its television fills it to 0.65 m either side of its middle, measured from the file:
-       no table lamp fits on it. The armchair's reading lamp stands beside it; the table lamp is on the sideboard) */
-    const ARMLAMP = { x: ARM.x + 0.78, z: ARM.z + 0.12 };
-    things.floorLamp2 = place('w5floorlamp', ARMLAMP.x, 0, ARMLAMP.z, 0, { name: 'floorlamp2' });
-    solidXZ(ARMLAMP.x - 0.25, ARMLAMP.z - 0.25, ARMLAMP.x + 0.25, ARMLAMP.z + 0.25, 1.5);
+       no table lamp fits on it. The table lamp is on the sideboard) */
     place('w5wallclock', -6.15, 1.42, LIVING.z1 - 0.06 - 0.062, Math.PI, { name: 'wallclock', wood: true });
     /* --- the dining room: the table (scaled to 0.75 m tall) and four chairs round it, the pendant over it, the sideboard
        against its north wall, a framed picture over it */
@@ -815,7 +812,7 @@
 
     /* ================================================================ THE LAMPS' LIGHT (painted: v9.4, v15.1)
        Each lamp's glow (a soft card over its shade, drawn over what stands at its depth: v25.5) and its pool on the floor,
-       wall or ceiling; lamp(i, k) sets one by k (0 off, 1 on: the fourth lamp of 4.2 flickers by the play's hand); the
+       wall or ceiling; lamp(i, k) sets one by k (0 off, 1 on: the one of 4.2 that flickers, LAMP_FLICK, by the play's hand); the
        court's two wall lamps are lit for the night (courtLamps(k)) */
     const glowTex = (() => { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 64, 2, 64, 64, 62);
       g.addColorStop(0, 'rgba(255,236,196,1)'); g.addColorStop(0.35, 'rgba(255,214,150,0.45)'); g.addColorStop(1, 'rgba(255,200,130,0)');
@@ -829,10 +826,10 @@
         const q = new THREE.Mesh(new THREE.PlaneGeometry(pool.w, pool.h), pm); q.position.set(pool.x, pool.y, pool.z); q.rotation.set(pool.rx || 0, pool.ry || 0, 0); world.add(q); owned.push(q.geometry); }
       const L = { sp, mat, pm, k: 1, o0: mat.opacity, p0: pm ? pm.opacity : 0 }; lights.push(L); return L;
     }
-    lightAt(SOFA.x - 0.05, 1.42, SOFA.z + 1.38, 0.55, { x: SOFA.x, y: 0.006, z: SOFA.z + 1.2, w: 2.4, h: 2.4, rx: -Math.PI / 2 });
-    lightAt(ARMLAMP.x, 1.42, ARMLAMP.z, 0.55, { x: ARMLAMP.x - 0.2, y: 0.006, z: ARMLAMP.z - 0.1, w: 2.2, h: 2.2, rx: -Math.PI / 2 });
+    /* (R42: the two standing lamps' glows went with them; the light that flickers (Mr Koh's "the lights keep going off",
+       the plan's 4.2 and 5) is the dining room's pendant now, LAMP_FLICK: it was the armchair's reading lamp) */
     lightAt(SB.x + 0.62, SB.top + 0.38, SB.z + 0.02, 0.42, { x: SB.x + 0.62, y: 1.4, z: DINING.z1 - 0.062, w: 1.4, h: 1.4, ry: Math.PI });
-    lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 });
+    const LAMP_FLICK = lights.indexOf(lightAt(DT.x, HOUSE.ceil - 0.62, DT.z, 0.6, { x: DT.x, y: 0.758, z: DT.z, w: 1.6, h: 1.6, rx: -Math.PI / 2 }));
     const courtL = [lightAt(DOOR_FRONT.x0 - 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x0 - 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI }),
                     lightAt(DOOR_FRONT.x1 + 0.38, 1.86, HOUSE.face - 0.3, 0.38, { x: DOOR_FRONT.x1 + 0.38, y: 1.6, z: HOUSE.face - 0.212, w: 1.6, h: 1.6, ry: Math.PI })];
     /* (the rooms' holders, tested before each draw: see INSIDE) */
