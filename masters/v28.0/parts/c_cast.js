@@ -409,7 +409,10 @@
        black: the flame stands round the silhouette), deep red at its roots, orange, yellow at its brightest tips; its
        strength the body's own (PRAI5.alpha). Painted light: no light added (v9.4). In Spirit Vision (the hunt) the nine
        keep the vision's look (its black and its pale edge on the white of the vision's picture) */
-    const PRAI_FLAME = { inflate: 0.03, lick: 0.07, speed: 1.9, gain: 1.25 };
+    /* (inflate and lick in METRES of the world: the bodies are built in centimetres under an armature of 0.01, so the swell is
+       divided by the mesh's own scale in its shader; the first build swelled them 0.3 mm and the flame lay on the body, every
+       thin limb orange across its whole width: the picture of build 34. Its band only where the shell turns from the lens) */
+    const PRAI_FLAME = { inflate: 0.035, lick: 0.06, speed: 1.9, gain: 1.35 };
     const praiFlameU = { uFT: { value: 0 } };
     const PRAI_NOISE = `float pfH(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
       float pfN(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -422,15 +425,16 @@
       m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
         const vs = sh.vertexShader.replace('#include <skinning_vertex>', `#include <skinning_vertex>
           { vec3 fw0 = (modelMatrix * vec4(transformed, 1.0)).xyz, on = normalize(objectNormal);
+            float sc = max(1e-6, length(modelMatrix[0].xyz));
             float fl = pfN(vec3(fw0.x * 5.0, fw0.y * 3.2 - uFT * ${F.speed.toFixed(2)}, fw0.z * 5.0));
-            transformed += on * (${F.inflate.toFixed(3)} + ${F.lick.toFixed(3)} * fl * (0.55 + 0.45 * clamp(on.y * 0.5 + 0.5, 0.0, 1.0))); }`)
+            transformed += on * ((${F.inflate.toFixed(3)} + ${F.lick.toFixed(3)} * fl * (0.55 + 0.45 * clamp(on.y * 0.5 + 0.5, 0.0, 1.0))) / sc); }`)
           .replace('#include <project_vertex>', '#include <project_vertex>\n  vFw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
         if (vs === sh.vertexShader) console.warn('e4c5: the Prai\'s flame found no skinning line to swell (three changed?)');
         sh.vertexShader = 'varying vec3 vFw;\nuniform float uFT;\n' + PRAI_NOISE + vs;
         const out = sh.fragmentShader.replace(PRAI_SHADE,
-          `vec3 fN0 = normalize(normal); float rim = pow(1.0 - clamp(abs(fN0.z), 0.0, 1.0), 2.0);
+          `vec3 fN0 = normalize(normal); float rim = smoothstep(0.35, 0.95, 1.0 - clamp(abs(fN0.z), 0.0, 1.0));
            float n1 = pfN(vec3(vFw.x * 6.0, vFw.y * 4.5 - uFT * 2.6, vFw.z * 6.0)), n2 = pfN(vec3(vFw.x * 13.0, vFw.y * 9.0 - uFT * 4.1, vFw.z * 13.0));
-           float fire = clamp(rim * (0.5 + 0.95 * n1) * (0.65 + 0.7 * n2), 0.0, 1.0);
+           float fire = clamp(rim * rim * (0.55 + 0.9 * n1) * (0.65 + 0.7 * n2), 0.0, 1.0);
            vec3 col = mix(vec3(0.5, 0.015, 0.0), vec3(1.0, 0.3, 0.03), smoothstep(0.2, 0.7, fire));
            col = mix(col, vec3(1.0, 0.72, 0.22), smoothstep(0.72, 1.0, fire) * 0.65);
            gl_FragColor = vec4(col * fire * ${F.gain.toFixed(2)} * uFA, 1.0);`);
