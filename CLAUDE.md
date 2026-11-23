@@ -1638,7 +1638,7 @@ https://docs.google.com/spreadsheets/d/1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLG
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v153 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v154 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
