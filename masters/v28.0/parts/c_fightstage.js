@@ -878,7 +878,7 @@
     /* (each frame, on the fight's own clock: from the top, after its hold, back down; and handed back once it is done, so
        nothing on another clock can leave him in it) */
     function fsZavActTick() {
-      const Z = FS5.zact, P = cast.zav; if (!Z) return;
+      const Z = FS5.zact, P = cast.zav; if (!Z || FS5.labZPose) return;
       const A = FS_ZAV_TAKE[Z.kind]; if (!P || !A) { FS5.zact = null; return; }
       if (!Z.down && FS5.wall >= Z.at + A.up + A.hold) { Z.down = true; span(P, A.take, A.top, A.b, A.down, { fade: 0 }); }
       if (FS5.wall >= Z.until + 0.02) fsZavBack();
@@ -894,7 +894,7 @@
       if (!P || !P.ready) return;
       const T = fsTake[who]; T.pace = pace;
       if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
-      if (who === 'zav' && fsZavActing()) return;                       // (his student's act holds him the same way: R34)
+      if (who === 'zav' && (fsZavActing() || FS5.labZPose)) return;     // (his student's act holds him the same way: R34)
       const moving = pace > 0.08;
       if (moving) { T.t = 0; const g = fsGait(P, who, pace); if (!T.walking || g !== T.gait) fsGaitTo(P, who, g, 0.15); }
       else if (T.walking) { T.t += wdt; if (T.t > 0.12) { T.walking = false;           // (stopped: his rest within 0.12 s, eased 0.25)
@@ -1207,6 +1207,7 @@
       FS5.wall += wdt;
       const st = FS5.st, ts = kit.tagState();
       if (FS5.labPose && cast.pho && cast.pho.ready) pose(cast.pho, FS5.labPose.name, FS5.labPose.t);   // (a probe's: lab.pose)
+      if (FS5.labZPose && cast.zav && cast.zav.ready) pose(cast.zav, FS5.labZPose.name, FS5.labZPose.t);   // (a probe's: lab.zpose)
       if (!ts.on) return;
       /* the card after a loss waits a moment of the court going dark */
       if (FS5.card && FS5.wall >= FS5.cardAt) { const c = FS5.card; FS5.card = null; c(); }
@@ -1420,6 +1421,10 @@
       /* his body held in one of his takes at one moment (the chapter's own pose: every law of his, his feet's curve), laid
          on every frame until it is let go (null), so a probe photographs and measures it whatever else runs */
       pose(name, t) { FS5.labPose = name && cast.pho && cast.pho.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labPose || !name; },
+      /* (his student held the same way, in one of his takes at one moment, his own act let go: R34's casts photographed at
+         their tops; null lets him go) */
+      zpose(name, t, keep) { if (keep && name && FS5.zact) FS5.zact.until = Infinity; else FS5.zact = null;   // (keep: an act begun stays turned as it plays)
+        FS5.labZPose = name && cast.zav && cast.zav.acts[name] ? { name, t: +t || 0 } : null; return !!FS5.labZPose || !name; },
       ground() { const P = cast.pho; return P && P.groundRep ? JSON.parse(JSON.stringify(P.groundRep)) : null; },
       groundOn() { FS5.groundOn = true; fsGroundActs(cast.pho); return this.ground(); },
       /* (a probe's walk measured from a clear start: one of the two set down at a place of the court in the rules' own frame,
@@ -1455,6 +1460,8 @@
         else if (name === 'labGather') st.pho.wind = (FN5.windSecs || 1.5) * 0.35;
         else if (name === 'labWheel') { st.pho.ring = { x: st.pho.x, z: st.pho.z, r: 2.4 }; fsEvents([{ e: 'wave' }]); }
         else if (name === 'labStreak') fsStreak(L, false);
+        else if (name === 'labSmell') fsEvents([{ e: 'smell' }]);                      // (R34: his SMELL as the game plays it: his act, the breath)
+        else if (name === 'labLend') fsEvents([{ e: 'lend' }]);                        // (R34: his LEND as the game plays it: his act, the beam)
         else return false;
         void w;
         for (let t = 0; t < secs; t += 1 / 30) fsFxFrame(1 / 30, (st.t || 0) + t);
@@ -1481,7 +1488,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', objStep: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
@@ -1595,7 +1602,10 @@
          on through the fight's lab, gripOn) */
       let GRIP_ON = true;
       const STICK_C = [0.082, -0.003];
-      let STICK_R = 0.036, FING_R = 0.008, GAP = 0.003;
+      /* (R33, 23 Nov: the fingers' own radius 5 mm and no gap, the thumb's 2.2 cm, the palm 3 cm off his hand's line: e4c5grip
+         measured his skin against the shaft at rest, none of it inside (the palm was 1.2 cm in it, the thumb 1.0), the palm
+         0.1 cm clear and every finger's nearest point within 3 mm of the wood; the shaft through his wrist (R28) gone) */
+      let STICK_R = 0.036, FING_R = 0.005, GAP = 0;
       /* (the shaft is carved, not turned: round its middle line its ridges stand 3.7 to 4.0 cm out and its grooves 3.2 to 3.6,
          read from its file every centimetre (masters/v28.0/m8 shaftr), the ninetieth of each centimetre's points here, from 0.96
          to 1.13 m up it. BYH: each finger closed round the ridges where it crosses, its own radius, not one for all; FGAP: a
@@ -1604,7 +1614,7 @@
       let BYH = false, FGAP = {};
       const shaftR = (y) => { const f = Math.max(0, Math.min(SHAFT_P90.length - 1, (y - 0.96) * 100)), i = Math.min(SHAFT_P90.length - 2, Math.floor(f));
         return (SHAFT_P90[i] + (SHAFT_P90[i + 1] - SHAFT_P90[i]) * (f - i)) / 100; };
-      let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.012, BACK = 0.025, PALM = 0.016;    // (a probe may try others: tune)
+      let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.022, BACK = 0.025, PALM = 0.03;     // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
