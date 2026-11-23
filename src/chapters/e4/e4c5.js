@@ -434,7 +434,11 @@
               and turns it down to him, never past 50 degrees: at the court's gate end his whole body stands in the picture
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
            camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
-           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
+           /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
+              what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
+              the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
+           party: {},
+           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
               so a thumb's easy push runs; and turns to its walk at 16 a second, where 9 took 0.26 s for 90 %. The
@@ -451,13 +455,13 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
-      'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
-      'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole',
-      'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
-      'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
-      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
-      'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh',
+      'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost',
+      'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa',
+      'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
+      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
+      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
@@ -550,6 +554,9 @@
       whySwitchFirst: 'Fire first',
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
+      // (R49: the small line over each name on the party list's tiles)
+      btnPhoTitle: 'GRANDMASTER',
+      btnZavierTitle: 'MASTER',
       btnTogether: 'TOGETHER',
       // the card when the fight is lost (the fight begins again, never the chapter: R14)
       lostSay: 'The cleansing was broken.',
@@ -8523,7 +8530,7 @@
       'u5slipthru', 'u5stale', 'u5bind1', 'u5bind2', 'u5bindhold', 'u5bindstale', 'u5bindpop', 'u5sniff1', 'u5sniff2', 'u5sniff3', 'u5sournote', 'u5ripple', 'u5shown',
       'u5strain1', 'u5strain2', 'u5strain3', 'u5lend', 'u5lendback', 'u5cagehum', 'u5cagethin', 'u5waveready', 'u5windup', 'u5robe', 'u5wave', 'u5lampflare', 'u5wavebreak',
       'u5drawn1', 'u5drawn2', 'u5baginhale', 'u5bagsnap', 'u5rise1', 'u5rise2', 'u5ncome', 'u5nslip', 'u5nhide', 'u5barring1', 'u5barring2', 'u5sink', 'u5gather1',
-      'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5plant', 'u5shape', 'u5shapeloop',
+      'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5tagsweep', 'u5plant', 'u5shape', 'u5shapeloop',
       'u5togfill', 'u5done', 'u5broken', 'u5start', 'u5ready', 'u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9',
       'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last',
       'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2'];
@@ -9305,7 +9312,7 @@
           case 'cageBreak': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); fsFx('u5stagger', 0.8, zw ? zw.x : null, zw ? zw.z : null);
             if (zw) fsBurst(zw.x, 1.1, zw.z, 26, { sp: 2.4, up: 0, life: 0.7, s0: 0.11, col: FS_COL.violet, col2: 0xffffff, mix: 0.2, grav: -3, drag: 1.5 }); break; }
           case 'cageWhole': fsFx('u5cagewhole', 0.8, null); break;
-          case 'switch': fsFx(e.to === 'pho' ? 'u5swpho' : 'u5swzav', 0.8, null); break;
+          case 'switch': fsFx(e.to === 'pho' ? 'u5swpho' : 'u5swzav', 0.8, null); fsFx('u5tagsweep', 0.8, null); break;   // (R50: the party list's sweep of light under his own tone)
           case 'hold': fsFx('u5plant', 0.8, null); break;
           case 'stage': fsStage(e.to); break;
           case 'surge': fsFx('u5shape', 0.8, null); { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
@@ -9768,11 +9775,15 @@
       yaw.position.set(STATION.fight.at.x, EYE, STATION.fight.at.z); yaw.rotation.y = STATION.fight.at.ry; pitch.rotation.x = -0.04;
       const ok = !!(kit && kit.tag && pho && zav && kit.tag({
         bodies: [
-          { id: 'pho', obj: pho.group, name: W5.btnPho, speed: FN5.phoWalk || 1.2, radius: 0.45, acts: [
+          /* (R49: each a tile of the party list: its portrait (the game's own render of him, masters/v28.0/props/portraits.py),
+             the small line over its name, and its colour: his gold, his student's violet, the cage's own) */
+          { id: 'pho', obj: pho.group, name: W5.btnPho, title: W5.btnPhoTitle, color: '#FFC860', pic: have('p5portpho') ? 'p5portpho' : null,
+            speed: FN5.phoWalk || 1.2, radius: 0.45, acts: [
             { id: 'flame', slot: 'main', label: W5.btnFire, icon: FS_ICON.flame, key: 'Space' },
             { id: 'shock', slot: 'second', label: W5.btnShockwave, icon: FS_ICON.shock, key: 'KeyQ' },
             { id: 'bag', slot: 'third', label: W5.btnBag, icon: FS_ICON.bag, key: 'KeyE' }] },
-          { id: 'zavier', obj: zav.group, name: W5.btnZavier, speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
+          { id: 'zavier', obj: zav.group, name: W5.btnZavier, title: W5.btnZavierTitle, color: '#9B6BFF', pic: have('p5portzav') ? 'p5portzav' : null,
+            speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
             { id: 'bind', slot: 'main', label: W5.btnBind, icon: FS_ICON.bind, key: 'Space' },
             { id: 'smell', slot: 'second', label: W5.btnSmell, icon: FS_ICON.smell, key: 'KeyQ' },
             { id: 'lend', slot: 'third', label: W5.btnLend, icon: FS_ICON.lend, key: 'KeyE' }] }

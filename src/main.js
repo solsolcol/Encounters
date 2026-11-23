@@ -8138,6 +8138,7 @@ const TAG_DEFAULTS = {
   reach: 1,                                    // v28.0 (R25): the share of the stick's travel that is full pace (1: all of it)
   eye: 1.62,                                   // the pivot's height over his feet: "where he is" for every distance
   crane: null,                                 // v28.0 (R41): { max } a held lens keeps its height and looks down (tagPitchFor)
+  party: null,                                 // v28.0 (R49, the sixty-eighth seam): {} draws the switch as a PARTY LIST (tagPaintParty)
   keys: { switch: 'KeyF' }
 };
 const TAG_SLOTS = ['main', 'second', 'third'];
@@ -8376,7 +8377,8 @@ function tagCutAll(why) {
 function tagRefuse(slot, words) {              // a wait or a lock: the button shakes, and a lock says why (never pressed: v21.28)
   tag.refused++;
   const E = tagEls(), b = slot === 'switch' ? E.sw : E.btn[TAG_RANK[slot]];
-  if (b && b.el) { b.el.classList.remove('nope'); void b.el.offsetWidth; b.el.classList.add('nope'); }
+  if (slot === 'switch' && tag.cfg && tag.cfg.party) tagPartyNope(E);
+  else if (b && b.el) { b.el.classList.remove('nope'); void b.el.offsetWidth; b.el.classList.add('nope'); }
   if (words) weaponBlockSay(String(words));
 }
 /* this frame's one act: the main first, the rest dropped (their lift says nothing) */
@@ -8387,7 +8389,7 @@ function tagFlush() {
   for (let i = 1; i < Q.length; i++) { tag.dropped++; if (!Q[i].up) tag.dead.add(Q[i].pid); }
   const P = tag.bodies[tag.played]; if (!P) return;
   const spent = () => { if (!q.up) tag.dead.add(q.pid); };
-  if (q.slot === 'switch') { spent(); tagSwitchTo(null, q.by); return; }
+  if (q.slot === 'switch') { spent(); tagSwitchTo(q.id, q.by); return; }   // (seam 68: a tile names its body; the round button and the key name none)
   if (q.slot === 'target') { spent(); tagTell({ act: 'target', id: q.id, who: P.id, by: q.by, t: tag.t }); return; }
   const a = P.slots[q.slot], st = a && tag.acts[a.id];
   if (!a || !st || st.hidden) { spent(); return; }
@@ -8434,7 +8436,7 @@ function tagKey(e, isDown) {
   if (state !== 'play' || ev) return false;
   const s = tagKeyOf(e.code);
   if (!s) return false;
-  if (e.code === 'Space') e.preventDefault();
+  if (e.code === 'Space' || e.code === 'Tab') e.preventDefault();   // (Tab: only when the chapter made it the switch's key)
   if (s !== 'own' && !e.repeat) tagPress(s, pid, 'key');
   return true;
 }
@@ -8492,6 +8494,7 @@ function tagOpen(o) {
                         key: typeof a.key === 'string' ? a.key : null, waitSay: a.waitSay };
     }
     bodies.push({ id: b.id, obj: b.obj, name: b.name == null ? b.id : String(b.name), pic: b.pic || null,
+                  title: b.title == null ? '' : String(b.title), color: typeof b.color === 'string' && /^#[0-9a-f]{6}$/i.test(b.color) ? b.color : null,
                   speed: Number.isFinite(+b.speed) && +b.speed >= 0 ? +b.speed : null,
                   radius: Number.isFinite(+b.radius) && +b.radius >= 0 ? +b.radius : null, faceOff: +b.faceOff || 0,
                   slots, vx: 0, vz: 0, cov: 0, gy: NaN, y0: 0, place: null, face: null, root: false, share: null });
@@ -8503,6 +8506,7 @@ function tagOpen(o) {
               soft: num(o.soft, d.soft), glide: num(o.glide, d.glide), lock: num(o.lock, d.lock), radius: num(o.radius, d.radius),
               speed: num(o.speed, d.speed), turn: num(o.turn, d.turn), eye: num(o.eye, d.eye),
               ease: num(o.ease, d.ease), reach: num(o.reach, d.reach), crane: o.crane !== undefined ? o.crane : d.crane,
+              party: o.party !== undefined ? o.party : d.party,
               boom: { ...d.boom, ...(o.boom || {}) }, portrait: o.portrait ? { ...d.boom, ...(o.boom || {}), ...o.portrait } : d.portrait,
               keys: { ...d.keys, ...(o.keys || {}) } };
   for (const B of bodies) {
@@ -8634,7 +8638,7 @@ function tagStateRead() {
            lock: tag.on ? Math.ceil(tagLockLeft() * 1000) / 1000 : 0, gliding: tag.glideFrom >= 0, held: !!tag.save0,
            bodies: tag.bodies.map(b => ({ id: b.id, x: +b.obj.position.x.toFixed(3), z: +b.obj.position.z.toFixed(3),
                                          ry: +b.obj.rotation.y.toFixed(3), v: +b.cov.toFixed(3), moving: b.cov > 0.05, played: b === P })),
-           count: tag.count ? { ...tag.count } : null };
+           count: tag.count ? { ...tag.count } : null, party: tag.on && tag.cfg && tag.cfg.party ? tagPartyRead() : null };
 }
 /* ---- the mode's screen (from kitFrame): the buttons, the switch, the marks, the other one's mark, the count ---------- */
 function tagEls() {
@@ -8643,7 +8647,8 @@ function tagEls() {
                       wait: el.querySelector('.tgWait'), fill: el.querySelector('.tgFill'), face: el.querySelector('.tgFace'),
                       name: el.querySelector('.tgName'), sig: '', lblOf: null, icoOf: undefined, keyOf: null } : null; };
   tag.el = { btn: ['tagA0', 'tagA1', 'tagA2'].map(mk), sw: mk('tagSw'), marks: $('tagMarks'), mate: $('tagMate'), count: $('tagCount'),
-             pool: [], countOf: -1, countLeft: -1, mateSig: '' };
+             pool: [], countOf: -1, countLeft: -1, mateSig: '',
+             party: $('tagParty'), pfx: $('tagPartyFx'), tiles: [], partySig: '', partyPlayed: -1, partyOn: false, partyN: { took: 0, nope: 0, here: 0 } };
   return tag.el;
 }
 function tagRing(c, k) { if (c) c.style.strokeDashoffset = (TAG_RING_C * (1 - Math.max(0, Math.min(1, k)))).toFixed(1); }
@@ -8670,6 +8675,7 @@ function tagPaintBtn(b, a, st) {
 }
 function tagPaintSw(E) {
   const b = E.sw; if (!b) return;
+  if (tag.cfg && tag.cfg.party) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }   // (seam 68: the party list is the switch)
   const n = tag.bodies.length, O = n > 1 ? tag.bodies[(tag.played + 1) % n] : null, st = tag.acts.switch;
   if (!O || !st) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }
   const lock = tag.cfg.lock > 0 ? Math.min(1, tagLockLeft() / tag.cfg.lock) : 0, cl = b.el.classList;
@@ -8684,6 +8690,124 @@ function tagPaintSw(E) {
   cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked);
   cl.toggle('waiting', lock > 0); cl.toggle('ready', !lock && !st.blocked);
   tagRing(b.wait, 1 - lock); tagRing(b.fill, 0);
+}
+/* ══ v28.0 · THE SIXTY-EIGHTH SEAM: THE PARTY LIST (the tag declaration's `party`, or kit.tag's own) ══════════════════
+   Chad, 23 Nov 2026 (docs/V28.0-E4C5-PLAN.md R49, R50): "Instead of a round button to switch betwen pho and zavier, i want a
+   switching ui like what final fantasy usually has ... the character potraits with the name, as like a row of rectangle
+   tile with skewed edge towards its end ... aligned to the right of the screen, and tapping on each tile will instantly
+   switch the character control smoothly. On the desktop, press the 'tab' button to switch characters"; "This switching ui
+   should look visually impressive with its own animations, visual effects, visual cues and prompts, breathing effect,
+   sound effects when switching". THE SWITCH DRAWN AS A COLUMN OF TILES at the screen's right edge, one a body in the order
+   the chapter hands them: its picture (`pic`: a canvas, a function that makes one, or a hosted asset key, decoded from its
+   own bytes as kit.picture decodes, so no browser's dimming of pictures reaches it), a small line over its name (`title`),
+   its name, its colour (`color`, #rrggbb), and under the name the readiness of its main act (its wait, the chapter's).
+   The PLAYED one's tile is lit in its colour, drawn out further, breathes, and a light crosses it now and then; a tap on
+   another's tile switches to THAT one (the switch's own press: its lock, its refusal and its words are the switch's; a
+   refused tap shakes the tile); a tap on the played one's tile only bumps it. A switch lights the new tile (a flash, a
+   sweep of light, its picture popping, sparks off its slanted end, a glow at the screen's edge in its colour) and the one
+   left goes dark. While the switch asks (its `pulse`) the other tiles call: their light beats, they lean out, chevrons point
+   at them. The lock after a switch drains along the other tiles' foot. The switch's key (`keys.switch`) is drawn on the
+   other tiles to a fine pointer. The round button is not drawn. The sound is the chapter's (it is told every switch).
+   Absent, none of this runs and the round button stands as before (fixturetest: K.tagParty*). */
+function tagHexRgb(h) { const n = parseInt(String(h).slice(1), 16) || 0; return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255); }
+function tagPortrait(pic, cls) {
+  /* (an asset key is decoded from its own bytes onto a canvas, kit.picture's way; anything else is evIconNode's) */
+  if (typeof pic !== 'string') return evIconNode(pic, cls);
+  const w = document.createElement('span'); w.className = cls;
+  if (!(HOSTED && ASSET_MAP[pic])) return w;
+  const c = document.createElement('canvas'); c.width = c.height = 192; w.appendChild(c);
+  assetBytes(pic).then(b => createImageBitmap(new Blob([b], { type: picMime(b) }))).then(bm => {
+    const x = c.getContext('2d'), k = Math.max(c.width / bm.width, c.height / bm.height), dw = bm.width * k, dh = bm.height * k;
+    x.drawImage(bm, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh); if (bm.close) bm.close();
+  }).catch(err => console.warn('tag: the party list\'s picture ' + pic + ' did not draw', err));
+  return w;
+}
+function tagPartyBuild(E) {
+  const sig = tag.bodies.map(B => B.id + '|' + B.name + '|' + B.title + '|' + (B.color || '') + '|' + (typeof B.pic === 'string' ? B.pic : B.pic ? 'f' : '')).join('/');
+  if (E.partySig === sig) return;
+  E.partySig = sig; E.party.textContent = ''; E.tiles = []; E.partyPlayed = -1;
+  tag.bodies.forEach((B, i) => {
+    const col = B.color || '#F4ECD8';
+    const row = document.createElement('div'); row.className = 'tpRow';
+    row.style.setProperty('--i', String(i)); row.style.setProperty('--pc', col); row.style.setProperty('--pcr', tagHexRgb(col));
+    const mk = (cls, parent, tg = 'span') => { const el = document.createElement(tg); if (cls) el.className = cls; parent.appendChild(el); return el; };
+    const ask = mk('tpAsk', row); ask.setAttribute('aria-hidden', 'true'); for (let k = 0; k < 3; k++) mk('', ask, 'i');
+    const el = mk('tpTile', row, 'button'); el.type = 'button'; el.dataset.id = B.id;
+    el.setAttribute('aria-label', T('hud.tagSwitch') + ' ' + B.name);
+    mk('tpGlow', el); mk('tpSheen', el);
+    el.appendChild(tagPortrait(B.pic, 'tpFace'));
+    const tx = mk('tpText', el), tt = mk('tpTitle', tx), nm = mk('tpName', tx), gg = mk('tpGauge', tx), gf = mk('', gg, 'i');
+    tt.textContent = B.title || ''; nm.textContent = B.name;
+    const lk = mk('tpLock', el), lf = mk('', lk, 'i');
+    const kk = mk('wpnKey', el), kbd = mk('', kk, 'kbd');
+    mk('tpEdge', el);
+    E.party.appendChild(row);
+    E.tiles.push({ B, row, el, gf, lf, kbd, sig: '', keyOf: null, tookT: 0 });
+  });
+}
+function tagPaintParty(E) {
+  if (!E.party) return;
+  if (!E.partyOn) { E.partyOn = true; document.body.classList.add('tagParty'); }
+  tagPartyBuild(E);
+  const st = tag.acts.switch, lockS = tag.cfg.lock > 0 ? Math.min(1, tagLockLeft() / tag.cfg.lock) : 0, kn = tagKeyName(tag.cfg.keys.switch);
+  if (E.partyPlayed !== tag.played) { const was = E.partyPlayed; E.partyPlayed = tag.played; if (was >= 0) tagPartyTook(E, tag.played, was); }
+  for (let i = 0; i < E.tiles.length; i++) {
+    const t = E.tiles[i], on = i === tag.played, m = t.B.slots.main, ms = m && tag.acts[m.id], shown = !!ms && !ms.hidden;
+    const wait = shown && ms.wait > 0.0005 ? Math.min(1, ms.wait) : 0, ready = shown && !ms.blocked && !wait;
+    const blocked = !on && !!st && !!st.blocked, ask = !on && !!st && !!st.pulse && !blocked, locked = !on && lockS > 0;
+    const sig = (on ? 1 : 0) + '' + (ask ? 1 : 0) + (blocked ? 1 : 0) + (ready ? 1 : 0) + (shown ? 1 : 0) + '|' + lockS.toFixed(2) + '|' + wait.toFixed(2) + '|' + kn;
+    if (sig === t.sig) continue;
+    t.sig = sig;
+    const cl = t.el.classList;
+    cl.toggle('on', on); cl.toggle('ask', ask); cl.toggle('blocked', blocked); cl.toggle('locked', locked); cl.toggle('ready', ready); cl.toggle('noGauge', !shown);
+    t.row.classList.toggle('on', on); t.row.classList.toggle('ask', ask);
+    t.gf.style.transform = 'scaleX(' + (shown ? (1 - wait).toFixed(3) : '0') + ')';
+    t.lf.style.transform = 'scaleX(' + (locked ? lockS.toFixed(3) : '0') + ')';
+    const k = on ? '' : kn;
+    if (t.keyOf !== k) { t.keyOf = k; t.kbd.textContent = k; cl.toggle('noKey', !k); }
+  }
+}
+/* a switch: the new tile lit (its own animation, its picture popping), sparks off its slanted end and a glow at the screen's
+   edge in its colour (on a layer of their own that takes no press, gone in under a second), the one left gone dark */
+function tagPartyTook(E, i, was) {
+  const t = E.tiles[i], o = E.tiles[was];
+  if (o) { o.el.classList.remove('took'); o.el.classList.remove('left'); void o.el.offsetWidth; o.el.classList.add('left'); }
+  if (!t) return;
+  E.partyN.took++;
+  t.el.classList.remove('took'); t.el.classList.remove('left'); void t.el.offsetWidth; t.el.classList.add('took');
+  const fx = E.pfx; if (!fx) return;
+  const r = t.el.getBoundingClientRect(), made = [];
+  const glow = document.createElement('i'); glow.className = 'tpFlash'; glow.style.top = (r.top + r.height / 2).toFixed(1) + 'px';
+  glow.style.setProperty('--pcr', tagHexRgb(t.B.color || '#F4ECD8')); fx.appendChild(glow); made.push(glow);
+  for (let k = 0; k < 14; k++) {
+    /* (their ways fixed, not drawn at random: the same burst every time) */
+    const a = Math.PI * (0.55 + 0.9 * k / 13) + 0.18 * Math.sin(k * 7.1), d = 30 + 26 * (((k * 37) % 10) / 10);
+    const sp = document.createElement('i'); sp.className = 'tpSpark';
+    sp.style.left = (r.left + 10 - 8 * (((k * 53) % 10) / 10)).toFixed(1) + 'px';
+    sp.style.top = (r.top + r.height * (0.12 + 0.76 * (((k * 29) % 10) / 10))).toFixed(1) + 'px';
+    sp.style.setProperty('--dx', (Math.cos(a) * d).toFixed(1) + 'px'); sp.style.setProperty('--dy', (Math.sin(a) * d * 0.75).toFixed(1) + 'px');
+    sp.style.setProperty('--pcr', tagHexRgb(t.B.color || '#F4ECD8')); sp.style.animationDelay = ((k % 4) * 0.025).toFixed(3) + 's';
+    fx.appendChild(sp); made.push(sp);
+  }
+  setTimeout(() => { for (const n of made) n.remove(); }, 950);
+}
+function tagPartyNope(E) {
+  E.partyN.nope++;
+  for (let i = 0; i < E.tiles.length; i++) if (i !== tag.played) { const el = E.tiles[i].el; el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); }
+}
+function tagPartyOff(E) {
+  if (!E || !E.party) return;
+  E.partyOn = false; document.body.classList.remove('tagParty');
+  E.party.textContent = ''; E.tiles = []; E.partySig = ''; E.partyPlayed = -1;
+  if (E.pfx) E.pfx.textContent = '';
+}
+function tagPartyRead() {
+  const E = tagEls();
+  /* (each one-shot's count: its class is taken off when its animation ends, on a slow box before anyone could read it) */
+  return { tiles: E.tiles.map(t => ({ id: t.B.id, name: t.B.name, title: t.B.title, on: t.el.classList.contains('on'), ask: t.el.classList.contains('ask'),
+                                       locked: t.el.classList.contains('locked'), blocked: t.el.classList.contains('blocked'), ready: t.el.classList.contains('ready'),
+                                       key: t.kbd.textContent, pic: !!t.el.querySelector('.tpFace canvas, .tpFace img, .tpFace > span > *') })),
+           took: E.partyN.took, nope: E.partyN.nope, here: E.partyN.here };
 }
 function tagMarkEl(i) {
   const E = tagEls(); if (!E.marks) return null;
@@ -8783,6 +8907,7 @@ function tagPaint() {
       if (E.count) E.count.classList.remove('on');
       for (const b of [...E.btn, E.sw]) if (b) { b.sig = ''; b.icoOf = undefined; }
       E.countOf = -1; E.countLeft = -1; E.mateSig = '';
+      tagPartyOff(E);
     }
   }
   if (!tag.on) return;
@@ -8790,6 +8915,7 @@ function tagPaint() {
   if (state === 'play') {
     for (let i = 0; i < 3; i++) { const a = P && P.slots[TAG_SLOTS[i]]; tagPaintBtn(E.btn[i], a, a && tag.acts[a.id]); }
     tagPaintSw(E);
+    if (tag.cfg.party) tagPaintParty(E); else if (E.partyOn) tagPartyOff(E);
   }
   tagPaintMarks(); tagPaintMate(); tagPaintCount();
 }
@@ -8807,6 +8933,25 @@ function tagWire() {                           // once (kitInit): the buttons an
     const up = e => tagLift('p' + e.pointerId);
     b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('lostpointercapture', up);
     b.addEventListener('contextmenu', e => e.preventDefault());
+  }
+  const pa = $('tagParty');
+  if (pa) {
+    pa.addEventListener('pointerdown', e => {
+      const el = e.target && e.target.closest ? e.target.closest('.tpTile') : null; if (!el) return;
+      e.stopPropagation(); e.preventDefault();
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      const i = tag.bodies.findIndex(B => B.id === el.dataset.id); if (i < 0 || !tag.on) return;
+      try { el.setPointerCapture(e.pointerId); } catch {}
+      if (i === tag.played) { if (tagLive()) { tagEls().partyN.here++; el.classList.remove('here'); void el.offsetWidth; el.classList.add('here'); } return; }   // (the one he plays: a bump, nothing pressed)
+      tagPress('switch', 'p' + e.pointerId, e.pointerType === 'mouse' ? 'click' : 'tap', el.dataset.id);
+    });
+    const pu = e => tagLift('p' + e.pointerId);
+    pa.addEventListener('pointerup', pu); pa.addEventListener('pointercancel', pu); pa.addEventListener('lostpointercapture', pu);
+    pa.addEventListener('contextmenu', e => e.preventDefault());
+    /* (each one-shot's class taken off as its animation ends: left on, a later rule's animation (the call, the breath) would
+       stand behind it) */
+    const ONE = { tpTook: 'took', tpLeft: 'left', tpHere: 'here', tpNope: 'nope' };
+    pa.addEventListener('animationend', e => { const el = e.target, c = ONE[e.animationName]; if (c && el && el.classList && el.classList.contains('tpTile')) el.classList.remove(c); });
   }
   const ag = $('rtAgain'), mo = $('rtMore');
   if (ag) ag.addEventListener('click', e => { e.stopPropagation(); retryPress('again'); });
@@ -16613,6 +16758,8 @@ const STING_SAMPLE = {
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5pvhit1: ['u5pvhit1', 1], u5pvhit2: ['u5pvhit2', 1], u5pvbind1: ['u5pvbind1', 1], u5pvbind2: ['u5pvbind2', 1],
   u5pvstrug1: ['u5pvstrug1', 1], u5pvstrug2: ['u5pvstrug2', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5tagsweep: ['u5tagsweep', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

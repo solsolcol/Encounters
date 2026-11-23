@@ -1083,6 +1083,14 @@
    "why": "a: 100 % where a phone plays, loudest 50 ms -11.7 dBFS (others, phone/loudest: b 1.00/-19.2)"
   },
   {
+   "name": "u5tagsweep",
+   "family": "screen",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R50: the party list's switch: the sweep of light across the chosen tile (under that one's own tone)",
+   "why": "c: 100 % where a phone plays, loudest 50 ms -16.4 dBFS (others, phone/loudest: a 1.00/-21.3, b 1.00/-20.1, d 1.00/-22.3)"
+  },
+  {
    "name": "u5ready",
    "family": "screen",
    "kind": "one-shot",

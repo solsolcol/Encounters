@@ -126,6 +126,7 @@ SFX = [
     # ---- THE SCREEN'S OWN (the count's nine notes are MADE from one bowl, sound/notes.py)
     ('u5swpho', 1.2, False, 2, .45, "One low warm struck wooden temple block and a soft low gong tone together, short and clear." + NOBASS, 'screen', 'switch: to Grandmaster Pho'),
     ('u5swzav', 1.2, False, 2, .45, "One small bright brass bell struck once, a clear high ring, short." + NOBASS, 'screen', 'switch: to Master Zavier'),
+    ('u5tagsweep', 1.0, False, 4, .5, "A quick bright magical swoosh that sweeps past and ends in a shimmering crystal sparkle, like light racing across glass. Clean, airy and short, no voice." + NOBASS, 'screen', "R50: the party list's switch: the sweep of light across the chosen tile (under that one's own tone)"),
     ('u5ready', 0.8, False, 2, .45, "A tiny soft crystal chime, one quick bright ping, gentle." + NOBASS, 'screen', 'a button come ready'),
     ('u5bowl', 4.0, False, 2, .45, "One small Tibetan singing bowl struck once with a soft mallet, a single pure clear ringing note sustaining and fading, close.", 'screen', "the count's notes: the source the nine notes are made from (sound/notes.py)"),
     ('u5start', 1.6, False, 2, .45, "A single deep resonant gong struck softly, solemn, a ritual beginning." + NOBASS, 'screen', "the brief's START"),

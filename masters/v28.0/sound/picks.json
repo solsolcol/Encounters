@@ -790,6 +790,13 @@
   "where": "switch: to Master Zavier",
   "why": "a: 100 % where a phone plays, loudest 50 ms -11.7 dBFS (others, phone/loudest: b 1.00/-19.2)"
  },
+ "u5tagsweep": {
+  "kind": "fx",
+  "take": "u5tagsweep_c",
+  "family": "screen",
+  "where": "R50: the party list's switch: the sweep of light across the chosen tile (under that one's own tone)",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -16.4 dBFS (others, phone/loudest: a 1.00/-21.3, b 1.00/-20.1, d 1.00/-22.3)"
+ },
  "u5ready": {
   "kind": "fx",
   "take": "u5ready_b",

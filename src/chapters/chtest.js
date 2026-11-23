@@ -573,13 +573,19 @@
       bodyB.position.set(F_HOME.b[0], 0, F_HOME.b[1]); bodyB.rotation.y = Math.PI;
       bodyA.visible = bodyB.visible = true;
       F.on = true; fReset();
+      /* (v28.0, the sixty-eighth seam: with `party`, the switch is the party list: each body a tile with a picture, a small line
+         over its name and a colour; the key may be named, Tab as chapter 5 names it) */
+      const face = (col) => () => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+        x.fillStyle = col; x.fillRect(0, 0, 64, 64); x.fillStyle = '#000'; x.beginPath(); x.arc(32, 28, 14, 0, Math.PI * 2); x.fill(); return c; };
+      const P = o.party ? { a: { title: 'THE FIRST', color: '#FFC860', pic: face('#FFC860') }, b: { title: 'THE SECOND', color: '#9B6BFF', pic: face('#9B6BFF') } } : { a: {}, b: {} };
       const ok = kit.tag({
+        ...(o.party ? { party: {}, keys: o.keys || {} } : {}),
         bodies: [
-          { id: 'a', obj: bodyA, name: 'GOLD', speed: 1.2, acts: [
+          { id: 'a', obj: bodyA, name: 'GOLD', ...P.a, speed: 1.2, acts: [
             { id: 'zap', slot: 'main', label: 'ZAP', key: 'Space' },
             { id: 'ring', slot: 'second', label: 'RING', key: 'KeyQ' },
             { id: 'take', slot: 'third', label: 'TAKE', key: 'KeyE' }] },
-          { id: 'b', obj: bodyB, name: 'VIOLET', speed: 0.6, acts: [
+          { id: 'b', obj: bodyB, name: 'VIOLET', ...P.b, speed: 0.6, acts: [
             { id: 'grip', slot: 'main', label: 'GRIP', key: 'Space' },
             { id: 'sniff', slot: 'second', label: 'SNIFF', key: 'KeyN' }] }
         ],

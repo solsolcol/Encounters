@@ -30,6 +30,11 @@ group("e4c5 v28.0 (episode 4 chapter 5, the house with nine Prai): MASTER ZAVIER
 group("e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its\n"
       "own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)",
       [('w5nagastaff', 'w5nagastaff.glb', "Grandmaster Pho's Naga stick, light brown, 1.40 m")])
+group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), the game's\n"
+      "own renders of the two bodies (tools/probes/e4c5portrait.mjs), cropped to the tile and graded (masters/v28.0/props/portraits.py):\n"
+      "Grandmaster Pho's likeness never goes to a picture service",
+      [('p5portpho', 'p5portpho.jpg', "Grandmaster Pho's portrait on the party list's tile (480 x 380)"),
+       ('p5portzav', 'p5portzav.jpg', "Master Zavier's portrait on the party list's tile (480 x 380)")])
 group("e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the\n"
       "library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga\n"
       "stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)",

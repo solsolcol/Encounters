@@ -815,6 +815,11 @@ ASSETS = {
     # e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its
     # own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)
     'w5nagastaff':  ('assets/w5nagastaff.glb', True, False),     # Grandmaster Pho's Naga stick, light brown, 1.40 m
+    # e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), the game's
+    # own renders of the two bodies (tools/probes/e4c5portrait.mjs), cropped to the tile and graded (masters/v28.0/props/portraits.py):
+    # Grandmaster Pho's likeness never goes to a picture service
+    'p5portpho':    ('assets/p5portpho.jpg', True, False),     # Grandmaster Pho's portrait on the party list's tile (480 x 380)
+    'p5portzav':    ('assets/p5portzav.jpg', True, False),     # Master Zavier's portrait on the party list's tile (480 x 380)
     # e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the
     # library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga
     # stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)
@@ -1040,13 +1045,14 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
-           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
-           'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
-           'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable',
-           'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant',
-           'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
-           'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector',
-           'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh',
+           'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost',
+           'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa',
+           'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+           'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap',
+           'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
+           'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom',
+           'w5hunphayon',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

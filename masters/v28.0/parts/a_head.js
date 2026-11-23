@@ -174,7 +174,11 @@
               and turns it down to him, never past 50 degrees: at the court's gate end his whole body stands in the picture
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
            camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
-           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
+           /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
+              what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
+              the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
+           party: {},
+           radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
               so a thumb's easy push runs; and turns to its walk at 16 a second, where 9 took 0.26 s for 90 %. The
@@ -191,13 +195,13 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh',
-      'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2',
-      'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole',
-      'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
-      'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
-      'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
-      'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh',
+      'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost',
+      'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa',
+      'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
+      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
+      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
@@ -290,6 +294,9 @@
       whySwitchFirst: 'Fire first',
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
+      // (R49: the small line over each name on the party list's tiles)
+      btnPhoTitle: 'GRANDMASTER',
+      btnZavierTitle: 'MASTER',
       btnTogether: 'TOGETHER',
       // the card when the fight is lost (the fight begins again, never the chapter: R14)
       lostSay: 'The cleansing was broken.',

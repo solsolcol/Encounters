@@ -3209,7 +3209,7 @@ const TAG_HUD_ALL = TAG_HUD_MINE.concat(['#stats', '#mute', '#menuBtn', '#volWra
    words go up (a watcher on their class), each thing where it stands risen: their rise (0.3 s from nothing, from the frame
    after) and the caption's set aside for the measure and given back. On a slow page the round trips between a touch, its
    acknowledgement and a measure from out here outlasted the words' 2.2 s) */
-const tagArm = (pg) => pg.evaluate(([mine, all]) => {
+const tagArm = (pg, MINE = TAG_HUD_MINE, ALL = TAG_HUD_ALL) => pg.evaluate(([mine, all]) => {
   window.__tagOv = null;
   const nf = document.getElementById('nofire'), cp = document.getElementById('caption');
   const measure = (how) => {
@@ -3235,7 +3235,7 @@ const tagArm = (pg) => pg.evaluate(([mine, all]) => {
   });
   mo.observe(nf, { attributes: true, attributeFilter: ['class'] });
   return true;
-}, [TAG_HUD_MINE, TAG_HUD_ALL]);
+}, [MINE, ALL]);
 const tagRead = (pg) => pg.waitForFunction(() => !!window.__tagOv, null, { timeout: 20000, polling: 100 })
   .then(() => pg.evaluate(() => window.__tagOv), () => pg.evaluate(() => { if (window.__tagOvMo) window.__tagOvMo.disconnect();
     return { measured: [], bad: ['the refusal\'s words never went up'], off: [], up: { nofire: document.getElementById('nofire').className } }; }));
@@ -3543,7 +3543,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     if (!ok) console.log('tag phone ' + name + ' parts:', JSON.stringify(r));
     return ok;
   };
-  for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone']) K[k] = false;
+  for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
+                   'tagPartyShown', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3631,7 +3632,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     K.tagPhoneButton = await pUntil(`return logSince(window.__n0).some(r => r.act === 'zap' && r.phase === 'up');`, 20000)
       && await pCheck('button', `const L = logSince(window.__n0); return { tapped: L[0].act === 'zap' && L[0].phase === 'down' && L[0].by === 'tap', noClick: !L.some(r => r.by === 'click') };`);
     /* every overlap of what the mode adds, the caption up, a refusal said, TAKE shown, the other one's mark up */
-    const phoneHud = async (label) => {
+    const phoneHud = async (label, party) => {
       await pEval(`
         const A = st.fightBodies.a, T = st.fightTargets[1]; T.tired = true; T.taken = false; T.hidden = false; T.m.position.set(A.position.x + 1, 1, A.position.z - 0.4);
         kit.tagPlace('b', A.position.x + 0.6, A.position.z + 5.4, {});
@@ -3643,16 +3644,82 @@ K.tagGoneWithChapter = await p.evaluate(() => {
         && !document.getElementById('tagA2').classList.contains('hide') && document.getElementById('tagMate').classList.contains('on');`, 30000);
       await new Promise(r => setTimeout(r, 950));
       const r0 = await pEval(`const r = document.getElementById('tagA0').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };`);
-      await tagArm(pp);
+      const sw = party ? '#tagParty' : '#tagSw', mine = TAG_HUD_MINE.map(x => x === '#tagSw' ? sw : x), all = TAG_HUD_ALL.map(x => x === '#tagSw' ? sw : x);
+      await tagArm(pp, mine, all);
       await tap(r0.x, r0.y, 6);
       const ov = await tagRead(pp);
       console.log('tag HUD ' + label + ':', JSON.stringify({ bad: ov.bad, off: ov.off, measured: ov.measured, up: ov.up }));
-      return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s));
+      return ov.bad.length === 0 && ov.off.length === 0 && ['#tagA0', '#tagA1', '#tagA2', sw, '#tagCount', '#tagMate', '#caption', '#nofire', '#stats', '#objective .obox'].every(s => ov.measured.includes(s))
+        && (!party || !ov.measured.includes('#tagSw'));
     };
     K.tagHudPhone = await phoneHud('390x844');
     await pp.setViewportSize({ width: 360, height: 780 });
     await pEval(`await frames(4); return true;`);
     K.tagHudLowPhone = await phoneHud('360x780');
+    /* v28.0 · THE PARTY LIST (the sixty-eighth seam; Chad's R49 and R50): the same fight opened with `party` and Tab for its
+       key. Its tiles drawn (the played one lit, the round button not drawn); a REAL TAP on the other's tile switches to that
+       one; a tap on the played one's tile only bumps it; a tap inside the switch's lock is refused and shakes the tile; the
+       switch's ask makes the other tile call; Tab switches and never moves the browser's focus; and every overlap of what
+       the mode puts up, the list in place of the round button, on this phone, a low phone and a desktop's width */
+    await pEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); st.fightEnd('restore'); await frames(2); return true;`);
+    await pp.setViewportSize({ width: 390, height: 844 });
+    K.tagPartyShown = await pCheck('partyShown', `
+      await frames(2);
+      const R = {};
+      R.opened = st.fightOpen({ party: true, keys: { switch: 'Tab' } }) === true;
+      await poll(() => { const s0 = kit.tagState(); return s0.live && s0.party && s0.party.tiles.length === 2; }, 20000);
+      await frames(4);
+      const P0 = kit.tagState().party, cs = getComputedStyle(document.getElementById('tagParty'));
+      R.tiles = P0.tiles.length === 2 && P0.tiles[0].id === 'a' && P0.tiles[0].on && !P0.tiles[1].on && P0.tiles[0].name === 'GOLD' && P0.tiles[1].title === 'THE SECOND';
+      R.pics = P0.tiles.every(t => t.pic);
+      R.shown = cs.display === 'flex' && getComputedStyle(document.getElementById('tagSw')).display === 'none';
+      const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect();
+      R.atEdge = Math.abs(r.right - innerWidth) < 1 && r.top > innerHeight * 0.3 && r.bottom < innerHeight * 0.55;
+      return R;`);
+    const tb = await pEval(`window.__n0 = E.tag().log.length; window.__pn = kit.tagState().party; const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height / 2 };`);
+    await tap(tb.x, tb.y, 7);
+    K.tagPartyTap = await pUntil(`return kit.tagState().played === 'b';`, 20000)
+      && await pCheck('partyTap', `
+        await frames(2); const L = logSince(window.__n0), P0 = kit.tagState().party;
+        return { told: L.some(r => r.act === 'switch' && r.to === 'b' && r.by === 'tap'), lit: P0.tiles[1].on && !P0.tiles[0].on, took: P0.took === window.__pn.took + 1 };`);
+    /* the played one's tile: a bump, nothing switched (after the switch's lock has run) */
+    await pEval(`await poll(() => kit.tagState().lock === 0, 20000); window.__n0 = E.tag().log.length; window.__pn = kit.tagState().party; return true;`);
+    const tb2 = await pEval(`const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height / 2 };`);
+    await tap(tb2.x, tb2.y, 8);
+    K.tagPartyHere = await pCheck('partyHere', `
+      await frames(4);
+      return { still: kit.tagState().played === 'b', none: !logSince(window.__n0).some(r => r.act === 'switch'), bump: kit.tagState().party.here === window.__pn.here + 1 };`);
+    /* inside the lock: refused, and the tile it would have gone to shakes */
+    K.tagPartyLock = await pCheck('partyLock', `
+      const f0 = E.tag().refused, n0 = kit.tagState().party.nope;
+      const sw = kit.tagSwitch('a');
+      const el = document.querySelector('#tagParty .tpTile[data-id="b"]');
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 61, pointerType: 'touch' }));
+      el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId: 61, pointerType: 'touch' }));
+      await frames(3);
+      return { switched: sw === true, held: kit.tagState().played === 'a', refused: E.tag().refused === f0 + 1, shook: kit.tagState().party.nope === n0 + 1 };`);
+    /* the switch's ask: the other tile calls (its row's chevrons too) */
+    K.tagPartyAsk = await pCheck('partyAsk', `
+      kit.tagAct('switch', { pulse: true }); await frames(3);
+      const P0 = kit.tagState().party, row = document.querySelector('#tagParty .tpTile[data-id="b"]').parentElement;
+      const r = { asks: P0.tiles[1].ask && !P0.tiles[0].ask, row: row.classList.contains('ask') };
+      kit.tagAct('switch', { pulse: false }); await frames(3);
+      r.stops = !kit.tagState().party.tiles[1].ask;
+      return r;`);
+    /* Tab: the switch, and the browser's focus never moved */
+    await pEval(`await poll(() => kit.tagState().lock === 0, 20000); window.__tabDP = null;
+      window.addEventListener('keydown', e => { if (e.code === 'Tab') setTimeout(() => { window.__tabDP = e.defaultPrevented; }, 0); }, { once: true });
+      window.__n0 = E.tag().log.length; return true;`);
+    await pp.keyboard.press('Tab');
+    K.tagPartyTab = await pUntil(`return kit.tagState().played === 'b';`, 20000)
+      && await pCheck('partyTab', `await frames(2); return { told: logSince(window.__n0).some(r => r.act === 'switch' && r.by === 'key'), kept: window.__tabDP === true };`);
+    K.tagPartyHudPhone = await phoneHud('party 390x844', true);
+    await pp.setViewportSize({ width: 360, height: 780 });
+    await pEval(`await frames(4); return true;`);
+    K.tagPartyHudLowPhone = await phoneHud('party 360x780', true);
+    await pp.setViewportSize({ width: 900, height: 600 });
+    await pEval(`await frames(4); return true;`);
+    K.tagPartyHudWide = await phoneHud('party 900x600', true);
     await pEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); st.fightEnd('restore'); await frames(2); return true;`);
   } catch (e) {
     console.log('tag phone threw', e && e.message);
