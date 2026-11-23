@@ -6,7 +6,12 @@ or a painted portrait asked for on that green): the green keyed out (its edge ke
 and the skin's edge taken back to the colours beside it), cropped square round the head and shoulders (the top of the head a
 little under the top, the head about half the square), written as a PNG with its own alpha, 256 x 256 (the tile draws it into
 a 46 x 42 box: 5.5 of its pixels a CSS pixel, enough for a phone at three device pixels a point).
-    python3 -I masters/v28.0/props/portraits2.py <pho picture> <zav picture> [out dir]   (from the repo root; out: assets/) """
+    python3 -I masters/v28.0/props/portraits2.py <pho picture> <zav picture> [out dir]   (from the repo root; out: assets/)
+R59 (Chad, 23 Nov: "send them to gptimage to generate in an artstyle similar to the final fantasy art style"): the painted
+portraits come back from GPT Image with their own alpha (masters/v28.0/props/PORTRAITS.md: the jobs, the prompts, the
+references); --painted takes that alpha as it is (no keying), grades nothing (the painting carries its own light) and crops
+them by the same head outline:
+    python3 -I masters/v28.0/props/portraits2.py --painted <pho painting> <zav painting> [out dir]"""
 import os, sys
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
@@ -18,7 +23,15 @@ LIFT = {'pho': 1.04, 'zav': 1.55}
 #  narrowest row is his jaw, not his neck, and his chin lies under it)
 FILL = {'pho': 0.82, 'zav': 0.70}
 
+PAINTED = '--painted' in sys.argv
+if PAINTED:
+    sys.argv.remove('--painted')
+    # (a painting's head is framed as a portrait: the top of the head to the narrowest row under it fills about 0.72 of the
+    #  square for both, his student's hair included)
+    LIFT = {'pho': 1.0, 'zav': 1.0}; FILL = {'pho': 0.72, 'zav': 0.72}
+
 def cut(path, out, who, N=256):
+    if PAINTED: return cutPainted(path, out, who, N)
     im = np.asarray(Image.open(path).convert('RGB')).astype(np.float32)
     R, G, B = im[..., 0], im[..., 1], im[..., 2]
     gd = G - np.maximum(R, B)                                   # how much greener than its other two: the backdrop is all green
@@ -50,6 +63,23 @@ def cut(path, out, who, N=256):
     crop = Image.fromarray(rgba, 'RGBA').crop((x0, y0, x0 + side, y0 + side)).resize((N, N), Image.LANCZOS)
     crop.save(out, 'PNG', optimize=True)
     print(os.path.basename(path), 'head', (top, neck), 'box', (x0, y0, side), '->', out, os.path.getsize(out), 'bytes')
+
+def cutPainted(path, out, who, N=256):
+    im = Image.open(path).convert('RGBA'); A = np.asarray(im).astype(np.float32)
+    al = A[..., 3] / 255.0
+    ys, xs = np.nonzero(al > 0.5)
+    if len(xs) < 2000: raise SystemExit(f'{path}: no figure in the painting')
+    top = ys.min(); H, W = al.shape
+    rows = {y: np.nonzero(al[y] > 0.5)[0] for y in range(top, H)}
+    wid = {y: (r.max() - r.min() if len(r) else 0) for y, r in rows.items()}
+    lo = int(top + 0.45 * (H - top))
+    neck = min((y for y in range(lo, H) if wid[y] > 0), key=lambda y: wid[y])
+    cx = float(np.median([(rows[y].min() + rows[y].max()) / 2 for y in range(top, neck) if len(rows[y])]))
+    side = min(H, W, int((neck - top) / FILL[who])); x0 = int(cx - side / 2); y0 = int(top - side * 0.05)
+    x0 = min(max(0, x0), W - side); y0 = min(max(0, y0), H - side)
+    crop = im.crop((x0, y0, x0 + side, y0 + side)).resize((N, N), Image.LANCZOS)
+    crop.save(out, 'PNG', optimize=True)
+    print(os.path.basename(path), 'head', (int(top), neck), 'box', (x0, y0, side), '->', out, os.path.getsize(out), 'bytes')
 
 pho, zav = sys.argv[1], sys.argv[2]
 od = sys.argv[3] if len(sys.argv) > 3 else 'assets'

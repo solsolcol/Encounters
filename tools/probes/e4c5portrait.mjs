@@ -1,6 +1,6 @@
 /* v28.0 (E4C5, R49 and R50): THE PARTY LIST'S TWO PORTRAITS, photographed from the game's own bodies. Chad, R49: "It should
-   show the character potraits with the name". Grandmaster Pho's likeness never goes to a picture service (his model is
-   made from photographs of a real man), so his portrait, and his student's beside it, are the game's own renders: the
+   show the character potraits with the name". The portraits begin as the game's own renders (since R59, 23 Nov, the
+   references GPT Image paints them from, at Chad's word: masters/v28.0/props/PORTRAITS.md), of the two bodies: the
    fight set out through its lab (c_fightstage.js FS_LAB), the tag mode left so the lens is the probe's, everything but
    the one body hidden, the court's light kept, a dark backdrop, the lens in front of his face at a portrait's lens
    (FOV 22) from 1.05 m, a little above his eyes. Each in three turns of his head to the lens (0, 12 and -12 degrees of

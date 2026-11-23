@@ -624,7 +624,7 @@ body.tagParty #tagSw{display:none}
 .tpTile.took .tpFace{animation:tpFacePop .5s cubic-bezier(.2,1.6,.4,1)}
 @keyframes tpFacePop{0%{transform:scale(.78);filter:brightness(2.6)}100%{transform:scale(1);filter:brightness(1)}}
 .tpText{position:absolute;left:57px;right:5px;top:4px;bottom:5px;display:flex;flex-direction:column;justify-content:center;gap:1px;pointer-events:none;z-index:1}
-.tpTitle{font-size:7px;line-height:1;letter-spacing:.16em;font-weight:700;color:rgba(var(--pcr),.95);white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.tpTitle{font-size:6.8px;line-height:1;letter-spacing:.07em;font-weight:700;color:rgba(var(--pcr),.95);white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.8)}
 .tpTile.on .tpTitle{color:rgba(255,255,255,.92)}
 .tpName{font-size:12.5px;line-height:1.05;letter-spacing:.05em;font-weight:800;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.85)}
 .tpTile:not(.on) .tpName{color:rgba(244,236,216,.82)}
@@ -640,7 +640,10 @@ body.tagParty #tagSw{display:none}
 .tpEdge{position:absolute;left:0;top:0;bottom:0;width:20px;pointer-events:none;background:rgba(var(--pcr),.6);z-index:2;
   clip-path:polygon(15px 0,18px 0,3px 100%,0 100%);-webkit-clip-path:polygon(15px 0,18px 0,3px 100%,0 100%)}
 .tpTile.on .tpEdge{background:#FFFFFF;box-shadow:0 0 10px #FFFFFF}
-.tpTile .wpnKey{left:auto;right:5px;top:3px;bottom:auto;transform:none;font-size:.55rem;z-index:2}
+/* (the key's chip at the foot of the portrait, under his chin, clear of the words: named with body.finePtr, or the
+   button's own centred place, body.finePtr .wpnKey, outweighs it and the chip stood over the small line, build 40's
+   desktop picture) */
+body.finePtr .tpTile .wpnKey{left:13px;right:auto;top:auto;bottom:3px;transform:none;font-size:.5rem;z-index:2}
 .tpTile.noKey .wpnKey{display:none}
 .tpTile.ask{animation:tpCall 1.15s ease-in-out infinite}
 @keyframes tpCall{0%,100%{width:118px;filter:brightness(1)}50%{width:126px;filter:brightness(1.4)}}

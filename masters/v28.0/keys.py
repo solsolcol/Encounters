@@ -30,12 +30,12 @@ group("e4c5 v28.0 (episode 4 chapter 5, the house with nine Prai): MASTER ZAVIER
 group("e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on white, then Meshy at its highest and its\n"
       "own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)",
       [('w5nagastaff', 'w5nagastaff.glb', "Grandmaster Pho's Naga stick, light brown, 1.40 m")])
-group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), the game's\n"
-      "own renders of the two bodies on a keying green (tools/probes/e4c5portrait.mjs BG=0x00ff00), cut out with their own alpha,\n"
-      "cropped by the head's outline and graded (R54: 'no black background'; masters/v28.0/props/portraits2.py): Grandmaster Pho's\n"
-      "likeness never goes to a picture service",
-      [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, cut out (256 x 256, alpha)"),
-       ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, cut out (256 x 256, alpha)")])
+group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), painted by\n"
+      "GPT Image in a style like Final Fantasy's from the game's own renders of the two bodies (R59, his word: masters/v28.0/props/\n"
+      "PORTRAITS.md, the jobs and the prompts), with their own alpha (R54: 'no black background'), cropped by the head's outline\n"
+      "(masters/v28.0/props/portraits2.py --painted)",
+      [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)"),
+       ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)")])
 group("e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the\n"
       "library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga\n"
       "stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)",
