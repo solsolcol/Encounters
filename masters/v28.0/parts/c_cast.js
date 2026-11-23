@@ -143,6 +143,83 @@
       for (const b in P.bone) if (/(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d$/.test(b)) { const q = bindLocal(P, P.bone[b]); if (q) P.bone[b].quaternion.copy(q); }
       if (n) console.log('HANDS5: ' + P.key + "'s fingers held as modelled (" + n + ' finger tracks out of his takes)');
     });
+    /* (R39, 23 Nov: Chad, "Why does the middle finger keep sticking out like that". MEASURED on his file, never guessed
+       (tools/probes/fingerskin.mjs, each finger's skin against its own bones): the end of Grandmaster Pho's right MIDDLE
+       finger, 86 points of its skin from its last joint to its tip and past it, is carried by RightHandEnd, his rig's old end
+       site under his hand (the finger graft renamed it and took it to carry nothing), never by the finger's own last bone; so
+       when his fingers close round the stick, that fingertip stays where his open hand held it, straight out past the others.
+       Every other finger's tip is its own last bone's. The end site is made a child of the middle finger's last bone where it
+       stands (attach keeps its place in the world, at rest the same as it was): open, nothing moves; closed, the tip goes
+       with its finger) */
+    whenReady(cast.pho, (P) => {
+      const end = boneOf(P, 'RightHandEnd'), m3 = boneOf(P, 'RightHandMiddle3');
+      if (!end || !m3 || end.parent === m3) return;
+      m3.updateWorldMatrix(true, false); end.updateWorldMatrix(true, false); m3.attach(end);
+      console.log('HANDS5: ' + P.key + "'s middle fingertip carried by its own last bone (RightHandEnd under RightHandMiddle3)");
+    });
+
+    /* (R35, 23 Nov: THE ARMS HELD TO A REAL BODY'S RANGE, after every take, in every pose: the class, never pose by pose. The
+       joint check (tools/probes/jointscan.mjs, run over every take both men play here: e4c5hands.mjs) read Master Zavier's
+       right shoulder thrown back 71 to 75 degrees in his run (a real shoulder's limit is near 60, a runner's back swing 45)
+       and his right wrist turned 41 to 49 degrees toward his little finger through his bind (a real wrist's 30 to 40), and
+       Grandmaster Pho's left shoulder back 66 to 71 in his run and his gold. Each frame, after the takes and his grip, each
+       arm is read by jointscan's own measures (the same formulas, so the check and the limit never differ) and, only where
+       it is past them, brought back to the edge: the upper arm turned forward to LIM5.back from the body's front (the
+       forearm and hand going with it), and the hand turned on the wrist back inside LIM5's bends (its twist and its fingers
+       kept). A take's own value of each bone is kept as the mixer last wrote it (an unchanged bone is not written again:
+       v11.5), so nothing stacks, and given back where the arm is inside its range. Grandmaster Pho's right arm is his grip's
+       (PHOGRIP5 lays it) while the stick is in his hand) */
+    const LIM5 = { back: 55, toLittle: 35, toThumb: 20, flex: 65, bentBack: 55 }, D2R5 = Math.PI / 180;
+    const _l = { a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3(), e: new THREE.Vector3(), f: new THREE.Vector3(), g: new THREE.Vector3(),
+      h: new THREE.Vector3(), i: new THREE.Vector3(), j: new THREE.Vector3(), q: new THREE.Quaternion(), r: new THREE.Quaternion(), s: new THREE.Quaternion() };
+    function limKeep(L, b) { const S = L.get(b) || (L.set(b, { take: new THREE.Quaternion(), wrote: null }), L.get(b));
+      if (!S.wrote || !b.quaternion.equals(S.wrote)) S.take.copy(b.quaternion); else b.quaternion.copy(S.take); return S; }
+    function limTurn(S, b, rot) { b.parent.getWorldQuaternion(_l.r); b.getWorldQuaternion(_l.s);
+      b.quaternion.copy(_l.r.invert().multiply(rot).multiply(_l.s)); S.wrote = b.quaternion.clone(); b.updateWorldMatrix(false, true); }
+    function armLimit(P, skip) {
+      const L = P.limState || (P.limState = new Map()), B = P.limBones || (P.limBones = {});
+      const bo = (n) => (n in B ? B[n] : (B[n] = boneOf(P, n)));
+      const lh = bo('LeftUpLeg'), rh = bo('RightUpLeg'), la = bo('LeftArm'), ra = bo('RightArm'); if (!lh || !rh || !la || !ra) return;
+      /* (each arm's bones as the take left them, read afresh: what was written last frame and not written again is taken back) */
+      for (const S0 of ['Left', 'Right']) { if (skip === S0) continue; for (const n of ['Arm', 'Hand']) { const b = bo(S0 + n); if (b) limKeep(L, b); } }
+      P.group.updateWorldMatrix(true, false); for (const b of [lh, rh, la, ra]) b.updateWorldMatrix(true, false);
+      const pa = la.getWorldPosition(_l.a), pb = ra.getWorldPosition(_l.b), mid = _l.c.copy(pa).add(pb).multiplyScalar(0.5);
+      const U = _l.d.copy(mid).sub(_l.e.copy(lh.getWorldPosition(_l.e)).add(rh.getWorldPosition(_l.f)).multiplyScalar(0.5)).normalize();
+      const Lf = _l.e.copy(pa).sub(pb); Lf.addScaledVector(U, -Lf.dot(U)).normalize(); const F = _l.f.crossVectors(Lf, U).normalize();
+      for (const [S0, side] of [['Left', 1], ['Right', -1]]) {
+        if (skip === S0) continue;
+        const up = bo(S0 + 'Arm'), fo = bo(S0 + 'ForeArm'), hd = bo(S0 + 'Hand'); if (!up || !fo || !hd) continue;
+        /* THE SHOULDER thrown back (read on an arm below the level, as jointscan reads it) */
+        { up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
+          const sh = up.getWorldPosition(_l.g), u = fo.getWorldPosition(_l.h).sub(sh).normalize(), dn = -u.dot(U), ext = Math.atan2(-u.dot(F), dn) / D2R5;
+          if (ext > LIM5.back && dn > 0.2) { const lat = u.dot(Lf), k = Math.sqrt(Math.max(0, 1 - lat * lat)), a = LIM5.back * D2R5;
+            const want = _l.i.copy(Lf).multiplyScalar(lat).addScaledVector(U, -Math.cos(a) * k).addScaledVector(F, -Math.sin(a) * k).normalize();
+            limTurn(L.get(up), up, _l.q.setFromUnitVectors(u, want)); } }
+        /* THE WRIST: the fingers' line against the forearm's, toward the palm or the back, toward the thumb or the little finger */
+        const i1 = bo(S0 + 'HandIndex1'), m1 = bo(S0 + 'HandMiddle1'), k1 = bo(S0 + 'HandPinky1') || bo(S0 + 'HandRing1'); if (!i1 || !m1 || !k1) continue;
+        fo.updateWorldMatrix(true, false); for (const b of [hd, i1, m1, k1]) b.updateWorldMatrix(true, false);
+        const el = fo.getWorldPosition(_l.g), wr = hd.getWorldPosition(_l.h), e = _l.i.copy(wr).sub(el).normalize();
+        const f = m1.getWorldPosition(_l.j).sub(wr).normalize(), ac = i1.getWorldPosition(_l.a).sub(k1.getWorldPosition(_l.b)); ac.addScaledVector(f, -ac.dot(f)).normalize();
+        const n = _l.b.crossVectors(f, ac).multiplyScalar(side).normalize(), ne = n.addScaledVector(e, -n.dot(e)).normalize(), re = ac.addScaledVector(e, -ac.dot(e)).normalize();
+        const fe = f.dot(e); if (fe < 0.05) continue;
+        const wf = Math.atan2(f.dot(ne), fe) / D2R5, wd = Math.atan2(f.dot(re), fe) / D2R5;
+        const wf1 = Math.max(-LIM5.bentBack, Math.min(LIM5.flex, wf)), wd1 = Math.max(-LIM5.toLittle, Math.min(LIM5.toThumb, wd));
+        if (wf1 === wf && wd1 === wd) continue;
+        const want = _l.c.copy(e).addScaledVector(ne, Math.tan(wf1 * D2R5)).addScaledVector(re, Math.tan(wd1 * D2R5)).normalize();
+        limTurn(L.get(hd), hd, _l.q.setFromUnitVectors(f, want));
+      }
+      /* (where an arm is in its range again, its take's own values stand: limKeep has put them back, and nothing was written) */
+      for (const [b, S] of L) if (S.wrote && !b.quaternion.equals(S.wrote)) S.wrote = null;
+    }
+    const limHook = new THREE.Object3D(); limHook.name = 'the arms held to a real range';
+    limHook.updateMatrixWorld = function (force) {
+      try {
+        for (const [P, skip] of [[cast.zav, null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
+          if (P && P.ready && P.group.visible) armLimit(P, skip);
+      } catch (e) { if (!limHook.failed) { limHook.failed = true; console.warn('LIM5 threw: ' + (e && e.message)); } }
+      THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+    };
+    world.children.unshift(limHook); limHook.parent = world;
 
     /* until he has a rest, the moment of his own walk where he most nearly stands (measured on his file, 21 Nov: at 0.03 s
        his feet 17 cm apart and level within 6 cm, his hands at his sides; the 0.27 s first held was mid-stride, his feet

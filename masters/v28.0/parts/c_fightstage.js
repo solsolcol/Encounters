@@ -1623,7 +1623,16 @@
       let BYH = false, FGAP = {};
       const shaftR = (y) => { const f = Math.max(0, Math.min(SHAFT_P90.length - 1, (y - 0.96) * 100)), i = Math.min(SHAFT_P90.length - 2, Math.floor(f));
         return (SHAFT_P90[i] + (SHAFT_P90[i + 1] - SHAFT_P90[i]) * (f - i)) / 100; };
-      let TILT = 0, STICK_Y = 1.07, THUMB_R = 0.022, BACK = 0.025, PALM = 0.03;     // (a probe may try others: tune)
+      /* (R35, 23 Nov, measured by e4c5gripfit with the solve's own joints beside the drawn (lab.gripDiag): with the shaft 2.5 cm
+         back from his knuckles and 3 cm under his hand's line, his knuckles stood 2.4 to 3.0 cm off the wood and a finger
+         bent as a hand bends could touch it only with its tip, the rest of it curled in the air 1.5 to 2 cm off (the pictures'
+         floating fist); under his knuckles (BACK 0) and 1.8 cm under his hand's line his fingers lie on it (their skin 0.1 to
+         0.2 cm in its carving) and his palm meets it. And the shaft runs ACROSS his palm on the slant a staff takes in a
+         closed hand, from the heel of his hand under his little finger up between his thumb and his first finger (TILT -22:
+         his fingers' line 22 degrees down from square to it), so his forearm, which comes down to his fist, meets a straight
+         wrist: square to it, his wrist stood 20 to 27 degrees toward his thumb at rest and 25 to 35 as he talked (a real
+         wrist's range 25), on the slant 0 to 2; his thumb's skin 2.1 to 2.3 cm inside the shaft square to it, 0.3 on it) */
+      let TILT = -22 * Math.PI / 180, STICK_Y = 1.07, THUMB_R = 0.022, BACK = 0, PALM = 0.018;     // (a probe may try others: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -1714,16 +1723,20 @@
              shaft with its tip, the claw the pictures showed. A hand closing round a bar bends its three joints together, the
              middle joint as much as the knuckle and the end joint about half of it (one tendon works the two last; the
              knuckle is driven with them): so the finger's whole bend T is shared out so, 0.40, 0.40 and 0.20, each joint held
-             in its range, and only T is searched, every hundredth of a radian to 2.8: the T whose chain lies nearest the
-             circle at its joints and tip and enters it nowhere) */
-          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l, SPLIT = [0.40, 0.40, 0.20];
+             in its range, and T is searched, every hundredth of a radian to 2.8 (with the knuckle's share, below): the T whose
+             chain lies nearest the circle at its joints and tip and enters it nowhere) */
+          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l;
           const segD = (ax, ay, bx, by) => { const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let t = L2 > 0 ? ((c[0] - ax) * dx + (c[1] - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(ax + dx * t - c[0], ay + dy * t - c[1]); };
-          const bendsOf = (T) => SPLIT.map((k, i) => Math.min(hi[i], k * T));
+          /* (the knuckle's share r searched too, within a hand's own: 0.30 to 0.48 of the whole bend, the rest shared two to one
+             between the middle and the end joint (one tendon works both), a little cost for leaving 0.40, so a finger whose
+             knuckle stands off the wood can lie on it as a hand would, and one that can already does as before) */
+          const bendsOf = (T, r = 0.40) => [r, (1 - r) * 2 / 3, (1 - r) / 3].map((k, i) => Math.min(hi[i], k * T));
           const lay = (fs) => { let x = 0, y = 0, cum = 0, J = 0, clear = Infinity; for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
               clear = Math.min(clear, segD(x, y, nx, ny) - rho); const e = Math.hypot(nx - c[0], ny - c[1]) - rho; J += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
             return { J, clear, tip: Math.hypot(x - c[0], y - c[1]) - rho }; };
           let best = null;
-          for (let T = 0; T <= 2.8 + 1e-9; T += 0.01) { const fs = bendsOf(T), r = lay(fs); if (r.clear < -0.01 * rho) continue; if (!best || r.J < best.J) best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T }; }
+          for (let rr = 0.30; rr <= 0.48 + 1e-9; rr += 0.02) for (let T = 0; T <= 2.8 + 1e-9; T += 0.01) { const fs = bendsOf(T, rr), r = lay(fs); if (r.clear < -0.01 * rho) continue;
+            const J = r.J + 0.5 * rho * rho * (rr - 0.40) * (rr - 0.40); if (!best || J < best.J) best = { f: fs, J, clear: r.clear, tip: r.tip, T, r: rr }; }
           if (!best) { const fs = bendsOf(0), r = lay(fs); best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T: 0 }; }
           return best;
         };
@@ -1873,7 +1886,8 @@
         /* (and where it stands at his standing rest, the place every act's follow is measured from) */
         const R0 = P.acts.Sit_to_Stand_Transition_M; if (R0) { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Sit_to_Stand_Transition_M' ? 1 : 0);
           R0.time = Math.min(R0.getClip().duration - 1e-3, 5.85); P.mixer.update(0); P.group.updateMatrixWorld(true); hb.getWorldPosition(v); P.group.worldToLocal(v); HIPS.rest = [v.x, v.y, v.z];
-          const cb = boneOf(P, 'RightShoulder'); if (cb) HIPS.restClav = cb.quaternion.clone(); }
+          const cb = boneOf(P, 'RightShoulder'); if (cb) HIPS.restClav = cb.quaternion.clone();
+          const cbL = boneOf(P, 'LeftShoulder'); if (cbL) HIPS.restClavL = cbL.quaternion.clone(); }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); P.acts[k].timeScale = keep[k][2]; }
         P.mixer.update(0); personSettle(P);
       });
@@ -1967,6 +1981,18 @@
         if (w > 0.001) { clB.quaternion.copy(clTake).slerp(HIPS.restClav, w); clWrote = clB.quaternion.clone(); clB.updateWorldMatrix(false, true); }
         else if (clWrote) { clB.quaternion.copy(clTake); clWrote = null; clB.updateWorldMatrix(false, true); }
       }
+      /* (R35, 23 Nov: HIS FREE SHOULDER LET HALF DOWN IN HIS ACTS. The joint check read his left collarbone raised 44 to 56
+         degrees over his rest at the gold's top and 22 to 30 through the throw: his shoulder at his ear. A raised arm lifts
+         its collarbone a quarter of its own rise, about 35 degrees overhead; his takes shrug it near twice that. Half the
+         take's turn of it is kept, eased toward his standing rest by the act's weight, as the right one is: clavLay) */
+      const CLAV_L = 0.5;
+      let clL = null, clLWrote = null; const clLTake = new THREE.Quaternion();
+      function clavLayL(P, w) {
+        if (!clL) clL = boneOf(P, 'LeftShoulder'); if (!clL || !HIPS.restClavL) return;
+        if (!clLWrote || !clL.quaternion.equals(clLWrote)) clLTake.copy(clL.quaternion);
+        if (w > 0.001) { clL.quaternion.copy(clLTake).slerp(HIPS.restClavL, w); clLWrote = clL.quaternion.clone(); clL.updateWorldMatrix(false, true); }
+        else if (clLWrote) { clL.quaternion.copy(clLTake); clLWrote = null; clL.updateWorldMatrix(false, true); }
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -1983,7 +2009,7 @@
         /* (the fist's height is where the stick's foot stands on the paving: the hand STICK_Y up it, leaned or not, 4 mm clear;
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
-        clavLay(P, Math.min(1, m.clav) * share);
+        clavLay(P, Math.min(1, m.clav) * share); clavLayL(P, CLAV_L * Math.min(1, m.clav) * share);
         const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
@@ -2041,7 +2067,7 @@
                                  (STICK5.who === 'pho' || (STICK5.who === 'planted' && heldPlanted(P))));
             k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
           if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
-          else if (clWrote && P && P.ready) clavLay(P, 0);
+          else if ((clWrote || clLWrote) && P && P.ready) { clavLay(P, 0); clavLayL(P, 0); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
         THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
       };
@@ -2065,6 +2091,9 @@
           if (G.thumbAt) { const T = G.thumbAt, ofl = (q) => { const r = q.clone().sub(T.cs); r.addScaledVector(G.A, -r.dot(G.A)); return cm(r.length() - T.rho); };
             const drawn = G.chains.Thumb.map(b => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv));
             out.Thumb = { rho: cm(T.rho), j: drawn.map((q, i) => ({ miss: cm(q.distanceTo(T.tg[i])), off: ofl(q), wantOff: ofl(T.tg[i]) })) }; }
+          /* (R39: the old end site that carries his middle fingertip, against that finger's end: as near closed as open) */
+          { const e = boneOf(P, 'RightHandEnd'), m4 = boneOf(P, 'RightHandMiddle4');
+            if (e && m4) { out.endGap = +(e.getWorldPosition(new THREE.Vector3()).distanceTo(m4.getWorldPosition(new THREE.Vector3())) * 100).toFixed(2); out.endParent = e.parent && e.parent.name; } }
           return out; },
         /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
