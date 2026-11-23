@@ -8959,3 +8959,11 @@ wall's clock it was over before its picture (tools/probes/e4c5prai.mjs STEP_MS).
 angle its move asks bent his wrist past a real wrist's range in three casts (to 62 degrees toward the little finger, and 138
 back as he lifted it). Hold the wrist inside its range and let the stick, carried in the fist by the hand bone, lean with
 the hand: the joint check comes back clean and the hand still closes round the shaft.
+
+**The warm scan's lesson, bitten a third time** (v28.0, build 49; written down at v21.30 and again for a helper's cues).
+Build 43's Naga film cued its three pierces through a loop over a list, and timed four more with a call
+(`sfx(R(T.p1), ...)`: a bracket in the time), so the engine's scan read none of them and each could be silent on a
+fresh load; chaptertest caught all twelve. Before writing a film's sounds, re-read the v21.30 entry: every cue written
+out whole, its time a plain name (`const P1 = R(T.p1)` first). And a film whose marks come from a live clock the stage
+hands it has no length at all to a walk without a world: write the marks beside the film, and have the film say on the
+console when the live clock parts from them (z_tail.js TOG5; tools/probes/e4c5tog5.mjs proves the check by breaking it).
