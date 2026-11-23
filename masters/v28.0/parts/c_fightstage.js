@@ -142,6 +142,7 @@
     let fsSmokeI = 0;
     function fsSmoke(x, y, z, o = {}) { const P = fsSmokes[fsSmokeI++ % fsSmokes.length], r = FS5.srand || Math.random;
       P.t = 0; P.T = o.life || 0.9; P.s0 = o.s0 || 0.12; P.s1 = o.s1 || 0.5; P.a = o.a != null ? o.a : 0.3; P.vy = o.vy != null ? o.vy : 0.25; P.rot = (r() - 0.5) * 1.2;
+      P.s.material.color.setHex(o.col != null ? o.col : FS_FIRE.smoke);
       P.s.position.set(x, y, z); P.s.material.rotation = r() * Math.PI * 2; P.s.visible = true; }
     /* the flare at the Naga's mouth as a ball is let go */
     const fsFlares = [0, 1].map(() => ({ s: fsSprite(FS_FIRE.yel, true, 8), t: -1 }));
@@ -149,9 +150,11 @@
     /* THE BUBBLES (BIND): violet light round the Prai, brighter at its edge (a fresnel), thinning as its time runs; three */
     const fsBubbleMat = () => {
       const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.FrontSide,
-        uniforms: { uCol: { value: new THREE.Color(FS_COL.violet) }, uA: { value: 0 }, uT: { value: 0 }, uFl: { value: 0 } },
-        vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
-        fragmentShader: 'uniform vec3 uCol; uniform float uA, uT, uFl; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.4); float w = 0.86 + 0.14 * sin(uT * 2.6 + vN.y * 4.0); vec3 c = mix(uCol, vec3(1.0, 0.35, 0.45), uFl); gl_FragColor = vec4(c * (0.10 + 1.25 * f) * w, uA * (0.10 + 0.9 * f)); }' });
+        uniforms: { uCol: { value: new THREE.Color(FS_COL.violet) }, uA: { value: 0 }, uT: { value: 0 }, uFl: { value: 0 }, uSnap: { value: 0 } },
+        vertexShader: 'varying vec3 vN; varying vec3 vV; varying vec3 vP; void main(){ vP = position; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+        /* (R34: his cage's own bars stand on it, turning slowly, so the bubble reads as his cage closed round the Prai: twelve
+           bars from its round (its own frame), brighter at its edge; uSnap the white of its closing) */
+        fragmentShader: 'uniform vec3 uCol; uniform float uA, uT, uFl, uSnap; varying vec3 vN; varying vec3 vV; varying vec3 vP; void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.4); float w = 0.86 + 0.14 * sin(uT * 2.6 + vN.y * 4.0); float ang = atan(vP.z, vP.x) + uT * 0.35; float bars = pow(abs(cos(ang * 6.0)), 26.0) * (1.0 - smoothstep(0.82, 0.98, abs(vP.y))); vec3 c = mix(uCol, vec3(1.0, 0.35, 0.45), uFl); c += vec3(0.85, 0.78, 1.0) * bars * 0.9 + vec3(1.0) * uSnap * 0.8; gl_FragColor = vec4(c * (0.10 + 1.25 * f) * w, clamp(uA * (0.10 + 0.9 * f + 0.55 * bars) + uSnap * 0.5, 0.0, 1.0)); }' });
       mats.push(m); return m; };
     const fsBubbleGeo = (() => { const g = new THREE.SphereGeometry(1, 28, 18); owned.push(g); return g; })();
     const fsBubbles = [0, 1, 2].map(() => { const me = new THREE.Mesh(fsBubbleGeo, fsBubbleMat()); me.visible = false; me.renderOrder = 4; FSG.add(me); return { me, id: 0, fl: 0 }; });
@@ -176,6 +179,97 @@
       const me = new THREE.Mesh(geo, m); me.visible = false; me.renderOrder = 3; FSG.add(me); return me; })();
     const fsGatherRing = fsGround(fsRingTex, FS_COL.gold, true, 0.021);
     const fsGoldHalo = fsSprite(FS_COL.gold, true, 6);
+    /* ---------------------------------------------------------------- R34 (Chad, 23 Nov: "Pho's shockwave ability 's visuals
+       and impact need to be improved much more. It is too simple now. Add a screen shake effect to the shockwave"; "The bind
+       visuals also is too simple, need to be improved and with more visual impact and feedback"; his acts shown). All painted
+       light, as everything here (no light added: v9.4): */
+    /* a streak of light along the paving, bright at its root and gone at its tip (the gold's rays) */
+    const fsStreakTex = (() => { const [c, x] = fsCanvas(64); const g = x.createLinearGradient(0, 64, 0, 0); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.35, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64); const h = x.createLinearGradient(0, 0, 64, 0); h.addColorStop(0, 'rgba(0,0,0,1)'); h.addColorStop(0.5, 'rgba(0,0,0,0)'); h.addColorStop(1, 'rgba(0,0,0,1)');
+      x.globalCompositeOperation = 'destination-out'; x.fillStyle = h; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+    /* his lock's seal on the paving under a bubble: two fine rings, twelve ticks between them and four small diamonds (a dial
+       of his own, no sacred sign: v17.6), turning */
+    const fsSealTex = (() => { const [c, x] = fsCanvas(256); x.translate(128, 128); x.strokeStyle = 'rgba(255,255,255,0.95)'; x.fillStyle = 'rgba(255,255,255,0.95)';
+      x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 118, 0, Math.PI * 2); x.stroke(); x.lineWidth = 3; x.beginPath(); x.arc(0, 0, 92, 0, Math.PI * 2); x.stroke();
+      for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; x.lineWidth = i % 3 === 0 ? 6 : 3; x.beginPath(); x.moveTo(Math.cos(a) * 94, Math.sin(a) * 94); x.lineTo(Math.cos(a) * 116, Math.sin(a) * 116); x.stroke(); }
+      for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + Math.PI / 4; x.save(); x.rotate(a); x.translate(0, -70); x.beginPath(); x.moveTo(0, -9); x.lineTo(6, 0); x.lineTo(0, 9); x.lineTo(-6, 0); x.closePath(); x.fill(); x.restore(); }
+      const g = x.createRadialGradient(0, 0, 0, 0, 0, 90); g.addColorStop(0, 'rgba(255,255,255,0.22)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(0, 0, 90, 0, Math.PI * 2); x.fill();
+      return tex(done(THREE, c, false)); })();
+    /* THE GOLD LOOSED: a column of gold standing up out of him (0.7 s), a flash of gold over the paving round him going out
+       (0.4 s), twelve rays of light shot out along the paving (0.5 s); and a smaller column where it takes a Prai */
+    const fsColGeo = (() => { const g = new THREE.CylinderGeometry(1, 1, 1, 32, 1, true); g.translate(0, 0.5, 0); owned.push(g); return g; })();
+    const fsColMat = (col) => { const m = new THREE.MeshBasicMaterial({ map: fsWallTex, color: col, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(m); return m; };
+    const fsPillars = Array.from({ length: 5 }, () => { const me = new THREE.Mesh(fsColGeo, fsColMat(FS_COL.gold)); me.visible = false; me.renderOrder = 6; FSG.add(me); return { me, t: -1, T: 0.7, r0: 0.4, r1: 1.2, h: 4.5, k: 1 }; });
+    const fsWaveFlash = { m: fsGround(fsDot, FS_COL.gold, true, 0.022), t: -1, x: 0, z: 0 };
+    const fsRays = Array.from({ length: 12 }, () => { const m = new THREE.Mesh(fsQuad, fsGroundMat(fsStreakTex, FS_COL.gold, true)); m.visible = false; m.position.y = 0.023; m.renderOrder = 3; FSG.add(m); return { m, a: 0, L: 5 }; });
+    const fsRayState = { t: -1, x: 0, z: 0 };
+    /* the wheel's second wall, thin and white-hot, just ahead of the gold one */
+    const fsWallHot = (() => { const m = new THREE.MeshBasicMaterial({ map: fsWallTex, color: 0xfff0c8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(m);
+      const me = new THREE.Mesh(fsWall.geometry, m); me.visible = false; me.renderOrder = 3; FSG.add(me); return me; })();
+    /* THE BIND: a bolt of his violet from his hands to it (0.12 s out, then fading), its bubble snapping shut onto it from
+       twice its size with a white closing, a ring going out on the paving where it closes, two rings of light turning round
+       the bubble like a lock's (a gyroscope's), and his seal turning on the paving under it while it holds */
+    const fsBeamMat = () => { const m = new THREE.MeshBasicMaterial({ color: 0xeadcff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m); return m; };
+    const fsBeams = [0, 1, 2].map(() => { const core = new THREE.Mesh(fsColGeo, fsBeamMat()); core.visible = false; core.renderOrder = 6; FSG.add(core);
+      return { core, glows: Array.from({ length: 7 }, () => fsSprite(FS_COL.violet, true, 6)), t: -1, a: new THREE.Vector3(), b: new THREE.Vector3(), col: FS_COL.violet }; });
+    const fsLockRings = [0, 1, 2].map(() => ({ m: fsGround(fsRingTex, FS_COL.violet, true, 0.024), t: -1, x: 0, z: 0 }));
+    const fsTorusGeo = (() => { const g = new THREE.TorusGeometry(1, 0.03, 6, 56); owned.push(g); return g; })();
+    const fsOrbits = [0, 1, 2].map(() => [0, 1].map(() => { const m = new THREE.MeshBasicMaterial({ color: 0xc9b0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m);
+      const me = new THREE.Mesh(fsTorusGeo, m); me.visible = false; me.renderOrder = 5; FSG.add(me); return me; }));
+    const fsSeals = [0, 1, 2].map(() => fsGround(fsSealTex, FS_COL.violet, true, 0.025));
+    const fsBindAt = {};                                                    // (each Prai's bind, the wall time it closed: the snap)
+    /* SMELL: his breath drawn in, a sour light at his face going in to him (the ripple goes out over the paving as before) */
+    const fsBreath = { s: fsSprite(FS_COL.sour, true, 6), t: -1 };
+    /* a bolt from a to b in this colour */
+    function fsBeam(a, b, col) { const B = fsBeams.find(q => q.t < 0) || fsBeams[0]; B.t = 0; B.a.copy(a); B.b.copy(b); B.col = col;
+      B.core.material.color.setHex(col === FS_COL.violet ? 0xeadcff : col); for (const g of B.glows) g.material.color.setHex(col); }
+    /* the place of his hands as he casts (between his two hands; his chest if they are not to be had) */
+    const _fsH1 = new THREE.Vector3(), _fsH2 = new THREE.Vector3();
+    function fsHands(P, out) { const As = P && P.ready ? armsOf(P) : null;
+      if (As && As.L && As.R && As.L.hand && As.R.hand) { As.L.hand.getWorldPosition(_fsH1); As.R.hand.getWorldPosition(_fsH2); return out.addVectors(_fsH1, _fsH2).multiplyScalar(0.5); }
+      return fsHead(P, out, 1.3).setY(1.2); }
+    function fsBindCast(p, w) {
+      const zv = cast.zav; fsHands(zv, _fsA); _fsB.set(w.x, 1.0 * (fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1), w.z);
+      fsBeam(_fsA, _fsB, FS_COL.violet); fsBindAt[p.id] = FS5.wall;
+      const L = fsLockRings.find(q => q.t < 0) || fsLockRings[0]; L.t = 0; L.x = w.x; L.z = w.z;
+      fsBurst(w.x, 1.0, w.z, 26, { sp: 2.6, up: 0.0, life: 0.55, s0: 0.1, col: 0xeadcff, col2: FS_COL.violet, mix: 0.55, grav: 0, drag: 2.2 });
+      fsShake(0.035, 0.28, 0.008);
+    }
+    function fsSmellCast() { const zv = cast.zav; if (!zv) return; fsHead(zv, fsBreath.s.position, 1.55); fsBreath.t = 0;
+      const r = FS5.srand || Math.random; for (let i = 0; i < 5; i++) { const a = r() * Math.PI * 2, R = 0.5 + r() * 0.4;
+        fsSmoke(fsBreath.s.position.x + Math.cos(a) * R, fsBreath.s.position.y - 0.2 + r() * 0.3, fsBreath.s.position.z + Math.sin(a) * R, { s0: 0.18, s1: 0.05, life: 0.7, a: 0.22, vy: 0.05, col: FS_COL.sour }); } }
+    function fsLendCast(pw) { const zv = cast.zav; fsHands(zv, _fsA); _fsB.set(pw.x, 1.25, pw.z); fsBeam(_fsA, _fsB, FS_COL.violet);
+      const L = fsLockRings.find(q => q.t < 0) || fsLockRings[0]; L.t = 0; L.x = pw.x; L.z = pw.z; fsShake(0.02, 0.2, 0); }
+    function fsPillar(x, z, o) { const C = fsPillars.find(q => q.t < 0) || fsPillars[0]; C.t = 0; C.T = o.T; C.r0 = o.r0; C.r1 = o.r1; C.h = o.h; C.k = o.k; C.me.position.set(x, 0, z); C.me.material.color.setHex(o.col || FS_COL.gold); }
+    function fsHitPillar(x, z) { fsPillar(x, z, { T: 0.55, r0: 0.25, r1: 0.6, h: 3.0, k: 0.8 }); }
+    function fsWaveCast(pw) {
+      fsPillar(pw.x, pw.z, { T: 0.75, r0: 0.35, r1: 1.4, h: 5.0, k: 1 });
+      fsWaveFlash.t = 0; fsWaveFlash.x = pw.x; fsWaveFlash.z = pw.z;
+      fsRayState.t = 0; fsRayState.x = pw.x; fsRayState.z = pw.z; const r = FS5.srand || Math.random;
+      fsRays.forEach((R, i) => { R.a = (i + 0.35 * (r() - 0.5)) / fsRays.length * Math.PI * 2; R.L = 4.5 + 2.5 * r(); });
+      fsBurst(pw.x, 0.15, pw.z, 60, { sp: 6.5, up: 0.0, life: 0.6, s0: 0.12, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.4, grav: -2, drag: 2.0 });
+      fsBurst(pw.x, 0.6, pw.z, 30, { sp: 3.2, up: 0.75, life: 1.0, s0: 0.1, col: 0xfff0c8, col2: FS_COL.gold, mix: 0.5, grav: -1.2, drag: 1.2 });
+      fsShake(0.13, 0.75, 0.045);
+    }
+    /* THE SCREEN SHAKEN (R34), by the shockwave (and a small knock for the bind and the lend): the lens knocked off its line
+       and back, fast and dying away; a low rumble growing under it while the gold gathers. Laid on AFTER the engine has set
+       the lens on its boom this frame (the mode derives the lens every frame from the bodies and reads nothing back: a
+       knock written here is gone the next frame), and only while the mode is live: under a menu the lens is not written
+       by the mode, so nothing is laid on it */
+    FS5.shake = null;
+    function fsShake(amp, secs, roll = 0) { const S = FS5.shake, now = FS5.wall;
+      const left = S ? Math.max(0, 1 - (now - S.t0) / S.secs) : 0, cur = S ? S.amp * left * left : 0;
+      if (amp >= cur) FS5.shake = { t0: now, secs, amp, roll: Math.max(roll, S ? S.roll * left * left : 0) }; }
+    function fsShakeFrame(ts) {
+      let amp = 0, roll = 0; const S = FS5.shake;
+      if (S) { const u = (FS5.wall - S.t0) / S.secs; if (u >= 1) FS5.shake = null; else { const k = (1 - u) * (1 - u); amp = S.amp * k; roll = S.roll * k; } }
+      const st = FS5.st; if (st && st.pho && st.pho.wind > 0) { const w = 1 - st.pho.wind / (FN5.windSecs || 1.5); amp = Math.max(amp, 0.004 + 0.024 * w * w); }
+      if (!(amp > 1e-4) || !ts || !ts.on || !ts.live) return;
+      const t = FS5.wall;
+      camera.position.x += amp * (0.6 * Math.sin(t * 61.3) + 0.4 * Math.sin(t * 97.1 + 2.1));
+      camera.position.y += amp * (0.6 * Math.sin(t * 73.7 + 1.3) + 0.4 * Math.sin(t * 41.9));
+      if (roll) camera.rotation.z += roll * Math.sin(t * 53.1 + 0.7);
+    }
     /* THE BAG: what is drawn streams to his mouth and down into the open bag at the doorway; a thin line on the paving joins
        him to the one the button will take while it shows */
     const FS_STREAK = 14;
@@ -516,13 +610,18 @@
          fire tires the one in it */
       const bound = st.prai.filter(p => p.st === 'bound' || p.st === 'held');
       fsBubbles.forEach((Bb, j) => {
-        const p = bound[j]; if (!p) { Bb.me.visible = false; Bb.id = 0; return; }
+        const p = bound[j]; if (!p) { Bb.me.visible = false; Bb.id = 0; for (const me of fsOrbits[j]) me.visible = false; fsSeals[j].visible = false; return; }
         const P = fsPraiP(p.id), V = fsVis[p.id - 1], w = fsW(p.x, p.z);
         if (Bb.id !== p.id) { Bb.id = p.id; Bb.fl = 0; }
         Bb.fl = Math.max(0, Bb.fl - wdt * 1.8);
         const left = c01((p.bub || 0) / Math.max(0.1, FN5.bubbleSecs || 10)), sc = V ? V.s : 1;
-        Bb.me.visible = true; Bb.me.position.set(w.x, 0.92 * sc, w.z); Bb.me.scale.set(0.62 * sc, 1.0 * sc, 0.62 * sc);
-        const U = Bb.me.material.uniforms; U.uA.value = 0.35 + 0.65 * left; U.uT.value = ft; U.uFl.value = Bb.fl;
+        /* (R34: it snaps shut onto it from nearly twice its size in 0.28 s, white as it closes) */
+        const sn = fsBindAt[p.id] != null ? c01((FS5.wall - fsBindAt[p.id]) / 0.28) : 1, grow = 1 + 0.9 * (1 - sn) * (1 - sn);
+        Bb.me.visible = true; Bb.me.position.set(w.x, 0.92 * sc, w.z); Bb.me.scale.set(0.62 * sc * grow, 1.0 * sc * grow, 0.62 * sc * grow);
+        const U = Bb.me.material.uniforms; U.uA.value = 0.35 + 0.65 * left; U.uT.value = ft; U.uFl.value = Bb.fl; U.uSnap.value = 1 - sn;
+        fsOrbits[j].forEach((me, k) => { me.visible = true; me.position.set(w.x, 0.92 * sc, w.z); const R = (0.74 + 0.1 * k) * sc * grow; me.scale.set(R, R * (k ? 1.25 : 1.15), R);
+          me.rotation.set(ft * (k ? -1.1 : 0.9) + k * 1.2, ft * (k ? 0.7 : 1.3), k ? 0.9 : 0.4); me.material.opacity = (0.3 + 0.5 * left) * (k ? 0.7 : 1); });
+        { const Sg = fsSeals[j], sr = 0.85 * sc * (1 + 0.6 * (1 - sn)); Sg.visible = true; Sg.position.set(w.x, 0.025, w.z); Sg.scale.set(sr * 2, 1, sr * 2); Sg.rotation.y = ft * 0.6; Sg.material.opacity = 0.5 + 0.35 * left; }
         /* (violet motes rising off its skin, the fewer the thinner it has worn) */
         if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * (6 + 10 * left)) { const a = rr() * Math.PI * 2, yy = rr() * 2 - 1, q = Math.sqrt(1 - yy * yy);
           fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.075, s1: 0.03, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
@@ -558,14 +657,36 @@
       if (ph.ring) { const w = fsW(ph.ring.x, ph.ring.z), r = Math.max(0.2, ph.ring.r), out = c01(r / Math.max(0.1, FN5.ringMax || 7));
         fsWheel.visible = true; fsWheel.position.set(w.x, 0.02, w.z); fsWheel.scale.set(r * 2, 1, r * 2); fsWheel.rotation.y = -r * 0.25; fsWheel.material.opacity = 0.95 * (1 - out * out);
         /* (a second wheel just behind it, turning the other way; gold motes lifting off its rim as it goes) */
-        fsWall.visible = true; fsWall.position.set(w.x, 0, w.z); fsWall.scale.set(r, 1 - 0.5 * out, r); fsWall.material.opacity = 0.75 * (1 - out);
+        fsWall.visible = true; fsWall.position.set(w.x, 0, w.z); fsWall.scale.set(r, 2.0 * (1 - 0.6 * out), r); fsWall.material.opacity = 0.95 * (1 - out * out);
+        fsWallHot.visible = true; fsWallHot.position.set(w.x, 0, w.z); fsWallHot.scale.set(r + 0.12, 1.15 * (1 - 0.5 * out), r + 0.12); fsWallHot.material.opacity = 0.8 * (1 - out);
+        if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * 30) { const a = rr() * Math.PI * 2;
+          fsSmoke(w.x + Math.cos(a) * r, 0.12, w.z + Math.sin(a) * r, { s0: 0.25, s1: 0.8, life: 0.7, a: 0.18 * (1 - out), vy: 0.35, col: 0x8a7a5a }); } }
         const r2 = Math.max(0.15, r - 0.55); fsWheel2.visible = true; fsWheel2.position.set(w.x, 0.019, w.z); fsWheel2.scale.set(r2 * 2, 1, r2 * 2); fsWheel2.rotation.y = r * 0.4; fsWheel2.material.opacity = 0.5 * (1 - out);
         if (wdt > 0) { const rr = FS5.srand || Math.random; for (let k = 0; k < 7; k++) { const a = rr() * Math.PI * 2;
           fsSpark(w.x + Math.cos(a) * r, 0.06, w.z + Math.sin(a) * r, { vx: Math.cos(a) * 0.5, vy: 0.7 + 0.8 * rr(), vz: Math.sin(a) * 0.5, life: 0.55 + 0.35 * rr(), s0: 0.11 * (0.7 + 0.6 * rr()), col: rr() < 0.3 ? 0xfff0c8 : FS_COL.gold, grav: 0.25, drag: 1.2, a: 0.9 * (1 - out) }); } }
         /* the lamps at the house flare as it passes them */
         const dl = Math.abs((COURT5.z - (HOUSE.face - 0.3)) - ph.ring.z) - r;
         if (dl < 0.2 && !FS5.flared) { FS5.flared = true; FS5.flare = 1; fsFx('u5lampflare', 0.4, DOOR_FRONT.x0 - 0.38, HOUSE.face - 0.3); fsFx('u5lampflare', 0.34, DOOR_FRONT.x1 + 0.38, HOUSE.face - 0.3); } }
-      else { fsWheel.visible = fsWheel2.visible = fsWall.visible = false; FS5.flared = false; }
+      else { fsWheel.visible = fsWheel2.visible = fsWall.visible = fsWallHot.visible = false; FS5.flared = false; }
+      /* R34: the gold loosed (its column, its flash over the paving, its rays), the bolts, the lock's rings, his breath */
+      for (const C of fsPillars) { if (C.t < 0) continue; C.t += wdt; const u = c01(C.t / C.T); if (u >= 1) { C.t = -1; C.me.visible = false; continue; }
+        const r = C.r0 + (C.r1 - C.r0) * Math.sqrt(u); C.me.visible = true; C.me.scale.set(r, C.h * (0.35 + 0.65 * Math.sqrt(u)), r); C.me.material.opacity = C.k * Math.min(1, u / 0.08) * Math.pow(1 - u, 1.5); }
+      if (fsWaveFlash.t >= 0) { fsWaveFlash.t += wdt; const u = c01(fsWaveFlash.t / 0.45), m = fsWaveFlash.m;
+        if (u >= 1) { fsWaveFlash.t = -1; m.visible = false; } else { const r = 0.8 + 7.5 * Math.sqrt(u); m.visible = true; m.position.set(fsWaveFlash.x, 0.022, fsWaveFlash.z); m.scale.set(r * 2, 1, r * 2); m.material.opacity = 0.95 * Math.pow(1 - u, 1.6); } }
+      if (fsRayState.t >= 0) { fsRayState.t += wdt; const u = c01(fsRayState.t / 0.55);
+        fsRays.forEach((R) => { if (u >= 1) { R.m.visible = false; return; } const L = R.L * Math.sqrt(u), cx = Math.sin(R.a), cz = Math.cos(R.a);
+          R.m.visible = true; R.m.position.set(fsRayState.x + cx * L * 0.5, 0.023, fsRayState.z + cz * L * 0.5); R.m.rotation.y = R.a + Math.PI; R.m.scale.set(0.32 * (1 - 0.5 * u), 1, Math.max(0.05, L)); R.m.material.opacity = 0.9 * (1 - u); });
+        if (u >= 1) fsRayState.t = -1; }
+      for (const B of fsBeams) { if (B.t < 0) continue; B.t += wdt; const T = 0.45, u = c01(B.t / T);
+        if (u >= 1) { B.t = -1; B.core.visible = false; for (const g of B.glows) g.visible = false; continue; }
+        const grow = c01(B.t / 0.12), fade = B.t < 0.12 ? 1 : Math.pow(1 - (B.t - 0.12) / (T - 0.12), 1.4);
+        _fsC.subVectors(B.b, B.a); const len = _fsC.length(); if (len < 1e-3) continue; _fsC.multiplyScalar(1 / len);
+        B.core.visible = true; B.core.position.copy(B.a); B.core.quaternion.setFromUnitVectors(_fsUp, _fsC); B.core.scale.set(0.03 * fade + 0.008, len * grow, 0.03 * fade + 0.008); B.core.material.opacity = 0.95 * fade;
+        B.glows.forEach((g, i) => { const q = (i + 0.5) / B.glows.length; if (q > grow) { g.visible = false; return; } g.visible = true; g.position.copy(B.a).addScaledVector(_fsC, len * q); g.scale.setScalar(0.38 + 0.1 * Math.sin(ft * 40 + i)); g.material.opacity = 0.6 * fade; }); }
+      for (const L of fsLockRings) { if (L.t < 0) continue; L.t += wdt; const u = c01(L.t / 0.5); if (u >= 1) { L.t = -1; L.m.visible = false; continue; }
+        const r = 0.3 + 1.9 * Math.sqrt(u); L.m.visible = true; L.m.position.set(L.x, 0.024, L.z); L.m.scale.set(r * 2, 1, r * 2); L.m.material.opacity = 0.9 * (1 - u); }
+      if (fsBreath.t >= 0) { fsBreath.t += wdt; const u = c01(fsBreath.t / 0.7);
+        if (u >= 1) { fsBreath.t = -1; fsBreath.s.visible = false; } else { if (cast.zav) fsHead(cast.zav, fsBreath.s.position, 1.55); fsBreath.s.visible = true; fsBreath.s.scale.setScalar(1.2 * (1 - u) + 0.2); fsBreath.s.material.opacity = 0.5 * Math.sin(u * Math.PI); } }
       FS5.flare = Math.max(0, FS5.flare - wdt * 2.2);
       /* the streaks: drawn to his mouth, and down into the bag (gold when the gold gathers it) */
       for (const S of fsStreaks) {
@@ -604,9 +725,17 @@
        file at a hundredth of each take). His student has only his Walking (1.23 of its own). The rates are held between
        0.35 and 1.5 of a take's own (a slower walk is a stroll, never a frozen leg) */
     const FS_RUN = { on: 1.9, off: 1.7, shift: -0.10, fade: 0.2 };
+    /* HIS STUDENT RUNS (Chad's R34, 23 Nov: "master zavier walking speed can be made faster. Also make him use a running
+       animation instead of a walking animation"): his rig's own run (Meshy's, laid on his rig with his walk: masters/v28.0/
+       make.sh §9), played above a stroll's pace at the rate the ground asks of it, so at the rules' 2.6 m a second he runs;
+       his walk is kept only for the slowest steps (the stick barely pushed), where a run at a third of its rate would be a
+       jog on the spot. In step as his teacher's: his run's strikes (0.17 and 0.75 of its 0.63 s) lie 0.11 before his walk's
+       (0.28 and 0.78 of its 1.03 s) */
+    const FS_ZRUN = { on: 1.0, off: 0.8, shift: -0.11 };
     function fsGait(P, who, pace) {
-      if (who !== 'pho' || !P.acts.Running) return 'Walking';
-      return fsTake[who].gait === 'Running' && fsTake[who].walking ? (pace < FS_RUN.off ? 'Walking' : 'Running') : (pace > FS_RUN.on ? 'Running' : 'Walking');
+      if (!P.acts.Running) return 'Walking';
+      const R = who === 'pho' ? FS_RUN : FS_ZRUN;
+      return fsTake[who].gait === 'Running' && fsTake[who].walking ? (pace < R.off ? 'Walking' : 'Running') : (pace > R.on ? 'Running' : 'Walking');
     }
     const fsGaitRate = (P, name, pace) => Math.max(0.35, Math.min(1.5, pace / ((P.pace && P.pace[name]) || (name === 'Running' ? 2.31 : 1.29))));
     /* into the walk or the run this pace asks for: from his rest (eased in over 0.15 s), or from the other one, in step */
@@ -617,7 +746,7 @@
       take(P, g, from ? FS_RUN.fade : fade);
       if (from && P.acts[from] && P.acts[g]) {
         const A0 = P.acts[from], A1 = P.acts[g], d0 = A0.getClip().duration || 1, d1 = A1.getClip().duration || 1;
-        const u0 = (((A0.time % d0) + d0) % d0) / d0, u1 = (((u0 + (g === 'Running' ? FS_RUN.shift : -FS_RUN.shift)) % 1) + 1) % 1;
+        const sh = who === 'pho' ? FS_RUN.shift : FS_ZRUN.shift, u0 = (((A0.time % d0) + d0) % d0) / d0, u1 = (((u0 + (g === 'Running' ? sh : -sh)) % 1) + 1) % 1;
         A1.time = u1 * d1; }
     }
     /* HIS ACTS IN HIS OWN BODY: three of Grandmaster Pho's own file's takes (none was made for the fight), each played
@@ -709,10 +838,50 @@
       if (P && A) { const n = Ac.n, run = FS5.run; Ac.down = true; Ac.until = FS5.wall + A.down; span(P, A.take, P.acts[A.take] ? P.acts[A.take].time : A.top, A.b, A.down, { fade: 0, then: () => { if (run === FS5.run && FS5.act && FS5.act.n === n) fsPhoBack(); } }); } } }
     function fsPhoCut(kind) { const Ac = FS5.act; if (!Ac || (kind && Ac.kind !== kind)) return; fsPhoBack(0.25); }
     const fsActing = () => !!(FS5.act && FS5.wall < FS5.act.until);
+    /* HIS STUDENT'S ACTS IN HIS OWN BODY (Chad's R34: "When master zavier uses any of his ability, you need to add
+       animations to show him casting or using his ability, for visual feedback, such as the lending, the smell, and the
+       bind"): three library takes laid on his own rig (masters/v28.0/people.sh, make.sh §9), each measured as a motion before
+       it was cast (tools/probes/takefk.mjs), played between two of its own moments as his teacher's are, on the frame the
+       rules spend the act; he stands for it (rooted: the engine moves him not, so the rules see no walk), then his run or his
+       rest takes him back:
+       BIND, mage_soell_cast_3: from his ready stance both palms driven out at arm's length with a lean (0.45 to 1.05 of it),
+         held a moment, then back (2.7 to 3.3): its push goes 55 degrees to his left of his front (both hands at 0.7 m left,
+         0.5 m before him: measured), so he is turned that much the other way while it plays and the push lands ON the Prai
+       SMELL, Alert: the crouch and the look round (1.9 to 3.35 of it), quickened to 0.75 s
+       LEND, mage_soell_cast_6: the dip and the rising sweep of his right hand (0.3 to 1.15), held, then down (1.15 to 2.3),
+         turned to his teacher as the bind is to its Prai */
+    const FS_ZAV_TAKE = { bind:  { take: 'mage_soell_cast_3', a: 0.45, top: 1.05, b: 3.30, up: 0.22, hold: 0.18, down: 0.38, turn: -0.96 },
+                          smell: { take: 'Alert', a: 1.90, top: 2.70, b: 3.35, up: 0.40, hold: 0.10, down: 0.30, turn: 0 },
+                          lend:  { take: 'mage_soell_cast_6', a: 0.30, top: 1.15, b: 2.30, up: 0.36, hold: 0.20, down: 0.40, turn: -0.96 } };
+    function fsZavAct(kind, at) {
+      const P = cast.zav, A = FS_ZAV_TAKE[kind];
+      if (!P || !P.ready || !A || !P.acts[A.take]) return 0;
+      const n = ++FS5.actN, all = A.up + A.hold + A.down;
+      FS5.zact = { kind, n, at: FS5.wall, until: FS5.wall + all, face: at || null, turn: A.turn, down: false };
+      fsTake.zav.walking = false;
+      span(P, A.take, A.a, A.top, A.up, { fade: 0.12 });
+      return all;
+    }
+    /* (each frame, on the fight's own clock: from the top, after its hold, back down; and handed back once it is done, so
+       nothing on another clock can leave him in it) */
+    function fsZavActTick() {
+      const Z = FS5.zact, P = cast.zav; if (!Z) return;
+      const A = FS_ZAV_TAKE[Z.kind]; if (!P || !A) { FS5.zact = null; return; }
+      if (!Z.down && FS5.wall >= Z.at + A.up + A.hold) { Z.down = true; span(P, A.take, A.top, A.b, A.down, { fade: 0 }); }
+      if (FS5.wall >= Z.until + 0.02) fsZavBack();
+    }
+    function fsZavBack(fade = 0.25) {
+      const P = cast.zav; FS5.zact = null; if (!P) return;
+      const T = fsTake.zav;
+      if (T.pace > 0.08) { T.walking = false; fsGaitTo(P, 'zav', fsGait(P, 'zav', T.pace), fade); fsGaitRates(P, T.pace); }
+      else { T.walking = false; T.t = 0; const rt = zavRest(); if (rt) rest(P, fade); else hold(P, 'Walking', ZAV_STAND5, 0.001, fade); }
+    }
+    const fsZavActing = () => !!(FS5.zact && FS5.wall < FS5.zact.until);
     function fsBodyTake(P, who, pace, wdt) {
       if (!P || !P.ready) return;
       const T = fsTake[who]; T.pace = pace;
       if (who === 'pho' && (fsActing() || FS5.labPose)) return;       // (an act's take holds him: it hands him back itself)
+      if (who === 'zav' && fsZavActing()) return;                       // (his student's act holds him the same way: R34)
       const moving = pace > 0.08;
       if (moving) { T.t = 0; const g = fsGait(P, who, pace); if (!T.walking || g !== T.gait) fsGaitTo(P, who, g, 0.15); }
       else if (T.walking) { T.t += wdt; if (T.t > 0.12) { T.walking = false;           // (stopped: his rest within 0.12 s, eased 0.25)
@@ -730,7 +899,7 @@
     /* THEIR FOOTFALLS on the paving (the engine's steps are the first person's, and he does not walk in the mode): each
        body's walk struck where its own take sets a foot down, read from each file through its bones (M8's takeread: his
        teacher's Walking at 0.37 and 0.85 of its 1.03 s, his own at 0.28 and 0.78), at the manifest's gain */
-    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85], run: [0.30, 0.86] }, zav: { name: 'u5zstep', at: [0.28, 0.78] } };
+    const FS_STEP = { pho: { name: 'u5phostep', at: [0.37, 0.85], run: [0.30, 0.86] }, zav: { name: 'u5zstep', at: [0.28, 0.78], run: [0.17, 0.75] } };
     /* (his run's own strikes, the same way: each foot within 3.5 cm of its lowest, at 0.30 and 0.86 of its 0.63 s) */
     function fsSteps() {
       for (const who of ['pho', 'zav']) {
@@ -860,32 +1029,40 @@
             else { fsBloom(w.x, w.z, FS_FIRE.orange, 0.6, true, 0.35); fsFx(fsDeal('land'), 0.6, w.x, w.z); fsBurst(w.x, 0.1, w.z, 10, { sp: 2, up: 0.45, life: 0.5, s0: 0.065, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.3, grav: -5 }); }
             break; }
           case 'bind': { const zw = cast.zav ? cast.zav.group.position : null;
+            const secs = fsZavAct('bind');                                              // (R34: the push on his own body)
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
             else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null);
-              if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = 0.7; fsBloom(w.x, w.z, FS_COL.violet, 0.9);
-                fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 }); } }
+              if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = Math.max(0.7, secs); fsBloom(w.x, w.z, FS_COL.violet, 0.9);
+                fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
+                fsBindCast(p, w); } }
             break; }
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5bindpop', 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
+            fsZavAct('smell'); fsSmellCast();                                           // (R34: the crouch and the look round; the breath drawn in)
             fsFx(fsDeal('sniff'), 0.8, null); fsFx('u5sournote', 0.8, null); fsFx('u5ripple', 0.8, null);
             if (kit && kit.chill) { kit.chill(0.3, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.9; }
             break; }
           case 'drawn': for (const p of st.prai) if (p.st === 'coming' || p.st === 'pressing') { const w = fsW(p.x, p.z); fsFx(fsDeal('strain'), 0.55, w.x, w.z); break; } break;
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null);
-            FS5.faceTo.zavier = { x: st.pho.x, z: st.pho.z }; FS5.faceT.zavier = 0.9; break; }          // (he turns to the one he lends it to)
+            const secs = fsZavAct('lend', pw);                                          // (R34: the rising sweep sends it)
+            FS5.faceTo.zavier = { x: st.pho.x, z: st.pho.z }; FS5.faceT.zavier = Math.max(0.9, secs);   // (he turns to the one he lends it to)
+            if (pw) fsLendCast(pw); break; }
           case 'lendEnd': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5lendback', 0.8, zw ? zw.x : null, zw ? zw.z : null); break; }
           case 'waveReady': fsFx('u5waveready', 0.8, null); break;
           case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
-            fsPhoAct('wave', FN5.windSecs || 1.5); break; }
-          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave');
-            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.13, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 }); }
+            fsPhoAct('wave', FN5.windSecs || 1.5); FS5.windT = FS5.wall; break; }
+          case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.3 }); FS5.flared = false; fsPhoRelease('wave');
+            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.13, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 });
+              if (pw) fsWaveCast(pw); }
             break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
             if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
-            else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.11, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 }); } }
+            else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.11, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 });
+              /* (R34: the gold STRIKES each one it takes: a flash and a column of gold where it stood, a wider burst) */
+              fsBloom(w.x, w.z, FS_COL.gold, 1.3); fsBurst(w.x, 1.0, w.z, 22, { sp: 3.0, up: 0.05, life: 0.7, s0: 0.12, col: 0xfff0c8, col2: FS_COL.gold, mix: 0.5, grav: -1, drag: 1.8 }); fsHitPillar(w.x, w.z); } }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
@@ -973,7 +1150,7 @@
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
-      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null;
+      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
@@ -983,6 +1160,8 @@
       for (const B of fsBalls) B.on = false; for (const L of fsBlooms) L.on = false; for (const S of fsStreaks) S.on = false;
       fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false; fsPtsClear();
       for (const P of fsSmokes) P.t = -1; for (const F of fsFlares) F.t = -1; for (const S of fsScorches) S.t = -1;
+      for (const C of fsPillars) C.t = -1; fsWaveFlash.t = -1; fsRayState.t = -1; for (const B of fsBeams) B.t = -1; for (const L of fsLockRings) L.t = -1; fsBreath.t = -1;
+      for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null;
       for (const o of FSG.children) o.visible = false;
     }
 
@@ -1070,12 +1249,14 @@
       /* (his teacher stands still while the gold gathers and while the bag draws: the rules' own; and for his swing) */
       const still = !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last');
       kit.tagBody('pho', { root: still || st.pho.wind > 0 || st.pho.draw > 0 || (!!FS5.act && FS5.act.kind === 'phoFire' && fsActing()) });
-      kit.tagBody('zavier', { root: still });
+      kit.tagBody('zavier', { root: still || fsZavActing() });
+      fsZavActTick();
       fsFaces(wdt, playedNow);
       /* 5. the screen and the court */
       fsHud();
       fsLookFrame(wdt, playedNow, phoB, zavB);
       fsSoundFrame(wdt, playedNow);
+      fsShakeFrame(ts);
     }
     function fsLensClear(dt) {
       const st = FS5.st; if (!st || !(dt > 0) || !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last')) return;
@@ -1106,7 +1287,9 @@
           else { let best = null, bd = 1e9; for (const p of st.prai) if (p.st === 'pressing' || p.st === 'through' || p.st === 'coming') { const d = Math.hypot(p.x - st.zav.x, p.z - st.zav.z); if (d < bd) { bd = d; best = p; } }
             tgt = best || { x: st.zav.x, z: st.zav.z - 3 }; }
         }
-        if (tgt) { const a = fsW(R.x, R.z), b = fsW(tgt.x, tgt.z); kit.tagBody(who, { face: faceTo(a.x, a.z, b.x, b.z) }); }
+        /* (his act's take pushes off his front: turned so its push lands on what he acts on, R34) */
+        const tw = who === 'zavier' && FS5.zact && fsZavActing() && FS5.faceT.zavier > 0 ? FS5.zact.turn || 0 : 0;
+        if (tgt) { const a = fsW(R.x, R.z), b = fsW(tgt.x, tgt.z); kit.tagBody(who, { face: faceTo(a.x, a.z, b.x, b.z) + tw }); }
         else kit.tagBody(who, { face: null });
       }
       /* his head toward a Prai that has hidden (the rules' own look, z.look) */

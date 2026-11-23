@@ -95,7 +95,10 @@
        4.6: every other shot is his eyes). His lighter body with his walk, and every triangle of him within 2.2 m and in the
        films' close shots (v26.5). Hidden until a film or the fight shows him. HIS REST AND HIS TRANCE'S TAKES are CAST's to
        make (people/RECORD.md: his file holds only his walk): `restTake` reads whichever he has */
-    cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Walking', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
+    /* (R33/R34, 23 Nov: his file holds his rest now, Meshy's Idle_3 on his own rig, and his run and his three acts: he stands
+       in his rest wherever a film or the fight lets him stand, no longer frozen at his walk's 0.03 s; ZAV_STAND5 below stays
+       for a file without it) */
+    cast.zav = mkPerson('p5zavier', 0, 0, 0, { take: 'Idle_3', hidden: true, skins: { 0: 'p5zavierh' }, blobW: 0.8, blobD: 0.6, pace: true,
       shoulders: { Idle_3: 1, Walking: 1 } });
     const zavRest = () => { const P = cast.zav; return P && P.acts && P.acts.Idle_3 ? 'Idle_3' : (P && P.acts && P.acts.trance ? 'trance' : null); };
     /* until he has a rest, the moment of his own walk where he most nearly stands (measured on his file, 21 Nov: at 0.03 s
@@ -175,7 +178,7 @@
         else { /* the stick's length is its y: laid down along the palms' line, its head to his left hand's side */
           g.position.set(mid.x, mid.y, mid.z); g.rotation.set(0, yaw, Math.PI / 2 + Math.atan2(dy, hl), 'YXZ');
           g.translateY(-STICK_LEN * 0.5); }
-        g.visible = true; return true; },
+        g.visible = true; navCarried(P, g); return true; },
       /* stood upright by itself at a point (the Naga's film: planted, "the stick stands by itself once planted") */
       plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; },
       /* the wrapped stick carried upright in Ton's right hand, its foot a hand over the floor (laid from his standing rest

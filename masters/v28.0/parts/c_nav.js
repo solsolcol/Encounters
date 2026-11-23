@@ -35,6 +35,10 @@
     const navR = (P) => NAV5.rOf[P.key] || NAV5.r;
     /* the solids round a body's disc: [x0, x1, z0, z1], kept while the blockers are the same (a cheap signature each call) */
     function navBoxes() {
+      /* (signed at most once in 30 ms: within one picture the blockers are the same, and a nearest-point search makes up to
+         1,536 calls, each of which signed every blocker again: R33's L4-11) */
+      const now = performance.now(); if (navBoxes.list && now - (navBoxes.t || 0) < 30) return navBoxes.list;
+      navBoxes.t = now;
       const B = (S && S.blockers) || [], g = NAV5.r - NAV5.grow;
       let sig = B.length;
       for (const b of B) sig = (Math.imul(sig, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13))) | 0;
@@ -98,12 +102,17 @@
        people for that t, so a seek, a skip, a probe's run of seeks and play all land on the same picture), and whether each
        walks in it (fmWalk's own answer) along which way (its route) */
     const navFrame = { put: new Map(), depth: 0 };
+    /* THE THINGS A BODY CARRIES in the world (laid at its hands this picture by handHold5 and STICK5, world-attached): when the
+       settle moves the body they go with it, by the same amount (R33, lens 4's L4-08: Ton's wrapped staff, Jun's duffel,
+       his teacher's tied bag, the stick laid on Ton's palms were laid before the settle and left where the body had been) */
+    const navCarry = new Map();
+    function navCarried(P, g) { if (!P || !g) return; let a = navCarry.get(P); if (!a) navCarry.set(P, a = []); if (!a.includes(g)) a.push(g); }
     function navHook() {
       if (navHook.done) return;
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) navFrame.put.clear();
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); }
           try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) navSettle('film'); } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
@@ -144,11 +153,13 @@
     const navPlayWalk = new Map();                 // (play: the walkers walking this frame, and where to)
     /* THE SETTLE (the header): 'film' moves only the bodies the film put in this picture; 'play' any body on the floor */
     function navSettle(mode) {
-      if (!NAV5.on || (typeof FS5 !== 'undefined' && FS5.on)) return;
+      const fight = typeof FS5 !== 'undefined' && FS5.on;
+      if (!NAV5.on || (fight && mode !== 'film')) return;
       navBoxes(); NAV5.passes++;
       const film = mode === 'film', list = [];
       for (const P of people) {
         if (!P || !P.ready || P.hidden || !P.key || !NAV_FLOOR.test(P.key) || !navSeen(P.group)) continue;
+        if (fight && (P === cast.pho || P === cast.zav)) continue;         // (in the fight's own film its two are the fight's)
         const b = navBody(P), stands = b[2] >= NAV5.standY;
         const e = film ? navFrame.put.get(P) : (navPlayWalk.has(P) ? { walk: true, to: navPlayWalk.get(P) } : null);
         const may = stands && (!film || !!e), walking = may && !!(e && e.walk);
@@ -166,7 +177,8 @@
           for (const o of obs) { const q = navRound(x, z, it.r, o, f); if (q) { x = q[0]; z = q[1]; } }
           if (!film) { const q = navPush(x, z, it.r, null); if (q) { x = q[0]; z = q[1]; } }
         }
-        if (x !== it.x || z !== it.z) { const g = it.P.group.position; g.x += x - it.x; g.z += z - it.z; NAV5.moved++; }
+        if (x !== it.x || z !== it.z) { const g = it.P.group.position, dx = x - it.x, dz = z - it.z; g.x += dx; g.z += dz; NAV5.moved++;
+          const cs = navCarry.get(it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += dx; c.position.z += dz; } }
         done.push([x, z, it.r]);
       }
     }
@@ -246,6 +258,7 @@
     };
     const navPlayFrame0 = playFrame;
     playFrame = function (wdt, st) {
+      navCarry.clear();
       const out = navPlayFrame0(wdt, st);
       navHook();
       if (st === 'play') navSettle('play');

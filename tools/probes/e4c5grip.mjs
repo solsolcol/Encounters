@@ -43,9 +43,15 @@ await p.evaluate(() => { const k = window.__enc.kit; if (k.tag().on) k.tag(null,
 if (process.env.KEEP !== '1') await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; P.group.position.x = -8.5; P.group.position.z = -9.7;
   /* (his student stood 0.3 m before him there: set aside, clear of every view, at the court's far corner on his left) */
   const Z = E.stage.plan.FLOOR.cast.zav; if (Z) { Z.group.position.x = -6.9; Z.group.position.z = -11.4; } });
+if (process.env.GHOST === '1') await p.evaluate(() => { window.__ghost = true; });
 const res = { grip, poses: [] };
-for (const [name, t] of POSES) {
-  await p.evaluate(([n, t]) => window.__enc.stage.snap().story.fight.lab.pose(n === 'rest' ? null : n, t), [name, t]);
+/* (TUNES='[{...},{...}]': the poses photographed again under each further setting of the grip, in the same boot, each
+   picture named with its setting's number: one boot, several settings compared) */
+const TUNES = process.env.TUNES ? JSON.parse(process.env.TUNES) : [];
+for (let pass = 0; pass <= TUNES.length; pass++) {
+if (pass > 0) { say('tuned', pass, JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), TUNES[pass - 1]))); await frames(6); }
+for (const [name0, t] of POSES) { const name = pass ? name0 + '-T' + pass : name0;
+  await p.evaluate(([n, t]) => window.__enc.stage.snap().story.fight.lab.pose(n === 'rest' ? null : n, t), [name0, t]);
   await frames(4);
   /* HIS SKIN ON THE SHAFT, measured: every point of his skin whose heaviest bone is his right hand's (its palm, or a finger:
      the family named), skinned as drawn (the grip is laid in each drawing and stands between drawings), taken into the
@@ -69,8 +75,11 @@ for (const [name, t] of POSES) {
         if (v.y < 0.85 || v.y > 1.35) { const F = per[f] || (per[f] = { n: 0, out: 0, inside: 0, deep: 0, gap: 1, on: 0 }); F.out++; continue; }
         const d = (Math.hypot(v.x - CX, v.z - CZ) - R) * ws;
         const F = per[f] || (per[f] = { n: 0, out: 0, inside: 0, deep: 0, gap: 1, on: 0 });
-        F.n++; n++; if (d < -0.003) { F.inside++; inside++; } if (-d > F.deep) F.deep = -d; if (-d > deep) deep = -d; if (d < F.gap) F.gap = d; if (Math.abs(d) < 0.01) F.on++; } });
-    for (const f in per) { const F = per[f]; F.deep = +(F.deep * 100).toFixed(2); F.gap = +(F.gap * 100).toFixed(2); }
+        F.n++; n++; if (d < -0.003) { F.inside++; inside++; } if (-d > F.deep) F.deep = -d; if (-d > deep) deep = -d; if (d < F.gap) F.gap = d; if (Math.abs(d) < 0.01) F.on++; (F.ds = F.ds || []).push(d); } });
+    for (const f in per) { const F = per[f]; F.deep = +(F.deep * 100).toFixed(2); F.gap = +(F.gap * 100).toFixed(2);
+      /* (how far its skin stands off the shaft: its median and its 90th point, cm; a finger closed round the shaft keeps its
+         whole skin within a finger's thickness of it, one that juts past it does not) */
+      if (F.ds) { const q = F.ds.slice().sort((x, y) => x - y), at = (u) => +(q[Math.min(q.length - 1, Math.floor(u * q.length))] * 100).toFixed(2); F.med = at(0.5); F.p90 = at(0.9); F.far = at(1); delete F.ds; } }
     return { ws: +ws.toFixed(4), n, inside, deepCm: +(deep * 100).toFixed(2), per }; });
   say('contact', name, t, JSON.stringify(contact));
   res.poses.push({ name, t, contact });
@@ -88,11 +97,18 @@ for (const [name, t] of POSES) {
       else if (view === 'front') { c = new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); tg = new V(g.x, 1.0, g.z); }
       else if (view === 'side') { c = new V(g.x - lx * 1.45, 1.3, g.z - lz * 1.45); tg = new V(g.x, 0.95, g.z); }   // (his right side, inside the court's wall)
       else if (view === 'hand') { c = new V(fist.x + fx * 0.9, fist.y + 0.12, fist.z + fz * 0.9); tg = fist.clone(); }   // (a little above: as a man standing before him sees it)
+      /* (below: looking straight up the stick through his fist, so the fingers closing round it show as a ring round the shaft) */
+      else if (view === 'below') { const g = E.stage.things && E.stage.things.nagaStaff, up = new V(0, 1, 0); if (g) { g.updateWorldMatrix(true, false); up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); }
+        c = fist.clone().addScaledVector(up, -0.42).add(new V(fx * 0.04, 0, fz * 0.04)); tg = fist.clone(); }
       else { c = new V(fist.x - lx * 0.9, fist.y + 0.12, fist.z - lz * 0.9); tg = fist.clone(); }
       E.yaw.position.copy(c); window.__aim = tg;
       /* (the hand's two views through a narrower lens, 22 degrees: a detail taken with a lens, never by enlarging; the body's
          two through the game's own) */
-      if (E.kit.lens) E.kit.lens(view === 'hand' || view === 'handout' ? 22 : null, { secs: 0 });
+      if (E.kit.lens) E.kit.lens(view === 'hand' || view === 'handout' ? 22 : view === 'below' ? 40 : null, { secs: 0 });
+      /* (GHOST=1: in the hand's two views the stick drawn see-through, so a finger behind it or inside it shows where it is) */
+      { const g = E.stage.things && E.stage.things.nagaStaff, gh = window.__ghost && (view === 'hand' || view === 'handout' || view === 'below');
+        if (g) g.traverse(o => { if (!o.isMesh || !o.material) return; const m = o.material; if (m.__op == null) { m.__op = m.opacity; m.__tr = m.transparent; m.__dw = m.depthWrite; }
+          m.transparent = gh ? true : m.__tr; m.opacity = gh ? 0.38 : m.__op; m.depthWrite = gh ? false : m.__dw; m.needsUpdate = true; }); }
       return { cam: c.toArray().map(x => +x.toFixed(3)), hand: h.toArray().map(x => +x.toFixed(3)), fist: fist.toArray().map(x => +x.toFixed(3)) }; }, [view]);
     await frames(2);
     await p.evaluate(() => { const E = window.__enc, tg = window.__aim, c = E.yaw.position, d = tg.clone().sub(c);
@@ -101,6 +117,7 @@ for (const [name, t] of POSES) {
     const f = `${OUT}/${name}-${t}-${view}.png`; await p.screenshot({ path: f, timeout: 300000 }); say('pic', f, JSON.stringify(at));
     res.poses.push({ name, t, view, at, file: f });
   }
+}
 }
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.pose(null));
 fs.writeFileSync(OUT + '/grip.json', JSON.stringify({ res, errs, logs }, null, 1));

@@ -74,7 +74,13 @@ go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 
 # wasting effort and just use the first model unless there is a very strong reason to use the 4th model". Its face is
 # the closest to the reference (his R9); its four fingers of each hand are one piece of mesh and its watch a checkered
 # patch, and he has seen both. Nothing below this line is run again without his word.
-go zavier && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier 40000 2048 $(T zavier walking Walking) )
+# (23 Nov 2026, Chad's R34: "make him use a running animation instead of a walking animation"; "add animations to show him
+#  casting or using his ability ... the lending, the smell, and the bind"; and R33's debug: he had no rest, frozen at his walk's
+#  0.03 s in every film: his rig's own free run (the rig task's basic animation), Meshy's Idle_3, and three of eight library
+#  takes laid on his rig (24 credits: masters/v28.0/make.sh §9), each measured as a motion first (tools/probes/takefk.mjs):
+#  BIND mage_soell_cast_3 (both palms pushed out with a lean), SMELL Alert (a crouch and a look round), LEND mage_soell_cast_6
+#  (a dip and a rising sweep). The five not cast are left out of his file (v5.20).)
+go zavier && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier one zavier 40000 2048 $(T zavier walking Walking) $(T zavier running Running) $(T zavier idle Idle_3) $SRC/takes-zavier-acts.glb:mage_soell_cast_3,-,mage_soell_cast_6,-,- $SRC/takes-zavier-acts2.glb:Alert,-,- )
 # HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
 # them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
 # (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.

@@ -867,7 +867,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (o.out && P.hips) { P.hips.getWorldPosition(_hhO); const dx = pm.x - _hhO.x, dz = pm.z - _hhO.z, dl = Math.hypot(dx, dz);
           if (dl > 1e-4) { g.position.x += dx / dl * o.out; g.position.z += dz / dl * o.out; } }
         if (o.upright) g.rotation.set(0, P.group.rotation.y + (o.ry || 0), Math.PI / 2, 'YXZ'); else g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0);
-        g.visible = true; return off;
+        g.visible = true; navCarried(P, g); return off;
       }
       if (g.parent !== hb) hb.add(g);
       off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
