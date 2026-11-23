@@ -28,12 +28,14 @@
     /* ---------------------------------------------------------------- THE WALKWAY'S ONE LINE (the plan's 4.1): where
        along it he is (`s`, metres from the lift's doors, round the one turn to his gate) and a point on it, `lat` metres
        toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
-    const WAY = { turnS: 15.2, gateS: 15.2 + 8.5 };
-    function wayS(x, z) { return z > -14.95 ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
-    const wayLat = (x, z) => z > -14.95 ? -x : z + 14.95;
+    /* (R46: read from the walkway itself, its second run's middle line WAY_Z; was -14.95, turnS 15.2) */
+    const WAY_Z = (WALK.z0 + WALK.turnZ) / 2;
+    const WAY = { turnS: 0.25 - WAY_Z, gateS: 0.25 - WAY_Z + 8.5 };
+    function wayS(x, z) { return z > WAY_Z ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
+    const wayLat = (x, z) => z > WAY_Z ? -x : z - WAY_Z;
     function wayAt(s, lat, out) {
       if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
-      return out.set(-(s - WAY.turnS), 0, -14.95 + lat);
+      return out.set(-(s - WAY.turnS), 0, WAY_Z + lat);
     }
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
@@ -97,7 +99,7 @@
     const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.16, 0.09, 0.03, 0.85], smoke: [0.14, 0.13, 0.12, 0.7] };
     /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
        and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
-    const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];
+    const TRAIL = [[0.12, 1.0], [0.12, WAY_Z + 0.5], [-0.35, WAY_Z + 0.03], [-8.15, WAY_Z + 0.03], [-8.5, WAY_Z + 0.5], [-8.5, WALK.turnZ + 0.8]];   // (R46: on the walkway's own line)
     const trailLen = []; { let L = 0; trailLen.push(0); for (let i = 1; i < TRAIL.length; i++) { L += Math.hypot(TRAIL[i][0] - TRAIL[i - 1][0], TRAIL[i][1] - TRAIL[i - 1][1]); trailLen.push(L); } }
     const TRAIL_L = trailLen[trailLen.length - 1];
     function trailAt(s, out) {
@@ -234,7 +236,7 @@
        and come to HIM, so he is never sent back. Each walks his own take at the pace of the ground he covers (v7.1).
        Past 40 s of nothing done, his teacher walks on ahead and waits at the gate. */
     const FOLLOW = { gap: 1.5, step: 1.05, wall: 0.55, slack: 0.7 };
-    const PHO_GATE = { x: -7.75, z: -14.5 };
+    const PHO_GATE = { x: -7.75, z: WAY_Z + 0.45 };   // (R46: at the gate, wherever it stands; was z -14.5)
     const walkers = { list: [], ahead: false };
     function walkersInit() {
       walkers.list = []; walkers.ahead = false;
@@ -344,8 +346,8 @@
        faint sheen moving on it; the threshold's with spots in a trail across the court to his doors. */
     const HUNT5 = {
       s1: { x: -9.45, z: -5.12 },                                   // under the shoe cabinet by the doors (inside)
-      s2: { x: -6.82, z: PLANT_Z },                                 // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's)
-      s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
+      s2: { x: COURT.x1 - 0.92, z: PLANT_Z },                       // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's; R46: its x too, was -6.82)
+      s3: { x: GATE.x, z: WALK.turnZ + 0.28 },                      // the threshold between the gate posts (R46: was -13.72)
       arm: { x: -7.25, z: -2.18 }                                   // the old armchair
     };
     const stainFx = [];
@@ -369,7 +371,7 @@
       add(stainMesh(28713, HUNT5.s3.x, HUNT5.s3.z, 0.85, 0.3));
       /* the spots in a trail from the threshold across the court to his doors */
       const r = rng(28714);
-      for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
+      for (let z = WALK.turnZ + 0.9; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
       grp.visible = false;
       /* seen only through his sight, LAID ON its white negative by its own strength (vision.js: never added), so a dark
          colour reads as a dark spill, with a slow sheen (its flicker) moving on it; 3 cm over the floor, so the pass's

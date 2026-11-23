@@ -10,11 +10,16 @@
        Every thing in it is a real model made for this chapter (masters/v28.0/props/RECORD.md), placed by its own size;
        what is painted here is only what a builder pours or paints (floors, walls, slabs, glass, the estate's faces). No
        lamp is added on screen (v15.1): the lamps' light is painted. */
-    const WALK = { x0: -0.95, x1: 0.95, z0: -15.9, z1: 1.2, turnZ: -14.0, endX: -12.3, soffit: 2.75, slab: 0.20, edge: 1.0 };
+    /* (R46, 23 Nov 2026: his court about twice its floor, Chad's pick "Bigger yard + roomy end": its gate's line 2.6 m further
+       out, so the walkway's second run with it (was z0 -15.9, turnZ -14.0) and its west end 0.6 m further west, past the
+       court's own west wall (was endX -12.3); the lift's end, the house and its rooms where they were) */
+    const WALK = { x0: -0.95, x1: 0.95, z0: -18.5, z1: 1.2, turnZ: -16.6, endX: -12.9, soffit: 2.75, slab: 0.20, edge: 1.0 };
     /* the walkway is a block's third storey (a storey 2.95 m): the estate's ground 5.9 m below its floor */
     const STOREY = 2.95, GROUND_Y = -2 * STOREY;
-    /* HIS COURT (the plan's 8.1: 5.2 m by 8.4 m, open to the sky; the fight's ground, its 5.6) */
-    const COURT = { x0: -11.1, x1: -5.9, z0: -14.0, z1: -5.6, wallTop: 3.0 * STOREY };
+    /* HIS COURT (the plan's 8.1, open to the sky; the fight's ground, its 5.6): 8.0 m by 11.0 m since R46 (Chad, 23 Nov:
+       "Bigger yard + roomy end": 88 square metres, was 5.2 by 8.4, 43.7), round the same middle line (the gate's and the
+       door's, x -8.5), out to the gate (z -16.6) from his front wall (z -5.6) */
+    const COURT = { x0: -12.5, x1: -4.5, z0: -16.6, z1: -5.6, wallTop: 3.0 * STOREY };
     const GATE = { x: -8.5, w: 1.248, h: 1.40, post: 0.417, frontH: 1.5 };
     /* HIS HOUSE: the front wall on the court's far side; the L-shaped living and dining room behind it (7.2 m across) */
     const HOUSE = { face: -5.6, ceil: 2.70, wall: 0.12 };
@@ -228,7 +233,7 @@
        An open walkway along the block's face, 1.9 m wide, covered by the storey above's slab (its soffit 2.75 m), open
        on its outer side over the estate behind a balustrade (w5rail, 2 m sections stretched to fit each run), its lights
        on the soffit every 4 m (w5walklight); along its inner side the other homes' walls and gates. It begins at the lift's
-       doors in its end wall, runs 15.2 m along -z, turns to -x and runs 9.5 m to his gate. A drain's grating at its outer
+       doors in its end wall, runs 17.8 m along -z, turns to -x and runs 8.5 m to his gate (R46: 2.6 m longer). A drain's grating at its outer
        edge 8.7 m from the lift, where water has stood (the decoy of 4.1). */
     function buildWalkway() {
       const W = WALK, s = W.soffit;
@@ -328,7 +333,7 @@
       /* THE COURT'S SIDE WALLS, his (west: his bedroom wing) and his neighbour's (east), to the block's roof (the court is
          open to the sky): the block's paint over a tiled dado, a slab band at every storey, and the homes' windows that
          look into the court (his bedroom's at the ground storey behind its grille; two a storey above) */
-      const SW = [{ z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];
+      const SW = [{ z0: -16.0, z1: -14.8 }, { z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];   // (R46: a third pair on the longer walls, the same rhythm)
       /* (storey by storey: wallZ takes openings in order along the wall, and the ground window and an upper one overlap
          in z: built as one, the upper one's cut drew a wall over the ground window. The ground storey is solid) */
       for (let st = 0; st <= 2; st++) { const y = st * STOREY, y1 = st === 2 ? C.wallTop : y + STOREY;
@@ -373,7 +378,7 @@
       box(mBand, C.x1 + 0.1, C.wallTop + 0.1, (C.z0 + H.face) / 2, 0.3, 0.2, H.face - C.z0);
       box(mBand, (C.x0 + C.x1) / 2, C.wallTop + 0.1, H.face - 0.1, C.x1 - C.x0 + 0.4, 0.2, 0.3);
       /* HIS FRONT WALL (z -5.6): the door in the middle, a window either side, curtains drawn behind both */
-      wallX(mCourtWall, H.face - 0.1, 0.2, LIVING.x0 - 0.1, LIVING.x1 + 0.1, [
+      wallX(mCourtWall, H.face - 0.1, 0.2, Math.min(LIVING.x0, C.x0) - 0.1, Math.max(LIVING.x1, C.x1) + 0.1, [   // (R46: across the wider court)
         { x0: WIN_A.x0, x1: WIN_A.x1, y0: WIN_A.sill, y1: WIN_A.head },
         { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, y0: 0, y1: DOOR_FRONT.h },
         { x0: WIN_B.x0, x1: WIN_B.x1, y0: WIN_B.sill, y1: WIN_B.head }], 0, STOREY);
@@ -470,7 +475,7 @@
       floor(mDeck, 4, -40, 28, -18, G + 0.02); floor(mPool, 7, -37, 25, -24, G + 0.04);
       floor(mDeck, -40, -26, 4, -21, G + 0.02); floor(mDeck, 4, -18, 8, 20, G + 0.02);
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
-      box(mFace, -6, (G - 0.35) / 2, -6, 10, -G - 0.35, 16);
+      box(mFace, -6.8, (G - 0.35) / 2, -7.35, 11.6, -G - 0.35, 18.7);   // (R46: under the wider, longer court too; was x -11..-1, z -14..2)
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
       const NW = 8, atlas = (() => { const [c, x] = canvas(1024, 1024), r = rng(28532), cw = 1024 / 4, ch = 1024 / 4;
         x.fillStyle = '#e2dccd'; x.fillRect(0, 0, 1024, 1024);
@@ -698,7 +703,7 @@
        two wall lamps either side of his door; a pair of slippers by it */
     /* (R37, 23 Nov: the fight's court made the yard itself (c_fightrules.js NUM): the planters moved 1.05 m toward the gate,
        into its two corners, their far ends 5 cm off the low wall's inner face (z -13.8); was -11.7) */
-    const PLANT_Z = -12.75;
+    const PLANT_Z = -15.35;   // (R46: in the gate's corners of the longer court, as R37 set them in the old one: -12.75 there)
     place('w5planter', COURT.x1 - 0.373 - 0.02, -0.15, PLANT_Z, Math.PI / 2, { name: 'planterL' });        // (his LEFT, walking in)
     place('w5planter2', COURT.x0 + 0.413 + 0.02, -0.25, PLANT_Z, -Math.PI / 2, { name: 'planterR' });
     solidXZ(COURT.x1 - 0.76, PLANT_Z - 1.0, COURT.x1, PLANT_Z + 1.0, 1.4);
@@ -932,7 +937,7 @@
                pho: { x: 0.0, z: -3.2, ry: Math.PI }, ton: { x: -0.3, z: -2.0, ry: 0.13 }, jun: { x: 0.32, z: -2.35, ry: -0.12 },
                koh: { x: -9.6, z: -4.75, ry: Math.PI } },   // (R25: out of the sofa, between it and the shoe cabinet, the door's west side)
       hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
-               pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
+               pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -15.2, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },   // (R46: Ton by the gate, 1.4 m in from its line as before; was z -12.6)
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
       /* the cleansing: he in the court (the fight's own start is the fight's), the three in the doorway behind the thread */
       fight: { at: { x: -8.5, z: -10.6, ry: Math.PI },

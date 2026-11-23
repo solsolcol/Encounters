@@ -140,7 +140,7 @@
     spawn:     { x: 0, y: 1.62, z: 0.25, rot: 0 },
     shrine:    { x: 0, z: 240.0 },               // the engine's anchor (ghost: null): the collector's table, the chapter's pile
     ghostHome: { x: 0, z: 240.0 },
-    bounds:    { minX: -13.0, maxX: 2.5, minZ: -16.5, maxZ: 243.0 },
+    bounds:    { minX: -13.4, maxX: 2.5, minZ: -19.1, maxZ: 243.0 },   // (R46: the walkway's second run out to z -18.5 and x -12.9)
 
     ghost: null,
     fireLight: null,
@@ -173,7 +173,9 @@
               walkway's slab begins at -14.0), the stop R37 put there is retired, and the crane keeps the held lens's height
               and turns it down to him, never past 50 degrees: at the court's gate end his whole body stands in the picture
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
-           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R46: the court 8.0 by 11.0 m, x -12.5..-4.5 and z -16.6..-5.6: the box 0.3 m inside its side walls, its z line
+              at the new gate's (the walkway's slab above begins at -16.6), and high enough for the end's pulled-back boom) */
+           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 5.4 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
            /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */

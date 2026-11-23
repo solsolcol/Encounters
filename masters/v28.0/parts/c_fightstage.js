@@ -42,7 +42,8 @@
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
-                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
+                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {},
+                  pulled: false };   // (R46: the end's lens pulled back, c_cast.js PULL5, as last asked of the engine)
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
     const fsCanvas = (n) => { const c = document.createElement('canvas'); c.width = c.height = n; return [c, c.getContext('2d')]; };
@@ -1332,6 +1333,13 @@
          inside the court and never inside the other's cage ring, and holds his place there; nothing while he gathers the
          gold or draws the bag, nor under the brief, a loss or the win */
       fsLensClear(dt);
+      /* 3c. THE END'S LENS PULLED BACK (R46, his pick: "Bigger yard + roomy end ... the camera pulled back"): from the surge on
+         the boom stands further back and higher (c_cast.js PULL5), eased in over 1.4 s, which the together act's 1.5 s before
+         it is live (FIGHT.NUM togetherAfter) always lets finish before its film begins on it, and held through the win, whose
+         film (bagtied) begins on it too; eased back over 0.8 s if the fight begins again. Asked only when it changes; the
+         engine lets go of it as the mode is left */
+      { const want = st.stage === 'surge' || st.stage === 'last' || st.stage === 'won';
+        if (want !== FS5.pulled && kit && kit.tagBoom && kit.tagBoom(want ? PULL5 : null, { secs: want ? 1.4 : 0.8 })) FS5.pulled = want; }
       /* 4. where the rules stopped him, he stops: the played one set back to the rules' place; the other moved by the rules */
       const playedNow = kit.tagState().played === 'zavier' ? 'zavier' : 'pho';
       for (const who of ['pho', 'zavier']) {
@@ -1367,8 +1375,11 @@
       const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
       if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
       /* (R41: the lens is held at the gate by the mode's box again, its z line -13.9, court z 5.2: R37's stop, which drew it in
-         to court z 4.96, is retired) */
-      const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
+         to court z 4.96, is retired. R46: the boom's own length (pulled back at the end: PULL5) and the box's z line read from
+         the declaration, court z 7.8 in the bigger yard: were 4.0 and 5.2 written here) */
+      const tg = DATA.tag || {}, back = FS5.pulled ? PULL5.back : ((tg.boom && tg.boom.back) || 4.0);
+      const boxZ = tg.camBox && Number.isFinite(tg.camBox.minZ) ? COURT5.z - tg.camBox.minZ : 5.2;
+      const lensZ = Math.min(played.z + back, boxZ), half = 0.45 + 0.25 + 0.3;
       if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
       const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
       const bx = n.bodyX || 1.6, room = (sg) => sg > 0 ? bx - (played.x + half) : (played.x - half) + bx;
@@ -1591,7 +1602,8 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn,
+        pulled: false });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
@@ -1628,6 +1640,7 @@
       fsNineStand(); fsPraiReset(true);
       /* the mode, behind and above Grandmaster Pho; the first person put where a Continue lands (the held save's place) */
       yaw.position.set(STATION.fight.at.x, EYE, STATION.fight.at.z); yaw.rotation.y = STATION.fight.at.ry; pitch.rotation.x = -0.04;
+      FS5.pulled = false;   // (R46: the mode opens on the declaration's boom: the end's pull is asked again from the surge)
       const ok = !!(kit && kit.tag && pho && zav && kit.tag({
         bodies: [
           /* (R49: each a tile of the party list: its portrait (the game's own render of him, masters/v28.0/props/portraits.py),

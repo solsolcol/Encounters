@@ -51,16 +51,25 @@
            short of the gate's low wall (its inner face at the yard's z -13.8; the two planters moved into the gate's corners
            to give the room: b_world.js PLANT_Z), 4.9 by 7.7 m; the two of them walk 4.2 by 6.6 m of it, 27.7 square metres
            less the planters' corners, 1.7 times what they had. Was courtX 1.95, courtZ1 3.0) */
-        courtX: 2.45, courtZ0: -3.0, courtZ1: 4.7,
+        /* (R46, 23 Nov: Chad's pick "Bigger yard + roomy end": the yard 8.0 by 11.0 m (b_world.js COURT), the court the yard
+           as R37 made it: 0.15 m off its side walls (x 3.85) and 0.4 m short of the gate's low wall (its inner face at the
+           yard's z -16.4, court z 7.7), 7.7 by 10.3 m; the two of them walk 7.0 by 9.2 m of it, 64 square metres less the
+           planters' corners, 2.3 times R37's. Was courtX 2.45, courtZ1 4.7) */
+        courtX: 3.85, courtZ0: -3.0, courtZ1: 7.3,
         praiIn: 0.2,                          // a Prai keeps this far inside the court's walls
-        notch: { z: 2.75, x: 1.45 },          // (R37) and out of the planters in the gate's corners: past z 2.75 it keeps
+        notch: { z: 5.35, x: 2.86 },          // (R37; R46 5.35 and 2.86, was 2.75 and 1.45: the planters' inner faces x 3.16 and
+                                              // -3.24 from z 5.65) and out of the planters in the gate's corners: past z 2.75 it keeps
                                               // within x 1.45 of the middle (their inner faces x 1.76 and -1.84 from
                                               // z 3.05: a Prai's own half-width, 0.3, to spare)
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
-        bodyX: 2.1, bodyZ0: -2.3, bodyZ1: 4.3, // where the two of them may stand (R37: was 1.6 and 2.6; the planters in the
+        bodyX: 3.5, bodyZ0: -2.3, bodyZ1: 6.9, // where the two of them may stand (R46: was 2.1 and 4.3; R37: was 1.6 and 2.6; the planters in the
                                               // gate's corners stop them as every solid does, the mode's own slide)
         wallOff: 1.6, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
-        offZ1: 1.9,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
+        /* (R46: the ROOMY END, his pick: the Naga's loop 0.62 m in from the bigger yard's walls (local x 3.38, its gate end's
+           run at court z 6.75), so from the surge on the two stand within x 2.25 (1.13 m from its body, as before) and up to
+           z 4.5 toward the gate (2.25 m from its run): 4.5 by 5.9 m, 26.6 square metres, 4.7 times the 1.7 by 3.3 m they had,
+           and the lens pulled back over it (c_cast.js PULL5). Was offZ1 1.9) */
+        offZ1: 4.5,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
                                               // loop as before, which lies 0.62 m in from the yard's walls: x 0.85 as before;
                                               // and toward the gate no further than the old court let them, z 1.9 (offZ1):
                                               // with the court's length let out to 4.7 the simulator's careful player could

@@ -400,7 +400,7 @@
     spawn:     { x: 0, y: 1.62, z: 0.25, rot: 0 },
     shrine:    { x: 0, z: 240.0 },               // the engine's anchor (ghost: null): the collector's table, the chapter's pile
     ghostHome: { x: 0, z: 240.0 },
-    bounds:    { minX: -13.0, maxX: 2.5, minZ: -16.5, maxZ: 243.0 },
+    bounds:    { minX: -13.4, maxX: 2.5, minZ: -19.1, maxZ: 243.0 },   // (R46: the walkway's second run out to z -18.5 and x -12.9)
 
     ghost: null,
     fireLight: null,
@@ -433,7 +433,9 @@
               walkway's slab begins at -14.0), the stop R37 put there is retired, and the crane keeps the held lens's height
               and turns it down to him, never past 50 degrees: at the court's gate end his whole body stands in the picture
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
-           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R46: the court 8.0 by 11.0 m, x -12.5..-4.5 and z -16.6..-5.6: the box 0.3 m inside its side walls, its z line
+              at the new gate's (the walkway's slab above begins at -16.6), and high enough for the end's pulled-back boom) */
+           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 5.4 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
            /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
@@ -728,11 +730,16 @@
        Every thing in it is a real model made for this chapter (masters/v28.0/props/RECORD.md), placed by its own size;
        what is painted here is only what a builder pours or paints (floors, walls, slabs, glass, the estate's faces). No
        lamp is added on screen (v15.1): the lamps' light is painted. */
-    const WALK = { x0: -0.95, x1: 0.95, z0: -15.9, z1: 1.2, turnZ: -14.0, endX: -12.3, soffit: 2.75, slab: 0.20, edge: 1.0 };
+    /* (R46, 23 Nov 2026: his court about twice its floor, Chad's pick "Bigger yard + roomy end": its gate's line 2.6 m further
+       out, so the walkway's second run with it (was z0 -15.9, turnZ -14.0) and its west end 0.6 m further west, past the
+       court's own west wall (was endX -12.3); the lift's end, the house and its rooms where they were) */
+    const WALK = { x0: -0.95, x1: 0.95, z0: -18.5, z1: 1.2, turnZ: -16.6, endX: -12.9, soffit: 2.75, slab: 0.20, edge: 1.0 };
     /* the walkway is a block's third storey (a storey 2.95 m): the estate's ground 5.9 m below its floor */
     const STOREY = 2.95, GROUND_Y = -2 * STOREY;
-    /* HIS COURT (the plan's 8.1: 5.2 m by 8.4 m, open to the sky; the fight's ground, its 5.6) */
-    const COURT = { x0: -11.1, x1: -5.9, z0: -14.0, z1: -5.6, wallTop: 3.0 * STOREY };
+    /* HIS COURT (the plan's 8.1, open to the sky; the fight's ground, its 5.6): 8.0 m by 11.0 m since R46 (Chad, 23 Nov:
+       "Bigger yard + roomy end": 88 square metres, was 5.2 by 8.4, 43.7), round the same middle line (the gate's and the
+       door's, x -8.5), out to the gate (z -16.6) from his front wall (z -5.6) */
+    const COURT = { x0: -12.5, x1: -4.5, z0: -16.6, z1: -5.6, wallTop: 3.0 * STOREY };
     const GATE = { x: -8.5, w: 1.248, h: 1.40, post: 0.417, frontH: 1.5 };
     /* HIS HOUSE: the front wall on the court's far side; the L-shaped living and dining room behind it (7.2 m across) */
     const HOUSE = { face: -5.6, ceil: 2.70, wall: 0.12 };
@@ -1324,7 +1331,7 @@
        An open walkway along the block's face, 1.9 m wide, covered by the storey above's slab (its soffit 2.75 m), open
        on its outer side over the estate behind a balustrade (w5rail, 2 m sections stretched to fit each run), its lights
        on the soffit every 4 m (w5walklight); along its inner side the other homes' walls and gates. It begins at the lift's
-       doors in its end wall, runs 15.2 m along -z, turns to -x and runs 9.5 m to his gate. A drain's grating at its outer
+       doors in its end wall, runs 17.8 m along -z, turns to -x and runs 8.5 m to his gate (R46: 2.6 m longer). A drain's grating at its outer
        edge 8.7 m from the lift, where water has stood (the decoy of 4.1). */
     function buildWalkway() {
       const W = WALK, s = W.soffit;
@@ -1424,7 +1431,7 @@
       /* THE COURT'S SIDE WALLS, his (west: his bedroom wing) and his neighbour's (east), to the block's roof (the court is
          open to the sky): the block's paint over a tiled dado, a slab band at every storey, and the homes' windows that
          look into the court (his bedroom's at the ground storey behind its grille; two a storey above) */
-      const SW = [{ z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];
+      const SW = [{ z0: -16.0, z1: -14.8 }, { z0: -12.4, z1: -11.2 }, { z0: -8.8, z1: -7.6 }];   // (R46: a third pair on the longer walls, the same rhythm)
       /* (storey by storey: wallZ takes openings in order along the wall, and the ground window and an upper one overlap
          in z: built as one, the upper one's cut drew a wall over the ground window. The ground storey is solid) */
       for (let st = 0; st <= 2; st++) { const y = st * STOREY, y1 = st === 2 ? C.wallTop : y + STOREY;
@@ -1469,7 +1476,7 @@
       box(mBand, C.x1 + 0.1, C.wallTop + 0.1, (C.z0 + H.face) / 2, 0.3, 0.2, H.face - C.z0);
       box(mBand, (C.x0 + C.x1) / 2, C.wallTop + 0.1, H.face - 0.1, C.x1 - C.x0 + 0.4, 0.2, 0.3);
       /* HIS FRONT WALL (z -5.6): the door in the middle, a window either side, curtains drawn behind both */
-      wallX(mCourtWall, H.face - 0.1, 0.2, LIVING.x0 - 0.1, LIVING.x1 + 0.1, [
+      wallX(mCourtWall, H.face - 0.1, 0.2, Math.min(LIVING.x0, C.x0) - 0.1, Math.max(LIVING.x1, C.x1) + 0.1, [   // (R46: across the wider court)
         { x0: WIN_A.x0, x1: WIN_A.x1, y0: WIN_A.sill, y1: WIN_A.head },
         { x0: DOOR_FRONT.x0, x1: DOOR_FRONT.x1, y0: 0, y1: DOOR_FRONT.h },
         { x0: WIN_B.x0, x1: WIN_B.x1, y0: WIN_B.sill, y1: WIN_B.head }], 0, STOREY);
@@ -1566,7 +1573,7 @@
       floor(mDeck, 4, -40, 28, -18, G + 0.02); floor(mPool, 7, -37, 25, -24, G + 0.04);
       floor(mDeck, -40, -26, 4, -21, G + 0.02); floor(mDeck, 4, -18, 8, 20, G + 0.02);
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
-      box(mFace, -6, (G - 0.35) / 2, -6, 10, -G - 0.35, 16);
+      box(mFace, -6.8, (G - 0.35) / 2, -7.35, 11.6, -G - 0.35, 18.7);   // (R46: under the wider, longer court too; was x -11..-1, z -14..2)
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
       const NW = 8, atlas = (() => { const [c, x] = canvas(1024, 1024), r = rng(28532), cw = 1024 / 4, ch = 1024 / 4;
         x.fillStyle = '#e2dccd'; x.fillRect(0, 0, 1024, 1024);
@@ -1794,7 +1801,7 @@
        two wall lamps either side of his door; a pair of slippers by it */
     /* (R37, 23 Nov: the fight's court made the yard itself (c_fightrules.js NUM): the planters moved 1.05 m toward the gate,
        into its two corners, their far ends 5 cm off the low wall's inner face (z -13.8); was -11.7) */
-    const PLANT_Z = -12.75;
+    const PLANT_Z = -15.35;   // (R46: in the gate's corners of the longer court, as R37 set them in the old one: -12.75 there)
     place('w5planter', COURT.x1 - 0.373 - 0.02, -0.15, PLANT_Z, Math.PI / 2, { name: 'planterL' });        // (his LEFT, walking in)
     place('w5planter2', COURT.x0 + 0.413 + 0.02, -0.25, PLANT_Z, -Math.PI / 2, { name: 'planterR' });
     solidXZ(COURT.x1 - 0.76, PLANT_Z - 1.0, COURT.x1, PLANT_Z + 1.0, 1.4);
@@ -2028,7 +2035,7 @@
                pho: { x: 0.0, z: -3.2, ry: Math.PI }, ton: { x: -0.3, z: -2.0, ry: 0.13 }, jun: { x: 0.32, z: -2.35, ry: -0.12 },
                koh: { x: -9.6, z: -4.75, ry: Math.PI } },   // (R25: out of the sofa, between it and the shoe cabinet, the door's west side)
       hunt:  { at: { x: -7.9, z: -5.05, ry: Math.PI + 0.2 },
-               pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -12.6, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },
+               pho: { x: -9.6, z: -4.6, ry: -Math.PI / 2 }, ton: { x: -7.4, z: -15.2, ry: Math.PI }, jun: { x: -9.4, z: -8.4, ry: 0.4 },   // (R46: Ton by the gate, 1.4 m in from its line as before; was z -12.6)
                koh: { x: -9.85, z: -2.25, ry: Math.PI * 0.85 } },
       /* the cleansing: he in the court (the fight's own start is the fight's), the three in the doorway behind the thread */
       fight: { at: { x: -8.5, z: -10.6, ry: Math.PI },
@@ -5870,9 +5877,16 @@
       if (v < lo + m) return lo + m - m * (1 - Math.exp(-((lo + m) - v) / m));
       return v;
     }
-    function boomAt(feet) {
+    /* (R46, 23 Nov: THE END'S LENS PULLED BACK. Chad's pick, "Bigger yard + roomy end ... the camera pulled back": from the
+       surge on (the cage cracking, the Naga called round the court, the last three) the boom stands 5.4 m back and 4.3 m up
+       where it stood 4.0 and 3.1, looking down 34 degrees where it looked 26, so the court round the two of them and the
+       Naga's coil stand in the picture. The fight asks the engine for it (kit.tagBoom, the sixty-ninth seam, eased 1.4 s);
+       the films that begin or end on the mode's picture in those stages ask boomAt for it (its second argument)) */
+    const PULL5 = { back: 5.4, up: 4.3, pitch: 34 };
+    function boomAt(feet, over) {
       const d = DATA.tag || {}, portrait = camera.aspect < 1;
-      const b0 = Object.assign({ back: 4.0, up: 3.1, pitch: 26 }, d.boom || {}), b = portrait && d.portrait ? Object.assign({}, b0, d.portrait) : b0;
+      const b1 = Object.assign({ back: 4.0, up: 3.1, pitch: 26 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
+            b = over ? Object.assign({}, b0, over) : b0;
       const h = d.heading != null ? d.heading : COURT5.heading, soft = d.soft != null ? d.soft : 0.6, cb = d.camBox || null;
       const o = { x: feet.x + b.back * Math.sin(h), y: (feet.y || 0) + b.up, z: feet.z + b.back * Math.cos(h) };
       if (cb) { if (Number.isFinite(cb.minX) && Number.isFinite(cb.maxX)) o.x = boomSoft(o.x, cb.minX, cb.maxX, soft);
@@ -6714,16 +6728,25 @@
            short of the gate's low wall (its inner face at the yard's z -13.8; the two planters moved into the gate's corners
            to give the room: b_world.js PLANT_Z), 4.9 by 7.7 m; the two of them walk 4.2 by 6.6 m of it, 27.7 square metres
            less the planters' corners, 1.7 times what they had. Was courtX 1.95, courtZ1 3.0) */
-        courtX: 2.45, courtZ0: -3.0, courtZ1: 4.7,
+        /* (R46, 23 Nov: Chad's pick "Bigger yard + roomy end": the yard 8.0 by 11.0 m (b_world.js COURT), the court the yard
+           as R37 made it: 0.15 m off its side walls (x 3.85) and 0.4 m short of the gate's low wall (its inner face at the
+           yard's z -16.4, court z 7.7), 7.7 by 10.3 m; the two of them walk 7.0 by 9.2 m of it, 64 square metres less the
+           planters' corners, 2.3 times R37's. Was courtX 2.45, courtZ1 4.7) */
+        courtX: 3.85, courtZ0: -3.0, courtZ1: 7.3,
         praiIn: 0.2,                          // a Prai keeps this far inside the court's walls
-        notch: { z: 2.75, x: 1.45 },          // (R37) and out of the planters in the gate's corners: past z 2.75 it keeps
+        notch: { z: 5.35, x: 2.86 },          // (R37; R46 5.35 and 2.86, was 2.75 and 1.45: the planters' inner faces x 3.16 and
+                                              // -3.24 from z 5.65) and out of the planters in the gate's corners: past z 2.75 it keeps
                                               // within x 1.45 of the middle (their inner faces x 1.76 and -1.84 from
                                               // z 3.05: a Prai's own half-width, 0.3, to spare)
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
-        bodyX: 2.1, bodyZ0: -2.3, bodyZ1: 4.3, // where the two of them may stand (R37: was 1.6 and 2.6; the planters in the
+        bodyX: 3.5, bodyZ0: -2.3, bodyZ1: 6.9, // where the two of them may stand (R46: was 2.1 and 4.3; R37: was 1.6 and 2.6; the planters in the
                                               // gate's corners stop them as every solid does, the mode's own slide)
         wallOff: 1.6, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
-        offZ1: 1.9,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
+        /* (R46: the ROOMY END, his pick: the Naga's loop 0.62 m in from the bigger yard's walls (local x 3.38, its gate end's
+           run at court z 6.75), so from the surge on the two stand within x 2.25 (1.13 m from its body, as before) and up to
+           z 4.5 toward the gate (2.25 m from its run): 4.5 by 5.9 m, 26.6 square metres, 4.7 times the 1.7 by 3.3 m they had,
+           and the lens pulled back over it (c_cast.js PULL5). Was offZ1 1.9) */
+        offZ1: 4.5,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
                                               // loop as before, which lies 0.62 m in from the yard's walls: x 0.85 as before;
                                               // and toward the gate no further than the old court let them, z 1.9 (offZ1):
                                               // with the court's length let out to 4.7 the simulator's careful player could
@@ -8187,7 +8210,8 @@
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
                   hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
-                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
+                  reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {},
+                  pulled: false };   // (R46: the end's lens pulled back, c_cast.js PULL5, as last asked of the engine)
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
     const fsCanvas = (n) => { const c = document.createElement('canvas'); c.width = c.height = n; return [c, c.getContext('2d')]; };
@@ -9477,6 +9501,13 @@
          inside the court and never inside the other's cage ring, and holds his place there; nothing while he gathers the
          gold or draws the bag, nor under the brief, a loss or the win */
       fsLensClear(dt);
+      /* 3c. THE END'S LENS PULLED BACK (R46, his pick: "Bigger yard + roomy end ... the camera pulled back"): from the surge on
+         the boom stands further back and higher (c_cast.js PULL5), eased in over 1.4 s, which the together act's 1.5 s before
+         it is live (FIGHT.NUM togetherAfter) always lets finish before its film begins on it, and held through the win, whose
+         film (bagtied) begins on it too; eased back over 0.8 s if the fight begins again. Asked only when it changes; the
+         engine lets go of it as the mode is left */
+      { const want = st.stage === 'surge' || st.stage === 'last' || st.stage === 'won';
+        if (want !== FS5.pulled && kit && kit.tagBoom && kit.tagBoom(want ? PULL5 : null, { secs: want ? 1.4 : 0.8 })) FS5.pulled = want; }
       /* 4. where the rules stopped him, he stops: the played one set back to the rules' place; the other moved by the rules */
       const playedNow = kit.tagState().played === 'zavier' ? 'zavier' : 'pho';
       for (const who of ['pho', 'zavier']) {
@@ -9512,8 +9543,11 @@
       const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
       if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
       /* (R41: the lens is held at the gate by the mode's box again, its z line -13.9, court z 5.2: R37's stop, which drew it in
-         to court z 4.96, is retired) */
-      const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
+         to court z 4.96, is retired. R46: the boom's own length (pulled back at the end: PULL5) and the box's z line read from
+         the declaration, court z 7.8 in the bigger yard: were 4.0 and 5.2 written here) */
+      const tg = DATA.tag || {}, back = FS5.pulled ? PULL5.back : ((tg.boom && tg.boom.back) || 4.0);
+      const boxZ = tg.camBox && Number.isFinite(tg.camBox.minZ) ? COURT5.z - tg.camBox.minZ : 5.2;
+      const lensZ = Math.min(played.z + back, boxZ), half = 0.45 + 0.25 + 0.3;
       if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
       const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
       const bx = n.bodyX || 1.6, room = (sg) => sg > 0 ? bx - (played.x + half) : (played.x - half) + bx;
@@ -9736,7 +9770,8 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', objStep: 0, objTxt: null, objAt: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn,
+        pulled: false });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
@@ -9773,6 +9808,7 @@
       fsNineStand(); fsPraiReset(true);
       /* the mode, behind and above Grandmaster Pho; the first person put where a Continue lands (the held save's place) */
       yaw.position.set(STATION.fight.at.x, EYE, STATION.fight.at.z); yaw.rotation.y = STATION.fight.at.ry; pitch.rotation.x = -0.04;
+      FS5.pulled = false;   // (R46: the mode opens on the declaration's boom: the end's pull is asked again from the surge)
       const ok = !!(kit && kit.tag && pho && zav && kit.tag({
         bodies: [
           /* (R49: each a tile of the party list: its portrait (the game's own render of him, masters/v28.0/props/portraits.py),
@@ -11044,12 +11080,14 @@
     /* ---------------------------------------------------------------- THE WALKWAY'S ONE LINE (the plan's 4.1): where
        along it he is (`s`, metres from the lift's doors, round the one turn to his gate) and a point on it, `lat` metres
        toward the inner wall from its middle. The followers walk it in single file on the wall side; the trail runs it */
-    const WAY = { turnS: 15.2, gateS: 15.2 + 8.5 };
-    function wayS(x, z) { return z > -14.95 ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
-    const wayLat = (x, z) => z > -14.95 ? -x : z + 14.95;
+    /* (R46: read from the walkway itself, its second run's middle line WAY_Z; was -14.95, turnS 15.2) */
+    const WAY_Z = (WALK.z0 + WALK.turnZ) / 2;
+    const WAY = { turnS: 0.25 - WAY_Z, gateS: 0.25 - WAY_Z + 8.5 };
+    function wayS(x, z) { return z > WAY_Z ? Math.max(0, 0.25 - z) : WAY.turnS + Math.max(0, -x); }
+    const wayLat = (x, z) => z > WAY_Z ? -x : z - WAY_Z;
     function wayAt(s, lat, out) {
       if (s <= WAY.turnS) return out.set(-lat, 0, 0.25 - s);
-      return out.set(-(s - WAY.turnS), 0, -14.95 + lat);
+      return out.set(-(s - WAY.turnS), 0, WAY_Z + lat);
     }
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
@@ -11113,7 +11151,7 @@
     const TH_COL = { dark: [0.045, 0.04, 0.035, 0.88], drain: [0.16, 0.09, 0.03, 0.85], smoke: [0.14, 0.13, 0.12, 0.7] };
     /* THE TRUE TRAIL (4.1): grey-black and long along the floor, from his court out between the gate's posts, along run 2
        and round the turn, back up run 1 toward the lift; stronger the nearer the gate */
-    const TRAIL = [[0.12, 1.0], [0.12, -14.45], [-0.35, -14.92], [-8.15, -14.92], [-8.5, -14.45], [-8.5, -13.2]];
+    const TRAIL = [[0.12, 1.0], [0.12, WAY_Z + 0.5], [-0.35, WAY_Z + 0.03], [-8.15, WAY_Z + 0.03], [-8.5, WAY_Z + 0.5], [-8.5, WALK.turnZ + 0.8]];   // (R46: on the walkway's own line)
     const trailLen = []; { let L = 0; trailLen.push(0); for (let i = 1; i < TRAIL.length; i++) { L += Math.hypot(TRAIL[i][0] - TRAIL[i - 1][0], TRAIL[i][1] - TRAIL[i - 1][1]); trailLen.push(L); } }
     const TRAIL_L = trailLen[trailLen.length - 1];
     function trailAt(s, out) {
@@ -11250,7 +11288,7 @@
        and come to HIM, so he is never sent back. Each walks his own take at the pace of the ground he covers (v7.1).
        Past 40 s of nothing done, his teacher walks on ahead and waits at the gate. */
     const FOLLOW = { gap: 1.5, step: 1.05, wall: 0.55, slack: 0.7 };
-    const PHO_GATE = { x: -7.75, z: -14.5 };
+    const PHO_GATE = { x: -7.75, z: WAY_Z + 0.45 };   // (R46: at the gate, wherever it stands; was z -14.5)
     const walkers = { list: [], ahead: false };
     function walkersInit() {
       walkers.list = []; walkers.ahead = false;
@@ -11360,8 +11398,8 @@
        faint sheen moving on it; the threshold's with spots in a trail across the court to his doors. */
     const HUNT5 = {
       s1: { x: -9.45, z: -5.12 },                                   // under the shoe cabinet by the doors (inside)
-      s2: { x: -6.82, z: PLANT_Z },                                 // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's)
-      s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
+      s2: { x: COURT.x1 - 0.92, z: PLANT_Z },                       // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's; R46: its x too, was -6.82)
+      s3: { x: GATE.x, z: WALK.turnZ + 0.28 },                      // the threshold between the gate posts (R46: was -13.72)
       arm: { x: -7.25, z: -2.18 }                                   // the old armchair
     };
     const stainFx = [];
@@ -11385,7 +11423,7 @@
       add(stainMesh(28713, HUNT5.s3.x, HUNT5.s3.z, 0.85, 0.3));
       /* the spots in a trail from the threshold across the court to his doors */
       const r = rng(28714);
-      for (let z = -13.1; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
+      for (let z = WALK.turnZ + 0.9; z < HOUSE.face - 0.3; z += 0.55 + r() * 0.35) add(stainMesh(28720 + ((z * 10) | 0), GATE.x + (r() - 0.5) * 0.55, z, 0.07 + r() * 0.07, 0.06 + r() * 0.06, r() * 3));
       grp.visible = false;
       /* seen only through his sight, LAID ON its white negative by its own strength (vision.js: never added), so a dark
          colour reads as a dark spill, with a slow sheen (its flicker) moving on it; 3 cm over the floor, so the pass's
@@ -13273,8 +13311,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        curtains drawn, three lamps on, the fourth flickering; what has been happening to him, and that he has quarrelled
        with people (he says nothing of who, and nobody asks); "We will look first."; his teacher's order, turned to him.
        Ton and Jun stay in the court (the hunt's stations). It ends on the view the hunt begins in */
-    const DV5AT = { gateEye: [-8.18, EYE, -15.05], phoGate: [-8.92, -14.52], tonW: [-7.58, -15.3], junW: [-9.75, -15.35],
-                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
+    /* (R46: the gate 2.6 m further out with the longer court: every place at it read from its line, WALK.turnZ; was -14.0) */
+    const GZ5 = WALK.turnZ;
+    const DV5AT = { gateEye: [-8.18, EYE, GZ5 - 1.05], phoGate: [-8.92, GZ5 - 0.52], tonW: [-7.58, GZ5 - 1.3], junW: [-9.75, GZ5 - 1.35],
+                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, GZ5 + 0.68], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
     /* (his room, measured against its solids (b_world.js): the door's leaf stands open along x -8.9 from the wall to z -4.75, the
        sofa fills x -9.06..-8.18, z -4.67..-2.57. So he stands where the hunt begins (STATION.hunt.at, east of the door), his
        teacher west of the sofa's back, north of the leaf, so no line of sight crosses the leaf (from where the first cut put
@@ -13304,7 +13344,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
              them: stood in the court with his back to the shut door, his arm went through its frame (clipscan, 168
              crossings), and the door opened behind him by itself) */
-          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
+          /* (R46: the court 2.6 m longer: his walk to the gate a little quicker, a worried man, and the shot 1.4 s longer, so he is
+             as near the gate at the cut as he was: was 1.12 m a second over 6.2 s) */
+          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.3, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
           else if (t < T.in) { put(P, A.kohGate[0], A.kohGate[1], faceTo(A.kohGate[0], A.kohGate[1], A.phoGate[0], A.phoGate[1]));
             fmTalk(P, 'koh', t, T.ko5d1, SECS.ko5d1, 'Talk_with_Hands_Open');
             /* his head bowed to Grandmaster Pho as he greets him (the wai's own take is wanted: the plan's 4.2) */
@@ -13328,7 +13370,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            his student. At the end turned back toward the room (the hunt's station) */
         whenReady(cast.pho, (P) => {
           if (t < T.in) { put(P, A.phoGate[0], A.phoGate[1], 0); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.koh, [-8.5, 1.55, -9]), 0.8, 0.7); }
-          else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, -12.6], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
+          else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, GZ5 + 1.4], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
           else { const toKoh = faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]), toMe = faceTo(A.phoIn[0], A.phoIn[1], A.eyeIn[0], A.eyeIn[2]);
             const ry = t < T.ph5d2 - 0.2 ? toKoh : fmTurn(t, T.ph5d2 - 0.2, T.ph5d2 + 0.6, toKoh, toMe);
             /* (his look on his student let go over his first steps, not dropped in one frame as he turns away) */
@@ -13340,26 +13382,28 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         });
         /* Ton and Jun: behind at the gate; into the court, where the hunt keeps them */
         whenReady(cast.ton, (P) => { if (t < T.in + 0.4) { put(P, A.tonW[0], A.tonW[1], 0); fmRest(P, 'ton', t); }
-          else fmWalk(P, t, T.in + 0.4, [A.tonW, [-7.9, -14.3], [STATION.hunt.ton.x, STATION.hunt.ton.z]], 1.0, restOf5('ton', t), STATION.hunt.ton.ry);
+          else fmWalk(P, t, T.in + 0.4, [A.tonW, [-7.9, GZ5 - 0.3], [STATION.hunt.ton.x, STATION.hunt.ton.z]], 1.0, restOf5('ton', t), STATION.hunt.ton.ry);
           STICK5.carry(P); });
         whenReady(cast.jun, (P) => { if (t < T.in + 0.9) { put(P, A.junW[0], A.junW[1], 0.1); fmRest(P, 'jun', t); }
-          else fmWalk(P, t, T.in + 0.9, [A.junW, [-8.9, -14.3], [-9.2, -11.0], [STATION.hunt.jun.x, STATION.hunt.jun.z]], 1.05, restOf5('jun', t), STATION.hunt.jun.ry);
+          else fmWalk(P, t, T.in + 0.9, [A.junW, [-8.9, GZ5 - 0.3], [-9.2, GZ5 + 3.0], [STATION.hunt.jun.x, STATION.hunt.jun.z]], 1.05, restOf5('jun', t), STATION.hunt.jun.ry);
           DUFFEL5.carry(P); });
         /* THE LENS: through the gate's bars to his doors, as they open and he comes; on the cut, him in the open gate, his
            greeting; walking in behind them, past the planters; his doors, the slippers; the room: him by his dining room,
            his three lines; his teacher's two; and the room the hunt begins in (its snapshot) */
         const KOH = () => fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]), PHO = () => fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]);
         fmTrack(t, [
-          { t: 0, name: 'gate', eye: A.gateEye, at: [-8.55, 1.25, -5.8], fp: 46, fd: 40 },
-          { t: T.walk + 1.0, name: 'gate', eye: A.gateEye, at: [-8.5, 1.35, -8.5], fp: 52, fd: 44 },
-          { t: T.cut1 - 0.05, name: 'gate', eye: [-8.2, EYE, -14.95], at: () => fmHead(cast.koh, [-7.82, 1.55, -13.32]), fp: 56, fd: 48 },
+          /* (R46: from the gate 2.6 m further from his doors, the lens narrowed by as much, so his doors and he coming stand as
+             large as they stood: was 46/40 and 52/44) */
+          { t: 0, name: 'gate', eye: A.gateEye, at: [-8.55, 1.25, -5.8], fp: 37, fd: 32 },
+          { t: T.walk + 1.0, name: 'gate', eye: A.gateEye, at: [-8.5, 1.35, -8.5], fp: 44, fd: 37 },
+          { t: T.cut1 - 0.05, name: 'gate', eye: [-8.2, EYE, GZ5 - 0.95], at: () => fmHead(cast.koh, [-7.82, 1.55, GZ5 + 0.68]), fp: 56, fd: 48 },
           /* (on the cut, the gate open: a single of him greeting, from beside his teacher, his face toward the lens and his
              eyes on Grandmaster Pho at the frame's right; aimed between them it cut him in half at a phone's edge, and from
              where the shot before stood it was a jump cut, the look 4.7 degrees: lensread.py) */
-          { t: T.cut1, name: 'greet', eye: [-8.55, EYE, -14.6], at: () => fmHead(cast.koh, [-7.82, 1.5, -13.32]), fp: 42, fd: 38, cut: true },
-          { t: T.in - 0.1, name: 'greet', eye: [-8.55, EYE, -14.6], at: () => fmHead(cast.koh, [-7.82, 1.5, -13.32]), fp: 40, fd: 36 },
-          { t: T.in, name: 'court', eye: [-8.4, EYE, -14.55], at: [-8.5, 1.3, -6.5], fp: 66, fd: 58, cut: true },
-          { t: T.slip - 0.05, name: 'court', eye: [-8.45, EYE, -11.9], at: [-8.5, 1.25, -5.8], fp: 66, fd: 58 },
+          { t: T.cut1, name: 'greet', eye: [-8.55, EYE, GZ5 - 0.6], at: () => fmHead(cast.koh, [-7.82, 1.5, GZ5 + 0.68]), fp: 42, fd: 38, cut: true },
+          { t: T.in - 0.1, name: 'greet', eye: [-8.55, EYE, GZ5 - 0.6], at: () => fmHead(cast.koh, [-7.82, 1.5, GZ5 + 0.68]), fp: 40, fd: 36 },
+          { t: T.in, name: 'court', eye: [-8.4, EYE, GZ5 - 0.55], at: [-8.5, 1.3, -6.5], fp: 66, fd: 58, cut: true },
+          { t: T.slip - 0.05, name: 'court', eye: [-8.45, EYE, GZ5 + 2.1], at: [-8.5, 1.25, -5.8], fp: 66, fd: 58 },
           /* (the slippers from beside the path, west of it, so nobody walking in passes through the lens) */
           { t: T.slip, name: 'slippers', eye: [-9.6, 1.45, -6.95], at: [-9.02, 0.1, -6.1], fp: 60, fd: 52, cut: true },
           { t: T.room - 0.05, name: 'slippers', eye: [-9.55, 1.45, -6.85], at: [-8.75, 0.6, -5.4], fp: 62, fd: 54 },
@@ -13625,7 +13669,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (before it rises its head is the stick's head, where it will come out: the lens on the strike turns to it, and the
            first laid head stands there; aimed up its path at 2.4 m, the lens swung to the empty wall over the strike and
            jumped down to the stick's head as it rose, together-phone 1.9 on lab 5) */
-        const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
+        /* (R46: begun and ended on the mode's picture in the surge, the end's lens pulled back: c_cast.js PULL5) */
+        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
         const LC = { x: (lay[0].x + lay[1].x + lay[2].x) / 3, z: (lay[0].z + lay[1].z + lay[2].z) / 3 };   // (the three laid: their middle)
         const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
         fmTrack(t, [
@@ -13774,7 +13819,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the lift: the doors at the end */
         liftDoors(atLift ? smo(c01((t - T.doors) / 1.4)) * (1 - smo(c01((t - T.close) / 1.3))) : 0);
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
-        const B0 = boomAt({ x: pz.x, z: pz.z }), ZH = [zz.x, 1.66, zz.z];
+        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), ZH = [zz.x, 1.66, zz.z];   // (R46: begun on the end's pulled-back lens)
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.violet + 0.3, name: 'into', eye: [ZH[0], ZH[1] + 0.35, ZH[2] - 0.9], at: [ZH[0], 1.4, ZH[2] + 2.5], fp: 60, fd: 54 },
@@ -14324,7 +14369,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
 
   /* THE DEVOTEE (the plan's 4.2): his doors open, he comes to his gate; his greeting; the court; the slippers; his room,
      his three lines; his teacher's two. It ends on the view the hunt begins in */
-  const DV5 = tl(0, [[0.8], ['@door'], [1.6], ['@walk'], [6.2], ['@cut1'], [0.35], ['ko5d1', 0.5], ['@in'], [2.7], ['@slip'], [2.7], ['@room'], [0.6],
+  /* (R46: the court 2.6 m longer: his walk to the gate 1.4 s longer (was 6.2) and the walk in 1.4 s longer (was 2.7)) */
+  const DV5 = tl(0, [[0.8], ['@door'], [1.6], ['@walk'], [7.6], ['@cut1'], [0.35], ['ko5d1', 0.5], ['@in'], [4.1], ['@slip'], [2.7], ['@room'], [0.6],
                      ['ko5d2', 0.35], ['ko5d3', 0.6], ['ko5d4', 0.6], ['ph5d1', 0.45], ['ph5d2', 0.3], ['@turn'], [1.3], ['@end']]);
   function filmDevotee(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.devotee, T = DV5;
@@ -14343,11 +14389,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.walk + 0.4, 'u5step1', 0.18); sfx(T.walk + 1.0, 'u5step2', 0.2); sfx(T.walk + 1.6, 'u5step1', 0.22); sfx(T.walk + 2.2, 'u5step2', 0.24);
     sfx(T.walk + 2.8, 'u5step1', 0.26); sfx(T.walk + 3.4, 'u5step2', 0.28); sfx(T.walk + 4.0, 'u5step1', 0.3); sfx(T.walk + 4.6, 'u5step2', 0.32);
     sfx(T.walk + 5.2, 'u5step1', 0.34); sfx(T.walk + 5.8, 'u5step2', 0.36);   // his steps down his court, nearer
+    sfx(T.walk + 6.4, 'u5step1', 0.38); sfx(T.walk + 7.0, 'u5step2', 0.4);     // (R46: two more, the court longer)
     sfx(T.cut1 - 0.15, 'u5gate', 0.75);                                        // the gate, opened by his hand (the cut)
     sfx(T.ko5d1, 'ko5d1', 1);                                                  // "Grandmaster. You came. I did not know who else to ask."
     sfx(T.in + 0.5, 'u5phostep', 0.32); sfx(T.in + 1.1, 'u5phostep', 0.3); sfx(T.in + 1.7, 'u5phostep', 0.28); sfx(T.in + 2.3, 'u5phostep', 0.26);   // his teacher ahead
     sfx(T.in + 0.25, 'u5step1', 0.45); sfx(T.in + 0.8, 'u5step2', 0.45); sfx(T.in + 1.35, 'u5step1', 0.45); sfx(T.in + 1.9, 'u5step2', 0.45);
     sfx(T.in + 2.45, 'u5step1', 0.42);                                         // his own, up the court between the planters
+    sfx(T.in + 2.9, 'u5phostep', 0.24); sfx(T.in + 3.5, 'u5phostep', 0.22);   // (R46: the walk in 1.4 s longer: his teacher's and his own on)
+    sfx(T.in + 3.0, 'u5step2', 0.4); sfx(T.in + 3.55, 'u5step1', 0.38);
     sfx(T.slip + 1.0, 'u5tile1', 0.4); sfx(T.slip + 1.65, 'u5tile1', 0.36);    // the slippers left; bare feet on his tiles
     sfx(T.room + 0.5, 'u5lamptick', 0.4);                                      // the fourth lamp, flickering
     sfx(T.ko5d2, 'ko5d2', 1);                                                  // "At night somebody knocks. Inside the house. ..."

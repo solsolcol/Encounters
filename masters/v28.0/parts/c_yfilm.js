@@ -1012,8 +1012,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        curtains drawn, three lamps on, the fourth flickering; what has been happening to him, and that he has quarrelled
        with people (he says nothing of who, and nobody asks); "We will look first."; his teacher's order, turned to him.
        Ton and Jun stay in the court (the hunt's stations). It ends on the view the hunt begins in */
-    const DV5AT = { gateEye: [-8.18, EYE, -15.05], phoGate: [-8.92, -14.52], tonW: [-7.58, -15.3], junW: [-9.75, -15.35],
-                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, -13.32], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
+    /* (R46: the gate 2.6 m further out with the longer court: every place at it read from its line, WALK.turnZ; was -14.0) */
+    const GZ5 = WALK.turnZ;
+    const DV5AT = { gateEye: [-8.18, EYE, GZ5 - 1.05], phoGate: [-8.92, GZ5 - 0.52], tonW: [-7.58, GZ5 - 1.3], junW: [-9.75, GZ5 - 1.35],
+                    kohDoor: [-8.35, -4.9], kohGate: [-7.82, GZ5 + 0.68], phoIn: [-9.5, -3.9], eyeIn: [STATION.hunt.at.x, EYE, STATION.hunt.at.z], kohRoom: [STATION.hunt.koh.x, STATION.hunt.koh.z] };
     /* (his room, measured against its solids (b_world.js): the door's leaf stands open along x -8.9 from the wall to z -4.75, the
        sofa fills x -9.06..-8.18, z -4.67..-2.57. So he stands where the hunt begins (STATION.hunt.at, east of the door), his
        teacher west of the sofa's back, north of the leaf, so no line of sight crosses the leaf (from where the first cut put
@@ -1043,7 +1045,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (inside his doors as they open, clear of the leaf's swing (0.89 m from its hinge) and of the sofa, and out through
              them: stood in the court with his back to the shut door, his arm went through its frame (clipscan, 168
              crossings), and the door opened behind him by itself) */
-          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.12, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
+          /* (R46: the court 2.6 m longer: his walk to the gate a little quicker, a worried man, and the shot 1.4 s longer, so he is
+             as near the gate at the cut as he was: was 1.12 m a second over 6.2 s) */
+          else if (t < T.cut1) fmWalk(P, t, T.walk, [A.kohDoor, [-8.5, -6.0], [-8.4, -9.5], A.kohGate], 1.3, restOf5('koh', t), Math.PI + 0.2, { ry0: Math.PI });
           else if (t < T.in) { put(P, A.kohGate[0], A.kohGate[1], faceTo(A.kohGate[0], A.kohGate[1], A.phoGate[0], A.phoGate[1]));
             fmTalk(P, 'koh', t, T.ko5d1, SECS.ko5d1, 'Talk_with_Hands_Open');
             /* his head bowed to Grandmaster Pho as he greets him (the wai's own take is wanted: the plan's 4.2) */
@@ -1067,7 +1071,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            his student. At the end turned back toward the room (the hunt's station) */
         whenReady(cast.pho, (P) => {
           if (t < T.in) { put(P, A.phoGate[0], A.phoGate[1], 0); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.koh, [-8.5, 1.55, -9]), 0.8, 0.7); }
-          else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, -12.6], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
+          else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, GZ5 + 1.4], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
           else { const toKoh = faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]), toMe = faceTo(A.phoIn[0], A.phoIn[1], A.eyeIn[0], A.eyeIn[2]);
             const ry = t < T.ph5d2 - 0.2 ? toKoh : fmTurn(t, T.ph5d2 - 0.2, T.ph5d2 + 0.6, toKoh, toMe);
             /* (his look on his student let go over his first steps, not dropped in one frame as he turns away) */
@@ -1079,26 +1083,28 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         });
         /* Ton and Jun: behind at the gate; into the court, where the hunt keeps them */
         whenReady(cast.ton, (P) => { if (t < T.in + 0.4) { put(P, A.tonW[0], A.tonW[1], 0); fmRest(P, 'ton', t); }
-          else fmWalk(P, t, T.in + 0.4, [A.tonW, [-7.9, -14.3], [STATION.hunt.ton.x, STATION.hunt.ton.z]], 1.0, restOf5('ton', t), STATION.hunt.ton.ry);
+          else fmWalk(P, t, T.in + 0.4, [A.tonW, [-7.9, GZ5 - 0.3], [STATION.hunt.ton.x, STATION.hunt.ton.z]], 1.0, restOf5('ton', t), STATION.hunt.ton.ry);
           STICK5.carry(P); });
         whenReady(cast.jun, (P) => { if (t < T.in + 0.9) { put(P, A.junW[0], A.junW[1], 0.1); fmRest(P, 'jun', t); }
-          else fmWalk(P, t, T.in + 0.9, [A.junW, [-8.9, -14.3], [-9.2, -11.0], [STATION.hunt.jun.x, STATION.hunt.jun.z]], 1.05, restOf5('jun', t), STATION.hunt.jun.ry);
+          else fmWalk(P, t, T.in + 0.9, [A.junW, [-8.9, GZ5 - 0.3], [-9.2, GZ5 + 3.0], [STATION.hunt.jun.x, STATION.hunt.jun.z]], 1.05, restOf5('jun', t), STATION.hunt.jun.ry);
           DUFFEL5.carry(P); });
         /* THE LENS: through the gate's bars to his doors, as they open and he comes; on the cut, him in the open gate, his
            greeting; walking in behind them, past the planters; his doors, the slippers; the room: him by his dining room,
            his three lines; his teacher's two; and the room the hunt begins in (its snapshot) */
         const KOH = () => fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]), PHO = () => fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]);
         fmTrack(t, [
-          { t: 0, name: 'gate', eye: A.gateEye, at: [-8.55, 1.25, -5.8], fp: 46, fd: 40 },
-          { t: T.walk + 1.0, name: 'gate', eye: A.gateEye, at: [-8.5, 1.35, -8.5], fp: 52, fd: 44 },
-          { t: T.cut1 - 0.05, name: 'gate', eye: [-8.2, EYE, -14.95], at: () => fmHead(cast.koh, [-7.82, 1.55, -13.32]), fp: 56, fd: 48 },
+          /* (R46: from the gate 2.6 m further from his doors, the lens narrowed by as much, so his doors and he coming stand as
+             large as they stood: was 46/40 and 52/44) */
+          { t: 0, name: 'gate', eye: A.gateEye, at: [-8.55, 1.25, -5.8], fp: 37, fd: 32 },
+          { t: T.walk + 1.0, name: 'gate', eye: A.gateEye, at: [-8.5, 1.35, -8.5], fp: 44, fd: 37 },
+          { t: T.cut1 - 0.05, name: 'gate', eye: [-8.2, EYE, GZ5 - 0.95], at: () => fmHead(cast.koh, [-7.82, 1.55, GZ5 + 0.68]), fp: 56, fd: 48 },
           /* (on the cut, the gate open: a single of him greeting, from beside his teacher, his face toward the lens and his
              eyes on Grandmaster Pho at the frame's right; aimed between them it cut him in half at a phone's edge, and from
              where the shot before stood it was a jump cut, the look 4.7 degrees: lensread.py) */
-          { t: T.cut1, name: 'greet', eye: [-8.55, EYE, -14.6], at: () => fmHead(cast.koh, [-7.82, 1.5, -13.32]), fp: 42, fd: 38, cut: true },
-          { t: T.in - 0.1, name: 'greet', eye: [-8.55, EYE, -14.6], at: () => fmHead(cast.koh, [-7.82, 1.5, -13.32]), fp: 40, fd: 36 },
-          { t: T.in, name: 'court', eye: [-8.4, EYE, -14.55], at: [-8.5, 1.3, -6.5], fp: 66, fd: 58, cut: true },
-          { t: T.slip - 0.05, name: 'court', eye: [-8.45, EYE, -11.9], at: [-8.5, 1.25, -5.8], fp: 66, fd: 58 },
+          { t: T.cut1, name: 'greet', eye: [-8.55, EYE, GZ5 - 0.6], at: () => fmHead(cast.koh, [-7.82, 1.5, GZ5 + 0.68]), fp: 42, fd: 38, cut: true },
+          { t: T.in - 0.1, name: 'greet', eye: [-8.55, EYE, GZ5 - 0.6], at: () => fmHead(cast.koh, [-7.82, 1.5, GZ5 + 0.68]), fp: 40, fd: 36 },
+          { t: T.in, name: 'court', eye: [-8.4, EYE, GZ5 - 0.55], at: [-8.5, 1.3, -6.5], fp: 66, fd: 58, cut: true },
+          { t: T.slip - 0.05, name: 'court', eye: [-8.45, EYE, GZ5 + 2.1], at: [-8.5, 1.25, -5.8], fp: 66, fd: 58 },
           /* (the slippers from beside the path, west of it, so nobody walking in passes through the lens) */
           { t: T.slip, name: 'slippers', eye: [-9.6, 1.45, -6.95], at: [-9.02, 0.1, -6.1], fp: 60, fd: 52, cut: true },
           { t: T.room - 0.05, name: 'slippers', eye: [-9.55, 1.45, -6.85], at: [-8.75, 0.6, -5.4], fp: 62, fd: 54 },
@@ -1364,7 +1370,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (before it rises its head is the stick's head, where it will come out: the lens on the strike turns to it, and the
            first laid head stands there; aimed up its path at 2.4 m, the lens swung to the empty wall over the strike and
            jumped down to the stick's head as it rose, together-phone 1.9 on lab 5) */
-        const B0 = boomAt({ x: pz.x, z: pz.z }), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
+        /* (R46: begun and ended on the mode's picture in the surge, the end's lens pulled back: c_cast.js PULL5) */
+        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
         const LC = { x: (lay[0].x + lay[1].x + lay[2].x) / 3, z: (lay[0].z + lay[1].z + lay[2].z) / 3 };   // (the three laid: their middle)
         const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
         fmTrack(t, [
@@ -1513,7 +1520,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* the lift: the doors at the end */
         liftDoors(atLift ? smo(c01((t - T.doors) / 1.4)) * (1 - smo(c01((t - T.close) / 1.3))) : 0);
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
-        const B0 = boomAt({ x: pz.x, z: pz.z }), ZH = [zz.x, 1.66, zz.z];
+        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), ZH = [zz.x, 1.66, zz.z];   // (R46: begun on the end's pulled-back lens)
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.violet + 0.3, name: 'into', eye: [ZH[0], ZH[1] + 0.35, ZH[2] - 0.9], at: [ZH[0], 1.4, ZH[2] + 2.5], fp: 60, fd: 54 },

@@ -3100,7 +3100,8 @@ let kitInited = false;
 const tag = { decl: null, cfg: null, on: false, live: false, bodies: [], played: 0, onAct: null, targets: null, acts: {},
               t: 0, last: 0, lockTo: 0, glideFrom: -1, glideT0: 0, boomK: 1, pitchNow: 0, snap: null, save0: null, wrote: false,
               queue: [], down: new Map(), dead: new Set(), stale: new Set(), tgtTouch: new Map(), drawn: [],
-              count: null, log: [], acted: 0, dropped: 0, refused: 0, classOn: false, el: null, wired: false };
+              count: null, log: [], acted: 0, dropped: 0, refused: 0, classOn: false, el: null, wired: false,
+              boomOver: null };                 // v28.0 (seam 69): { from, to, t0, secs, keep } a boom eased over the declaration's (kit.tagBoom)
 const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
 
 /* ---- hotspots ---------------------------------------------------------- */
@@ -8174,7 +8175,33 @@ function tagSoft(v, lo, hi, m) {
 }
 function tagBoomNow() {
   const c = tag.cfg, b = (innerHeight > innerWidth && c.portrait) || c.boom;
-  return { back: +b.back || 0, up: +b.up || 0, pitch: +b.pitch || 0, fov: Math.max(20, Math.min(110, +(b.fov || c.fov) || CAM_FOV)) };
+  const B = { back: +b.back || 0, up: +b.up || 0, pitch: +b.pitch || 0, fov: Math.max(20, Math.min(110, +(b.fov || c.fov) || CAM_FOV)) };
+  const O = tag.boomOver; if (!O) return B;
+  /* v28.0 (seam 69, kit.tagBoom): the boom a chapter lays over the declaration's, eased on the mode's clock (a smooth step,
+     never a jump), from wherever the boom stood when it was asked; `to` null eases back to the declaration's and then lets go */
+  const u = O.secs > 0 ? Math.max(0, Math.min(1, (tag.t - O.t0) / O.secs)) : 1, w = u * u * (3 - 2 * u), T = O.to || B;
+  if (!O.to && u >= 1) { tag.boomOver = null; return B; }
+  return { back: O.from.back + (T.back - O.from.back) * w, up: O.from.up + (T.up - O.from.up) * w, pitch: O.from.pitch + (T.pitch - O.from.pitch) * w,
+           fov: O.from.fov + (T.fov - O.from.fov) * w };
+}
+/* v28.0 · THE SIXTY-NINTH SEAM: THE BOOM CHANGED WHILE THE MODE IS ON (kit.tagBoom). Chad, R46 (23 Nov 2026): toward the
+   fight's end "it starts to overwhelm the camera framing"; his pick, the roomy end "with the camera pulled back".
+   `kit.tagBoom({ back, up, pitch, fov }, { secs })` lays a boom over the declaration's (each field optional: the rest the
+   declaration's, the portrait's on an upright screen), eased over `secs` (1.2 unless it says; 0 at once) on the mode's
+   clock from wherever the boom stands; `kit.tagBoom(null, { secs })` eases back to the declaration's and lets go. The wall
+   rule, the box, the crane and the glide read the boom as it stands. Refused with the mode off; let go when it is left.
+   Never asked, tagBoomNow is the declaration's bit for bit (fixturetest K.tagBoomOver) */
+function kitTagBoom(o, opts = {}) {
+  if (!tag.on || !tag.cfg) return false;
+  const secs = Number.isFinite(+opts.secs) ? Math.max(0, +opts.secs) : 1.2;
+  const from = tagBoomNow();
+  if (o == null) { if (!tag.boomOver) return true; tag.boomOver = { from, to: null, t0: tag.t, secs }; if (!(secs > 0)) tag.boomOver = null; return true; }
+  if (typeof o !== 'object') return false;
+  const c = tag.cfg, b = (innerHeight > innerWidth && c.portrait) || c.boom, num = (v, fb) => (Number.isFinite(+v) ? +v : fb);
+  const to = { back: num(o.back, +b.back || 0), up: num(o.up, +b.up || 0), pitch: num(o.pitch, +b.pitch || 0),
+               fov: Math.max(20, Math.min(110, num(o.fov, +(b.fov || c.fov) || CAM_FOV))) };
+  tag.boomOver = { from, to, t0: tag.t, secs };
+  return true;
 }
 /* where the lens stands for this body (into `out`): behind and above his feet, inside the chapter's box and bounds; answers
    the share of that boom the walls between it and his head leave it (1: the whole of it) */
@@ -8526,7 +8553,7 @@ function tagOpen(o) {
   tag.targets = o.targets === undefined ? null : o.targets;
   tag.acts = { switch: tagActState(null) };
   for (const B of bodies) for (const s of TAG_SLOTS) if (B.slots[s]) tag.acts[B.slots[s].id] = tagActState(B.slots[s]);
-  tag.t = 0; tag.last = 0; tag.lockTo = 0; tag.glideFrom = -1;
+  tag.t = 0; tag.last = 0; tag.lockTo = 0; tag.glideFrom = -1; tag.boomOver = null;
   tag.queue.length = 0; tag.down.clear(); tag.dead.clear(); tag.stale.clear(); tag.tgtTouch.clear(); tag.drawn.length = 0;
   tag.log.length = 0; tag.acted = tag.dropped = tag.refused = 0; tag.count = null;
   tag.on = true; tag.live = false;
@@ -8552,7 +8579,7 @@ function tagOff(how) {
     to = { pos: new THREE.Vector3(+how.x, Number.isFinite(+how.y) ? +how.y : groundAt(+how.x, +how.z) + 1.62, +how.z),
            ry: Number.isFinite(+how.ry) ? +how.ry : yaw.rotation.y, px: 0, roll: 0 };
   }
-  tag.on = false; tag.live = false; tag.save0 = null;
+  tag.on = false; tag.live = false; tag.save0 = null; tag.boomOver = null;
   tag.queue.length = 0; tag.down.clear(); tag.dead.clear(); tag.stale.clear(); tag.tgtTouch.clear(); tag.drawn.length = 0;
   tag.bodies = []; tag.onAct = null; tag.targets = null; tag.acts = {}; tag.count = null; tag.glideFrom = -1;
   tagCamZero(true);
@@ -9268,6 +9295,7 @@ const KIT = {
   tagPlace: kitTagPlace,                   // a body moved by the chapter: (id, x, z, { secs, ry })
   tagMarks: (list) => { if (!tag.on) return false; tag.targets = list === undefined ? null : list; return true; },
   tagCount: kitTagCount,                   // the count under the objective: (left, of), or null
+  tagBoom: kitTagBoom,                     // v28.0: the sixty-ninth seam — the boom changed while the mode is on, eased ({ back, up, pitch, fov } | null, { secs })
   tagHold: kitTagHold,                     // the run held again as it stands now
   button: kitButton,                       // v28.0: the sixty-first seam — a button of the chapter's own in the right-hand column
   retry: kitRetry,                         // v28.0: the sixty-fifth seam — a loss that begins again where the chapter says

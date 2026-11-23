@@ -46,7 +46,8 @@
 
   /* THE DEVOTEE (the plan's 4.2): his doors open, he comes to his gate; his greeting; the court; the slippers; his room,
      his three lines; his teacher's two. It ends on the view the hunt begins in */
-  const DV5 = tl(0, [[0.8], ['@door'], [1.6], ['@walk'], [6.2], ['@cut1'], [0.35], ['ko5d1', 0.5], ['@in'], [2.7], ['@slip'], [2.7], ['@room'], [0.6],
+  /* (R46: the court 2.6 m longer: his walk to the gate 1.4 s longer (was 6.2) and the walk in 1.4 s longer (was 2.7)) */
+  const DV5 = tl(0, [[0.8], ['@door'], [1.6], ['@walk'], [7.6], ['@cut1'], [0.35], ['ko5d1', 0.5], ['@in'], [4.1], ['@slip'], [2.7], ['@room'], [0.6],
                      ['ko5d2', 0.35], ['ko5d3', 0.6], ['ko5d4', 0.6], ['ph5d1', 0.45], ['ph5d2', 0.3], ['@turn'], [1.3], ['@end']]);
   function filmDevotee(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.devotee, T = DV5;
@@ -65,11 +66,14 @@
     sfx(T.walk + 0.4, 'u5step1', 0.18); sfx(T.walk + 1.0, 'u5step2', 0.2); sfx(T.walk + 1.6, 'u5step1', 0.22); sfx(T.walk + 2.2, 'u5step2', 0.24);
     sfx(T.walk + 2.8, 'u5step1', 0.26); sfx(T.walk + 3.4, 'u5step2', 0.28); sfx(T.walk + 4.0, 'u5step1', 0.3); sfx(T.walk + 4.6, 'u5step2', 0.32);
     sfx(T.walk + 5.2, 'u5step1', 0.34); sfx(T.walk + 5.8, 'u5step2', 0.36);   // his steps down his court, nearer
+    sfx(T.walk + 6.4, 'u5step1', 0.38); sfx(T.walk + 7.0, 'u5step2', 0.4);     // (R46: two more, the court longer)
     sfx(T.cut1 - 0.15, 'u5gate', 0.75);                                        // the gate, opened by his hand (the cut)
     sfx(T.ko5d1, 'ko5d1', 1);                                                  // "Grandmaster. You came. I did not know who else to ask."
     sfx(T.in + 0.5, 'u5phostep', 0.32); sfx(T.in + 1.1, 'u5phostep', 0.3); sfx(T.in + 1.7, 'u5phostep', 0.28); sfx(T.in + 2.3, 'u5phostep', 0.26);   // his teacher ahead
     sfx(T.in + 0.25, 'u5step1', 0.45); sfx(T.in + 0.8, 'u5step2', 0.45); sfx(T.in + 1.35, 'u5step1', 0.45); sfx(T.in + 1.9, 'u5step2', 0.45);
     sfx(T.in + 2.45, 'u5step1', 0.42);                                         // his own, up the court between the planters
+    sfx(T.in + 2.9, 'u5phostep', 0.24); sfx(T.in + 3.5, 'u5phostep', 0.22);   // (R46: the walk in 1.4 s longer: his teacher's and his own on)
+    sfx(T.in + 3.0, 'u5step2', 0.4); sfx(T.in + 3.55, 'u5step1', 0.38);
     sfx(T.slip + 1.0, 'u5tile1', 0.4); sfx(T.slip + 1.65, 'u5tile1', 0.36);    // the slippers left; bare feet on his tiles
     sfx(T.room + 0.5, 'u5lamptick', 0.4);                                      // the fourth lamp, flickering
     sfx(T.ko5d2, 'ko5d2', 1);                                                  // "At night somebody knocks. Inside the house. ..."

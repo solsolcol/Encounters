@@ -3201,6 +3201,24 @@ K.tagRetry = retries.every((r, i) => r.card.early === false && r.card.open && r.
     && typeof r.after.fight === 'string' && r.after.fight === retries[0].after.fight && r.after.count && r.after.count.left === 3);
 if (!K.tagRetry) console.log('tag retries', JSON.stringify(retries));
 
+/* 69 · THE BOOM CHANGED WHILE THE MODE IS ON (kit.tagBoom, v28.0: chapter 5's roomy end, R46): never asked, the boom is
+   the declaration's; laid at once it reads as laid; eased, part way it stands between the two; null eases back and lets go,
+   the declaration's bit for bit again (a desktop here: its `boom`, not the portrait's) */
+K.tagBoomOver = await tagCheckSrc('boomOver', `
+  const R = {}, D = () => E.tag().boom;
+  const b0 = D();
+  R.asDeclared = b0.back === 4.0 && b0.up === 3.1 && b0.pitch === 26;
+  R.laid = kit.tagBoom({ back: 6, up: 4.5, pitch: 34 }, { secs: 0 }) === true;
+  const b1 = D(); R.atOnce = b1.back === 6 && b1.up === 4.5 && b1.pitch === 34 && b1.fov === b0.fov;
+  R.letGo = kit.tagBoom(null, { secs: 0 }) === true;
+  const b2 = D(); R.backExact = Object.is(b2.back, b0.back) && Object.is(b2.up, b0.up) && Object.is(b2.pitch, b0.pitch) && Object.is(b2.fov, b0.fov);
+  kit.tagBoom({ back: 8 }, { secs: 3 });
+  await poll(() => D().back > b0.back + 0.3, 30000);
+  const bm = D(); R.eased = bm.back > b0.back && bm.back < 8 && bm.up === b0.up && bm.pitch === b0.pitch;
+  kit.tagBoom(null, { secs: 0 }); const b3 = D();
+  R.backAgain = Object.is(b3.back, b0.back) && Object.is(b3.up, b0.up);
+  R.refusedBad = kit.tagBoom('far') === false;
+  return R;`);
 /* 63 · THE CAPTION IN THE MODE, and every overlap of what the mode adds, by bounding box (a desktop of 900 x 600 here; the
    phone's 390 x 844 and a low phone's 360 x 780 below) */
 const TAG_HUD_MINE = ['#tagA0', '#tagA1', '#tagA2', '#tagSw', '#tagCount', '#tagMate', '#caption', '#nofire'];
@@ -3276,7 +3294,7 @@ K.tagLeave = await tagCheckSrc('leave', `
     && document.body.classList.contains('weaponUp') && getComputedStyle(document.getElementById('visionBtn')).display !== 'none'
     && getComputedStyle(document.querySelector('.cBtn')).display !== 'none';
   R.saveMoves = !E.tagSave0() && JSON.stringify(E.checkpointData().stats) === JSON.stringify(E.worldState().stats);
-  R.refusedAfter = kit.tagAct('zap', { wait: 0.5 }) === false && kit.tagSwitch() === false && kit.retry({}) === false;
+  R.refusedAfter = kit.tagAct('zap', { wait: 0.5 }) === false && kit.tagSwitch() === false && kit.retry({}) === false && kit.tagBoom({ back: 6 }) === false;
   return R;`);
 await tagEval(`kit.take('rifle'); kit.button('nose', null); await frames(2); return true;`);
 K.buttonGone = await tagCheckSrc('buttonGone', `await frames(2); return { gone: !document.querySelector('.cBtn') && E.buttons().length === 0 && !document.body.classList.contains('hasCBtn') };`);
