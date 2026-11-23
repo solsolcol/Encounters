@@ -63,9 +63,6 @@
     function blockers() {
       const out = [];
       for (const s of solids) { s.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(s); bb.expandByScalar(0.14); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); }
-      /* (R37: the fight's lens stop at the gate (b_world.js boomStop) is no solid until the fight's phase turns it on
-         (b_xpeople.js blockOn, which keeps its whole box here): over the walkway he walks it in every other phase) */
-      { const i = solids.indexOf(boomStop); if (i >= 0) { block0.set(boomStop, out[i].clone()); out[i].makeEmpty(); } }
       return out;
     }
 

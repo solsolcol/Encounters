@@ -2867,6 +2867,14 @@ K.tagOpen = await tagCheckSrc('open', `
   R.saveHeld = !!s0 && JSON.stringify(cd.stats) === JSON.stringify(s0.st.stats) && cd.at.x === s0.at.x && cd.at.z === s0.at.z && cd.phase === s0.st.phase;
   R.refusedTwice = kit.tag({ bodies: [{ id: 'x', obj: A }] }) === false;
   return R;`);
+/* v28.0 (R41): the crane where nothing holds the lens: exactly the boom's lens and its pitch */
+K.tagCraneOpen = await tagCheckSrc('craneOpen', `
+  E.tagCrane({ max: 60 }); await frames(2);
+  const T = E.tag(), A = st.fightBodies.a;
+  const R = { lens: near(T.lens[0], A.position.x) && near(T.lens[1], A.position.y + 3.1) && near(T.lens[2], A.position.z + 4.0) && T.boomK === 1,
+              pitch: near(E.pitch.rotation.x, -26 * Math.PI / 180, 1e-12) && T.pitchNow === 26, _p: [E.pitch.rotation.x, T.pitchNow, T.boomK] };
+  E.tagCrane(null); await frames(1);
+  return R;`);
 
 /* the walk BY THE SCREEN (W is away down the court, D to its right), the other body still; the look dead */
 const walkKey = async (key, body, ms = 40000) => { await p.keyboard.down(key); const ok = await tagUntil(body, ms); await p.keyboard.up(key); return ok; };
@@ -3068,6 +3076,23 @@ K.tagLensClear = await tagCheckSrc('lensClear', `
   return { pulledIn: T.boomK < 0.95, inFront: L.z < st.pillar.position.z - 0.4 - 0.28, notInABlocker: !E.blockers.some(b => b.containsPoint(L)),
            insideBox: L.x >= -10.4 && L.x <= 10.4 && L.z >= -10.4 && L.z <= 10.2,
            _lens: T.lens, _boomK: T.boomK, _b: [st.fightBodies.b.position.x, st.fightBodies.b.position.z], _st: [E.getState(), T.on, T.live, T.played, T.t] };`);
+
+/* v28.0 (R41): THE CRANE (a chapter's `crane`): the same hold with it on keeps the lens's height and turns it down to keep
+   his head where the whole boom puts it on the screen, never past its `max`; off again, the pull along the line and the
+   boom's own pitch, exactly */
+K.tagCrane = await tagCheckSrc('crane', `
+  E.tagCrane({ max: 60 }); await frames(3);
+  const T = E.tag(), B = st.fightBodies.b, bm = T.boom, V = E.yaw.position.constructor, L = new V(...T.lens);
+  const H = new V(B.position.x, B.position.y + 1.6, B.position.z), deg = -E.pitch.rotation.x * 180 / Math.PI, e0 = Math.atan2(bm.up - 1.6, bm.back);
+  E.camera.updateMatrixWorld(true); const hp = H.clone().project(E.camera), want = Math.tan(bm.pitch * Math.PI / 180 - e0) / Math.tan(E.camera.fov * Math.PI / 360);
+  const R = { held: T.boomK < 0.95, height: near(L.y, B.position.y + bm.up, 1e-9), inFront: L.z < st.pillar.position.z - 0.4 - 0.28,
+              notInABlocker: !E.blockers.some(b => b.containsPoint(L)), steeper: deg > bm.pitch + 1 && deg <= 60 + 1e-9 && near(deg, T.pitchNow, 1e-9),
+              headKept: deg >= 60 - 1e-9 || Math.abs(hp.y - want) < 0.01, _deg: deg, _hp: [hp.x, hp.y], _want: want, _lens: T.lens };
+  E.tagCrane(null); await frames(3);
+  const T2 = E.tag();
+  R.offExact = near(E.pitch.rotation.x, -bm.pitch * Math.PI / 180, 1e-12) && T2.lens[1] < B.position.y + bm.up - 0.05;
+  R._off = [E.pitch.rotation.x, T2.lens];
+  return R;`);
 
 /* the other one's mark at the screen's edge while he is out of the picture: his name, his share */
 /* (the gold one carries no share of the fixture's own; one is given here, so its ring is seen drawn, and taken back) */

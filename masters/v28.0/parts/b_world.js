@@ -688,13 +688,10 @@
     world.remove(things.gate); gateHinge.add(things.gate);
     const gateShut = solidXZ(GATE.x - GATE.w / 2, WALK.turnZ, GATE.x + GATE.w / 2, WALK.turnZ + 0.2);
     const gateOpenLeaf = solidXZ(GATE.x - GATE.w / 2 - 0.08, WALK.turnZ + 0.15, GATE.x - GATE.w / 2 + 0.12, WALK.turnZ + 0.15 + GATE.w);
-    /* (R37) THE LENS'S STOP AT THE GATE, a solid only while the fight is on (b_xpeople.js worldPhase): with the court now
-       reaching 0.4 m short of the gate's low wall, the fight's boom (4.0 m behind and 3.1 m above the one he plays) would
-       pass over the gate into the walkway's storey slab; the mode draws its lens in ALONG its own line toward his head where
-       a solid stands between them (main.js tagBoomFor), so it comes down and in over his shoulder, still looking as it did,
-       instead of being held at the gate's line, where he walked out of the bottom of the picture. 6 m high, the yard's width
-       and more, from 2 cm outside the low wall's outer face out over the walkway; c_cast.js boomAt draws in the same */
-    const boomStop = solidXZ(COURT.x0 - 0.3, WALK.turnZ - 2.4, COURT.x1 + 0.3, WALK.turnZ - 0.02, 6.0);
+    /* (R41, 23 Nov: R37's stop for the fight's lens at the gate is retired. Drawn in along its line by it, the lens came down
+       to half a metre behind his head at the yard's gate end and his head filled the picture (the live check of build 30:
+       1.8 m up). The lens is held at the gate's line by the mode's box again and keeps its height there, looking down at him:
+       the engine's crane, a_head.js) */
     function gateOpen(k) { gateHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 92 * DEG; }
     /* --- the court: the two planters along its sides near the gate (each 2 m long, turned to run along the court),
        SUNK into the paving until their ragged bottoms are hidden (RECORD.md 3: the first 15 cm, the second 25 cm); the

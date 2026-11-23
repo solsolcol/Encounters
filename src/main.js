@@ -3098,7 +3098,7 @@ let kitInited = false;
    no frame and no verb can reach it before it exists. `on` is set by kit.tag alone, and kit.tag refuses a chapter that does
    not declare `tag`: every branch the mode adds to the frame, the input and the saves stands behind it */
 const tag = { decl: null, cfg: null, on: false, live: false, bodies: [], played: 0, onAct: null, targets: null, acts: {},
-              t: 0, last: 0, lockTo: 0, glideFrom: -1, glideT0: 0, boomK: 1, snap: null, save0: null, wrote: false,
+              t: 0, last: 0, lockTo: 0, glideFrom: -1, glideT0: 0, boomK: 1, pitchNow: 0, snap: null, save0: null, wrote: false,
               queue: [], down: new Map(), dead: new Set(), stale: new Set(), tgtTouch: new Map(), drawn: [],
               count: null, log: [], acted: 0, dropped: 0, refused: 0, classOn: false, el: null, wired: false };
 const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
@@ -8137,6 +8137,7 @@ const TAG_DEFAULTS = {
   ease: 7.6,                                   // v28.0 (R25): how fast a body comes to the stick's pace (a second's rate)
   reach: 1,                                    // v28.0 (R25): the share of the stick's travel that is full pace (1: all of it)
   eye: 1.62,                                   // the pivot's height over his feet: "where he is" for every distance
+  crane: null,                                 // v28.0 (R41): { max } a held lens keeps its height and looks down (tagPitchFor)
   keys: { switch: 'KeyF' }
 };
 const TAG_SLOTS = ['main', 'second', 'third'];
@@ -8204,19 +8205,39 @@ function tagPull(A, p, k) {                    // the lens drawn in along the bo
   if (!(k < 1)) return p;
   const o = A.obj.position;
   _tgQ.set(o.x, o.y + 1.6, o.z);
+  /* (v28.0, R41: THE CRANE, a chapter's `crane`: drawn in over the ground, its height kept; the pitch looks down: tagPitchFor) */
+  if (tag.cfg && tag.cfg.crane) { const kk = Math.max(0, k); p.x = _tgQ.x + (p.x - _tgQ.x) * kk; p.z = _tgQ.z + (p.z - _tgQ.z) * kk; return p; }
   return p.sub(_tgQ).multiplyScalar(Math.max(0, k)).add(_tgQ);
+}
+/* v28.0 (R41: the fight's lens at the yard's gate end, held by the chapter's box, was drawn down its line until it stood
+   half a metre behind his head, and his head filled the picture; held by the box alone it stood where it stopped while he
+   walked on under it, out of the bottom of the picture): THE CRANE. A chapter that declares `crane: { max }` has a lens the
+   box, the bounds or a wall hold short of its boom KEEP ITS HEIGHT (tagPull: drawn in over the ground) and turn down to keep
+   his head where the whole boom puts it on the screen (the angle from the lens down to his head, 1.6 m over his feet, past
+   the boom's own, added to the boom's pitch), never steeper than `max` degrees (60 unless it says) and never less steep
+   than the boom's. A lens its boom's whole length away looks exactly as the boom says. Without `crane` none of this runs */
+function tagPitchFor(A, p) {
+  const c = tag.cfg, bm = tagBoomNow();
+  if (!c || !c.crane) return bm.pitch;
+  const o = A.obj.position, e0 = Math.atan2(bm.up - 1.6, bm.back);
+  const e = Math.atan2(p.y - (o.y + 1.6), Math.hypot(p.x - o.x, p.z - o.z));
+  if (!(e - e0 > 1e-6)) return bm.pitch;
+  const mx = Number.isFinite(+c.crane.max) ? +c.crane.max : 60;
+  return Math.max(bm.pitch, Math.min(mx, bm.pitch + (e - e0) * 180 / Math.PI));
 }
 function tagLens(out, wdt) {
   const P = tag.bodies[tag.played];
   const k = tagBoomFor(P, _tgB);
   tag.boomK = k < tag.boomK ? k : tag.boomK + (k - tag.boomK) * (1 - Math.exp(-wdt * 3));   // a wall: in at once, out eased
   tagPull(P, _tgB, tag.boomK);
+  tag.pitchNow = tagPitchFor(P, _tgB);
   if (tag.glideFrom >= 0) {
     const A = tag.bodies[tag.glideFrom], u = (tag.t - tag.glideT0) / Math.max(0.01, tag.cfg.glide);
     if (!A || u >= 1) tag.glideFrom = -1;
     else {
       tagPull(A, _tgA, tagBoomFor(A, _tgA));
-      const w = Math.max(0, u), s = w * w * (3 - 2 * w);
+      const w = Math.max(0, u), s = w * w * (3 - 2 * w), pa = tagPitchFor(A, _tgA);
+      tag.pitchNow = pa + (tag.pitchNow - pa) * s;
       return out.lerpVectors(_tgA, _tgB, s);
     }
   }
@@ -8228,9 +8249,9 @@ function tagRig(wdt) {
   const c = tag.cfg, bm = tagBoomNow(), o = P.obj.position;
   yaw.position.set(o.x, o.y + c.eye, o.z);
   yaw.rotation.y = c.heading;
-  pitch.rotation.x = -bm.pitch * Math.PI / 180;
+  tagLens(_tgV, wdt);                          // (first: the crane's pitch is read off where the lens stands)
+  pitch.rotation.x = -(c.crane ? tag.pitchNow : bm.pitch) * Math.PI / 180;
   camera.rotation.z = 0;
-  tagLens(_tgV, wdt);
   _tgV.sub(yaw.position).applyAxisAngle(_tgY, -c.heading).applyAxisAngle(_tgX, -pitch.rotation.x);
   camera.position.copy(_tgV);
   tag.wrote = true;
@@ -8481,7 +8502,7 @@ function tagOpen(o) {
   tag.cfg = { ...d, heading: num(o.heading, d.heading), fov: num(o.fov, d.fov), camBox: o.camBox !== undefined ? o.camBox : d.camBox,
               soft: num(o.soft, d.soft), glide: num(o.glide, d.glide), lock: num(o.lock, d.lock), radius: num(o.radius, d.radius),
               speed: num(o.speed, d.speed), turn: num(o.turn, d.turn), eye: num(o.eye, d.eye),
-              ease: num(o.ease, d.ease), reach: num(o.reach, d.reach),
+              ease: num(o.ease, d.ease), reach: num(o.reach, d.reach), crane: o.crane !== undefined ? o.crane : d.crane,
               boom: { ...d.boom, ...(o.boom || {}) }, portrait: o.portrait ? { ...d.boom, ...(o.boom || {}), ...o.portrait } : d.portrait,
               keys: { ...d.keys, ...(o.keys || {}) } };
   for (const B of bodies) {
@@ -19897,11 +19918,13 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                    const lens = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld);
                    return { ...tagStateRead(), decl: !!tag.decl, wrote: tag.wrote, cam: camera.position.toArray(), lens: lens.toArray(),
                             fov: camera.fov, boomK: +tag.boomK.toFixed(4), boom: tag.cfg ? tagBoomNow() : null, heading: tag.cfg ? tag.cfg.heading : null,
+                            pitchNow: tag.pitchNow, crane: tag.cfg ? tag.cfg.crane || null : null,
                             queue: tag.queue.length, down: tag.down.size, dead: tag.dead.size, stale: tag.stale.size,
                             acted: tag.acted, dropped: tag.dropped, refused: tag.refused, log: tag.log.slice(-24),
                             acts: JSON.parse(JSON.stringify(tag.acts)), marks: tag.drawn.map(m => ({ ...m })), save0: !!tag.save0,
                             classOn: document.body.classList.contains('tagOn') };
                  },
+                 tagCrane: (v) => { if (!tag.cfg) return false; tag.cfg.crane = v || null; return true; },   // v28.0 (R41): the fixture's crane, live
                  tagBlocked: (x, z) => collideFrom(x, z, x, z),
                  tagSave0: () => (tag.save0 ? JSON.parse(JSON.stringify(tag.save0)) : null),
                  vmPasses: () => vmPassN,

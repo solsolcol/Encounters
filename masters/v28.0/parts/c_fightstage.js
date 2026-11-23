@@ -1287,10 +1287,9 @@
       const st = FS5.st; if (!st || !(dt > 0) || !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last')) return;
       const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
       if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
-      /* (R37: the lens stops at the gate where the fight's own stop draws it in along its line, b_world.js boomStop: its box
-         grown 0.14 for the eye reaches the yard's z -13.88 and the lens stands 0.22 before it, court z 4.96; was the lens
-         box's 5.2) */
-      const lensZ = Math.min(played.z + 4.0, 4.96), half = 0.45 + 0.25 + 0.3;
+      /* (R41: the lens is held at the gate by the mode's box again, its z line -13.9, court z 5.2: R37's stop, which drew it in
+         to court z 4.96, is retired) */
+      const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
       if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
       const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
       const bx = n.bodyX || 1.6, room = (sg) => sg > 0 ? bx - (played.x + half) : (played.x - half) + bx;
@@ -1446,6 +1445,7 @@
       gripTune(o) { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.tune(o) : null; },
       gripMove() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.move() : null; },
       gripDiag() { return typeof PHOGRIP5 === 'object' && PHOGRIP5.diag ? PHOGRIP5.diag() : null; },
+      gripSwing(on) { return typeof PHOGRIP5 === 'object' && PHOGRIP5.swing ? PHOGRIP5.swing(on) : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -1993,6 +1993,73 @@
         if (w > 0.001) { clL.quaternion.copy(clLTake).slerp(HIPS.restClavL, w); clLWrote = clL.quaternion.clone(); clL.updateWorldMatrix(false, true); }
         else if (clLWrote) { clL.quaternion.copy(clLTake); clLWrote = null; clL.updateWorldMatrix(false, true); }
       }
+      /* (R41, 23 Nov: HIS ELBOW GOES WHERE HIS WRIST CAN HOLD THE STICK. With the stick in a thumb-up fist his hand's turn is
+         the stick's, so his wrist's bend is set by where his forearm comes from, and his forearm by where his elbow hangs: the
+         live check of build 30 read his wrist 41 to 65 degrees toward his little finger in the gold, the fire and the bag
+         (jointscan's line is 40, a real wrist's range about 30 to 40), his fist lifted out to his right with his elbow hung
+         low under it. A man lifting a staff lifts his elbow with it. So his elbow is swung about the line from his shoulder to
+         his wrist (every 3 degrees to 90 either way, then by half degrees) to the least swing that holds jointscan's own
+         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 30 (40),
+         bent 60 toward his palm (70) and 50 back (60); his forearm turned 90 (100); his elbow no more than 1.5 cm behind his
+         shoulder while his hand is before it (2.5), 3 cm in toward his middle or 5 cm over his shoulder; each degree or
+         centimetre past its margin costing its square, a swing a hundredth of its degrees squared. Where his elbow's own
+         place already holds all of them it is not moved at all (his rest, his walk, his run and his talk stand as they were) */
+      const _w5 = { S: V(), T: V(), P0: V(), B: V(), Pp: V(), U: V(), Vf: V(), E: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), h: V(), dn: V(),
+                    Ut: V(), Lf: V(), F: V(), a1: V(), a2: V(), h1: V(), h2: V(), W0: V(), E0: V() };
+      let SWING_ON = true, swingLast = null;
+      function swingCost(w, th, la, lb, d, ca, sa, side) {
+        const c = Math.cos(th), s = Math.sin(th);
+        w.Pp.copy(w.P0).multiplyScalar(c).addScaledVector(w.B, s);
+        w.U.copy(w.T).multiplyScalar(ca).addScaledVector(w.Pp, sa);
+        w.E.copy(w.U).multiplyScalar(la);                                    // (the elbow, from his shoulder)
+        w.Vf.copy(w.T).multiplyScalar(d).addScaledVector(w.U, -la).normalize();
+        w.re.copy(w.ac).addScaledVector(w.Vf, -w.ac.dot(w.Vf)).normalize(); w.ne.copy(w.n).addScaledVector(w.Vf, -w.n.dot(w.Vf)).normalize();
+        const fe = w.f.dot(w.Vf), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
+        const q = (x) => (x > 0 ? x * x : 0);
+        let cost = q(wd - 22) + q(-wd - 30) + q(wf - 60) + q(-wf - 50), tw = 0;
+        const phi = Math.acos(Math.max(-1, Math.min(1, w.U.dot(w.Vf)))) / D2R;
+        if (phi > 25) { w.h.crossVectors(w.U, w.Vf).normalize().multiplyScalar(side); w.dn.copy(w.U).addScaledVector(w.Vf, -w.U.dot(w.Vf)).normalize();
+          tw = Math.atan2(w.ne.dot(w.dn), w.ne.dot(w.h)) / D2R; cost += q(Math.abs(tw) - 90); }
+        const eb = w.E.dot(w.F), hf = w.W0.dot(w.F), ey = w.E.dot(w.Ut), lat = -w.E.dot(w.Lf);
+        if (hf > 0.1) cost += q((-eb - 0.015) * 100);
+        cost += q((ey - 0.05) * 100) + q((-lat - 0.03) * 100);
+        return { cost: cost + 0.01 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
+      }
+      function swing5(P, a, Wr, pole, Qh) {
+        swingLast = null; if (!SWING_ON) return;
+        const w = _w5;
+        if (!a.f5) {                                                         // (the hand's own lines, from his rig: they never change)
+          const m1 = boneOf(P, 'RightHandMiddle1'), i1 = boneOf(P, 'RightHandIndex1'), k1 = boneOf(P, 'RightHandPinky1') || boneOf(P, 'RightHandRing1');
+          if (!m1 || !i1 || !k1) a.f5 = { none: true };
+          else { const f = m1.position.clone().normalize(), ac = i1.position.clone().sub(k1.position); ac.addScaledVector(f, -ac.dot(f)).normalize();
+            a.f5 = { f, ac, n: new THREE.Vector3().crossVectors(f, ac).multiplyScalar(-1).normalize() }; } }
+        const legL = boneOf(P, 'LeftUpLeg'), legR = boneOf(P, 'RightUpLeg'), armL = boneOf(P, 'LeftArm');
+        if (a.f5.none || !legL || !legR || !armL) return;
+        a.up.updateWorldMatrix(true, false); a.up.getWorldPosition(w.S);
+        a.fore.updateWorldMatrix(true, false); a.fore.getWorldPosition(w.E0); a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(w.h1);
+        if (!a.l5) a.l5 = [w.S.distanceTo(w.E0), w.E0.distanceTo(w.h1)];
+        const la = a.l5[0], lb = a.l5[1];
+        /* (his torso's own frame, as jointscan reads it: up from his hips' middle to his shoulders', across from his right
+           shoulder to his left, forward square to both) */
+        legL.updateWorldMatrix(true, false); legR.updateWorldMatrix(true, false); armL.updateWorldMatrix(true, false);
+        legL.getWorldPosition(w.a1); legR.getWorldPosition(w.a2); armL.getWorldPosition(w.h2);
+        w.Ut.copy(w.h2).add(w.S).multiplyScalar(0.5).sub(w.a1.add(w.a2).multiplyScalar(0.5)).normalize();
+        w.Lf.copy(w.h2).sub(w.S); w.Lf.addScaledVector(w.Ut, -w.Lf.dot(w.Ut)).normalize(); w.F.crossVectors(w.Lf, w.Ut).normalize();
+        w.T.copy(Wr).sub(w.S); const d0 = w.T.length(); if (!(d0 > 1e-5)) return; w.T.divideScalar(d0); w.W0.copy(Wr).sub(w.S);
+        const d = Math.max(Math.abs(la - lb) + 1e-3, Math.min(la + lb - 1e-3, d0));
+        w.P0.copy(pole).addScaledVector(w.T, -pole.dot(w.T)); if (w.P0.lengthSq() < 1e-10) return; w.P0.normalize(); w.B.crossVectors(w.T, w.P0);
+        const ca = Math.max(-1, Math.min(1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
+        w.f.copy(a.f5.f).applyQuaternion(Qh); w.ac.copy(a.f5.ac).applyQuaternion(Qh); w.n.copy(a.f5.n).applyQuaternion(Qh);
+        const r0 = swingCost(w, 0, la, lb, d, ca, sa, -1);
+        if (!(r0.cost > 0)) { swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        let best = 0, bc = r0.cost;
+        for (let dg = -90; dg <= 90; dg += 3) { if (!dg) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        const lo = best - 3, hi = best + 3;
+        for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        const rb = swingCost(w, best * D2R, la, lb, d, ca, sa, -1);
+        swingLast = { th: best, ...rb, at0: r0 };
+        if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -2040,6 +2107,7 @@
         /* the wrist, where the fist's middle comes onto its place */
         const Wr = _sf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_sq2).negate().add(Ct);
         const pole = _sd.set(STAFF.pole[0], STAFF.pole[1], STAFF.pole[2]).normalize().applyQuaternion(_sq);
+        swing5(P, a, Wr, pole, _sq2);                                        // (R41: the elbow where his wrist can hold it)
         armHinge(a, Wr, pole);
         /* the forearm turned along its own line by the hand's turn about it (swing and twist: the twist to the forearm) */
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
@@ -2078,6 +2146,9 @@
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },
+        /* (R41, a probe's: the elbow's swing this frame (degrees), the wrist's measures it left and those at no swing; and the
+           swing switched off and on, so the same frame can be read both ways) */
+        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null }; },
         /* (a probe's: each finger's joints as DRAWN, in the plane the solve worked in (cm: along the finger's rest line, toward
            the back of his hand, and out of the plane), beside the joints it meant, and each one's distance from the shaft's
            circle there (the finger's own thickness on the wood): a solve that is laid as it was meant reads the same twice) */
