@@ -3600,7 +3600,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3819,6 +3819,34 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     await pEval(`await frames(4); return true;`);
     K.tagPartyHudWide = await phoneHud('party 900x600', true);
     await pEval(`kit.captions(null); kit.tagAct('zap', { blocked: null }); st.fightEnd('restore'); await frames(2); return true;`);
+    /* v28.0 (R75's debug: on a phone the R60 arrow stood under the order's box and the count, only its tip showing). On the
+       phone's 390 x 844: the fight opened with the arrow where it always is (1.6 m), the height found whose point would stand
+       4 px up inside the lowest of the box and the count; opened again with the arrow there: its 30 px now stand clear
+       under them (or its point sits just over the head, where the head itself is under them), and never under the head */
+    await pp.setViewportSize({ width: 390, height: 844 });
+    K.tagArrowClear = await pCheck('arrowClear', `
+      await frames(2);
+      const R = {}, A = document.getElementById('tagArrow');
+      const prj = (x, y, z) => { const v = new E.camera.position.constructor(x, y, z); E.camera.updateMatrixWorld(true); v.project(E.camera); return (-v.y * 0.5 + 0.5) * innerHeight; };
+      const floorNow = () => Math.max(0, ...[document.querySelector('#objective .obox'), document.getElementById('tagCount')]
+        .filter(e => e && e.getBoundingClientRect().height > 0 && e.getBoundingClientRect().top < innerHeight / 2).map(e => e.getBoundingClientRect().bottom));
+      const played = () => { const s0 = kit.tagState(); return s0.bodies.find(q => q.id === s0.played); };
+      R.opened1 = st.fightOpen({ party: true, keys: { switch: 'Tab' }, arrow: { y: 1.6 } }) === true;
+      await poll(() => kit.tagState().live, 20000); await frames(6); await new Promise(r => setTimeout(r, 900)); await frames(2);
+      const f0 = floorNow(), b0 = played(); let yTry = null;
+      for (let h = 1.6; h <= 14; h += 0.02) if (prj(b0.x, (b0.y || 0) + h, b0.z) < f0 - 4) { yTry = +h.toFixed(2); break; }
+      R.floorSeen = f0 > 0; R.found = yTry != null;
+      st.fightEnd('restore'); await frames(2);
+      R.opened = st.fightOpen({ party: true, keys: { switch: 'Tab' }, arrow: { y: yTry || 3, head: 1.1 } }) === true;
+      await poll(() => kit.tagState().live, 20000); await frames(6); await new Promise(r => setTimeout(r, 900)); await frames(2);
+      await new Promise(r => setTimeout(r, 600)); await frames(2);
+      const f1 = floorNow(), b1 = played(), ar = A.getBoundingClientRect(), hy = prj(b1.x, (b1.y || 0) + 1.1, b1.z);
+      R.on = A.classList.contains('on');
+      R.clear = ar.top >= f1 + 4 || Math.abs(ar.bottom - (hy - 2)) < 3;
+      R.overHead = ar.bottom <= hy + 1;
+      R._m = { yTry, floor: Math.round(f1), top: Math.round(ar.top), bottom: Math.round(ar.bottom), head: Math.round(hy) };
+      st.fightEnd('restore'); await frames(2);
+      return R;`);
   } catch (e) {
     console.log('tag phone threw', e && e.message);
     K.tagPhoneRan = false;

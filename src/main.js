@@ -8983,6 +8983,21 @@ function tagPaint() {
    over his feet, 2.3 if none), placed through the same lens as the marks the frame it is drawn; at a switch it pops in
    over the other. Only while the mode is live (never under a film, a card, a menu or the brief: #tagHud's own rules, it
    stands inside it), and only declared: absent, no element is ever shown (tagPaintArrow returns at once) */
+/* v28.0 (R75's debug: the fight's first phone picture drew the R60 arrow UNDER the order's box and the Prai's count, only its
+   tip showing below them): the lowest bottom of the top of the HUD that stands over the world in the mode (the order's box,
+   the count), read at most twice a second, 0 when neither is drawn */
+const tagFloorC = { t: -1e9, v: 0 };
+function tagHudFloor() {
+  const now = performance.now();
+  if (now - tagFloorC.t < 500) return tagFloorC.v;
+  tagFloorC.t = now; let v = 0;
+  for (const el of [document.querySelector('#objective .obox'), $('tagCount')]) {
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0 && r.top < innerHeight * 0.5) v = Math.max(v, r.bottom);
+  }
+  return (tagFloorC.v = v);
+}
 function tagPaintArrow() {
   const el = $('tagArrow'); if (!el) return;
   const A = tag.cfg && tag.cfg.arrow, B = tag.on ? tag.bodies[tag.played] : null;
@@ -8991,7 +9006,17 @@ function tagPaintArrow() {
     const o = B.obj.position, y = Number.isFinite(+A.y) ? +A.y : 2.3, q = projectTo(o.x, o.y + y, o.z);
     if (q.z <= 1 && Math.abs(q.x) <= 1.05 && Math.abs(q.y) <= 1.05) {
       show = true;
-      const x = (q.x * 0.5 + 0.5) * innerWidth, yy = (-q.y * 0.5 + 0.5) * innerHeight;
+      const x = (q.x * 0.5 + 0.5) * innerWidth, yy0 = (-q.y * 0.5 + 0.5) * innerHeight;
+      /* (the arrow is 30 px tall over its point: where it would reach into the box or the count, it comes down until it
+         clears them by 6 px, but never past just over the played one's head (`head`, metres over his feet; absent, half a
+         metre under the arrow's own height); where his head itself stands under them it points from just over his head.
+         Clear of them, it is where it always was) */
+      let yy = yy0;
+      const floor = tagHudFloor();
+      if (floor > 0 && yy0 - 30 < floor + 6) {
+        const hd = Number.isFinite(+A.head) ? +A.head : y - 0.5, h = projectTo(o.x, o.y + hd, o.z), hy = (-h.y * 0.5 + 0.5) * innerHeight;
+        yy = Math.min(Math.max(yy0, floor + 36), Math.max(yy0, hy - 2));
+      }
       el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px)';
       if (el.dataset.who !== B.id) {
         const first = !el.dataset.who; el.dataset.who = B.id; el.style.setProperty('--ac', tagHexRgb(B.color || '#F4ECD8'));

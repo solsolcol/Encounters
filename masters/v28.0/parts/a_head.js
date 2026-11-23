@@ -181,8 +181,10 @@
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
            party: {},
            /* (R60, 23 Nov: "Show a floating arrow pointing downwards at the character that is currently under control": the
-              engine's seventy-first seam, 2.35 m over his feet, half a metre over either head) */
-           arrow: { y: 2.35 },
+              engine's seventy-first seam, 2.35 m over his feet, half a metre over either head; R75's debug: on a phone it
+              stood under the order's box and the count, so the engine brings it down until it clears them, never lower
+              than its point at `head`, 1.95 m, just over either head) */
+           arrow: { y: 2.35, head: 1.95 },
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
