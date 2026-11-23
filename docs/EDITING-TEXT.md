@@ -11,7 +11,11 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (20 Nov 2026): Master Z's Encounters — GAME TEXT v153 (edit here)**, id `14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8`
+**THE CURRENT SHEET (23 Nov 2026): Master Z's Encounters — GAME TEXT v154 (edit here)**, id `1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0`
+(<https://docs.google.com/spreadsheets/d/1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0/edit>; v153 with chapter 4's R139 to
+R142 rows and episode 4 chapter 5's words and voice lines, made from the LIVE chapters, deploy 25 (docs/HISTORY.md, "The
+sheet, version by version"); 11,983 cells read back, mismatched 0; v153 checked first: created 14:27:22.9, modified
+14:27:24.3, the conversion itself). The one before it, v153, id `14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8`
 (<https://docs.google.com/spreadsheets/d/14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8/edit>; v152 with seven rows changed
 (build 54, R133 to R136): `e4c4.words.objHold` in Chad's words (R135), `guardBrief` and `guardBriefKey` saying how each
 device reloads, two rows added, `waterEmpty` and `waterEmptyTouch` (the dry flick's words, before only in the code), and

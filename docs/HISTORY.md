@@ -9470,6 +9470,17 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v154, PUBLISHED 23 Nov 2026** (`masters/v28.0/masterz-text-v154.xlsx`, sha256 266ab1bf...edd046e8): v153 with
+exactly these rows changed, made by `textsync export` from the LIVE chapters (deploy 25: chapter 5 the release's
+e4c5 05c67b1d, not the tree's own assembly, which carries helpers' unproven parts): UI TEXT four added,
+`lost.restartChapter` "Restart chapter" (R139) and chapter 5's tag mode and loss, `hud.tagSwitch` "Switch to",
+`hud.retryLabel` "Not finished", `hud.retryAgain` "Begin again"; EPISODE 4 two changed, `e4c4.words.guardBrief` and
+`guardBriefKey` (no word of reloading: R141), two retired, `e4c4.words.waterEmpty` and `waterEmptyTouch` (the water never
+runs dry: R141), and seventy-four added, every word of episode 4 chapter 5 (`e4c5.title` to `e4c5.D.teach`); VOICE LINES
+197 added, `voice.ph4k1` to `ph4k4` (Grandmaster Pho on Amma's karmic creditors, R142) and chapter 5's 193 lines. Id
+`1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0`; v153 checked first (created 20 Nov 14:27:22.9, modified 14:27:24.3: the
+conversion itself, no edit of his); read back tab by tab and compared by `tools/sheetcmp.py`: 11,983 cells, mismatched 0.
+
 **v153, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v153.xlsx`): v152 with exactly seven rows changed (build 54,
 R133 to R136): `e4c4.words.objHold` "Keep the green spirits away from Amma by using the holy water." (R135, his words);
 `guardBrief` and `guardBriefKey`, whose refill sentence now says "Tap the gold icon above the holy water bowl to reload."
