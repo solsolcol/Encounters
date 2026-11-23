@@ -3846,6 +3846,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.overHead = ar.bottom <= hy + 1;
       R._m = { yTry, floor: Math.round(f1), top: Math.round(ar.top), bottom: Math.round(ar.bottom), head: Math.round(hy) };
       st.fightEnd('restore'); await frames(2);
+      /* (and the mode closed while the arrow is shown: it goes with the mode and forgets whose it was) */
+      R.goneWithMode = !A.classList.contains('on') && !A.dataset.who;
       return R;`);
   } catch (e) {
     console.log('tag phone threw', e && e.message);

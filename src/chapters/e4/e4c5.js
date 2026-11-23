@@ -9645,17 +9645,22 @@
       const card = () => {
         if (run !== FS5.run || !FS5.st || FS5.st.stage !== 'lost') return;
         const ok = kit && kit.retry && kit.retry({ title: W5.lostSay, line: '', button: W5.lostAgain, more: st.losses >= 3 ? W5.lostLead : null,
-          onPress: (r) => { if (run !== FS5.run || !FS5.st) return; FS5.retrying = true; fsStep({ act: r && r.button === 'more' ? 'LEAD' : 'RETRY' }, 0); } });
-        if (!ok) { FS5.retrying = true; fsStep({ act: 'RETRY' }, 0); }
+          onPress: (r) => { if (run !== FS5.run || !FS5.st) return; FS5.retrying = true; fsRewind(); fsStep({ act: r && r.button === 'more' ? 'LEAD' : 'RETRY' }, 0); } });
+        if (!ok) { FS5.retrying = true; fsRewind(); fsStep({ act: 'RETRY' }, 0); }
       };
       FS5.cardAt = FS5.wall + 1.1; FS5.card = card;           // (a moment of the court going dark before the card)
     }
+    /* (R75's debug, the saves lens: BEGIN AGAIN drew on from where the lost try's streams stood, so every try's entries and
+       sparks fell differently; v6.15's law is a stream rewound by a reset. Rewound at the press, before the rules take it) */
+    function fsRewind() { FS5.rand = rng(0x2858); FS5.srand = rng(0x2859); }
     /* begun again: the bodies at their places, the eight new, every effect and loop put back as the fight begins */
+    /* (R75's debug: and the cage is set where it stands now, never eased across the court from the lost try's place) */
     function fsRestart() {
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
       FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
+      FS5.cageAt = null;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
       NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
@@ -10013,6 +10018,12 @@
         swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, labZPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn,
         pulled: false });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
+      /* (R75's debug, the saves lens: the reset put the fight's clock back to nought but kept stamps read against it: the last
+         struggle cry's (every bound one's cry silent until the new clock passed the old fight's last), the end of the last
+         line (the Naga's film waiting for it, minutes after a replay), his act's span (rooted until it passed), the shake,
+         the Naga's wait, the bag's run, the call's rise, the bag's snap. Each back to what a fresh build has) */
+      FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
+      FS5.nagaDim = false; FS5.windT = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);

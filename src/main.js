@@ -5215,7 +5215,9 @@ function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} 
    each prai, there needs to be visual impact and physical feedback"): a vibration pattern in milliseconds through the one
    haptic path, only while the game is played or a film runs (never under a menu, a card or the title); a device without
    vibration ignores it. Answers whether it was sent. Absent, nothing buzzes */
-function kitBuzz(pattern) { if (state !== 'play' && state !== 'cine') return false; haptic(pattern); return true; }
+/* (R75's debug: a film's buzzes are timed steps, and a skip runs every step it passes at once, so Skip shook the phone with
+   every hit the player chose not to watch: a skipped film buzzes nothing) */
+function kitBuzz(pattern) { if (state !== 'play' && state !== 'cine') return false; if (state === 'cine' && cine && cine.skipped) return false; haptic(pattern); return true; }
 
 /* ---- events -------------------------------------------------------------- */
 /* v18.2: every kind's briefing picture (shell.html's #evDemo classes) — the
@@ -8965,6 +8967,10 @@ function tagPaint() {
       for (const b of [...E.btn, E.sw]) if (b) { b.sig = ''; b.icoOf = undefined; }
       E.countOf = -1; E.countLeft = -1; E.mateSig = '';
       tagPartyOff(E);
+      /* (v28.0, R75's debug: the seventy-first seam's arrow was left standing where it last stood when the mode closed while
+         it was shown (chapter 5 closes the mode at the fight's end and then plays its film), and kept the last one's name, so
+         the next mode popped it as if he had switched) */
+      const ar = $('tagArrow'); if (ar) { ar.classList.remove('on'); delete ar.dataset.who; }
     }
   }
   if (!tag.on) return;
