@@ -1594,13 +1594,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const bag = things.bagTied;
         if (bag) { bag.visible = gathered; if (gathered) { bag.position.set(RITE_AT.bag[0], 0.345, RITE_AT.bag[1]); bag.rotation.set(0, 0.5, 0); } }
         RITE5.string(gathered ? smo(c01((tr - RT.string) / 0.6)) : 0, bag);
+        /* the ending's own things (the case pushed across, the lid, the three), set before the presences, which ride on
+           the three (R33) */
+        const X = ENDS5[k];
+        if (X.things) X.things(t, E, me);
         /* the presences (the play's own, c_play.js pres): crying out and coming away as the water reaches them, each
            lifting off its piece and leaving the table's light */
         const P5 = presOf5();
         if (P5) for (const [nm, i] of [['angry', 0], ['hungry', 1], ['energy', 2]]) { const q = P5[nm]; if (!q) continue;
           const u = smo(c01((tr - RT.away - i * 0.7) / 3.0));
           q.grp.visible = tr < RT.away + 3.6 + i * 0.7 && u < 0.999;
-          if (q.grp.visible) { q.grp.position.set(q.home.x + (q.home.x - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, q.home.z + 0.9 * u);
+          /* (R33: each on its own piece where the piece now lies: ending C pushes the three across the cloth, threeAt5, and
+             they stayed on its bare first places, 0.38 to 0.48 m from them) */
+          const pk = things[TABLE5.P[nm].key], ph = threeHome5[TABLE5.P[nm].key];
+          const hx = q.home.x + (pk && ph ? pk.position.x - ph.x : 0), hz = q.home.z + (pk && ph ? pk.position.z - ph.z : 0);
+          if (q.grp.visible) { q.grp.position.set(hx + (hx - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, hz + 0.9 * u);
             if (q.fx) q.fx.set('uAlpha', 1 - u); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
@@ -1636,16 +1644,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (R25: his one seated take PLAYS through his lines, fmSpeak, where mixed with itself it sagged toward its bind pose
              at each line; at the door, standing, he talks with his hands for his line there) */
           if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2]));
-            fmSpeak(P, 'koh', t, Object.keys(E).filter(q => /^co5/.test(q) && E[q] >= E.door && SECS[q]).map(q => [E[q], SECS[q], 'Talk_with_Hands_Open'])); }
+            fmSpeak(P, 'koh', t, Object.keys(E).filter(q => /^co5/.test(q) && E[q] >= E.door && SECS[q]).map(q => [E[q], SECS[q], 'Idle_3'])); }
           else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
             fmSpeak(P, 'col', t, (E.col || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions'])); }
           /* (his looks: the ending's own, then the cloth through the rite, then him: each carried 0.6 s) */
           const L = ENDS5[k].colLooks ? ENDS5[k].colLooks(E).slice() : [[0, 'lens']];
           L.push([r0, CLOTH]); L.push([r0 + RT.end, 'lens']); L.sort((a, b) => a[0] - b[0]);
           fmGaze(P, t, L, 0.75, 0.7, 0.03, 0.6); });
-        /* the ending's own things (the case pushed across, the lid, the three) */
-        const X = ENDS5[k];
-        if (X.things) X.things(t, E, me);
         /* THE LENS: the ending's own shots, the rite's, the close's */
         const COL = colHead5, PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
         const keys = X.shots(me, COL, PHO, E).concat([

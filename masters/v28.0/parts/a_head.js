@@ -217,8 +217,10 @@
 
     musicVol: 0,
     /* THE BEDS, every one at 0 here: the play's mixer (c_psound.js bedsTick) sets each by the place and the beat, a film
-       through BED5.film. The order is BED5_AT's */
-    ambience: { beds: [['u5walkbed', 0], ['u5courtbed', 0], ['u5roombed', 0], ['u5fanroom', 0], ['u5sour', 0], ['u5flies', 0], ['u5clock', 0], ['u5lampbuzz', 0], ['u5threads', 0]] },
+       through BED5.film; each found by its name (c_psound.js BED5_SND). The last three are the play's music (R33: M2 the
+       walkway, M4 the hunt, M14 the pieces with his sight open, the plan's 10.2) */
+    ambience: { beds: [['u5walkbed', 0], ['u5courtbed', 0], ['u5roombed', 0], ['u5fanroom', 0], ['u5sour', 0], ['u5flies', 0], ['u5clock', 0], ['u5lampbuzz', 0], ['u5threads', 0],
+                       ['u5m2walk', 0], ['u5m4hunt', 0], ['u5m14sight', 0]] },
     voiceLine: null,
 
     words: {

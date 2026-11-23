@@ -322,6 +322,8 @@
     const huntReady = () => stainsFound() === 3 && play.found.has('n');
     /* "Nine Prai." (quietly, already beside him) "They were already there." */
     function nineLines(alone) {
+      /* M5, the nine seen: one sung chord (c_psound.js nineSound5) */
+      nineSound5();
       phoBeside();
       say('ph5h1'); say('q5h4');
       if (!alone) return;
