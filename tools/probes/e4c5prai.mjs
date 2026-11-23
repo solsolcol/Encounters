@@ -30,6 +30,9 @@ await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
 await frames(4);
+const lab0 = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
+say('start', await lab0('start'));                       // (the lesson begun: in the brief the rules do not step and the nine are not drawn)
+await frames(6);
 const lab = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
 const res = { rows: [], errs, warns };
 let n = 0;

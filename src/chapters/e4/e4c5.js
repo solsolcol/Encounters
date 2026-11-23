@@ -9450,6 +9450,8 @@
       place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
         R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      /* (a probe's: the brief's START as its own button gives it, the lesson begun: the rules then step, and the nine are drawn) */
+      start() { const st = FS5.st; if (!st) return null; if (st.stage === 'brief') fightStart5(); return FS5.st ? FS5.st.stage : null; },
       /* (R43, a probe's: a Prai set in a state at a place of the court, the rules then driving it (coming: it walks to him;
          bound: it struggles in its bubble; fleeing: it staggers back to the house); and a fire's landing on one drawn and
          sounded as the game does it, its flinch and its cry) */
