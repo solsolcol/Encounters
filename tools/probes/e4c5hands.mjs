@@ -103,8 +103,11 @@ for (const who of WHO) {
       const t = +(d * (i + 0.5) / N).toFixed(3);
       await setPose(who, take, t); await frames(3);
       const m = await measure(who); const r = m && m[0] ? m[0] : null;
-      res.rows.push({ who, take, t, flags: r ? r.flags : null, j: r ? r.j : null });
+      /* (R41: the elbow's swing the grip chose this moment, and the wrist it left: c_fightstage.js swing5) */
+      const sw = who === 'pho' ? await lab('gripSwing') : null, sl = sw && typeof sw === 'object' ? sw.last : null;
+      res.rows.push({ who, take, t, flags: r ? r.flags : null, j: r ? r.j : null, swing: sl });
       if (r && r.flags.length) say('FAULT', who, take, t, JSON.stringify(r.flags));
+      if (sl && sl.th) say('swing', who, take, t, sl.th, 'wrist', sl.wd.toFixed(1), sl.wf.toFixed(1), 'from', sl.at0.wd.toFixed(1), sl.at0.wf.toFixed(1));
     }
     if (PICS) for (const u of AT) {
       const t = +(d * u).toFixed(3); await setPose(who, take, t); await frames(3);

@@ -44,10 +44,12 @@ for (const who of WHO) {
     await frames(30);                                        // (the boom eased out after a wall drew it in: about a second)
     const st = await p.evaluate(() => { const E = window.__enc, t = E.kit.tagState(); let cam = null; E.pitch.traverse(o => { if (!cam && o.isCamera) cam = o; });
       const V = cam.position.constructor, w = new V(); cam.updateWorldMatrix(true, false); cam.getWorldPosition(w);
-      return { played: t.played, bodies: t.bodies, lens: w.toArray().map(v => +v.toFixed(2)), boomK: t.boomK != null ? +(+t.boomK).toFixed(2) : null }; });
+      const T2 = typeof E.tag === 'function' ? E.tag() : null;              // (the engine's own read: its boom's share and, R41, the crane's pitch)
+      return { played: t.played, bodies: t.bodies, lens: w.toArray().map(v => +v.toFixed(2)), boomK: T2 ? +(+T2.boomK).toFixed(2) : null,
+               pitch: +(-E.pitch.rotation.x * 180 / Math.PI).toFixed(1), crane: T2 ? T2.crane : null }; });
     const f = `${OUT}/${who}-${String(++n).padStart(2, '0')}-${where}.png`;
     await p.screenshot({ path: f, timeout: 300000 });
-    res.rows.push({ who, where, at: [x, z], ...st, f }); say('pic', f, JSON.stringify(st.lens), 'boomK', st.boomK);
+    res.rows.push({ who, where, at: [x, z], ...st, f }); say('pic', f, JSON.stringify(st.lens), 'boomK', st.boomK, 'pitch', st.pitch);
   }
 }
 fs.writeFileSync(OUT + '/yard.json', JSON.stringify(res, null, 1));
