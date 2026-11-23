@@ -10,7 +10,11 @@ The build needs no row of its own: build.py finds every sound in assets/audio an
 import json, os, re, sys
 MAIN = 'src/main.js'; main = open(MAIN, encoding='utf-8').read()
 man = json.load(open('masters/v28.0/sound/manifest.json', encoding='utf-8'))
-names = [s['name'] for s in man['sounds']]
+# (R33, 23 Nov 2026: two sounds no beat plays, RETIRED as the house retires one, v24.3: their files out of the game and their
+#  rows out of STING_SAMPLE, their takes kept in sound/raw. u5chair was Mr Koh sitting into his armchair, a beat the films
+#  never kept; u5murmur2 was the trance murmur's second length, the films and the fight using the first and third)
+RETIRED = {'u5chair', 'u5murmur2'}
+names = [s['name'] for s in man['sounds'] if s['name'] not in RETIRED]
 miss = [n for n in names if not (os.path.isfile(f'assets/audio/{n}.mp3') and os.path.isfile(f'assets/audio-opus/{n}.ogg'))]
 assert not miss, ('a file missing', miss)
 FXB = '  /* E4C5 FX BEGIN: v28.0, its effects, beds and music (masters/v28.0/sound/install.py) */\n'
