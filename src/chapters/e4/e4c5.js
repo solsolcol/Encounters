@@ -6211,7 +6211,7 @@
     /* (inflate and lick in METRES of the world: the bodies are built in centimetres under an armature of 0.01, so the swell is
        divided by the mesh's own scale in its shader; the first build swelled them 0.3 mm and the flame lay on the body, every
        thin limb orange across its whole width: the picture of build 34. Its band only where the shell turns from the lens) */
-    const PRAI_FLAME = { inflate: 0.035, lick: 0.06, speed: 1.9, gain: 1.35 };
+    const PRAI_FLAME = { inflate: 0.016, lick: 0.022, speed: 1.9, gain: 0.62 };   /* (R45: now only the heat at the flames' roots, deep red: the flames themselves are FIRE5's) */
     const praiFlameU = { uFT: { value: 0 } };
     const PRAI_NOISE = `float pfH(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
       float pfN(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -6234,13 +6234,154 @@
           `vec3 fN0 = normalize(normal); float rim = smoothstep(0.35, 0.95, 1.0 - clamp(abs(fN0.z), 0.0, 1.0));
            float n1 = pfN(vec3(vFw.x * 6.0, vFw.y * 4.5 - uFT * 2.6, vFw.z * 6.0)), n2 = pfN(vec3(vFw.x * 13.0, vFw.y * 9.0 - uFT * 4.1, vFw.z * 13.0));
            float fire = clamp(rim * rim * (0.55 + 0.9 * n1) * (0.65 + 0.7 * n2), 0.0, 1.0);
-           vec3 col = mix(vec3(0.5, 0.015, 0.0), vec3(1.0, 0.3, 0.03), smoothstep(0.2, 0.7, fire));
-           col = mix(col, vec3(1.0, 0.72, 0.22), smoothstep(0.72, 1.0, fire) * 0.65);
+           vec3 col = mix(vec3(0.42, 0.0, 0.0), vec3(0.95, 0.1, 0.015), smoothstep(0.2, 0.75, fire));
            gl_FragColor = vec4(col * fire * ${F.gain.toFixed(2)} * uFA, 1.0);`);
         if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s flame found no colour line to write (three changed?)');
         sh.fragmentShader = 'varying vec3 vFw;\nuniform float uFT, uFA;\n' + PRAI_NOISE + out; };
       m.customProgramCacheKey = () => 'e4c5praiFlame';
       m.userData.U = U; return m;
+    }
+    /* R44 and R45 (23 Nov 2026, Chad, of build 35's pictures: "That does not look like flame edge to me, where are the
+       flames? Its just an orange edge"; "I meant the flame edge has to look like its on fire."): THE PRAI ON FIRE. The rim
+       above stays, the glow at the flames' roots; over it each body now BURNS. (1) Tongues of flame standing on its outline:
+       cards, each on one of its own bones and SKINNED to it (so a flame rides its body in every frame of every film, of the
+       fight and of play, whoever ticks the look), turned to the lens round the upright and set out to the side of the
+       outline the lens sees (a limb's outer side; both sides of the head, the neck, the chest, the waist and the hips; one
+       up off the crown, the hands and the feet), rising, swaying and flickering, torn into tongues at their tips, deep red at
+       their edges, red-orange in, a little yellow only at the hottest root; additive and tested against depth, so the body
+       hides the flame behind it and the fire stands round its silhouette, lapping a little over its edge. (2) Embers rising
+       off it, drifting and dying. (3) Its fire's light on the paving under it, a painted pool that breathes with the flames.
+       Painted light, no light added (v9.4); caught over half a second as the trance's look turns on. Sized in the world's
+       metres (the bodies are built in centimetres: the lesson of build 34) */
+    const FIRE5 = { fwd: 0.05, catchS: 0.55, emb: { rate: 9, rateLow: 5, life: [0.7, 1.4], up: [0.45, 0.95], size: [0.016, 0.034] }, pool: { r: 0.75, a: 0.5 } };
+    /* [its bone, a second bone (the card halfway between) or null, its side (0 on the bone, 1 both sides, 2 the side away
+       from the body's middle as the lens sees it), how far out (m; 'W' the body's own half-width at the chest, 'M' at the
+       waist, 'H' at the hips), the card's width and height (m)] */
+    const FIRE_AT = [
+      ['head_end', null, 0, 0, 0.3, 0.62], ['Head', null, 1, 0.08, 0.2, 0.42], ['neck', null, 1, 0.1, 0.22, 0.42],
+      ['LeftArm', null, 2, 0.07, 0.26, 0.52], ['RightArm', null, 2, 0.07, 0.26, 0.52],
+      ['LeftArm', 'LeftForeArm', 2, 0.055, 0.22, 0.44], ['RightArm', 'RightForeArm', 2, 0.055, 0.22, 0.44],
+      ['LeftForeArm', null, 2, 0.05, 0.2, 0.4], ['RightForeArm', null, 2, 0.05, 0.2, 0.4],
+      ['LeftForeArm', 'LeftHand', 2, 0.045, 0.19, 0.36], ['RightForeArm', 'RightHand', 2, 0.045, 0.19, 0.36],
+      ['LeftHand', null, 0, 0, 0.2, 0.4], ['RightHand', null, 0, 0, 0.2, 0.4],
+      ['Spine', null, 1, 'W', 0.28, 0.56], ['Spine01', null, 1, 'M', 0.26, 0.5], ['Spine02', null, 1, 'H', 0.25, 0.46], ['Hips', null, 1, 'H', 0.24, 0.42],
+      ['LeftUpLeg', 'LeftLeg', 2, 0.07, 0.22, 0.4], ['RightUpLeg', 'RightLeg', 2, 0.07, 0.22, 0.4],
+      ['LeftLeg', null, 2, 0.055, 0.2, 0.36], ['RightLeg', null, 2, 0.055, 0.2, 0.36],
+      ['LeftLeg', 'LeftFoot', 2, 0.05, 0.18, 0.32], ['RightLeg', 'RightFoot', 2, 0.05, 0.18, 0.32],
+      ['LeftFoot', null, 0, 0, 0.2, 0.3], ['RightFoot', null, 0, 0, 0.2, 0.3]];
+    /* (each card its own size, its own beat and its own lean, so the tongues never stand in a row: the first pass drew small
+       even teardrops stacked up each side, a ladder; the flame itself a field of turbulence carried up and cut into tongues
+       where it thins, never a drawn teardrop) */
+    const FIRE_VS = `#include <common>
+      #include <skinning_pars_vertex>
+      attribute vec2 aCorner; attribute vec4 aCard; attribute float aSeed;
+      uniform float uT, uK, uA, uFwd; uniform vec3 uC;
+      varying vec2 vUv; varying float vS; varying float vA;
+      void main() {
+        #include <skinbase_vertex>
+        vec3 transformed = vec3(position);
+        #include <skinning_vertex>
+        vec3 wc = (modelMatrix * vec4(transformed, 1.0)).xyz;
+        vec3 toC = cameraPosition - wc, toH = vec3(toC.x, 0.0, toC.z);
+        vec3 rr = dot(toH, toH) > 1e-8 ? normalize(cross(vec3(0.0, 1.0, 0.0), toH)) : vec3(1.0, 0.0, 0.0);
+        float sd = aCard.x;
+        if (sd > 1.5) sd = dot(wc - uC, rr) >= 0.0 ? 1.0 : -1.0;
+        wc += rr * (sd * aCard.y * uK) + normalize(toC) * (uFwd * uK);
+        float s1 = fract(aSeed * 7.13), s2 = fract(aSeed * 3.71), s3 = fract(aSeed * 11.37);
+        float fl = 0.78 + 0.2 * sin(uT * (6.1 + 2.0 * s1) + aSeed * 17.0) + 0.12 * sin(uT * (11.3 + 3.0 * s2) + aSeed * 5.3) + 0.07 * sin(uT * 21.7 + aSeed * 31.0);
+        float w = aCard.z * uK * (0.8 + 0.35 * s2) * (0.92 + 0.08 * sin(uT * 4.7 + aSeed * 9.0)), h = aCard.w * uK * (0.7 + 0.6 * s1) * fl;
+        float lean = (s3 - 0.5) * 0.5 * h + sd * 0.12 * h + 0.06 * h * sin(uT * 3.1 + aSeed * 13.0);
+        vec3 wp = wc + rr * (aCorner.x * w + lean * max(0.0, aCorner.y)) + vec3(0.0, aCorner.y * h, 0.0);
+        vUv = vec2(aCorner.x + 0.5, aCorner.y + 0.22); vS = aSeed; vA = uA;
+        gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
+      }`;
+    const FIRE_FS = `varying vec2 vUv; varying float vS; varying float vA; uniform float uT;
+      float fh(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+      float fn(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(fh(i), fh(i + vec2(1.0, 0.0)), u.x), mix(fh(i + vec2(0.0, 1.0)), fh(i + vec2(1.0, 1.0)), u.x), u.y); }
+      float fb(vec2 p) { float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a * fn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return v; }
+      void main() {
+        float y = clamp(vUv.y, 0.0, 1.0), x = (vUv.x - 0.5) * 2.0, t = uT + vS * 17.0;
+        float n1 = fb(vec2(x * 1.7 + vS * 5.0, y * 2.3 - t * 2.5)), n2 = fb(vec2(x * 3.4 - vS * 2.0, y * 4.0 - t * 4.0));
+        float xs = x + (n1 - 0.5) * 1.0 * y;
+        float hx = pow(1.0 - smoothstep(0.0, 1.0, abs(xs)), 0.8);
+        float g = pow(1.0 - y, 1.1);
+        float f = hx * (0.3 + 0.7 * g) * (0.4 + 1.0 * n2) + 0.22 * hx * g;
+        float base = smoothstep(0.02, 0.36, y + (0.16 * (1.0 - abs(xs)) + (n1 - 0.5) * 0.14) * smoothstep(0.0, 0.22, y));
+        float win = (1.0 - smoothstep(0.7, 1.0, abs(x))) * (1.0 - smoothstep(0.84, 1.0, y));
+        float shape = smoothstep(0.27, 0.52, f) * base * win;
+        float heat = clamp(f * 1.5 - 0.25, 0.0, 1.0) * (0.35 + 0.65 * g) * (0.45 + 0.55 * base);
+        vec3 c = mix(vec3(0.38, 0.0, 0.0), vec3(0.92, 0.05, 0.01), smoothstep(0.0, 0.3, heat));
+        c = mix(c, vec3(1.0, 0.25, 0.03), smoothstep(0.3, 0.68, heat));
+        c = mix(c, vec3(1.0, 0.6, 0.2), smoothstep(0.78, 1.0, heat) * 0.55);
+        float a = shape * (0.16 + 0.95 * heat) * vA;
+        if (a < 0.004) discard;
+        gl_FragColor = vec4(c, a);
+      }`;
+    function praiFireMat() {
+      const m = new THREE.ShaderMaterial({ vertexShader: FIRE_VS, fragmentShader: FIRE_FS, transparent: true, depthWrite: false, depthTest: true,
+        blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide,
+        uniforms: { uT: { value: 0 }, uK: { value: 1 }, uA: { value: 0 }, uFwd: { value: FIRE5.fwd }, uC: { value: new THREE.Vector3() } } });
+      mats.push(m); return m;
+    }
+    let firePoolTex = null, firePoolGeo = null;
+    function firePool() {
+      if (!firePoolTex) { const [c, x] = canvas(128, 128), gr = x.createRadialGradient(64, 64, 0, 64, 64, 63);
+        gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gr.addColorStop(0.7, 'rgba(255,255,255,0.14)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+        x.fillStyle = gr; x.fillRect(0, 0, 128, 128); firePoolTex = tex(done(THREE, c, false)); }
+      if (!firePoolGeo) { firePoolGeo = new THREE.PlaneGeometry(2 * FIRE5.pool.r, 2 * FIRE5.pool.r); firePoolGeo.rotateX(-Math.PI / 2); owned.push(firePoolGeo); }
+      return [firePoolTex, firePoolGeo];
+    }
+    function praiFireBuild(P, list) {
+      const o = list.find(q => q.isSkinnedMesh); if (!o || !o.skeleton) return null;
+      const sk = o.skeleton, bones = sk.bones;
+      const idx = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); return bones.findIndex(b => re.test(b.name)); };
+      /* (the body's own half-widths in its own metres, its shoulders' span and its hips', measured once as it lands) */
+      P.group.updateWorldMatrix(true, true);
+      const wpos = (nm) => { const i = idx(nm); return i < 0 ? null : bones[i].getWorldPosition(new THREE.Vector3()); };
+      const s0 = P.group.scale.x || 1, la = wpos('LeftArm'), ra = wpos('RightArm'), lu = wpos('LeftUpLeg'), ru = wpos('RightUpLeg');
+      const W = la && ra ? 0.5 * la.distanceTo(ra) / s0 * 0.78 : 0.16, H = lu && ru ? 0.5 * lu.distanceTo(ru) / s0 + 0.07 : 0.15, R = { W, M: 0.5 * (W + H), H };
+      /* (each card's point in the mesh's own space at the bind: skinned to its bone, it lands on the bone) */
+      const bi = new THREE.Matrix4().copy(o.bindMatrix).invert(), q = new THREE.Vector3(), q2 = new THREE.Vector3(), M = new THREE.Matrix4();
+      const at = (i, out) => out.setFromMatrixPosition(M.copy(sk.boneInverses[i]).invert());
+      const cards = [];
+      for (const [a, b, side, r, w, h] of FIRE_AT) { const ia = idx(a), ib = b ? idx(b) : -1; if (ia < 0 || (b && ib < 0)) continue;
+        const rr = typeof r === 'string' ? R[r] : r;
+        for (const sd of side === 1 ? [-1, 1] : [side]) cards.push({ ia, ib, sd, rr, w, h }); }
+      const N = cards.length; if (!N) return null;
+      const pos = new Float32Array(N * 12), cor = new Float32Array(N * 8), crd = new Float32Array(N * 16), sed = new Float32Array(N * 4),
+            sI = new Uint16Array(N * 16), sW = new Float32Array(N * 16), ind = [];
+      const C4 = [[-0.5, -0.22], [0.5, -0.22], [0.5, 0.78], [-0.5, 0.78]], rnd = rng(9001 + 37 * (P.slot || 0));
+      cards.forEach((c, k) => {
+        at(c.ia, q); if (c.ib >= 0) { at(c.ib, q2); q.lerp(q2, 0.5); } q.applyMatrix4(bi);
+        const s = rnd();
+        for (let v = 0; v < 4; v++) { const j = k * 4 + v;
+          pos[j * 3] = q.x; pos[j * 3 + 1] = q.y; pos[j * 3 + 2] = q.z; cor[j * 2] = C4[v][0]; cor[j * 2 + 1] = C4[v][1];
+          crd[j * 4] = c.sd; crd[j * 4 + 1] = c.rr; crd[j * 4 + 2] = c.w; crd[j * 4 + 3] = c.h; sed[j] = s;
+          sI[j * 4] = c.ia; sW[j * 4] = c.ib >= 0 ? 0.5 : 1; if (c.ib >= 0) { sI[j * 4 + 1] = c.ib; sW[j * 4 + 1] = 0.5; } }
+        const b0 = k * 4; ind.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3); });
+      const g = new THREE.BufferGeometry(); owned.push(g);
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aCorner', new THREE.BufferAttribute(cor, 2));
+      g.setAttribute('aCard', new THREE.BufferAttribute(crd, 4)); g.setAttribute('aSeed', new THREE.BufferAttribute(sed, 1));
+      g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(sI, 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sW, 4)); g.setIndex(ind);
+      const m = praiFireMat(), me = new THREE.SkinnedMesh(g, m); me.bind(sk, o.bindMatrix);
+      me.userData.__svTwin = true; me.userData.__praiTwin = true; me.frustumCulled = false; me.castShadow = false; me.receiveShadow = false; me.visible = false; me.renderOrder = 3;
+      me.position.copy(o.position); me.quaternion.copy(o.quaternion); me.scale.copy(o.scale); o.parent.add(me);
+      const hip = bones[Math.max(0, idx('Hips'))];
+      const F = { me, m, k: 0, a: 1, last: 0, acc: 0, hip, n: N, emb: ['head_end', 'Head', 'LeftHand', 'RightHand', 'LeftArm', 'RightArm', 'Spine', 'LeftForeArm', 'RightForeArm', 'Hips', 'LeftLeg', 'RightLeg'].map(idx).filter(i => i >= 0).map(i => bones[i]) };
+      /* (its clock, its size, its strength and where its middle stands: set as it is drawn, so they hold in every frame) */
+      me.onBeforeRender = () => { const now = performance.now() / 1000, dt = F.last ? Math.min(0.1, Math.max(0, now - F.last)) : 0; F.last = now;
+        F.k = Math.min(1, F.k + dt / FIRE5.catchS);
+        const U = m.uniforms; U.uT.value = now % 1000; U.uK.value = P.group.scale.x || 1; U.uA.value = F.a * smo(F.k); hip.getWorldPosition(U.uC.value); };
+      /* (3) its fire's light on the paving under it */
+      const [pt, pg] = firePool();
+      const gm = new THREE.MeshBasicMaterial({ map: pt, color: 0xff3b12, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false,
+        polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(gm);
+      const gq = new THREE.Mesh(pg, gm); gq.position.y = 0.019; gq.renderOrder = 2; gq.visible = false; gq.frustumCulled = false; gq.userData.__praiTwin = true; P.group.add(gq);
+      gq.onBeforeRender = () => { const t = performance.now() / 1000, f = 0.82 + 0.1 * Math.sin(t * 9.1 + P.slot) + 0.08 * Math.sin(t * 15.7 + 2 * P.slot);
+        gm.opacity = FIRE5.pool.a * F.a * smo(F.k) * f; };
+      F.glow = gq; F.gm = gm;
+      return F;
     }
     const _pr5 = new THREE.Vector3();
     const PRAI5 = {
@@ -6271,6 +6412,8 @@
           t.userData.__svTwin = true; t.userData.__praiTwin = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false; t.renderOrder = 2;
           t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); flames.push(t); }
         P.tr = { twins, m, on: false, flames, fm };
+        /* (R45: and its fire, on its own bones: praiFireBuild) */
+        P.tr.fire = praiFireBuild(P, list);
         /* (1) Spirit Vision's: the body itself to the vision's layer, laid on as black, and a twin of pale light at its
            edge (ctx.spiritAura twins only what the world draws: the body is turned back to the world's layer for the one
            call, then sent to the vision's) */
@@ -6284,9 +6427,10 @@
       /* which look: 'vision' (seen only through Spirit Vision) or 'trance' (the world's, from the turn) */
       look(mode) { this.mode = mode; for (const P of this.list) this.lay(P); },
       lay(P) { if (!P.tr) return; const on = this.mode === 'trance' && P.group.visible;
-        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on; } },
+        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on;
+          const F = P.tr.fire; if (F) { F.me.visible = on; F.glow.visible = on; F.k = 0; F.last = 0; F.acc = 0; } } },
       /* a body's strength (0 gone .. 1): both looks */
-      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; if (P.tr.fire) P.tr.fire.a = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
       /* R43 (Chad: "add animations to the prais, walking animations, passive idle animations and animations when getting hit
          or binded"): its takes made ready once it has landed (masters/v28.0/people.sh: the library's acts set on each body).
          The stagger's own travel pinned (Hit_Reaction carries its hips 0.77 m back and 0.47 m aside: the rules carry the
@@ -6325,8 +6469,54 @@
           else { P.hidden = true; P.group.visible = false; }
         });
         this.look('vision'); for (const P of this.list) this.alpha(P, 1);
+        PRAI_EMB.clear();
       }
     };
+    /* R45 (2): THE EMBERS off the nine on fire: one cloud of points for all of them, each a soft spark, hot at its heart,
+       additive, sized in metres on the screen's own scale (the fight's sparks' way, fsPts); they rise off a body's own bones
+       at a few a second, drift, cool from orange to red and die. Stepped as the cloud is drawn (wall time, a cosmetic), so
+       they run in every frame whoever ticks the look; their own seeded stream (v6.15) */
+    const PRAI_EMB = (() => {
+      const NMAX = 200, g = new THREE.BufferGeometry(), pos = new Float32Array(NMAX * 3), col = new Float32Array(NMAX * 3), siz = new Float32Array(NMAX), alp = new Float32Array(NMAX);
+      const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
+      g.setAttribute('position', at(pos, 3)); g.setAttribute('aC', at(col, 3)); g.setAttribute('aS', at(siz, 1)); g.setAttribute('aA', at(alp, 1)); g.setDrawRange(0, 0); owned.push(g);
+      const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, uniforms: { uScale: { value: 500 } },
+        vertexShader: 'attribute vec3 aC; attribute float aS; attribute float aA; varying vec3 vC; varying float vA; uniform float uScale; void main(){ vC = aC; vA = aA; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+        fragmentShader: 'varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float f = pow(1.0 - d, 1.6), h = pow(1.0 - d, 5.0); gl_FragColor = vec4(vC + vec3(0.5 * h, 0.35 * h, 0.0), vA * f); }' });
+      mats.push(m);
+      const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.renderOrder = 4; pts.userData.__praiTwin = true; world.add(pts);
+      const E = Array.from({ length: NMAX }, () => ({ on: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, age: 0, life: 1, s: 0.02, ph: 0 }));
+      const rnd = rng(4242), _e = new THREE.Vector3(), _r = new THREE.Vector3(), _u = new THREE.Vector3(), _f = new THREE.Vector3();
+      let last = 0, cur = 0;
+      const spawn = (x, y, z) => { let e = null;
+        for (let i = 0; i < NMAX; i++) { const q = E[(cur + i) % NMAX]; if (!q.on) { e = q; cur = (cur + i + 1) % NMAX; break; } }
+        if (!e) { e = E[cur]; cur = (cur + 1) % NMAX; }
+        const L = FIRE5.emb; e.on = true; e.x = x; e.y = y; e.z = z; e.vx = (rnd() - 0.5) * 0.3; e.vz = (rnd() - 0.5) * 0.3; e.vy = L.up[0] + rnd() * (L.up[1] - L.up[0]);
+        e.age = 0; e.life = L.life[0] + rnd() * (L.life[1] - L.life[0]); e.s = L.size[0] + rnd() * (L.size[1] - L.size[0]); e.ph = rnd() * 6.28; };
+      pts.onBeforeRender = () => {
+        const now = performance.now() / 1000, dt = last ? Math.min(0.1, Math.max(0, now - last)) : 0; last = now;
+        m.uniforms.uScale.value = Math.min(devicePixelRatio || 1, LOW ? 1.6 : 2) * innerHeight / (2 * Math.tan(camera.fov * Math.PI / 360));
+        camera.updateMatrixWorld(); camera.matrixWorld.extractBasis(_r, _u, _f); _r.y = 0; if (_r.lengthSq() < 1e-6) _r.set(1, 0, 0); _r.normalize();
+        const rate = LOW ? FIRE5.emb.rateLow : FIRE5.emb.rate;
+        for (const P of PRAI5.list) { const F = P.tr && P.tr.fire;
+          if (!F || !P.tr.on || !P.group.visible || F.a < 0.05 || !F.emb.length) { if (F) F.acc = 0; continue; }
+          const k = P.group.scale.x || 1; F.acc += dt * rate * F.a * smo(F.k) * k;
+          while (F.acc >= 1) { F.acc -= 1; const b = F.emb[Math.floor(rnd() * F.emb.length)]; b.getWorldPosition(_e);
+            const sd = (rnd() - 0.5) * 0.24 * k; spawn(_e.x + _r.x * sd, _e.y + rnd() * 0.08, _e.z + _r.z * sd); } }
+        let hi = 0;
+        for (let i = 0; i < NMAX; i++) { const e = E[i];
+          if (e.on && dt > 0) { e.age += dt; if (e.age >= e.life) e.on = false; }
+          if (!e.on) { siz[i] = 0; alp[i] = 0; continue; }
+          if (dt > 0) { e.vy *= Math.exp(-0.6 * dt); e.x += (e.vx + 0.18 * Math.sin(e.ph + e.age * 5.0)) * dt; e.y += e.vy * dt; e.z += (e.vz + 0.18 * Math.cos(e.ph + e.age * 4.3)) * dt; }
+          const u = e.age / e.life, a = Math.min(1, u / 0.1) * Math.pow(1 - u, 1.2);
+          pos[i * 3] = e.x; pos[i * 3 + 1] = e.y; pos[i * 3 + 2] = e.z;
+          col[i * 3] = 1.0; col[i * 3 + 1] = 0.55 - 0.42 * u; col[i * 3 + 2] = 0.16 - 0.15 * u;
+          siz[i] = e.s * (1 - 0.5 * u); alp[i] = a; hi = i + 1; }
+        g.setDrawRange(0, hi);
+        if (hi > 0) for (const k of ['position', 'aC', 'aS', 'aA']) g.attributes[k].needsUpdate = true;
+      };
+      return { pts, clear() { for (const e of E) e.on = false; g.setDrawRange(0, 0); last = 0; } };
+    })();
     PRAI5.make();
 
     /* ---------------------------------------------------------------- HIS LERSI'S CAGE (the plan's 5.3 and 11: "seven thin
@@ -10113,6 +10303,25 @@
         swingLast = { th: best, ...rb, at0: r0 };
         if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)
       }
+      /* his wrist held inside the swing's own margins (swingCost's: toward his thumb 22, toward his little finger 32, bent
+         60 toward his palm and 50 back), the hand turned the least way back to them (the shortest turn of his fist's middle
+         line onto the nearest direction inside them: his knuckles keep their roll); `Q` his hand's turn in the world,
+         changed in place. Answers whether it held him */
+      const WRIST5 = { toThumb: 22, toLittle: 32, flex: 60, back: 50 };
+      const _wc = { V: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), t: V(), h: V(), e: V(), q: new THREE.Quaternion() };
+      let wristHeld = 0;
+      function wristClamp(a, Q) {
+        if (!a.f5 || a.f5.none) return false;
+        const w = _wc; a.fore.getWorldPosition(w.e); a.hand.getWorldPosition(w.h); w.V.subVectors(w.h, w.e); const L = w.V.length(); if (!(L > 1e-5)) return false; w.V.divideScalar(L);
+        w.f.copy(a.f5.f).applyQuaternion(Q); w.ac.copy(a.f5.ac).applyQuaternion(Q); w.n.copy(a.f5.n).applyQuaternion(Q);
+        w.re.copy(w.ac).addScaledVector(w.V, -w.ac.dot(w.V)); w.ne.copy(w.n).addScaledVector(w.V, -w.n.dot(w.V));
+        if (w.re.lengthSq() < 1e-10 || w.ne.lengthSq() < 1e-10) return false; w.re.normalize(); w.ne.normalize();
+        const fe = w.f.dot(w.V), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
+        const cd = Math.max(-WRIST5.toLittle, Math.min(WRIST5.toThumb, wd)), cf = Math.max(-WRIST5.back, Math.min(WRIST5.flex, wf));
+        if (cd === wd && cf === wf) { wristHeld = 0; return false; }
+        w.t.copy(w.V).addScaledVector(w.re, Math.tan(cd * D2R)).addScaledVector(w.ne, Math.tan(cf * D2R)).normalize();
+        w.q.setFromUnitVectors(w.f, w.t); Q.premultiply(w.q); wristHeld = Math.max(Math.abs(wd - cd), Math.abs(wf - cf)); return true;
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -10166,6 +10375,12 @@
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
         const rel = _sq3.clone().invert().multiply(_sq2), ax = G.foreAxis, dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
         const tw = new THREE.Quaternion(ax.x * dd, ax.y * dd, ax.z * dd, rel.w); if (tw.lengthSq() > 1e-12) { tw.normalize(); a.fore.quaternion.multiply(tw); a.fore.updateWorldMatrix(false, true); }
+        /* R33 and R35 (23 Nov: the swing measured as a move on a phone's clock, tools/probes/e4c5swinglive.mjs): with the stick
+           held where its move puts it, his wrist was still bent toward his little finger 51 to 62 degrees through the gold
+           and cast 7 and 43 through the bag (a real wrist's range is about 30 to 40), and bent back 138 degrees as he lifts
+           it to plant it. A man's hand on a staff leads the staff: where his hand would have to bend past its range it
+           stops at the range's edge, and the stick, carried in his fist by his hand bone (STICK5.inHand), leans with it */
+        if (!planted) wristClamp(a, _sq2);
         a.fore.getWorldQuaternion(_sq3); a.hand.quaternion.copy(_sq3.invert().multiply(_sq2)); a.hand.updateWorldMatrix(false, true);
         if (share < 0.999) { _sq.copy(a.up.quaternion); a.up.quaternion.copy(_keep[0]).slerp(_sq, share);
           _sq.copy(a.fore.quaternion); a.fore.quaternion.copy(_keep[1]).slerp(_sq, share);
@@ -10201,7 +10416,7 @@
         k() { return k; },
         /* (R41, a probe's: the elbow's swing this frame (degrees), the wrist's measures it left and those at no swing; and the
            swing switched off and on, so the same frame can be read both ways) */
-        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null }; },
+        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null, held: wristHeld }; },
         /* (a probe's: each finger's joints as DRAWN, in the plane the solve worked in (cm: along the finger's rest line, toward
            the back of his hand, and out of the plane), beside the joints it meant, and each one's distance from the shaft's
            circle there (the finger's own thickness on the wood): a solve that is laid as it was meant reads the same twice) */

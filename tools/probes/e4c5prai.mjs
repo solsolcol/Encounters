@@ -7,7 +7,11 @@
    Prai is set coming (it walks to him), struck by the fire (setback: its flinch), bound (its struggle in the bubble),
    chased (its stagger back), and two set coming side by side (they keep apart). At each, the picture, and every Prai's
    state, take, rate and speed (lab.praiRead). OUT/prai.json holds every row; OUT/<n>-<what>.png the pictures.
-     ENC_DIST=<snapshot> CHROMIUM_PATH=... [CHFILE=<chapter.js>] [OUT=dir] node tools/probes/e4c5prai.mjs */
+   STEP_MS (default 0: the wall's own clock): once the lesson has begun, the page's clock is SLOWED as filmlive.mjs slows
+   it (performance.now, and the time handed to every frame, advance exactly STEP_MS a drawn frame), so a flinch of a second
+   is photographed inside it: on a box with no graphics card a frame takes about a second, and on the wall's clock the
+   flinch and the stagger were over before the next picture was drawn (build 35's first run).
+     ENC_DIST=<snapshot> CHROMIUM_PATH=... [CHFILE=<chapter.js>] [OUT=dir] [STEP_MS=33] node tools/probes/e4c5prai.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -33,6 +37,14 @@ await frames(4);
 const lab0 = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
 say('start', await lab0('start'));                       // (the lesson begun: in the brief the rules do not step and the nine are not drawn)
 await frames(6);
+const STEP_MS = +(process.env.STEP_MS || 0);
+if (STEP_MS) await p.evaluate((STEP_MS) => {              // (the slowed clock: filmlive.mjs's, word for word in what it does)
+  const realNow = performance.now.bind(performance), realRaf = window.requestAnimationFrame.bind(window);
+  window.__virt = realNow(); performance.now = () => window.__virt;
+  window.requestAnimationFrame = (cb) => realRaf(() => cb(window.__virt + 5000));
+  const tick = () => { window.__virt += STEP_MS; realRaf(tick); }; realRaf(tick);
+}, STEP_MS);
+if (STEP_MS) { say('clock slowed to', STEP_MS, 'ms a frame'); await frames(4); }
 const lab = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
 const res = { rows: [], errs, warns };
 let n = 0;

@@ -2165,6 +2165,25 @@
         swingLast = { th: best, ...rb, at0: r0 };
         if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)
       }
+      /* his wrist held inside the swing's own margins (swingCost's: toward his thumb 22, toward his little finger 32, bent
+         60 toward his palm and 50 back), the hand turned the least way back to them (the shortest turn of his fist's middle
+         line onto the nearest direction inside them: his knuckles keep their roll); `Q` his hand's turn in the world,
+         changed in place. Answers whether it held him */
+      const WRIST5 = { toThumb: 22, toLittle: 32, flex: 60, back: 50 };
+      const _wc = { V: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), t: V(), h: V(), e: V(), q: new THREE.Quaternion() };
+      let wristHeld = 0;
+      function wristClamp(a, Q) {
+        if (!a.f5 || a.f5.none) return false;
+        const w = _wc; a.fore.getWorldPosition(w.e); a.hand.getWorldPosition(w.h); w.V.subVectors(w.h, w.e); const L = w.V.length(); if (!(L > 1e-5)) return false; w.V.divideScalar(L);
+        w.f.copy(a.f5.f).applyQuaternion(Q); w.ac.copy(a.f5.ac).applyQuaternion(Q); w.n.copy(a.f5.n).applyQuaternion(Q);
+        w.re.copy(w.ac).addScaledVector(w.V, -w.ac.dot(w.V)); w.ne.copy(w.n).addScaledVector(w.V, -w.n.dot(w.V));
+        if (w.re.lengthSq() < 1e-10 || w.ne.lengthSq() < 1e-10) return false; w.re.normalize(); w.ne.normalize();
+        const fe = w.f.dot(w.V), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
+        const cd = Math.max(-WRIST5.toLittle, Math.min(WRIST5.toThumb, wd)), cf = Math.max(-WRIST5.back, Math.min(WRIST5.flex, wf));
+        if (cd === wd && cf === wf) { wristHeld = 0; return false; }
+        w.t.copy(w.V).addScaledVector(w.re, Math.tan(cd * D2R)).addScaledVector(w.ne, Math.tan(cf * D2R)).normalize();
+        w.q.setFromUnitVectors(w.f, w.t); Q.premultiply(w.q); wristHeld = Math.max(Math.abs(wd - cd), Math.abs(wf - cf)); return true;
+      }
       function staffLay(P, kk) {
         const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
         /* (every take of his holds it so: his rest, walk and run, his talk in the films, the free hand talking (with the
@@ -2218,6 +2237,12 @@
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
         const rel = _sq3.clone().invert().multiply(_sq2), ax = G.foreAxis, dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
         const tw = new THREE.Quaternion(ax.x * dd, ax.y * dd, ax.z * dd, rel.w); if (tw.lengthSq() > 1e-12) { tw.normalize(); a.fore.quaternion.multiply(tw); a.fore.updateWorldMatrix(false, true); }
+        /* R33 and R35 (23 Nov: the swing measured as a move on a phone's clock, tools/probes/e4c5swinglive.mjs): with the stick
+           held where its move puts it, his wrist was still bent toward his little finger 51 to 62 degrees through the gold
+           and cast 7 and 43 through the bag (a real wrist's range is about 30 to 40), and bent back 138 degrees as he lifts
+           it to plant it. A man's hand on a staff leads the staff: where his hand would have to bend past its range it
+           stops at the range's edge, and the stick, carried in his fist by his hand bone (STICK5.inHand), leans with it */
+        if (!planted) wristClamp(a, _sq2);
         a.fore.getWorldQuaternion(_sq3); a.hand.quaternion.copy(_sq3.invert().multiply(_sq2)); a.hand.updateWorldMatrix(false, true);
         if (share < 0.999) { _sq.copy(a.up.quaternion); a.up.quaternion.copy(_keep[0]).slerp(_sq, share);
           _sq.copy(a.fore.quaternion); a.fore.quaternion.copy(_keep[1]).slerp(_sq, share);
@@ -2253,7 +2278,7 @@
         k() { return k; },
         /* (R41, a probe's: the elbow's swing this frame (degrees), the wrist's measures it left and those at no swing; and the
            swing switched off and on, so the same frame can be read both ways) */
-        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null }; },
+        swing(on) { if (on != null) SWING_ON = !!on; return { on: SWING_ON, last: swingLast ? JSON.parse(JSON.stringify(swingLast)) : null, held: wristHeld }; },
         /* (a probe's: each finger's joints as DRAWN, in the plane the solve worked in (cm: along the finger's rest line, toward
            the back of his hand, and out of the plane), beside the joints it meant, and each one's distance from the shaft's
            circle there (the finger's own thickness on the wood): a solve that is laid as it was meant reads the same twice) */
