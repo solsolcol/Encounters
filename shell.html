@@ -773,6 +773,10 @@ body.inplay .cBtn.hide{display:none}
   .tagSw{width:64px;height:64px;right:calc(max(16px,env(safe-area-inset-right)) + 8px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 164px)}
   body.tagOn:not(.cine) #caption{max-width:92vw;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 240px)}
   body.tagOn #nofire{bottom:calc(max(18px,env(safe-area-inset-bottom)) + 240px)}
+  /* (v28.0, R75: with the party list up, a refusal's words stand in the width its column leaves, set tighter so the longest
+     of the fight's, "Lend the cage first", keeps to one line: centred on the screen they ran under the column, 3 px on a
+     360-wide phone with two words, and over half a tile with the longest on any phone; fixturetest's tagPartyHudLowPhone) */
+  body.tagOn.tagParty #nofire{left:calc((100vw - 176px) / 2);max-width:calc(100vw - 188px);font-size:.74rem;letter-spacing:.06em;padding:6px 10px}
   #tagCount{top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,37px) + 8px)}
   /* (the objective box clears the column a chapter's own button stands in, as it does the torch's and the eye's) */
   body.hasCBtn .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
