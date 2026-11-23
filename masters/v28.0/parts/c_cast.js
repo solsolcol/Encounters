@@ -23,6 +23,18 @@
 //@@COPY 3548-4954 :: /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits
 //@@COPY 5430-5492 :: /* chapter 3's numbers for a man set on a seat by his own body
 //@@COPY 5494-5527 :: /* LOOK D on Grandmaster Pho
+    /* R33 (23 Nov; R28, "brown bits" on his robe in the fight): chapter 4's cover takes the robe's islands of SKIN colour;
+       the scan also left small DARK specks in the robe's white (grey, brown and black dots, seen on his front and back at
+       three metres on a phone). They are found in his sheet by tools/phodark.py (PHO_DARK5, c_phodark.js: on pieces that
+       paint mostly robe, clear of the bead strands) and painted into the same cover once, in the robe's colour round each:
+       chapter 4's look D, its mask and his file unchanged. */
+    { const fleck0 = phoFleck;
+      phoFleck = function () { const t = fleck0();
+        if (t && !t.userData.dark5 && typeof PHO_DARK5 === 'object' && t.image && t.image.getContext) {
+          const g = t.image.getContext('2d'), s = t.image.width / PHO_DARK5.size;
+          for (const [r, gr, b, R] of PHO_DARK5.f) { g.fillStyle = `rgb(${r},${gr},${b})`; for (let i = 0; i < R.length; i += 3) g.fillRect(R[i + 1] * s, R[i] * s, R[i + 2] * s, s); }
+          t.userData.dark5 = true; t.needsUpdate = true; }
+        return t; }; }
     /* and chapter 3's numbers for him seated CROSS-LEGGED on a cushion (its hall, v26.18: masters/v26.18/pho), with the
        white cloth over his crossed legs (w3pholap, a declared reuse) */
 //@@COPY3 4616-4618 :: const CROSS = {

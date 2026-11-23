@@ -96,6 +96,10 @@ for (const [name0, t] of POSES) { const name = pass ? name0 + '-T' + pass : name
       if (view === 'nine') { c = new V(-8.5, 2.3, -10.4); tg = new V(-8.5, 0.7, -6.4); }   // (the court's far end, the nine where the brief stands them)
       else if (view === 'front') { c = new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); tg = new V(g.x, 1.0, g.z); }
       else if (view === 'side') { c = new V(g.x - lx * 1.45, 1.3, g.z - lz * 1.45); tg = new V(g.x, 0.95, g.z); }   // (his right side, inside the court's wall)
+      /* (back: from 3.0 m behind him; backclose: 1.2 m behind his right shoulder blade, where R28's brown bits were, through a
+         30 degree lens) */
+      else if (view === 'back') { c = new V(g.x - fx * 3.0, 1.45, g.z - fz * 3.0); tg = new V(g.x, 1.1, g.z); }
+      else if (view === 'backclose') { c = new V(g.x - fx * 1.2 - lx * 0.2, 1.5, g.z - fz * 1.2 - lz * 0.2); tg = new V(g.x - fx * 0.08 - lx * 0.13, 1.33, g.z - fz * 0.08 - lz * 0.13); }
       else if (view === 'hand') { c = new V(fist.x + fx * 0.9, fist.y + 0.12, fist.z + fz * 0.9); tg = fist.clone(); }   // (a little above: as a man standing before him sees it)
       /* (below: looking straight up the stick through his fist, so the fingers closing round it show as a ring round the shaft) */
       else if (view === 'below') { const g = E.stage.things && E.stage.things.nagaStaff, up = new V(0, 1, 0); if (g) { g.updateWorldMatrix(true, false); up.setFromMatrixColumn(g.matrixWorld, 1).normalize(); }
@@ -104,7 +108,7 @@ for (const [name0, t] of POSES) { const name = pass ? name0 + '-T' + pass : name
       E.yaw.position.copy(c); window.__aim = tg;
       /* (the hand's two views through a narrower lens, 22 degrees: a detail taken with a lens, never by enlarging; the body's
          two through the game's own) */
-      if (E.kit.lens) E.kit.lens(view === 'hand' || view === 'handout' ? 22 : view === 'below' ? 40 : null, { secs: 0 });
+      if (E.kit.lens) E.kit.lens(view === 'hand' || view === 'handout' ? 22 : view === 'below' ? 40 : view === 'backclose' ? 30 : null, { secs: 0 });
       /* (GHOST=1: in the hand's two views the stick drawn see-through, so a finger behind it or inside it shows where it is) */
       { const g = E.stage.things && E.stage.things.nagaStaff, gh = window.__ghost && (view === 'hand' || view === 'handout' || view === 'below');
         if (g) g.traverse(o => { if (!o.isMesh || !o.material) return; const m = o.material; if (m.__op == null) { m.__op = m.opacity; m.__tr = m.transparent; m.__dw = m.depthWrite; }
