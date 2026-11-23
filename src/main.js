@@ -16610,6 +16610,9 @@ const STING_SAMPLE = {
   u5m7voice: ['u5m7voice', 1],
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5colaugh: ['u5colaugh', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5pvhit1: ['u5pvhit1', 1], u5pvhit2: ['u5pvhit2', 1], u5pvbind1: ['u5pvbind1', 1], u5pvbind2: ['u5pvbind2', 1],
+  u5pvstrug1: ['u5pvstrug1', 1], u5pvstrug2: ['u5pvstrug2', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

@@ -108,6 +108,17 @@
         paceCome: 0.6, paceSlip: 0.8, paceHide: 0.55, paceHidden: 0.5, rush: 2.2,
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
+        /* (R43, 23 Nov: Chad, "The prais also have some automatic walking logic that slowly walks around, taking into account
+           body collision with other prais and models, pathfinding, etc." Each one on the court is a body, a disc of praiR
+           (a woman's shoulders, 0.4 m across, and her arms' swing); a bubble round a bound one a disc of bubR (it is drawn
+           0.62 m round); Grandmaster Pho a disc of phoR. None stands in another: met, they are set apart (praiBodies). Its
+           way to him is steered round what stands ahead of it within steerLook (steerAround): round the side its way
+           already passes, never through. And while three are at his bars, one that waits its turn PROWLS round him at
+           prowl, a little out from the bars (prowlIn), turning back where a wall, a planter or another shuts its way, no
+           sooner than prowlTurn after its last turn) */
+        praiR: 0.26, bubR: 0.62, phoR: 0.34, steerLook: 1.4, prowl: 0.3, prowlIn: 0.3, prowlTurn: 1.2,
+        slidePush: 3.0, slideThrow: 6.0,      // (R43: how fast a setback carries it back, and the gold throws it: slideTick)
+        bubGrow: 0.3,                         // (R43: a bubble's disc grows round the bound one over this: prR)
         // FIRE (Grandmaster Pho's main act)
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
@@ -290,7 +301,8 @@
         // BIND; 'keep' a bubble that stands still until the lesson's bag; 'grace' a bubble that stands still until the
         // first golden shockwave. lurk: a Prai chased away lies still this long before it comes on
         return { id, kind, st: 'waiting', x: 0, z: 0, t: 0, at: 0, ring: 0, bub: 0, stood: 0, show: 0, gath: 0, stop: 0,
-                 hideIn: 0, lurk: 0, ph: 0, due: 0, fx: 0, fz: 0, hold: '', was: '' };
+                 hideIn: 0, lurk: 0, ph: 0, due: 0, fx: 0, fz: 0, hold: '', was: '',
+                 sx: 0, sz: 0, sv: 0, pdir: 0, pturn: 0, bt: 0 };   // (R43: where a slide takes it, and at what pace; a prowl's way and its turn)
       }
 
       /* ------------------------------------------------------------------ a fight */
@@ -802,8 +814,20 @@
       /* ------------------------------------------------------------------ the fire in the air, the gold, the ring */
       function pushBack(st, p, by, stop) {
         const z = st.zav, dx = p.x - z.x, dz = p.z - z.z, d = Math.sqrt(dx * dx + dz * dz) || 1;
-        p.x += dx / d * by; p.z += dz / d * by; clampPrai(st.n, p);
+        slideTo(st.n, p, p.x + dx / d * by, p.z + dz / d * by, st.n.slidePush);   // (R43: carried back, never put: slideTick)
         p.stop = stop;
+      }
+      /* (R43: A PRAI SET BACK IS CARRIED THERE, NEVER PUT: fast, easing in over its last few centimetres, so the picture
+         follows it. The fire's setback had moved it 0.7 m in one step and the gold across the court, each drawn as a jump.
+         The place is the one it was put at (in the court); a bubble, a lesson's hold or the bag stops the slide where it is) */
+      function slideTo(n, p, x, z, speed) { const c = { x, z }; clampPrai(n, c); p.sx = c.x; p.sz = c.z; p.sv = speed; }
+      function slideTick(n, p, dt) {
+        if (!(p.sv > 0)) return;
+        if (prFixed(p) || p.st === 'drawn' || !prBody(p)) { p.sv = 0; return; }
+        const dx = p.sx - p.x, dz = p.sz - p.z, d = Math.sqrt(dx * dx + dz * dz);
+        if (d < 0.005) { p.x = p.sx; p.z = p.sz; p.sv = 0; return; }
+        const stp = Math.min(d, Math.max(p.sv * 0.35, Math.min(p.sv, d * 6)) * dt);
+        p.x += dx / d * stp; p.z += dz / d * stp; clampPrai(n, p);
       }
       function chase(st, p) {                                    // chased away: it flees to the far side, and sinks there
         const n = st.n, z = st.zav;
@@ -879,8 +903,8 @@
       /* the ring drives a free Prai back to the far side and stills it there; what was under the paving it shows */
       function throwBack(st, p, circle) {
         const n = st.n, under = p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || (p.st === 'rushing' && p.was === 'shown');
-        p.x = Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - circle.x) * 0.5));
-        p.z = n.throwZ; clampPrai(n, p); p.stop = n.throwStop; p.at = 0; p.gath = 0; p.lurk = 0;
+        slideTo(n, p, Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - circle.x) * 0.5)), n.throwZ, n.slideThrow);   // (R43: thrown, not put)
+        p.stop = n.throwStop; p.at = 0; p.gath = 0; p.lurk = 0;
         if (under) { p.show = n.showSecs; if (p.st === 'shown') restart(st, p, p.hold); else setSt(st, p, 'shown', 'the gold shows it'); }
         else setSt(st, p, 'coming', 'the gold drives it back');
       }
@@ -928,10 +952,103 @@
         const z = st.zav, dx = z.x - p.x, dz = z.z - p.z, d = Math.sqrt(dx * dx + dz * dz) || 1e-6;
         if (d <= stopAt + 1e-6) return true;
         const stp = Math.min(pace * dt, d - stopAt);
-        p.x += dx / d * stp; p.z += dz / d * stp;
+        /* (R43: one that is seen goes round what stands in its way; one under the paving goes under it) */
+        const u = p.st === 'hidden' || p.st === 'beneath' ? null : steerAround(st, p, dx / d, dz / d, d);
+        if (u) { p.x += u[0] * stp; p.z += u[1] * stp; } else { p.x += dx / d * stp; p.z += dz / d * stp; }
         if (weave) { p.ph += dt; const s = Math.sin(p.ph * 2 * Math.PI / st.n.weaveSecs) * weave * dt; p.x += -dz / d * s; p.z += dx / d * s; }
         clampPrai(st.n, p);
         return dist(z.x, z.z, p.x, p.z) <= stopAt + 1e-3;
+      }
+      /* R43: THE BODIES ON THE COURT. What stands on the paving as a body: everything seen and not being drawn into the bag;
+         what cannot be moved by another (a bubble, a tired one, one rising, one a lesson holds where it is) */
+      const prBody = (p) => p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown' || p.st === 'rushing' ||
+                            p.st === 'fleeing' || p.st === 'bound' || p.st === 'held' || p.st === 'tired' || p.st === 'entering';
+      const prFixed = (p) => p.st === 'bound' || p.st === 'held' || p.st === 'tired' || p.st === 'entering' || !!p.hold;
+      /* (a bubble's disc grows round the bound one over bubGrow, so what stood beside it is moved out of it, never jumped) */
+      const prR = (n, p) => (p.st === 'bound' || p.st === 'held') ? n.praiR + (n.bubR - n.praiR) * Math.min(1, (p.bt || 0) / Math.max(0.01, n.bubGrow || 0.3)) : n.praiR;
+      /* its way (ux, uz: a unit step toward its goal, `far` metres off) turned round each body that stands ahead of it, within
+         steerLook and nearer than its goal, whose disc its line would cross: away from the side the body stands on, the more
+         the nearer its line runs to the body's middle and the nearer the body is. A body dead ahead is passed on the side
+         this one's number gives (the same answer every run). Grandmaster Pho is a body to it; its goal, his student, is not */
+      function steerAround(st, p, ux, uz, far) {
+        const n = st.n; if (!(n.steerLook > 0)) return null;
+        let sx = ux, sz = uz, turned = false;
+        const one = (ox, oz, r) => {
+          const rx = ox - p.x, rz = oz - p.z, along = rx * ux + rz * uz;
+          if (along <= 0.02 || along > Math.min(n.steerLook, far)) return;
+          const lat = rx * -uz + rz * ux, clear = r + n.praiR + 0.06;
+          if (Math.abs(lat) >= clear) return;
+          const side = lat > 1e-6 ? -1 : lat < -1e-6 ? 1 : (p.id % 2 ? 1 : -1);   // (the body on its left: it goes right)
+          const k = 1.6 * (1 - Math.abs(lat) / clear) * (1 - along / Math.min(n.steerLook, far) * 0.6);
+          sx += -uz * side * k; sz += ux * side * k; turned = true;
+        };
+        one(st.pho.x, st.pho.z, n.phoR);
+        for (const q of st.prai) if (q !== p && prBody(q)) one(q.x, q.z, prR(n, q));
+        if (!turned) return null;
+        const L = Math.sqrt(sx * sx + sz * sz) || 1; return [sx / L, sz / L];
+      }
+      /* one that waits its turn while three are at his bars: round him, a little out from the bars, slowly (prowl), each its
+         own way (its number), turning back where its way is shut (a wall, a planter, or a body just ahead) */
+      function prowl(st, p, d, dt) {
+        const n = st.n, z = st.zav; if (!(n.prowl > 0) || d < 1e-6) return;
+        if (!p.pdir) p.pdir = p.id % 2 ? 1 : -1;
+        if (p.pturn > 0) p.pturn -= dt;
+        const ox = (p.x - z.x) / d, oz = (p.z - z.z) / d, tx = -oz * p.pdir, tz = ox * p.pdir;
+        const want = Math.min(n.waitR, n.pressR + n.prowlIn), s = n.prowl * dt, pull = (want - d) * Math.min(1, dt * 1.5);
+        let shut = false;
+        const ax = p.x + tx * (n.praiR * 2 + 0.12), az = p.z + tz * (n.praiR * 2 + 0.12);
+        for (const q of st.prai) if (q !== p && prBody(q) && dist(ax, az, q.x, q.z) < prR(n, q) + n.praiR) shut = true;
+        if (dist(ax, az, st.pho.x, st.pho.z) < n.phoR + n.praiR) shut = true;
+        const bx = p.x, bz = p.z;
+        if (!shut) { p.x += tx * s + ox * pull; p.z += tz * s + oz * pull; clampPrai(n, p); }
+        if ((shut || dist(bx, bz, p.x, p.z) < s * 0.35) && !(p.pturn > 0)) { p.pdir = -p.pdir; p.pturn = n.prowlTurn; }
+      }
+      /* every body on the court set apart from every other it stands in, and out of Grandmaster Pho: two that meet each
+         give half the overlap along the line between them (one that cannot move gives none: the other all of it); one at
+         his bars, or at him, is then set back on its ring round him (so it slides round), and each kept in the court.
+         Three passes, in the nine's own order: the same answer every run */
+      function praiBodies(st) {
+        const n = st.n, z = st.zav, ph = st.pho, L = st.prai;
+        if (!(n.praiR > 0)) return;
+        for (let pass = 0; pass < 3; pass++) {
+          let moved = false;
+          for (let i = 0; i < L.length; i++) { const a = L[i]; if (!prBody(a)) continue;
+            for (let j = i + 1; j < L.length; j++) { const b = L[j]; if (!prBody(b)) continue;
+              const fa = prFixed(a), fb = prFixed(b); if (fa && fb) continue;
+              let dx = b.x - a.x, dz = b.z - a.z, d = Math.sqrt(dx * dx + dz * dz); const need = prR(n, a) + prR(n, b);
+              if (d >= need - 1e-4) continue;
+              if (d < 1e-6) { dx = (a.id % 2 ? 1 : -1) * 0.01; dz = 0.01; d = Math.sqrt(dx * dx + dz * dz); }
+              const over = need - d, ux = dx / d, uz = dz / d, ka = fa ? 0 : fb ? 1 : 0.5, kb = 1 - ka;
+              a.x -= ux * over * ka; a.z -= uz * over * ka; b.x += ux * over * kb; b.z += uz * over * kb; moved = true; } }
+          for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+            const dx = p.x - ph.x, dz = p.z - ph.z, d = Math.sqrt(dx * dx + dz * dz), need = n.phoR + n.praiR;
+            if (d < need - 1e-4) { const ux = d > 1e-6 ? dx / d : (p.id % 2 ? 1 : -1), uz = d > 1e-6 ? dz / d : 0; p.x = ph.x + ux * need; p.z = ph.z + uz * need; moved = true; } }
+          for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+            if (p.st === 'pressing') toRing(st, p, n.pressR);
+            clampPrai(n, p); }
+          if (!moved) break;
+        }
+        /* (what three passes leave standing in a body that cannot move, or in him, is held there by the court's edge or by
+           his bars: it is set at the NEAREST clear place instead, on its ring if it has one (rings of 4 cm, 24 ways round,
+           out to a metre and a half; the same answer every run)) */
+        for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+          if (!prIn(st, p, p.x, p.z)) continue;
+          const ring = p.st === 'pressing' ? n.pressR : 0;
+          let best = null;
+          if (ring) { const a0 = Math.atan2(p.z - z.z, p.x - z.x);
+            for (let k = 1; k <= 36 && !best; k++) for (const sg of [1, -1]) { const a = a0 + sg * k * Math.PI / 36, qx = z.x + Math.cos(a) * ring, qz = z.z + Math.sin(a) * ring;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
+          else for (let r = 0.04; r <= 1.5 && !best; r += 0.04) for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12, qx = p.x + Math.cos(a) * r, qz = p.z + Math.sin(a) * r;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } }
+          if (best) { p.x = best.x; p.z = best.z; }
+        }
+      }
+      /* (whether a body of praiR at x, z stands in another body on the court, or in Grandmaster Pho) */
+      function prIn(st, p, x, z) {
+        const n = st.n;
+        if (Math.hypot(x - st.pho.x, z - st.pho.z) < n.phoR + n.praiR - 0.01) return true;
+        for (const q of st.prai) if (q !== p && prBody(q) && Math.hypot(x - q.x, z - q.z) < prR(n, q) + n.praiR - 0.01) return true;
+        return false;
       }
       /* a Prai set back on the ring r round him (his bars: pressR), along the line from him where the court allows it, else
          round him toward the court's middle (the nearest place on the ring inside it): where a wall stood between, the
@@ -973,6 +1090,8 @@
           if (carry && (p.st === 'pressing' || p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2))) {
             p.x += cdx; p.z += cdz; clampPrai(n, p);
           }
+          slideTick(n, p, dt);                                    // (R43: a setback or a throw carries it there)
+          p.bt = (p.st === 'bound' || p.st === 'held') ? (p.bt || 0) + dt : 0;   // (R43: how long its bubble has stood)
           switch (p.st) {
             case 'entering':
               if (p.t >= n.enterSecs) { setSt(st, p, 'coming', 'risen'); if (p.kind === 'hide') p.hideIn = n.hideAfter; }
@@ -990,7 +1109,7 @@
               const d = dist(z.x, z.z, p.x, p.z);
               // three at the bars: the rest wait, in view (and one he walks into is pushed out by his bars, never left
               // standing inside them while his cage holds)
-              if (pressing >= n.pressMax && d <= n.waitR + 0.05) { if (d < n.pressR - 0.02) toRing(st, p, n.pressR); break; }
+              if (pressing >= n.pressMax && d <= n.waitR + 0.05) { if (d < n.pressR - 0.02) toRing(st, p, n.pressR); else prowl(st, p, d, dt); break; }   // (R43: it prowls)
               if (towardHim(st, p, pace, n.pressR, dt, wv) && pressing < n.pressMax) { p.at = 1; pressing++; toRing(st, p, n.pressR); setSt(st, p, 'pressing', 'at the bars'); }
               break;
             }
@@ -1062,6 +1181,7 @@
               break;
           }
         }
+        praiBodies(st);                                           // (R43: none stands in another, nor in Grandmaster Pho)
         // the stale clouds thin and go
         if (st.clouds.length) { let w = 0; for (const c of st.clouds) { c.t -= dt; if (c.t > 0) st.clouds[w++] = c; } st.clouds.length = w; }
       }

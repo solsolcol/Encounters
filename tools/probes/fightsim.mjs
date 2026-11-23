@@ -289,7 +289,7 @@ function campaign(F, L, who, seed, opts) {
   mem.lesson = follower(PROF.careful);
   const res = { who, seed, won: false, firstWin: false, tries: 1, length: 0, firstLength: 0, losses: 0, sanity: 0, stalled: '',
                 bad: [], illegal: {}, stats: null, lead: false, said: {}, sayN: 0, where: [], dropped: 0 };
-  let heard = null, prevLeft = st.left, prevLock = 0, guard = 0, lostAt = [], lastSwitch = -99, lastLock = 0;
+  let heard = null, prevLeft = st.left, prevLock = 0, prevT = null, inBody = new Map(), guard = 0, lostAt = [], lastSwitch = -99, lastLock = 0;
   const fuzz = who === 'fuzz';
   const bad = (what) => { if (res.bad.length < 8) res.bad.push(what + ' @' + st.t.toFixed(1) + ' ' + st.stage); };
   while (st.stage !== 'won') {
@@ -331,6 +331,24 @@ function campaign(F, L, who, seed, opts) {
         if (Math.abs(p.x) > n.courtX - n.praiIn + 1e-6 || p.z < n.threadZ - 1e-6 || p.z > n.courtZ1 - n.praiIn + 1e-6) bad('a Prai outside the court ' + p.st);
       }
     }
+    /* (R43: the nine as bodies, c_fightrules.js praiBodies: none stands in another, nor in Grandmaster Pho, by more than
+       3 cm after a step. Two that cannot be moved, two bubbles side by side, may touch; so may one he walks into) */
+    if (n.praiR > 0) {
+      const body = (p) => ['coming', 'pressing', 'through', 'shown', 'rushing', 'fleeing', 'bound', 'held', 'tired', 'entering'].includes(p.st);
+      const fixed = (p) => p.st === 'bound' || p.st === 'held' || p.st === 'tired' || p.st === 'entering' || !!p.hold;
+      const rr = (p) => (p.st === 'bound' || p.st === 'held') ? n.bubR : n.praiR;
+      const L = st.prai.filter(body), dtNow = st.t - (prevT == null ? st.t : prevT);
+      /* (a pair is counted once it has stood in each other half a second of the fight's clock: a push is a push, a clip
+         is a clip) */
+      const now = new Set();
+      for (let i = 0; i < L.length; i++) { const a = L[i];
+        if (!fixed(a) && Math.hypot(a.x - st.pho.x, a.z - st.pho.z) < n.phoR + n.praiR - 0.03) now.add('pho/' + a.id + '/' + a.st);
+        for (let j = i + 1; j < L.length; j++) { const b = L[j]; if (fixed(a) && fixed(b)) continue;
+          if (Math.hypot(a.x - b.x, a.z - b.z) < rr(a) + rr(b) - 0.03) now.add(a.id + '/' + b.id + '/' + [a.st, b.st].sort().join('/')); } }
+      for (const k of [...inBody.keys()]) if (!now.has(k)) inBody.delete(k);
+      for (const k of now) { const v = (inBody.get(k) || 0) + dtNow; inBody.set(k, v); if (v > 0.5 && v - dtNow <= 0.5) bad((k.startsWith('pho') ? 'a Prai standing in Grandmaster Pho ' : 'two Prai standing in each other ') + k.split('/').slice(2).join('/')); }
+    }
+    prevT = st.t;
     if (pressing > n.pressMax) bad('more than three at the bars');
     if (bub > n.bubbleMax) bad('more bubbles than ' + n.bubbleMax);
     if (Math.hypot(st.pho.x - st.zav.x, st.pho.z - st.zav.z) < n.apart - 1e-3) bad('Grandmaster Pho inside the cage');

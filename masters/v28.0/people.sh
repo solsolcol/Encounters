@@ -160,11 +160,16 @@ go collector && ( LEVELS=none WSMOOTH=0 XSCALE=1000 FINS=1 \
 # (a plain rig's armature is scaled 0.01: tools/mergetakes.mjs keeps a bone's tracks its own where both parents stand
 #  the same, so the merge no longer refuses it; earlier merges come out the same bytes. THE NAGA is people/naga.sh.)
 prai() { LEVELS=none; one "$@"; LEVELS=; }
-go praicome && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praicome 16000 1024 $(T praicome lib Idle_3) $(T praicome walking Walking) )
-go praihide && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praihide 16000 1024 $(T praihide lib Idle_3) $(T praihide walking Walking) )
+# (R43, 23 Nov: Chad, "add animations to the prais, walking animations, passive idle animations and animations when getting
+#  hit or binded": the library's acts set, 3 credits a body (masters/v28.0/takes.sh <name> lib acts 178,179,172,123):
+#  Hit_Reaction (1.63 s, a stagger back: its hips travel 0.77 m, pinned at run time, c_cast.js PRAI5), Hit_Reaction_1
+#  (1.20 s, a flinch on the spot), Electrocution_Reaction (4.67 s, thrashing where it stands: the bubble's), Unsteady_Walk
+#  (2.97 s, on the spot: its pace read from the planted foot). Each measured as a motion, tools/probes/takefk.mjs and gait.mjs)
+go praicome && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praicome 16000 1024 $(T praicome lib Idle_3) $(T praicome walking Walking) $SRC/takes-praicome-acts.glb )
+go praihide && ( CALM="Idle_3=9,0.6 Walking=9,0.5,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praihide 16000 1024 $(T praihide lib Idle_3) $(T praihide walking Walking) $SRC/takes-praihide-acts.glb )
 # (CAST-2, 21 Nov 2026: her arms hang wider, and swing less in and out, so her right forearm no longer passes into her
 #  side at the waist in the walk: tools/probes/armside.mjs, the walk at every 1/30 s: at 18 (as first prepared) the right arm
 #  was in her side in 6 of 33 moments, 2.4 cm deep; at 24 with a third of its in-and-out kept, in none (the left: two points
 #  of the back of the upper arm close under the armpit in one moment, 1.7 cm, as before). RECORD.md section 7.)
-go praiheavy && ( CALM="Idle_3=21,0.6 Walking=24,0.3,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praiheavy 16000 1024 $(T praiheavy lib Idle_3) $(T praiheavy walking Walking) )
+go praiheavy && ( CALM="Idle_3=21,0.6 Walking=24,0.3,0.7" WSMOOTH=0 XSCALE=1000 FINS=1; prai praiheavy 16000 1024 $(T praiheavy lib Idle_3) $(T praiheavy walking Walking) $SRC/takes-praiheavy-acts.glb )
 echo PEOPLE DONE

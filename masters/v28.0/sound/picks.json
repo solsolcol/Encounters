@@ -391,6 +391,49 @@
   "why": "d: 99 % where a phone plays, loudest 50 ms -11.3 dBFS (others, phone/loudest: a 0.96/-20.4, b 1.00/-12.5, c 0.95/-12.3); its 0.20 s silent head cut",
   "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
  },
+ "u5pvhit1": {
+  "kind": "fx",
+  "take": "u5pvhit1_b",
+  "family": "nine",
+  "where": "R43 land: the Prai's own cry as the fire strikes it (dealt in turn with u5pvhit2)",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -6.9 dBFS (others, phone/loudest: a 1.00/-8.3, c 1.00/-9.3, d 1.00/-8.7); its 0.15 s silent head cut",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.02"
+ },
+ "u5pvhit2": {
+  "kind": "fx",
+  "take": "u5pvhit2_a",
+  "family": "nine",
+  "where": "R43 land: (dealt in turn)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -5.9 dBFS (others, phone/loudest: b 1.00/-10.4, c 1.00/-9.6, d 1.00/-11.5)"
+ },
+ "u5pvbind1": {
+  "kind": "fx",
+  "take": "u5pvbind1_d",
+  "family": "nine",
+  "where": "R43 bind: the Prai's cry as the bubble closes on it (dealt in turn)",
+  "why": "d: 100 % where a phone plays, loudest 50 ms -4.3 dBFS (others, phone/loudest: a 1.00/-10.7, b 1.00/-5.8, c 1.00/-5.3)"
+ },
+ "u5pvbind2": {
+  "kind": "fx",
+  "take": "u5pvbind2_a",
+  "family": "nine",
+  "where": "R43 bind: (dealt in turn)",
+  "why": "a: 92 % where a phone plays, loudest 50 ms -15.2 dBFS (others, phone/loudest: b 0.89/-15.4, c 0.93/-16.2, d 0.91/-15.9)"
+ },
+ "u5pvstrug1": {
+  "kind": "fx",
+  "take": "u5pvstrug1_c",
+  "family": "nine",
+  "where": "R43 bound: now and then while it struggles in its bubble (dealt in turn)",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -16.6 dBFS (others, phone/loudest: d 1.00/-20.3); refused: a the transcriber writes \"Yay!\"; b the transcriber writes \"MMMMMMMMMMMMMMMMMM\""
+ },
+ "u5pvstrug2": {
+  "kind": "fx",
+  "take": "u5pvstrug2_c",
+  "family": "nine",
+  "where": "R43 bound: (dealt in turn)",
+  "why": "c: 98 % where a phone plays, loudest 50 ms -12.9 dBFS (others, phone/loudest: a 0.79/-25.8, b 0.79/-27.7); refused: d the transcriber writes \"Ugh.\""
+ },
  "u5unrise": {
   "kind": "fx",
   "take": "u5unrise_a",
@@ -1326,12 +1369,5 @@
   "family": "music",
   "where": "M7, the fight: the student's: the wordless choir (beatless, its own piece)",
   "why": "u5m7band c separated (six_stems_v1) and u5m7choir a, by sound/stems.py: one loop of 30 bars (75.0 s at 96 BPM) for all five"
- },
- "u5colaugh": {
-  "kind": "fx",
-  "take": "u5colaugh_a",
-  "family": "case3",
-  "where": "the collector film: his small laugh at himself, between co5t1 and co5t2",
-  "why": "a: one breath of laughter, sound 0.15 to 1.30 s, its end clean (-67.6 dB); b the same length with a gap after its first 'heh' (end -69.8 dB); c rings on to its end (-39.2 dB): refused. The transcriber writes only 'Heh, heh heh.' (a laugh, no word). His voice (Shawn Ng), eleven_v3, prompted '[amused] Heh. Heh heh.' (v5.28: one emotion tag, voiceable text, v10.8)"
  }
 }

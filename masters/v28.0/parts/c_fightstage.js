@@ -365,7 +365,8 @@
     const FS_DEAL = { swing: ['u5swing1', 'u5swing2'], ball: ['u5fire1', 'u5fire2', 'u5fire3'], land: ['u5land1', 'u5land2'], tired: ['u5tired1', 'u5tired2'],
                       bind: ['u5bind1', 'u5bind2'], sniff: ['u5sniff1', 'u5sniff2', 'u5sniff3'], drawn: ['u5drawn1', 'u5drawn2'], rise: ['u5rise1', 'u5rise2'],
                       strain: ['u5strain1', 'u5strain2', 'u5strain3'], bars: ['u5barring1', 'u5barring2'], gather: ['u5gather1', 'u5gather2'],
-                      note: ['u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9'] };
+                      note: ['u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9'],
+                      pvhit: ['u5pvhit1', 'u5pvhit2'], pvbind: ['u5pvbind1', 'u5pvbind2'], pvstrug: ['u5pvstrug1', 'u5pvstrug2'] };   // (R43: the nine's own cries)
     const FS_HIT = { come: 'u5hitc', slip: 'u5hits', hide: 'u5hith' };
     const FS_VOICE = { come: 'u5ncome', slip: 'u5nslip', hide: 'u5nhide' };
     const fsDealN = {};
@@ -377,7 +378,8 @@
       'u5drawn1', 'u5drawn2', 'u5baginhale', 'u5bagsnap', 'u5rise1', 'u5rise2', 'u5ncome', 'u5nslip', 'u5nhide', 'u5barring1', 'u5barring2', 'u5sink', 'u5gather1',
       'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5plant', 'u5shape', 'u5shapeloop',
       'u5togfill', 'u5done', 'u5broken', 'u5start', 'u5ready', 'u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9',
-      'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last'];
+      'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last',
+      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2'];
     const _fsP = new THREE.Vector3();
     function fsPan(x, z, y = 1.0) { _fsP.set(x, y, z).project(camera); return Math.max(-0.8, Math.min(0.8, (_fsP.z > 1 ? -_fsP.x : _fsP.x) * 0.8)); }
     function fsFx(name, vol, x, z) {
@@ -453,10 +455,11 @@
     /* ---------------------------------------------------------------- THE NINE ON THE COURT, as the rules have them */
     const fsPraiP = (id) => PRAI5.list[id - 1] || null;
     /* each one's look, eased toward its state (how far into the paving, how strong, how tall, its lean) */
-    const fsVis = Array.from({ length: 9 }, () => ({ y: -1.9, a: 0, s: 1, lean: 0, sh: 0, was: '', vt: 0, voice: null }));
+    const fsVis = Array.from({ length: 9 }, () => ({ y: -1.9, a: 0, s: 1, lean: 0, sh: 0, was: '', vt: 0, voice: null,
+                                                    lx: null, lz: 0, spd: 0, hd: 0, ry: null, hit: '', hitT: 0, strugT: 1.5 }));   // (R43: its walk, its turn, a hit's take)
     const FS_SUNK = -1.9;
     function fsPraiReset(stand) {
-      PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0;
+      PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0; V.lx = null; V.spd = 0; V.ry = null; V.hit = ''; V.hitT = 0; V.strugT = 1.5 + 0.4 * i;
         if (stand) { V.y = 0; V.a = 1; V.s = 1; V.lean = 0; } else { V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; } });
     }
     /* where the nine stand while the brief is read: as the preparation's turn leaves them (the lesson's in the middle, the
@@ -497,7 +500,7 @@
         else { V.lean += (tL - V.lean) * k(0.25); }
         const vis = V.a > 0.02 && V.y > FS_SUNK + 0.05;
         P.hidden = !vis; if (P.ready) P.group.visible = vis;
-        if (!vis) { V.was = p.st; return; }
+        if (!vis) { V.was = p.st; V.lx = null; V.ry = null; return; }
         V.sh += wdt;
         const jx = shake ? Math.sin(V.sh * 31 + i) * shake : 0, jz = shake ? Math.cos(V.sh * 27 + i * 2) * shake : 0;
         /* (one waiting its turn, or gathered, has no place in the rules: it sinks where it stood) */
@@ -505,8 +508,66 @@
         else put(P, w.x + jx, w.z + jz, ry, V.y);
         P.group.rotation.order = 'YXZ'; P.group.rotation.x = V.lean; P.group.scale.setScalar(V.s);
         PRAI5.alpha(P, V.a);
+        fsPraiTake(P, V, p, wdt, w, zw);
         V.was = p.st;
       });
+    }
+    /* R43 (23 Nov 2026, Chad: "add animations to the prais, walking animations, passive idle animations and animations when
+       getting hit or binded, with sound effects and voices"): WHAT EACH ONE'S BODY DOES, from what the rules have it do.
+       Its speed over the paving read from where it is drawn, frame to frame (eased): moving on its own way (coming,
+       through, shown, rushing, and the prowl round him while it waits its turn) it WALKS, the slow unsteady walk, and the
+       library's walk once it goes faster than a metre a second, each at the rate the ground it covers asks (its own pace,
+       read from the planted foot: c_cast.js PRAI5.takes), turned along its way; still, it stands in its rest, turned to
+       him. In a bubble (bound, held) and drawn to the bag it STRUGGLES (the loop of its thrashing), and is heard now and
+       then (u5pvstrug, one at a time, never over a line). Struck (fsPraiHit: the land event) it FLINCHES where it stands,
+       or, chased away, STAGGERS back (its take's travel pinned: the rules carry it) turned to the fire; the rise and the
+       sinking keep their rest. A take is a pose of the cast's own clock (peopleTick), so a hidden tab and a slow phone
+       change nothing of the rules */
+    const FS_WALK = { slow: 'Unsteady_Walk', fast: 'Walking', fastAt: 1.05, minSpd: 0.12 };
+    function fsPraiTake(P, V, p, wdt, w, zw) {
+      if (!P.ready || !P.acts) return;
+      const k = (secs) => 1 - Math.exp(-wdt / Math.max(0.01, secs));
+      /* (its speed and its way over the ground, from where the rules have it: the shake at his bars is no walk) */
+      const gx = w.x, gz = w.z;
+      if (V.lx == null || wdt <= 0) { V.lx = gx; V.lz = gz; }
+      else { const dx = gx - V.lx, dz = gz - V.lz, d = Math.hypot(dx, dz), inst = d / wdt;
+        V.spd += (Math.min(4, inst) - V.spd) * k(0.18); if (d > 1e-4 && inst > 0.05) V.hd = Math.atan2(dx, dz);
+        V.lx = gx; V.lz = gz; }
+      const own = (p.st === 'coming' && !(p.stop > 0) && !(p.sv > 0)) || p.st === 'through' || (p.st === 'shown' && p.at !== 2 && !(p.sv > 0)) || p.st === 'rushing';
+      let name = 'Idle_3', rate = 1, ry = faceTo(w.x, w.z, zw.x, zw.z);
+      if (p.st === 'rushing') { const pw = cast.pho ? cast.pho.group.position : zw; ry = faceTo(w.x, w.z, pw.x, pw.z); }
+      if (p.st === 'bound' || p.st === 'held') { name = 'Electrocution_Reaction'; rate = p.st === 'held' ? 0.7 : 1; }
+      else if (p.st === 'drawn') { name = 'Electrocution_Reaction'; rate = 1.4; }
+      else if (p.st === 'fleeing') { name = 'Hit_Reaction'; ry = faceTo(w.x, w.z, fsW(p.fx, p.fz).x, fsW(p.fx, p.fz).z) + Math.PI; }
+      else if (own && V.spd > FS_WALK.minSpd) {
+        name = V.spd > FS_WALK.fastAt ? FS_WALK.fast : FS_WALK.slow;
+        const pace = (P.praiPace && P.praiPace[name]) || (name === 'Walking' ? 1.1 : 0.45);
+        rate = Math.max(0.5, Math.min(1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
+        ry = V.hd;
+      }
+      /* (carried back by a setback or thrown by the gold: turned against the push; thrown, it staggers) */
+      if (p.sv > 0) { ry = V.hd + Math.PI;
+        if (p.sv >= 5 && !(V.hitT > 0) && P.acts.Hit_Reaction) { V.hit = 'Hit_Reaction'; V.hitT = 1.3; take(P, 'Hit_Reaction', 0.08, true); } }
+      if (V.hitT > 0) { V.hitT -= wdt; if (p.st !== 'fleeing' && p.st !== 'drawn' && p.st !== 'gathered') { name = V.hit; rate = 1; } }
+      if (!P.acts[name]) name = 'Idle_3';
+      if (P.cur !== name) take(P, name, name === V.hit && V.hitT > 0 ? 0.08 : 0.3, name === V.hit && V.hitT > 0);
+      if (p.st === 'fleeing' && V.was !== 'fleeing' && P.acts.Hit_Reaction) { take(P, 'Hit_Reaction', 0.08, true); }
+      if (P.acts[name]) P.acts[name].timeScale = rate;
+      /* (its turn eased, never snapped: a walk turns along its way, a struck one to the fire) */
+      if (V.ry == null) V.ry = ry; else V.ry += angTo(V.ry, ry) * k(p.st === 'fleeing' ? 0.06 : 0.2);
+      P.group.rotation.y = V.ry;
+      /* (heard in its bubble now and then: one at a time, never over a line) */
+      if (p.st === 'bound' || p.st === 'held') { V.strugT -= wdt;
+        if (V.strugT <= 0) { const quiet = FS5.wall < (FS5.lineEnd || 0) || FS5.wall - (FS5.strugAt || -9) < 1.6;
+          if (!quiet) { fsFx(fsDeal('pvstrug'), 0.42, w.x, w.z); FS5.strugAt = FS5.wall; }
+          V.strugT = quiet ? 0.6 : 2.6 + 1.8 * (FS5.srand ? FS5.srand() : 0.5); } }
+      else V.strugT = Math.max(V.strugT, 0.9);
+    }
+    /* (struck: a flinch where it stands, its cry; chased away, the stagger is its fleeing's own) */
+    function fsPraiHit(p, result, w) {
+      if (!p) return; const V = fsVis[p.id - 1], P = fsPraiP(p.id); if (!V) return;
+      if (result === 'setback' || result === 'tired') { V.hit = 'Hit_Reaction_1'; V.hitT = 1.05; if (P && P.ready && P.acts && P.acts.Hit_Reaction_1) take(P, 'Hit_Reaction_1', 0.08, true); }
+      if (result === 'setback' || result === 'tired' || result === 'chased') fsFx(fsDeal('pvhit'), result === 'setback' ? 0.5 : 0.75, w.x, w.z);
     }
     /* THE SURGE (stage 4): the last three drawn together into one tall shape over him, leaning in: by its end exactly where
        the Naga's film begins them (c_yfilm.js FILMS5.together: his place, those three offsets, 1.55 times their height, a
@@ -1031,6 +1092,7 @@
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
             const y0 = 1.3 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
+            if (p && (e.result === 'setback' || e.result === 'tired' || e.result === 'chased')) fsPraiHit(p, e.result, w);   // (R43: its body and its cry)
             if (e.result === 'tired') { fsBloom(w.x, w.z, FS_FIRE.orange, 1.2, true, y0); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
               fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, 8, { sp: 2.4, up: 0.3, life: 0.7, s0: 0.1, col: FS_COL.ruby, grav: -3 }); }
@@ -1045,6 +1107,7 @@
             const secs = fsZavAct('bind');                                              // (R34: the push on his own body)
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
             else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null);
+              if (w) fsFx(fsDeal('pvbind'), 0.75, w.x, w.z);                          // (R43: its own cry as the bubble closes on it)
               if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = Math.max(0.7, secs); fsBloom(w.x, w.z, FS_COL.violet, 0.9);
                 fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
                 fsBindCast(p, w); } }
@@ -1434,6 +1497,19 @@
       place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
         R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      /* (R43, a probe's: a Prai set in a state at a place of the court, the rules then driving it (coming: it walks to him;
+         bound: it struggles in its bubble; fleeing: it staggers back to the house); and a fire's landing on one drawn and
+         sounded as the game does it, its flinch and its cry) */
+      prai(id, stt, x, z) { const st = FS5.st, p = st && st.prai[id - 1]; if (!p) return false;
+        p.labWas = p.labWas || p.st; p.st = stt; p.t = 0; p.hold = ''; p.stop = 0; p.sv = 0; p.at = 0; if (x != null) { p.x = +x; p.z = +z; }
+        if (stt === 'bound' || stt === 'held') { p.bub = FN5.bubbleSecs || 10; p.bt = 0; }
+        if (stt === 'fleeing') { p.fx = p.x; p.fz = st.n.throwZ; }
+        return true; },
+      hit(id, result) { const st = FS5.st, p = st && st.prai[id - 1]; if (!p) return false;
+        fsEvents([result === 'bind' ? { e: 'bind', id } : { e: 'land', result, id, x: p.x, z: p.z }]); return true; },
+      praiRead() { const st = FS5.st; if (!st) return null; return st.prai.map((p, i) => { const P = PRAI5.list[i], V = fsVis[i];
+        return { id: p.id, st: p.st, x: +p.x.toFixed(2), z: +p.z.toFixed(2), cur: P ? P.cur : null, ts: P && P.acts && P.acts[P.cur] ? +P.acts[P.cur].timeScale.toFixed(2) : null,
+                 spd: V ? +V.spd.toFixed(2) : null, vis: P ? P.group.visible : false, pace: P && P.praiPace ? P.praiPace : null, flame: !!(P && P.tr && P.tr.flames && P.tr.flames.length && P.tr.flames[0].visible) }; }); },
       /* (a probe's: the rules set in the fight's last stage as the Naga's film leaves them: five gathered, three laid where the
          Naga lays them; the two where they stand) */
       toLast() { const st = FS5.st; if (!st) return false; const n = st.n; let i = 0;
@@ -1998,15 +2074,15 @@
          live check of build 30 read his wrist 41 to 65 degrees toward his little finger in the gold, the fire and the bag
          (jointscan's line is 40, a real wrist's range about 30 to 40), his fist lifted out to his right with his elbow hung
          low under it. A man lifting a staff lifts his elbow with it. So his elbow is swung about the line from his shoulder to
-         his wrist (every 3 degrees to 90 either way, then by half degrees) to the least swing that holds jointscan's own
-         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 30 (40),
+         his wrist (one way at a time, every 3 degrees to 50, then by half degrees; and as a MOVE, swing5) to the least swing that holds jointscan's own
+         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 32 (40),
          bent 60 toward his palm (70) and 50 back (60); his forearm turned 90 (100); his elbow no more than 1.5 cm behind his
          shoulder while his hand is before it (2.5), 3 cm in toward his middle or 5 cm over his shoulder; each degree or
-         centimetre past its margin costing its square, a swing a hundredth of its degrees squared. Where his elbow's own
+         centimetre past its margin costing its square, a swing 0.012 of its degrees squared. Where his elbow's own
          place already holds all of them it is not moved at all (his rest, his walk, his run and his talk stand as they were) */
       const _w5 = { S: V(), T: V(), P0: V(), B: V(), Pp: V(), U: V(), Vf: V(), E: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), h: V(), dn: V(),
                     Ut: V(), Lf: V(), F: V(), a1: V(), a2: V(), h1: V(), h2: V(), W0: V(), E0: V() };
-      let SWING_ON = true, swingLast = null;
+      let SWING_ON = true, swingLast = null, swingPrev = null, swingT = 0;
       function swingCost(w, th, la, lb, d, ca, sa, side) {
         const c = Math.cos(th), s = Math.sin(th);
         w.Pp.copy(w.P0).multiplyScalar(c).addScaledVector(w.B, s);
@@ -2016,14 +2092,14 @@
         w.re.copy(w.ac).addScaledVector(w.Vf, -w.ac.dot(w.Vf)).normalize(); w.ne.copy(w.n).addScaledVector(w.Vf, -w.n.dot(w.Vf)).normalize();
         const fe = w.f.dot(w.Vf), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
         const q = (x) => (x > 0 ? x * x : 0);
-        let cost = q(wd - 22) + q(-wd - 30) + q(wf - 60) + q(-wf - 50), tw = 0;
+        let cost = q(wd - 22) + q(-wd - 32) + q(wf - 60) + q(-wf - 50), tw = 0;
         const phi = Math.acos(Math.max(-1, Math.min(1, w.U.dot(w.Vf)))) / D2R;
         if (phi > 25) { w.h.crossVectors(w.U, w.Vf).normalize().multiplyScalar(side); w.dn.copy(w.U).addScaledVector(w.Vf, -w.U.dot(w.Vf)).normalize();
           tw = Math.atan2(w.ne.dot(w.dn), w.ne.dot(w.h)) / D2R; cost += q(Math.abs(tw) - 90); }
         const eb = w.E.dot(w.F), hf = w.W0.dot(w.F), ey = w.E.dot(w.Ut), lat = -w.E.dot(w.Lf);
         if (hf > 0.1) cost += q((-eb - 0.015) * 100);
         cost += q((ey - 0.05) * 100) + q((-lat - 0.03) * 100);
-        return { cost: cost + 0.01 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
+        return { cost: cost + 0.012 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
       }
       function swing5(P, a, Wr, pole, Qh) {
         swingLast = null; if (!SWING_ON) return;
@@ -2051,11 +2127,29 @@
         const ca = Math.max(-1, Math.min(1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
         w.f.copy(a.f5.f).applyQuaternion(Qh); w.ac.copy(a.f5.ac).applyQuaternion(Qh); w.n.copy(a.f5.n).applyQuaternion(Qh);
         const r0 = swingCost(w, 0, la, lb, d, ca, sa, -1);
-        if (!(r0.cost > 0)) { swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        /* (R43's check of R41's swing, measured every 0.05 s of his casts on the live rules: one way only still turned over
+           in a step where the wrist was not straight, the elbow thrown from -50 to +50 degrees between two moments of the
+           gold and of cast 7. So the swing is a MOVE, not a pick: it goes on from where it stood a moment ago (within a
+           quarter second), at most 150 degrees a second, and turns to the other side only once it is back near nought; where
+           nothing needs a swing it eases back to nought, never snaps) */
+        const now = performance.now(), fresh = swingPrev != null && now - swingT < 250, dtS = fresh ? Math.min(0.1, (now - swingT) / 1000) : 0;
+        const ease = (to) => { if (!fresh) return to; const mx = 150 * dtS + 0.25; return Math.max(swingPrev - mx, Math.min(swingPrev + mx, to)); };
+        if (!(r0.cost > 0) && !(fresh && Math.abs(swingPrev) > 0.25)) { swingPrev = 0; swingT = now; swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        /* (R41, its live check: searched both ways, the gold's best swing was 55 to 68 degrees one way while he lifted and -58
+           the other at the strike, the elbow thrown across in 0.3 s. So ONE WAY ONLY, the way the wrist needs and no other:
+           a wrist bent toward the little finger is the forearm coming up to the fist from too low, cured by the elbow RISING;
+           one bent toward the thumb by it falling. Which way rises is read here (the elbow's height a little either way), and
+           the side turns over only where the wrist is straight, where no swing is wanted: the swing goes through nought and
+           never jumps. At most 50 degrees) */
+        const up = swingCost(w, 0.26, la, lb, d, ca, sa, -1).ey - swingCost(w, -0.26, la, lb, d, ca, sa, -1).ey;
+        let sg = (r0.wd < 0 ? 1 : -1) * (up >= 0 ? 1 : -1);
+        if (fresh && Math.abs(swingPrev) > 4 && Math.sign(swingPrev) !== sg) sg = Math.sign(swingPrev);   // (its side kept until it is back near nought)
         let best = 0, bc = r0.cost;
-        for (let dg = -90; dg <= 90; dg += 3) { if (!dg) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
-        const lo = best - 3, hi = best + 3;
-        for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        if (r0.cost > 0) {
+          for (let dg = 3; dg <= 50; dg += 3) { const r = swingCost(w, sg * dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = sg * dg; } }
+          const lo = Math.max(-50, best - 3), hi = Math.min(50, best + 3);
+          for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { if (dg * sg < 0) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } } }
+        best = ease(best); swingPrev = best; swingT = now;
         const rb = swingCost(w, best * D2R, la, lb, d, ca, sa, -1);
         swingLast = { th: best, ...rb, at0: r0 };
         if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)

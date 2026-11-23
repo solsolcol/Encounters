@@ -264,3 +264,16 @@
 #    python3 -I masters/v28.0/meshy28.py refetch zavier acts), and the bodies made again by people.sh's zavier line:
 #    the mesh and the paint byte for byte as before (only the takes differ: p5zavier.glb 2,611,112 bytes; the near and
 #    full bodies' geometry and images hashed the same).
+#
+# ---- R43 (23 Nov 2026, Chad: "add animations to the prais, walking animations, passive idle animations and animations
+#    when getting hit or binded"): THE NINE'S ACTS, the library's on each of the three bodies (Meshy animation, actions
+#    178 Hit_Reaction, 179 Hit_Reaction_1, 172 Electrocution_Reaction, 123 Unsteady_Walk; 12 credits a body, 36 in all):
+#      praicome  01a20850-170e-7129-b37b-54aec883bee1      sh masters/v28.0/takes.sh praicome lib acts 178,179,172,123
+#      praiheavy 01a20850-1729-723a-a301-9888e24f47cc      sh masters/v28.0/takes.sh praiheavy lib acts 178,179,172,123
+#      praihide  01a20850-17de-75f7-abac-2d448d01c90c      sh masters/v28.0/takes.sh praihide lib acts 178,179,172,123
+#    stripped to src/takes-<name>-acts.glb (--same-rig: 66 bones at the same rest pose) and laid on each body by people.sh's
+#    three prai lines (the body, its paint and its other takes as before). Measured as motions before casting
+#    (tools/probes/takefk.mjs, gait.mjs): Hit_Reaction carries its hips 0.77 m back and 0.47 m aside (pinned at run time:
+#    c_cast.js PRAI5.takes), Hit_Reaction_1 a flinch on the spot (head 0.33 m of travel), Electrocution_Reaction on the spot
+#    to 2.2 s (a loop of 0.05 to 2.2 s: the left foot steps back at 3.5 s), Unsteady_Walk on the spot (its pace read from
+#    the planted foot). Their sounds: masters/v28.0/sound/make.sh (u5pvhit, u5pvbind, u5pvstrug).

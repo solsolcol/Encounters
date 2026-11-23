@@ -359,7 +359,7 @@
          once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */
       wrapOff: null,
       carry(P) { if (this.who !== 'tonWrap' || !P || !P.ready || !things.staffWrap) return;
-        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0.07 }); }
+        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0 }); }   // (R33 F4: in his fist, c_yfilm.js CARRY5; was out 0.07 from a hanging hand)
     };
     /* the nine as the play reaches them (c_play.js praiOf: cast.prai) */
     Object.defineProperty(cast, 'prai', { get: () => PRAI5.list, enumerable: false });
@@ -403,14 +403,53 @@
       m.customProgramCacheKey = () => 'e4c5praiTrance';
       m.userData.U = U; return m;
     }
+    /* R43 (23 Nov 2026, Chad: "add a red flaming effect to every prai around their silhouette"): a THIRD twin of each body in
+       the trance (the fight, and the films from the turn to the bag tied), swelled out along its own normals by a flicker
+       that rises up the body as flame does, and drawn ADDITIVE and only toward its edges (the body's face to the lens stays
+       black: the flame stands round the silhouette), deep red at its roots, orange, yellow at its brightest tips; its
+       strength the body's own (PRAI5.alpha). Painted light: no light added (v9.4). In Spirit Vision (the hunt) the nine
+       keep the vision's look (its black and its pale edge on the white of the vision's picture) */
+    const PRAI_FLAME = { inflate: 0.03, lick: 0.07, speed: 1.9, gain: 1.25 };
+    const praiFlameU = { uFT: { value: 0 } };
+    const PRAI_NOISE = `float pfH(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+      float pfN(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(mix(pfH(i), pfH(i + vec3(1.0, 0.0, 0.0)), f.x), mix(pfH(i + vec3(0.0, 1.0, 0.0)), pfH(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+                   mix(mix(pfH(i + vec3(0.0, 0.0, 1.0)), pfH(i + vec3(1.0, 0.0, 1.0)), f.x), mix(pfH(i + vec3(0.0, 1.0, 1.0)), pfH(i + vec3(1.0, 1.0, 1.0)), f.x), f.y), f.z); }\n`;
+    function praiFlameMat() {
+      const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide }); mats.push(m);
+      m.transparent = true; m.depthWrite = false; m.fog = false; m.toneMapped = false; m.blending = THREE.AdditiveBlending;
+      const U = Object.assign({ uFA: { value: 1 } }, praiFlameU), F = PRAI_FLAME;
+      m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+        const vs = sh.vertexShader.replace('#include <skinning_vertex>', `#include <skinning_vertex>
+          { vec3 fw0 = (modelMatrix * vec4(transformed, 1.0)).xyz, on = normalize(objectNormal);
+            float fl = pfN(vec3(fw0.x * 5.0, fw0.y * 3.2 - uFT * ${F.speed.toFixed(2)}, fw0.z * 5.0));
+            transformed += on * (${F.inflate.toFixed(3)} + ${F.lick.toFixed(3)} * fl * (0.55 + 0.45 * clamp(on.y * 0.5 + 0.5, 0.0, 1.0))); }`)
+          .replace('#include <project_vertex>', '#include <project_vertex>\n  vFw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        if (vs === sh.vertexShader) console.warn('e4c5: the Prai\'s flame found no skinning line to swell (three changed?)');
+        sh.vertexShader = 'varying vec3 vFw;\nuniform float uFT;\n' + PRAI_NOISE + vs;
+        const out = sh.fragmentShader.replace(PRAI_SHADE,
+          `vec3 fN0 = normalize(normal); float rim = pow(1.0 - clamp(abs(fN0.z), 0.0, 1.0), 2.0);
+           float n1 = pfN(vec3(vFw.x * 6.0, vFw.y * 4.5 - uFT * 2.6, vFw.z * 6.0)), n2 = pfN(vec3(vFw.x * 13.0, vFw.y * 9.0 - uFT * 4.1, vFw.z * 13.0));
+           float fire = clamp(rim * (0.5 + 0.95 * n1) * (0.65 + 0.7 * n2), 0.0, 1.0);
+           vec3 col = mix(vec3(0.5, 0.015, 0.0), vec3(1.0, 0.3, 0.03), smoothstep(0.2, 0.7, fire));
+           col = mix(col, vec3(1.0, 0.72, 0.22), smoothstep(0.72, 1.0, fire) * 0.65);
+           gl_FragColor = vec4(col * fire * ${F.gain.toFixed(2)} * uFA, 1.0);`);
+        if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s flame found no colour line to write (three changed?)');
+        sh.fragmentShader = 'varying vec3 vFw;\nuniform float uFT, uFA;\n' + PRAI_NOISE + out; };
+      m.customProgramCacheKey = () => 'e4c5praiFlame';
+      m.userData.U = U; return m;
+    }
+    const _pr5 = new THREE.Vector3();
     const PRAI5 = {
       list: [], mode: 'vision', t: 0,
       /* the nine made: each its body, hidden, its two looks laid on as it lands */
       make() {
         PRAI_KINDS.forEach((kind, i) => {
-          const P = mkPerson(PRAI_BODY[kind], 0, 0, 0, { take: 'Idle_3', phase: 0.11 * i, hidden: true, noBlob: true, skins: false, s: 0.97 + 0.02 * (i % 3) });
+          /* (R43: its struggle in a bubble a window of the take where its feet stay planted, made a loop: loopOf) */
+          const P = mkPerson(PRAI_BODY[kind], 0, 0, 0, { take: 'Idle_3', phase: 0.11 * i, hidden: true, noBlob: true, skins: false, s: 0.97 + 0.02 * (i % 3),
+                                                         loops: { Electrocution_Reaction: [0.05, 2.2, 0.5] } });
           P.kind = kind; P.slot = i; P.alpha = 1;
-          whenReady(P, (Q) => this.looks(Q));
+          whenReady(P, (Q) => { this.looks(Q); this.takes(Q); });
           this.list.push(P);
         });
       },
@@ -423,7 +462,12 @@
           if (o.isSkinnedMesh) { t = new THREE.SkinnedMesh(o.geometry, m); t.bind(o.skeleton, o.bindMatrix); } else t = new THREE.Mesh(o.geometry, m);
           t.userData.__svTwin = true; t.userData.__praiTwin = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false;
           t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); twins.push(t); }
-        P.tr = { twins, m, on: false };
+        /* (R43: the flame's twins beside them, the same bones) */
+        const fm = praiFlameMat(), flames = [];
+        for (const o of list) { if (!o.isSkinnedMesh) continue; const t = new THREE.SkinnedMesh(o.geometry, fm); t.bind(o.skeleton, o.bindMatrix);
+          t.userData.__svTwin = true; t.userData.__praiTwin = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false; t.renderOrder = 2;
+          t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); flames.push(t); }
+        P.tr = { twins, m, on: false, flames, fm };
         /* (1) Spirit Vision's: the body itself to the vision's layer, laid on as black, and a twin of pale light at its
            edge (ctx.spiritAura twins only what the world draws: the body is turned back to the world's layer for the one
            call, then sent to the vision's) */
@@ -437,11 +481,38 @@
       /* which look: 'vision' (seen only through Spirit Vision) or 'trance' (the world's, from the turn) */
       look(mode) { this.mode = mode; for (const P of this.list) this.lay(P); },
       lay(P) { if (!P.tr) return; const on = this.mode === 'trance' && P.group.visible;
-        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; } },
+        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on; } },
       /* a body's strength (0 gone .. 1): both looks */
-      alpha(P, a) { P.alpha = a; if (P.tr) P.tr.m.userData.U.uPA.value = a; if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      /* R43 (Chad: "add animations to the prais, walking animations, passive idle animations and animations when getting hit
+         or binded"): its takes made ready once it has landed (masters/v28.0/people.sh: the library's acts set on each body).
+         The stagger's own travel pinned (Hit_Reaction carries its hips 0.77 m back and 0.47 m aside: the rules carry the
+         body back, so a body sent back by its take as well went twice as far, and stepped back to its mark as the take
+         ended); and the two walks' paces read from the foot that is down (both come on the spot: tools/probes/gait.mjs),
+         in the body's own metres, so the fight drives each walk's rate from the ground it covers (v7.1) */
+      takes(P) {
+        if (P.r43) return; P.r43 = true;
+        const A = P.acts.Hit_Reaction;
+        if (A) { const c = A.getClip().clone(), tr = c.tracks.find(t => /Hips\.position$/.test(t.name));
+          if (tr) { const v = tr.values; for (let i = 3; i < v.length; i += 3) { v[i] = v[0]; v[i + 2] = v[2]; } }
+          const w = P.w.Hit_Reaction || 0; A.stop(); P.mixer.uncacheAction(A.getClip());
+          const A2 = P.mixer.clipAction(c); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); P.acts.Hit_Reaction = A2; }
+        P.praiPace = {};
+        const LF = boneOf(P, 'LeftFoot'), RF = boneOf(P, 'RightFoot'); if (!LF || !RF) return;
+        const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k] || 0];
+        for (const name of ['Unsteady_Walk', 'Walking']) { const W = P.acts[name]; if (!W) continue;
+          const d = W.getClip().duration, N = 48, F = [[], []];
+          for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+          for (let i = 0; i <= N; i++) { W.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+            [LF, RF].forEach((b, j) => { b.getWorldPosition(_pr5); P.group.worldToLocal(_pr5); F[j].push([_pr5.y, _pr5.z]); }); }
+          let lo = Infinity; for (const f of F) for (const q of f) lo = Math.min(lo, q[0]);
+          let back = 0, nn = 0; for (const f of F) for (let i = 0; i < N; i++) if (f[i][0] < lo + 0.035 && f[i + 1][0] < lo + 0.035) { back += f[i][1] - f[i + 1][1]; nn++; }
+          if (nn > 2 && back > 0) P.praiPace[name] = back / (nn * d / N); }
+        for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.w[k] = keep[k][1]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+        P.mixer.update(0);
+      },
       /* each frame (the sheen's own clock: wall time, a cosmetic) */
-      tick(wdt) { this.t += wdt; praiU.uPT.value = this.t; for (const P of this.list) this.lay(P); },
+      tick(wdt) { this.t += wdt; praiU.uPT.value = this.t; praiFlameU.uFT.value = this.t; for (const P of this.list) this.lay(P); },
       /* where they stand in a phase: in the court all evening (the hunt; the preparation finds them there), at the fight's
          places in the fight, nowhere after it */
       home(p) {

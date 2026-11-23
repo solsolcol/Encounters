@@ -6158,7 +6158,7 @@
          once and carried by the hand bone: c_yfilm.js handHold5), while he is its carrier */
       wrapOff: null,
       carry(P) { if (this.who !== 'tonWrap' || !P || !P.ready || !things.staffWrap) return;
-        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0.07 }); }
+        this.wrapOff = handHold5(P, 'Right', things.staffWrap, this.wrapOff, { upright: true, foot: 0.06, ry: Math.PI / 2, out: 0 }); }   // (R33 F4: in his fist, c_yfilm.js CARRY5; was out 0.07 from a hanging hand)
     };
     /* the nine as the play reaches them (c_play.js praiOf: cast.prai) */
     Object.defineProperty(cast, 'prai', { get: () => PRAI5.list, enumerable: false });
@@ -6202,14 +6202,53 @@
       m.customProgramCacheKey = () => 'e4c5praiTrance';
       m.userData.U = U; return m;
     }
+    /* R43 (23 Nov 2026, Chad: "add a red flaming effect to every prai around their silhouette"): a THIRD twin of each body in
+       the trance (the fight, and the films from the turn to the bag tied), swelled out along its own normals by a flicker
+       that rises up the body as flame does, and drawn ADDITIVE and only toward its edges (the body's face to the lens stays
+       black: the flame stands round the silhouette), deep red at its roots, orange, yellow at its brightest tips; its
+       strength the body's own (PRAI5.alpha). Painted light: no light added (v9.4). In Spirit Vision (the hunt) the nine
+       keep the vision's look (its black and its pale edge on the white of the vision's picture) */
+    const PRAI_FLAME = { inflate: 0.03, lick: 0.07, speed: 1.9, gain: 1.25 };
+    const praiFlameU = { uFT: { value: 0 } };
+    const PRAI_NOISE = `float pfH(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+      float pfN(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(mix(pfH(i), pfH(i + vec3(1.0, 0.0, 0.0)), f.x), mix(pfH(i + vec3(0.0, 1.0, 0.0)), pfH(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+                   mix(mix(pfH(i + vec3(0.0, 0.0, 1.0)), pfH(i + vec3(1.0, 0.0, 1.0)), f.x), mix(pfH(i + vec3(0.0, 1.0, 1.0)), pfH(i + vec3(1.0, 1.0, 1.0)), f.x), f.y), f.z); }\n`;
+    function praiFlameMat() {
+      const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide }); mats.push(m);
+      m.transparent = true; m.depthWrite = false; m.fog = false; m.toneMapped = false; m.blending = THREE.AdditiveBlending;
+      const U = Object.assign({ uFA: { value: 1 } }, praiFlameU), F = PRAI_FLAME;
+      m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+        const vs = sh.vertexShader.replace('#include <skinning_vertex>', `#include <skinning_vertex>
+          { vec3 fw0 = (modelMatrix * vec4(transformed, 1.0)).xyz, on = normalize(objectNormal);
+            float fl = pfN(vec3(fw0.x * 5.0, fw0.y * 3.2 - uFT * ${F.speed.toFixed(2)}, fw0.z * 5.0));
+            transformed += on * (${F.inflate.toFixed(3)} + ${F.lick.toFixed(3)} * fl * (0.55 + 0.45 * clamp(on.y * 0.5 + 0.5, 0.0, 1.0))); }`)
+          .replace('#include <project_vertex>', '#include <project_vertex>\n  vFw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        if (vs === sh.vertexShader) console.warn('e4c5: the Prai\'s flame found no skinning line to swell (three changed?)');
+        sh.vertexShader = 'varying vec3 vFw;\nuniform float uFT;\n' + PRAI_NOISE + vs;
+        const out = sh.fragmentShader.replace(PRAI_SHADE,
+          `vec3 fN0 = normalize(normal); float rim = pow(1.0 - clamp(abs(fN0.z), 0.0, 1.0), 2.0);
+           float n1 = pfN(vec3(vFw.x * 6.0, vFw.y * 4.5 - uFT * 2.6, vFw.z * 6.0)), n2 = pfN(vec3(vFw.x * 13.0, vFw.y * 9.0 - uFT * 4.1, vFw.z * 13.0));
+           float fire = clamp(rim * (0.5 + 0.95 * n1) * (0.65 + 0.7 * n2), 0.0, 1.0);
+           vec3 col = mix(vec3(0.5, 0.015, 0.0), vec3(1.0, 0.3, 0.03), smoothstep(0.2, 0.7, fire));
+           col = mix(col, vec3(1.0, 0.72, 0.22), smoothstep(0.72, 1.0, fire) * 0.65);
+           gl_FragColor = vec4(col * fire * ${F.gain.toFixed(2)} * uFA, 1.0);`);
+        if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s flame found no colour line to write (three changed?)');
+        sh.fragmentShader = 'varying vec3 vFw;\nuniform float uFT, uFA;\n' + PRAI_NOISE + out; };
+      m.customProgramCacheKey = () => 'e4c5praiFlame';
+      m.userData.U = U; return m;
+    }
+    const _pr5 = new THREE.Vector3();
     const PRAI5 = {
       list: [], mode: 'vision', t: 0,
       /* the nine made: each its body, hidden, its two looks laid on as it lands */
       make() {
         PRAI_KINDS.forEach((kind, i) => {
-          const P = mkPerson(PRAI_BODY[kind], 0, 0, 0, { take: 'Idle_3', phase: 0.11 * i, hidden: true, noBlob: true, skins: false, s: 0.97 + 0.02 * (i % 3) });
+          /* (R43: its struggle in a bubble a window of the take where its feet stay planted, made a loop: loopOf) */
+          const P = mkPerson(PRAI_BODY[kind], 0, 0, 0, { take: 'Idle_3', phase: 0.11 * i, hidden: true, noBlob: true, skins: false, s: 0.97 + 0.02 * (i % 3),
+                                                         loops: { Electrocution_Reaction: [0.05, 2.2, 0.5] } });
           P.kind = kind; P.slot = i; P.alpha = 1;
-          whenReady(P, (Q) => this.looks(Q));
+          whenReady(P, (Q) => { this.looks(Q); this.takes(Q); });
           this.list.push(P);
         });
       },
@@ -6222,7 +6261,12 @@
           if (o.isSkinnedMesh) { t = new THREE.SkinnedMesh(o.geometry, m); t.bind(o.skeleton, o.bindMatrix); } else t = new THREE.Mesh(o.geometry, m);
           t.userData.__svTwin = true; t.userData.__praiTwin = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false;
           t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); twins.push(t); }
-        P.tr = { twins, m, on: false };
+        /* (R43: the flame's twins beside them, the same bones) */
+        const fm = praiFlameMat(), flames = [];
+        for (const o of list) { if (!o.isSkinnedMesh) continue; const t = new THREE.SkinnedMesh(o.geometry, fm); t.bind(o.skeleton, o.bindMatrix);
+          t.userData.__svTwin = true; t.userData.__praiTwin = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false; t.renderOrder = 2;
+          t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); flames.push(t); }
+        P.tr = { twins, m, on: false, flames, fm };
         /* (1) Spirit Vision's: the body itself to the vision's layer, laid on as black, and a twin of pale light at its
            edge (ctx.spiritAura twins only what the world draws: the body is turned back to the world's layer for the one
            call, then sent to the vision's) */
@@ -6236,11 +6280,38 @@
       /* which look: 'vision' (seen only through Spirit Vision) or 'trance' (the world's, from the turn) */
       look(mode) { this.mode = mode; for (const P of this.list) this.lay(P); },
       lay(P) { if (!P.tr) return; const on = this.mode === 'trance' && P.group.visible;
-        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; } },
+        if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on; } },
       /* a body's strength (0 gone .. 1): both looks */
-      alpha(P, a) { P.alpha = a; if (P.tr) P.tr.m.userData.U.uPA.value = a; if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      /* R43 (Chad: "add animations to the prais, walking animations, passive idle animations and animations when getting hit
+         or binded"): its takes made ready once it has landed (masters/v28.0/people.sh: the library's acts set on each body).
+         The stagger's own travel pinned (Hit_Reaction carries its hips 0.77 m back and 0.47 m aside: the rules carry the
+         body back, so a body sent back by its take as well went twice as far, and stepped back to its mark as the take
+         ended); and the two walks' paces read from the foot that is down (both come on the spot: tools/probes/gait.mjs),
+         in the body's own metres, so the fight drives each walk's rate from the ground it covers (v7.1) */
+      takes(P) {
+        if (P.r43) return; P.r43 = true;
+        const A = P.acts.Hit_Reaction;
+        if (A) { const c = A.getClip().clone(), tr = c.tracks.find(t => /Hips\.position$/.test(t.name));
+          if (tr) { const v = tr.values; for (let i = 3; i < v.length; i += 3) { v[i] = v[0]; v[i + 2] = v[2]; } }
+          const w = P.w.Hit_Reaction || 0; A.stop(); P.mixer.uncacheAction(A.getClip());
+          const A2 = P.mixer.clipAction(c); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); P.acts.Hit_Reaction = A2; }
+        P.praiPace = {};
+        const LF = boneOf(P, 'LeftFoot'), RF = boneOf(P, 'RightFoot'); if (!LF || !RF) return;
+        const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k] || 0];
+        for (const name of ['Unsteady_Walk', 'Walking']) { const W = P.acts[name]; if (!W) continue;
+          const d = W.getClip().duration, N = 48, F = [[], []];
+          for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+          for (let i = 0; i <= N; i++) { W.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+            [LF, RF].forEach((b, j) => { b.getWorldPosition(_pr5); P.group.worldToLocal(_pr5); F[j].push([_pr5.y, _pr5.z]); }); }
+          let lo = Infinity; for (const f of F) for (const q of f) lo = Math.min(lo, q[0]);
+          let back = 0, nn = 0; for (const f of F) for (let i = 0; i < N; i++) if (f[i][0] < lo + 0.035 && f[i + 1][0] < lo + 0.035) { back += f[i][1] - f[i + 1][1]; nn++; }
+          if (nn > 2 && back > 0) P.praiPace[name] = back / (nn * d / N); }
+        for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.w[k] = keep[k][1]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+        P.mixer.update(0);
+      },
       /* each frame (the sheen's own clock: wall time, a cosmetic) */
-      tick(wdt) { this.t += wdt; praiU.uPT.value = this.t; for (const P of this.list) this.lay(P); },
+      tick(wdt) { this.t += wdt; praiU.uPT.value = this.t; praiFlameU.uFT.value = this.t; for (const P of this.list) this.lay(P); },
       /* where they stand in a phase: in the court all evening (the hunt; the preparation finds them there), at the fight's
          places in the fight, nowhere after it */
       home(p) {
@@ -6499,6 +6570,17 @@
         paceCome: 0.6, paceSlip: 0.8, paceHide: 0.55, paceHidden: 0.5, rush: 2.2,
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
+        /* (R43, 23 Nov: Chad, "The prais also have some automatic walking logic that slowly walks around, taking into account
+           body collision with other prais and models, pathfinding, etc." Each one on the court is a body, a disc of praiR
+           (a woman's shoulders, 0.4 m across, and her arms' swing); a bubble round a bound one a disc of bubR (it is drawn
+           0.62 m round); Grandmaster Pho a disc of phoR. None stands in another: met, they are set apart (praiBodies). Its
+           way to him is steered round what stands ahead of it within steerLook (steerAround): round the side its way
+           already passes, never through. And while three are at his bars, one that waits its turn PROWLS round him at
+           prowl, a little out from the bars (prowlIn), turning back where a wall, a planter or another shuts its way, no
+           sooner than prowlTurn after its last turn) */
+        praiR: 0.26, bubR: 0.62, phoR: 0.34, steerLook: 1.4, prowl: 0.3, prowlIn: 0.3, prowlTurn: 1.2,
+        slidePush: 3.0, slideThrow: 6.0,      // (R43: how fast a setback carries it back, and the gold throws it: slideTick)
+        bubGrow: 0.3,                         // (R43: a bubble's disc grows round the bound one over this: prR)
         // FIRE (Grandmaster Pho's main act)
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
@@ -6681,7 +6763,8 @@
         // BIND; 'keep' a bubble that stands still until the lesson's bag; 'grace' a bubble that stands still until the
         // first golden shockwave. lurk: a Prai chased away lies still this long before it comes on
         return { id, kind, st: 'waiting', x: 0, z: 0, t: 0, at: 0, ring: 0, bub: 0, stood: 0, show: 0, gath: 0, stop: 0,
-                 hideIn: 0, lurk: 0, ph: 0, due: 0, fx: 0, fz: 0, hold: '', was: '' };
+                 hideIn: 0, lurk: 0, ph: 0, due: 0, fx: 0, fz: 0, hold: '', was: '',
+                 sx: 0, sz: 0, sv: 0, pdir: 0, pturn: 0, bt: 0 };   // (R43: where a slide takes it, and at what pace; a prowl's way and its turn)
       }
 
       /* ------------------------------------------------------------------ a fight */
@@ -7193,8 +7276,20 @@
       /* ------------------------------------------------------------------ the fire in the air, the gold, the ring */
       function pushBack(st, p, by, stop) {
         const z = st.zav, dx = p.x - z.x, dz = p.z - z.z, d = Math.sqrt(dx * dx + dz * dz) || 1;
-        p.x += dx / d * by; p.z += dz / d * by; clampPrai(st.n, p);
+        slideTo(st.n, p, p.x + dx / d * by, p.z + dz / d * by, st.n.slidePush);   // (R43: carried back, never put: slideTick)
         p.stop = stop;
+      }
+      /* (R43: A PRAI SET BACK IS CARRIED THERE, NEVER PUT: fast, easing in over its last few centimetres, so the picture
+         follows it. The fire's setback had moved it 0.7 m in one step and the gold across the court, each drawn as a jump.
+         The place is the one it was put at (in the court); a bubble, a lesson's hold or the bag stops the slide where it is) */
+      function slideTo(n, p, x, z, speed) { const c = { x, z }; clampPrai(n, c); p.sx = c.x; p.sz = c.z; p.sv = speed; }
+      function slideTick(n, p, dt) {
+        if (!(p.sv > 0)) return;
+        if (prFixed(p) || p.st === 'drawn' || !prBody(p)) { p.sv = 0; return; }
+        const dx = p.sx - p.x, dz = p.sz - p.z, d = Math.sqrt(dx * dx + dz * dz);
+        if (d < 0.005) { p.x = p.sx; p.z = p.sz; p.sv = 0; return; }
+        const stp = Math.min(d, Math.max(p.sv * 0.35, Math.min(p.sv, d * 6)) * dt);
+        p.x += dx / d * stp; p.z += dz / d * stp; clampPrai(n, p);
       }
       function chase(st, p) {                                    // chased away: it flees to the far side, and sinks there
         const n = st.n, z = st.zav;
@@ -7270,8 +7365,8 @@
       /* the ring drives a free Prai back to the far side and stills it there; what was under the paving it shows */
       function throwBack(st, p, circle) {
         const n = st.n, under = p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || (p.st === 'rushing' && p.was === 'shown');
-        p.x = Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - circle.x) * 0.5));
-        p.z = n.throwZ; clampPrai(n, p); p.stop = n.throwStop; p.at = 0; p.gath = 0; p.lurk = 0;
+        slideTo(n, p, Math.max(-(n.courtX - n.praiIn), Math.min(n.courtX - n.praiIn, p.x + (p.x - circle.x) * 0.5)), n.throwZ, n.slideThrow);   // (R43: thrown, not put)
+        p.stop = n.throwStop; p.at = 0; p.gath = 0; p.lurk = 0;
         if (under) { p.show = n.showSecs; if (p.st === 'shown') restart(st, p, p.hold); else setSt(st, p, 'shown', 'the gold shows it'); }
         else setSt(st, p, 'coming', 'the gold drives it back');
       }
@@ -7319,10 +7414,103 @@
         const z = st.zav, dx = z.x - p.x, dz = z.z - p.z, d = Math.sqrt(dx * dx + dz * dz) || 1e-6;
         if (d <= stopAt + 1e-6) return true;
         const stp = Math.min(pace * dt, d - stopAt);
-        p.x += dx / d * stp; p.z += dz / d * stp;
+        /* (R43: one that is seen goes round what stands in its way; one under the paving goes under it) */
+        const u = p.st === 'hidden' || p.st === 'beneath' ? null : steerAround(st, p, dx / d, dz / d, d);
+        if (u) { p.x += u[0] * stp; p.z += u[1] * stp; } else { p.x += dx / d * stp; p.z += dz / d * stp; }
         if (weave) { p.ph += dt; const s = Math.sin(p.ph * 2 * Math.PI / st.n.weaveSecs) * weave * dt; p.x += -dz / d * s; p.z += dx / d * s; }
         clampPrai(st.n, p);
         return dist(z.x, z.z, p.x, p.z) <= stopAt + 1e-3;
+      }
+      /* R43: THE BODIES ON THE COURT. What stands on the paving as a body: everything seen and not being drawn into the bag;
+         what cannot be moved by another (a bubble, a tired one, one rising, one a lesson holds where it is) */
+      const prBody = (p) => p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown' || p.st === 'rushing' ||
+                            p.st === 'fleeing' || p.st === 'bound' || p.st === 'held' || p.st === 'tired' || p.st === 'entering';
+      const prFixed = (p) => p.st === 'bound' || p.st === 'held' || p.st === 'tired' || p.st === 'entering' || !!p.hold;
+      /* (a bubble's disc grows round the bound one over bubGrow, so what stood beside it is moved out of it, never jumped) */
+      const prR = (n, p) => (p.st === 'bound' || p.st === 'held') ? n.praiR + (n.bubR - n.praiR) * Math.min(1, (p.bt || 0) / Math.max(0.01, n.bubGrow || 0.3)) : n.praiR;
+      /* its way (ux, uz: a unit step toward its goal, `far` metres off) turned round each body that stands ahead of it, within
+         steerLook and nearer than its goal, whose disc its line would cross: away from the side the body stands on, the more
+         the nearer its line runs to the body's middle and the nearer the body is. A body dead ahead is passed on the side
+         this one's number gives (the same answer every run). Grandmaster Pho is a body to it; its goal, his student, is not */
+      function steerAround(st, p, ux, uz, far) {
+        const n = st.n; if (!(n.steerLook > 0)) return null;
+        let sx = ux, sz = uz, turned = false;
+        const one = (ox, oz, r) => {
+          const rx = ox - p.x, rz = oz - p.z, along = rx * ux + rz * uz;
+          if (along <= 0.02 || along > Math.min(n.steerLook, far)) return;
+          const lat = rx * -uz + rz * ux, clear = r + n.praiR + 0.06;
+          if (Math.abs(lat) >= clear) return;
+          const side = lat > 1e-6 ? -1 : lat < -1e-6 ? 1 : (p.id % 2 ? 1 : -1);   // (the body on its left: it goes right)
+          const k = 1.6 * (1 - Math.abs(lat) / clear) * (1 - along / Math.min(n.steerLook, far) * 0.6);
+          sx += -uz * side * k; sz += ux * side * k; turned = true;
+        };
+        one(st.pho.x, st.pho.z, n.phoR);
+        for (const q of st.prai) if (q !== p && prBody(q)) one(q.x, q.z, prR(n, q));
+        if (!turned) return null;
+        const L = Math.sqrt(sx * sx + sz * sz) || 1; return [sx / L, sz / L];
+      }
+      /* one that waits its turn while three are at his bars: round him, a little out from the bars, slowly (prowl), each its
+         own way (its number), turning back where its way is shut (a wall, a planter, or a body just ahead) */
+      function prowl(st, p, d, dt) {
+        const n = st.n, z = st.zav; if (!(n.prowl > 0) || d < 1e-6) return;
+        if (!p.pdir) p.pdir = p.id % 2 ? 1 : -1;
+        if (p.pturn > 0) p.pturn -= dt;
+        const ox = (p.x - z.x) / d, oz = (p.z - z.z) / d, tx = -oz * p.pdir, tz = ox * p.pdir;
+        const want = Math.min(n.waitR, n.pressR + n.prowlIn), s = n.prowl * dt, pull = (want - d) * Math.min(1, dt * 1.5);
+        let shut = false;
+        const ax = p.x + tx * (n.praiR * 2 + 0.12), az = p.z + tz * (n.praiR * 2 + 0.12);
+        for (const q of st.prai) if (q !== p && prBody(q) && dist(ax, az, q.x, q.z) < prR(n, q) + n.praiR) shut = true;
+        if (dist(ax, az, st.pho.x, st.pho.z) < n.phoR + n.praiR) shut = true;
+        const bx = p.x, bz = p.z;
+        if (!shut) { p.x += tx * s + ox * pull; p.z += tz * s + oz * pull; clampPrai(n, p); }
+        if ((shut || dist(bx, bz, p.x, p.z) < s * 0.35) && !(p.pturn > 0)) { p.pdir = -p.pdir; p.pturn = n.prowlTurn; }
+      }
+      /* every body on the court set apart from every other it stands in, and out of Grandmaster Pho: two that meet each
+         give half the overlap along the line between them (one that cannot move gives none: the other all of it); one at
+         his bars, or at him, is then set back on its ring round him (so it slides round), and each kept in the court.
+         Three passes, in the nine's own order: the same answer every run */
+      function praiBodies(st) {
+        const n = st.n, z = st.zav, ph = st.pho, L = st.prai;
+        if (!(n.praiR > 0)) return;
+        for (let pass = 0; pass < 3; pass++) {
+          let moved = false;
+          for (let i = 0; i < L.length; i++) { const a = L[i]; if (!prBody(a)) continue;
+            for (let j = i + 1; j < L.length; j++) { const b = L[j]; if (!prBody(b)) continue;
+              const fa = prFixed(a), fb = prFixed(b); if (fa && fb) continue;
+              let dx = b.x - a.x, dz = b.z - a.z, d = Math.sqrt(dx * dx + dz * dz); const need = prR(n, a) + prR(n, b);
+              if (d >= need - 1e-4) continue;
+              if (d < 1e-6) { dx = (a.id % 2 ? 1 : -1) * 0.01; dz = 0.01; d = Math.sqrt(dx * dx + dz * dz); }
+              const over = need - d, ux = dx / d, uz = dz / d, ka = fa ? 0 : fb ? 1 : 0.5, kb = 1 - ka;
+              a.x -= ux * over * ka; a.z -= uz * over * ka; b.x += ux * over * kb; b.z += uz * over * kb; moved = true; } }
+          for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+            const dx = p.x - ph.x, dz = p.z - ph.z, d = Math.sqrt(dx * dx + dz * dz), need = n.phoR + n.praiR;
+            if (d < need - 1e-4) { const ux = d > 1e-6 ? dx / d : (p.id % 2 ? 1 : -1), uz = d > 1e-6 ? dz / d : 0; p.x = ph.x + ux * need; p.z = ph.z + uz * need; moved = true; } }
+          for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+            if (p.st === 'pressing') toRing(st, p, n.pressR);
+            clampPrai(n, p); }
+          if (!moved) break;
+        }
+        /* (what three passes leave standing in a body that cannot move, or in him, is held there by the court's edge or by
+           his bars: it is set at the NEAREST clear place instead, on its ring if it has one (rings of 4 cm, 24 ways round,
+           out to a metre and a half; the same answer every run)) */
+        for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
+          if (!prIn(st, p, p.x, p.z)) continue;
+          const ring = p.st === 'pressing' ? n.pressR : 0;
+          let best = null;
+          if (ring) { const a0 = Math.atan2(p.z - z.z, p.x - z.x);
+            for (let k = 1; k <= 36 && !best; k++) for (const sg of [1, -1]) { const a = a0 + sg * k * Math.PI / 36, qx = z.x + Math.cos(a) * ring, qz = z.z + Math.sin(a) * ring;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } } }
+          else for (let r = 0.04; r <= 1.5 && !best; r += 0.04) for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12, qx = p.x + Math.cos(a) * r, qz = p.z + Math.sin(a) * r;
+              const c = { x: qx, z: qz }; clampPrai(n, c); if (Math.abs(c.x - qx) + Math.abs(c.z - qz) < 1e-6 && !prIn(st, p, qx, qz)) { best = c; break; } }
+          if (best) { p.x = best.x; p.z = best.z; }
+        }
+      }
+      /* (whether a body of praiR at x, z stands in another body on the court, or in Grandmaster Pho) */
+      function prIn(st, p, x, z) {
+        const n = st.n;
+        if (Math.hypot(x - st.pho.x, z - st.pho.z) < n.phoR + n.praiR - 0.01) return true;
+        for (const q of st.prai) if (q !== p && prBody(q) && Math.hypot(x - q.x, z - q.z) < prR(n, q) + n.praiR - 0.01) return true;
+        return false;
       }
       /* a Prai set back on the ring r round him (his bars: pressR), along the line from him where the court allows it, else
          round him toward the court's middle (the nearest place on the ring inside it): where a wall stood between, the
@@ -7364,6 +7552,8 @@
           if (carry && (p.st === 'pressing' || p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2))) {
             p.x += cdx; p.z += cdz; clampPrai(n, p);
           }
+          slideTick(n, p, dt);                                    // (R43: a setback or a throw carries it there)
+          p.bt = (p.st === 'bound' || p.st === 'held') ? (p.bt || 0) + dt : 0;   // (R43: how long its bubble has stood)
           switch (p.st) {
             case 'entering':
               if (p.t >= n.enterSecs) { setSt(st, p, 'coming', 'risen'); if (p.kind === 'hide') p.hideIn = n.hideAfter; }
@@ -7381,7 +7571,7 @@
               const d = dist(z.x, z.z, p.x, p.z);
               // three at the bars: the rest wait, in view (and one he walks into is pushed out by his bars, never left
               // standing inside them while his cage holds)
-              if (pressing >= n.pressMax && d <= n.waitR + 0.05) { if (d < n.pressR - 0.02) toRing(st, p, n.pressR); break; }
+              if (pressing >= n.pressMax && d <= n.waitR + 0.05) { if (d < n.pressR - 0.02) toRing(st, p, n.pressR); else prowl(st, p, d, dt); break; }   // (R43: it prowls)
               if (towardHim(st, p, pace, n.pressR, dt, wv) && pressing < n.pressMax) { p.at = 1; pressing++; toRing(st, p, n.pressR); setSt(st, p, 'pressing', 'at the bars'); }
               break;
             }
@@ -7453,6 +7643,7 @@
               break;
           }
         }
+        praiBodies(st);                                           // (R43: none stands in another, nor in Grandmaster Pho)
         // the stale clouds thin and go
         if (st.clouds.length) { let w = 0; for (const c of st.clouds) { c.t -= dt; if (c.t > 0) st.clouds[w++] = c; } st.clouds.length = w; }
       }
@@ -8108,7 +8299,8 @@
     const FS_DEAL = { swing: ['u5swing1', 'u5swing2'], ball: ['u5fire1', 'u5fire2', 'u5fire3'], land: ['u5land1', 'u5land2'], tired: ['u5tired1', 'u5tired2'],
                       bind: ['u5bind1', 'u5bind2'], sniff: ['u5sniff1', 'u5sniff2', 'u5sniff3'], drawn: ['u5drawn1', 'u5drawn2'], rise: ['u5rise1', 'u5rise2'],
                       strain: ['u5strain1', 'u5strain2', 'u5strain3'], bars: ['u5barring1', 'u5barring2'], gather: ['u5gather1', 'u5gather2'],
-                      note: ['u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9'] };
+                      note: ['u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9'],
+                      pvhit: ['u5pvhit1', 'u5pvhit2'], pvbind: ['u5pvbind1', 'u5pvbind2'], pvstrug: ['u5pvstrug1', 'u5pvstrug2'] };   // (R43: the nine's own cries)
     const FS_HIT = { come: 'u5hitc', slip: 'u5hits', hide: 'u5hith' };
     const FS_VOICE = { come: 'u5ncome', slip: 'u5nslip', hide: 'u5nhide' };
     const fsDealN = {};
@@ -8120,7 +8312,8 @@
       'u5drawn1', 'u5drawn2', 'u5baginhale', 'u5bagsnap', 'u5rise1', 'u5rise2', 'u5ncome', 'u5nslip', 'u5nhide', 'u5barring1', 'u5barring2', 'u5sink', 'u5gather1',
       'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5plant', 'u5shape', 'u5shapeloop',
       'u5togfill', 'u5done', 'u5broken', 'u5start', 'u5ready', 'u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9',
-      'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last'];
+      'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last',
+      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2'];
     const _fsP = new THREE.Vector3();
     function fsPan(x, z, y = 1.0) { _fsP.set(x, y, z).project(camera); return Math.max(-0.8, Math.min(0.8, (_fsP.z > 1 ? -_fsP.x : _fsP.x) * 0.8)); }
     function fsFx(name, vol, x, z) {
@@ -8196,10 +8389,11 @@
     /* ---------------------------------------------------------------- THE NINE ON THE COURT, as the rules have them */
     const fsPraiP = (id) => PRAI5.list[id - 1] || null;
     /* each one's look, eased toward its state (how far into the paving, how strong, how tall, its lean) */
-    const fsVis = Array.from({ length: 9 }, () => ({ y: -1.9, a: 0, s: 1, lean: 0, sh: 0, was: '', vt: 0, voice: null }));
+    const fsVis = Array.from({ length: 9 }, () => ({ y: -1.9, a: 0, s: 1, lean: 0, sh: 0, was: '', vt: 0, voice: null,
+                                                    lx: null, lz: 0, spd: 0, hd: 0, ry: null, hit: '', hitT: 0, strugT: 1.5 }));   // (R43: its walk, its turn, a hit's take)
     const FS_SUNK = -1.9;
     function fsPraiReset(stand) {
-      PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0;
+      PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0; V.lx = null; V.spd = 0; V.ry = null; V.hit = ''; V.hitT = 0; V.strugT = 1.5 + 0.4 * i;
         if (stand) { V.y = 0; V.a = 1; V.s = 1; V.lean = 0; } else { V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; } });
     }
     /* where the nine stand while the brief is read: as the preparation's turn leaves them (the lesson's in the middle, the
@@ -8240,7 +8434,7 @@
         else { V.lean += (tL - V.lean) * k(0.25); }
         const vis = V.a > 0.02 && V.y > FS_SUNK + 0.05;
         P.hidden = !vis; if (P.ready) P.group.visible = vis;
-        if (!vis) { V.was = p.st; return; }
+        if (!vis) { V.was = p.st; V.lx = null; V.ry = null; return; }
         V.sh += wdt;
         const jx = shake ? Math.sin(V.sh * 31 + i) * shake : 0, jz = shake ? Math.cos(V.sh * 27 + i * 2) * shake : 0;
         /* (one waiting its turn, or gathered, has no place in the rules: it sinks where it stood) */
@@ -8248,8 +8442,66 @@
         else put(P, w.x + jx, w.z + jz, ry, V.y);
         P.group.rotation.order = 'YXZ'; P.group.rotation.x = V.lean; P.group.scale.setScalar(V.s);
         PRAI5.alpha(P, V.a);
+        fsPraiTake(P, V, p, wdt, w, zw);
         V.was = p.st;
       });
+    }
+    /* R43 (23 Nov 2026, Chad: "add animations to the prais, walking animations, passive idle animations and animations when
+       getting hit or binded, with sound effects and voices"): WHAT EACH ONE'S BODY DOES, from what the rules have it do.
+       Its speed over the paving read from where it is drawn, frame to frame (eased): moving on its own way (coming,
+       through, shown, rushing, and the prowl round him while it waits its turn) it WALKS, the slow unsteady walk, and the
+       library's walk once it goes faster than a metre a second, each at the rate the ground it covers asks (its own pace,
+       read from the planted foot: c_cast.js PRAI5.takes), turned along its way; still, it stands in its rest, turned to
+       him. In a bubble (bound, held) and drawn to the bag it STRUGGLES (the loop of its thrashing), and is heard now and
+       then (u5pvstrug, one at a time, never over a line). Struck (fsPraiHit: the land event) it FLINCHES where it stands,
+       or, chased away, STAGGERS back (its take's travel pinned: the rules carry it) turned to the fire; the rise and the
+       sinking keep their rest. A take is a pose of the cast's own clock (peopleTick), so a hidden tab and a slow phone
+       change nothing of the rules */
+    const FS_WALK = { slow: 'Unsteady_Walk', fast: 'Walking', fastAt: 1.05, minSpd: 0.12 };
+    function fsPraiTake(P, V, p, wdt, w, zw) {
+      if (!P.ready || !P.acts) return;
+      const k = (secs) => 1 - Math.exp(-wdt / Math.max(0.01, secs));
+      /* (its speed and its way over the ground, from where the rules have it: the shake at his bars is no walk) */
+      const gx = w.x, gz = w.z;
+      if (V.lx == null || wdt <= 0) { V.lx = gx; V.lz = gz; }
+      else { const dx = gx - V.lx, dz = gz - V.lz, d = Math.hypot(dx, dz), inst = d / wdt;
+        V.spd += (Math.min(4, inst) - V.spd) * k(0.18); if (d > 1e-4 && inst > 0.05) V.hd = Math.atan2(dx, dz);
+        V.lx = gx; V.lz = gz; }
+      const own = (p.st === 'coming' && !(p.stop > 0) && !(p.sv > 0)) || p.st === 'through' || (p.st === 'shown' && p.at !== 2 && !(p.sv > 0)) || p.st === 'rushing';
+      let name = 'Idle_3', rate = 1, ry = faceTo(w.x, w.z, zw.x, zw.z);
+      if (p.st === 'rushing') { const pw = cast.pho ? cast.pho.group.position : zw; ry = faceTo(w.x, w.z, pw.x, pw.z); }
+      if (p.st === 'bound' || p.st === 'held') { name = 'Electrocution_Reaction'; rate = p.st === 'held' ? 0.7 : 1; }
+      else if (p.st === 'drawn') { name = 'Electrocution_Reaction'; rate = 1.4; }
+      else if (p.st === 'fleeing') { name = 'Hit_Reaction'; ry = faceTo(w.x, w.z, fsW(p.fx, p.fz).x, fsW(p.fx, p.fz).z) + Math.PI; }
+      else if (own && V.spd > FS_WALK.minSpd) {
+        name = V.spd > FS_WALK.fastAt ? FS_WALK.fast : FS_WALK.slow;
+        const pace = (P.praiPace && P.praiPace[name]) || (name === 'Walking' ? 1.1 : 0.45);
+        rate = Math.max(0.5, Math.min(1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
+        ry = V.hd;
+      }
+      /* (carried back by a setback or thrown by the gold: turned against the push; thrown, it staggers) */
+      if (p.sv > 0) { ry = V.hd + Math.PI;
+        if (p.sv >= 5 && !(V.hitT > 0) && P.acts.Hit_Reaction) { V.hit = 'Hit_Reaction'; V.hitT = 1.3; take(P, 'Hit_Reaction', 0.08, true); } }
+      if (V.hitT > 0) { V.hitT -= wdt; if (p.st !== 'fleeing' && p.st !== 'drawn' && p.st !== 'gathered') { name = V.hit; rate = 1; } }
+      if (!P.acts[name]) name = 'Idle_3';
+      if (P.cur !== name) take(P, name, name === V.hit && V.hitT > 0 ? 0.08 : 0.3, name === V.hit && V.hitT > 0);
+      if (p.st === 'fleeing' && V.was !== 'fleeing' && P.acts.Hit_Reaction) { take(P, 'Hit_Reaction', 0.08, true); }
+      if (P.acts[name]) P.acts[name].timeScale = rate;
+      /* (its turn eased, never snapped: a walk turns along its way, a struck one to the fire) */
+      if (V.ry == null) V.ry = ry; else V.ry += angTo(V.ry, ry) * k(p.st === 'fleeing' ? 0.06 : 0.2);
+      P.group.rotation.y = V.ry;
+      /* (heard in its bubble now and then: one at a time, never over a line) */
+      if (p.st === 'bound' || p.st === 'held') { V.strugT -= wdt;
+        if (V.strugT <= 0) { const quiet = FS5.wall < (FS5.lineEnd || 0) || FS5.wall - (FS5.strugAt || -9) < 1.6;
+          if (!quiet) { fsFx(fsDeal('pvstrug'), 0.42, w.x, w.z); FS5.strugAt = FS5.wall; }
+          V.strugT = quiet ? 0.6 : 2.6 + 1.8 * (FS5.srand ? FS5.srand() : 0.5); } }
+      else V.strugT = Math.max(V.strugT, 0.9);
+    }
+    /* (struck: a flinch where it stands, its cry; chased away, the stagger is its fleeing's own) */
+    function fsPraiHit(p, result, w) {
+      if (!p) return; const V = fsVis[p.id - 1], P = fsPraiP(p.id); if (!V) return;
+      if (result === 'setback' || result === 'tired') { V.hit = 'Hit_Reaction_1'; V.hitT = 1.05; if (P && P.ready && P.acts && P.acts.Hit_Reaction_1) take(P, 'Hit_Reaction_1', 0.08, true); }
+      if (result === 'setback' || result === 'tired' || result === 'chased') fsFx(fsDeal('pvhit'), result === 'setback' ? 0.5 : 0.75, w.x, w.z);
     }
     /* THE SURGE (stage 4): the last three drawn together into one tall shape over him, leaning in: by its end exactly where
        the Naga's film begins them (c_yfilm.js FILMS5.together: his place, those three offsets, 1.55 times their height, a
@@ -8774,6 +9026,7 @@
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
             const y0 = 1.3 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
+            if (p && (e.result === 'setback' || e.result === 'tired' || e.result === 'chased')) fsPraiHit(p, e.result, w);   // (R43: its body and its cry)
             if (e.result === 'tired') { fsBloom(w.x, w.z, FS_FIRE.orange, 1.2, true, y0); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
               fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, 8, { sp: 2.4, up: 0.3, life: 0.7, s0: 0.1, col: FS_COL.ruby, grav: -3 }); }
@@ -8788,6 +9041,7 @@
             const secs = fsZavAct('bind');                                              // (R34: the push on his own body)
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
             else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null);
+              if (w) fsFx(fsDeal('pvbind'), 0.75, w.x, w.z);                          // (R43: its own cry as the bubble closes on it)
               if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = Math.max(0.7, secs); fsBloom(w.x, w.z, FS_COL.violet, 0.9);
                 fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
                 fsBindCast(p, w); } }
@@ -9177,6 +9431,19 @@
       place(who, x, z) { const st = FS5.st; if (!st) return false; const R = who === 'pho' ? st.pho : st.zav, k = who === 'pho' ? 'pho' : 'zav';
         R.x = +x; R.z = +z; FS5.last[k] = { x: R.x, z: R.z }; const w = fsW(R.x, R.z); return kit.tagPlace(who === 'pho' ? 'pho' : 'zavier', w.x, w.z); },
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
+      /* (R43, a probe's: a Prai set in a state at a place of the court, the rules then driving it (coming: it walks to him;
+         bound: it struggles in its bubble; fleeing: it staggers back to the house); and a fire's landing on one drawn and
+         sounded as the game does it, its flinch and its cry) */
+      prai(id, stt, x, z) { const st = FS5.st, p = st && st.prai[id - 1]; if (!p) return false;
+        p.labWas = p.labWas || p.st; p.st = stt; p.t = 0; p.hold = ''; p.stop = 0; p.sv = 0; p.at = 0; if (x != null) { p.x = +x; p.z = +z; }
+        if (stt === 'bound' || stt === 'held') { p.bub = FN5.bubbleSecs || 10; p.bt = 0; }
+        if (stt === 'fleeing') { p.fx = p.x; p.fz = st.n.throwZ; }
+        return true; },
+      hit(id, result) { const st = FS5.st, p = st && st.prai[id - 1]; if (!p) return false;
+        fsEvents([result === 'bind' ? { e: 'bind', id } : { e: 'land', result, id, x: p.x, z: p.z }]); return true; },
+      praiRead() { const st = FS5.st; if (!st) return null; return st.prai.map((p, i) => { const P = PRAI5.list[i], V = fsVis[i];
+        return { id: p.id, st: p.st, x: +p.x.toFixed(2), z: +p.z.toFixed(2), cur: P ? P.cur : null, ts: P && P.acts && P.acts[P.cur] ? +P.acts[P.cur].timeScale.toFixed(2) : null,
+                 spd: V ? +V.spd.toFixed(2) : null, vis: P ? P.group.visible : false, pace: P && P.praiPace ? P.praiPace : null, flame: !!(P && P.tr && P.tr.flames && P.tr.flames.length && P.tr.flames[0].visible) }; }); },
       /* (a probe's: the rules set in the fight's last stage as the Naga's film leaves them: five gathered, three laid where the
          Naga lays them; the two where they stand) */
       toLast() { const st = FS5.st; if (!st) return false; const n = st.n; let i = 0;
@@ -9741,15 +10008,15 @@
          live check of build 30 read his wrist 41 to 65 degrees toward his little finger in the gold, the fire and the bag
          (jointscan's line is 40, a real wrist's range about 30 to 40), his fist lifted out to his right with his elbow hung
          low under it. A man lifting a staff lifts his elbow with it. So his elbow is swung about the line from his shoulder to
-         his wrist (every 3 degrees to 90 either way, then by half degrees) to the least swing that holds jointscan's own
-         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 30 (40),
+         his wrist (one way at a time, every 3 degrees to 50, then by half degrees; and as a MOVE, swing5) to the least swing that holds jointscan's own
+         measures inside a margin of its lines: his wrist toward his thumb 22 (its line 25), toward his little finger 32 (40),
          bent 60 toward his palm (70) and 50 back (60); his forearm turned 90 (100); his elbow no more than 1.5 cm behind his
          shoulder while his hand is before it (2.5), 3 cm in toward his middle or 5 cm over his shoulder; each degree or
-         centimetre past its margin costing its square, a swing a hundredth of its degrees squared. Where his elbow's own
+         centimetre past its margin costing its square, a swing 0.012 of its degrees squared. Where his elbow's own
          place already holds all of them it is not moved at all (his rest, his walk, his run and his talk stand as they were) */
       const _w5 = { S: V(), T: V(), P0: V(), B: V(), Pp: V(), U: V(), Vf: V(), E: V(), f: V(), ac: V(), n: V(), re: V(), ne: V(), h: V(), dn: V(),
                     Ut: V(), Lf: V(), F: V(), a1: V(), a2: V(), h1: V(), h2: V(), W0: V(), E0: V() };
-      let SWING_ON = true, swingLast = null;
+      let SWING_ON = true, swingLast = null, swingPrev = null, swingT = 0;
       function swingCost(w, th, la, lb, d, ca, sa, side) {
         const c = Math.cos(th), s = Math.sin(th);
         w.Pp.copy(w.P0).multiplyScalar(c).addScaledVector(w.B, s);
@@ -9759,14 +10026,14 @@
         w.re.copy(w.ac).addScaledVector(w.Vf, -w.ac.dot(w.Vf)).normalize(); w.ne.copy(w.n).addScaledVector(w.Vf, -w.n.dot(w.Vf)).normalize();
         const fe = w.f.dot(w.Vf), wd = Math.atan2(w.f.dot(w.re), fe) / D2R, wf = Math.atan2(w.f.dot(w.ne), fe) / D2R;
         const q = (x) => (x > 0 ? x * x : 0);
-        let cost = q(wd - 22) + q(-wd - 30) + q(wf - 60) + q(-wf - 50), tw = 0;
+        let cost = q(wd - 22) + q(-wd - 32) + q(wf - 60) + q(-wf - 50), tw = 0;
         const phi = Math.acos(Math.max(-1, Math.min(1, w.U.dot(w.Vf)))) / D2R;
         if (phi > 25) { w.h.crossVectors(w.U, w.Vf).normalize().multiplyScalar(side); w.dn.copy(w.U).addScaledVector(w.Vf, -w.U.dot(w.Vf)).normalize();
           tw = Math.atan2(w.ne.dot(w.dn), w.ne.dot(w.h)) / D2R; cost += q(Math.abs(tw) - 90); }
         const eb = w.E.dot(w.F), hf = w.W0.dot(w.F), ey = w.E.dot(w.Ut), lat = -w.E.dot(w.Lf);
         if (hf > 0.1) cost += q((-eb - 0.015) * 100);
         cost += q((ey - 0.05) * 100) + q((-lat - 0.03) * 100);
-        return { cost: cost + 0.01 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
+        return { cost: cost + 0.012 * (th / D2R) * (th / D2R), wd, wf, tw, eb, ey, lat };
       }
       function swing5(P, a, Wr, pole, Qh) {
         swingLast = null; if (!SWING_ON) return;
@@ -9794,11 +10061,29 @@
         const ca = Math.max(-1, Math.min(1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
         w.f.copy(a.f5.f).applyQuaternion(Qh); w.ac.copy(a.f5.ac).applyQuaternion(Qh); w.n.copy(a.f5.n).applyQuaternion(Qh);
         const r0 = swingCost(w, 0, la, lb, d, ca, sa, -1);
-        if (!(r0.cost > 0)) { swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        /* (R43's check of R41's swing, measured every 0.05 s of his casts on the live rules: one way only still turned over
+           in a step where the wrist was not straight, the elbow thrown from -50 to +50 degrees between two moments of the
+           gold and of cast 7. So the swing is a MOVE, not a pick: it goes on from where it stood a moment ago (within a
+           quarter second), at most 150 degrees a second, and turns to the other side only once it is back near nought; where
+           nothing needs a swing it eases back to nought, never snaps) */
+        const now = performance.now(), fresh = swingPrev != null && now - swingT < 250, dtS = fresh ? Math.min(0.1, (now - swingT) / 1000) : 0;
+        const ease = (to) => { if (!fresh) return to; const mx = 150 * dtS + 0.25; return Math.max(swingPrev - mx, Math.min(swingPrev + mx, to)); };
+        if (!(r0.cost > 0) && !(fresh && Math.abs(swingPrev) > 0.25)) { swingPrev = 0; swingT = now; swingLast = { th: 0, ...r0, at0: r0 }; return; }
+        /* (R41, its live check: searched both ways, the gold's best swing was 55 to 68 degrees one way while he lifted and -58
+           the other at the strike, the elbow thrown across in 0.3 s. So ONE WAY ONLY, the way the wrist needs and no other:
+           a wrist bent toward the little finger is the forearm coming up to the fist from too low, cured by the elbow RISING;
+           one bent toward the thumb by it falling. Which way rises is read here (the elbow's height a little either way), and
+           the side turns over only where the wrist is straight, where no swing is wanted: the swing goes through nought and
+           never jumps. At most 50 degrees) */
+        const up = swingCost(w, 0.26, la, lb, d, ca, sa, -1).ey - swingCost(w, -0.26, la, lb, d, ca, sa, -1).ey;
+        let sg = (r0.wd < 0 ? 1 : -1) * (up >= 0 ? 1 : -1);
+        if (fresh && Math.abs(swingPrev) > 4 && Math.sign(swingPrev) !== sg) sg = Math.sign(swingPrev);   // (its side kept until it is back near nought)
         let best = 0, bc = r0.cost;
-        for (let dg = -90; dg <= 90; dg += 3) { if (!dg) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
-        const lo = best - 3, hi = best + 3;
-        for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } }
+        if (r0.cost > 0) {
+          for (let dg = 3; dg <= 50; dg += 3) { const r = swingCost(w, sg * dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = sg * dg; } }
+          const lo = Math.max(-50, best - 3), hi = Math.min(50, best + 3);
+          for (let dg = lo; dg <= hi + 1e-9; dg += 0.5) { if (dg * sg < 0) continue; const r = swingCost(w, dg * D2R, la, lb, d, ca, sa, -1); if (r.cost < bc) { bc = r.cost; best = dg; } } }
+        best = ease(best); swingPrev = best; swingT = now;
         const rb = swingCost(w, best * D2R, la, lb, d, ca, sa, -1);
         swingLast = { th: best, ...rb, at0: r0 };
         if (best) pole.copy(w.Pp);                                           // (armHinge takes the pole's square part to the reach: this)
@@ -12550,7 +12835,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const DUFFEL5 = {
       who: 'away', off: null,
       to(who) { this.who = who; const g = things.duffel; if (!g) return; if (who !== 'jun' && g.parent !== world) world.attach(g); g.visible = who !== 'away'; },
-      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2, out: 0.1 }); }
+      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2, out: 0.05 }); }   // (R33 F4: his arm out 10 degrees, CARRY5; was out 0.1)
     };
     /* A THING CARRIED IN ONE HAND (Ton's wrapped staff, Jun's duffel): its offset from the hand bone made ONCE, from the
        body's standing rest (its handles or its shaft at the palm's middle), and the thing carried by the hand bone from
@@ -12602,6 +12887,90 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
       return off;
     }
+
+    /* (R33 F4, 23 Nov: CARRIED AS A HAND CAN CARRY IT. The wrapped staff stood upright in Ton's HANGING fist, so its shaft ran
+       up through his wrist, forearm, elbow and upper arm (the opening's clipscan: 895 crossings at 0 s and 1,133 at 27 s, from
+       his hand to his shoulder); a staff upright in one fist lies ACROSS the palm, so the forearm holding it is level, the
+       elbow bent near a right angle and the thumb on top, as a man carries a tall staff he is not leaning on. Each frame he
+       carries it, after everything has posed him: his right wrist 0.24 m to his right of his middle, 0.97 m up and 0.17 m
+       before him (his group's frame), his elbow hung under his shoulder (armHinge, its hinge read off his own pose first),
+       his hand straight on his forearm as his bind holds it, the forearm and the wrist sharing the turn that puts his thumb
+       on top; the staff then set in his fist, 3 cm along his palm's facing from its middle (inside his curled fingers). And
+       Jun's duffel through his thigh as he walked (446): his left arm turned out from his side 10 degrees as an arm carrying
+       a bag hangs, the bag under his hand. Both laid with a share eased over 0.3 s as the carrying begins or ends, kept as the
+       mixer wrote them and taken back by armsBack before it runs again (v11.5); a probe's switch: CARRY5.on) */
+    const CARRY5 = { on: true, k: 0, kj: 0, last: 0, wrist: [-0.24, 0.97, 0.17], pole: [0.25, -0.95, -0.15], palm: 0.03, junOut: 10 * Math.PI / 180, read: null };
+    const _cyA = new THREE.Vector3(), _cyB = new THREE.Vector3(), _cyC = new THREE.Vector3(), _cyD = new THREE.Vector3(), _cyE = new THREE.Vector3(),
+          _cyQ = new THREE.Quaternion(), _cyQ2 = new THREE.Quaternion(), _cyQ3 = new THREE.Quaternion(), _cyM = new THREE.Matrix4(), _cyM2 = new THREE.Matrix4();
+    function bindTurn5(P, par, ch) {                                          // (a bone's turn on its parent in the body's bind pose)
+      let sk = null; P.group.traverse(o => { if (!sk && o.isSkinnedMesh && o.skeleton) sk = o.skeleton; });
+      const ip = sk ? sk.bones.indexOf(par) : -1, ic = sk ? sk.bones.indexOf(ch) : -1; if (ip < 0 || ic < 0) return null;
+      _cyM.copy(sk.boneInverses[ip]); _cyM2.copy(sk.boneInverses[ic]).invert(); _cyM.multiply(_cyM2);
+      const q = new THREE.Quaternion(); _cyM.decompose(_cyA, q, _cyB); return q;
+    }
+    function carryStaffLay(P, kk) {
+      const As = armsOf(P), a = As && As.R; if (!a) return;
+      if (!a.hinge) hingeOf(a, -1);                                           // (read off his own pose, before anything is laid)
+      if (!a.c5) { const m1 = boneOf(P, 'RightHandMiddle1'), i1 = boneOf(P, 'RightHandIndex1'), k1 = boneOf(P, 'RightHandPinky1') || boneOf(P, 'RightHandRing1');
+        const bt = bindTurn5(P, a.fore, a.hand);
+        if (!m1 || !i1 || !k1 || !bt) { a.c5 = { none: true }; console.warn('CARRY5: ' + P.key + ' has no hand to carry the staff with'); }
+        else { const f = m1.position.clone().normalize(), r = i1.position.clone().sub(k1.position); r.addScaledVector(f, -r.dot(f)).normalize();
+          a.c5 = { bt, f, r, n: new THREE.Vector3().crossVectors(f, r).negate().normalize() }; } }
+      if (a.c5.none) return;
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+      _cyQ3.copy(a.up.quaternion); const kF = a.fore.quaternion.clone(), kH = a.hand.quaternion.clone();
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
+      const Wr = _cyA.set(CARRY5.wrist[0], CARRY5.wrist[1], CARRY5.wrist[2]); P.group.localToWorld(Wr);
+      const pole = _cyB.set(CARRY5.pole[0], CARRY5.pole[1], CARRY5.pole[2]).normalize().applyQuaternion(_cyQ);
+      armHinge(a, Wr, pole);
+      /* (the hand straight on the forearm, as his bind holds it; then the turn about the forearm's line that puts the thumb's side
+         up, shared half and half between the forearm and the wrist, so neither carries all of it) */
+      a.hand.quaternion.copy(a.c5.bt); a.hand.updateWorldMatrix(true, false);
+      a.fore.getWorldPosition(_cyC); a.hand.getWorldPosition(_cyD); const e = _cyE.subVectors(_cyD, _cyC).normalize();
+      a.hand.getWorldQuaternion(_cyQ2); const r = _cyC.copy(a.c5.r).applyQuaternion(_cyQ2); r.addScaledVector(e, -r.dot(e)).normalize();
+      const u = _cyD.set(0, 1, 0).addScaledVector(e, -e.y).normalize();
+      const phi = Math.atan2(_cyA.crossVectors(r, u).dot(e), r.dot(u));
+      a.fore.getWorldQuaternion(_cyQ2); const fw = _cyQ2.clone(), hw = _cyQ2.clone().multiply(a.c5.bt);
+      const qh = new THREE.Quaternion().setFromAxisAngle(e, phi / 2), qf = new THREE.Quaternion().setFromAxisAngle(e, phi);
+      fw.premultiply(qh); hw.premultiply(qf);
+      a.fore.parent.getWorldQuaternion(_cyQ); a.fore.quaternion.copy(_cyQ.invert().multiply(fw));
+      a.hand.quaternion.copy(fw.clone().invert().multiply(hw));
+      if (kk < 0.999) { a.up.quaternion.slerpQuaternions(_cyQ3, a.up.quaternion.clone(), kk); a.fore.quaternion.slerpQuaternions(kF, a.fore.quaternion.clone(), kk);
+        a.hand.quaternion.slerpQuaternions(kH, a.hand.quaternion.clone(), kk); }
+      a.up.updateWorldMatrix(false, true);
+    }
+    function carryBagLay(P, kk) {
+      const As = armsOf(P), a = As && As.L; if (!a) return;
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
+      const fwd = _cyA.set(0, 0, 1).applyQuaternion(_cyQ);                     // (his forward: a turn about it by a positive angle takes his LEFT arm out)
+      a.up.parent.updateWorldMatrix(true, false); a.up.parent.getWorldQuaternion(_cyQ2); fwd.applyQuaternion(_cyQ2.invert()).normalize();
+      a.up.quaternion.premultiply(_cyQ3.setFromAxisAngle(fwd, CARRY5.junOut * kk)); a.up.updateWorldMatrix(false, true);
+    }
+    const carryHook = new THREE.Object3D(); carryHook.name = 'what Ton and Jun carry, held as a hand holds it';
+    carryHook.updateMatrixWorld = function (force) {
+      try {
+        const now = performance.now(), dt = CARRY5.last ? Math.min(0.1, (now - CARRY5.last) / 1000) : 0; CARRY5.last = now;
+        const T = cast.ton, J = cast.jun, tOn = CARRY5.on && typeof STICK5 === 'object' && STICK5.who === 'tonWrap' && !!(T && T.ready && T.group.visible) && !!things.staffWrap;
+        const jOn = CARRY5.on && DUFFEL5.who === 'jun' && !!(J && J.ready && J.group.visible) && !!things.duffel;
+        CARRY5.k = tOn ? Math.min(1, CARRY5.k + dt / 0.3) : Math.max(0, CARRY5.k - dt / 0.3);
+        CARRY5.kj = jOn ? Math.min(1, CARRY5.kj + dt / 0.3) : Math.max(0, CARRY5.kj - dt / 0.3);
+        /* (the first frame he carries it after a cut or a Continue: the whole share at once, never eased in on screen from his
+           hanging arm, which held the staff through it) */
+        if (tOn && CARRY5.k < 1 && !CARRY5.tWas) CARRY5.k = 1; if (jOn && CARRY5.kj < 1 && !CARRY5.jWas) CARRY5.kj = 1;
+        CARRY5.tWas = tOn; CARRY5.jWas = jOn;
+        /* (the grip's height is read once, from his plain standing rest (handHold5 poses it and puts the take back): read before
+           anything is laid this frame, so the lay is not undone by it) */
+        if (tOn && !STICK5.wrapOff) STICK5.carry(T); if (jOn && !DUFFEL5.off) DUFFEL5.carry(J);
+        if (T && T.ready && CARRY5.k > 0) { carryStaffLay(T, CARRY5.k);
+          if (tOn) { STICK5.carry(T); const a = armsOf(T).R, g = things.staffWrap; if (a && a.c5 && !a.c5.none && g) {
+            a.hand.getWorldQuaternion(_cyQ); const n = _cyA.copy(a.c5.n).applyQuaternion(_cyQ); n.y = 0;
+            if (n.lengthSq() > 1e-6) { n.normalize(); g.position.addScaledVector(n, CARRY5.palm); } } } }
+        if (J && J.ready && CARRY5.kj > 0) { carryBagLay(J, CARRY5.kj); if (jOn) DUFFEL5.carry(J); }
+      } catch (e) { if (!CARRY5.failed) { CARRY5.failed = true; console.warn('CARRY5 threw: ' + (e && e.message)); } }
+      THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+    };
+    world.children.unshift(carryHook); carryHook.parent = world;
 
     /* WHERE TON'S 'give' HOLDS HIS BODY (R25, measured on deploy 12, e4c5films seek rows): his file's take steps 0.77 m toward
        the one he gives to by its held moment (2.6 s), and the cast's offset for a take is its FIRST moment's, so stood on his

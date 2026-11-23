@@ -122,3 +122,12 @@
 #   M14 u5m14sight b  100 % (a 56 %), a loop
 #   M15 u5m15endA a   71 %   M16 u5m16endB b 99 %   M17 u5m17endC a 48 % (b refused: the transcriber writes "Thanks for
 #   watching!")   M18 u5m18endD b 56 %   M19 u5m19card b 100 %, 26 % in the voice's band
+#
+# ---- R43 (23 Nov 2026, Chad: "with sound effects and voices when getting hit or binded"): THE NINE'S OWN CRIES, six rows of
+#   sfx.py (family nine), four takes each, 24 in all, none failed: 432 credits (spend.log 12:18-12:19). Through measure.py's
+#   transcriber three were refused: u5pvstrug1 a ("Yay!"), u5pvstrug1 b ("MMMM..."), u5pvstrug2 d ("Ugh."). The picks
+#   (pick.py, picks.json): u5pvhit1 b (its 0.15 s silent head cut), u5pvhit2 a, u5pvbind1 d, u5pvbind2 a, u5pvstrug1 c,
+#   u5pvstrug2 c; each levelled and encoded (encode.py), installed (install.py: six STING_SAMPLE rows). Cued by the fight
+#   (c_fightstage.js): a cry as fire strikes one (pvhit, dealt in turn), as a bubble closes on it (pvbind), and now and
+#   then while it struggles in a bubble (pvstrug: one at a time, never over a line). The measured picks stand until
+#   Chad's ear (v10.6).

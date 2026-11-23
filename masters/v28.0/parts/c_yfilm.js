@@ -832,7 +832,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const DUFFEL5 = {
       who: 'away', off: null,
       to(who) { this.who = who; const g = things.duffel; if (!g) return; if (who !== 'jun' && g.parent !== world) world.attach(g); g.visible = who !== 'away'; },
-      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2, out: 0.1 }); }
+      carry(P) { const g = things.duffel; if (!g || this.who !== 'jun' || !P || !P.ready) return; this.off = handHold5(P, 'Left', g, this.off, { hang: 0.03, ry: Math.PI / 2, out: 0.05 }); }   // (R33 F4: his arm out 10 degrees, CARRY5; was out 0.1)
     };
     /* A THING CARRIED IN ONE HAND (Ton's wrapped staff, Jun's duffel): its offset from the hand bone made ONCE, from the
        body's standing rest (its handles or its shaft at the palm's middle), and the thing carried by the hand bone from
@@ -884,6 +884,90 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
       return off;
     }
+
+    /* (R33 F4, 23 Nov: CARRIED AS A HAND CAN CARRY IT. The wrapped staff stood upright in Ton's HANGING fist, so its shaft ran
+       up through his wrist, forearm, elbow and upper arm (the opening's clipscan: 895 crossings at 0 s and 1,133 at 27 s, from
+       his hand to his shoulder); a staff upright in one fist lies ACROSS the palm, so the forearm holding it is level, the
+       elbow bent near a right angle and the thumb on top, as a man carries a tall staff he is not leaning on. Each frame he
+       carries it, after everything has posed him: his right wrist 0.24 m to his right of his middle, 0.97 m up and 0.17 m
+       before him (his group's frame), his elbow hung under his shoulder (armHinge, its hinge read off his own pose first),
+       his hand straight on his forearm as his bind holds it, the forearm and the wrist sharing the turn that puts his thumb
+       on top; the staff then set in his fist, 3 cm along his palm's facing from its middle (inside his curled fingers). And
+       Jun's duffel through his thigh as he walked (446): his left arm turned out from his side 10 degrees as an arm carrying
+       a bag hangs, the bag under his hand. Both laid with a share eased over 0.3 s as the carrying begins or ends, kept as the
+       mixer wrote them and taken back by armsBack before it runs again (v11.5); a probe's switch: CARRY5.on) */
+    const CARRY5 = { on: true, k: 0, kj: 0, last: 0, wrist: [-0.24, 0.97, 0.17], pole: [0.25, -0.95, -0.15], palm: 0.03, junOut: 10 * Math.PI / 180, read: null };
+    const _cyA = new THREE.Vector3(), _cyB = new THREE.Vector3(), _cyC = new THREE.Vector3(), _cyD = new THREE.Vector3(), _cyE = new THREE.Vector3(),
+          _cyQ = new THREE.Quaternion(), _cyQ2 = new THREE.Quaternion(), _cyQ3 = new THREE.Quaternion(), _cyM = new THREE.Matrix4(), _cyM2 = new THREE.Matrix4();
+    function bindTurn5(P, par, ch) {                                          // (a bone's turn on its parent in the body's bind pose)
+      let sk = null; P.group.traverse(o => { if (!sk && o.isSkinnedMesh && o.skeleton) sk = o.skeleton; });
+      const ip = sk ? sk.bones.indexOf(par) : -1, ic = sk ? sk.bones.indexOf(ch) : -1; if (ip < 0 || ic < 0) return null;
+      _cyM.copy(sk.boneInverses[ip]); _cyM2.copy(sk.boneInverses[ic]).invert(); _cyM.multiply(_cyM2);
+      const q = new THREE.Quaternion(); _cyM.decompose(_cyA, q, _cyB); return q;
+    }
+    function carryStaffLay(P, kk) {
+      const As = armsOf(P), a = As && As.R; if (!a) return;
+      if (!a.hinge) hingeOf(a, -1);                                           // (read off his own pose, before anything is laid)
+      if (!a.c5) { const m1 = boneOf(P, 'RightHandMiddle1'), i1 = boneOf(P, 'RightHandIndex1'), k1 = boneOf(P, 'RightHandPinky1') || boneOf(P, 'RightHandRing1');
+        const bt = bindTurn5(P, a.fore, a.hand);
+        if (!m1 || !i1 || !k1 || !bt) { a.c5 = { none: true }; console.warn('CARRY5: ' + P.key + ' has no hand to carry the staff with'); }
+        else { const f = m1.position.clone().normalize(), r = i1.position.clone().sub(k1.position); r.addScaledVector(f, -r.dot(f)).normalize();
+          a.c5 = { bt, f, r, n: new THREE.Vector3().crossVectors(f, r).negate().normalize() }; } }
+      if (a.c5.none) return;
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+      _cyQ3.copy(a.up.quaternion); const kF = a.fore.quaternion.clone(), kH = a.hand.quaternion.clone();
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
+      const Wr = _cyA.set(CARRY5.wrist[0], CARRY5.wrist[1], CARRY5.wrist[2]); P.group.localToWorld(Wr);
+      const pole = _cyB.set(CARRY5.pole[0], CARRY5.pole[1], CARRY5.pole[2]).normalize().applyQuaternion(_cyQ);
+      armHinge(a, Wr, pole);
+      /* (the hand straight on the forearm, as his bind holds it; then the turn about the forearm's line that puts the thumb's side
+         up, shared half and half between the forearm and the wrist, so neither carries all of it) */
+      a.hand.quaternion.copy(a.c5.bt); a.hand.updateWorldMatrix(true, false);
+      a.fore.getWorldPosition(_cyC); a.hand.getWorldPosition(_cyD); const e = _cyE.subVectors(_cyD, _cyC).normalize();
+      a.hand.getWorldQuaternion(_cyQ2); const r = _cyC.copy(a.c5.r).applyQuaternion(_cyQ2); r.addScaledVector(e, -r.dot(e)).normalize();
+      const u = _cyD.set(0, 1, 0).addScaledVector(e, -e.y).normalize();
+      const phi = Math.atan2(_cyA.crossVectors(r, u).dot(e), r.dot(u));
+      a.fore.getWorldQuaternion(_cyQ2); const fw = _cyQ2.clone(), hw = _cyQ2.clone().multiply(a.c5.bt);
+      const qh = new THREE.Quaternion().setFromAxisAngle(e, phi / 2), qf = new THREE.Quaternion().setFromAxisAngle(e, phi);
+      fw.premultiply(qh); hw.premultiply(qf);
+      a.fore.parent.getWorldQuaternion(_cyQ); a.fore.quaternion.copy(_cyQ.invert().multiply(fw));
+      a.hand.quaternion.copy(fw.clone().invert().multiply(hw));
+      if (kk < 0.999) { a.up.quaternion.slerpQuaternions(_cyQ3, a.up.quaternion.clone(), kk); a.fore.quaternion.slerpQuaternions(kF, a.fore.quaternion.clone(), kk);
+        a.hand.quaternion.slerpQuaternions(kH, a.hand.quaternion.clone(), kk); }
+      a.up.updateWorldMatrix(false, true);
+    }
+    function carryBagLay(P, kk) {
+      const As = armsOf(P), a = As && As.L; if (!a) return;
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
+      const fwd = _cyA.set(0, 0, 1).applyQuaternion(_cyQ);                     // (his forward: a turn about it by a positive angle takes his LEFT arm out)
+      a.up.parent.updateWorldMatrix(true, false); a.up.parent.getWorldQuaternion(_cyQ2); fwd.applyQuaternion(_cyQ2.invert()).normalize();
+      a.up.quaternion.premultiply(_cyQ3.setFromAxisAngle(fwd, CARRY5.junOut * kk)); a.up.updateWorldMatrix(false, true);
+    }
+    const carryHook = new THREE.Object3D(); carryHook.name = 'what Ton and Jun carry, held as a hand holds it';
+    carryHook.updateMatrixWorld = function (force) {
+      try {
+        const now = performance.now(), dt = CARRY5.last ? Math.min(0.1, (now - CARRY5.last) / 1000) : 0; CARRY5.last = now;
+        const T = cast.ton, J = cast.jun, tOn = CARRY5.on && typeof STICK5 === 'object' && STICK5.who === 'tonWrap' && !!(T && T.ready && T.group.visible) && !!things.staffWrap;
+        const jOn = CARRY5.on && DUFFEL5.who === 'jun' && !!(J && J.ready && J.group.visible) && !!things.duffel;
+        CARRY5.k = tOn ? Math.min(1, CARRY5.k + dt / 0.3) : Math.max(0, CARRY5.k - dt / 0.3);
+        CARRY5.kj = jOn ? Math.min(1, CARRY5.kj + dt / 0.3) : Math.max(0, CARRY5.kj - dt / 0.3);
+        /* (the first frame he carries it after a cut or a Continue: the whole share at once, never eased in on screen from his
+           hanging arm, which held the staff through it) */
+        if (tOn && CARRY5.k < 1 && !CARRY5.tWas) CARRY5.k = 1; if (jOn && CARRY5.kj < 1 && !CARRY5.jWas) CARRY5.kj = 1;
+        CARRY5.tWas = tOn; CARRY5.jWas = jOn;
+        /* (the grip's height is read once, from his plain standing rest (handHold5 poses it and puts the take back): read before
+           anything is laid this frame, so the lay is not undone by it) */
+        if (tOn && !STICK5.wrapOff) STICK5.carry(T); if (jOn && !DUFFEL5.off) DUFFEL5.carry(J);
+        if (T && T.ready && CARRY5.k > 0) { carryStaffLay(T, CARRY5.k);
+          if (tOn) { STICK5.carry(T); const a = armsOf(T).R, g = things.staffWrap; if (a && a.c5 && !a.c5.none && g) {
+            a.hand.getWorldQuaternion(_cyQ); const n = _cyA.copy(a.c5.n).applyQuaternion(_cyQ); n.y = 0;
+            if (n.lengthSq() > 1e-6) { n.normalize(); g.position.addScaledVector(n, CARRY5.palm); } } } }
+        if (J && J.ready && CARRY5.kj > 0) { carryBagLay(J, CARRY5.kj); if (jOn) DUFFEL5.carry(J); }
+      } catch (e) { if (!CARRY5.failed) { CARRY5.failed = true; console.warn('CARRY5 threw: ' + (e && e.message)); } }
+      THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+    };
+    world.children.unshift(carryHook); carryHook.parent = world;
 
     /* WHERE TON'S 'give' HOLDS HIS BODY (R25, measured on deploy 12, e4c5films seek rows): his file's take steps 0.77 m toward
        the one he gives to by its held moment (2.6 s), and the cast's offset for a take is its FIRST moment's, so stood on his
