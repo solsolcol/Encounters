@@ -816,10 +816,11 @@ ASSETS = {
     # own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)
     'w5nagastaff':  ('assets/w5nagastaff.glb', True, False),     # Grandmaster Pho's Naga stick, light brown, 1.40 m
     # e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), the game's
-    # own renders of the two bodies (tools/probes/e4c5portrait.mjs), cropped to the tile and graded (masters/v28.0/props/portraits.py):
-    # Grandmaster Pho's likeness never goes to a picture service
-    'p5portpho':    ('assets/p5portpho.jpg', True, False),     # Grandmaster Pho's portrait on the party list's tile (480 x 380)
-    'p5portzav':    ('assets/p5portzav.jpg', True, False),     # Master Zavier's portrait on the party list's tile (480 x 380)
+    # own renders of the two bodies on a keying green (tools/probes/e4c5portrait.mjs BG=0x00ff00), cut out with their own alpha,
+    # cropped by the head's outline and graded (R54: 'no black background'; masters/v28.0/props/portraits2.py): Grandmaster Pho's
+    # likeness never goes to a picture service
+    'p5portpho':    ('assets/p5portpho.png', True, False),     # Grandmaster Pho's portrait on the party list's tile, cut out (256 x 256, alpha)
+    'p5portzav':    ('assets/p5portzav.png', True, False),     # Master Zavier's portrait on the party list's tile, cut out (256 x 256, alpha)
     # e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the
     # library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga
     # stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)

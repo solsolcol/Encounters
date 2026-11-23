@@ -31,10 +31,11 @@ group("e4c5: the Naga stick (R2), from Chad's photograph: a checked picture on w
       "own remesh (masters/v28.0/make.sh section 2, props/TABLE.txt, prop.sh)",
       [('w5nagastaff', 'w5nagastaff.glb', "Grandmaster Pho's Naga stick, light brown, 1.40 m")])
 group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the character potraits with the name'), the game's\n"
-      "own renders of the two bodies (tools/probes/e4c5portrait.mjs), cropped to the tile and graded (masters/v28.0/props/portraits.py):\n"
-      "Grandmaster Pho's likeness never goes to a picture service",
-      [('p5portpho', 'p5portpho.jpg', "Grandmaster Pho's portrait on the party list's tile (480 x 380)"),
-       ('p5portzav', 'p5portzav.jpg', "Master Zavier's portrait on the party list's tile (480 x 380)")])
+      "own renders of the two bodies on a keying green (tools/probes/e4c5portrait.mjs BG=0x00ff00), cut out with their own alpha,\n"
+      "cropped by the head's outline and graded (R54: 'no black background'; masters/v28.0/props/portraits2.py): Grandmaster Pho's\n"
+      "likeness never goes to a picture service",
+      [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, cut out (256 x 256, alpha)"),
+       ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, cut out (256 x 256, alpha)")])
 group("e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the\n"
       "library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga\n"
       "stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)",

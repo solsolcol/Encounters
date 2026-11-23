@@ -8742,7 +8742,7 @@ function tagPortrait(pic, cls) {
   if (typeof pic !== 'string') return evIconNode(pic, cls);
   const w = document.createElement('span'); w.className = cls;
   if (!(HOSTED && ASSET_MAP[pic])) return w;
-  const c = document.createElement('canvas'); c.width = c.height = 192; w.appendChild(c);
+  const c = document.createElement('canvas'); c.width = c.height = 256; w.appendChild(c);   // (R54: a cut-out portrait's own 256, drawn whole)
   assetBytes(pic).then(b => createImageBitmap(new Blob([b], { type: picMime(b) }))).then(bm => {
     const x = c.getContext('2d'), k = Math.max(c.width / bm.width, c.height / bm.height), dw = bm.width * k, dh = bm.height * k;
     x.drawImage(bm, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh); if (bm.close) bm.close();
@@ -16761,9 +16761,9 @@ const STING_SAMPLE = {
   u5bindpop: ['u5bindpop', 1], u5bindstale: ['u5bindstale', 1], u5lend: ['u5lend', 1], u5lendback: ['u5lendback', 1],
   u5zbreath: ['u5zbreath', 1], u5stagger: ['u5stagger', 1], u5zstep: ['u5zstep', 1], u5turn: ['u5turn', 1],
   u5swpho: ['u5swpho', 1], u5swzav: ['u5swzav', 1], u5ready: ['u5ready', 1], u5start: ['u5start', 1],
-  u5broken: ['u5broken', 1], u5done: ['u5done', 1], u5nagarise: ['u5nagarise', 1], u5nagacoil: ['u5nagacoil', 1],
-  u5nagabreath: ['u5nagabreath', 1], u5shapebreak: ['u5shapebreak', 1], u5togfill: ['u5togfill', 1],
-  u5embers: ['u5embers', 1], u5clasp: ['u5clasp', 1], u5lay1: ['u5lay1', 1], u5lay2: ['u5lay2', 1],
+  u5broken: ['u5broken', 1], u5done: ['u5done', 1],
+  u5shapebreak: ['u5shapebreak', 1], u5togfill: ['u5togfill', 1],
+  u5clasp: ['u5clasp', 1], u5lay1: ['u5lay1', 1], u5lay2: ['u5lay2', 1],
   u5lay3: ['u5lay3', 1], u5whisk1: ['u5whisk1', 1], u5whisk2: ['u5whisk2', 1], u5drops: ['u5drops', 1],
   u5pcangry: ['u5pcangry', 1], u5pchungry: ['u5pchungry', 1], u5pcwarm: ['u5pcwarm', 1], u5pcry1: ['u5pcry1', 1],
   u5pcry2: ['u5pcry2', 1], u5pgather: ['u5pgather', 1], u5string: ['u5string', 1], u5lighter: ['u5lighter', 1],
@@ -16788,6 +16788,10 @@ const STING_SAMPLE = {
   u5pvstrug1: ['u5pvstrug1', 1], u5pvstrug2: ['u5pvstrug2', 1],
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5tagsweep: ['u5tagsweep', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5nagawater: ['u5nagawater', 1], u5nagapass: ['u5nagapass', 1], u5pierce1: ['u5pierce1', 1],
+  u5pierce2: ['u5pierce2', 1], u5pierce3: ['u5pierce3', 1], u5douse: ['u5douse', 1], u5nagawrap: ['u5nagawrap', 1],
+  u5nagabreathw: ['u5nagabreathw', 1], u5mist: ['u5mist', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

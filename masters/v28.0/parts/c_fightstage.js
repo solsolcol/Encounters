@@ -470,6 +470,7 @@
     const FS_SUNK = -1.9;
     function fsPraiReset(stand) {
       PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0; V.lx = null; V.spd = 0; V.ry = null; V.hit = ''; V.hitT = 0; V.strugT = 1.5 + 0.4 * i;
+        PRAI5.burn(P, 1); PRAI5.cool(P, 0);                    // (R47: on fire again, as it rose)
         if (stand) { V.y = 0; V.a = 1; V.s = 1; V.lean = 0; } else { V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; } });
     }
     /* where the nine stand while the brief is read: as the preparation's turn leaves them (the lesson's in the middle, the
@@ -503,7 +504,7 @@
           case 'rushing': tL = 0.3; ry = faceTo(w.x, w.z, pw.x, pw.z); ease = 0.15; break;
           case 'drawn': { const u = c01(p.t / Math.max(0.05, FN5.bagSecs || 1)); tS = 0.55 * (1 - 0.8 * u); tA = 0.6 * (1 - u); ease = 0; V.s = tS; V.a = tA; break; }
           case 'shape': break;                                         // (the surge's own: fsSurgeFrame)
-          case 'laid': tS = 0.55; tA = 0.65; tL = 0.55; break;
+          case 'laid': tS = 0.55; tA = 0.65; tL = 0.55; break;   // (R47: and cool, its fire out: below)
         }
         if (p.st === 'shape') return;
         if (ease > 0) { const q = k(ease); V.y += (tY - V.y) * q; V.a += (tA - V.a) * q; V.s += (tS - V.s) * k(0.3); V.lean += (tL - V.lean) * k(0.25); }
@@ -517,6 +518,8 @@
         if (p.st === 'waiting' || p.st === 'gathered') put(P, P.group.position.x, P.group.position.z, P.group.rotation.y, V.y);
         else put(P, w.x + jx, w.z + jz, ry, V.y);
         P.group.rotation.order = 'YXZ'; P.group.rotation.x = V.lean; P.group.scale.setScalar(V.s);
+        /* (R47: one the Naga laid is cool, its fire out; every other burns) */
+        { const laid = p.st === 'laid'; PRAI5.burn(P, laid ? 0 : 1); PRAI5.cool(P, laid ? 1 : 0); }
         PRAI5.alpha(P, V.a);
         fsPraiTake(P, V, p, wdt, w, zw);
         V.was = p.st;
@@ -1220,7 +1223,7 @@
     function fsNagaGo() {
       FS5.nagaAt = null; if (kit && kit.captions) kit.captions(null);
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
-      if (typeof FILMS5 === 'object' && FILMS5.together) FILMS5.together.three = three.length === 3 ? three : null;
+      if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three.length === 3 ? three : null; FILMS5.together.spots = st.three || null; }   // (R47: and where the rules lay them)
       FS5.film = true;
       /* M8 under the surge goes down as the film comes in (the film plays M9 over everything; the fight's loops go quiet by
          themselves under it, their frame stopped) */
@@ -1255,6 +1258,8 @@
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
       FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
+      PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
+      NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
       fsStand(cast.pho, 'pho'); fsStand(cast.zav, 'zav');

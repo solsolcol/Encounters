@@ -11,6 +11,9 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c5portrait'; fs.mkdirSync(OUT, { recursive: true });
+/* (BG=0x00ff00: a keying green behind him, so the portrait can be cut out of it clean, R54: "no black background"; the dark
+   backdrop by default, 0x0b0d12) */
+const BGC = parseInt(process.env.BG || '0x0b0d12', 16);
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 1100, height: 1100 }, deviceScaleFactor: 1 });
 const p = await ctx.newPage(); const errs = [];
@@ -38,7 +41,7 @@ await p.evaluate(() => { const k = window.__enc.kit; if (k.tag().on) k.tag(null,
 await frames(6);
 for (const who of ['pho', 'zav']) {
   for (const [tag, turn] of [['0', 0], ['l', 12], ['r', -12]]) {
-    const info = await p.evaluate(([who, turn]) => {
+    const info = await p.evaluate(([who, turn, BGC]) => {
       const E = window.__enc, cast = E.stage.plan.FLOOR.cast, P = cast[who], T = E.THREE || window.THREE;
       if (!P || !P.group) return 'no body ' + who;
       /* everything but this body hidden (kept in a list, so the next one can be shown again) */
@@ -58,9 +61,9 @@ for (const who of ['pho', 'zav']) {
       E.yaw.rotation.y = ry; E.pitch.rotation.x = 0;
       E.camera.position.set(0, 0, 0); E.camera.rotation.set(0, 0, 0);
       if (E.kit.lens) E.kit.lens(26, { secs: 0 });
-      if (E.scene.background && E.scene.background.isColor) E.scene.background.set(0x0b0d12);
+      if (E.scene.background && E.scene.background.isColor) E.scene.background.set(BGC);
       return { head: [h.x, h.y, h.z].map(v => +v.toFixed(3)), bone: head.name, ry: +ry.toFixed(3) };
-    }, [who, turn]);
+    }, [who, turn, BGC]);
     say(who, tag, JSON.stringify(info));
     await frames(8);
     const f = `${OUT}/${who}-${tag}.png`;

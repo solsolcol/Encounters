@@ -32,16 +32,16 @@ EVENT = {
     'switch': ['u5swpho / u5swzav (the one arrived at)', 'M7: the arrival\'s stems up over 0.4 s'],
     'refused': ["the engine's own refusal"], 'stage (learn/fight/hold)': ['u5plant on a hold\'s start'],
     'hold / holdEnd': ['M7 down a step / back (the plan\'s 10.2)'], 'surge': ['u5shape', 'u5shapeloop', 'u5cagecrack', 'M8 u5m8surge over every stem down'],
-    'together': ['u5togfill'], 'naga': ['u5nagarise', 'u5nagacoil', 'u5nagabreath', 'u5embers', 'u5shapebreak', 'u5laid', 'M9 u5m9naga'],
+    'together': ['u5togfill'], 'naga': ['u5nagawater', 'u5nagapass', 'u5pierce1|u5pierce2|u5pierce3 (one a Prai)', 'u5douse', 'u5nagawrap', 'u5nagabreathw', 'u5mist', 'u5shapebreak', 'u5laid', 'M9 u5m9naga'],   # (R47: the water Naga's; the fire Naga's four retired)
     'won': ['u5done', 'M10 down'], 'lost': ['u5broken'], 'the brief\'s START': ['u5start'],
 }
 GAIN = {'one-shot': 0.8, 'loop': 0.5, 'bed': 0.55, 'music': 0.7, 'music-loop': 0.55, 'stem': 1.0}
 SPECIAL = {'u5step1': 0.45, 'u5step2': 0.45, 'u5tile1': 0.45, 'u5phostep': 0.4, 'u5zstep': 0.4, 'u5threads': 0.3, 'u5sour': 0.0,
            'u5lampbuzz': 0.25, 'u5clock': 0.25, 'u5flies': 0.45, 'u5bindhold': 0.35, 'u5cagehum': 0.4, 'u5cagethin': 0.0,
            'u5murmur1': 0.45, 'u5murmur2': 0.45, 'u5murmur3': 0.45, 'u5ncome': 0.4, 'u5nslip': 0.4, 'u5nhide': 0.4,
-           'u5shapeloop': 0.5, 'u5nagabreath': 0.5, 'u5embers': 0.35, 'u5ready': 0.5, 'u5flight': 0.6, 'u5lampflare': 0.4,
+           'u5shapeloop': 0.5, 'u5nagabreathw': 0.5, 'u5mist': 0.35, 'u5ready': 0.5, 'u5flight': 0.6, 'u5lampflare': 0.4,
            'u5playground': 0.35, 'u5tvwall': 0.35, 'u5mynah': 0.4, 'u5os1': 0.4, 'u5os2': 0.4, 'u5os3': 0.4, 'u5os4': 0.4,
-           'u5shutter': 0.4, 'u5farchime': 0.35, 'u5lifthum': 0.55, 'u5wave': 1.0, 'u5nagarise': 1.0,
+           'u5shutter': 0.4, 'u5farchime': 0.35, 'u5lifthum': 0.55, 'u5wave': 1.0, 'u5nagawater': 1.0, 'u5pierce1': 1.0, 'u5pierce2': 1.0, 'u5pierce3': 1.0,
            'u5m7low': 0.85, 'u5m7drum': 1.0, 'u5m7line': 1.0, 'u5m7flute': 1.0, 'u5m7voice': 0.8, 'u5bowl': 0.0}
 NOTE = {'u5sour': 'its gain is the smell\'s nearness (0 far, up to 0.5 at the source); never over a line',
         'u5cagethin': 'crossfaded under u5cagehum as the cage wears: cagehum x strength, cagethin x (1 - strength) x 0.45',

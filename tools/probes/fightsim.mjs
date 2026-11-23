@@ -96,7 +96,8 @@ function slotOf(st, act) {
 function common(st, mem, r, prof) {
   if (st.stage === 'brief') { if (st.t >= 0 && (mem.briefAt = (mem.briefAt ?? 0) + 0.1) > prof.brief) return { act: 'START' }; return {}; }
   if (st.stage === 'lost') { mem.cardT = (mem.cardT || 0) + 0.1; if (mem.cardT > prof.card) { mem.cardT = 0; return { act: st.losses >= 3 && prof.lead ? 'LEAD' : 'RETRY' }; } return {}; }
-  if (st.stage === 'naga') { if (st.stageT >= 25) return { act: 'FILMDONE' }; return {}; }
+  /* (the Naga's film as the chapter plays it: R47's water Naga, 28.8 s from its stick planted to the boom again (z_tail.js NG5)) */
+  if (st.stage === 'naga') { if (st.stageT >= 28.8) return { act: 'FILMDONE' }; return {}; }
   return null;
 }
 /* A PLAYER WHO FOLLOWS WHAT THE SCREEN ASKS (the pulse, and the line said): the careful one and the slow one */

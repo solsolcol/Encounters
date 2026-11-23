@@ -3562,7 +3562,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
+                   'tagPartyShown', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3693,6 +3693,18 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.shown = cs.display === 'flex' && getComputedStyle(document.getElementById('tagSw')).display === 'none';
       const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect();
       R.atEdge = Math.abs(r.right - innerWidth) < 1 && r.top > innerHeight * 0.3 && r.bottom < innerHeight * 0.55;
+      return R;`);
+    /* (and GONE under a film played from the mode, back as play comes back: R47's lab, 23 Nov, found the list standing over
+       the Naga's film, its showing rule naming one class more than the hiding ones and so outweighing them) */
+    K.tagPartyFilm = await pCheck('partyFilm', `
+      const R = {};
+      R.started = kit.film('flash') === true;
+      R.cine = await poll(() => E.getState() === 'cine', 30000);
+      await frames(3);
+      R.hidden = getComputedStyle(document.getElementById('tagParty')).display === 'none';
+      R.back = await poll(() => E.getState() === 'play', 180000);
+      await frames(4);
+      R.shownAgain = getComputedStyle(document.getElementById('tagParty')).display === 'flex' && kit.tagState().on;
       return R;`);
     const tb = await pEval(`window.__n0 = E.tag().log.length; window.__pn = kit.tagState().party; const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height / 2 };`);
     await tap(tb.x, tb.y, 7);

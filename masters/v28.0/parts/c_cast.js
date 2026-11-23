@@ -397,16 +397,20 @@
     function praiTranceMat() {
       const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide }); mats.push(m);
       m.transparent = true; m.depthWrite = true; m.fog = false; m.toneMapped = false;
-      const U = Object.assign({ uPA: { value: 1 } }, praiU);
+      const U = Object.assign({ uPA: { value: 1 }, uPCool: { value: 0 } }, praiU);
       m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
         sh.vertexShader = 'varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vPw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        /* (R47: COOLED by the Naga's water (uPCool, PRAI5.cool): its black turned a wet dark slate, its edge a pale blue-grey,
+           its sheen running stronger, as a wet thing shines) */
         const out = sh.fragmentShader.replace(PRAI_SHADE,
           `vec3 pN = normalize(normal); float pf = pow(1.0 - clamp(abs(pN.z), 0.0, 1.0), 2.2);
            float ps = pow(0.5 + 0.5 * sin(vPw.y * 5.0 - uPT * 1.3 + vPw.x * 1.7 + vPw.z * 1.1), 10.0);
            vec3 pc = mix(uPBody, uPEdge, pf * 0.85) + uPSheen * ps * 0.28 * (1.0 - pf);
+           vec3 pw = mix(vec3(0.04, 0.065, 0.09), vec3(0.58, 0.7, 0.82), pf * 0.8) + vec3(0.45, 0.58, 0.72) * ps * 0.5 * (1.0 - pf);
+           pc = mix(pc, pw, uPCool);
            gl_FragColor = vec4(pc, uPA * (0.9 + 0.1 * pf));`);
         if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s trance look found no colour line to write (three changed?)');
-        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA;\n' + out; };
+        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA, uPCool;\n' + out; };
       m.customProgramCacheKey = () => 'e4c5praiTrance';
       m.userData.U = U; return m;
     }
@@ -638,7 +642,12 @@
         if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on;
           const F = P.tr.fire; if (F) { F.me.visible = on; F.glow.visible = on; F.k = 0; F.last = 0; F.acc = 0; } } },
       /* a body's strength (0 gone .. 1): both looks */
-      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; if (P.tr.fire) P.tr.fire.a = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      alpha(P, a) { P.alpha = a; const b = P.burnK == null ? 1 : P.burnK; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a * b; if (P.tr.fire) P.tr.fire.a = a * b; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      /* R47 (Chad: "As it pierces through each prai, the fire of each prai is extinguished and it cools them down"): its fire's
+         strength (0 out .. 1: the flames, their glow at its edge, its embers and its light on the paving), and how cooled it
+         is (0 .. 1: its trance look turned wet and cold) */
+      burn(P, k) { P.burnK = k; const a = P.alpha == null ? 1 : P.alpha; if (P.tr) { if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a * k; if (P.tr.fire) P.tr.fire.a = a * k; } },
+      cool(P, k) { P.coolK = k; if (P.tr && P.tr.m.userData.U.uPCool) P.tr.m.userData.U.uPCool.value = k; },
       /* R43 (Chad: "add animations to the prais, walking animations, passive idle animations and animations when getting hit
          or binded"): its takes made ready once it has landed (masters/v28.0/people.sh: the library's acts set on each body).
          The stagger's own travel pinned (Hit_Reaction carries its hips 0.77 m back and 0.47 m aside: the rules carry the
@@ -676,7 +685,7 @@
           if (p === 'hunt' || p === 'fight') { P.hidden = false; put(P, w.x, w.z, faceTo(w.x, w.z, w.x, HOUSE.face)); if (P.ready) { P.group.visible = true; rest(P, 0); } }
           else { P.hidden = true; P.group.visible = false; }
         });
-        this.look('vision'); for (const P of this.list) this.alpha(P, 1);
+        this.look('vision'); for (const P of this.list) { P.burnK = 1; this.cool(P, 0); this.alpha(P, 1); }
         PRAI_EMB.clear();
       }
     };

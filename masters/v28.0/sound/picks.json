@@ -878,6 +878,69 @@
   "where": "the Naga film: embers rising (a loop)",
   "why": "a: 99 % where a phone plays, loudest 50 ms -29.3 dBFS, swing 13.3 dB, 11 % in the voice band (others, phone/loudest: b 0.98/-25.3)"
  },
+ "u5nagawater": {
+  "kind": "fx",
+  "take": "u5nagawater_a",
+  "family": "together",
+  "where": "the Naga film: the water Naga rising (R47)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -13.2 dBFS (others, phone/loudest: b 0.96/-16.8, c 0.97/-22.5, d 0.96/-16.2)"
+ },
+ "u5nagapass": {
+  "kind": "fx",
+  "take": "u5nagapass_c",
+  "family": "together",
+  "where": "the Naga film: it sweeps past (R47)",
+  "why": "c: 96 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: a 0.99/-10.5, b 0.92/-10.0, d 1.00/-10.9)"
+ },
+ "u5pierce1": {
+  "kind": "fx",
+  "take": "u5pierce1_d",
+  "family": "together",
+  "where": "the Naga film: the first pierce (R47)",
+  "why": "d: 67 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: a 0.55/-10.4, b 0.56/-12.8, c 0.46/-7.8)"
+ },
+ "u5pierce2": {
+  "kind": "fx",
+  "take": "u5pierce2_b",
+  "family": "together",
+  "where": "the Naga film: the second pierce (R47)",
+  "why": "b: 93 % where a phone plays, loudest 50 ms -9.7 dBFS (others, phone/loudest: c 0.92/-13.0, d 0.87/-9.7); refused: a the transcriber writes \"THUD\""
+ },
+ "u5pierce3": {
+  "kind": "fx",
+  "take": "u5pierce3_b",
+  "family": "together",
+  "where": "the Naga film: the third pierce (R47)",
+  "why": "b: 91 % where a phone plays, loudest 50 ms -6.6 dBFS (others, phone/loudest: a 0.42/-7.4, c 0.74/-10.0, d 0.91/-10.8)"
+ },
+ "u5douse": {
+  "kind": "fx",
+  "take": "u5douse_a",
+  "family": "together",
+  "where": "the Naga film: a Prai's fire put out (R47)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -14.3 dBFS (others, phone/loudest: b 0.99/-20.8, c 0.99/-25.6, d 0.97/-25.4)"
+ },
+ "u5nagawrap": {
+  "kind": "fx",
+  "take": "u5nagawrap_d",
+  "family": "together",
+  "where": "the Naga film: it lays itself round the court (R47)",
+  "why": "d: 99 % where a phone plays, loudest 50 ms -14.4 dBFS (others, phone/loudest: a 1.00/-36.5, b 0.97/-31.5, c 0.94/-16.4)"
+ },
+ "u5nagabreathw": {
+  "kind": "loop",
+  "take": "u5nagabreathw_a",
+  "family": "together",
+  "where": "the Naga film: its breath (a loop, R47)",
+  "why": "a: 99 % where a phone plays, loudest 50 ms -29.1 dBFS, swing 11.4 dB, 88 % in the voice band (others, phone/loudest: b 0.97/-23.6)"
+ },
+ "u5mist": {
+  "kind": "loop",
+  "take": "u5mist_a",
+  "family": "together",
+  "where": "the Naga film: the mist off its body (a loop, R47)",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -44.1 dBFS, swing 21.3 dB, 1 % in the voice band (others, phone/loudest: b 1.00/-40.0)"
+ },
  "u5clasp": {
   "kind": "fx",
   "take": "u5clasp_a",

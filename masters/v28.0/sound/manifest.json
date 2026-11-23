@@ -131,10 +131,13 @@
    "u5togfill"
   ],
   "naga": [
-   "u5nagarise",
-   "u5nagacoil",
-   "u5nagabreath",
-   "u5embers",
+   "u5nagawater",
+   "u5nagapass",
+   "u5pierce1|u5pierce2|u5pierce3 (one a Prai)",
+   "u5douse",
+   "u5nagawrap",
+   "u5nagabreathw",
+   "u5mist",
    "u5shapebreak",
    "u5laid",
    "M9 u5m9naga"
@@ -1126,7 +1129,7 @@
    "name": "u5nagarise",
    "family": "together",
    "kind": "one-shot",
-   "gain": 1.0,
+   "gain": 0.8,
    "for": "together / naga: the Naga rising",
    "why": "c: 30 % where a phone plays, loudest 50 ms -8.4 dBFS (others, phone/loudest: a 0.09/-5.6, b 0.12/-6.9, d 0.08/-6.4); HARMONISED (a phone plays 30 %); its 0.15 s silent head cut"
   },
@@ -1166,9 +1169,84 @@
    "name": "u5embers",
    "family": "together",
    "kind": "loop",
-   "gain": 0.35,
+   "gain": 0.5,
    "for": "the Naga film: embers rising (a loop)",
    "why": "a: 99 % where a phone plays, loudest 50 ms -29.3 dBFS, swing 13.3 dB, 11 % in the voice band (others, phone/loudest: b 0.98/-25.3)"
+  },
+  {
+   "name": "u5nagawater",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 1.0,
+   "for": "the Naga film: the water Naga rising (R47)",
+   "why": "a: 100 % where a phone plays, loudest 50 ms -13.2 dBFS (others, phone/loudest: b 0.96/-16.8, c 0.97/-22.5, d 0.96/-16.2)"
+  },
+  {
+   "name": "u5nagapass",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "the Naga film: it sweeps past (R47)",
+   "why": "c: 96 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: a 0.99/-10.5, b 0.92/-10.0, d 1.00/-10.9)"
+  },
+  {
+   "name": "u5pierce1",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 1.0,
+   "for": "the Naga film: the first pierce (R47)",
+   "why": "d: 67 % where a phone plays, loudest 50 ms -9.5 dBFS (others, phone/loudest: a 0.55/-10.4, b 0.56/-12.8, c 0.46/-7.8)",
+   "group": "u5pierce"
+  },
+  {
+   "name": "u5pierce2",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 1.0,
+   "for": "the Naga film: the second pierce (R47)",
+   "why": "b: 93 % where a phone plays, loudest 50 ms -9.7 dBFS (others, phone/loudest: c 0.92/-13.0, d 0.87/-9.7); refused: a the transcriber writes \"THUD\"",
+   "group": "u5pierce"
+  },
+  {
+   "name": "u5pierce3",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 1.0,
+   "for": "the Naga film: the third pierce (R47)",
+   "why": "b: 91 % where a phone plays, loudest 50 ms -6.6 dBFS (others, phone/loudest: a 0.42/-7.4, c 0.74/-10.0, d 0.91/-10.8)",
+   "group": "u5pierce"
+  },
+  {
+   "name": "u5douse",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "the Naga film: a Prai's fire put out (R47)",
+   "why": "a: 100 % where a phone plays, loudest 50 ms -14.3 dBFS (others, phone/loudest: b 0.99/-20.8, c 0.99/-25.6, d 0.97/-25.4)"
+  },
+  {
+   "name": "u5nagawrap",
+   "family": "together",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "the Naga film: it lays itself round the court (R47)",
+   "why": "d: 99 % where a phone plays, loudest 50 ms -14.4 dBFS (others, phone/loudest: a 1.00/-36.5, b 0.97/-31.5, c 0.94/-16.4)"
+  },
+  {
+   "name": "u5nagabreathw",
+   "family": "together",
+   "kind": "loop",
+   "gain": 0.5,
+   "for": "the Naga film: its breath (a loop, R47)",
+   "why": "a: 99 % where a phone plays, loudest 50 ms -29.1 dBFS, swing 11.4 dB, 88 % in the voice band (others, phone/loudest: b 0.97/-23.6)"
+  },
+  {
+   "name": "u5mist",
+   "family": "together",
+   "kind": "loop",
+   "gain": 0.35,
+   "for": "the Naga film: the mist off its body (a loop, R47)",
+   "why": "a: 100 % where a phone plays, loudest 50 ms -44.1 dBFS, swing 21.3 dB, 1 % in the voice band (others, phone/loudest: b 1.00/-40.0)"
   },
   {
    "name": "u5clasp",

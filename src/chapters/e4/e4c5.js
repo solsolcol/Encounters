@@ -6210,16 +6210,20 @@
     function praiTranceMat() {
       const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide }); mats.push(m);
       m.transparent = true; m.depthWrite = true; m.fog = false; m.toneMapped = false;
-      const U = Object.assign({ uPA: { value: 1 } }, praiU);
+      const U = Object.assign({ uPA: { value: 1 }, uPCool: { value: 0 } }, praiU);
       m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
         sh.vertexShader = 'varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vPw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        /* (R47: COOLED by the Naga's water (uPCool, PRAI5.cool): its black turned a wet dark slate, its edge a pale blue-grey,
+           its sheen running stronger, as a wet thing shines) */
         const out = sh.fragmentShader.replace(PRAI_SHADE,
           `vec3 pN = normalize(normal); float pf = pow(1.0 - clamp(abs(pN.z), 0.0, 1.0), 2.2);
            float ps = pow(0.5 + 0.5 * sin(vPw.y * 5.0 - uPT * 1.3 + vPw.x * 1.7 + vPw.z * 1.1), 10.0);
            vec3 pc = mix(uPBody, uPEdge, pf * 0.85) + uPSheen * ps * 0.28 * (1.0 - pf);
+           vec3 pw = mix(vec3(0.04, 0.065, 0.09), vec3(0.58, 0.7, 0.82), pf * 0.8) + vec3(0.45, 0.58, 0.72) * ps * 0.5 * (1.0 - pf);
+           pc = mix(pc, pw, uPCool);
            gl_FragColor = vec4(pc, uPA * (0.9 + 0.1 * pf));`);
         if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s trance look found no colour line to write (three changed?)');
-        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA;\n' + out; };
+        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA, uPCool;\n' + out; };
       m.customProgramCacheKey = () => 'e4c5praiTrance';
       m.userData.U = U; return m;
     }
@@ -6451,7 +6455,12 @@
         if (P.tr.on !== on) { P.tr.on = on; for (const t of P.tr.twins) t.visible = on; for (const t of P.tr.flames || []) t.visible = on;
           const F = P.tr.fire; if (F) { F.me.visible = on; F.glow.visible = on; F.k = 0; F.last = 0; F.acc = 0; } } },
       /* a body's strength (0 gone .. 1): both looks */
-      alpha(P, a) { P.alpha = a; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a; if (P.tr.fire) P.tr.fire.a = a; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      alpha(P, a) { P.alpha = a; const b = P.burnK == null ? 1 : P.burnK; if (P.tr) { P.tr.m.userData.U.uPA.value = a; if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a * b; if (P.tr.fire) P.tr.fire.a = a * b; } if (P.fx) P.fx.set('uAlpha', a); if (P.edge) P.edge.set('uAlpha', a); },
+      /* R47 (Chad: "As it pierces through each prai, the fire of each prai is extinguished and it cools them down"): its fire's
+         strength (0 out .. 1: the flames, their glow at its edge, its embers and its light on the paving), and how cooled it
+         is (0 .. 1: its trance look turned wet and cold) */
+      burn(P, k) { P.burnK = k; const a = P.alpha == null ? 1 : P.alpha; if (P.tr) { if (P.tr.fm) P.tr.fm.userData.U.uFA.value = a * k; if (P.tr.fire) P.tr.fire.a = a * k; } },
+      cool(P, k) { P.coolK = k; if (P.tr && P.tr.m.userData.U.uPCool) P.tr.m.userData.U.uPCool.value = k; },
       /* R43 (Chad: "add animations to the prais, walking animations, passive idle animations and animations when getting hit
          or binded"): its takes made ready once it has landed (masters/v28.0/people.sh: the library's acts set on each body).
          The stagger's own travel pinned (Hit_Reaction carries its hips 0.77 m back and 0.47 m aside: the rules carry the
@@ -6489,7 +6498,7 @@
           if (p === 'hunt' || p === 'fight') { P.hidden = false; put(P, w.x, w.z, faceTo(w.x, w.z, w.x, HOUSE.face)); if (P.ready) { P.group.visible = true; rest(P, 0); } }
           else { P.hidden = true; P.group.visible = false; }
         });
-        this.look('vision'); for (const P of this.list) this.alpha(P, 1);
+        this.look('vision'); for (const P of this.list) { P.burnK = 1; this.cool(P, 0); this.alpha(P, 1); }
         PRAI_EMB.clear();
       }
     };
@@ -7368,11 +7377,35 @@
         sayOnce(st, 'q5c2'); sayOnce(st, 'ju5c2', 6.0);
         st.ev.push({ e: 'surge' });
       }
+      /* (R47, 23 Nov: Chad, "The naga should pierce through all the prai's bodies ... As it pierces through each prai, the fire
+         of each prai is extinguished and it cools them down": the Naga's film flings the three apart onto ONE STRAIGHT LINE
+         and its head goes through all three in one low pass, so where they are laid is chosen here, from where the two stand
+         as the Naga is called: three places 1.8 m apart on a line, with a level run of 2.0 m before the first and 1.0 m after
+         the last for its head, all of it 0.95 m inside the court's walls and the house and clear of the planters, and the
+         whole run at least 1.6 m from both of them (its body passes at their knees, his student's cage round him); of every
+         line tried (twelve ways, its middle on a grid of the court), the one farthest from them, a little nearer the house;
+         NUM.laidAt if none fits. The film reads them (c_fightstage.js fsNagaGo) and the last stage lays them there) */
+      function spotsFor(st) {
+        const n = st.n, B = [st.pho, st.zav], gap = 1.8, pre = 2.0, post = 1.0;
+        const inside = (x, z) => Math.abs(x) <= n.courtX - 0.95 && z >= n.courtZ0 + 0.95 && z <= n.courtZ1 - 0.95 && !(z >= n.notch.z - 0.5 && Math.abs(x) > n.notch.x - 0.6);
+        let best = null;
+        for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, ux = Math.sin(a), uz = Math.cos(a);
+          for (let gx = -2.4; gx <= 2.4001; gx += 0.6) for (let gz = -1.6; gz <= 5.0001; gz += 0.6) {
+            let ok = true, dmin = Infinity;
+            for (let s = -(gap + pre); s <= gap + post + 1e-6; s += 0.25) { const x = gx + ux * s, z = gz + uz * s;
+              if (!inside(x, z)) { ok = false; break; }
+              for (const b of B) dmin = Math.min(dmin, Math.hypot(x - b.x, z - b.z)); }
+            if (!ok || dmin < 1.6) continue;
+            const score = Math.min(dmin, 3.0) - 0.06 * Math.max(0, gz - 0.5);
+            if (!best || score > best.score + 1e-9) best = { score, gx, gz, ux, uz }; } }
+        if (!best) return n.laidAt.map(q => q.slice());
+        return [-gap, 0, gap].map(s => [best.gx + best.ux * s, best.gz + best.uz * s]);
+      }
       function layThree(st) {                                    // the Naga's film is over: stage 6
-        const n = st.n;
+        const n = st.n, at3 = st.three && st.three.length === 3 ? st.three : n.laidAt;
         let i = 0;
         for (const p of st.prai) if (p.st === 'shape') {
-          const at = n.laidAt[Math.min(i++, n.laidAt.length - 1)];
+          const at = at3[Math.min(i++, at3.length - 1)];
           p.x = at[0]; p.z = at[1]; setSt(st, p, 'laid', 'the Naga lays it down');
         }
         st.sanity = Math.max(st.sanity, st.preSurge);             // what the surge pressed out of him comes back
@@ -7434,7 +7467,7 @@
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.ev.push({ e: 'naga' });
+            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.three = spotsFor(st); st.ev.push({ e: 'naga' });
               if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
           }
         } else if (st.stage === 'naga') {
@@ -8638,6 +8671,7 @@
     const FS_SUNK = -1.9;
     function fsPraiReset(stand) {
       PRAI5.list.forEach((P, i) => { const V = fsVis[i]; V.was = ''; V.vt = 0; V.sh = 0; V.lx = null; V.spd = 0; V.ry = null; V.hit = ''; V.hitT = 0; V.strugT = 1.5 + 0.4 * i;
+        PRAI5.burn(P, 1); PRAI5.cool(P, 0);                    // (R47: on fire again, as it rose)
         if (stand) { V.y = 0; V.a = 1; V.s = 1; V.lean = 0; } else { V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; } });
     }
     /* where the nine stand while the brief is read: as the preparation's turn leaves them (the lesson's in the middle, the
@@ -8671,7 +8705,7 @@
           case 'rushing': tL = 0.3; ry = faceTo(w.x, w.z, pw.x, pw.z); ease = 0.15; break;
           case 'drawn': { const u = c01(p.t / Math.max(0.05, FN5.bagSecs || 1)); tS = 0.55 * (1 - 0.8 * u); tA = 0.6 * (1 - u); ease = 0; V.s = tS; V.a = tA; break; }
           case 'shape': break;                                         // (the surge's own: fsSurgeFrame)
-          case 'laid': tS = 0.55; tA = 0.65; tL = 0.55; break;
+          case 'laid': tS = 0.55; tA = 0.65; tL = 0.55; break;   // (R47: and cool, its fire out: below)
         }
         if (p.st === 'shape') return;
         if (ease > 0) { const q = k(ease); V.y += (tY - V.y) * q; V.a += (tA - V.a) * q; V.s += (tS - V.s) * k(0.3); V.lean += (tL - V.lean) * k(0.25); }
@@ -8685,6 +8719,8 @@
         if (p.st === 'waiting' || p.st === 'gathered') put(P, P.group.position.x, P.group.position.z, P.group.rotation.y, V.y);
         else put(P, w.x + jx, w.z + jz, ry, V.y);
         P.group.rotation.order = 'YXZ'; P.group.rotation.x = V.lean; P.group.scale.setScalar(V.s);
+        /* (R47: one the Naga laid is cool, its fire out; every other burns) */
+        { const laid = p.st === 'laid'; PRAI5.burn(P, laid ? 0 : 1); PRAI5.cool(P, laid ? 1 : 0); }
         PRAI5.alpha(P, V.a);
         fsPraiTake(P, V, p, wdt, w, zw);
         V.was = p.st;
@@ -9388,7 +9424,7 @@
     function fsNagaGo() {
       FS5.nagaAt = null; if (kit && kit.captions) kit.captions(null);
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
-      if (typeof FILMS5 === 'object' && FILMS5.together) FILMS5.together.three = three.length === 3 ? three : null;
+      if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three.length === 3 ? three : null; FILMS5.together.spots = st.three || null; }   // (R47: and where the rules lay them)
       FS5.film = true;
       /* M8 under the surge goes down as the film comes in (the film plays M9 over everything; the fight's loops go quiet by
          themselves under it, their frame stopped) */
@@ -9423,6 +9459,8 @@
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
       FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
+      PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
+      NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
       fsStand(cast.pho, 'pho'); fsStand(cast.zav, 'zav');
@@ -12567,97 +12605,121 @@
         me.position.set(a[0], a[1], a[2]); me.scale.set(L, 1, 1); me.rotation.set(0, Math.atan2(-dz, dx), Math.atan2(dy, Math.hypot(dx, dz)), 'YZX'); } };
     })();
 
-    /* ---------------------------------------------------------------- THE NAGA OF THE FIGHT'S FILM (the plan's 5.5 stage 5,
-       9.3, 11): "ruby and vast", rising from the stick's head and laying its long body ONCE round the court's edge, between
-       the nine and everyone in the court and at its door; not Mucalinda's seven coils and spread hood (the canon gives
-       those to the Buddha alone: §0.3, 12). Drawn as ruby LIGHT (its model, people/naga.sh, is faithful to its reference
-       and crumpled close: at the film's distance it is light and scale): a glowing skin of the model laid along a path by
-       its own length, its head leading. The path: up from the stick's head, over, and round the court a little inside its
-       walls, a rounded loop; `k` how far along the path the head has come (0 .. 1), `a` its light */
+    /* ---------------------------------------------------------------- THE NAGA OF THE FIGHT'S FILM (R47 and R51, 23 Nov
+       2026; the plan's 5.5 stage 5, 9.3, 11). Chad, R47: "change the naga to a blue one, and it needs to look more natural
+       as it flies around and wraps the prai, the curent animation is very wooden and feels underwhelming ... The naga should
+       pierce through all the prai's bodies with a water sound as it pierces through each. As it pierces through each prai,
+       the fire of each prai is extinguished and it cools them down"; R51: "use the naga head, and then the rest of the body
+       you generate so that you can have full control over how it moves and bends and the angles". Not Mucalinda's seven
+       coils and spread hood (the canon gives those to the Buddha alone: §0.3, 12): one head, one long body.
+       THE HEAD is the model's own (people/naga.sh: its crest, its open jaws, its beard), carried whole and rigid; only its
+       neck, which in the file rises straight up from a body lying on the ground, is bent back once as it loads, round a
+       quarter circle under the jaw, so it leaves the head along the line of flight (the head stays upright, the face
+       forward, the crest up). THE BODY is made here: a tube 22 m long, round with a keel along its back and its belly a
+       little flat, thickest a quarter of the way down and tapering to a point, laid every frame along the path its head
+       has flown (each ring where the head was that many metres before: a serpent's own way of moving, so every bend the head
+       makes runs back down its length), banked into its turns, a travelling wave down it while it flies, still when it
+       lies. BLUE: a body of water and light (deep blue, azure scales, a pale belly, water running bright along it, its edge
+       burning cyan; gold only where Grandmaster Pho's light falls on it, the gold being his alone). Drawn in three passes
+       of each skin, as the ruby one was (its nearest surface for depth only; the body; its glow, the back faces of a skin a
+       hand's breadth out, added): no inner face ever shows through, and a light it adds none (v9.4). Its path, its timing
+       and what it does are the film's (FILMS5.together: plan(), then fly() each frame); a pure function of the film's
+       clock, so a seek, a skip and a slow phone land on the same picture */
     const NAGA5 = (() => {
       const g = new THREE.Group(); g.visible = false; world.add(g);
-      /* ITS LIGHT (R25, FILMS-2: the laying was right and the look was not: an unlit, double-sided red with no depth drew
-         every inner face of the crumpled model over every other, "red sheets of glass", a cone, a wall and a slab of red
-         shards, together-phone 5.8, 8.5 and 11.8 on the rewrite). Now a body of ruby light in three draws of the one laid
-         skin: (1) its NEAREST SURFACE only (a pass that writes depth and no colour, so the next draws only the surface the
-         lens meets first: no inner face, no fold behind another); (2) THE BODY: a deep ruby whose faces turned to the lens
-         thin toward the court behind them and whose edges burn bright (a fresnel on its own smooth normals, welded across
-         the file's split seams and turned with the path every lay), scales flowing along it (a pattern in metres along the
-         body and round it, so they are never stretched with the body's length), a slow breath of light down its length, and
-         GOLD only where his light falls on it (the faces turned to his shoulders, near him: uNPho); its hue normal-blended;
-         (3) ITS GLOW, a layer of its own: the back faces of a skin a hand's breadth out, added (never normal-blended), drawn
-         only round its silhouette (the first draw hides the rest), brightest at its edge and gone a hand away. A light it
-         adds none (v9.4). uNA its strength (the fight's last stage keeps it at 0.3: under 0.5 its glow goes out and it is
-         drawn after everything else, so a dim Naga hides nothing behind it), uNT its clock */
-      const U = { uNK: { value: 0 }, uNA: { value: 0 }, uNT: { value: 0 }, uNLen: { value: 1 }, uNKK: { value: 0 }, uNGR: { value: 0 }, uNGW: { value: 0.16 },
-                  uNS0: { value: 1 }, uNLm: { value: 1 }, uNJ: { value: 0.5 }, uNTPL: { value: 1.6 },   // (the lying middle's stretch, its length in the file, its neck's length, its taper: set())
+      /* (R47, the lab's first pictures, 23 Nov: at 0.85 its crest stood 1.96 m over its neck's line, a head taller than a
+         Prai swallowed each one whole and the pierce read as a blue wall across the frame; at 0.68 its head is a Prai's
+         chest from jaw to brow, its crest 1.57 m, and it goes THROUGH. Its body thinned with it, its front the neck's size) */
+      const HS = 0.68;                                     // the head's scale
+      const BODY = { L: 22.0, NR: 220, NS: 22, d0: -0.12, rStub: 0.22, rMax: 0.236, rTip: 0.012, ax: 1.0, ay: 0.86, keel: 0.15 };
+      /* (the model, measured from the file (tools: dbgnagahead; its slices by height, R52): its body 0.56 m wide and 0.7 tall
+         lies along +z; from its collar its neck rises, a round post 0.64 m across round z 2.87 from y 1.2 to 1.45, and
+         leans forward into the head; the snout at (0, 2.28, 4.21), the crest's tip at (0, 3.6, 4.0), the beard hanging to
+         y 1.0 at z 3.55 .. 3.85. THE HEAD ALONE is taken (R52, Chad: "you could have cut the naga head higher, you included
+         too much of its neck and when you could have really just kept only strictly the head"; R47 had kept the whole neck
+         from y 0.95 and bent it back), cut WHERE HE DREW IT (R57, "You should cut the naga head like at the red line", on
+         the side view of this file): a slanting plane from the back of the neck just under the back of the head (z 2.605,
+         y 1.95) down and forward to the throat under the jaw (z 3.52, y 1.14), across the upper neck where it leans into the
+         head; the head, its crest and the beard under its jaw above it, the neck, the collar and the body left with the file.
+         The made body rises into that slanting cut itself: its first rings round an arc of 0.6 m from their foot on the path
+         (J0) up 48.6 degrees to the cut's middle (z 2.95, y 1.645; 0.66 m across each way), meeting it square, so the head
+         rides over its body's line and the body does all the bending) */
+      const NK = { CZ: 2.605, CY: 1.95, NZ: 0.661, NY: 0.750, DZ: 2.95, DY: 1.645, R: 0.6, ZJAW: 3.45, HX: 0.33, HN: 0.33 };
+      const PHI = Math.atan2(NK.NY, NK.NZ);                                                             // the neck's way at the cut, up from the line of flight
+      const cutSide = (y, z) => (z - NK.CZ) * NK.NZ + (y - NK.CY) * NK.NY;                              // over 0: the head's side of his line
+      const J0 = [0, NK.DY - NK.R * (1 - Math.cos(PHI)), NK.DZ - NK.R * Math.sin(PHI)];                // the arc's foot, on the path: the head's own origin
+      const ARC = PHI * NK.R * HS;                                                                      // the arc's length at full size
+      BODY.d0 = -(ARC + 0.07);                                                                          // the body's first rings: up the curve and 7 cm into the head
+      const FACE = [0, 2.45 - J0[1], 3.9 - J0[2]], SNOUT = [0, 2.28 - J0[1], 4.21 - J0[2]];             // from the foot, in the model's metres
+      const U = { uNA: { value: 0 }, uNT: { value: 0 }, uNGW: { value: 0.115 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
-                  uNDeep: { value: new THREE.Color(0x3a020c) }, uNCol: { value: new THREE.Color(0xb00a22) }, uNRim: { value: new THREE.Color(0xff2a40) },
-                  uNGlowC: { value: new THREE.Color(0xff1030) }, uNGold: { value: new THREE.Color(0xffc860) },
-                  uNLook: { value: new THREE.Vector4(1.0, 2.6, 0.6, 0.30) } };   // (core alpha, rim power, glow strength, scale strength; the core at 0.82 showed the court's tiles and edges through it, red glass: together-phone 8.5 and 11.8 on 0f693b7)
-      const st = { ready: false, path: null, len: 1, minX: 0, maxX: 1, mesh: null, laid: '' };
-      /* the three draws' shaders: one vertex step for all three (the glow's pushed a hand's breadth out along its normal),
-         so the nearest surface and the body are the same depths to the bit */
+                  uNDeep: { value: new THREE.Color(0x03163a) }, uNCol: { value: new THREE.Color(0x0d63d8) }, uNRim: { value: new THREE.Color(0x86ecff) },
+                  uNBelly: { value: new THREE.Color(0xa8dcff) }, uNGlowC: { value: new THREE.Color(0x2aa6ff) }, uNGold: { value: new THREE.Color(0xffc860) },
+                  uNLook: { value: new THREE.Vector4(1.0, 2.4, 0.62, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
+      const st = { ready: false, head: null, tube: null, tgeo: null, plan: null, uH: 0, grow: 0, laid: '', fw: null, sw: null, emb: null };
       const SH5 = {};
-      SH5.vsHead = `attribute float aNf; attribute float aReg; attribute float aO2; attribute vec2 aCS; attribute float aW;
-uniform float uNKK, uNLen, uNGR, uNGW, uNS0, uNLm, uNJ, uNTPL;
-varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
+      SH5.vsHead = `attribute float aS; attribute float aReg; attribute vec2 aCS; attribute float aW; attribute float aF;
+uniform float uNGW;
+varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNF;
 `;
       SH5.vsBody = `#include <begin_vertex>
-  /* (the lying middle's place along the path, metres from the stick's head, as set() lays it: stretched evenly, and
-     unstretched over its last uNJ metres of the file, its neck, so it meets the head at the head's own scale) */
-  float nXm = aO2 * uNLm, nWj = clamp((nXm - (uNLm - uNJ)) / max(uNJ, 1e-4), 0.0, 1.0);
-  float nDm = uNS0 * nXm + (uNGR - uNS0) * uNJ * (nWj * nWj * nWj - 0.5 * nWj * nWj * nWj * nWj);
   #ifdef NAGA_GLOW
-    /* (as thick as the body is where it stands: thinned with it where it leaves the stick, or a glow of full width stood
-       round a thin body there as a pale sleeve, together-phone 5.8 on lab 5) */
-    transformed += normal * (uNGW * aW * clamp(uNGR / 0.9, 0.0, 1.0) * (aReg < 1.5 ? smoothstep(0.0, 1.0, clamp(nDm / max(uNTPL, 1e-3), 0.0, 1.0)) : 1.0));
+    transformed += normal * (uNGW * aW);
   #endif
   vNWp = (modelMatrix * vec4(transformed, 1.0)).xyz;
   vNWn = normalize(mat3(modelMatrix) * normal);
-  vNS = aReg < 0.5 ? 0.0 : (aReg < 1.5 ? nDm : uNKK * uNLen + aO2 * uNGR);
-  vNCS = aCS; vNReg = aReg; vNNf = aNf;
+  vNS = aS; vNCS = aCS; vNReg = aReg; vNF = aF;
 `;
-      SH5.fsHead = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNGlowC, uNGold;
-varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNNf;
+      SH5.fsHead = `uniform float uNA, uNT; uniform vec4 uNPho, uNLook; uniform vec3 uNDeep, uNCol, uNRim, uNBelly, uNGlowC, uNGold;
+varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; varying float vNReg; varying float vNF;
 `;
-      /* the nearest surface: depth only */
-      SH5.depth = `gl_FragColor = vec4(0.0);`;
-      /* the body */
+      /* (where the head's neck and beard fade out at their cut (aF under a half), they leave no depth: the body inside shows) */
+      SH5.depth = `if (vNF < 0.5) discard;
+  gl_FragColor = vec4(0.0);`;
       SH5.body = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nFr = pow(1.0 - clamp(abs(dot(nN, nV)), 0.0, 1.0), uNLook.y);
-  /* the scales: sixteen round the body, 0.17 m long, rows offset by half, each row over the one behind it (its free edge
-     toward the tail), flowing slowly toward the head; drawn only on the lying body, and faded where they would be finer
-     than the screen can hold */
-  vec2 nP = vec2(atan(vNCS.y, vNCS.x) * (16.0 / 6.2831853), (vNS - uNT * 0.28) / 0.17);
+  float nTube = step(0.5, vNReg) * (1.0 - step(1.5, vNReg));
+  /* its scales: fourteen round the body, 0.15 m long, rows offset by half, each over the one behind it; on the made body
+     only (the head has the model's own carved scales), and faded where they would be finer than the screen can hold */
+  vec2 nP = vec2(atan(vNCS.y, vNCS.x) * (14.0 / 6.2831853), vNS / 0.15);
   float nJ = floor(nP.y) + 1.0, nO = 0.5 * mod(nJ, 2.0);
   float nD = length(nP - vec2(floor(nP.x - nO) + 0.5 + nO, nJ)) / 0.72;
   if (nD >= 1.0) { nJ -= 1.0; nO = 0.5 * mod(nJ, 2.0); nD = length(nP - vec2(floor(nP.x - nO) + 0.5 + nO, nJ)) / 0.72; }
-  float nFw = (fwidth(vNCS.x) + fwidth(vNCS.y)) * (16.0 / 6.2831853) + fwidth(nP.y);
-  float nAa = clamp(1.6 - 2.2 * nFw, 0.0, 1.0) * (1.0 - step(1.5, vNReg)) * step(0.5, vNReg);
-  float nSc = mix(0.62, mix(0.45, 1.0, smoothstep(0.62, 0.97, nD)) * (1.0 - 0.55 * smoothstep(0.97, 1.0, nD)), nAa * uNLook.w / 0.3);
-  /* a slow breath of light down its length */
-  float nBr = 0.84 + 0.32 * (0.5 + 0.5 * sin(vNS * 0.7 - uNT * 1.9));
-  /* ITS FORM: a key light from over the lens (above it and from its side, wherever the lens stands), so its round body and
-     its head's planes read as one solid thing of light; unshaded, its head read as a flat cut-out with a glowing rim and
-     its body as see-through cloth (the independent review of ba6a2bb: desk 7.0 and 25.5) */
+  float nFw = (fwidth(vNCS.x) + fwidth(vNCS.y)) * (14.0 / 6.2831853) + fwidth(nP.y);
+  float nAa = clamp(1.6 - 2.2 * nFw, 0.0, 1.0) * nTube;
+  /* (R58, Chad: "Colour the body of the naga in the same colour as the head please". The made body is painted by the
+     head's own rule, one colour for the whole creature: the head's blue (its deep and its azure at 0.86), its underside
+     paler where the faces turn down, and its glaze of water over all of it. The scales stay, as LIGHT on that colour and
+     not as a second, darker blue: each a little darker at its heart, brighter to its rim and a fine dark line at its edge,
+     about the head's own colour on the whole, as the head's carved scales read by their light. Measured before (the lab's
+     pictures of build 39's colours): the head hue 207, saturation 0.63, value 0.77; the body 214, 0.72 and 0.49) */
+  float nRel = mix(0.9, 1.2, smoothstep(0.62, 0.97, nD)) * (1.0 - 0.3 * smoothstep(0.97, 1.0, nD));
+  /* ITS FORM: a key light from over the lens, so the round body and the head's carving read as one solid thing */
   float nLam = max(dot(nN, normalize(nV + vec3(0.0, 1.3, 0.0))), 0.0);
-  vec3 nCol = mix(uNDeep, uNCol, nSc) * nBr * (0.3 + 0.95 * nLam);
-  nCol = mix(nCol, uNRim, nFr * 0.85);
-  /* his light: gold on the faces turned to his shoulders, near him, and nowhere else */
+  vec3 nCol = mix(uNDeep, uNCol, 0.86) * (0.3 + 0.95 * nLam) * mix(1.0, nRel, nAa * uNLook.w / 0.3);
+  /* its underside paler, the faces turned down (the lab's first pictures drew the head a deeper, flatter blue than the body
+     it led; the same rule on the body since R58) */
+  nCol = mix(nCol, uNBelly * (0.28 + 0.7 * nLam), smoothstep(-0.2, -0.8, nN.y) * 0.4);
+  /* and a glaze of its water over all of it (the lab's second pictures drew the carved head a heavier blue than the body:
+     the head's glaze, over the body too since R58) */
+  nCol = mix(nCol, uNRim * (0.45 + 0.55 * nLam), 0.2);
+  /* WATER RUNNING IN IT: two crossing ripples carried down its length, bright where they meet */
+  float nW1 = sin(vNS * 2.3 - uNT * 4.4 + vNCS.x * 2.5), nW2 = sin(vNS * 3.9 - uNT * 6.3 - vNCS.y * 3.1);
+  float nWat = pow(clamp(0.5 + 0.5 * nW1 * nW2, 0.0, 1.0), 6.0) * (0.55 + 0.45 * nTube);
+  nCol += uNRim * nWat * 0.42 * (0.35 + 0.65 * nLam);
+  nCol = mix(nCol, uNRim, nFr * 0.8);
+  /* a slow breath of light down its length */
+  nCol *= 0.86 + 0.28 * (0.5 + 0.5 * sin(vNS * 0.6 + uNT * 1.7));
+  /* his light: gold on the faces turned to his shoulders, near him, and nowhere else (the gold is his alone) */
   vec3 nL = uNPho.xyz - vNWp; float nDl = length(nL);
   float nGk = uNPho.w * max(dot(nN, nL / max(nDl, 1e-3)), 0.0) * (1.0 - smoothstep(0.5, 2.0, nDl));
   nCol = mix(nCol, uNGold * (0.85 + 0.3 * nFr), clamp(nGk, 0.0, 0.3));
-  /* (SOLID: its light uNA makes it brighter or darker, never see-through: at the fight's 0.3 it is a darker ruby lying
-     round the court, where a see-through one showed the planters' plants, the skirting's tiles and the window frames
-     through it, the review's 11.8 and 25.5; it comes in over its first quarter of light) */
   nCol *= 0.4 + 0.6 * clamp(uNA, 0.0, 1.0);
-  gl_FragColor = vec4(nCol, uNLook.x * clamp(uNA * 4.0, 0.0, 1.0));`;
-      /* its glow: the outer skin's back faces round the silhouette, brightest at the body's edge, gone a hand away */
+  gl_FragColor = vec4(nCol, uNLook.x * clamp(uNA * 4.0, 0.0, 1.0) * vNF);`;
       SH5.glow = `vec3 nN = normalize(vNWn), nV = normalize(cameraPosition - vNWp);
   float nK = clamp(-dot(nN, nV), 0.0, 1.0);
   vec3 nL = uNPho.xyz - vNWp; float nGk = uNPho.w * (1.0 - smoothstep(0.6, 2.6, length(nL)));
-  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.25 * nGk, 0.0, 0.25)), pow(nK, 2.0) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA));`;
+  gl_FragColor = vec4(mix(uNGlowC, uNGold, clamp(0.25 * nGk, 0.0, 0.25)), pow(nK, 2.0) * uNLook.z * uNA * smoothstep(0.45, 0.6, uNA) * vNF);`;
       function nagaMat(kind) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, fog: false, toneMapped: false,
           depthWrite: kind === 'depth', colorWrite: kind !== 'depth',
@@ -12669,316 +12731,325 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const out = sh.fragmentShader.replace('#include <opaque_fragment>', SH5[kind]);
           if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s light found no line to write (three changed?)');
           sh.fragmentShader = SH5.fsHead + out; };
-        /* (a probe's lab may write SH5 and bump SH5.v: each draw is compiled again) */
-        m.customProgramCacheKey = () => 'e4c5naga2-' + kind + (SH5.v || '');
+        m.customProgramCacheKey = () => 'e4c5naga4-' + kind + (SH5.v || '');
         return m;
       }
-      /* the path, in the world: from the stick's head up 4.5 m, arching over toward the house, down to the court's far
-         corner and round it a little inside the walls: west side, gate end, east side, where its head turns in toward the
-         court and rears, facing the house */
-      /* (R25: laid round the whole court, its reared head 2 m long ended on the loop's own start, where the dive from the
-         arch also lands: the head is the model's own now, rigid, and needs room of its own) */
-      function pathFor(sx, sz) {
-        const C = COURT, ins = 0.62, x0 = C.x0 + ins, x1 = C.x1 - ins, z0 = C.z0 + 1.15, z1 = HOUSE.face - 0.55, y = 0.32, zm = (z0 + z1) / 2;   // (0.62 off the side walls: at 0.42 the dive's swing into the west side put its body into the wall)
-        /* (it rises leaning toward the court's middle: leaning toward the house, from a stick planted near the house end
-           its body stood in the house's front) */
-        const cxC = (x0 + x1) / 2; let dx = cxC - sx, dz = zm - sz; const dl = Math.hypot(dx, dz); if (dl < 0.3) { dx = 0; dz = 1; } else { dx /= dl; dz /= dl; }
-        const pts = [[sx, 1.4, sz], [sx + 0.2 * dx, 3.2, sz + 0.2 * dz], [sx + 0.9 * dx, 5.0, sz + 0.9 * dz], [cxC, 4.2, zm + 1.2], [x0 + 0.4, 1.6, z1 - 0.6]];
-        /* (OVER THE PLANTERS: the court's two planters stand against its side walls near the gate, 2 m long and 0.76 to 0.84
-           m deep, their plants 0.67 and 0.71 m high (b_world.js PLANT_Z), and the loop's sides 0.62 m in ran through both,
-           0.42 m deep, 2143 and 2863 crossings in the film's clipscan. The body is lifted over each, 1.12 m, from 0.85 m
-           before it to round the gate end's corner, as a serpent goes over a box: measured at 32 stick places, every
-           twentieth of the way, none of it in a planter, a wall or the house) */
-        /* (R37, 23 Nov: the planters moved 1.05 m into the gate's corners (b_world.js PLANT_Z, -11.7 to -12.75): each hump now
-           read from where they stand, as it was laid against them: up 1.75 m before a planter's house end on his left,
-           1.25 m on his right, down from them 2.6 and 2.1 m before it, over the turn at the gate end (z0 + 0.25). With
-           PLANT_Z -11.7 these are the numbers the clipscan passed: -9.1, -9.95, -12.6, -10.45, -9.6) */
-        const PZ = PLANT_Z, r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, PZ + 2.6], [x0 + 0.02, HY, PZ + 1.75], [x0 + 0.14, HY, z0 + 0.25], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
-                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, z0 + 0.25], [x1 - 0.02, HY, PZ + 1.25], [x1, y, PZ + 2.1], [x1, y, zm + 1.0]];
-        return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
+      /* the three passes of a skin, in their order (bright: after the court's own transparent things and its painted ground,
+         before the cage and the fight's effects) */
+      function threeOf(geo, into) {
+        const out = [];
+        for (const [kind, lo] of [['depth', 2.5], ['body', 2.6], ['glow', 2.7]]) {
+          const me = new THREE.Mesh(geo, st.mats[kind]); me.frustumCulled = false;
+          Object.defineProperty(me, 'renderOrder', { get: () => lo, set: () => {}, configurable: true }); into.add(me); out.push(me); }
+        return out;
+      }
+      /* ---- THE HEAD, out of the file once it lands */
+      function headOf(src) {
+        src.updateMatrixWorld(true);
+        let geo = null;
+        src.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry.clone();
+          for (const nm of ['position', 'normal']) { const p = geo.attributes[nm]; if (!p || (!p.normalized && p.array instanceof Float32Array)) continue;
+            const a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { a[i * 3] = p.getX(i); a[i * 3 + 1] = p.getY(i); a[i * 3 + 2] = p.getZ(i); }
+            geo.setAttribute(nm, new THREE.BufferAttribute(a, 3)); }
+          geo.applyMatrix4(o.matrixWorld); } });
+        if (!geo || !geo.index) return null;
+        const P = geo.attributes.position.array, X = geo.index.array, n = P.length / 3;
+        /* which points are the head's: above his red line (R57), its crest, the beard under the jaw */
+        const keep = new Int32Array(n).fill(-1); let m = 0;
+        const isHead = (x, y, z) => z > 2.3 && (cutSide(y, z) >= 0 || (z >= NK.ZJAW && y >= 0.9));
+        for (let i = 0; i < n; i++) if (isHead(P[i * 3], P[i * 3 + 1], P[i * 3 + 2])) keep[i] = m++;
+        const tri = []; for (let t = 0; t < X.length; t += 3) { const a = keep[X[t]], b = keep[X[t + 1]], c = keep[X[t + 2]]; if (a >= 0 && b >= 0 && c >= 0) tri.push(a, b, c); }
+        const Q = new Float32Array(m * 3), Y0 = new Float32Array(m), Z0 = new Float32Array(m);
+        for (let i = 0; i < n; i++) { const k = keep[i]; if (k < 0) continue; let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2]; Y0[k] = y; Z0[k] = z;
+          Q[k * 3] = (x - J0[0]) * HS; Q[k * 3 + 1] = (y - J0[1]) * HS; Q[k * 3 + 2] = (z - J0[2]) * HS; }
+        /* THE CUT'S EDGE faded out over its last 6 cm, and the beard's lower edge over 12 (aF): the body's own rings, risen into
+           the head's underside, show through, so no torn edge is ever drawn (a cut through a mesh follows its triangles) */
+        const F = new Float32Array(m).fill(1);
+        for (let k = 0; k < m; k++) F[k] = Z0[k] >= NK.ZJAW ? smo(c01((Y0[k] - 0.9) / 0.12)) : smo(c01((cutSide(Y0[k], Z0[k]) - 0.003) / 0.06));
+        /* its own smooth normals, each place's from the faces round it (the file's seams carry different normals at one place:
+           read on them, a rim light draws every seam as a line) */
+        const rep = new Int32Array(m), idx = new Map(), q = 1e4;
+        for (let i = 0; i < m; i++) { const k = Math.round(Q[i * 3] * q) + ',' + Math.round(Q[i * 3 + 1] * q) + ',' + Math.round(Q[i * 3 + 2] * q);
+          const r0 = idx.get(k); if (r0 === undefined) { idx.set(k, i); rep[i] = i; } else rep[i] = r0; }
+        const acc = new Float64Array(m * 3), own = new Float64Array(m * 3), mag = new Float64Array(m);
+        for (let t = 0; t < tri.length; t += 3) { const a = tri[t], b = tri[t + 1], c = tri[t + 2];
+          const ux = Q[b * 3] - Q[a * 3], uy = Q[b * 3 + 1] - Q[a * 3 + 1], uz = Q[b * 3 + 2] - Q[a * 3 + 2], vx = Q[c * 3] - Q[a * 3], vy = Q[c * 3 + 1] - Q[a * 3 + 1], vz = Q[c * 3 + 2] - Q[a * 3 + 2];
+          const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx, fl = Math.hypot(fx, fy, fz);
+          for (const v of [a, b, c]) { const r0 = rep[v]; acc[r0 * 3] += fx; acc[r0 * 3 + 1] += fy; acc[r0 * 3 + 2] += fz; mag[r0] += fl; own[v * 3] += fx; own[v * 3 + 1] += fy; own[v * 3 + 2] += fz; } }
+        const N = new Float32Array(m * 3);
+        for (let i = 0; i < m; i++) { const r0 = rep[i]; let x = acc[r0 * 3], y = acc[r0 * 3 + 1], z = acc[r0 * 3 + 2], l = Math.hypot(x, y, z);
+          if (!(l > 0.3 * mag[r0])) { x = own[i * 3]; y = own[i * 3 + 1]; z = own[i * 3 + 2]; l = Math.hypot(x, y, z); }
+          if (!(l > 1e-12)) { x = 0; y = 1; z = 0; l = 1; } N[i * 3] = x / l; N[i * 3 + 1] = y / l; N[i * 3 + 2] = z / l; }
+        const hg = new THREE.BufferGeometry(); owned.push(hg); geo.dispose();
+        hg.setAttribute('position', new THREE.BufferAttribute(Q, 3)); hg.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+        hg.setIndex(new THREE.BufferAttribute(m > 65535 ? new Uint32Array(tri) : new Uint16Array(tri), 1));
+        const aS = new Float32Array(m), aReg = new Float32Array(m).fill(2), aCS = new Float32Array(m * 2), aW = new Float32Array(m).fill(0.35);
+        for (let i = 0; i < m; i++) { aS[i] = -Q[i * 3 + 2]; aCS[i * 2 + 1] = 1; }
+        hg.setAttribute('aS', new THREE.BufferAttribute(aS, 1)); hg.setAttribute('aReg', new THREE.BufferAttribute(aReg, 1));
+        hg.setAttribute('aCS', new THREE.BufferAttribute(aCS, 2)); hg.setAttribute('aW', new THREE.BufferAttribute(aW, 1)); hg.setAttribute('aF', new THREE.BufferAttribute(F, 1));
+        hg.computeBoundingSphere();
+        return hg;
+      }
+      /* ---- THE BODY: its rings' cross-section (made once: a round body, its keel along the back, its belly a little flat) */
+      const OX = new Float32Array(BODY.NS), OY = new Float32Array(BODY.NS), NX = new Float32Array(BODY.NS), NY = new Float32Array(BODY.NS);
+      { const sec = (a) => { const c = Math.cos(a), s = Math.sin(a); return [BODY.ax * c, BODY.ay * s * (s < 0 ? 0.92 : 1) + BODY.keel * Math.pow(Math.max(0, s), 14)]; };
+        for (let j = 0; j < BODY.NS; j++) { const a = j / BODY.NS * Math.PI * 2, p = sec(a), p1 = sec(a + 1e-3), p0 = sec(a - 1e-3);
+          OX[j] = p[0]; OY[j] = p[1]; let nx = p1[1] - p0[1], ny = -(p1[0] - p0[0]); const l = Math.hypot(nx, ny) || 1; NX[j] = nx / l; NY[j] = ny / l; } }
+      /* the body's girth along it: the neck's at the head, thickest a quarter of the way, to a point at the tail */
+      const RAD = new Float32Array(BODY.NR), DS = new Float32Array(BODY.NR);
+      for (let i = 0; i < BODY.NR; i++) { const d = BODY.d0 + i * (BODY.L - BODY.d0) / (BODY.NR - 1), f = d / BODY.L; DS[i] = d;
+        const up = BODY.rStub + (BODY.rMax - BODY.rStub) * smo(c01(f / 0.25)), down = Math.pow(1 - smo(c01((f - 0.3) / 0.7)), 0.85);
+        RAD[i] = Math.max(BODY.rTip, up * down); }
+      function tubeOf() {
+        const NR = BODY.NR, NS = BODY.NS, nv = NR * NS;
+        const tg = new THREE.BufferGeometry(); owned.push(tg);
+        const pos = new THREE.BufferAttribute(new Float32Array(nv * 3), 3).setUsage(THREE.DynamicDrawUsage);
+        const nor = new THREE.BufferAttribute(new Float32Array(nv * 3), 3).setUsage(THREE.DynamicDrawUsage);
+        const aW = new THREE.BufferAttribute(new Float32Array(nv), 1).setUsage(THREE.DynamicDrawUsage);
+        const aS = new Float32Array(nv), aReg = new Float32Array(nv).fill(1), aCS = new Float32Array(nv * 2);
+        for (let i = 0; i < NR; i++) for (let j = 0; j < NS; j++) { const v = i * NS + j, a = j / NS * Math.PI * 2; aS[v] = DS[i]; aCS[v * 2] = Math.cos(a); aCS[v * 2 + 1] = Math.sin(a); }
+        const ind = [];
+        for (let i = 0; i < NR - 1; i++) for (let j = 0; j < NS; j++) { const j1 = (j + 1) % NS, a = i * NS + j, b = i * NS + j1, c = (i + 1) * NS + j, d = (i + 1) * NS + j1;
+          ind.push(a, c, b, b, c, d); }    // (outward: ring i+1 lies behind ring i, along -T)
+        tg.setAttribute('position', pos); tg.setAttribute('normal', nor); tg.setAttribute('aW', aW);
+        tg.setAttribute('aS', new THREE.BufferAttribute(aS, 1)); tg.setAttribute('aReg', new THREE.BufferAttribute(aReg, 1)); tg.setAttribute('aCS', new THREE.BufferAttribute(aCS, 2));
+        tg.setAttribute('aF', new THREE.BufferAttribute(new Float32Array(nv).fill(1), 1));
+        tg.setIndex(ind);
+        return tg;
       }
       function make() {
-        if (st.ready || !have('p5naga')) return;
+        if (st.ready || st.making || !have('p5naga')) return; st.making = true;
         parseOnce('p5naga').then(({ scene: src }) => {
           if (!alive) return;
-          src.updateMatrixWorld(true);
-          let geo = null, bb = new THREE.Box3();
-          /* (a quantized file: its points made plain floats FIRST, then placed by its node. Placed first, as written until
-             FILMS-2, every coordinate past one metre was written back into the file's 16-bit integers and WRAPPED (three's
-             setXYZ rounds and stores, and an Int16Array keeps the low 16 bits): the 8.4 m serpent was folded four times
-             into two metres and its 3.6 m head into garbage, and that was laid along the path: the "red sheets of glass".
-             Measured: the file's points span z -4.21 .. 4.21 and y 0 .. 3.6; the folded copy spanned -1 .. 1) */
-          src.traverse(o => { if (o.isMesh && !geo) { geo = o.geometry.clone();
-            for (const nm of ['position', 'normal']) { const p = geo.attributes[nm]; if (!p || (!p.normalized && p.array instanceof Float32Array)) continue;
-              const a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { a[i * 3] = p.getX(i); a[i * 3 + 1] = p.getY(i); a[i * 3 + 2] = p.getZ(i); }
-              geo.setAttribute(nm, new THREE.BufferAttribute(a, 3)); }
-            geo.applyMatrix4(o.matrixWorld); } });
-          if (!geo) return; owned.push(geo);
-          geo.computeBoundingBox(); bb.copy(geo.boundingBox);
-          /* its length is its longest side (8.41 m, the record's): the body laid along z of the model */
-          const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
-          st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
-          /* ITS LONG TRIANGLES DIVIDED (R25), each into pieces no longer than 5 cm along the body, so the body bends with the
-             path at the court's corners instead of cutting across them: its 5.8 m middle is laid along about 21 m of path,
-             and a triangle 0.2 to 0.57 m long in the file came out 0.9 to 2.4 m long and laid flat across the inside of
-             each turn (324 over 0.8 m, measured). Divided at their middles, each shared middle made once (no cracks), the
-             winding kept: 62,393 triangles become 85,916; the longest laid edge 0.43 m */
-          if (geo.index) { const ax = along === 'z' ? 2 : 0, P0 = geo.attributes.position.array, N0 = geo.attributes.normal ? geo.attributes.normal.array : null, X0 = geo.index.array;
-            const Pa = Array.from(P0), Na = N0 ? Array.from(N0) : null, out = [], mid = new Map(), todo = [];
-            for (let q = 0; q < X0.length; q += 3) todo.push([X0[q], X0[q + 1], X0[q + 2]]);
-            while (todo.length) { const [a, b, c] = todo.pop(), za = Pa[a * 3 + ax], zb = Pa[b * 3 + ax], zc = Pa[c * 3 + ax];
-              const sab = Math.abs(za - zb), sbc = Math.abs(zb - zc), sca = Math.abs(zc - za);
-              if (Math.max(sab, sbc, sca) <= 0.05) { out.push(a, b, c); continue; }
-              const [i, j, k] = sab >= sbc && sab >= sca ? [a, b, c] : sbc >= sca ? [b, c, a] : [c, a, b];
-              const key = i < j ? i * 1048576 + j : j * 1048576 + i; let mi = mid.get(key);
-              if (mi === undefined) { mi = Pa.length / 3; Pa.push((Pa[i * 3] + Pa[j * 3]) / 2, (Pa[i * 3 + 1] + Pa[j * 3 + 1]) / 2, (Pa[i * 3 + 2] + Pa[j * 3 + 2]) / 2);
-                if (Na) { const nx = Na[i * 3] + Na[j * 3], ny = Na[i * 3 + 1] + Na[j * 3 + 1], nz = Na[i * 3 + 2] + Na[j * 3 + 2], nl = Math.hypot(nx, ny, nz) || 1; Na.push(nx / nl, ny / nl, nz / nl); }
-                mid.set(key, mi); }
-              todo.push([i, mi, k], [mi, j, k]); }
-            const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(Pa), 3));
-            if (Na) g2.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(Na), 3));
-            g2.setIndex(new THREE.BufferAttribute(Pa.length / 3 > 65535 ? new Uint32Array(out) : new Uint16Array(out), 1));
-            geo.dispose(); geo = g2; owned.push(geo); }
-          /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
-             on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
-             shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga
-             was never drawn: together-00012, 21 Nov) */
-          { const P = geo.attributes.position, nf = new Float32Array(P.count), sp = st.maxX - st.minX;
-            for (let i = 0; i < P.count; i++) nf[i] = ((along === 'z' ? P.getZ(i) : P.getX(i)) - st.minX) / sp;
-            geo.setAttribute('aNf', new THREE.BufferAttribute(nf, 1)); }
-          /* (the body is laid on the CPU, not in the shader: its points moved once a frame the film draws it, along the
-             path by their place along the body, a cross-section kept round the path's own frame) */
-          const base = geo.attributes.position.array.slice(0);
-          st.base = base; st.along = along; st.geo = geo;
-          /* ITS OWN CENTRE LINE, taken out of every point before the body is laid along the path (the file's serpent rears and
-             waves: 8.4 m long, 0.78 m wide and 3.6 m tall), so only its round cross-section, scales and all, is laid round the
-             path. Laid with its waves, each point stood up to 1.8 m off the path and the body came out as sheets of pink glass
-             across the court: together-00012 after the shader's fix, 21 Nov */
-          { const NB = 200, cx = new Float32Array(NB), cy = new Float32Array(NB), cn = new Float32Array(NB), n = base.length / 3, bin = new Uint16Array(n), sp = st.maxX - st.minX;
-            for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2];
-              const b0 = Math.min(NB - 1, Math.max(0, Math.floor((ax - st.minX) / sp * NB))); bin[i] = b0; cx[b0] += c; cy[b0] += base[i * 3 + 1]; cn[b0]++; }
-            let lx = 0, ly = 0; for (let b0 = 0; b0 < NB; b0++) { if (cn[b0] > 0) { cx[b0] /= cn[b0]; cy[b0] /= cn[b0]; lx = cx[b0]; ly = cy[b0]; } else { cx[b0] = lx; cy[b0] = ly; } }
-            st.cl = { cx, cy, bin };
-            /* ITS HEAD AND ITS TAIL ARE ITS OWN (R25). The file's serpent lies on the ground for its middle (every slice of
-               it 0.7 m tall) and rears at both ends: its tail curls up 2.3 m and its head stands 3.6 m, a column from the
-               ground with the hood and the face on it. Laid slice by slice round the path, each reared slice came out a
-               flat sheet up to 2.6 m tall, and the head's 22 % of the body, stretched along the path, a 7 m wall of red
-               planes across the court and through the people in it: together-phone 5.8, 12.8, 15.2 and 19.9 on deploy 16
-               with NormalBlending, 21 Nov. Now the lying middle is laid along the path; the head is carried flat and
-               raised at the end WHOLE, the model's own shape, in the path's own frame (its neck meets the body's last
-               slice); the tail folds into the stick's head it rises from (set(), below). The middle: the longest run of
-               slices under 0.85 m tall */
-            const ylo = new Float32Array(NB).fill(1e9), yhi = new Float32Array(NB).fill(-1e9);
-            for (let i = 0; i < n; i++) { const b0 = bin[i], y = base[i * 3 + 1]; if (y < ylo[b0]) ylo[b0] = y; if (y > yhi[b0]) yhi[b0] = y; }
-            const tall = (b0) => yhi[b0] - ylo[b0] > 0.85 && yhi[b0] > ylo[b0];
-            let bT = NB >> 1, bH = NB >> 1; while (bT > 0 && !tall(bT - 1)) bT--; while (bH < NB - 1 && !tall(bH + 1)) bH++;
-            const ZT = st.minX + bT * sp / NB, ZH = st.minX + (bH + 1) * sp / NB;
-            const reg = new Uint8Array(n), off = new Float32Array(n * 3);
-            for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2], y = base[i * 3 + 1], b0 = bin[i];
-              if (b0 > bH) { reg[i] = 2; off[i * 3] = c - cx[bH]; off[i * 3 + 1] = y - cy[bH]; off[i * 3 + 2] = ax - ZH; }
-              else if (b0 < bT) { reg[i] = 0; off[i * 3] = c - cx[bT]; off[i * 3 + 1] = y - cy[bT]; off[i * 3 + 2] = 0; }
-              else { reg[i] = 1; off[i * 3] = c - cx[b0]; off[i * 3 + 1] = y - cy[b0]; off[i * 3 + 2] = (ax - ZT) / Math.max(1e-3, ZH - ZT); } }
-            st.reg = reg; st.off = off; st.parts = { ZT, ZH, bT, bH }; }
-          /* ITS OWN SMOOTH NORMALS (FILMS-2). The file's 87,610 points stand on 31,214 places, and 55,546 of the 56,396 points
-             that share a place with another carry a different normal (up to opposite): a fresnel read on them draws every seam
-             as a line and every facet as a shard. Each place's normal is made again from the faces round it (each weighed by
-             its area, the file's own winding outward); a point whose place's faces cancel (the two sides of a thin fin meet
-             there) keeps its own faces' normal. Kept in the model's frame as (across, up, along), turned with the path at
-             each lay (set(), below) */
-          if (geo.index) { const P = st.base, X = geo.index.array, n = P.length / 3, rep = new Int32Array(n), idx = new Map(), q = 1e4;
-            for (let i = 0; i < n; i++) { const k = Math.round(P[i * 3] * q) + ',' + Math.round(P[i * 3 + 1] * q) + ',' + Math.round(P[i * 3 + 2] * q);
-              const r0 = idx.get(k); if (r0 === undefined) { idx.set(k, i); rep[i] = i; } else rep[i] = r0; }
-            const acc = new Float64Array(n * 3), own = new Float64Array(n * 3), mag = new Float64Array(n);
-            for (let t = 0; t < X.length; t += 3) { const a = X[t], b = X[t + 1], c = X[t + 2];
-              const ux = P[b * 3] - P[a * 3], uy = P[b * 3 + 1] - P[a * 3 + 1], uz = P[b * 3 + 2] - P[a * 3 + 2], vx = P[c * 3] - P[a * 3], vy = P[c * 3 + 1] - P[a * 3 + 1], vz = P[c * 3 + 2] - P[a * 3 + 2];
-              const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx, fl = Math.hypot(fx, fy, fz);
-              for (const v of [a, b, c]) { const r0 = rep[v]; acc[r0 * 3] += fx; acc[r0 * 3 + 1] += fy; acc[r0 * 3 + 2] += fz; mag[r0] += fl; own[v * 3] += fx; own[v * 3 + 1] += fy; own[v * 3 + 2] += fz; } }
-            const BN = new Float32Array(n * 3), alZ = st.along === 'z';
-            for (let i = 0; i < n; i++) { const r0 = rep[i]; let x = acc[r0 * 3], y = acc[r0 * 3 + 1], z = acc[r0 * 3 + 2], l = Math.hypot(x, y, z);
-              if (!(l > 0.3 * mag[r0])) { x = own[i * 3]; y = own[i * 3 + 1]; z = own[i * 3 + 2]; l = Math.hypot(x, y, z); }
-              if (!(l > 1e-12)) { x = 0; y = 1; z = 0; l = 1; }
-              BN[i * 3] = (alZ ? x : z) / l; BN[i * 3 + 1] = y / l; BN[i * 3 + 2] = (alZ ? z : x) / l; }
-            st.bn = BN; }
-          /* what the shaders read of each point, laid once: its region (0 the tail, 1 the lying middle, 2 the head), its place
-             along its region (the middle's share 0 .. 1, the head's metres past the middle's end), its way round its
-             slice's centre line (cosine and sine: an angle itself would be drawn through 0 across the seam at its back),
-             and how far its glow stands out (the head's a third of the middle's: its crest and fins are thin) */
-          { const n = st.base.length / 3, R = st.reg, O = st.off, B = st.base, cl = st.cl, alZ = st.along === 'z';
-            const aReg = new Float32Array(n), aO2 = new Float32Array(n), aCS = new Float32Array(n * 2), aW = new Float32Array(n);
-            for (let i = 0; i < n; i++) { const r0 = R[i]; aReg[i] = r0; aO2[i] = r0 === 0 ? 0 : O[i * 3 + 2];
-              let cx0 = O[i * 3], cy0 = O[i * 3 + 1];
-              if (r0 === 2) { const b0 = cl.bin[i]; cx0 = (alZ ? B[i * 3] : B[i * 3 + 2]) - cl.cx[b0]; cy0 = B[i * 3 + 1] - cl.cy[b0]; }
-              const l = Math.hypot(cx0, cy0) || 1; aCS[i * 2] = cx0 / l; aCS[i * 2 + 1] = cy0 / l;
-              aW[i] = r0 === 1 ? 1 : r0 === 2 ? 0.35 : 0; }
-            geo.setAttribute('aReg', new THREE.BufferAttribute(aReg, 1)); geo.setAttribute('aO2', new THREE.BufferAttribute(aO2, 1));
-            geo.setAttribute('aCS', new THREE.BufferAttribute(aCS, 2)); geo.setAttribute('aW', new THREE.BufferAttribute(aW, 1));
-            const nb = new THREE.BufferAttribute(new Float32Array(n * 3), 3); nb.setUsage(THREE.DynamicDrawUsage); geo.setAttribute('normal', nb);
-            geo.attributes.position.setUsage(THREE.DynamicDrawUsage); }
-          /* (the laying maps the model's across, up and along onto the path's B, N and T, and B x N = -T: a mirror. So each
-             triangle's order is turned once, here, after its normals were read from the file's own, and the front of the
-             laid skin is its outside for the lens: drawn double-sided before, nothing showed which side was which) */
-          if (st.along === 'z' && geo.index) { const X = geo.index.array; for (let t = 0; t < X.length; t += 3) { const s0 = X[t + 1]; X[t + 1] = X[t + 2]; X[t + 2] = s0; } }
-          const mD = new THREE.Mesh(geo, nagaMat('depth')), mB = new THREE.Mesh(geo, nagaMat('body')), mG = new THREE.Mesh(geo, nagaMat('glow'));
-          /* (WHEN IT IS DRAWN, by its light. Bright (its film): after the court's own transparent things and its painted
-             ground, and before the cage and the fight's effects (renderOrder 3 and on), which its nearest surface then hides
-             where its body stands in front of them, and which stand over it where they are in front. Dim (under 0.5: the
-             fight's last stage keeps it at 0.3): LAST, so the effects of the fight behind it show through it and none is
-             cut out by a body nearly not there. Dim and drawn among them, only its front faces and nothing nearest, every
-             scale and fold of the crumpled model drew its own faint line: glass again, together-phone 26.8 on lab 4) */
-          for (const [me, lo, hi] of [[mD, 2.5, 9.5], [mB, 2.6, 9.6], [mG, 2.7, 9.7]]) { me.frustumCulled = false;
-            Object.defineProperty(me, 'renderOrder', { get: () => lo, set: () => {}, configurable: true }); g.add(me); }   // (solid now at every light: drawn before the fight's effects always, hi kept for a see-through look)
-          st.mesh = mB; st.mat = mB.material; st.meshes = [mD, mB, mG];
-          /* ITS EMBERS (the plan's 11: "embers rising"; the film's u5embers): forty sparks of its light, a fixed set (the same
-             on every phone: the plan's 13), each rising from a point of its lying body (chosen once, seeded) a metre and a
-             third over 1.6 to 2.6 s and going out as it rises; their rise is the shader's, on its clock (uNT), so they rise on
-             wherever the body lies, the fight's last stage included, with nothing laid again */
-          { const NE = 40, r = rng(28700), pick = []; for (let i = 0; i < st.reg.length; i++) if (st.reg[i] === 1) pick.push(i);
-            const ev = new Int32Array(NE), ph = new Float32Array(NE), sp = new Float32Array(NE);
-            for (let i = 0; i < NE; i++) { ev[i] = pick[Math.floor(r() * pick.length)] || 0; ph[i] = r(); sp[i] = 1 / (1.6 + r() * 1.0); }
+          const hg = headOf(src); if (!hg) return;
+          st.mats = { depth: nagaMat('depth'), body: nagaMat('body'), glow: nagaMat('glow') };
+          const hgrp = new THREE.Group(); hgrp.matrixAutoUpdate = false; g.add(hgrp); threeOf(hg, hgrp);
+          st.head = hgrp; st.hgeo = hg;
+          st.tgeo = tubeOf(); st.tube = threeOf(st.tgeo, g);
+          /* ITS MIST: forty drops of its water shed off its length, each falling and fading (a fixed set: the same on every
+             phone), their fall the shader's, on its clock (uNT) */
+          { const NE = 48, r = rng(28701), ev = new Int32Array(NE), ph = new Float32Array(NE), sp = new Float32Array(NE);
+            for (let i = 0; i < NE; i++) { ev[i] = Math.min(BODY.NR * BODY.NS - 1, Math.floor((6 + r() * (BODY.NR * 0.8)) | 0) * BODY.NS + ((r() * BODY.NS) | 0)); ph[i] = r(); sp[i] = 1 / (1.1 + r() * 0.9); }
             const eg = new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NE * 3), 3).setUsage(THREE.DynamicDrawUsage));
             eg.setAttribute('aPh', new THREE.BufferAttribute(ph, 1)); eg.setAttribute('aSpd', new THREE.BufferAttribute(sp, 1)); owned.push(eg);
             const soft = (() => { const [c, x] = canvas(64, 64); const gd = x.createRadialGradient(32, 32, 1, 32, 32, 31);
               gd.addColorStop(0, 'rgba(255,255,255,1)'); gd.addColorStop(0.35, 'rgba(255,255,255,0.55)'); gd.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gd; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
-            const em = new THREE.PointsMaterial({ map: soft, color: 0xff6a3a, size: 0.11, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(em);
+            const em = new THREE.PointsMaterial({ map: soft, color: 0x9fe8ff, size: 0.08, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(em);
             em.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
               sh.vertexShader = 'attribute float aPh; attribute float aSpd; uniform float uNT; varying float vEA;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
                 float eC = fract(uNT * aSpd + aPh);
-                transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * (0.12 + 0.2 * aPh), 1.35, cos(aPh * 4.1 + uNT * 1.1) * (0.12 + 0.2 * fract(aPh * 3.7))) * eC;
-                vEA = (1.0 - eC) * (1.0 - eC) * smoothstep(0.0, 0.12, eC);`);
-              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.4, 0.85, uNA) * smoothstep(0.1, 0.6, uNGR) );');
-              if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s embers found no colour line to write (three changed?)');
-              sh.fragmentShader = 'uniform float uNA, uNGR; varying float vEA;\n' + out; };
-            em.customProgramCacheKey = () => 'e4c5nagaEmbers';
+                transformed += vec3(sin(aPh * 6.2832 + uNT * 1.3) * (0.06 + 0.12 * aPh), -0.9 * eC * eC, cos(aPh * 4.1 + uNT * 1.1) * (0.06 + 0.12 * fract(aPh * 3.7))) * eC;
+                vEA = (1.0 - eC) * smoothstep(0.0, 0.1, eC);`);
+              const out = sh.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( diffuse, opacity * vEA * smoothstep(0.4, 0.85, uNA) );');
+              if (out === sh.fragmentShader) console.warn('e4c5: the Naga\'s mist found no colour line to write (three changed?)');
+              sh.fragmentShader = 'uniform float uNA; varying float vEA;\n' + out; };
+            em.customProgramCacheKey = () => 'e4c5nagaMist';
             const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => 2.8, set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
           st.ready = true;
+          if (st.plan && st.want) layAt(st.want.t, st.want.a);
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
       }
       make();
-      const _np = new THREE.Vector3(), _nt = new THREE.Vector3(), _nn = new THREE.Vector3(), _nb = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
-      let laidFor = '';
-      /* THE PATH AS A TABLE (R25): its place and its frame (along, across, up from it) at TABN + 1 even steps of its
-         length, made once a path, read by a straight blend between two steps (3 cm apart on its ~30 m): every point of
-         the body had asked the curve for its place and its turn every frame, 87,610 points twice */
-      const TABN = 1024;
-      function tabFor(P0) {
-        const T = new Float32Array((TABN + 1) * 12);
-        for (let j = 0; j <= TABN; j++) { const u = j / TABN; P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
-          _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
-          T.set([_np.x, _np.y, _np.z, _nt.x, _nt.y, _nt.z, _nb.x, _nb.y, _nb.z, _nn.x, _nn.y, _nn.z], j * 12); }
-        st.tab = T;
+      /* ---- ITS FLIGHT: a path through the film's points, a table of its places and frames along its length (every 4 cm:
+         where it is, the way it goes, its up and its side), each frame's up kept to the sky's and banked into the turns
+         (leaning toward the centre of each turn, as a flyer does, eased along its length), and the time it reaches each
+         point. A pure function of the plan: made once a film run */
+      const _v = new THREE.Vector3(), _t = new THREE.Vector3();
+      function plan(spec) {
+        const pts = spec.pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), n = pts.length;
+        const cv = new THREE.CatmullRomCurve3(pts, false, 'centripetal', 0.5);
+        const DIV = (n - 1) * 60; cv.arcLengthDivisions = DIV;
+        const lens = cv.getLengths(DIV), len = lens[lens.length - 1];
+        const uAt = pts.map((p, i) => lens[i * 60]);
+        const NT = Math.max(2, Math.ceil(len / 0.04) + 1), T = new Float32Array(NT * 12), ds = len / (NT - 1);
+        /* (its up: the sky's, laid square to its way; where its way stands within 15 degrees of upright, the last up carried on;
+           and if that too has nothing left, any square to it: never a frame of nothing) */
+        let px = 0, py = 0, pz = 1;
+        for (let j = 0; j < NT; j++) { const u = Math.min(1, j / (NT - 1)); cv.getPointAt(u, _v); cv.getTangentAt(u, _t);
+          let nx = -_t.y * _t.x, ny = 1 - _t.y * _t.y, nz = -_t.y * _t.z, nl = Math.hypot(nx, ny, nz);
+          if (nl < 0.25) { const k = px * _t.x + py * _t.y + pz * _t.z; nx = px - k * _t.x; ny = py - k * _t.y; nz = pz - k * _t.z; nl = Math.hypot(nx, ny, nz); }
+          if (!(nl > 1e-4)) { nx = _t.z; ny = 0; nz = -_t.x; nl = Math.hypot(nx, ny, nz); if (!(nl > 1e-4)) { nx = 1; ny = 0; nz = 0; nl = 1; } }
+          nx /= nl; ny /= nl; nz /= nl; px = nx; py = ny; pz = nz;
+          T.set([_v.x, _v.y, _v.z, _t.x, _t.y, _t.z, nx, ny, nz, 0, 0, 0], j * 12); }
+        /* the bank: the up leaned toward the centre of the turn by the turn's own curvature (0.9 m of lean for each 1/m),
+           at most 40 degrees, eased over 1.2 m of its length; then its side, up x along */
+        const lean = new Float32Array(NT * 3);
+        for (let j = 0; j < NT; j++) { const a = Math.max(0, j - 2) * 12, b = Math.min(NT - 1, j + 2) * 12, h = (Math.min(NT - 1, j + 2) - Math.max(0, j - 2)) * ds || 1;
+          let kx = (T[b + 3] - T[a + 3]) / h, ky = (T[b + 4] - T[a + 4]) / h, kz = (T[b + 5] - T[a + 5]) / h;
+          const o = j * 12, k = kx * T[o + 3] + ky * T[o + 4] + kz * T[o + 5]; kx -= k * T[o + 3]; ky -= k * T[o + 4]; kz -= k * T[o + 5];
+          const up = kx * T[o + 6] + ky * T[o + 7] + kz * T[o + 8]; kx -= up * T[o + 6]; ky -= up * T[o + 7]; kz -= up * T[o + 8];   // (only the turn across: a climb or a dive leans nothing)
+          let s = 0.9, kl = Math.hypot(kx, ky, kz); if (kl * s > 0.84) s = 0.84 / kl;
+          lean[j * 3] = kx * s; lean[j * 3 + 1] = ky * s; lean[j * 3 + 2] = kz * s; }
+        const W = Math.max(1, Math.round(0.6 / ds));
+        for (let j = 0; j < NT; j++) { let sx = 0, sy = 0, sz = 0, c = 0; for (let q = Math.max(0, j - W); q <= Math.min(NT - 1, j + W); q++) { sx += lean[q * 3]; sy += lean[q * 3 + 1]; sz += lean[q * 3 + 2]; c++; }
+          const o = j * 12, tx = T[o + 3], ty = T[o + 4], tz = T[o + 5];
+          let nx = T[o + 6] + sx / c, ny = T[o + 7] + sy / c, nz = T[o + 8] + sz / c; const k = nx * tx + ny * ty + nz * tz; nx -= k * tx; ny -= k * ty; nz -= k * tz;
+          const nl = Math.hypot(nx, ny, nz) || 1; nx /= nl; ny /= nl; nz /= nl;
+          T[o + 6] = nx; T[o + 7] = ny; T[o + 8] = nz; T[o + 9] = ny * tz - nz * ty; T[o + 10] = nz * tx - nx * tz; T[o + 11] = nx * ty - ny * tx; }
+        /* its timing: the film's keys (a time for a point), between them a monotone cubic (Fritsch and Carlson), so it never
+           stops or turns back between two keys and its speed changes smoothly through each */
+        const K = spec.keys.map(([t, i]) => [t, typeof i === 'number' && i % 1 === 0 && i < n ? uAt[i] : +i]).sort((a, b) => a[0] - b[0]);
+        const m = K.length, dd = [], mm = new Array(m).fill(0);
+        for (let i = 0; i < m - 1; i++) dd.push((K[i + 1][1] - K[i][1]) / Math.max(1e-6, K[i + 1][0] - K[i][0]));
+        for (let i = 1; i < m - 1; i++) mm[i] = dd[i - 1] * dd[i] <= 0 ? 0 : (dd[i - 1] + dd[i]) / 2;
+        mm[0] = m > 1 ? dd[0] : 0; mm[m - 1] = m > 1 ? dd[m - 2] : 0;
+        for (let i = 0; i < m - 1; i++) { if (Math.abs(dd[i]) < 1e-9) { mm[i] = mm[i + 1] = 0; continue; }
+          const a = mm[i] / dd[i], b = mm[i + 1] / dd[i], s = a * a + b * b; if (s > 9) { const tau = 3 / Math.sqrt(s); mm[i] = tau * a * dd[i]; mm[i + 1] = tau * b * dd[i]; } }
+        if (spec.restSecs > 0 && m > 0) mm[m - 1] = 0;
+        st.plan = { cv, len, T, NT, ds, uAt, K, mm, stick: spec.stick || [pts[0].x, pts[0].y, pts[0].z], spec };
+        st.laid = '';
+        return { len, uAt: uAt.slice() };
       }
-      const FR = new Float32Array(12), FRH = new Float32Array(12), FRT = new Float32Array(12), FRP = new Float32Array(12), FRQ = new Float32Array(12);
+      /* the leader's place along the path (metres) at film time t */
+      function uOf(t) {
+        const P = st.plan; if (!P) return 0; const K = P.K, mm = P.mm, m = K.length;
+        if (!m) return 0; if (t <= K[0][0]) return K[0][1]; if (t >= K[m - 1][0]) return K[m - 1][1];
+        let i = 0; while (i < m - 2 && t > K[i + 1][0]) i++;
+        const h = K[i + 1][0] - K[i][0], s = (t - K[i][0]) / h, s2 = s * s, s3 = s2 * s;
+        return (2 * s3 - 3 * s2 + 1) * K[i][1] + (s3 - 2 * s2 + s) * h * mm[i] + (-2 * s3 + 3 * s2) * K[i + 1][1] + (s3 - s2) * h * mm[i + 1];
+      }
+      const FR = new Float32Array(12);
       function frameAt(u, out) {
-        const T = st.tab, x = Math.max(0, Math.min(1, u)) * TABN, j = Math.min(TABN - 1, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
-        for (let q = 0; q < 12; q++) out[q] = T[a + q] + (T[b + q] - T[a + q]) * w;
+        const P = st.plan, x = Math.max(0, Math.min(P.NT - 1, u / P.ds)), j = Math.min(P.NT - 2, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
+        for (let q = 0; q < 12; q++) out[q] = P.T[a + q] + (P.T[b + q] - P.T[a + q]) * w;
         return out;
+      }
+      /* ---- LAID: the head where the leader is, every ring where the leader was its distance before */
+      const HM = new THREE.Matrix4(), FRB = new Float32Array(12);
+      function layAt(t, a) {
+        if (!st.ready || !st.plan || !(a > 0.001)) return false;
+        const uH = uOf(t), uP = uOf(t - 0.05), sp = Math.abs(uH - uP) / 0.05;
+        const key = uH.toFixed(5) + '|' + (sp > 0.2 ? t.toFixed(3) : 'still');
+        st.uH = uH; st.speed = sp;
+        if (st.laid === key) return true; st.laid = key;
+        const grow = smo(c01(uH / 1.4)); st.grow = grow;
+        /* THE HEAD on the leader, its along the path's along, its up the path's banked up */
+        const F = frameAt(uH, FR), s = Math.max(0.02, grow);
+        const bx = F[9], by = F[10], bz = F[11], nx = F[6], ny = F[7], nz = F[8], tx = F[3], ty = F[4], tz = F[5];
+        HM.set(bx * s, nx * s, tx * s, F[0], by * s, ny * s, ty * s, F[1], bz * s, nz * s, tz * s, F[2], 0, 0, 0, 1);
+        st.head.matrix.copy(HM); st.head.matrixWorldNeedsUpdate = true;
+        const fw = (p) => [F[0] + (bx * p[0] + nx * p[1] + tx * p[2]) * HS * s, F[1] + (by * p[0] + ny * p[1] + ty * p[2]) * HS * s, F[2] + (bz * p[0] + nz * p[1] + tz * p[2]) * HS * s];
+        st.fw = fw(FACE); st.sw = fw(SNOUT);
+        /* THE BODY: each ring where the leader was; thin where it is still coming out of the stick; a wave travelling down it
+           while it flies (none while it lies still), across and a little up and down */
+        const NR = BODY.NR, NS = BODY.NS, pa = st.tgeo.attributes.position.array, na = st.tgeo.attributes.normal.array, wa = st.tgeo.attributes.aW.array;
+        const mov = smo(c01((sp - 0.4) / 2.6)), stick = st.plan.stick, G = FRB;
+        for (let i = 0; i < NR; i++) {
+          const d = DS[i], u = uH - d;
+          let r = RAD[i] * grow, rx = 0, ry = 0, cx, cy, cz, Tx, Ty, Tz, Nx, Ny, Nz, Bx, By, Bz;
+          if (d < 0) {
+            /* THE ARC UP INTO THE HEAD (R52, R57): rings before the leader ride with the head, round the arc from the foot
+               (along the path, the body's own up) to the head's slanting cut (met square, its keel to the back of the neck,
+               its throat to the front), then 7 cm on into the head; drawn from the body's size to the cut's own */
+            const a2 = -d / s, Rm = NK.R * HS; let th, ly, lz;
+            if (a2 <= ARC) { th = a2 / Rm; ly = Rm * (1 - Math.cos(th)); lz = Rm * Math.sin(th); }
+            else { th = PHI; const e = a2 - ARC; ly = Rm * (1 - Math.cos(PHI)) + e * Math.sin(PHI); lz = Rm * Math.sin(PHI) + e * Math.cos(PHI); }
+            const sn = Math.sin(th), cs = Math.cos(th), k = smo(c01(th / PHI));
+            Tx = nx * sn + tx * cs; Ty = ny * sn + ty * cs; Tz = nz * sn + tz * cs;
+            Nx = nx * cs - tx * sn; Ny = ny * cs - ty * sn; Nz = nz * cs - tz * sn; Bx = bx; By = by; Bz = bz;
+            rx = lp(BODY.rStub, NK.HX * HS * 1.03, k) * grow; ry = lp(BODY.rStub, NK.HN * HS * 1.03 / 0.9, k) * grow; r = rx;
+            const off = -0.11 * ry * k;                                   // (the cross-section's keel lifts its middle 0.11 of it: set back on the cut's middle)
+            cx = F[0] + (nx * ly + tx * lz) * s + Nx * off; cy = F[1] + (ny * ly + ty * lz) * s + Ny * off; cz = F[2] + (nz * ly + tz * lz) * s + Nz * off; }
+          else if (u <= 0) { r = 0; cx = stick[0]; cy = stick[1]; cz = stick[2]; Tx = 0; Ty = 1; Tz = 0; Nx = 0; Ny = 0; Nz = 1; Bx = 1; By = 0; Bz = 0; }
+          else { frameAt(u, G); r *= smo(c01(u / 0.9)); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11];
+            const A = 0.14 * mov * smo(c01((d - 0.6) / 2.8)) * (1 - 0.45 * d / BODY.L) * smo(c01(u / 1.5)), wv = Math.sin(6.2832 * (d / 3.4) - 5.2 * t), wv2 = Math.sin(6.2832 * (d / 4.6) - 3.6 * t + 1.3);
+            cx += Bx * A * wv + Nx * A * 0.45 * wv2; cy += By * A * wv + Ny * A * 0.45 * wv2; cz += Bz * A * wv + Nz * A * 0.45 * wv2;
+            cy = Math.max(cy, r * BODY.ay + 0.015); }
+          if (d >= 0) { rx = r; ry = r; }
+          for (let j = 0; j < NS; j++) { const v = (i * NS + j) * 3, ox = OX[j] * rx, oy = OY[j] * ry;
+            pa[v] = cx + Bx * ox + Nx * oy; pa[v + 1] = cy + By * ox + Ny * oy; pa[v + 2] = cz + Bz * ox + Nz * oy;
+            if (rx === ry) { na[v] = Bx * NX[j] + Nx * NY[j]; na[v + 1] = By * NX[j] + Ny * NY[j]; na[v + 2] = Bz * NX[j] + Nz * NY[j]; }
+            else { const ex = NX[j] * ry, ey = NY[j] * rx, el = Math.hypot(ex, ey) || 1;
+              na[v] = (Bx * ex + Nx * ey) / el; na[v + 1] = (By * ex + Ny * ey) / el; na[v + 2] = (Bz * ex + Nz * ey) / el; }
+            wa[i * NS + j] = rx / BODY.rMax; } }
+        const ta = st.tgeo.attributes; ta.position.needsUpdate = true; ta.normal.needsUpdate = true; ta.aW.needsUpdate = true;
+        if (st.emb) { const E = st.emb, ep = E.eg.attributes.position.array; for (let i = 0; i < E.ev.length; i++) { const v = E.ev[i]; ep[i * 3] = pa[v * 3]; ep[i * 3 + 1] = pa[v * 3 + 1]; ep[i * 3 + 2] = pa[v * 3 + 2]; }
+          E.eg.attributes.position.needsUpdate = true; }
+        return true;
       }
       return {
         g, U,
-        /* k: the head's place along the path (0 .. 1); a: its light; t: the scales' clock; (sx, sz): the stick's head; s:
-           the body's thickness (the model's 0.78 m is laid at s of it) */
-        set(k, a, t, sx, sz, s = 0.9) {
-          /* (hidden, it forgets its laying and its head, so nothing aimed at its head reads a head from another moment: a seek
-             back to before it rises found the head where a later moment had laid it) */
-          if (!st.ready || !(a > 0.001)) { g.visible = false; st.laid = ''; st.head = null; return; }
-          g.visible = true; U.uNA.value = a; U.uNT.value = t; U.uNK.value = k;
-          const key = sx.toFixed(2) + ',' + sz.toFixed(2);
-          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
-          /* THE LYING MIDDLE stretched from the stick's head to where the head has come (k), thin where it leaves the stick
-             (its first 1.6 m: it rises from a point; full-thick, it brushed his teacher's arm); THE HEAD standing whole on
-             its leading point (below); THE TAIL folded into the stick's head. All of it grows out of the stick over the
-             first quarter of the way, and nothing goes under the ground (each point held at 1 cm over it). Measured again
-             with the file read whole (FILMS-2: before, the file was folded into two metres, see make()), every twentieth of
-             the way at 32 stick places (eight places over the court, each faced four ways): none of it in a wall or the
-             house */
-          /* (its girth and its head grow to their full size over its first tenth of the way, 2.6 m of the 25.6: grown over
-             its first quarter, it rose as a red thread with a speck for a head for two seconds, together-phone 3.5 on the
-             candidate 0f693b7; now its head is a third of its size a metre out of the stick and whole at the top of its
-             rise. Laid so, none of it is in a wall, a planter or the house at 32 stick places, every twentieth of the way) */
-          const kk = Math.max(0, Math.min(1, k)), gr = s * smo(c01(kk / 0.10)), arr = st.geo.attributes.position.array, n = arr.length / 3;
-          /* THE NECK UNSTRETCHED (FILMS-2). The lying middle is laid stretched along the path (its 5.8 m in the file over up to
-             25.6 m) and the head is not, so where they met the body's detail and its normals changed in one step: a twisted
-             ring round its neck, together-phone 14, 15.4 and 16.5 on ba6a2bb (at 15.4 the path and the head stand within a
-             degree of each other there: the ring was the stretch). Now the middle's last half metre of the file, its neck,
-             eases to the head's own scale along the path (its stretch S0 elsewhere, so the whole still ends at the head's
-             place); and it thins out of the stick over at most six tenths of its laid length, so a body still short is never
-             a thread under its head (together-phone 3.5: a flower on a stem) */
-          const Lm = Math.max(1e-3, st.parts.ZH - st.parts.ZT), NJ = Math.min(0.5, 0.3 * Lm), NZ0 = Lm - NJ, LK = kk * st.len;
-          const S0 = Math.max(1e-3, (LK - gr * NJ / 2) / (Lm - NJ / 2)), TPL = Math.max(1e-3, Math.min(1.6, 0.6 * LK));
-          U.uNKK.value = kk; U.uNLen.value = st.len; U.uNGR.value = gr; U.uNS0.value = S0; U.uNLm.value = Lm; U.uNJ.value = NJ; U.uNTPL.value = TPL;
-          /* (laid again only when its laying moves: once it lies whole, a frame changes its light and clock alone) */
-          const lk = key + '|' + kk.toFixed(6) + '|' + gr.toFixed(5);
-          if (st.laid === lk) return;
-          st.laid = lk;
-          const R = st.reg, O = st.off, B = st.base, cl = st.cl, LEN = st.len, alZ = st.along === 'z', T0 = frameAt(0, FRT), F = FR;
-          /* THE HEAD CARRIED WHOLE AND UPRIGHT (FILMS-2, with the file read whole at last: the "flat" head of the rewrite
-             was each slice of the reared neck and head pressed to the body's height round the path, a jagged wedge at the
-             body's front): the model's own reared neck, head and crest, rigid, standing on the body's leading point (where
-             the lying middle ends: the neck's foot is that slice), upright, and facing the way the path goes 4 m ahead
-             over the ground (the chord's way, so at a turn it already faces along the next side and never into a wall: at
-             1.9 m ahead it stood 0.3 m into the west wall as it came down to the north-west corner; at 4 m none of it is in
-             a wall or the house, every twentieth of the way, at 32 stick places, masters/v28.0 calc). It rises with the
-             body out of the stick, looks over the court from the top of its arch, comes down and goes round with its head
-             up, and stands at the end of the east side facing the house: always the Naga's own head, never a wedge */
-          const HA = frameAt(kk, FRH), HQ = frameAt(Math.min(1, kk + 4.5 * Math.max(gr, 0.05) / LEN), FRQ);
-          let hx = HQ[0] - HA[0], hz = HQ[2] - HA[2], hl = Math.hypot(hx, hz); if (hl < 1e-3) { hx = HA[3]; hz = HA[5]; hl = Math.hypot(hx, hz) || 1; } hx /= hl; hz /= hl;
-          st.head = [HA[0] + hx * 0.8 * gr, HA[1] + 1.6 * gr, HA[2] + hz * 0.8 * gr];
-          /* (its normals turned with it: the model's (across, up, along) onto the path's (B, N, T), the along part scaled by
-             the cross-section's scale over the middle's stretch along the path, as a stretched skin's normals are) */
-          const NR = st.geo.attributes.normal.array, BN = st.bn;
-          /* (THE NECK'S SLOPE: where the path rises or falls under the head, over the planters' humps, the neck's slices are
-             turned toward the head's upright along its length, so the two meet in one ring: 13 degrees apart at the east
-             hump's foot, together-phone 14. A slope steeper than 25 degrees there (its rise out of the stick, the dive to the
-             far corner) is laid as it was, the turn eased out by 45, where turning the slices would press the neck flat) */
-          const nj0 = HA[9], nj1 = HA[10], nj2 = HA[11], kl = Math.hypot(nj2, nj0), PH = Math.atan2(kl, nj1);
-          const PA = kl > 1e-6 ? PH * (1 - smo(c01((PH - 0.436) / 0.349))) : 0, kx = kl > 1e-6 ? -nj2 / kl : 0, kz = kl > 1e-6 ? nj0 / kl : 0;
-          for (let i = 0; i < n; i++) {
-            const o0 = O[i * 3], o1 = O[i * 3 + 1], o2 = O[i * 3 + 2], r = R[i];
-            const bx = BN ? BN[i * 3] : 0, by = BN ? BN[i * 3 + 1] : 1, ba = BN ? BN[i * 3 + 2] : 0;
-            let px, py, pz, ex, ey, ez;
-            if (r === 1) { const xm = o2 * Lm; let d, sg, wj = 0;
-              if (xm <= NZ0) { d = S0 * xm; sg = S0; }
-              else { wj = (xm - NZ0) / NJ; const w3 = wj * wj * wj; d = S0 * xm + (gr - S0) * NJ * (w3 - 0.5 * w3 * wj); sg = S0 + (gr - S0) * wj * wj * (3 - 2 * wj); }
-              frameAt(d / LEN, F); const tp = smo(c01(d / TPL)), xx = o0 * gr * tp, yy = o1 * gr * tp, na = ba * Math.max(0.02, gr * tp) / Math.max(1e-3, sg);
-              let vx = F[6] * xx + F[9] * yy, vy = F[7] * xx + F[10] * yy, vz = F[8] * xx + F[11] * yy;
-              ex = F[3] * na + F[6] * bx + F[9] * by; ey = F[4] * na + F[7] * bx + F[10] * by; ez = F[5] * na + F[8] * bx + F[11] * by;
-              if (wj > 0 && PA > 1e-4) { const a = PA * wj * wj * (3 - 2 * wj), ca = Math.cos(a), sa = Math.sin(a);
-                let kv = kx * vx + kz * vz, qx = vx * ca - kz * vy * sa + kx * kv * (1 - ca), qy = vy * ca + (kz * vx - kx * vz) * sa, qz = vz * ca + kx * vy * sa + kz * kv * (1 - ca);
-                vx = qx; vy = qy; vz = qz;
-                kv = kx * ex + kz * ez; qx = ex * ca - kz * ey * sa + kx * kv * (1 - ca); qy = ey * ca + (kz * ex - kx * ez) * sa; qz = ez * ca + kx * ey * sa + kz * kv * (1 - ca);
-                ex = qx; ey = qy; ez = qz; }
-              px = F[0] + vx; py = F[1] + vy; pz = F[2] + vz;
-              /* (A SOLID BODY OF SCALES: its normal leaned seven tenths to its tube's own way out from the path, so it is shaded
-                 as one round body with the shader's scales on it; read whole from the file, every lump and crumple of the
-                 generated skin was drawn as a facet, and its glow, pushed out along them, as see-through copies round its
-                 outline: the independent review of ba6a2bb, phone 4.2 and 5.8, "crumpled, faceted", "copies stacked") */
-              const tl = Math.hypot(vx, vy, vz), el0 = Math.hypot(ex, ey, ez);
-              if (tl > 1e-6 && el0 > 1e-9) { ex = 0.3 * ex / el0 + 0.7 * vx / tl; ey = 0.3 * ey / el0 + 0.7 * vy / tl; ez = 0.3 * ez / el0 + 0.7 * vz / tl; } }
-            else if (r === 2) { /* (the model's across onto (-hz, 0, hx), its up onto the world's, its along onto (hx, 0, hz): the
-                 path's own B, N, T where the path lies level, so the neck's foot meets the body there exactly) */
-              px = HA[0] + (-hz * o0 + hx * o2) * gr; py = HA[1] + o1 * gr; pz = HA[2] + (hx * o0 + hz * o2) * gr;
-              ex = -hz * bx + hx * ba; ey = by; ez = hx * bx + hz * ba; }
-            else { px = T0[0]; py = T0[1]; pz = T0[2]; ex = T0[3]; ey = T0[4]; ez = T0[5]; }
-            arr[i * 3] = px; arr[i * 3 + 1] = Math.max(0.01, py); arr[i * 3 + 2] = pz;
-            const el = Math.hypot(ex, ey, ez) || 1; NR[i * 3] = ex / el; NR[i * 3 + 1] = ey / el; NR[i * 3 + 2] = ez / el;
-          }
-          st.geo.attributes.position.needsUpdate = true; st.geo.attributes.normal.needsUpdate = true; st.geo.computeBoundingSphere();
-          if (st.emb) { const E = st.emb, ep = E.eg.attributes.position.array; for (let i = 0; i < E.ev.length; i++) { const v = E.ev[i]; ep[i * 3] = arr[v * 3]; ep[i * 3 + 1] = arr[v * 3 + 1]; ep[i * 3 + 2] = arr[v * 3 + 2]; }
-            E.eg.attributes.position.needsUpdate = true; }
-        },
-        /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none); the faces turned to it go gold */
-        light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
         ready: () => st.ready,
-        /* the middle of its head as last laid (a film aims at it: a pure function of the film's clock, as set() is), or null */
-        headAt: () => (st.ready && st.head ? st.head.slice() : null),
+        /* the film's path and timing (FILMS5.together: { stick, pts, keys: [[t, point index or metres]], restSecs }) */
+        plan,
+        /* its place at film time t, its light a (0 hides it: hidden, it forgets its head, so nothing aims at a head from
+           another moment) */
+        fly(t, a) {
+          st.want = { t, a };
+          if (!st.ready || !st.plan || !(a > 0.001)) { g.visible = false; st.fw = null; st.sw = null; return; }
+          g.visible = true; U.uNA.value = a; U.uNT.value = t; layAt(t, a);
+        },
+        /* (kept for the callers that only ever hid it: set(0, ...)) */
+        set(k, a) { if (!(a > 0.001)) { st.want = null; g.visible = false; st.fw = null; st.sw = null; } },
+        hide() { st.want = null; g.visible = false; st.fw = null; st.sw = null; },
+        /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none) */
+        light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
+        /* the middle of its face as last laid, and its snout's tip (films aim at them), or null */
+        headAt: () => (st.ready && st.fw && g.visible ? st.fw.slice() : null),
+        snoutAt: () => (st.ready && st.sw && g.visible ? st.sw.slice() : null),
+        /* the leader's place along the path at film time t, and a point on the path `u` metres along it */
+        uAt: (t) => uOf(t),
+        pointAt(u) { if (!st.plan) return null; const F = frameAt(u, new Float32Array(12)); return [F[0], F[1], F[2]]; },
+        stickAt: () => (st.plan ? st.plan.stick.slice() : null),
         /* (a probe's lab: its state, its draws; tools/probes/e4c5nagalab.mjs) */
-        lab: () => Object.assign(st, { SH: SH5, U }),
-        /* a place on its path `d` metres from the stick's head, where the films aim (the same path set() lays) */
-        pointAtDist(sx, sz, d) {
-          const key = sx.toFixed(2) + ',' + sz.toFixed(2);
-          if (!st.path || laidFor !== key) { st.path = pathFor(sx, sz); st.len = st.path.getLength(); laidFor = key; tabFor(st.path); }
-          const F = frameAt(d / st.len, FRP); return [F[0], F[1], F[2]];
-        }
+        lab: () => Object.assign(st, { SH: SH5, U, BODY, HS, J0, FACE, SNOUT, geo: st.tgeo, meshes: [st.head, st.tube && st.tube[1]] })
+      };
+    })();
+
+    /* ---------------------------------------------------------------- THE PIERCE'S WATER AND STEAM (R47): as the Naga's head
+       goes through a Prai, its water bursts out of the body (drops thrown forward and round, each on its own arc and falling
+       under gravity, a ring of spray), and the fire put out goes up as steam (soft white puffs swelling as they climb and
+       drift). Painted light, no light added (v9.4); a pure function of the film's clock and the three moments (each drop's
+       way, speed, size and delay fixed by a seeded stream: the same on every phone) */
+    const SPLASH5 = (() => {
+      const ND = 64, NM = 22, NB = 3, r = rng(28747);
+      const mk = (n, blend) => {
+        const gg = new THREE.BufferGeometry(), at = (a, k) => new THREE.BufferAttribute(a, k).setUsage(THREE.DynamicDrawUsage);
+        const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), siz = new Float32Array(n), alp = new Float32Array(n);
+        gg.setAttribute('position', at(pos, 3)); gg.setAttribute('aC', at(col, 3)); gg.setAttribute('aS', at(siz, 1)); gg.setAttribute('aA', at(alp, 1)); owned.push(gg);
+        const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: blend, fog: false, toneMapped: false, uniforms: { uScale: { value: 500 }, uSoft: { value: blend === THREE.AdditiveBlending ? 1.6 : 0.9 } },
+          vertexShader: 'attribute vec3 aC; attribute float aS; attribute float aA; varying vec3 vC; varying float vA; uniform float uScale; void main(){ vC = aC; vA = aA; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+          fragmentShader: 'varying vec3 vC; varying float vA; uniform float uSoft; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float f = pow(1.0 - d, uSoft); gl_FragColor = vec4(vC, vA * f); }' });
+        mats.push(m);
+        const pts = new THREE.Points(gg, m); pts.frustumCulled = false; pts.visible = false; world.add(pts);
+        return { gg, m, pts, pos, col, siz, alp };
+      };
+      const D = mk(ND * NB, THREE.AdditiveBlending), M = mk(NM * NB, THREE.NormalBlending);
+      D.pts.renderOrder = 4; M.pts.renderOrder = 3.9;
+      /* each drop: its way (round the head's way, most of them thrown forward and out), its speed, its delay, its life and size */
+      const DR = Array.from({ length: ND }, () => { const a = r() * Math.PI * 2, c = 0.15 + 0.85 * r(), s = Math.sqrt(1 - c * c);
+        return { a, c, s, v: 2.2 + 3.6 * r(), dl: 0.06 * r(), life: 0.55 + 0.45 * r(), sz: 0.035 + 0.05 * r(), up: 0.4 + 1.2 * r() }; });
+      const SM = Array.from({ length: NM }, () => ({ ox: (r() - 0.5) * 0.5, oz: (r() - 0.5) * 0.5, oy: r() * 0.5, dl: 0.12 + 0.9 * r(), life: 1.6 + 1.0 * r(), rise: 0.7 + 0.7 * r(), drift: (r() - 0.5) * 0.5, sz: 0.28 + 0.3 * r() }));
+      let bursts = [];
+      return {
+        /* the three moments: [{ t0, p: [x, y, z] (the body's middle), d: [x, y, z] (the head's way through it) }] */
+        set(list) { bursts = list || []; },
+        frame(t) {
+          let any = false;
+          const sc = Math.min(devicePixelRatio || 1, LOW ? 1.6 : 2) * innerHeight / (2 * Math.tan(camera.fov * Math.PI / 360));
+          D.m.uniforms.uScale.value = sc; M.m.uniforms.uScale.value = sc;
+          for (let b = 0; b < NB; b++) { const B = bursts[b];
+            for (let i = 0; i < ND; i++) { const k = b * ND + i, q = DR[i], tau = B ? t - B.t0 - q.dl : -1;
+              if (!B || tau < 0 || tau > q.life) { D.alp[k] = 0; continue; }
+              any = true;
+              /* (a frame round the head's way: the way, a side, an up) */
+              const dx = B.d[0], dy = B.d[1], dz = B.d[2]; let sx = -dz, sz = dx; const sl = Math.hypot(sx, sz) || 1; sx /= sl; sz /= sl;
+              const ux = -sz * dy, uy = sz * dx - sx * dz, uz = sx * dy;
+              const ox = Math.cos(q.a) * q.s, oy = Math.sin(q.a) * q.s;
+              const vx = (dx * q.c + sx * ox + ux * oy) * q.v, vy = (dy * q.c + oy * (q.up)) * q.v * 0.8 + 0.6, vz = (dz * q.c + sz * ox + uz * oy) * q.v;
+              D.pos[k * 3] = B.p[0] + vx * tau; D.pos[k * 3 + 1] = Math.max(0.02, B.p[1] + vy * tau - 4.9 * tau * tau); D.pos[k * 3 + 2] = B.p[2] + vz * tau;
+              const f = 1 - tau / q.life; D.alp[k] = 0.9 * f * f; D.siz[k] = q.sz * (0.7 + 0.3 * f);
+              D.col[k * 3] = 0.62 + 0.3 * f; D.col[k * 3 + 1] = 0.88 + 0.1 * f; D.col[k * 3 + 2] = 1.0; }
+            for (let i = 0; i < NM; i++) { const k = b * NM + i, q = SM[i], tau = B ? t - B.t0 - q.dl : -1;
+              if (!B || tau < 0 || tau > q.life) { M.alp[k] = 0; continue; }
+              any = true;
+              const u = tau / q.life;
+              M.pos[k * 3] = B.p[0] + q.ox + q.drift * u; M.pos[k * 3 + 1] = B.p[1] - 0.25 + q.oy + q.rise * u * (2 - u); M.pos[k * 3 + 2] = B.p[2] + q.oz + q.drift * 0.6 * u;
+              M.siz[k] = q.sz * (0.5 + 1.4 * u); M.alp[k] = 0.34 * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.15)), 1.2);
+              M.col[k * 3] = 0.86; M.col[k * 3 + 1] = 0.9; M.col[k * 3 + 2] = 0.94; } }
+          for (const S of [D, M]) { S.pts.visible = any; const A = S.gg.attributes; A.position.needsUpdate = true; A.aC.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; }
+        },
+        off() { bursts = []; D.pts.visible = false; M.pts.visible = false; }
       };
     })();
 
@@ -13591,15 +13662,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock NG5): the
        ONE film inside the fight, which cannot be skipped the first time (the forty-first seam: the fight plays it with
        kit.film('together', { noSkip: !ctx.sealedBefore(...) })). It begins on the fight's own picture (the boom behind the
-       one played: the engine zeroes the boom under a film, so the first frame sets the same view from the rig), the tall
-       dark shape over his student. Grandmaster Pho plants the Naga stick (his Charged_Spell_Cast_1: the plan's 9.1); THE
-       NAGA rises from its head, ruby and vast, and lays its long body once round the court's edge, between the nine and
-       everyone in the court and at its door; the tall shape cannot hold: it comes apart into its three, and they sink low
-       and lie tired where the fight's last stage finds them (FIGHT.NUM laidAt). "The Naga guards. It always has." Mr Koh
-       at the door, behind the thread: "It is... warm. Why is it warm?" (what he feels, never what it was). It ends on the
-       boom behind Grandmaster Pho, played, the Naga lying round the court (the fight's last stage dims it) */
+       one played, pulled back since the surge: c_cast.js PULL5), the tall dark shape over his student. Grandmaster Pho
+       plants the Naga stick (his Charged_Spell_Cast_1: the plan's 9.1). R47 (23 Nov 2026, Chad: "change the naga to a blue
+       one, and it needs to look more natural as it flies around and wraps the prai ... The naga should pierce through all
+       the prai's bodies with a water sound as it pierces through each. As it pierces through each prai, the fire of each prai
+       is extinguished and it cools them down. This entire sequence needs to have a very cinematic framing and angling"): THE
+       NAGA OF WATER spirals up out of the stick's head, hangs a moment over the court looking down ("The Naga guards. It
+       always has."), and dives: it sweeps low over the tall shape and the shape bursts apart, its three flung onto one line
+       across the court (where the rules lay them: c_fightrules.js spotsFor), still burning. It comes round and down onto that
+       line and goes through all three in one low pass, head first, slowing as it goes through: each one's water bursts out of
+       it, its fire goes out in steam and it is cool, dark and wet (seen side on, head on, and from above, a cut each). It
+       climbs out and lays its whole body round the court's three walls, its head rising at the end facing the house; the
+       three sink low and lie where the fight's last stage finds them. Mr Koh at the door, behind the thread: "It is... warm.
+       Why is it warm?" (what he feels, never what it was). It ends on the boom behind Grandmaster Pho, played */
     FILMS5.together = {
-      three: null,                                                             // the last three (the fight says which: indices into PRAI5.list)
+      three: null, spots: null,                                                // the last three (the fight says which) and where they are laid (court frame)
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
         if (api && api.handsRoot) api.handsRoot.visible = false;
@@ -13608,98 +13685,253 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* where the two stand as the film begins (the fight's last frame) */
         this.pho = cast.pho ? { x: cast.pho.group.position.x, z: cast.pho.group.position.z, ry: cast.pho.group.rotation.y } : null;
         this.zav = cast.zav ? { x: cast.zav.group.position.x, z: cast.zav.group.position.z } : null;
+        this.fl = null; this.eyes = null; this.bow = null;
         PRAI5.look('trance');
+      },
+      /* THE FLIGHT, once a run (from where the stick is planted, where the two stand and where the three will lie), in the
+         court's frame (x across, + to his bedroom's wall; z down the court, + to the gate; y up); NAGA5.plan makes its path */
+      flight(sx, sz, pz, zz) {
+        const T = NG5, n = (typeof FIGHT === 'object' && FIGHT.NUM) || {}, loc = (w) => ({ x: COURT5.x - w.x, z: COURT5.z - w.z });
+        const cw = (x, y, z) => [COURT5.x - x, y, COURT5.z - z];
+        const S = loc({ x: sx, z: sz }), Z = loc(zz), P = loc(pz);
+        const XM = (n.courtX || 3.85) - 0.85, Z0 = (n.courtZ0 || -3.0) + 0.9, Z1 = (n.courtZ1 || 7.3) - 1.0;
+        const cx = (x) => Math.max(-XM, Math.min(XM, x)), cz = (z) => Math.max(Z0, Math.min(Z1, z));
+        const sp = (this.spots && this.spots.length === 3 ? this.spots : (n.laidAt || [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]])).map(q => ({ x: q[0], z: q[1] }));
+        const A = sp[0], B = sp[1], C = sp[2]; let ux = C.x - A.x, uz = C.z - A.z; const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
+        const pts = [], keys = [], at = (x, y, z, t) => { pts.push(cw(x, y, z)); if (t != null) keys.push([t, pts.length - 1]); };
+        /* 1. up out of the stick's head: a turn and a quarter of a rising spiral round a point a little toward the court's
+           middle, widening as it climbs (its first 1.4 m straight up beside him, out of reach of his shoulder) */
+        /* (leaning away from him as it comes out: its first 1.3 m rises 19 degrees off upright, away from his shoulder; the
+           spiral turns round a point 0.9 m away from him the same way, toward the court's middle where that is room) */
+        at(S.x, 1.45, S.z, T.rise);
+        let ax = S.x - P.x, az = S.z - P.z; const al = Math.hypot(ax, az) || 1; ax /= al; az /= al;
+        const mx = 0 - S.x, mz = 2.1 - S.z, ml = Math.hypot(mx, mz) || 1; ax = ax * 0.7 + 0.3 * mx / ml; az = az * 0.7 + 0.3 * mz / ml; const al2 = Math.hypot(ax, az) || 1; ax /= al2; az /= al2;
+        at(S.x + ax * 0.45, 2.75, S.z + az * 0.45, null);
+        const C0 = { x: cx(S.x + ax * 1.0), z: cz(S.z + az * 1.0) }, a0 = Math.atan2(S.x + ax * 0.45 - C0.x, S.z + az * 0.45 - C0.z), turn = 2.3 * Math.PI;
+        for (let k = 1; k <= 6; k++) { const f = k / 6, r = 0.6 + 0.75 * f, a = a0 + turn * f;
+          at(cx(C0.x + r * Math.sin(a)), 2.9 + 3.1 * Math.pow(f, 0.9), cz(C0.z + r * Math.cos(a)), k === 6 ? T.apex - 0.6 : null); }
+        /* 2. it rears over the court, then arches on and BOWS: its head carried on the way it rose, over and down, to hang
+           4.9 m up with its face turned down 50 degrees to the court while he says his line, all but still (R47, the lab's
+           first pictures: it had hung level 6.5 m up, its face away, its jaw all the low lens could see). Its way on is the
+           spiral's own way out, turned half toward the court's middle, so the bow lands over the open court */
+        const pe = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }), pq = loc({ x: pts[pts.length - 2][0], z: pts[pts.length - 2][2] });
+        const AP = { x: cx(pe.x * 0.5), z: cz(pe.z * 0.5 + 1.1) };
+        at(AP.x, 6.6, AP.z, T.apex);
+        let ex = (AP.x - pq.x), ez = (AP.z - pq.z); { const l = Math.hypot(ex, ez) || 1; ex /= l; ez /= l; }
+        { let mx2 = 0 - AP.x, mz2 = 2.1 - AP.z; const l = Math.hypot(mx2, mz2) || 1; ex = ex * 0.5 + 0.5 * mx2 / l; ez = ez * 0.5 + 0.5 * mz2 / l; const l2 = Math.hypot(ex, ez) || 1; ex /= l2; ez /= l2; }
+        at(cx(AP.x + ex * 1.0), 6.35, cz(AP.z + ez * 1.0), T.apex + 0.5);
+        const HV = { x: cx(AP.x + ex * 1.75), z: cz(AP.z + ez * 1.75) };
+        at(HV.x, 5.15, HV.z, T.apex + 1.0);
+        at(cx(HV.x + ex * 0.16), 4.9, cz(HV.z + ez * 0.16), T.dive);
+        this.bow = { x: HV.x, z: HV.z, ex, ez };
+        /* 3. down over the tall shape: its lowest over his student, high enough that its body passes over the shape's head and
+           his cage (3.8 m: the shape stands 2.6 m, the cage's light 2.4 m) */
+        const ap = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }); let dx = Z.x - ap.x, dz = Z.z - ap.z; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
+        at(cx(Z.x - dx * 1.6), 4.6, cz(Z.z - dz * 1.6), null);
+        at(Z.x, 3.8, Z.z, T.apart);
+        at(cx(Z.x + dx * 2.2), 3.4, cz(Z.z + dz * 2.2), T.apart + 0.55);
+        /* 4. round and down onto the line of the three: high behind where its run begins, then level along it */
+        const E2 = { x: A.x - ux * 2.0, z: A.z - uz * 2.0 }, E1 = { x: cx(A.x - ux * 4.2), z: cz(A.z - uz * 4.2) };
+        const q2 = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] });
+        at(cx((q2.x + E1.x) / 2 * 0.8), 3.4, cz((q2.z + E1.z) / 2), null);
+        at(E1.x, 2.2, E1.z, T.p1 - 1.45);
+        at(E2.x, 0.7, E2.z, T.p1 - 0.7);
+        /* 5. THROUGH THE THREE: its face (0.95 m before its body's leading point, 0.69 over it: the head rides over its body's
+           line, R57) through each one's chest at T.p1, T.p2, T.p3, its body after it through each one's hips; slowing
+           through them */
+        at(A.x - ux * 0.95, 0.62, A.z - uz * 0.95, T.p1); at(A.x, 0.6, A.z, null);
+        at(B.x - ux * 0.95, 0.6, B.z - uz * 0.95, T.p2); at(B.x, 0.6, B.z, null);
+        at(C.x - ux * 0.95, 0.6, C.z - uz * 0.95, T.p3); at(C.x, 0.62, C.z, null);
+        at(cx(C.x + ux * 1.1), 0.75, cz(C.z + uz * 1.1), null);
+        /* 6. up and out, to the near end of the court's three walls, and round all three (a little inside them: over the two
+           planters in the gate's corners), its head rising at the end, facing the house */
+        const sg = C.x + ux * 1.4 >= 0 ? 1 : -1;
+        const X2 = { x: cx(C.x + ux * 2.4), z: cz(C.z + uz * 2.4) };
+        at(X2.x, 2.3, X2.z, T.p3 + 1.15);
+        const xs = 3.38, zh = -1.55, zg = 6.75, PZ = (typeof PLANT_Z === 'number' ? COURT5.z - PLANT_Z : 6.65), HY = 1.12, yb = 0.32;
+        /* (the U in the court's frame, from the side `sg` at the house end, round the gate end, to the other side; each planter
+           crossed as the ruby Naga's loop crossed it, the hump's numbers by the planter it goes over: the west one's, then the
+           east's, mirrored when it begins on the east side) */
+        const hump = (side) => side > 0 ? [1.75, 2.6] : [1.25, 2.1];
+        const U = [];
+        { const s0 = sg, s1 = -sg, h0 = hump(s0), h1 = hump(s1);
+          U.push([s0 * xs * 0.85, 1.4, zh - 0.3], [s0 * xs, yb, zh + 0.6], [s0 * xs, yb, PZ - h0[1]], [s0 * (xs - 0.02), HY, PZ - h0[0]], [s0 * (xs - 0.14), HY, zg - 0.25],
+                 [s0 * (xs - 0.9), HY * 0.9, zg], [s0 * (xs - 1.6), yb, zg], [s1 * (xs - 1.6), yb, zg], [s1 * (xs - 0.9), HY * 0.9, zg], [s1 * (xs - 0.14), HY, zg - 0.25],
+                 [s1 * (xs - 0.02), HY, PZ - h1[0]], [s1 * xs, yb, PZ - h1[1]], [s1 * xs, yb, 2.3], [s1 * (xs - 0.12), 0.75, 1.35], [s1 * (xs - 0.24), 1.22, 0.7], [s1 * (xs - 0.27), 1.26, 0.42]); }
+        U.forEach((p, i) => at(p[0], p[1], p[2], i === 1 ? T.wrap : i === U.length - 1 ? T.rest : null));
+        return { stick: cw(S.x, 1.45, S.z), pts, keys, restSecs: 1, spots: sp, u: [ux, uz] };
       },
       frame(t) {
         const T = NG5, F = fightStart(), pz = this.pho || { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zz = this.zav || F.zav;
         fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((t - T.rise) / 2)));
         /* the court low under the trance; the smell of the tall shape until it comes apart */
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
-        /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
-        /* (the stick planted 0.38 m before him and 0.40 m to his right, FIGHT-IN's measure of the strike: at 0.42 and 0.18 the
-           place stood inside his body as his cast struck it down at 1.7 s, 1578 points of his trunk in the shaft; here it is
-           clear of his waist and in his hand's reach from his shoulder. Laid from here, none of the Naga is in a wall or the
-           house at 32 stick places) */
+        /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted (0.38 m before
+           him and 0.40 m to his right, FIGHT-IN's measure of the strike) */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
-        /* THE NAGA: up from the stick's head, over, and round the court once; ruby, and gold where his light falls (laid
-           first in the frame: his look and the lens are aimed at its head as this moment lays it) */
-        /* (its light comes down over the boom's last two seconds to the 0.3 the fight's last stage keeps it at: it had
-           ended at 0.65, and the fight's first frame put it at 0.3 in one frame, the glow gone with it, on the same view) */
-        const kN = smo(c01((t - T.rise) / (T.apart - T.rise))) , aN = smo(c01((t - T.rise) / 1.2)) * (1 - 0.35 * smo(c01((t - T.low) / 3))) * lp(1, 0.3 / 0.65, smo(c01((t - T.back - 0.1) / 1.8)));
-        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.set(kN, aN, t, sx, sz);
-        /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
-           one frame, on screen: R25) */
+        /* THE NAGA: its flight made once a run, then laid at this moment (first in the frame: his look and the lens aim at
+           its head as this moment lays it) */
+        if (!this.fl) { this.fl = this.flight(sx, sz, pz, zz); NAGA5.plan(this.fl);
+          const sp = this.fl.spots, w = (q) => ({ x: COURT5.x - q.x, z: COURT5.z - q.z }), dW = [-this.fl.u[0], 0, -this.fl.u[1]];
+          this.W = sp.map(w); this.dW = dW;
+          SPLASH5.set([T.p1, T.p2, T.p3].map((t0, j) => ({ t0, p: [this.W[j].x, 1.15, this.W[j].z], d: dW }))); }
+        const aN = smo(c01((t - T.rise) / 1.0)) * lp(1, 0.3 / 0.75, smo(c01((t - T.back - 0.1) / 1.8))) * (1 - 0.25 * smo(c01((t - T.rest) / 2.5)));
+        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.fly(t, aN);
+        SPLASH5.frame(t);
+        const HEADAT = () => NAGA5.headAt() || [sx, 1.45, sz];
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
-          /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops
-             there, its time going on at a twentieth (so he still lives), his hand on the stick as the Naga rises out of it;
-             then he is handed to his rest over 0.9 s. Played on, the cast's own step carried his hips 0.33 m to his right
-             and forward and his left arm across his front: into the planted stick, wherever his hand can plant it,
-             FIGHT-IN's scan of his whole skin, 1.5 to 4.3 s) */
+          /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
+             its time going on at a twentieth, his hand on the stick as the Naga rises out of it; then he is handed to his rest
+             over 0.9 s) */
           const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.6) / 0.9)), ct = Math.max(0, t - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
           if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', t);
           if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0)], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });   // (on the stick's head, then up at its head as it rises: R25)
+          fmGaze(P, t, [[0, [sx, 1.45, sz]], [T.rise + 0.2, HEADAT], [T.wrap + 1.0, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
-        /* the cage: cracked under the shape, whole again as the Naga closes round them */
-        const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
-        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart });
+        /* the cage: cracked under the shape, whole again once it has come apart */
+        const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart - 0.4) / 2.0));
+        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart + 0.4 });
         TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
-        /* the tall shape: the last three drawn together over him, leaning in; it comes apart into its three, and they sink
-           low and lie where the fight's last stage finds them */
-        const lay = F.laid.length === 3 ? F.laid : [courtWorld(-1.15, -0.8), courtWorld(0, -1.35), courtWorld(1.15, -0.8)];
+        /* THE THREE: the tall shape over him, leaning in; as the Naga sweeps over it, it bursts apart and each is flung onto
+           its place on the line, landing burning; each struggles there until the Naga's head goes through it (its take of
+           being struck, its fire put out in steam, its dark turned cool and wet), then sinks low where the fight's last stage
+           finds it */
+        const tp = [T.p1, T.p2, T.p3], Wsp = this.W || F.laid;
         this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P) return; whenReady(P, () => { fmShow(P, true);
-          const kA = smo(c01((t - T.apart - j * 0.15) / 2.2)), kL = smo(c01((t - T.low - j * 0.1) / 1.4));
-          const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j];
-          const x = lp(zz.x + ox, lay[j].x, kA), z = lp(zz.z + oz, lay[j].z, kA), sc = lp(1.55, 1.0, kA);
-          put(P, x, z, faceTo(x, z, zz.x, zz.z)); P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
-          pose(P, 'Idle_3', 2 + j * 0.7 + t * 0.4, true); PRAI5.alpha(P, 1 - 0.35 * kL); }); });
+          const kA = smo(c01((t - T.apart - 0.1 - j * 0.12) / 1.15)), hop = Math.sin(Math.PI * kA) * 1.1 * (1 - kA * 0.2);
+          const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j], to = Wsp[j] || { x: zz.x, z: zz.z };
+          const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
+          const hit = t - tp[j], kL = smo(c01((hit - 1.1) / 1.3));
+          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - this.dW[0], to.z - this.dW[2]));
+          P.group.position.y = hop * (kA < 1 ? 1 : 0);
+          P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
+          if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + t * 0.6, true);
+          PRAI5.burn(P, 1 - smo(c01((hit - 0.04) / 0.6)));
+          PRAI5.cool(P, smo(c01((hit - 0.1) / 0.9)));
+          PRAI5.alpha(P, 1 - 0.35 * kL); }); });
         PRAI5.tick(0.016);
         /* Mr Koh, at the doorway behind the thread, at its end */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', t, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
-        /* THE LENS: the fight's picture; down low beside him, ON ITS HEAD as it rises out of the stick, looks over the court
-           from the top of its arch, comes down to the far corner and down the west side toward the lens; on the line's last
-           word a CUT to high over the gate end, over the walls' top, the whole court and its edge in a phone's frame as it
-           runs round, easing in toward the east side where its head stands facing the house; the shape coming apart; down
-           to the three; the doorway; the boom again. (FILMS-2, each key measured against the laid Naga before it was drawn:
-           its nearest point to the lens, its share of the frame and where its head stands on a phone and a desk. The crane
-           from beside him up through its rising body drew the column 1.8 m from the lens across half a phone's frame, and
-           the high shot 3.8 m over the arch lost the head past a phone's edge as it reared at the east side; now the head
-           stands within 0.82 of a phone's half-width from 9 s to 14.5 s, the body never nearer the high lens than 4.5 m.)
-           The low eye is kept inside the court's walls wherever he stands */
-        /* (before it rises its head is the stick's head, where it will come out: the lens on the strike turns to it, and the
-           first laid head stands there; aimed up its path at 2.4 m, the lens swung to the empty wall over the strike and
-           jumped down to the stick's head as it rose, together-phone 1.9 on lab 5) */
-        /* (R46: begun and ended on the mode's picture in the surge, the end's lens pulled back: c_cast.js PULL5) */
-        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), HEADAT = () => NAGA5.headAt() || NAGA5.pointAtDist(sx, sz, 0);
-        const LC = { x: (lay[0].x + lay[1].x + lay[2].x) / 3, z: (lay[0].z + lay[1].z + lay[2].z) / 3 };   // (the three laid: their middle)
+        /* THE LENS. The fight's picture; down low beside him, on its head as it spirals up out of the stick; on the court's
+           floor before it as it bows, looking up into its face; a cut to high over the gate end as it dives on the tall
+           shape and the shape bursts apart, easing in as it comes round onto the line; then the three pierces, a cut each:
+           SIDE ON (across the line at the first, as the head goes through it), AHEAD (before the second and round to one
+           side, the head coming at the lens through it), FROM ABOVE (over the third, looking down, as it goes through and
+           climbs out); the god's eye over the court as it lays itself round the walls; low before its raised head at rest;
+           down to the three, cooled; the doorway; the boom again */
+        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), W = this.W || [], dW = this.dW || [0, 0, 1];
         const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
+        const sideX = -dW[2], sideZ = dW[0];
+        const A = W[0] || { x: zz.x, z: zz.z }, Bp = W[1] || A, Cc = W[2] || A;
+        const sd = ((A.x - zz.x) * sideX + (A.z - zz.z) * sideZ) >= 0 ? 1 : -1;
+        /* WHERE A LENS MAY STAND (R47, the lab's pictures: each pierce's lens had been set a fixed way off the line and pushed
+           back inside the court by its walls, so the first stood 0.3 m off the house and 2 m from its Prai and the Naga's head
+           filled the frame; turned instead to find room, a lens stood on the Naga's own way in and its body passed 0.9 m from
+           it, and another saw only a Prai's back). Tried from the wanted way round (OFF degrees from it, in that order) and from
+           the wanted distance in, 0.25 m at a time: the first place 0.35 m inside the court, 0.75 m clear of everyone standing,
+           1.4 m clear of every point of the way the Naga will have flown by the shot's end (its body lies along it, its crest
+           stands 1.6 m over it), and with neither of the other two between it and what it looks at (a lens over their heads
+           minds only the walls and the Naga); none, null */
+        /* (everyone standing and how far a lens keeps from each: his student 2.3 m, his cage's ring (1.35 m round him) and its
+           bars 2.05 m tall with room past them; his teacher 0.9. At 1.5 m the lab's rest shot stood 1.06 m from a bar, a violet
+           column down a phone's right edge: build 39's pictures) */
+        const NOW = [[pz, 0.9], [zz, 2.3], [A, 0.75], [Bp, 0.75], [Cc, 0.75]];
+        const segD = (p, a0, a1) => { const vx = a1.x - a0.x, vz = a1.z - a0.z, l2 = vx * vx + vz * vz || 1, k = Math.max(0, Math.min(1, ((p.x - a0.x) * vx + (p.z - a0.z) * vz) / l2));
+          return Math.hypot(p.x - a0.x - vx * k, p.z - a0.z - vz * k); };
+        const flown = (t1) => { const out = [], u1 = NAGA5.uAt(t1); for (let u = 0; u <= u1; u += 0.3) { const q = NAGA5.pointAt(u); if (q) out.push(q); } return out; };
+        const fits = (e, h, tg, way) => {
+          if (e.x < COURT.x0 + 0.35 || e.x > COURT.x1 - 0.35 || e.z < COURT.z0 + 0.35 || e.z > HOUSE.face - 0.35) return false;
+          if (h < 2.2 && NOW.some(([p, r]) => p !== tg && Math.hypot(e.x - p.x, e.z - p.z) < r)) return false;
+          if (h < 2.2 && [A, Bp, Cc].some(p => p !== tg && segD(p, e, tg) < 0.5)) return false;
+          /* (nor through his cage's bars, unless what it looks at stands by them) */
+          if (h < 2.2 && Math.hypot(tg.x - zz.x, tg.z - zz.z) > 1.6 && segD(zz, e, tg) < 1.55) return false;
+          return !way.some(q => Math.hypot(q[0] - e.x, q[1] - h, q[2] - e.z) < 1.4); };
+        const eyeFor = (tg, ang, dist, minD, h, t1, OFF = [0, 15, -15, 30, -30]) => {
+          const way = flown(t1);
+          for (const o of OFF) for (let d = dist; d >= minD - 1e-6; d -= 0.25) {
+            const a = ang + o * Math.PI / 180, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
+            if (fits(e, h, tg, way)) return [e.x, h, e.z]; }
+          return null; };
+        /* (a lens no wanted place could hold: any way round, every 30 degrees, from a little further, higher and lower; at the
+           last, 8.5 m straight over it, above anything the Naga's flight reaches: the lab's third layout found its lens over
+           the third standing inside the Naga's body, the fallback never checked) */
+        const anyEye = (tg, ang, dist, minD, h, t1) => {
+          const way = flown(t1);
+          for (const hh of [h, h + 0.9, Math.max(1.0, h - 0.8), h + 1.8]) for (let q = 0; q < 12; q++) for (let d = dist + 0.6; d >= minD - 1e-6; d -= 0.3) {
+            const a = ang + q * Math.PI / 6, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
+            if (fits(e, hh, tg, way)) return [e.x, hh, e.z]; }
+          return [tg.x, 8.5, tg.z + 0.01]; };
+        const angOf = (x, z) => Math.atan2(x, z);
+        if (!this.eyes) {
+          const bw = this.bow ? { x: COURT5.x - this.bow.x, z: COURT5.z - this.bow.z, ex: -this.bow.ex, ez: -this.bow.ez } : null;
+          const RP = this.fl && this.fl.pts.length ? this.fl.pts[this.fl.pts.length - 1] : [pz.x, 1.2, pz.z];
+          const LC = { x: (A.x + Bp.x + Cc.x) / 3, z: (A.z + Bp.z + Cc.z) / 3 };
+          /* THE THREE PIERCES, every lens on ONE side of the line (a cut across it would turn the Naga's way round on the
+             screen), the side with room for both: SIDE ON to the first, 3.6 m off, its whole body and the head through it;
+             AHEAD of the second, 50 degrees round from the side toward where it goes, 4 m off and low (1.3 m), the head
+             coming out of her at the lens; OVER the third from ahead and to that side, 3.2 m up and 2.8 m off, the head
+             bursting out of her and climbing past. (The lab's pictures of build 39: the second's lens 2.7 m off and 20
+             degrees toward where it came from held one Prai's back across the whole of a phone's frame; the third's, 4 m
+             straight up from behind the head, saw only its crest laid over her) */
+          const sideAt = (ss, tw) => { const x = sideX * ss, z = sideZ * ss, c = Math.cos(tw), sn = Math.sin(tw); return angOf(x * c - dW[0] * sn, z * c - dW[2] * sn); };
+          let P1 = null, P2 = null, ssUsed = sd;
+          for (const ss of [sd, -sd]) { const a1 = eyeFor(A, sideAt(ss, 0), 3.6, 2.8, 1.25, T.p2), a2 = eyeFor(Bp, sideAt(ss, -0.87), 4.0, 2.8, 1.3, T.p3);
+            if (a1 && a2) { P1 = a1; P2 = a2; ssUsed = ss; break; } if (!P1 && a1) { P1 = a1; ssUsed = ss; } if (!P2 && a2) P2 = a2; }
+          const P3a = angOf(dW[0] * 0.6 + sideX * ssUsed, dW[2] * 0.6 + sideZ * ssUsed);
+          this.eyes = {
+            P1: P1 || anyEye(A, sideAt(ssUsed, 0), 3.6, 2.4, 1.25, T.p2), P2: P2 || anyEye(Bp, sideAt(ssUsed, -0.87), 4.0, 2.4, 1.3, T.p3),
+            P3: eyeFor(Cc, P3a, 2.8, 1.8, 3.2, T.p3 + 1.1, [0, 20, -20, 40, -40]) || anyEye(Cc, P3a, 2.8, 1.6, 3.2, T.p3 + 1.1),
+            /* the bow: 4.2 m out from where it hangs, at 1.9 m, and 35 degrees round from its way on, looking up into its
+               face from a quarter turn (straight on, its crest stood as one tall spike over its face; from 2.6 m and 1.15 m up
+               it was seen from under its jaw: the lab's pictures) */
+            BOW: (bw && (eyeFor({ x: bw.x, z: bw.z }, angOf(bw.ex, bw.ez) + 0.61, 4.2, 2.6, 1.9, T.dive, [0, -100, 15, -115, 30])))
+                 || LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]),
+            /* the god's eye: 12.5 m over the court, a little to the gate's side of its middle, looking down on it, the house at
+               the top of the frame (a phone's third of the width holds the court's 8 m from this high: R47, the court's walls
+               where it lays itself round them) */
+            GOD: [COURT5.x, 12.5, COURT5.z - 3.4], GODAT: [COURT5.x, 0, COURT5.z - 1.2],
+            /* at rest: low and before its raised head (it rests facing the house), up to 3 m off, toward the court's middle
+               (2.4 m off, its head bowing to the lens filled a phone's frame with its crest; asked for 3.4 m it found no room
+               between its head and the house, and its old fallback, a fixed place, stood beside his cage's bars: the lab's
+               pictures of builds 39 and 40). Any way round next, and every place by the same rules */
+            REST: eyeFor({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 2.0, 1.1, T.rest, [0, 20, -20, 40, -40, 60, -60])
+                  || anyEye({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 1.8, 1.2, T.rest),
+            /* the three, cooled: from over the gate's side of their line, 5 m up */
+            THREE: eyeFor(LC, angOf(0, -1), 4.5, 2.5, 5.0, 0, [0, 25, -25, 50, -50, 75, -75]) || [LC.x, 6.0, LC.z - 2.0], LC };
+        }
+        const E = this.eyes, LC = E.LC;
         fmTrack(t, [
           { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
           { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
           { t: T.rise + 0.3, name: 'low', eye: LOWEYE([pz.x - 1.2, 0.9, pz.z - 1.4]), at: HEADAT, fp: 70, fd: 62 },
-          { t: T.ph5c2 + 0.6, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 72, fd: 64 },
-          { t: T.lay - 0.65, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 72, fd: 64 },
-          { t: T.lay - 0.6, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.0, -9.0], fp: 66, fd: 56, cut: true },
-          { t: T.lay + 1.4, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.0, -9.0], fp: 66, fd: 56 },
-          { t: T.lay + 3.0, name: 'high', eye: [COURT5.x + 0.1, 8.6, COURT.z0 + 0.4], at: [COURT5.x + 0.4, 0.2, -8.9], fp: 64, fd: 54 },
-          { t: T.apart - 1.1, name: 'high', eye: [COURT5.x + 0.2, 8.0, COURT.z0 + 0.6], at: [COURT5.x + 0.55, 0.4, -8.8], fp: 62, fd: 53 },
-          { t: T.apart + 0.6, name: 'high', eye: [COURT5.x + 0.5, 6.6, COURT.z0 + 1.0], at: [zz.x + 0.2, 0.6, zz.z + 0.5], fp: 60, fd: 52 },
-          /* (DOWN TO THE THREE where the Naga laid them, from high enough over his student that none of them is behind him,
-             wherever the fight left him: from 1.9 m beside him the lens stood 0.71 m from the Naga's hump over the east
-             planter, its body a red blob across a phone's top corner, one of the three out of the frame and one behind him,
-             together-phone 19.9 on ba6a2bb; measured from here, all three in a phone's frame and a desk's, the Naga's
-             nearest 2.2 m) */
-          { t: T.low + 1.2, name: 'three', eye: [LC.x + 0.2, 5.2, LC.z - 4.48], at: [LC.x, 0.3, LC.z - 0.28], fp: 56, fd: 50 },
+          { t: T.apex + 0.4, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 74, fd: 66 },
+          { t: T.apex + 0.45, name: 'bow', eye: E.BOW, at: HEADAT, fp: 62, fd: 52, cut: true },
+          { t: T.dive - 0.05, name: 'bow', eye: [E.BOW[0], E.BOW[1] - 0.1, E.BOW[2]], at: HEADAT, fp: 58, fd: 48 },
+          { t: T.dive, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.4, -9.0], fp: 66, fd: 56, cut: true },
+          { t: T.apart + 0.8, name: 'high', eye: [COURT5.x + 0.1, 8.8, COURT.z0 + 0.35], at: [LC.x * 0.5 + COURT5.x * 0.5, 0.5, LC.z * 0.5 - 9.0 * 0.5], fp: 64, fd: 54 },
+          { t: T.p1 - 0.75, name: 'high', eye: [COURT5.x + 0.15, 8.0, COURT.z0 + 0.6], at: [LC.x, 0.6, LC.z], fp: 60, fd: 50 },
+          { t: T.p1 - 0.7, name: 'side', eye: E.P1, at: [A.x - dW[0] * 0.3, 1.15, A.z - dW[2] * 0.3], fp: 52, fd: 44, cut: true },
+          { t: T.p1 + 0.5, name: 'side', eye: E.P1, at: [A.x + dW[0] * 0.2, 1.1, A.z + dW[2] * 0.2], fp: 50, fd: 42 },
+          { t: T.p2 - 0.55, name: 'ahead', eye: E.P2, at: [Bp.x, 1.1, Bp.z], fp: 50, fd: 42, cut: true },
+          { t: T.p2 + 0.42, name: 'ahead', eye: E.P2, at: [Bp.x * 0.7 + Cc.x * 0.3, 1.1, Bp.z * 0.7 + Cc.z * 0.3], fp: 50, fd: 42 },
+          { t: T.p3 - 0.45, name: 'above', eye: E.P3, at: [Cc.x, 1.2, Cc.z], fp: 56, fd: 48, cut: true },
+          { t: T.p3 + 1.0, name: 'above', eye: [E.P3[0], E.P3[1] + 0.3, E.P3[2]], at: [Cc.x + dW[0] * 0.8, 1.5, Cc.z + dW[2] * 0.8], fp: 60, fd: 52 },
+          { t: T.p3 + 1.05, name: 'god', eye: E.GOD, at: E.GODAT, fp: 72, fd: 54, cut: true },
+          { t: T.rest - 0.75, name: 'god', eye: [E.GOD[0], E.GOD[1] - 0.6, E.GOD[2]], at: E.GODAT, fp: 70, fd: 52 },
+          { t: T.rest - 0.7, name: 'rest', eye: E.REST, at: HEADAT, fp: 58, fd: 48, cut: true },
+          { t: T.rest + 1.3, name: 'rest', eye: E.REST, at: HEADAT, fp: 55, fd: 45 },
+          { t: T.rest + 1.35, name: 'three', eye: E.THREE, at: [LC.x, 0.3, LC.z], fp: 56, fd: 50, cut: true },
+          { t: T.ko5c2 - 0.05, name: 'three', eye: [E.THREE[0], E.THREE[1] - 0.2, E.THREE[2]], at: [LC.x, 0.3, LC.z], fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
-      end() { fmLens(PLAYFOV5);
-        /* what the last stage finds: the three laid at its places, small and dim, the Naga lying round the court */
-        const F = fightStart(), lay = F.laid.length === 3 ? F.laid : [];
-        this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !lay[j]) return; put(P, lay[j].x, lay[j].z, P.group.rotation.y); });
+      end() { fmLens(PLAYFOV5); SPLASH5.off();
+        /* what the last stage finds: the three laid at their places, small, dim and cool, the Naga lying round the court */
+        const W = this.W || fightStart().laid;
+        this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !W[j]) return; put(P, W[j].x, W[j].z, P.group.rotation.y); P.group.position.y = 0; PRAI5.burn(P, 0); PRAI5.cool(P, 1); });
         if (kit && kit.captions) kit.captions(null); }
     };
 
@@ -14462,26 +14694,36 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   /* TOGETHER (the plan's 5.5, stage 5): the ONE film inside the fight; it cannot be skipped the first time (the fight asks
      for it with kit.film's noSkip). The stick planted; the Naga rises and lays its body round the court; the tall shape
      comes apart into its three, laid low; Mr Koh's warmth; the boom again */
-  const NG5 = tl(0, [[0.2], ['@plant'], [2.0], ['@rise'], [3.6], ['ph5c2', 0.6], ['@lay'], [6.0], ['@apart'], [3.2], ['@low'], [1.5], ['ko5c2', 0.5], ['@back'], [2.0], ['@end']]);
+  /* (R47, 23 Nov 2026: the water Naga's film. Up out of the stick in a spiral, hanging over the court as Grandmaster Pho
+     says the line, down over the tall shape as it bursts apart (apart), round onto the line of three and through them, its
+     head through each at p1, p2 and p3, slowing as it goes; out and round the court's three walls (wrap) to rest with its
+     head raised (rest); the three sunk low (low); Mr Koh; the boom again) */
+  const NG5 = tl(0, [[0.2], ['@plant'], [2.0], ['@rise'], [2.8], ['@apex'], [0.1], ['ph5c2', -1.9], ['@dive'], [1.3], ['@apart'], [3.3],
+                     ['@p1'], [1.15], ['@p2'], [1.15], ['@p3'], [2.2], ['@wrap'], [3.5], ['@rest'], [-3.0], ['@low'], [6.4], ['ko5c2', 0.5], ['@back'], [1.8], ['@end']]);
   function filmTogether(c, s, api) {
     const { tr, step, sfx, sfxFade, rawK, stage } = api, F = stage.films.together, T = NG5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
-    sfx(0.1, 'u5shapeloop', 0.5); sfx(8.0, 'u5shapeloop', 0.5);                // the tall shape standing over him
+    sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
-    sfx(T.rise, 'u5nagarise', 1.0);                                            // the Naga rising from its head
-    sfx(T.rise + 1.2, 'u5embers', 0.35); sfx(T.rise + 7.2, 'u5embers', 0.35); sfx(T.rise + 13.2, 'u5embers', 0.3); sfx(T.rise + 19.2, 'u5embers', 0.28);
+    sfx(T.rise, 'u5nagawater', 1.0);                                           // the Naga of water surging up out of its head
+    sfx(T.rise + 0.6, 'u5mist', 0.32); sfx(T.rise + 6.6, 'u5mist', 0.3); sfx(T.rise + 12.6, 'u5mist', 0.28); sfx(T.rise + 18.6, 'u5mist', 0.26);   // the mist off it
     sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
-    sfx(T.lay, 'u5nagacoil', 0.8);                                             // its body laid round the court
-    sfx(T.lay + 0.6, 'u5nagabreath', 0.5); sfx(T.lay + 6.6, 'u5nagabreath', 0.5); sfx(T.lay + 12.6, 'u5nagabreath', 0.45);
+    sfx(T.dive, 'u5nagapass', 0.85);                                           // down over the tall shape
     sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
-    sfx(T.apart, 'u5shapebreak', 0.85);                                        // the tall shape comes apart into its three
+    sfx(T.apart, 'u5shapebreak', 0.85);                                        // the tall shape bursts into its three
     sfx(T.apart + 1.8, 'u5cagewhole', 0.7);                                    // his cage whole again
-    sfx(T.low, 'u5laid', 0.8);                                                 // the three laid low, at rest
+    sfx(T.p1 - 1.4, 'u5nagapass', 0.7);                                        // round and down onto their line
+    sfx(T.p1 - 0.06, 'u5pierce1', 1.0); sfx(T.p1 + 0.12, 'u5douse', 0.8);     // through the first: its water bursts, its fire hisses out
+    sfx(T.p2 - 0.06, 'u5pierce2', 1.0); sfx(T.p2 + 0.12, 'u5douse', 0.8);     // the second
+    sfx(T.p3 - 0.06, 'u5pierce3', 1.0); sfx(T.p3 + 0.12, 'u5douse', 0.8);     // the third
+    sfx(T.wrap - 0.3, 'u5nagawrap', 0.85);                                     // round the court's three walls
+    sfx(T.rest - 0.4, 'u5nagabreathw', 0.5); sfx(T.rest + 5.6, 'u5nagabreathw', 0.45);   // its breath, its head raised
+    sfx(T.low, 'u5laid', 0.8);                                                 // the three sunk low, cool
     sfx(T.ko5c2, 'ko5c2', 1);                                                  // "It is... warm. Why is it warm?"
-    sfxFade(T.back - 0.2, T.end - 0.1, 'u5m9naga'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5embers'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5nagabreath');
+    sfxFade(T.back - 0.2, T.end - 0.1, 'u5m9naga'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5mist'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5nagabreathw');
     step(T.end, () => F.end());
     c.keep.view = true;
   }

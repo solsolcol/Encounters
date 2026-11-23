@@ -1210,6 +1210,96 @@
   "where": "the Naga film: embers rising (a loop)"
  },
  {
+  "name": "u5nagawater",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A vast sacred serpent made of water surging up out of a stone staff: a great column of water erupting and rushing upward with a deep resonant roar of moving water, spray hissing, a shimmering ring at its peak. Majestic and awe-inspiring.",
+  "family": "together",
+  "where": "the Naga film: the water Naga rising (R47)"
+ },
+ {
+  "name": "u5nagapass",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A huge serpent of water sweeping fast past the listener: a powerful rushing whoosh of flowing water with a wet swirl and fine spray, close and then gone. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: it sweeps past (R47)"
+ },
+ {
+  "name": "u5pierce1",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A jet of water punching straight through a burning body: a hard wet splash impact with a deep watery thump and a burst of spray. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: the first pierce (R47)"
+ },
+ {
+  "name": "u5pierce2",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A rushing torrent of water spearing through a figure of fire: a sharp splashing crash of water, a heavy liquid impact and spray scattering. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: the second pierce (R47)"
+ },
+ {
+  "name": "u5pierce3",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A great serpent of water diving down through a burning body: a deep plunging splash like a heavy stone into a pool, water bursting outward, a booming liquid impact. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: the third pierce (R47)"
+ },
+ {
+  "name": "u5douse",
+  "secs": 2.6,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "Flames on a body put out by water all at once: a loud steaming hiss and sizzle that dies away, soft crackles fading into a quiet wisp of steam. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: a Prai's fire put out (R47)"
+ },
+ {
+  "name": "u5nagawrap",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A giant serpent of water coiling around a stone courtyard: a long sweeping rush of flowing water circling the listener, a heavy wet swirl settling into a calm low swell of water. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: it lays itself round the court (R47)"
+ },
+ {
+  "name": "u5nagabreathw",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A gigantic water serpent's slow deep breathing, cool and calm, each breath like a gentle wave drawing in and out over stones, majestic and peaceful.",
+  "family": "together",
+  "where": "the Naga film: its breath (a loop, R47)"
+ },
+ {
+  "name": "u5mist",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A soft shimmering of fine cool mist and tiny water droplets in the night air, a delicate glittering trickle, calm and magical. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "the Naga film: the mist off its body (a loop, R47)"
+ },
+ {
   "name": "u5clasp",
   "secs": 1.4,
   "loop": false,
