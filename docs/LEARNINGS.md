@@ -8937,3 +8937,25 @@ the lens, squared), so a limb's middle stays the body's colour.
 window away but not its stage: in 'brief' the rules do not step and the nine are not drawn at all, so a Prai the lab set
 walking stood where it was put, in whatever take it last had, and its picture proved nothing. A probe that wants the court
 alive begins the lesson the way START does (`lab.start()`); a probe that only places bodies (lab.place) does not need it.
+
+**A body on fire is tongues of flame on its own bones, not a swollen shell** (v28.0, R44 and R45; c_cast.js FIRE_AT,
+praiFireBuild). Chad, of a rim of orange round each Prai: "where are the flames? Its just an orange edge". A shell swelled
+along the normals can only ever draw an outline. Fire is cards: each skinned to one bone of the body (so it rides every
+frame of every film and the fight whoever ticks it, never a frame behind), turned to the lens round the upright, set out to
+the side of the outline the lens sees, and drawn additive and tested against depth so the body hides the flame behind it.
+Three things read as cards, not fire, and each was seen in a picture first: even teardrops one over another (a ladder: give
+each its own size, beat and lean, and draw the flame as a turbulence field carried up and cut into tongues where it thins);
+a flat root where the card begins (fade the root to nothing); and the card's straight sides up close (fade its borders).
+Try the shader in a lab page that reads it from the part itself (seconds a picture) before booting the game (minutes).
+
+**A move gated on wall time cannot be measured on a slow box** (v28.0, R33/R35; c_fightstage.js swing5). The stick's swing
+goes on from the last frame's only when that frame was drawn within a quarter second: on a box drawing a frame a second
+every frame solved afresh, so a dense measure of poses showed jumps the game no longer makes and could not show the lag it
+does make. Slow the page's clock (filmlive.mjs's STEP_MS: performance.now and every frame's time advance a fixed step a
+drawn frame) and play the take through on it (tools/probes/e4c5swinglive.mjs). The same holds for a 1-second flinch: on the
+wall's clock it was over before its picture (tools/probes/e4c5prai.mjs STEP_MS).
+
+**A hand on a staff leads the staff** (v28.0, R33/R35; c_fightstage.js wristClamp). Solving the hand onto a stick held at the
+angle its move asks bent his wrist past a real wrist's range in three casts (to 62 degrees toward the little finger, and 138
+back as he lifted it). Hold the wrist inside its range and let the stick, carried in the fist by the hand bone, lean with
+the hand: the joint check comes back clean and the hand still closes round the shaft.
