@@ -18,6 +18,7 @@ MM.update(json.load(open(os.path.join(R, 'measures-music4.json'))))
 AGAIN = {'u5m6prep': 'u5m6prep2'}      # made again (music4.json): the game's name keeps the cue's, the takes are the new ones
 STEPS = {'u5step1', 'u5step2', 'u5tile1', 'u5phostep', 'u5zstep'}
 PLAYCUES = {'u5m2walk': (52, 3), 'u5m4hunt': (52, 3), 'u5m10last': (30, 2), 'u5m13shop': (52, 3), 'u5m14sight': (34, 2)}
+SHAPED = {'u5nagaclimb': 'u5nagaclimb_a'}
 P = {}; refused = []
 for o in SFX:
     n = o['name']; takes = {k: v for k, v in MS.items() if k.rsplit('_', 1)[0] == n}
@@ -36,11 +37,17 @@ for o in SFX:
                                 # raised with it: u5cagehum's b), the steadier, then the less in the voice's band
         top = max(m['loud'] for m in near.values()); near = {k: m for k, m in near.items() if m['loud'] >= top - 12}
         k = min(near, key=lambda k: (near[k].get('swing', 0) + 10 * near[k]['voice']))
+    # (R64/R70, 23 Nov: a climb must CLIMB: its loudness read in fifths of a second, the takes that rise to a peak and pass
+    #  (a 1.0 s, b 0.6 s) kept over the one a phone plays most of, which holds one level from end to end, -20 dBFS: a steady
+    #  rush, no climb (c). The measure picks the share a phone plays; the SHAPE is read from the numbers. Set AFTER the
+    #  if/else above: set between them it once took the else for every one-shot, 54 picks changed on paper, caught and undone)
+    if n in SHAPED and SHAPED[n] in ok: k = SHAPED[n]
     m = ok[k]
     others = ', '.join('%s %.2f/%.1f' % (kk[-1], mm['phone'], mm['loud']) for kk, mm in sorted(ok.items()) if kk != k)
     why = '%s: %d %% where a phone plays, loudest 50 ms %.1f dBFS' % (k[-1], round(100 * m['phone']), m['loud'])
     if kind != 'fx': why += ', swing %.1f dB, %d %% in the voice band' % (m.get('swing', 0), round(100 * m['voice']))
     if others: why += ' (others, phone/loudest: %s)' % others
+    if n in SHAPED and SHAPED[n] == k: why += '; by its SHAPE: it rises to its peak and passes, where the others hold one level'
     rf = [r for r in refused if r[0].rsplit('_', 1)[0] == n]
     if rf: why += '; refused: ' + '; '.join('%s %s' % (a[-1], b) for a, b in rf)
     e = dict(kind=kind, take=k, family=o['family'], where=o['where'], why=why)

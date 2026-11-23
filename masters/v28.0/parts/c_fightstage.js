@@ -35,9 +35,10 @@
     }
     const fsL = (wx, wz) => ({ x: COURT5.x - wx, z: COURT5.z - wz });
     /* which of the rules' acts each body's buttons carry (FIGHT.SLOT), and the engine's id for each */
-    const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
-    const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', second: 'smell', third: 'lend' } };
-    const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', smell: 'second', lend: 'third' };
+    /* (R62, 23 Nov 2026: Master Zavier's SMELL is no longer a button: it goes out by itself, FIGHT's smellTick) */
+    const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', lend: 'LEND' };
+    const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', third: 'lend' } };
+    const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
@@ -168,6 +169,64 @@
       mats.push(m); return m; };
     const fsBubbleGeo = (() => { const g = new THREE.SphereGeometry(1, 28, 18); owned.push(g); return g; })();
     const fsBubbles = [0, 1, 2].map(() => { const me = new THREE.Mesh(fsBubbleGeo, fsBubbleMat()); me.visible = false; me.renderOrder = 4; FSG.add(me); return { me, id: 0, fl: 0 }; });
+    /* R74 (23 Nov 2026, Chad: "When the bind ends on the prai, i want a visual effect to show the binding cage break like glass
+       and shatters into pieces, with sound effects too"): THE BUBBLE SHATTERS. Where a bind RUNS OUT (never where the gold or
+       the bag takes the one inside), a crack of white-violet light, then its glass bursts outward in shards: thin glass
+       triangles from all over its skin, spinning, thrown out and up, falling to the paving, skidding and glinting out in about
+       a second and a half; its own shatter sound from where it stood. One instanced mesh drawn adding light (the bubble's own
+       pale violet), so a shard's fading is its colour going down to black; each glints as it turns */
+    const FS_SHARDN = 96;
+    const fsShards = (() => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([-0.5, -0.32, 0, 0.55, -0.22, 0, 0.04, 0.62, 0], 3)); owned.push(g);
+      const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+                                              depthWrite: false, fog: false, toneMapped: false }); owned.push(m);
+      const M = new THREE.InstancedMesh(g, m, FS_SHARDN); M.frustumCulled = false; M.renderOrder = 5; M.visible = false;
+      M.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      const k0 = new THREE.Color(0, 0, 0); for (let i = 0; i < FS_SHARDN; i++) M.setColorAt(i, k0);
+      FSG.add(M);
+      return { M, next: 0, O: new THREE.Object3D(), C: new THREE.Color(),
+               P: Array.from({ length: FS_SHARDN }, () => ({ on: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, rx: 0, ry: 0, rz: 0, wx: 0, wy: 0, wz: 0, s: 0.08, t: 0, T: 1.3 })) };
+    })();
+    function fsShatter(x, y, z, sc) {
+      const R = FS5.srand || Math.random, S = fsShards, rx = 0.62 * sc, ry = 1.0 * sc;
+      for (let i = 0; i < 34; i++) {
+        const k = S.P[S.next]; S.next = (S.next + 1) % FS_SHARDN;
+        const u = R() * 2 - 1, th = R() * Math.PI * 2, q = Math.sqrt(1 - u * u), nx = q * Math.cos(th), ny = u, nz = q * Math.sin(th), sp = 1.5 + 2.4 * R();
+        k.on = true; k.t = 0; k.T = 1.1 + 0.6 * R();
+        k.x = x + nx * rx; k.y = y + ny * ry; k.z = z + nz * rx;
+        k.vx = nx * sp; k.vy = ny * sp * 0.8 + 1.3 + 0.9 * R(); k.vz = nz * sp;
+        k.rx = R() * 6.28; k.ry = R() * 6.28; k.rz = R() * 6.28; k.wx = (R() - 0.5) * 20; k.wy = (R() - 0.5) * 20; k.wz = (R() - 0.5) * 20;
+        k.s = (0.05 + 0.1 * R()) * Math.max(0.7, sc);
+      }
+      fsBloom(x, z, 0xe6dcff, 1.25);
+      fsBurst(x, y, z, 22, { sp: 2.8, up: 0.25, life: 0.5, s0: 0.06, col: 0xffffff, col2: 0xd8c8ff, mix: 0.55, grav: -3, drag: 2.2 });
+      fsFx('u5bindshatter', 0.95, x, z);
+    }
+    function fsShardFrame(wdt) {
+      const S = fsShards, M = S.M, O = S.O, C = S.C; let any = false;
+      for (let i = 0; i < FS_SHARDN; i++) {
+        const k = S.P[i];
+        if (k.on && wdt > 0) {
+          k.t += wdt;
+          if (k.t >= k.T) k.on = false;
+          else {
+            k.vy -= 9.0 * wdt; const dr = Math.exp(-1.1 * wdt); k.vx *= dr; k.vz *= dr;
+            k.x += k.vx * wdt; k.y += k.vy * wdt; k.z += k.vz * wdt;
+            if (k.y < 0.015) { k.y = 0.015; if (k.vy < 0) { k.vy = -k.vy * 0.25; k.vx *= 0.45; k.vz *= 0.45; k.wx *= 0.35; k.wy *= 0.35; k.wz *= 0.35; } }
+            k.rx += k.wx * wdt; k.ry += k.wy * wdt; k.rz += k.wz * wdt;
+          }
+        }
+        if (!k.on) { O.position.set(0, -50, 0); O.scale.setScalar(1e-4); O.updateMatrix(); M.setMatrixAt(i, O.matrix); C.setRGB(0, 0, 0); M.setColorAt(i, C); continue; }
+        any = true;
+        O.position.set(k.x, k.y, k.z); O.rotation.set(k.rx, k.ry, k.rz); O.scale.setScalar(k.s); O.updateMatrix(); M.setMatrixAt(i, O.matrix);
+        const u = k.t / k.T, glint = 0.5 + 0.5 * Math.abs(Math.sin(k.rx * 1.7 + k.ry * 0.9)), f = (1 - u * u) * (0.55 + 0.45 * glint) * (k.t < 0.08 ? 1.4 : 1);
+        C.setRGB(0.84 * f, 0.78 * f, 1.0 * f); M.setColorAt(i, C);
+      }
+      M.instanceMatrix.needsUpdate = true; if (M.instanceColor) M.instanceColor.needsUpdate = true;
+      M.visible = any;
+    }
+    function fsShardsClear() { for (const k of fsShards.P) k.on = false; fsShards.M.visible = false; }
     /* THE TIRED ONES' RINGS, closing on the paving over the rules' ring time (the clock of its rising is on the screen) */
     const fsRings = Array.from({ length: 6 }, () => fsGround(fsRingTex, FS_COL.pale, true, 0.015));
     /* THE SMELL: its ripple out from him along the paving; a dark cloud where each hidden one is shown (rising into
@@ -286,6 +345,8 @@
     const fsStreaks = [0, 1, 2].map(() => ({ on: false, id: 0, t: 0, T: 1, gold: false, a: new THREE.Vector3(), m: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(),
       dots: Array.from({ length: FS_STREAK }, () => fsSprite(0x2a2f38, false, 5)), glints: Array.from({ length: 9 }, () => fsSprite(FS_COL.pale, true, 6)) }));
     const fsReach = (() => { const m = new THREE.Mesh(fsQuad, fsGroundMat(null, FS_COL.pale, true)); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; })();
+    /* (R71: the bag takes every one at once, so a line to each it will take: three more like the first, sharing its paint) */
+    const fsReachAll = [fsReach].concat([0, 1, 2].map(() => { const m = new THREE.Mesh(fsQuad, fsReach.material); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; }));
     /* where a Prai presses his cage's bars: a violet flare on the bars, flickering */
     const fsPress = [0, 1, 2].map(() => fsSprite(FS_COL.violet, true, 5));
     /* THE SPARKS AND MOTES: one cloud of points for every glint the fight throws (the fire's sparks and its burst where it
@@ -320,7 +381,10 @@
     function fsBurst(x, y, z, n, o) {
       const r = FS5.srand || Math.random;
       for (let i = 0; i < n; i++) { const th = r() * Math.PI * 2, ph = Math.asin(Math.min(1, (o.up != null ? o.up : 0.25) + r() * (1 - (o.up != null ? o.up : 0.25)))), sp = (o.sp || 2) * (0.45 + 0.55 * r());
-        fsSpark(x, y, z, { vx: Math.cos(th) * Math.cos(ph) * sp, vy: Math.sin(ph) * sp, vz: Math.sin(th) * Math.cos(ph) * sp, life: (o.life || 0.6) * (0.6 + 0.4 * r()),
+        /* (R61: `dir`, a way the burst is thrown along (the gold's own way out from him), `spread` the share of its speed that
+           stays its own; absent, as every burst before it) */
+        const dk = o.dir ? 1 - (o.spread != null ? o.spread : 0.5) : 0, dvx = o.dir ? o.dir[0] * sp * 1.6 * dk : 0, dvz = o.dir ? o.dir[2] * sp * 1.6 * dk : 0;
+        fsSpark(x, y, z, { vx: Math.cos(th) * Math.cos(ph) * sp + dvx, vy: Math.sin(ph) * sp, vz: Math.sin(th) * Math.cos(ph) * sp + dvz, life: (o.life || 0.6) * (0.6 + 0.4 * r()),
           s0: (o.s0 || 0.07) * (0.7 + 0.6 * r()), col: o.col2 != null && r() < (o.mix || 0) ? o.col2 : o.col, grav: o.grav, drag: o.drag, a: o.a }); }
     }
     function fsPtsFrame(wdt) {
@@ -360,9 +424,6 @@
         x.beginPath(); x.moveTo(26, 24); x.quadraticCurveTo(48, 38, 70, 24); x.stroke(); x.beginPath(); x.moveTo(40, 8); x.lineTo(38, 26); x.moveTo(56, 8); x.lineTo(58, 26); x.stroke(); }),
       bind: fsIcon((x) => { const g = x.createRadialGradient(40, 38, 6, 48, 48, 44); g.addColorStop(0, 'rgba(230,220,255,0.95)'); g.addColorStop(0.45, 'rgba(155,107,255,0.55)'); g.addColorStop(1, 'rgba(201,176,255,1)');
         x.fillStyle = g; x.beginPath(); x.arc(48, 48, 42, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#e6dcff'; x.lineWidth = 7; x.stroke(); }),
-      smell: fsIcon((x) => { x.strokeStyle = '#d4e2b4'; x.lineWidth = 8;
-        x.beginPath(); x.moveTo(34, 6); x.bezierCurveTo(32, 30, 18, 50, 14, 62); x.bezierCurveTo(10, 76, 24, 84, 36, 80); x.bezierCurveTo(40, 88, 50, 88, 54, 80); x.stroke();
-        x.lineWidth = 7; for (let i = 0; i < 3; i++) { const y0 = 30 + i * 20; x.beginPath(); x.moveTo(60, y0); x.bezierCurveTo(68, y0 - 9, 78, y0 + 9, 90, y0); x.stroke(); } }),
       lend: fsIcon((x) => { x.strokeStyle = '#c9b0ff'; x.lineWidth = 8; for (let i = 0; i < 5; i++) { const px = 14 + i * 17; x.beginPath(); x.moveTo(px, 8); x.lineTo(px, 78); x.stroke(); }
         x.lineWidth = 6; x.beginPath(); x.ellipse(48, 82, 40, 9, 0, 0, Math.PI * 2); x.stroke(); }),
       together: fsIcon((x) => { x.lineWidth = 9; x.strokeStyle = '#ffcf6a'; x.beginPath(); x.arc(34, 48, 26, 0, Math.PI * 2); x.stroke();
@@ -389,7 +450,8 @@
       'u5gather2', 'u5zbreath', 'u5unrise', 'u5cagecrack', 'u5stagger', 'u5cagewhole', 'u5murmur3', 'u5swpho', 'u5swzav', 'u5tagsweep', 'u5plant', 'u5shape', 'u5shapeloop',
       'u5togfill', 'u5done', 'u5broken', 'u5start', 'u5ready', 'u5note1', 'u5note2', 'u5note3', 'u5note4', 'u5note5', 'u5note6', 'u5note7', 'u5note8', 'u5note9',
       'u5m7low', 'u5m7drum', 'u5m7line', 'u5m7flute', 'u5m7voice', 'u5m8surge', 'u5m10last',
-      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2'];
+      'u5pvhit1', 'u5pvhit2', 'u5pvbind1', 'u5pvbind2', 'u5pvstrug1', 'u5pvstrug2',
+      'u5shockhit', 'u5bindshatter', 'u5togrise', 'u5togloop', 'u5togpress'];   // (R61, R74, R68)
     const _fsP = new THREE.Vector3();
     function fsPan(x, z, y = 1.0) { _fsP.set(x, y, z).project(camera); return Math.max(-0.8, Math.min(0.8, (_fsP.z > 1 ? -_fsP.x : _fsP.x) * 0.8)); }
     function fsFx(name, vol, x, z) {
@@ -714,6 +776,7 @@
           fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.075, s1: 0.03, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
         void P;
       });
+      fsShardFrame(wdt);                                                  // (R74: the shattered bubbles' glass)
       /* the tired ones' rings, closing */
       const tired = st.prai.filter(p => p.st === 'tired');
       fsRings.forEach((m, j) => { const p = tired[j]; if (!p) { m.visible = false; return; }
@@ -1029,13 +1092,19 @@
     function fsHud() {
       const st = FS5.st, H = FIGHT.hud(st), W5 = fsWords(), played = H.who === 'pho' ? 'pho' : 'zavier';
       const surge = st.stage === 'surge';
+      if (!surge) FS5.callAt = 0;                                       // (R68: the call's rise is heard once each surge)
       for (const who of ['pho', 'zavier']) for (const slot of ['main', 'second', 'third']) {
         const id = FS_ID[who][slot];
-        if (who !== played) continue;                                     // (only the one played has buttons on the screen)
+        if (who !== played || !id) continue;                              // (only the one played has buttons on the screen; R62: his second slot is empty)
         if (surge) {
-          if (slot === 'main') kit.tagAct(id, { hidden: false, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                                                label: W5.btnTogether, icon: FS_ICON.together });
-          else kit.tagAct(id, { hidden: true, pulse: false });
+          /* (R68: TOGETHER is THE CALL, in the middle of the screen a little below its centre (the engine's seventieth seam),
+             there from the moment it can be pressed, with its rising sound; held, it glows while its fill runs) */
+          if (slot === 'main') {
+            const callOn = H.together.live || H.together.fill > 0;
+            kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
+                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together });
+            if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
+          } else kit.tagAct(id, { hidden: true, pulse: false, call: false });
           continue;
         }
         const o = fsActState(H[slot]);
@@ -1043,8 +1112,8 @@
         const Wt = FS5.waits[id] || (FS5.waits[id] = { on: false, at: 0 });
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
-        const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, smell: W5.btnSmell, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, label: o.label || base, icon: FS_ICON[id] });
+        const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id] });
       }
       /* the switch: free once taught; said, never pressed, otherwise (the engine shows it whenever there are two) */
       const sw = H.swap, swWhy = FIGHT.why(st, 'SWITCH');
@@ -1082,7 +1151,7 @@
         let col = null, dim = false;
         if (P) {
           if (s === 'bound') col = '#ff4a62';
-          else if (s === 'held' || s === 'tired' || s === 'laid') { col = '#e8ecf4'; dim = true; }
+          else if (s === 'held' || s === 'tired' || s === 'laid') { col = '#e8ecf4'; dim = !(nd && nd.act === 'BAG'); }   // (R71: the bag takes them all)
           else if ((s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown') && p.kind !== 'slip') { col = '#ff8a96'; dim = true; }
         } else if (s === 'coming' || s === 'pressing' || s === 'through' || s === 'shown' || s === 'rushing') col = '#b896ff';
         else if (s === 'tired') { col = '#b896ff'; dim = true; }
@@ -1132,11 +1201,16 @@
                 fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
                 fsBindCast(p, w); } }
             break; }
-          case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5bindpop', 0.8, w ? w.x : null, w ? w.z : null); break; }
+          case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null, V = p ? fsVis[p.id - 1] : null, sc = V ? V.s : 1;
+            if (w) fsShatter(w.x, 0.92 * sc, w.z, sc);                                 // (R74: its bubble breaks like glass, with its own sound)
+            else fsFx('u5bindpop', 0.8, null); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
-            fsZavAct('smell'); fsSmellCast();                                           // (R34: the crouch and the look round; the breath drawn in)
+            /* (R62: it goes out by itself now, whoever is played and while he walks: his crouch and look round only while he
+               stands, so a walking body never slides through a crouch; the breath, the ripple and the sounds always) */
+            if (!(fsTake.zav && fsTake.zav.pace > 0.08)) fsZavAct('smell');
+            fsSmellCast();                                                              // (R34: the breath drawn in)
             fsFx(fsDeal('sniff'), 0.8, null); fsFx('u5sournote', 0.8, null); fsFx('u5ripple', 0.8, null);
-            if (kit && kit.chill) { kit.chill(0.3, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.9; }
+            if (kit && kit.chill) { kit.chill(0.22, { secs: 0.5, tint: 'sour' }); FS5.chillK = -1; FS5.chillHold = 0.8; }
             break; }
           case 'drawn': for (const p of st.prai) if (p.st === 'coming' || p.st === 'pressing') { const w = fsW(p.x, p.z); fsFx(fsDeal('strain'), 0.55, w.x, w.z); break; } break;
           case 'lend': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5lend', 0.8, pw ? pw.x : null, pw ? pw.z : null);
@@ -1152,18 +1226,38 @@
               if (pw) fsWaveCast(pw); }
             break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
+          /* R61 (23 Nov 2026, Chad: "the shockwave does not have much visual impact when hitting the prais, make it more
+             impactful, with sound effects as it hits each prai. With screen shake every time it hits one prai"): WHERE THE
+             GOLD STRIKES EACH ONE, on the frame it reaches it: a blast of gold on its body (a flash, a ring along the paving, a
+             spray of sparks thrown away from him), its own hit sound from where it stands, its body knocked (its hit take and
+             its cry, unless the gold takes it: the 'gathered' strike follows), and the screen knocked, once each */
+          case 'waveHit': { const p = st.prai[e.id - 1]; if (!p) break; const w = fsW(p.x, p.z), V = fsVis[p.id - 1], y0 = 1.15 * (V ? V.s : 1);
+            const pw = cast.pho ? cast.pho.group.position : null, ax = pw ? w.x - pw.x : 0, az = pw ? w.z - pw.z : 1, aL = Math.hypot(ax, az) || 1;
+            fsFx('u5shockhit', 0.95, w.x, w.z);
+            fsBloom(w.x, w.z, FS_COL.gold, 1.5);
+            fsBurst(w.x, y0, w.z, 26, { sp: 4.2, up: 0.15, life: 0.55, s0: 0.13, col: 0xfff3cc, col2: FS_COL.gold, mix: 0.5, grav: -1.5, drag: 2.2, dir: [ax / aL, 0, az / aL], spread: 0.45 });
+            fsBurst(w.x, 0.12, w.z, 18, { sp: 3.0, up: 0.0, life: 0.45, s0: 0.1, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.4, grav: 0, drag: 3.0 });
+            if (!e.gathers) fsPraiHit(p, 'setback', w);
+            fsShake(0.085, 0.34, 0.022);
+            break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
-            if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
+            if (e.by === 'bag') { if (FS5.snapAt !== FS5.wall) { FS5.snapAt = FS5.wall; fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }   // (R71: once a press)
+              fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
             else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.11, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 });
               /* (R34: the gold STRIKES each one it takes: a flash and a column of gold where it stood, a wider burst) */
               fsBloom(w.x, w.z, FS_COL.gold, 1.3); fsBurst(w.x, 1.0, w.z, 22, { sp: 3.0, up: 0.05, life: 0.7, s0: 0.12, col: 0xfff0c8, col2: FS_COL.gold, mix: 0.5, grav: -1, drag: 1.8 }); fsHitPillar(w.x, w.z); } }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
-          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null);
-            { const w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); } fsPhoAct('bag'); break; }
+          case 'bag': { const p = st.prai[e.id - 1]; fsStreak(p, false); const pw = cast.pho ? cast.pho.group.position : null;
+            /* (R71: one press takes every one at once: its great breath and his act once a press, each one its own streak, and
+               its draw heard from where it stands, the nearest first) */
+            const first = !(FS5.bagRun > 0); FS5.bagRun = first ? (e.n || 1) - 1 : FS5.bagRun - 1;
+            if (first) { fsFx('u5baginhale', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoAct('bag'); }
+            { const w = p ? fsW(p.x, p.z) : null; if (first || !w) fsFx(fsDeal('drawn'), 0.8, w ? w.x : null, w ? w.z : null); else fsFx(fsDeal('drawn'), 0.5, w.x, w.z); }
+            break; }
           case 'enter': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; if (w) fsFx(fsDeal('rise'), 0.8, w.x, w.z); break; }
           case 'state': fsState(e); break;
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
@@ -1176,7 +1270,10 @@
           case 'stage': fsStage(e.to); break;
           case 'surge': fsFx('u5shape', 0.8, null); { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
             FS5.m8 = fsFx('u5m8surge', 0.7, null); for (const V of fsVis) V.from = null; break;
-          case 'together': fsFx('u5togfill', 0.8, null); break;
+          case 'together': fsFx('u5togfill', 0.8, null);
+            /* (R68: pressed, the call BURSTS: its own sound, a flash of gold over the whole screen, the screen knocked) */
+            fsFx('u5togpress', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFE6A8', secs: 0.28 }); fsShake(0.07, 0.45, 0.025);
+            break;
           case 'won': fsFx('u5done', 0.8, null); FS5.wonAt = FS5.wall; break;
           case 'lost': fsFx('u5broken', 0.8, null); FS5.lostAt = FS5.wall; break;
         }
@@ -1190,6 +1287,8 @@
       else if (e.to === 'shown') { fsFx('u5shown', 0.8, w.x, w.z); const Pf = fsPuffs.find(q => q.t < 0) || fsPuffs[0]; Pf.t = 0; Pf.x = w.x; Pf.z = w.z;
         const V = fsVis[e.id - 1]; if (V && V.y < -1) V.y = -1.0; }
       if (e.to === 'fleeing' || e.to === 'gathered' || e.to === 'drawn') { if (FS5.pick === 'p' + e.id) FS5.pick = null; }
+      /* (R74: a tired one's bubble running out shatters too: held to tired, 'the bubble ends') */
+      if (e.from === 'held' && e.to === 'tired' && e.why === 'the bubble ends') { const V = fsVis[e.id - 1], sc = V ? V.s : 1; fsShatter(w.x, 0.92 * sc, w.z, sc); }
     }
     function fsStreak(p, gold) {
       if (!p) return;
@@ -1269,7 +1368,7 @@
       fsRipple.t = -1; for (const Pf of fsPuffs) Pf.t = -1; FS5.flare = 0; FS5.flared = false; fsPtsClear();
       for (const P of fsSmokes) P.t = -1; for (const F of fsFlares) F.t = -1; for (const S of fsScorches) S.t = -1;
       for (const C of fsPillars) C.t = -1; fsWaveFlash.t = -1; fsRayState.t = -1; for (const B of fsBeams) B.t = -1; for (const L of fsLockRings) L.t = -1; fsBreath.t = -1;
-      for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null;
+      for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null; fsShardsClear();
       for (const o of FSG.children) o.visible = false;
     }
 
@@ -1444,15 +1543,18 @@
       if (st.stage === 'surge') fsSurgeFrame(wdt); else if (st.stage !== 'brief') fsPraiFrame(wdt);   // (under the brief the nine stand as the film left them)
       fsFxFrame(wdt, ft);
       FSG.visible = true;
-      /* the reach line: him to the one the bag will take, while its button shows */
+      /* the reach lines: him to every one the bag will take (R71: all of them, wherever they stand), while its button shows */
       const H3 = st.who === 'pho' && (st.stage === 'fight' || st.stage === 'last' || st.stage === 'learn') ? FIGHT.hud(st).third : null;
       const nd = st.cur;
-      let tgt = null;
-      if (H3 && H3.shown && nd && nd.act === 'BAG' && nd.target) tgt = st.prai[nd.target - 1];
-      if (!tgt && H3 && H3.shown) { let bd = 1e9; for (const p of st.prai) if ((p.st === 'tired' || p.st === 'held' || p.st === 'laid') && Math.hypot(p.x - st.pho.x, p.z - st.pho.z) <= (FN5.bagReach || 2.5)) { const d = Math.hypot(p.x - st.pho.x, p.z - st.pho.z); if (d < bd) { bd = d; tgt = p; } } }
-      if (tgt && pw) { const w = fsW(tgt.x, tgt.z), dx = w.x - pw.x, dz = w.z - pw.z, L = Math.hypot(dx, dz);
-        fsReach.visible = L > 0.3; fsReach.position.set((w.x + pw.x) / 2, 0.019, (w.z + pw.z) / 2); fsReach.rotation.y = Math.atan2(dx, dz); fsReach.scale.set(0.04, 1, L); fsReach.material.opacity = 0.5; }
-      else fsReach.visible = false;
+      let ri = 0;
+      if (H3 && H3.shown && pw) for (const p of st.prai) {
+        if (ri >= fsReachAll.length) break;
+        if (p.st !== 'tired' && p.st !== 'held' && p.st !== 'laid') continue;
+        const R = fsReachAll[ri++], w = fsW(p.x, p.z), dx = w.x - pw.x, dz = w.z - pw.z, L = Math.hypot(dx, dz);
+        R.visible = L > 0.3; R.position.set((w.x + pw.x) / 2, 0.019, (w.z + pw.z) / 2); R.rotation.y = Math.atan2(dx, dz); R.scale.set(0.04, 1, L);
+      }
+      fsReach.material.opacity = 0.5;
+      for (; ri < fsReachAll.length; ri++) fsReachAll[ri].visible = false;
       /* reached: the picture's edges sour (the engine's red edge is held off in the mode) */
       let n = 0; for (const p of st.prai) if (p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2)) n++;
       FS5.reached = n;
@@ -1478,6 +1580,7 @@
       const bound = st.prai.filter(p => p.st === 'bound' || p.st === 'held');
       for (let j = 0; j < 3; j++) { const p = bound[j], w = p ? fsW(p.x, p.z) : null; fsLoop('bub' + j, 'u5bindhold', live && p ? 0.35 : 0, { pan: true, x: w ? w.x : 0, z: w ? w.z : 0, tau: 0.15 }); }
       fsLoop('shape', 'u5shapeloop', live && st.stage === 'surge' ? 0.5 : 0, { tau: 0.3 });
+      fsLoop('togcall', 'u5togloop', live && st.stage === 'surge' && FS5.callAt && !(st.together > 0) ? 0.35 : 0, { tau: 0.25 });   // (R68: the call's hum while it waits)
       /* M7: the floor always; the teacher's two up while he is played, the student's while he is; a hold a step down */
       if (fighting && live) fsStemsStart();
       const P = played === 'pho', hold = st.stage === 'fight' && st.hold > 0, m = fighting && live ? FS_M7 : 0;
@@ -1658,7 +1761,6 @@
           { id: 'zavier', obj: zav.group, name: W5.btnZavier, title: W5.btnZavierTitle, color: '#9B6BFF', pic: have('p5portzav') ? 'p5portzav' : null,
             speed: FN5.zavWalk || 0.6, radius: (FN5.apart || 1.45) - 0.45, acts: [
             { id: 'bind', slot: 'main', label: W5.btnBind, icon: FS_ICON.bind, key: 'Space' },
-            { id: 'smell', slot: 'second', label: W5.btnSmell, icon: FS_ICON.smell, key: 'KeyQ' },
             { id: 'lend', slot: 'third', label: W5.btnLend, icon: FS_ICON.lend, key: 'KeyE' }] }
         ],
         played: 'pho', targets: fsMarks, onAct: fsOnAct }));
@@ -1674,7 +1776,9 @@
       const W5 = fsWords(), run = FS5.run;
       FS5.brief = true;
       if (kit && kit.objective) kit.objective(null, { complete: false });
-      const brief = [W5.fightBrief1, W5.fightBrief2, W5.fightBrief3, TOUCHY ? W5.fightInTouch : W5.fightInKey].filter(Boolean).join(' ');
+      /* (R66/R67: his two sentences, then a blank line and the controls of this device, one to a line: the brief keeps its
+         line breaks, shell.html's #event.brief #evPrompt) */
+      const brief = [[W5.fightBrief1, W5.fightBrief2].filter(Boolean).join(' '), TOUCHY ? W5.fightInTouch : W5.fightInKey].filter(Boolean).join('\n\n');
       kit.event({ kind: 'guard', label: W5.fightTitle, demo: 'tag', brief }).then((r) => {
         if (run !== FS5.run || !FS5.st) return;
         FS5.brief = false;

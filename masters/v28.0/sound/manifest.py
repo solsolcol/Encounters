@@ -17,12 +17,12 @@ EVENT = {
     "land result 'chased'/'setback'": ['u5land1|u5land2', 'u5hitc|u5hits|u5hith (by the Prai\'s kind)'],
     "land result 'tired'": ['u5ruby', 'u5tired1|u5tired2'],
     "land result 'slipped'": ['u5slipthru'], "land result 'stale' / none": ['u5stale'],
-    'bind': ['u5bind1|u5bind2', 'then u5bindhold looped at the bubble'], 'bind stale': ['u5bindstale'], 'unbind': ['u5bindpop'],
-    'smell': ['u5sniff1|u5sniff2|u5sniff3', 'u5sournote', 'u5ripple'], 'smell found / state to shown': ['u5shown'],
-    'drawn (SMELL for nothing: they are drawn on)': ['u5strain1|u5strain2|u5strain3 from the Prai'],
+    'bind': ['u5bind1|u5bind2', 'then u5bindhold looped at the bubble'], 'bind stale': ['u5bindstale'], 'unbind (R74: the bubble shatters like glass)': ['u5bindshatter (u5bindpop only where no place is known)'],
+    'smell (R62: by itself, whoever is played)': ['u5sniff1|u5sniff2|u5sniff3', 'u5sournote', 'u5ripple'], 'smell found / state to shown': ['u5shown'],
+    'drawn (SMELL for nothing: held at zero since R62, his smell never goes out for nothing)': ['u5strain1|u5strain2|u5strain3 from the Prai'],
     'lend': ['u5lend', 'u5cagehum crosses to his teacher (its pan and place)'], 'lendEnd': ['u5lendback'],
     'waveReady': ['u5waveready'], 'windup': ['u5windup', 'u5robe'], 'wave': ['u5wave', 'u5lampflare at each lamp the ring passes'],
-    'broken': ['u5wavebreak'], 'gathered by the wave': ['u5drawn1|u5drawn2', 'u5noteN'],
+    'broken': ['u5wavebreak'], 'waveHit (R61: each one the gold reaches)': ['u5shockhit'], 'gathered by the wave': ['u5drawn1|u5drawn2', 'u5noteN'],
     'BAG pressed (drawn by the bag)': ['u5baginhale', 'u5drawn1|u5drawn2'], 'gathered by the bag': ['u5bagsnap', 'u5noteN (N = 9 - left: a step higher each time)'],
     'enter': ['u5rise1|u5rise2', 'then the kind\'s voice looped at it: u5ncome / u5nslip / u5nhide'],
     'state to pressing': ['u5strain1|u5strain2|u5strain3', 'u5barring1|u5barring2'], 'state to hidden': ['u5sink'],
@@ -32,7 +32,7 @@ EVENT = {
     'switch': ['u5swpho / u5swzav (the one arrived at)', 'M7: the arrival\'s stems up over 0.4 s'],
     'refused': ["the engine's own refusal"], 'stage (learn/fight/hold)': ['u5plant on a hold\'s start'],
     'hold / holdEnd': ['M7 down a step / back (the plan\'s 10.2)'], 'surge': ['u5shape', 'u5shapeloop', 'u5cagecrack', 'M8 u5m8surge over every stem down'],
-    'together': ['u5togfill'], 'naga': ['u5nagawater', 'u5nagapass', 'u5pierce1|u5pierce2|u5pierce3 (one a Prai)', 'u5douse', 'u5nagawrap', 'u5nagabreathw', 'u5mist', 'u5shapebreak', 'u5laid', 'M9 u5m9naga'],   # (R47: the water Naga's; the fire Naga's four retired)
+    'together (R68: the button in the middle)': ['u5togrise as it appears', 'u5togloop while it waits', 'u5togpress at the press', 'u5togfill'], 'naga': ['u5nagawater', 'u5nagapass', 'u5pierce1|u5pierce2|u5pierce3 (one a Prai)', 'u5douse', 'u5nagawrap', 'u5nagabreathw', 'u5mist', 'u5shapebreak', 'u5laid', 'M9 u5m9naga'],   # (R47: the water Naga's; the fire Naga's four retired)
     'won': ['u5done', 'M10 down'], 'lost': ['u5broken'], 'the brief\'s START': ['u5start'],
 }
 GAIN = {'one-shot': 0.8, 'loop': 0.5, 'bed': 0.55, 'music': 0.7, 'music-loop': 0.55, 'stem': 1.0}
@@ -42,6 +42,8 @@ SPECIAL = {'u5step1': 0.45, 'u5step2': 0.45, 'u5tile1': 0.45, 'u5phostep': 0.4, 
            'u5shapeloop': 0.5, 'u5nagabreathw': 0.5, 'u5mist': 0.35, 'u5ready': 0.5, 'u5flight': 0.6, 'u5lampflare': 0.4,
            'u5playground': 0.35, 'u5tvwall': 0.35, 'u5mynah': 0.4, 'u5os1': 0.4, 'u5os2': 0.4, 'u5os3': 0.4, 'u5os4': 0.4,
            'u5shutter': 0.4, 'u5farchime': 0.35, 'u5lifthum': 0.55, 'u5wave': 1.0, 'u5nagawater': 1.0, 'u5pierce1': 1.0, 'u5pierce2': 1.0, 'u5pierce3': 1.0,
+           'u5shockhit': 0.95, 'u5nagahit1': 1.0, 'u5nagahit2': 1.0, 'u5nagahit3': 1.0, 'u5nagacry': 1.0, 'u5nagaclimb': 0.9,
+           'u5nagadive': 0.9, 'u5togrise': 0.8, 'u5togloop': 0.35, 'u5togpress': 1.0, 'u5bindshatter': 0.95,
            'u5m7low': 0.85, 'u5m7drum': 1.0, 'u5m7line': 1.0, 'u5m7flute': 1.0, 'u5m7voice': 0.8, 'u5bowl': 0.0}
 NOTE = {'u5sour': 'its gain is the smell\'s nearness (0 far, up to 0.5 at the source); never over a line',
         'u5cagethin': 'crossfaded under u5cagehum as the cage wears: cagehum x strength, cagethin x (1 - strength) x 0.45',

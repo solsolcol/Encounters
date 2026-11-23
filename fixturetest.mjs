@@ -3594,6 +3594,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.uprightBoom = near(T.lens[0], A.position.x) && near(T.lens[1], A.position.y + 3.4) && near(T.lens[2], A.position.z + 4.4) && E.camera.fov === 74
         && near(E.pitch.rotation.x, -26 * Math.PI / 180, 1e-12) && T.boom.back === 4.4;
       R.staleTaken = T.stale >= 1 && !document.getElementById('stick').classList.contains('on');
+      R.noArrow = !document.getElementById('tagArrow').classList.contains('on');   // (seam 71: undeclared, never shown)
       window.__p0 = { a: [A.position.x, A.position.z] };
       return R;`);
     await touch('touchMove', [[80, 640, 1]]);
@@ -3684,7 +3685,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     K.tagPartyShown = await pCheck('partyShown', `
       await frames(2);
       const R = {};
-      R.opened = st.fightOpen({ party: true, keys: { switch: 'Tab' } }) === true;
+      R.opened = st.fightOpen({ party: true, keys: { switch: 'Tab' }, arrow: { y: 1.6 } }) === true;
       await poll(() => { const s0 = kit.tagState(); return s0.live && s0.party && s0.party.tiles.length === 2; }, 20000);
       await frames(4);
       const P0 = kit.tagState().party, cs = getComputedStyle(document.getElementById('tagParty'));
@@ -3693,6 +3694,11 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.shown = cs.display === 'flex' && getComputedStyle(document.getElementById('tagSw')).display === 'none';
       const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect();
       R.atEdge = Math.abs(r.right - innerWidth) < 1 && r.top > innerHeight * 0.3 && r.bottom < innerHeight * 0.55;
+      /* (v28.0, the seventy-first seam: the played one's arrow, declared here, stands over the played body: on, his, and
+         above where his body's feet are drawn) */
+      { const A = document.getElementById('tagArrow'), ar = A.getBoundingClientRect(), b = kit.tagState().bodies.find(q => q.id === 'a');
+        const f = E.projectTo ? E.projectTo(b.x, 0, b.z) : null;
+        R.arrow = A.classList.contains('on') && A.dataset.who === 'a' && ar.width > 10 && (!f || ar.bottom < (-f.y * 0.5 + 0.5) * innerHeight); }
       return R;`);
     /* (and GONE under a film played from the mode, back as play comes back: R47's lab, 23 Nov, found the list standing over
        the Naga's film, its showing rule naming one class more than the hiding ones and so outweighing them) */
@@ -3711,7 +3717,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     K.tagPartyTap = await pUntil(`return kit.tagState().played === 'b';`, 20000)
       && await pCheck('partyTap', `
         await frames(2); const L = logSince(window.__n0), P0 = kit.tagState().party;
-        return { told: L.some(r => r.act === 'switch' && r.to === 'b' && r.by === 'tap'), lit: P0.tiles[1].on && !P0.tiles[0].on, took: P0.took === window.__pn.took + 1 };`);
+        return { told: L.some(r => r.act === 'switch' && r.to === 'b' && r.by === 'tap'), lit: P0.tiles[1].on && !P0.tiles[0].on, took: P0.took === window.__pn.took + 1,
+                 arrow: document.getElementById('tagArrow').dataset.who === 'b' };`);   // (seam 71: the arrow moved over the other)
     /* the played one's tile: a bump, nothing switched (after the switch's lock has run) */
     await pEval(`await poll(() => kit.tagState().lock === 0, 20000); window.__n0 = E.tag().log.length; window.__pn = kit.tagState().party; return true;`);
     const tb2 = await pEval(`const r = document.querySelector('#tagParty .tpTile[data-id="b"]').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height / 2 };`);
@@ -3743,6 +3750,9 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     await pp.keyboard.press('Tab');
     K.tagPartyTab = await pUntil(`return kit.tagState().played === 'b';`, 20000)
       && await pCheck('partyTab', `await frames(2); return { told: logSince(window.__n0).some(r => r.act === 'switch' && r.by === 'key'), kept: window.__tabDP === true };`);
+    /* (the first one played again before the HUD's measures: they refuse the first one's main act, 'zap', and Tab left the
+       second played, whose main act is never refused, so the refusal's words never went up: build 41's run) */
+    await pEval(`await poll(() => kit.tagState().lock === 0, 20000); kit.tagSwitch('a'); return await poll(() => kit.tagState().played === 'a', 20000);`);
     K.tagPartyHudPhone = await phoneHud('party 390x844', true);
     await pp.setViewportSize({ width: 360, height: 780 });
     await pEval(`await frames(4); return true;`);

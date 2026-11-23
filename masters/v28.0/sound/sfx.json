@@ -1300,6 +1300,126 @@
   "where": "the Naga film: the mist off its body (a loop, R47)"
  },
  {
+  "name": "u5shockhit",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A wave of holy golden energy slamming into a ghostly body: a hard punchy impact with a bright ringing metallic shimmer and a short spirit hiss knocked away, powerful and clean, no voice. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "pho",
+  "where": "R61: the golden shockwave striking each Prai (one each, in the order it reaches them)"
+ },
+ {
+  "name": "u5nagahit1",
+  "secs": 2.4,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A colossal serpent made of water smashing straight through a burning body at great speed: an explosive cracking water blast like a huge wave breaking on rocks, a sharp thunderclap at the front, fire violently hissed out, spray bursting everywhere. Huge and cinematic. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R63: the first pierce, the heavy one (with u5douse under it)"
+ },
+ {
+  "name": "u5nagahit2",
+  "secs": 2.4,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A giant torrent of water punching through a figure of flame: a massive crashing splash impact with a deep cracking boom and a violent steaming hiss, debris of water scattering. Powerful, cinematic, no voice. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R63: the second pierce, the heavy one"
+ },
+ {
+  "name": "u5nagahit3",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "The final blow of a divine water serpent: an enormous booming water explosion through a burning spirit, a thunderous crack and a towering splash, the fire blasted out in a great roaring hiss of steam that rings away. Epic and cinematic. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R63: the third pierce, the last and heaviest"
+ },
+ {
+  "name": "u5nagacry",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A colossal sacred water serpent lets out a great cry: a deep resonant rising roar with a long hissing rasp and an echoing horn-like tail, water rushing around it, majestic and powerful, a divine guardian creature, not evil. No words.",
+  "family": "together",
+  "where": "R70: its cry, its eyes kindling as it climbs"
+ },
+ {
+  "name": "u5nagaclimb",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A huge serpent of water rocketing straight up into the night sky at great speed: a powerful rising rushing whoosh of water and wind, spray streaming behind it, climbing in pitch. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R64/R70: the climb at speed"
+ },
+ {
+  "name": "u5nagadive",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A giant water serpent diving down out of the sky at tremendous speed: a descending rushing roar of wind and water that grows into a thunderous close whoosh, about to strike. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R64: the dive onto the first Prai"
+ },
+ {
+  "name": "u5nagahome",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A great serpent of water flowing back into a wooden staff: a swirling inward rush of water and wind drawn in faster and faster, ending in one deep resonant bright burst like a temple gong and a splash of light, then calm. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R63: its end, back into the stick in a burst"
+ },
+ {
+  "name": "u5togrise",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "Holy energy gathering into one point: a rising shimmer of bright chimes and a warm swelling choir hum, gold and violet light building with anticipation, radiant, no words. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R68: the TOGETHER button appears in the middle"
+ },
+ {
+  "name": "u5togloop",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.4,
+  "prompt": "A sustained glowing hum of golden holy energy with faint sparkling chimes drifting through it, softly pulsing like a slow heartbeat of light, magical and expectant, quiet. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R68: the TOGETHER button waiting (a loop, low)"
+ },
+ {
+  "name": "u5togpress",
+  "secs": 2.4,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.45,
+  "prompt": "A powerful burst of holy golden energy: a great bright gong strike and shimmering chimes exploding outward with a rush of wind and a rising choir, triumphant, no words. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "together",
+  "where": "R68: TOGETHER pressed: the burst"
+ },
+ {
+  "name": "u5bindshatter",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A magical glass bubble cracking and shattering: one sharp bright crack, then a burst of many glass shards breaking apart, tinkling and scattering onto a stone floor, a faint shimmer fading. Close, crisp, no voice. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "zavier",
+  "where": "R74: a bind ends: the bubble shatters like glass"
+ },
+ {
   "name": "u5clasp",
   "secs": 1.4,
   "loop": false,

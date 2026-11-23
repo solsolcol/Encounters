@@ -110,11 +110,16 @@
         aiFar: 3.0, aiHome: [1.15, 1.3],      // the unplayed Grandmaster Pho walks back beside his student once this far
         // THE CAGE (his Lersi's, round him from the first moment to the last, never pressed for: the case file)
         cageR: 1.0, pressR: 1.3, himR: 0.55, waitR: 2.5, pressMax: 3,
-        cageMax: 100, wear: 4, mend: 6, whole: 30,
+        // (R73, 23 Nov 2026: his question, too easy now? With the smell his own and the bag reaching the court (R62, R71) the
+        //  careful first-timer of fightsim won 100 of 100 fights at the first try; this morning 69 %. A shorter bind alone
+        //  changed nothing (100 % at 6, 7, 8 and 10 s). His option 2, the default until he picks: the bind 7 s (was 10), the
+        //  Prai a little faster, two free from the start and three from 24 s (were one and two), the cage worn a little
+        //  faster (6, was 4): 95 of 100 at the first try, 100 within two, 3:07)
+        cageMax: 100, wear: 6, mend: 6, whole: 30,
         // HIS SANITY (the game's own stat)
         drain: 2, gather: 2.0, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
         // THE PRAI
-        paceCome: 0.6, paceSlip: 0.8, paceHide: 0.55, paceHidden: 0.5, rush: 2.2,
+        paceCome: 0.75, paceSlip: 0.95, paceHide: 0.7, paceHidden: 0.6, rush: 2.2,   // (R73: were 0.6, 0.8, 0.55, 0.5)
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
         /* (R43, 23 Nov: Chad, "The prais also have some automatic walking logic that slowly walks around, taking into account
@@ -138,22 +143,26 @@
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
-        bagReach: 2.5, bagSecs: 1.0,
+        bagReach: 2.5, bagSecs: 1.0,           // (R71: bagReach no longer read by the rules: the bag reaches the whole court)
+        bagStagger: 0.18,                      // (R71: when one press takes several, each is in the bag this long after the one before)
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown"); its wait a fifth
         // shorter at his R34 (23 Nov: "make it slightly easier to charge up the shockwave skill, it takes too long to
         // charge it up"): 40 s, was 50 (the holds' own waits below likewise; the wait after a break is a penalty, kept)
         waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 7, ringMax: 8.5, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
-        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 10, bubbleMax: 3,
+        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 7, bubbleMax: 3,   // (R73: the bind 7 s, was 10)
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
-        bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
+        bubbleLongest: 27,                    // so a bubble's longest stand: bubbleSecs + stillMax (R73: 7 + 20)
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
         // A SMELL OPENED FOR NOTHING COSTS HIM (Chad's R21: "A button masher should not win so easily"): with nothing hidden,
         // they feel him open, and it costs his sanity, seen on its bar (and said once: ph5fg)
         smellCost: 4,
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
+        // (R62: his smell goes out BY ITSELF: a hidden one that has begun to come on is found once it has lain smellBeat under
+        //  the paving, so its sinking is seen first; the lesson's after smellLesson, so "It hid." is read first)
+        smellBeat: 0.8, smellLesson: 1.6,
         drawSecs: 3.0, drawPace: 2.5, drawWear: 3.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
         // LEND (his cage over his teacher while the gold is gathered)
         lendSecs: 6.0, lendAfter: 0.3,           // (pressed with the cage lent, the gold keeps the cage round him until it has gone out)
@@ -161,7 +170,7 @@
         // allows are free on the court (one at a time once he asks his teacher to lead: after three losses)
         kinds3: ['come', 'slip', 'hide', 'come', 'slip', 'hide', 'slip', 'hide'],
         due3: [0, 12, 26, 42, 58, 74, 90, 106], entryGap: 1.5, leadMax: 1, breather: 8,
-        freeAt: [[0, 1], [24, 2]],             // how many may be free on the court at once: one, then two from 24 s
+        freeAt: [[0, 2], [24, 3]],             // how many may be free on the court at once: two, then three from 24 s (R73: were one and two)
         // HOLD THE LINE, twice: at six left and at four the bag no longer takes them, the gold gathers itself anew
         // (holdSecs), and only it can take them; after a wave that took none, holdRetry. The first hold ends when the gold
         // has gathered; the last, at three. While a hold stands they come on at holdPace (the gathering gold weighs on
@@ -172,7 +181,7 @@
         // and 92.3: at 300 fights the rates are noisy, the first hold's losses are not. The long wait at 40 changes
         // nothing for him: the holds set the wait before it runs out. TAKEN: 34, the shortest of the three that keeps the
         // careful player as sure within two tries as he was (97.3), still 6 s quicker than 40: Chad's "slightly easier")
-        holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.45, goldGrace: 8,
+        holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.62, goldGrace: 8,   // (R73: holdPace 0.62, was 0.45)
         // STAGES 4 TO 6
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
@@ -218,10 +227,9 @@
         Lfire:    { pho: ['ph5f1', 'ph5f1', 'ph5f1'] },
         // the lesson's needs and the fight's are the SAME needs: what the lesson taught, the fight goes on asking in other
         // words (its first wordings are the lesson's own lines, said once there)
-        hidden:   { pho: ['ph5f3', 'ph5ny2', 'ph5ns3'], zav: ['ph5f7', 'ph5nf2', 'ph5nf3'] },
         shown:    { pho: ['ph5nt1', 'ph5nt2', 'ph5ns3'], zav: ['ph5f8', 'ph5ns2', 'ph5f4'] },
         bound:    { pho: ['ph5f6', 'ph5nq1', 'ph5f1'], zav: ['ph5f5', 'ph5nc2', 'ph5nc3'] },
-        tired:    { pho: ['ph5nd1', 'ph5nd2', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },
+        tired:    { pho: ['ph5nd2', 'ph5nd3', 'ph5nd3'], zav: ['ph5ni1', 'ph5ni2', 'ph5ni2'] },   // (R71: no "Go to it")
         keep:     { zav: ['ph5nr1', 'ph5nr2', 'ph5f4'] },
         slip:     { pho: ['ph5nw1', 'ph5nw2', 'ph5ns3'], zav: ['ph5nx1', 'ph5nx2', 'ph5f4'] },
         come:     { pho: ['ph5nk2', 'ph5nt2', 'ph5ns3'], zav: ['ph5ng1', 'ph5ng2', 'ph5f4'] },
@@ -232,7 +240,6 @@
         athimS:   { pho: ['ph5nk1', 'ph5nw2', 'ph5ns3'] },
         athimB:   { zav: ['ph5nl1', 'ph5nl2', 'ph5f4'] },
         athimSw:  { zav: ['ph5nl3', 'ph5no2', 'ph5no2'] },
-        beneath:  { pho: ['ph5nm1', 'ph5ny2', 'ph5ns3'], zav: ['ph5nn1', 'ph5nn2', 'ph5nf3'] },
         // the golden shockwave
         waveL:    { pho: ['ph5f9', 'ph5nu1', 'ph5ns3'], zav: ['ph5f9', 'ph5nv1', 'ph5nv3'] },
         waveB:    { pho: ['ph5fd', 'ph5nt2', 'ph5ns3'], zav: ['ph5fd', 'ph5f4', 'ph5f4'] },
@@ -243,7 +250,7 @@
         last:     { pho: ['ph5nd3', 'ph5nd3', 'ph5nd3'] }
       };
       const ONCE = {
-        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fg: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
+        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
         ph5g1: 2, ph5g2: 2, ph5g3: 2, ph5g4: 2,
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
         tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
@@ -260,8 +267,11 @@
       })();
 
       /* the three buttons each of them has, and the switch (the plan's 5.6: the same places for both; the pictures change) */
-      const SLOT = { pho: { main: 'FIRE', second: 'SHOCKWAVE', third: 'BAG' }, zav: { main: 'BIND', second: 'SMELL', third: 'LEND' } };
-      const PHO_ACTS = { FIRE: 1, SHOCKWAVE: 1, BAG: 1 }, ZAV_ACTS = { BIND: 1, SMELL: 1, LEND: 1 };
+      /* (R62, 23 Nov 2026: Chad, "removing the manual smell button. Have Zavier auto smell throughout the fight whenever
+         needed so player does not have to micromanage the smell button": his second button is gone, and his SMELL goes out
+         by itself whenever it is needed, whoever is played: smellTick) */
+      const SLOT = { pho: { main: 'FIRE', second: 'SHOCKWAVE', third: 'BAG' }, zav: { main: 'BIND', third: 'LEND' } };
+      const PHO_ACTS = { FIRE: 1, SHOCKWAVE: 1, BAG: 1 }, ZAV_ACTS = { BIND: 1, LEND: 1 };
 
       /* ------------------------------------------------------------------ small things */
       const dist = (ax, az, bx, bz) => { const dx = ax - bx, dz = az - bz; return Math.sqrt(dx * dx + dz * dz); };
@@ -458,7 +468,7 @@
           if (bubbles(st) >= n.bubbleMax) return 'full';
           return bindTarget(st, 0) ? '' : 'none';
         }
-        if (act === 'SMELL') { if (!st.seen.smell) return 'stage'; return z.smellWait > 0 ? 'wait' : ''; }
+        if (act === 'SMELL') return 'stage';                       // (R62: never a press: smellTick)
         if (act === 'LEND') {
           if (!st.seen.shock || st.stage !== 'fight') return 'stage';
           if (ph.wind > 0 || ph.ring) return 'busy';
@@ -538,8 +548,7 @@
         for (const p of st.prai) {
           if (pick && p.id !== pick) continue;
           if (p.st !== 'tired' && p.st !== 'held' && p.st !== 'laid') continue;
-          const d = dist(ph.x, ph.z, p.x, p.z);
-          if (d > n.bagReach) continue;
+          const d = dist(ph.x, ph.z, p.x, p.z);                    // (R71: no reach: the court is his; the nearest named first)
           if (d < bs) { bs = d; best = p; }
         }
         return best;
@@ -581,10 +590,16 @@
             return;
           }
           case 'BAG': {
-            const ask = askOf(st, 'BAG');
-            const p = (input && input.pick ? bagTarget(st, input.pick) : null) || (ask ? bagTarget(st, ask) : null) || bagTarget(st, 0);
-            setSt(st, p, 'drawn', 'bag'); p.hold = ''; ph.draw = n.bagSecs; st.stats.bags++;
-            st.ev.push({ e: 'bag', id: p.id });
+            /* (R71, 23 Nov 2026: Chad, "make pho's bag ability have unlimited aoe and range, he should not have to walk so
+               close to the prai to bag it": one press draws EVERY Prai that can be bagged, wherever it stands on the court,
+               from wherever he stands; the nearest first in the events, so the stage's first draw is the nearest one's) */
+            const all = [];
+            for (const p of st.prai) if (p.st === 'tired' || p.st === 'held' || p.st === 'laid') all.push(p);
+            all.sort((a, b) => dist(ph.x, ph.z, a.x, a.z) - dist(ph.x, ph.z, b.x, b.z));
+            ph.draw = n.bagSecs + Math.max(0, all.length - 1) * n.bagStagger;
+            /* (in the bag one after another, the nearest first, bagStagger apart: so each is seen and heard going in, and the
+               count falls by one at a time, as the gold's does) */
+            all.forEach((p, i) => { setSt(st, p, 'drawn', 'bag'); p.t = -i * n.bagStagger; p.hold = ''; st.stats.bags++; st.ev.push({ e: 'bag', id: p.id, n: all.length }); });
             return;
           }
           case 'SHOCKWAVE':
@@ -609,21 +624,6 @@
             if (lessonShown) sayOnce(st, 'ph5g4');
             st.ev.push({ e: 'bind', id: p.id });
             if (st.stats.binds === 1) sayOnce(st, 'q5c5');
-            return;
-          }
-          case 'SMELL': {
-            z.smellWait = n.smellWait; st.stats.smells++;
-            let k = 0;
-            for (const p of st.prai) if (p.st === 'hidden' || p.st === 'beneath') {
-              p.show = n.showSecs; if (p.hold === 'hide') p.hold = 'show';
-              setSt(st, p, 'shown', 'smell'); k++;
-            }
-            st.ev.push({ e: 'smell', found: k });
-            if (!k && st.stage === 'fight') {                       // opened for nothing, he draws them on: faster and harder, a while
-              st.drawT = n.drawSecs; st.ev.push({ e: 'drawn', secs: n.drawSecs });
-              if (n.smellCost > 0) { st.owe += n.smellCost; st.stats.emptySmell++; }
-              sayOnce(st, 'ph5fg');                                 // "Do not open yourself for nothing. They feel it."
-            }
             return;
           }
           case 'LEND':
@@ -959,6 +959,8 @@
           if (dist(circle.x, circle.z, p.x, p.z) > circle.r) continue;
           if (took && (p.st === 'bound' || p.st === 'held')) continue;
           circle.touched |= bit;
+          // (R61: each one the gold reaches is STRUCK, told once each, in the order it reaches them: the stage's blast, sound, shake)
+          st.ev.push({ e: 'waveHit', id: p.id, gathers: p.st === 'bound' || p.st === 'held' });
           if (p.st === 'bound' || p.st === 'held') {
             // gathered at once: never past the three the surge waits on, and never the count jumped (the plan's 5.5)
             if (st.stage === 'fight' && st.left - 1 < 3) { if (p.st === 'bound') { p.ring = n.ringSecs; setSt(st, p, 'held', 'the gold'); } continue; }
@@ -1217,7 +1219,8 @@
               break;
             case 'drawn':
               if (p.t >= n.bagSecs) {
-                setSt(st, p, 'gathered', 'into the bag'); st.left--; st.pho.draw = 0;
+                setSt(st, p, 'gathered', 'into the bag'); st.left--;
+                if (!st.prai.some(q => q.st === 'drawn')) st.pho.draw = 0;   // (R71: his draw ends with the last of them)
                 st.ev.push({ e: 'gathered', id: p.id, by: 'bag', left: st.left });
                 leftLines(st);
               }
@@ -1237,7 +1240,7 @@
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
-        if (st.stage === 'fight' && st.left === 5) sayOnce(st, 'q5c1');
+        if (st.stage === 'fight' && st.left <= 5 && st.left > 3) sayOnce(st, 'q5c1');   // (R71: a bag of two may pass five)
         if (st.stage === 'last' && st.left === 0) sayOnce(st, 'ph5c4');
       }
 
@@ -1307,7 +1310,7 @@
             const p = st.prai[0];
             if (p.st === 'entering' || p.st === 'fleeing' || p.st === 'drawn' || p.st === 'gathered') return null;
             if (p.st === 'coming') return P ? mk('Lfire', 'FIRE', p, ph.fireWait <= 0 && !onFlight(st, p.id) && !lock) : null;
-            if (p.st === 'hidden') return P ? mk('hidden', 'SWITCH', p, !lock) : mk('hidden', 'SMELL', p, z.smellWait <= 0 && !lock);
+            if (p.st === 'hidden') return null;                    // (R62: his smell finds it by itself)
             if (p.st === 'shown') return P ? mk('shown', 'SWITCH', p, !lock) : mk('shown', 'BIND', p, z.bindWait <= 0 && !lock);
             if (p.st === 'bound') return P ? mk('bound', 'FIRE', p, ph.fireWait <= 0 && !onFlight(st, p.id) && !lock) : mk('bound', 'SWITCH', p, !lock);
             if (p.st === 'held') return P ? (ph.draw > 0 ? null : bagNeed(st, 'tired', p, mk)) : mk('tired', 'SWITCH', p, !lock);
@@ -1343,8 +1346,8 @@
         // the gold first, the moment it is ready with something bound (the lesson's own wave aside): it gathers what is
         // bound and throws back everything else, what is at him included, so nothing else the moment holds is worth more
         const goldFirst = waveReady && bound > 0 && !st.lesson.wave.startsWith('pend');
-        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && !full, smellOk = z.smellWait <= 0;
-        const bindSoon = !full && z.bindWait <= 1.5, smellSoon = z.smellWait <= 1.5;
+        const fireOk = ph.fireWait <= 0, bindOk = z.bindWait <= 0 && !full;   // (R62: no smell to ask for)
+        const bindSoon = !full && z.bindWait <= 1.5;
         if (P) {
           // GRANDMASTER PHO, PLAYED: what only he can do, first (chase off what is at his student, tire the bound, bag the
           // tired, loose the gold under the lent cage); then send him to his student for what only his student can do
@@ -1353,7 +1356,6 @@
           if (goldFirst) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aHim) return mk('athimF', 'FIRE', aHim, fireOk && !lock);                    // chase it off him
           if (aHimSlip && !full) return mk('athimS', 'SWITCH', aHimSlip, !lock);
-          if (aBen) return mk('beneath', 'SWITCH', aBen, !lock);
           if (waveReady && bound && !st.lesson.wave.startsWith('pend')) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (st.lesson.wave === 'pending' && bound) return mk('waveL', 'SWITCH', null, !lock);
           // (in the hold a bound Prai is left bound: still, harmless, and the gold's to gather. Fire would tire it, and a
@@ -1367,7 +1369,6 @@
           if (aShown && !full) return mk('shown', 'SWITCH', aShown, !lock);
           if (waveReady && worth) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aSlip && !full) return mk('slip', 'SWITCH', aSlip, !lock);
-          if (aHid) return mk('hidden', 'SWITCH', aHid, !lock);
           if (aCome && !full) return mk('come', 'SWITCH', aCome, !lock);
           return null;
         }
@@ -1382,7 +1383,6 @@
         if (aHim) return mk('athimSw', 'SWITCH', aHim, !lock);                // his BIND is far off: his teacher's fire chases it off
         if (aHimSlip && !full) return mk('athimB', 'BIND', aHimSlip, false);   // the fire cannot touch it: his BIND, as soon as it is back
         // (three bubbles already stand: his hands are full, and what frees one is his teacher's fire and bag, below)
-        if (aBen && smellSoon) return mk('beneath', 'SMELL', aBen, smellOk && !lock);
         if (waveReady && bound && !(st.cage.lent > 0)) return mk(st.lesson.wave === 'pending' ? 'waveL' : 'waveLend', 'LEND', null, !lock);   // the gold, the way out
         if (aPress && bindSoon) return bindAsk('press', aPress, bindOk && !lock);
         if (aShown && (bindOk || (bindSoon && z.bindWait < aShown.show))) return bindAsk('shown', aShown, bindOk && !lock);
@@ -1390,7 +1390,6 @@
           if (!bound) { const t = bindTarget(st, 0); if (t && bindSoon) return mk('waveB', 'BIND', t, bindOk && !lock); }
           else if (!(st.cage.lent > 0)) return mk('waveL', 'LEND', null, !lock);
         }
-        if (aHid && smellSoon) return mk('hidden', 'SMELL', aHid, smellOk && !lock);
         if (aSlip && bindSoon) return bindAsk('slip', aSlip, bindOk && !lock);
         if (aBound && !(st.hold > 0)) return mk('bound', 'SWITCH', aBound, !lock);
         if (aTired) {
@@ -1406,7 +1405,34 @@
       function bagNeed(st, id, p, mk) {
         const n = st.n, ph = st.pho;
         const d = dist(ph.x, ph.z, p.x, p.z);
-        return d <= n.bagReach ? mk(id, 'BAG', p, st.lock <= 0 && !ph.ring) : mk(id, 'BAG', p, false, true);
+        return mk(id, 'BAG', p, st.lock <= 0 && !ph.ring && !(d < 0));   // (R71: no reach: never 'walk to it')
+      }
+
+      /* R62 (23 Nov 2026, Chad: "Have Zavier auto smell throughout the fight whenever needed so player does not have to
+         micromanage the smell button"): HIS SMELL GOES OUT BY ITSELF, whoever is played, the moment it is needed: one under
+         him at once; a hidden one that has begun to come on (its lurk over) once it has lain smellBeat under the paving, so
+         its sinking is seen before it is found; the lesson's smellLesson after it sank. Never sooner than smellWait after the
+         last (one under him aside), so each is one breath drawn in, never a flicker. It finds every hidden one at once, as the
+         press did; with nothing hidden it never goes out, so nothing is opened for nothing (the draw and its cost are held at
+         zero: v8.6) */
+      function smellTick(st) {
+        if (st.stage !== 'learn' && st.stage !== 'fight') return;
+        const n = st.n, z = st.zav;
+        let due = false;
+        for (const p of st.prai) {
+          if (p.st === 'beneath') { due = true; break; }
+          if (p.st !== 'hidden' || z.smellWait > 0) continue;
+          if (p.hold === 'hide') { if (p.t >= n.smellLesson) { due = true; break; } continue; }
+          if (!(p.lurk > 0) && p.t >= n.smellBeat) { due = true; break; }
+        }
+        if (!due) return;
+        z.smellWait = n.smellWait; st.stats.smells++;
+        let k = 0;
+        for (const p of st.prai) if (p.st === 'hidden' || p.st === 'beneath') {
+          p.show = n.showSecs; if (p.hold === 'hide') p.hold = 'show';
+          setSt(st, p, 'shown', 'smell'); k++;
+        }
+        st.ev.push({ e: 'smell', found: k, auto: true });
       }
 
       /* ------------------------------------------------------------------ ONE STEP OF THE FIGHT */
@@ -1450,6 +1476,7 @@
         windTick(st, dt);
         ringTick(st, dt);
         praiTick(st, dt);
+        smellTick(st);
         cageTick(st, dt);
         sanityTick(st, dt, fed);
         if (st.stage !== 'lost') stageTick(st, dt, io);
@@ -1483,7 +1510,7 @@
           cage: { str: st.cage.str / n.cageMax, broken: st.cage.broken, lent: st.cage.lent > 0 },
           objective: objectiveOf(st),
           main: btn('main', s.main, inPlay && (P ? st.stage !== 'last' : st.seen.bind)),
-          second: btn('second', s.second, st.stage === 'fight' ? (P ? st.seen.shock : st.seen.smell) : (st.stage === 'learn' && !P && st.seen.smell)),
+          second: btn('second', s.second, !!s.second && st.stage === 'fight' && st.seen.shock),   // (R62: his teacher's alone)
           third: btn('third', s.third, inPlay && (P ? !!bagTarget(st, 0) : (st.seen.shock && ph.waveWait <= 0 && st.stage === 'fight'))),
           swap: { slot: 'swap', act: 'SWITCH', face: P ? 'zavier' : 'pho', shown: st.seen.swap && (st.stage === 'learn' || st.stage === 'fight'),
                   live: !why(st, 'SWITCH'), why: why(st, 'SWITCH'), wait: st.lock / n.switchLock, pulse: !!(nd && nd.act === 'SWITCH') },

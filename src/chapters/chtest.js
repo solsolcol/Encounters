@@ -579,7 +579,7 @@
         x.fillStyle = col; x.fillRect(0, 0, 64, 64); x.fillStyle = '#000'; x.beginPath(); x.arc(32, 28, 14, 0, Math.PI * 2); x.fill(); return c; };
       const P = o.party ? { a: { title: 'THE FIRST', color: '#FFC860', pic: face('#FFC860') }, b: { title: 'THE SECOND', color: '#9B6BFF', pic: face('#9B6BFF') } } : { a: {}, b: {} };
       const ok = kit.tag({
-        ...(o.party ? { party: {}, keys: o.keys || {} } : {}),
+        ...(o.party ? { party: {}, keys: o.keys || {} } : {}), ...(o.arrow ? { arrow: o.arrow } : {}),   // (v28.0, the seventy-first seam: the played one's arrow)
         bodies: [
           { id: 'a', obj: bodyA, name: 'GOLD', ...P.a, speed: 1.2, acts: [
             { id: 'zap', slot: 'main', label: 'ZAP', key: 'Space' },

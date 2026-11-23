@@ -8140,6 +8140,7 @@ const TAG_DEFAULTS = {
   eye: 1.62,                                   // the pivot's height over his feet: "where he is" for every distance
   crane: null,                                 // v28.0 (R41): { max } a held lens keeps its height and looks down (tagPitchFor)
   party: null,                                 // v28.0 (R49, the sixty-eighth seam): {} draws the switch as a PARTY LIST (tagPaintParty)
+  arrow: null,                                 // v28.0 (R60, the seventy-first seam): { y } an arrow over the played one's head (tagPaintArrow)
   keys: { switch: 'KeyF' }
 };
 const TAG_SLOTS = ['main', 'second', 'third'];
@@ -8503,7 +8504,7 @@ function tagMarkAt(x, y) {                     // the mark nearest the point, ex
   return best;
 }
 function tagActState(a) {
-  return { wait: 0, fill: 0, pulse: false, blocked: null, hidden: false, on: false, label: undefined, icon: undefined,
+  return { wait: 0, fill: 0, pulse: false, blocked: null, hidden: false, on: false, call: false, label: undefined, icon: undefined,
            waitSay: a && a.waitSay ? String(a.waitSay) : null };
 }
 /* opened: refused outside play, without the chapter's declaration, with no body, or while it is already on */
@@ -8533,7 +8534,7 @@ function tagOpen(o) {
               soft: num(o.soft, d.soft), glide: num(o.glide, d.glide), lock: num(o.lock, d.lock), radius: num(o.radius, d.radius),
               speed: num(o.speed, d.speed), turn: num(o.turn, d.turn), eye: num(o.eye, d.eye),
               ease: num(o.ease, d.ease), reach: num(o.reach, d.reach), crane: o.crane !== undefined ? o.crane : d.crane,
-              party: o.party !== undefined ? o.party : d.party,
+              party: o.party !== undefined ? o.party : d.party, arrow: o.arrow !== undefined ? o.arrow : d.arrow,
               boom: { ...d.boom, ...(o.boom || {}) }, portrait: o.portrait ? { ...d.boom, ...(o.boom || {}), ...o.portrait } : d.portrait,
               keys: { ...d.keys, ...(o.keys || {}) } };
   for (const B of bodies) {
@@ -8607,6 +8608,7 @@ function kitTagAct(id, p) {
   if ('blocked' in p) st.blocked = p.blocked ? String(p.blocked) : null;
   if ('hidden' in p) st.hidden = !!p.hidden;
   if ('on' in p) st.on = !!p.on;
+  if ('call' in p) st.call = !!p.call;          // v28.0 (seam 70): THE CALL, the act drawn in the screen's middle (shell.html .tagBtn.call)
   if ('label' in p) st.label = p.label == null ? undefined : String(p.label);
   if ('icon' in p) st.icon = p.icon == null ? undefined : p.icon;
   if ('waitSay' in p) st.waitSay = p.waitSay ? String(p.waitSay) : null;
@@ -8689,7 +8691,7 @@ function tagPaintBtn(b, a, st) {
     if (b.ico) { b.ico.textContent = ''; if (icon) b.ico.appendChild(evIconNode(icon, 'tgIcoIn')); }
     cl.toggle('hasIco', !!icon);
   }
-  const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3);
+  const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + (st.call ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3);
   if (sig === b.sig) return;
   b.sig = sig;
   cl.remove('hide');
@@ -8697,6 +8699,7 @@ function tagPaintBtn(b, a, st) {
   const kn = tagKeyName(a.key);
   if (b.keyOf !== kn) { b.keyOf = kn; if (b.kbd) b.kbd.textContent = kn; cl.toggle('noKey', !kn); }
   cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked); cl.toggle('on', !!st.on);
+  cl.toggle('call', !!st.call);                 // (seam 70: absent, never set: every button as it always was)
   cl.toggle('waiting', wait > 0); cl.toggle('ready', !wait && !st.blocked);
   tagRing(b.wait, 1 - wait); tagRing(b.fill, st.fill);
 }
@@ -8944,7 +8947,33 @@ function tagPaint() {
     tagPaintSw(E);
     if (tag.cfg.party) tagPaintParty(E); else if (E.partyOn) tagPartyOff(E);
   }
-  tagPaintMarks(); tagPaintMate(); tagPaintCount();
+  tagPaintMarks(); tagPaintMate(); tagPaintCount(); tagPaintArrow();
+}
+/* ══ v28.0 · THE SEVENTY-FIRST SEAM: THE PLAYED ONE'S ARROW (the tag declaration's `arrow`, or kit.tag's own) ═══════════
+   Chad, R60 (23 Nov 2026): "Show a floating arrow pointing downwards at the character that is currently under control, so
+   that player can easily tell who he is playing. This arrow switches to the other character when player switches." An
+   arrow pointing down, in the played one's own colour (his tile's), floating and bobbing over his head (`arrow.y` metres
+   over his feet, 2.3 if none), placed through the same lens as the marks the frame it is drawn; at a switch it pops in
+   over the other. Only while the mode is live (never under a film, a card, a menu or the brief: #tagHud's own rules, it
+   stands inside it), and only declared: absent, no element is ever shown (tagPaintArrow returns at once) */
+function tagPaintArrow() {
+  const el = $('tagArrow'); if (!el) return;
+  const A = tag.cfg && tag.cfg.arrow, B = tag.on ? tag.bodies[tag.played] : null;
+  let show = false;
+  if (A && B && B.obj && tagLive()) {
+    const o = B.obj.position, y = Number.isFinite(+A.y) ? +A.y : 2.3, q = projectTo(o.x, o.y + y, o.z);
+    if (q.z <= 1 && Math.abs(q.x) <= 1.05 && Math.abs(q.y) <= 1.05) {
+      show = true;
+      const x = (q.x * 0.5 + 0.5) * innerWidth, yy = (-q.y * 0.5 + 0.5) * innerHeight;
+      el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px)';
+      if (el.dataset.who !== B.id) {
+        const first = !el.dataset.who; el.dataset.who = B.id; el.style.setProperty('--ac', tagHexRgb(B.color || '#F4ECD8'));
+        if (!first) { const s = el.firstElementChild; if (s) { s.classList.remove('pop'); void s.offsetWidth; s.classList.add('pop'); } }
+      }
+    }
+  }
+  if (el.classList.contains('on') !== show) el.classList.toggle('on', show);
+  if (!tag.on && el.dataset.who) delete el.dataset.who;
 }
 function tagWire() {                           // once (kitInit): the buttons answer the finger's touch, never its lift, and never become a drag
   if (tag.wired) return;
@@ -16792,6 +16821,11 @@ const STING_SAMPLE = {
   u5nagawater: ['u5nagawater', 1], u5nagapass: ['u5nagapass', 1], u5pierce1: ['u5pierce1', 1],
   u5pierce2: ['u5pierce2', 1], u5pierce3: ['u5pierce3', 1], u5douse: ['u5douse', 1], u5nagawrap: ['u5nagawrap', 1],
   u5nagabreathw: ['u5nagabreathw', 1], u5mist: ['u5mist', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5shockhit: ['u5shockhit', 1], u5nagahit1: ['u5nagahit1', 1], u5nagahit2: ['u5nagahit2', 1],
+  u5nagahit3: ['u5nagahit3', 1], u5nagacry: ['u5nagacry', 1], u5nagaclimb: ['u5nagaclimb', 1],
+  u5nagadive: ['u5nagadive', 1], u5togrise: ['u5togrise', 1], u5togloop: ['u5togloop', 1],
+  u5togpress: ['u5togpress', 1], u5bindshatter: ['u5bindshatter', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

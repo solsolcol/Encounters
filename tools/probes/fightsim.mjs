@@ -89,7 +89,7 @@ const SLOTS = ['main', 'second', 'third', 'swap'];
 function towards(b, x, z) { const dx = x - b.x, dz = z - b.z, d = Math.sqrt(dx * dx + dz * dz); return d > 0.08 ? { mx: dx / d, mz: dz / d } : null; }
 function praiOf(st, id) { return id ? st.prai[id - 1] : null; }
 function slotOf(st, act) {
-  const s = st.who === 'pho' ? { FIRE: 'main', SHOCKWAVE: 'second', BAG: 'third' } : { BIND: 'main', SMELL: 'second', LEND: 'third' };
+  const s = st.who === 'pho' ? { FIRE: 'main', SHOCKWAVE: 'second', BAG: 'third' } : { BIND: 'main', LEND: 'third' };   // (R62: no SMELL to press)
   return act === 'SWITCH' ? 'swap' : s[act] || '';
 }
 /* the parts every player shares: the brief read, the card answered, the film watched */
@@ -188,13 +188,13 @@ function optimalAct(st, F, onlyWho) {
       else return towards(ph, untiredBound.p.x, untiredBound.p.z) || {};
     }
     if (atHimCome && live('FIRE') && !flying(atHimCome.id)) return { act: 'FIRE', pick: atHimCome.id };
-    if (tired && !(st.hold > 0)) { if (live('BAG')) return { act: 'BAG', pick: tired.p.id }; if (F.why(st, 'BAG') === 'none' || tired.d > n.bagReach) { const m = towards(ph, tired.p.x, tired.p.z); if (m) return m; } }
+    if (tired && !(st.hold > 0)) { if (live('BAG')) return { act: 'BAG', pick: tired.p.id }; if (F.why(st, 'BAG') === 'none') { const m = towards(ph, tired.p.x, tired.p.z); if (m) return m; } }   // (R71: no reach)
     if (waveReady && bound >= 1 && live('SHOCKWAVE')) {
       const near = st.prai.some(p => (p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown') && Math.hypot(p.x - ph.x, p.z - ph.z) - n.breakDist <= n.rush * n.windSecs);
       if (!near) return { act: 'SHOCKWAVE' };
     }
     if (onlyWho !== 'pho') {
-      const zWork = (hidden && z.smellWait <= 0.2) || (bindable && z.bindWait <= 0.3 && bound < n.bubbleMax) || (waveReady && bound >= 1 && !lent);
+      const zWork = (bindable && z.bindWait <= 0.3 && bound < n.bubbleMax) || (waveReady && bound >= 1 && !lent);   // (R62: his smell is his own)
       if (zWork && live('SWITCH') && ((st.hold > 0) || (!untiredBound && !(tired && !F.why(st, 'BAG'))))) return { act: 'SWITCH' };
     }
     if (onlyWho === 'pho' && live('FIRE')) {
@@ -208,12 +208,11 @@ function optimalAct(st, F, onlyWho) {
     return towards(ph, z.x + 1.0, z.z - 1.2) || {};
   }
   if (lent && waveReady && onlyWho !== 'zav') return live('SWITCH') ? { act: 'SWITCH' } : {};
-  if (hidden && live('SMELL')) return { act: 'SMELL' };
   if (live('BIND')) return { act: 'BIND' };
   if (waveReady && bound >= Math.min(2, Math.max(1, st.left - 3)) && !lent && live('LEND') && onlyWho !== 'zav') return { act: 'LEND' };
   if (onlyWho === 'zav') { if (waveReady && !lent && live('LEND')) return {}; return {}; }
   const pWork = (!(st.hold > 0) && (untiredBound || tired)) || (waveReady && lent) || atHimCome;
-  const zSoon = (hidden && z.smellWait <= 0.6) || (bindable && z.bindWait <= 0.6 && bound < n.bubbleMax);
+  const zSoon = bindable && z.bindWait <= 0.6 && bound < n.bubbleMax;
   if (pWork && !zSoon && live('SWITCH')) return { act: 'SWITCH' };
   return {};
 }
@@ -280,7 +279,9 @@ const ORDER = ['careful', 'slow', 'late', 'optimal', 'masher', 'never', 'onlyPho
 /* ------------------------------------------------------------------ one campaign: a fight, begun again after each loss */
 const MAX_TRIES = 6, MAX_CLOCK = 1800;
 const STAGE_MOVES = new Set(['brief>learn', 'learn>fight', 'fight>surge', 'fight>lost', 'lost>fight', 'surge>naga', 'naga>last', 'last>won']);
-const ACTED = new Set(['switch', 'bag', 'windup', 'bind', 'smell', 'lend', 'together']);
+/* (R62: his smell goes out by itself, so it is no act of the player's; R71: one BAG press draws every tired one at once,
+   one 'bag' event each, and is still one act: counted once a step, below) */
+const ACTED = new Set(['switch', 'windup', 'bind', 'lend', 'together']);
 function campaign(F, L, who, seed, opts) {
   const r = stream(seed * 2 + 1), rf = stream(seed * 2 + 2);
   const io = { rand: rf, secs: (k) => L.secs[k] || 2.5 };
@@ -302,13 +303,14 @@ function campaign(F, L, who, seed, opts) {
     const stageBefore = st.stage, lockBefore = st.lock;
     const ev = F.step(st, inp, dt, io);
     heard = null;
-    let acts = 0;
+    let acts = 0, bagged = false;
     for (const e of ev) {
       if (e.e === 'say') { if (e.need) heard = { need: e.need, end: st.t + (L.secs[e.key] || 2.5) }; res.said[e.key] = (res.said[e.key] || 0) + 1; res.sayN++; }
       else if (e.e === 'state') { const ok = F.STATES[e.from] && F.STATES[e.from].exits.includes(e.to); if (!ok) res.illegal[e.from + '>' + e.to] = (res.illegal[e.from + '>' + e.to] || 0) + 1; }
       else if (e.e === 'stage') { const k = stageBefore + '>' + e.to; if (!STAGE_MOVES.has(k)) bad('stage move ' + k); }
       else if (e.e === 'lost') { res.losses++; lostAt.push(st.t); res.where.push((st.hold ? 'in hold ' + st.hold : st.left + ' left') + (res.losses === 1 ? ' (1st)' : ' (2nd+)')); }
       if (ACTED.has(e.e) || (e.e === 'fireball' && !e.ai)) acts++;
+      else if (e.e === 'bag' && !bagged) { bagged = true; acts++; }
       if (e.e === 'switch') { if (st.t - lastSwitch < lastLock - 1e-6) bad('a switch inside the lock'); lastSwitch = st.t; lastLock = e.lock || st.n.switchLock; }
     }
     if (acts > 1) bad('two acts in one step');
@@ -535,7 +537,7 @@ async function main() {
   const fw = (w) => T[w] ? pct(T[w].firstWins, T[w].n) : NaN, tw = (w) => T[w] ? pct(T[w].twoWins, T[w].n) : NaN;
   const req = (ok, what) => R.push([ok ? 'ok  ' : 'FAIL', what]);
   if (T.careful) { req(tw('careful') >= 95, `a careful first-timer wins within two tries in 95% or more (${tw('careful').toFixed(1)}%)`);
-                   const m = median(T.careful.lens); req(m >= 200 && m <= 290, `the careful first-timer's fight is about four minutes, 3:20 to 4:50 (${mmss(m)})`); }
+                   const m = median(T.careful.lens); req(m >= 160 && m <= 290, `the careful first-timer's fight is about three to four minutes, 2:40 to 4:50 (${mmss(m)}; R62/R71 made it simpler at his word)`); }
   if (T.slow) req(tw('slow') >= 90, `a slow human (400 ms, 15% wrong) wins within two tries in 90% or more (${tw('slow').toFixed(1)}%)`);
   if (T.late) req(tw('late') >= 90, `the pair played a second and a half late on every press wins within two tries in 90% or more (${tw('late').toFixed(1)}%)`);
   if (T.optimal) req(fw('optimal') >= 99.5, `the optimal player wins at the first try (${fw('optimal').toFixed(1)}%)`);

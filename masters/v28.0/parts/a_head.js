@@ -180,6 +180,9 @@
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
            party: {},
+           /* (R60, 23 Nov: "Show a floating arrow pointing downwards at the character that is currently under control": the
+              engine's seventy-first seam, 2.35 m over his feet, half a metre over either head) */
+           arrow: { y: 2.35 },
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
@@ -266,14 +269,15 @@
       // THE CLEANSING (the plan's 5.2, 5.5 and 5.8), as the fight's specification gives them (docs/V28.0-FIGHT.md 11,
       // 21 Nov: R14's kit, BIND, SMELL and LEND beside FIRE, SHOCKWAVE and BAG). Every objective is true whoever is played
       fightTitle: 'THE CLEANSING',
-      fightBrief1: 'You play Grandmaster Pho and Master Zavier. Switch between them.',
-      fightBrief2: 'Master Zavier binds the Prai and smells out the hidden. Grandmaster Pho fires at the bound and bags the tired.',
-      fightBrief3: 'Keep Master Zavier safe. Nine Prai.',
+      // (R66, 23 Nov: his own two sentences, "bounded" written "bound", "or" written "and" and "prai" with the game's
+      //  capital, each said to him; R67: then the controls of the device he is on, one to a line, in very direct terms)
+      fightBrief1: 'Switch between Grandmaster Pho and Zavier.',
+      fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
-      fightInTouch: 'Tap the buttons to act, the face to switch. The stick walks.',
-      fightInKey: 'Space or a click, Q and E act. F switches. WASD or the arrows walk.',
+      fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nBag: E.',
       objFight1: 'Grandmaster Pho: fire at the Prai.',
-      objFight1b: 'It hid. Master Zavier: smell it out.',
+      objFight1b: 'It hid. Master Zavier smells it out.',
       objFight2: 'Master Zavier: bind it.',
       objFight2b: 'Grandmaster Pho: fire at it, then bag it.',
       objFight3: 'Bag the Prai: {n} left',
