@@ -8905,7 +8905,13 @@ function tagPaintMate() {
       show = true;
       /* at the screen's edge toward him, inside the mode's own margins: under the count, above the caption, and in a
          landscape screen clear of the buttons' column */
-      const portrait = H > W, top = portrait ? 252 : 96, left = 16, right = portrait ? 16 : 236;
+      const portrait = H > W, top = portrait ? 252 : 96, left = 16;
+      let right = portrait ? 16 : 236;
+      /* (v28.0: with the party list up, a portrait screen's mark keeps off its column at the right edge: on a 360-wide phone it
+         stood on the tiles, fixturetest's tagPartyHudLowPhone. The column's width read at most twice a second) */
+      if (portrait && tag.cfg && tag.cfg.party) { const now = performance.now();
+        if (!(now - (E.partyWAt || -1e9) < 500)) { const pe = $('tagParty'); E.partyW = pe && pe.offsetWidth ? pe.offsetWidth : 0; E.partyWAt = now; }
+        if (E.partyW > 0) right = Math.max(right, E.partyW + 12); }
       /* (and above a caption standing, with room for a refusal's words over it: the caption's top as its painter measured
          it, --capTop, from the foot of the screen) */
       let bot = portrait ? 312 : 120;

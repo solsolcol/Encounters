@@ -38,7 +38,10 @@ await p.evaluate(() => {
     const y = E.yaw.position, row = { t: +(performance.now() / 1000).toFixed(2), me: [+y.x.toFixed(3), +y.z.toFixed(3)], f: [] };
     for (const { Q, i } of who) { if (!Q.hips || !Q.group.visible) continue; Q.group.updateWorldMatrix(true, true); Q.hips.getWorldPosition(v);
       const x = v.x, z = v.z, dIn1 = z > -16.6 ? x - (-0.95) : 9, dIn2 = x < -0.95 ? -16.6 - z : 9, dC = Math.hypot(x + 0.95, z + 16.6);
-      row.f.push([Q.key + '#' + i, +x.toFixed(3), +z.toFixed(3), +Math.min(dIn1, dIn2).toFixed(3), +dC.toFixed(3)]); }
+      /* (and each foot's ball and the body's turn, to read a finding by) */
+      const ft = []; for (const nm of ['LeftToeBase', 'RightToeBase', 'LeftFoot', 'RightFoot']) { let bn = null; for (const k in (Q.bone || {})) if (new RegExp('^(mixamorig:?)?' + nm + '$').test(k)) { bn = Q.bone[k]; break; }
+        if (bn) { bn.getWorldPosition(v); ft.push(+v.x.toFixed(3), +v.z.toFixed(3)); } else ft.push(null, null); }
+      row.f.push([Q.key + '#' + i, +x.toFixed(3), +z.toFixed(3), +Math.min(dIn1, dIn2).toFixed(3), +dC.toFixed(3), ft, +Q.group.rotation.y.toFixed(3), Q.cur || '']); }
     row.K = window.__limbs();
     window.__rows.push(row);
   };
