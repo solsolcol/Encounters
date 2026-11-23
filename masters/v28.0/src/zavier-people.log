@@ -1,50 +1,53 @@
-wrote masters/v28.0/src/merged-zavier.glb 31208724 bytes
-["Walking (132 ch, 1.03 s)"]
+masters/v28.0/src/takes-zavier-acts.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+masters/v28.0/src/takes-zavier-acts2.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v28.0/src/merged-zavier.glb 32526668 bytes
+["Walking (132 ch, 1.03 s)","Running (132 ch, 0.63 s)","Idle_3 (132 ch, 9.97 s)","mage_soell_cast_3 (198 ch, 3.33 s)","mage_soell_cast_6 (198 ch, 2.30 s)","Alert (198 ch, 4.00 s)"]
 calmarms masters/v28.0/src/merged-zavier.glb: the body's left 1.00,0.00,-0.00, its face 0.00,0.00,1.00
-  Idle_3: not in this file (left out)
+  Idle_3: Left out 11.5..20.8 (mean 17.3) -> 2.5..8.1; swing -5.6..4.1 -> -5.6..4.1 | Right out 12.6..22.0 (mean 17.4) -> 3.1..8.8; swing -5.4..2.7 -> -5.4..2.7
   Stand_and_Chat: not in this file (left out)
   Listening_Gesture: not in this file (left out)
   Walking: Left out 7.3..24.4 (mean 15.9) -> 2.7..11.2; swing -25.3..30.4 -> -17.7..21.2 | Right out 8.7..30.6 (mean 19.1) -> 1.8..12.7; swing -23.8..28.0 -> -16.6..19.6
 wrote masters/v28.0/src/merged-zavier.glb
   fins: 21 triangles hanging from the body by one edge taken out (26.7 mm2 in all, the largest 7.7 mm2, if the file is in metres); edges of one triangle left: 16
-prune: Removed types... Texture (1), Accessor (2)
+prune: Removed types... Texture (1), Accessor (4)
   43422 vertices in 20689 positions; 22725 normals turned more than 10° to agree across a seam; normals of no length: 0
   repaint [   0.0s] 43422 points joined into 20689 places; 41418 triangles
-  repaint [   0.0s] the face 5906 triangles, the rest of the head 10666, the hands 3124, the body 21722 (looking [0.0, 0.0, 1.0])
-  repaint [   5.7s] xatlas: 1311 charts, 74% of the square used
-  repaint [   8.1s] packed again: 1311 charts in a 3470x3444 square drawn at 2048 (77% used), a margin of 3.5 pixels at 2048
-  repaint [   8.2s] texels a metre at 2048, before -> now: face 2014 -> 2270, head 2034 -> 1757, hands 1774 -> 1232, body 910 -> 835; 1311 charts, margin 3.5 px
-  repaint [   8.5s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
-  repaint [  14.3s] baked
-  repaint [  14.3s] written
+  repaint [   0.1s] the face 5906 triangles, the rest of the head 10666, the hands 3124, the body 21722 (looking [0.0, 0.0, 1.0])
+  repaint [  10.9s] xatlas: 1311 charts, 74% of the square used
+  repaint [  13.5s] packed again: 1311 charts in a 3470x3444 square drawn at 2048 (77% used), a margin of 3.5 pixels at 2048
+  repaint [  13.5s] texels a metre at 2048, before -> now: face 2014 -> 2270, head 2034 -> 1757, hands 1774 -> 1232, body 910 -> 835; 1311 charts, margin 3.5 px
+  repaint [  13.8s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  29.9s] baked
+  repaint [  29.9s] written
   edgeclean [   0.2s] 48449 points, 41418 triangles, a 2048 sheet; the body [0.859, 1.74, 0.292] m (scaled 1.0000)
-  edgeclean [   6.2s] collar: 998 triangles, 104312 texels (42996 in the box); skin 72069 (painted 2969), tee 9202 (painted 1783), knit 23041 (painted 187); islands gone 1, kept 0; the edge found in 56 of 100 slices (-1.411 to -1.391 along the walk), 1581 texels changed sides; 4939 texels painted again
-  edgeclean [  37.9s] frontR: 2247 triangles, 153679 texels (82766 in the box); skin 34521 (painted 815), tee 35062 (painted 1575), knit 84096 (painted 1465); islands gone 0, kept 4; the edge found in 269 of 326 slices (0.052 to 0.092 along the walk), 2438 texels changed sides; 3855 texels painted again
-  edgeclean [  69.3s] frontL: 2249 triangles, 166540 texels (94393 in the box); skin 42268 (painted 950), tee 33890 (painted 1761), knit 90382 (painted 2045); islands gone 0, kept 2; the edge found in 271 of 319 slices (0.056 to 0.115 along the walk), 3537 texels changed sides; 4756 texels painted again
-  edgeclean [  72.7s] hairtop: 8080 triangles, 282982 texels (188842 in the box); hair 282982 (painted 13); islands gone 0, kept 0; 13 texels painted again
-  edgeclean [  74.5s] 11109 texels painted again in 4 boxes, 18856 of the margin after them
+  edgeclean [   8.9s] collar: 998 triangles, 104312 texels (42996 in the box); skin 72069 (painted 2969), tee 9202 (painted 1783), knit 23041 (painted 187); islands gone 1, kept 0; the edge found in 56 of 100 slices (-1.411 to -1.391 along the walk), 1581 texels changed sides; 4939 texels painted again
+  edgeclean [  45.2s] frontR: 2247 triangles, 153679 texels (82766 in the box); skin 34521 (painted 815), tee 35062 (painted 1575), knit 84096 (painted 1465); islands gone 0, kept 4; the edge found in 269 of 326 slices (0.052 to 0.092 along the walk), 2438 texels changed sides; 3855 texels painted again
+  edgeclean [  84.3s] frontL: 2249 triangles, 166540 texels (94393 in the box); skin 42268 (painted 950), tee 33890 (painted 1761), knit 90382 (painted 2045); islands gone 0, kept 2; the edge found in 271 of 319 slices (0.056 to 0.115 along the walk), 3537 texels changed sides; 4756 texels painted again
+  edgeclean [  89.1s] hairtop: 8080 triangles, 282982 texels (188842 in the box); hair 282982 (painted 13); islands gone 0, kept 0; 13 texels painted again
+  edgeclean [  91.1s] 11109 texels painted again in 4 boxes, 18856 of the margin after them
   repaint: 43422 points -> 48449 (5027 copied along the new seams), 41418 triangles; texels a metre at 2048, before -> now: face 2014 -> 2270, head 2034 -> 1757, hands 1774 -> 1232, body 910 -> 835; 1311 charts, margin 3.5 px; edges: 11109 texels painted again in 4 boxes, 18856 of the margin after them
 prune: Removed types... Accessor (6)
 prune: Removed types... Skin (1), Accessor (5)
-prepmonk p5zavier1.glb: tris 41439 -> 41418, 1 takes, 2039 KB
+prepmonk p5zavier.glb: tris 41439 -> 41418, 6 takes, 2550 KB
   fins: 26 triangles hanging from the body by one edge taken out (11.5 mm2 in all, the largest 2.6 mm2, if the file is in metres); edges of one triangle left: 4
 prune: Removed types... Texture (2), Accessor (1)
   214559 vertices in 156276 positions; 54628 normals turned more than 10° to agree across a seam; normals of no length: 0
   repaint [   0.1s] 214559 points joined into 156276 places; 312614 triangles
-  repaint [   0.2s] the face 47147 triangles, the rest of the head 88885, the hands 23604, the body 152978 (looking [0.0, 0.0, 1.0])
-  repaint [ 104.2s] xatlas: 3342 charts, 79% of the square used
-  repaint [ 109.4s] packed again: 3342 charts in a 3581x3553 square drawn at 2048 (82% used), a margin of 3.4 pixels at 2048
-  repaint [ 109.7s] texels a metre at 2048, before -> now: face 2099 -> 2241, head 2166 -> 1704, hands 1812 -> 1198, body 925 -> 802; 3342 charts, margin 3.4 px
-  repaint [ 110.0s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
-  repaint [ 116.1s] baked
-  repaint [ 116.1s] written
-  edgeclean [   0.1s] 250797 points, 312614 triangles, a 2048 sheet; the body [0.859, 1.74, 0.293] m (scaled 1.0000)
-  edgeclean [   6.7s] collar: 7423 triangles, 91390 texels (43128 in the box); skin 59284 (painted 2859), tee 8822 (painted 2170), knit 23284 (painted 206); islands gone 3, kept 0; the edge found in 58 of 92 slices (-1.411 to -1.391 along the walk), 1942 texels changed sides; 5235 texels painted again
-  edgeclean [  39.6s] frontR: 16648 triangles, 140896 texels (83817 in the box); skin 29806 (painted 1097), tee 29100 (painted 1522), knit 81990 (painted 1751); islands gone 0, kept 5; the edge found in 270 of 313 slices (0.052 to 0.092 along the walk), 2771 texels changed sides; 4370 texels painted again
-  edgeclean [  72.0s] frontL: 17143 triangles, 145331 texels (88174 in the box); skin 31955 (painted 1012), tee 29525 (painted 1574), knit 83851 (painted 2108); islands gone 1, kept 1; the edge found in 270 of 306 slices (0.056 to 0.096 along the walk), 3403 texels changed sides; 4694 texels painted again
-  edgeclean [  79.5s] hairtop: 63091 triangles, 287643 texels (199147 in the box); hair 287643 (painted 10); islands gone 0, kept 1; 10 texels painted again
-  edgeclean [  82.3s] 11385 texels painted again in 4 boxes, 24494 of the margin after them
+  repaint [   0.3s] the face 47147 triangles, the rest of the head 88885, the hands 23604, the body 152978 (looking [0.0, 0.0, 1.0])
+  repaint [ 268.6s] xatlas: 3342 charts, 79% of the square used
+  repaint [ 276.2s] packed again: 3342 charts in a 3581x3553 square drawn at 2048 (82% used), a margin of 3.4 pixels at 2048
+  repaint [ 276.8s] texels a metre at 2048, before -> now: face 2099 -> 2241, head 2166 -> 1704, hands 1812 -> 1198, body 925 -> 802; 3342 charts, margin 3.4 px
+  repaint [ 277.4s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 294.9s] baked
+  repaint [ 294.9s] written
+  edgeclean [   0.2s] 250797 points, 312614 triangles, a 2048 sheet; the body [0.859, 1.74, 0.293] m (scaled 1.0000)
+  edgeclean [   9.7s] collar: 7423 triangles, 91390 texels (43128 in the box); skin 59284 (painted 2859), tee 8822 (painted 2170), knit 23284 (painted 206); islands gone 3, kept 0; the edge found in 58 of 92 slices (-1.411 to -1.391 along the walk), 1942 texels changed sides; 5235 texels painted again
+  edgeclean [  50.4s] frontR: 16648 triangles, 140896 texels (83817 in the box); skin 29806 (painted 1097), tee 29100 (painted 1522), knit 81990 (painted 1751); islands gone 0, kept 5; the edge found in 270 of 313 slices (0.052 to 0.092 along the walk), 2771 texels changed sides; 4370 texels painted again
+  edgeclean [  93.0s] frontL: 17143 triangles, 145331 texels (88174 in the box); skin 31955 (painted 1012), tee 29525 (painted 1574), knit 83851 (painted 2108); islands gone 1, kept 1; the edge found in 270 of 306 slices (0.056 to 0.096 along the walk), 3403 texels changed sides; 4694 texels painted again
+  edgeclean [ 104.0s] hairtop: 63091 triangles, 287643 texels (199147 in the box); hair 287643 (painted 10); islands gone 0, kept 1; 10 texels painted again
+  edgeclean [ 107.6s] 11385 texels painted again in 4 boxes, 24494 of the margin after them
   repaint: 214559 points -> 250797 (36238 copied along the new seams), 312614 triangles; texels a metre at 2048, before -> now: face 2099 -> 2241, head 2166 -> 1704, hands 1812 -> 1198, body 925 -> 802; 3342 charts, margin 3.4 px; edges: 11385 texels painted again in 4 boxes, 24494 of the margin after them
 prune: Removed types... Accessor (6)
 prune: Removed types... Skin (1), Accessor (5)
-prepmonk p5zavier1h.glb: tris 312640 -> 312614, 0 takes, 5045 KB
+prepmonk p5zavierh.glb: tris 312640 -> 312614, 0 takes, 5045 KB

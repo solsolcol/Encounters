@@ -10,15 +10,15 @@ wrote masters/v28.0/src/merged-collector.glb
 prune: Removed types... Texture (2), Accessor (5)
   177961 vertices in 157268 positions; 8882 normals turned more than 10° to agree across a seam; normals of no length: 0
   repaint [   0.1s] 177961 points joined into 157268 places; 314540 triangles
-  repaint [   0.2s] the face 21597 triangles, the rest of the head 29931, the hands 27304, the body 235708 (looking [0.0, 0.0, 1.0])
-  repaint [ 371.4s] xatlas: 2029 charts, 73% of the square used
-  repaint [ 378.0s] packed again: 2029 charts in a 3507x3474 square drawn at 2048 (77% used), a margin of 3.5 pixels at 2048
-  repaint [ 388.1s] 2 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (2, 1 of them laid back whole in the chart round them, 1 at one point); together 5.0 mm2 of the body, the largest 4.212 mm2 with an edge of 5.58 mm
-  repaint [ 388.2s] texels a metre at 2048, before -> now: face 1362 -> 2224, head 1321 -> 1645, hands 1569 -> 1048, body 1102 -> 836; 2029 charts, margin 3.5 px; 2 unplaced corners mended
-  repaint [ 389.3s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
-  repaint [ 412.9s] baked
-  repaint [ 412.9s] written
+  repaint [   0.3s] the face 21597 triangles, the rest of the head 29931, the hands 27304, the body 235708 (looking [0.0, 0.0, 1.0])
+  repaint [ 461.9s] xatlas: 2029 charts, 73% of the square used
+  repaint [ 469.2s] packed again: 2029 charts in a 3507x3474 square drawn at 2048 (77% used), a margin of 3.5 pixels at 2048
+  repaint [ 479.0s] 2 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (2, 1 of them laid back whole in the chart round them, 1 at one point); together 5.0 mm2 of the body, the largest 4.212 mm2 with an edge of 5.58 mm
+  repaint [ 479.1s] texels a metre at 2048, before -> now: face 1362 -> 2224, head 1321 -> 1645, hands 1569 -> 1048, body 1102 -> 836; 2029 charts, margin 3.5 px; 2 unplaced corners mended
+  repaint [ 479.8s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [ 502.5s] baked
+  repaint [ 502.5s] written
   repaint: 177961 points -> 209013 (31052 copied along the new seams), 314540 triangles; texels a metre at 2048, before -> now: face 1362 -> 2224, head 1321 -> 1645, hands 1569 -> 1048, body 1102 -> 836; 2029 charts, margin 3.5 px; 2 unplaced corners mended
 prune: Removed types... Accessor (6)
 prune: Removed types... Skin (1), Accessor (5)
-prepmonk p5collector.glb: tris 314540 -> 314540, 4 takes, 4065 KB
+prepmonk p5collector.glb: tris 314540 -> 314540, 4 takes, 4067 KB
