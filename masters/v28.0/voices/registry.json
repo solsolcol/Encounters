@@ -406,14 +406,6 @@
    "secs": 5.27
   },
   {
-   "id": "ph5f3",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need hidden, Grandmaster Pho played: first wording (said in the lesson)",
-   "text": "[firm] Only Zavier can find it. Switch to Zavier.",
-   "secs": 3.53
-  },
-  {
    "id": "ph5f4",
    "who": "pho",
    "ch": "e4c5",
@@ -436,14 +428,6 @@
    "where": "the fight: need bound, Grandmaster Pho played: first wording (said in the lesson)",
    "text": "[firm] Fire. Then bag it.",
    "secs": 1.53
-  },
-  {
-   "id": "ph5f7",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need hidden, Master Zavier played: first wording (said in the lesson)",
-   "text": "[calm] It is hiding. SMELL.",
-   "secs": 3.69
   },
   {
    "id": "ph5f8",
@@ -500,14 +484,6 @@
    "where": "the fight: a golden shockwave broken in its gathering (each time)",
    "text": "[serious] They broke the gold. Lend me your cage before I gather it.",
    "secs": 5.13
-  },
-  {
-   "id": "ph5fg",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: a SMELL with nothing hidden (once)",
-   "text": "[stern] Do not open yourself for nothing. They feel it.",
-   "secs": 3.69
   },
   {
    "id": "ph5fi",
@@ -590,14 +566,6 @@
    "secs": 1.85
   },
   {
-   "id": "ph5nd1",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need tired, Grandmaster Pho played: first wording (said in the lesson)",
-   "text": "[calm] It is tired. Go to it, and BAG it.",
-   "secs": 3.37
-  },
-  {
    "id": "ph5nd2",
    "who": "pho",
    "ch": "e4c5",
@@ -620,22 +588,6 @@
    "where": "the fight: the first time a tired Prai rises again (once)",
    "text": "[serious] The Prai rise again. Bag them while they are tired.",
    "secs": 4.33
-  },
-  {
-   "id": "ph5nf2",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need hidden, Master Zavier played: second wording",
-   "text": "[firm] SMELL, Zavier. Find the Prai.",
-   "secs": 2.49
-  },
-  {
-   "id": "ph5nf3",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: needs hidden and beneath, Master Zavier played: the short one",
-   "text": "[firm] SMELL.",
-   "secs": 1.2
   },
   {
    "id": "ph5ng1",
@@ -740,30 +692,6 @@
    "where": "the fight: need athimSw (Master Zavier played; at him, his BIND far off): first wording",
    "text": "[calm] Switch to me. I will chase it off.",
    "secs": 2.73
-  },
-  {
-   "id": "ph5nm1",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need beneath, Grandmaster Pho played: first wording",
-   "text": "[urgent] Something is under him. Switch to Zavier.",
-   "secs": 3.13
-  },
-  {
-   "id": "ph5nn1",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need beneath, Master Zavier played: first wording",
-   "text": "[urgent] Something is under you. SMELL.",
-   "secs": 3.53
-  },
-  {
-   "id": "ph5nn2",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: need beneath, Master Zavier played: second wording",
-   "text": "[firm] It is under you. SMELL.",
-   "secs": 3.21
   },
   {
    "id": "ph5no1",
@@ -916,14 +844,6 @@
    "where": "the fight: need slip, Master Zavier played: second wording",
    "text": "[calm] BIND it, and the fire will hold.",
    "secs": 3.13
-  },
-  {
-   "id": "ph5ny2",
-   "who": "pho",
-   "ch": "e4c5",
-   "where": "the fight: needs hidden and beneath, Grandmaster Pho played: second wording",
-   "text": "[firm] Switch to Zavier. SMELL.",
-   "secs": 2.65
   },
   {
    "id": "ph5g1",

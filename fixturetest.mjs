@@ -3600,7 +3600,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3740,6 +3740,26 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       return R;`);
     /* (and GONE under a film played from the mode, back as play comes back: R47's lab, 23 Nov, found the list standing over
        the Naga's film, its showing rule naming one class more than the hiding ones and so outweighing them) */
+    /* v28.0 · THE CALL (the seventieth seam; Chad's R68: "show up in the middle of the screen but slightly offset towards the
+       bottom"): absent, the main act stands in its slot with no 'call'; set `call`, the same button stands in the screen's
+       middle a little below its centre and the others step aside (none can be pressed); let go, it is back in its slot as it
+       was and the others with it */
+    K.tagCallSeam = await pCheck('callSeam', `
+      const R = {}, B = () => document.getElementById('tagA0'), others = () => ['tagA1', 'tagA2'].map(i => document.getElementById(i));
+      await frames(2);
+      const r0 = B().getBoundingClientRect();
+      R.absentNoCall = !B().classList.contains('call') && !document.querySelector('#tagHud .tagBtn.call');
+      kit.tagAct('zap', { call: true }); await frames(4);
+      const r1 = B().getBoundingClientRect(), cx = r1.left + r1.width / 2, cy = r1.top + r1.height / 2;
+      R.called = B().classList.contains('call');
+      R.middle = Math.abs(cx - innerWidth / 2) < innerWidth * 0.08 && cy > innerHeight * 0.5 && cy < innerHeight * 0.75;
+      R.othersAside = others().every(o => !o || o.classList.contains('hide') || (getComputedStyle(o).opacity === '0' && getComputedStyle(o).pointerEvents === 'none'));
+      kit.tagAct('zap', { call: false }); await frames(4);
+      const r2 = B().getBoundingClientRect();
+      R.back = !B().classList.contains('call') && Math.abs(r2.left - r0.left) < 2 && Math.abs(r2.top - r0.top) < 2 && Math.abs(r2.width - r0.width) < 2;
+      R.othersBack = others().every(o => !o || o.classList.contains('hide') || getComputedStyle(o).opacity !== '0');
+      R._r = [r0, r1, r2].map(r => [Math.round(r.left), Math.round(r.top), Math.round(r.width)]);
+      return R;`);
     K.tagPartyFilm = await pCheck('partyFilm', `
       const R = {};
       R.started = kit.film('flash') === true;
