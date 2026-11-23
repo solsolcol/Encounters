@@ -93,7 +93,13 @@ const INSTALL = () => {
       const s = [vis, +v.x.toFixed(2), +v.y.toFixed(2), +v.z.toFixed(2)], was = last.get(k);
       if (!was || was[0] !== s[0] || Math.abs(was[1] - s[1]) + Math.abs(was[2] - s[2]) + Math.abs(was[3] - s[3]) > 0.02) {
         n.copy(v).project(cam); T[k] = s.concat([+n.x.toFixed(3), +n.y.toFixed(3), n.z < 1 && n.z > -1 ? 1 : 0]); last.set(k, s); } }
-    return { L, P, T };
+    /* (the place's solids as they stand at this row, recorded only when they change: a door that opens, a gate shut by a
+       phase; read by tools/probes/e4c5bodies.py, which before read every row against the solids of the film's first frame) */
+    const BB = S.blockers || []; let bs = BB.length;
+    for (const b of BB) bs = (Math.imul(bs, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13 + b.min.z * 7))) | 0;
+    let BL = null;
+    if (bs !== window.__bsig) { window.__bsig = bs; BL = BB.map(b => b.isEmpty() ? null : [b.min.x, b.max.x, b.min.z, b.max.z].map(q => +q.toFixed(3))); }
+    return BL ? { L, P, T, B: BL } : { L, P, T };
   };
 };
 

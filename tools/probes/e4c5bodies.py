@@ -4,7 +4,8 @@ and preventing bodies from clipping?"; his pick: chapter 5 only).
 
 Reads the films' rows that tools/probes/e4c5films.mjs writes in MODE=seek (every person at every STEP s: shown or not, the
 hips in the world) with the place's solids it records as each film begins (`solids`: the blockers, each grown 0.14 m for
-his eye, or null where made empty). For every row:
+his eye, or null where made empty) and again at any row where they change (`B`: a door opened, a gate shut by a phase).
+For every row:
   - every SHOWN body on the floor (Grandmaster Pho, Ton, Jun, Mr Koh, Master Zavier, the collector) that STANDS (hips 0.65 m
     up or more: a seated body is left out) is a disc round its hips (0.18 m; Mr Koh 0.21);
   - A BODY IN A SOLID: its disc reaching more than TOL into a solid (the blocker taken back to the solid);
@@ -50,10 +51,15 @@ def main():
     for f in files:
         res = json.load(open(f))
         lab, rows, step = res['labels'], res['rows'], res.get('step', 0.1)
-        solids = [[b[0] + GROW, b[1] - GROW, b[2] + GROW, b[3] - GROW] for b in (res.get('solids') or []) if b]
+        shrink = lambda L: [[b[0] + GROW, b[1] - GROW, b[2] + GROW, b[3] - GROW] for b in (L or []) if b]
+        solids = shrink(res.get('solids'))
+        changes = 0
         spans, spirit = {}, {}
         for ri, row in enumerate(rows):
             t = row['T'] if isinstance(row.get('T'), (int, float)) else round(ri * step, 2)
+            if row.get('B') is not None:     # the solids as they stand from this row on (a door opened, a gate shut)
+                solids = shrink(row['B'])
+                changes += 1
             bodies = []
             for i, p in enumerate(row['P']):
                 if not p or not p[0]:
@@ -70,7 +76,7 @@ def main():
                 for si, s in enumerate(solids):
                     dep = disc_in_box(x, z, r, s)
                     if dep > tol:
-                        k = ('solid', n, si)
+                        k = ('solid', n, tuple(round(q, 2) for q in s))
                         e = spans.setdefault(k, [t, t, dep, (round(x, 2), round(z, 2))])
                         e[1] = t
                         if dep > e[2]:
@@ -88,11 +94,11 @@ def main():
                             e[2], e[3] = dep, (round(x1, 2), round(z1, 2))
         nav = res.get('nav')
         name = os.path.basename(f)
-        print('%s: %d rows, %d solids%s' % (name, len(rows), len(solids), ('' if not nav else ', map %s %s' % ('on' if nav.get('on') else 'off', json.dumps(nav.get('counts'))))))
+        print('%s: %d rows, %d solids (%d changes read row by row)%s' % (name, len(rows), len(solids), changes, ('' if not nav else ', map %s %s' % ('on' if nav.get('on') else 'off', json.dumps(nav.get('counts'))))))
         for k, e in sorted(spans.items(), key=lambda kv: -kv[1][2]):
             faults += 1
             if k[0] == 'solid':
-                s = solids[k[2]]
+                s = k[2]
                 print('  FAULT %s in a solid [%.2f..%.2f, %.2f..%.2f] %.1f-%.1fs, %.0f cm deep at its deepest (at %s)' % (k[1], s[0], s[1], s[2], s[3], e[0], e[1], e[2] * 100, e[3]))
             else:
                 print('  FAULT %s x %s %.1f-%.1fs, %.0f cm into each other at the deepest (at %s)' % (k[1], k[2], e[0], e[1], e[2] * 100, e[3]))
