@@ -126,8 +126,9 @@
         // try and 93.7% within two, against 76.7 and 97.0 at 40, its losses in the first hold 31 where they were 3 (the
         // first gold, taught in that hold, comes ready sooner, with fewer bound); 34 s measured 85.7 and 97.3, 36 s 78.3
         // and 92.3: at 300 fights the rates are noisy, the first hold's losses are not. The long wait at 40 changes
-        // nothing for him: the holds set the wait before it runs out)
-        holdAt: [6, 4], holdSecs: 32, holdRetry: 10, holdPace: 0.45, goldGrace: 8,
+        // nothing for him: the holds set the wait before it runs out. TAKEN: 34, the shortest of the three that keeps the
+        // careful player as sure within two tries as he was (97.3), still 6 s quicker than 40: Chad's "slightly easier")
+        holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.45, goldGrace: 8,
         // STAGES 4 TO 6
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)

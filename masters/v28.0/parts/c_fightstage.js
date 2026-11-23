@@ -32,7 +32,7 @@
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0,
                   last: { pho: null, zav: null }, faceTo: { pho: null, zavier: null }, faceT: { pho: 0, zavier: 0 }, wonAt: -1, done: false,
-                  hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
+                  hudSig: '', obj: null, objKey: '', objStep: 0, film: false, losses: 0, rand: null, fallback: false, lit: 0, flare: 0, drainSnd: 0,
                   reached: 0, chillK: -1, swNeed: false, stemsOn: false, lastLine: '', heard: [], log: [], act: null, actN: 0, waits: {} };
 
     /* ---------------------------------------------------------------- THE PICTURES THE FIGHT PAINTS (all painted light) */
@@ -447,6 +447,7 @@
       FS5.lastLine = key; FS5.heard.push(key); if (FS5.heard.length > 120) FS5.heard.shift();
       if (kit && kit.captions) kit.captions([{ at: 0, end: (SECS[key] || 2.5) + 0.4, text: L[2], sub: WHO[L[0]] || '' }]);
       if (worldSfx && !(soundOff && soundOff())) worldSfx(key, 1, 1, 0);
+      FS5.lineEnd = FS5.wall + (SECS[key] || 2.5);                       // (when this line is done: the Naga's film waits for it)
     }
 
     /* ---------------------------------------------------------------- THE NINE ON THE COURT, as the rules have them */
@@ -540,7 +541,19 @@
       if (!B.wait) fsBallGo(B);
     }
     /* let go: its sound, a flare at the Naga's mouth and a spit of sparks off it */
-    function fsBallGo(B) { fsBallSound(B); fsFlare(B.a, B.ai ? 0.7 : 1);
+    /* (R33, lens 3's L3-09: its arc was a fixed 0.8 m, so a ball thrown past his student at his head's height went through
+       it. Its rise is now made enough to carry it 0.45 m over the head of whichever of the two stands within 0.6 m of its line,
+       up to 2 m; otherwise as it was) */
+    const _fbHd = new THREE.Vector3();
+    function fsBallArc(B) {
+      let H = B.ai ? 0.6 : 0.8; const ax = B.a.x, az = B.a.z, dx = B.b.x - ax, dz = B.b.z - az, L2 = dx * dx + dz * dz; if (L2 < 1e-6) return H;
+      for (const P of [cast.zav, cast.pho]) { if (!P || !P.ready || !P.group.visible) continue;
+        fsHead(P, _fbHd, 1.62); const u = ((_fbHd.x - ax) * dx + (_fbHd.z - az) * dz) / L2; if (u <= 0.05 || u >= 0.95) continue;
+        const ox = ax + dx * u - _fbHd.x, oz = az + dz * u - _fbHd.z; if (ox * ox + oz * oz > 0.36) continue;
+        const need = (_fbHd.y + 0.45 - (B.a.y + (B.b.y - B.a.y) * u)) / (4 * u * (1 - u)); if (need > H) H = Math.min(2.0, need); }
+      return H;
+    }
+    function fsBallGo(B) { B.H = fsBallArc(B); fsBallSound(B); fsFlare(B.a, B.ai ? 0.7 : 1);
       fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 8 : 16, { sp: 2.2, up: 0.1, life: 0.4, s0: 0.09, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.5, grav: -1.5, drag: 3 }); }
     function fsBallSound(B) { const m = B.a; fsFx(fsDeal('ball'), B.ai ? 0.45 : 0.8, m.x, m.z); fsFx('u5flight', B.ai ? 0.32 : 0.6, m.x, m.z); }
     /* (a bloom of light where something lands: of fire (`fire`), with its flash, its roiling ball, its smoke and its scorch) */
@@ -559,7 +572,7 @@
       for (const B of fsBalls) {
         if (!B.on) { if (B.flame.visible || B.core.visible) { B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
         if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallGo(B); }   // (let go now, from the stick's head)
-        B.t += wdt; const u = c01(B.t / B.T), H = B.ai ? 0.6 : 0.8, h = H * 4 * u * (1 - u);
+        B.t += wdt; const u = c01(B.t / B.T), H = B.H || (B.ai ? 0.6 : 0.8), h = H * 4 * u * (1 - u);
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
         B.d.subVectors(B.b, B.a); B.d.y += H * 4 * (1 - 2 * u); if (B.d.lengthSq() > 1e-8) B.d.normalize(); else B.d.set(0, 0, 1);   // (its way now: the path's own)
         const sz = B.ai ? 0.72 : 1, fl = 0.9 + 0.07 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67 + B.seed);
@@ -969,9 +982,9 @@
       /* the objective (true whoever is played), the count, his cage's strength on his mark */
       const ob = H.objective, txt = ob ? String(W5[ob.key] || '').replace('{n}', String(ob.n != null ? ob.n : st.left)) : null;
       if (txt !== FS5.obj) {
-        const lessonStep = /^objFight(1|1b|2|2b)$/.test(FS5.objKey) && ob && ob.key !== FS5.objKey;
+        const lessonStep = FS5.objStep > 0 && FS5.objStep < 5 && !!ob && (ob.step || 0) > FS5.objStep;
         kit.objective(txt, { complete: lessonStep });
-        FS5.obj = txt; FS5.objKey = ob ? ob.key : '';
+        FS5.obj = txt; FS5.objKey = ob ? ob.key : ''; FS5.objStep = ob && ob.step ? ob.step : 0;
       }
       kit.tagCount(st.left, 9);
       kit.tagBody('zavier', { share: played === 'pho' ? H.cage.str : null });
@@ -1115,7 +1128,17 @@
     /* ---------------------------------------------------------------- THE STAGES THE PART ITSELF CARRIES OUT */
     /* stage 5: the Naga's film, the one film inside the fight (it cannot be skipped until the chapter has been sealed once:
        the forty-first seam); the three it lays down are the three the surge drew together */
+    /* (R33, lens 2's L2-04: a line of the fight still being said as the rules turn to the Naga ran on over the film's first
+       seconds, its caption standing over the film (a line of the fight plays through worldSfx, which a film's start does not
+       stop). The film now waits for the line to finish its sentence (at most its own length: a second or so), the court
+       held as it is) */
     function fsNaga() {
+      const wait = Math.max(0, (FS5.lineEnd || 0) - FS5.wall);
+      if (wait > 0.05) { FS5.nagaAt = FS5.wall + wait + 0.15; return; }
+      fsNagaGo();
+    }
+    function fsNagaGo() {
+      FS5.nagaAt = null; if (kit && kit.captions) kit.captions(null);
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
       if (typeof FILMS5 === 'object' && FILMS5.together) FILMS5.together.three = three.length === 3 ? three : null;
       FS5.film = true;
@@ -1150,7 +1173,7 @@
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
-      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null;
+      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
@@ -1187,6 +1210,7 @@
       if (!ts.on) return;
       /* the card after a loss waits a moment of the court going dark */
       if (FS5.card && FS5.wall >= FS5.cardAt) { const c = FS5.card; FS5.card = null; c(); }
+      if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
       if (FS5.wonAt >= 0) { fsWonTick(); }
       FS5.live = ts.live;
       const dt = Math.max(0, Math.min(0.1, ts.t - FS5.lastT)); FS5.lastT = ts.t;
@@ -1206,10 +1230,10 @@
       const q = FS5.q; FS5.q = null;
       const input = { mx, mz };
       if (q) {
-        if (q.act) input.act = q.act; if (q.slot) input.slot = q.slot;
+        if (q.act) input.act = q.act; if (q.slot) input.slot = q.slot; if (q.to) input.to = q.to;
         const pk = FS5.pick;
         if (pk && q.slot && q.slot !== 'swap' && q.slot !== 'together') { if (pk[0] === 'p') input.pick = +pk.slice(1); else input.pickCloud = +pk.slice(1); FS5.pick = null; }
-      } else if (FS5.swNeed) { input.act = 'SWITCH'; FS5.swNeed = false; }
+      } else if (FS5.swNeed) { input.act = 'SWITCH'; input.to = played; FS5.swNeed = false; }
       /* (where the stick's foot stands while his hand holds it: the gold's wheel goes out from the point it strikes) */
       { const f = typeof PHOGRIP5 === 'object' && PHOGRIP5.footAt ? PHOGRIP5.footAt(_fsFoot) : null; st.pho.strike = f ? fsL(f.x, f.z) : null; }
       /* 3. the step */
@@ -1456,7 +1480,7 @@
       if (FS5.on) fightLeave();
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
-        hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
+        hudSig: '', obj: null, objKey: '', objStep: 0, film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
         swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
@@ -1467,7 +1491,7 @@
     function fsOnAct(r) {
       if (!FS5.st || !r) return;
       if (r.act === 'target') { FS5.pick = r.id; return; }
-      if (r.act === 'switch') { FS5.q = { act: 'SWITCH' }; return; }
+      if (r.act === 'switch') { FS5.q = { act: 'SWITCH', to: r.to }; return; }
       if (r.phase !== 'down') return;
       FS5.q = { slot: FS5.st.stage === 'surge' ? 'together' : FS_SLOT[r.act] };
     }

@@ -15,7 +15,14 @@
        people stand at that phase's stations. */
     const FM5 = { once: new Set(), shot: '', lit: '', vis: false, s: null };
     const PLAYFOV5 = 72;
-    function fmLook(name, secs = 0) { if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
+    function fmLook(name, secs = 0) { phoLevel(name); if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
+    /* (R33, lens 4's L4-01: his look D draws his face, hands and beads unlit at the level the chapter sets for its light;
+       this chapter never set it, so at dusk, at night and in the trance they shone at the day's brightness, and its lift
+       drew his robe toward its unlit white in the dark. Chapter 4's measure for its dark, 0.55; the dusk and the evening
+       between. Set wherever the light is: a film's fmLook and the play's lookAt0, wrapped here) */
+    const PHO_LEVEL = { DAY: 1, DUSK: 0.8, EVENING: 0.7, NIGHT: 0.55, TRANCE: 0.55 };
+    function phoLevel(name) { if (typeof phoLook === 'object' && phoLook && phoLook.level) phoLook.level.value = PHO_LEVEL[name] != null ? PHO_LEVEL[name] : 1; }
+    { const look0 = lookAt0; lookAt0 = function (name, secs) { phoLevel(name); return look0(name, secs); }; phoLevel(lookName); }
     function fmLens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
     /* the rig at an eye, aimed at a point (yaw turns, pitch tilts: a turn of 0 looks toward -z) */
     function fmAim(p, q, roll = 0) {
