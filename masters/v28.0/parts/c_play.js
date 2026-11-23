@@ -54,6 +54,11 @@
       const th = (s - WAY_SA) / WAY_RHO, rr = WAY_RHO - lat;
       return out.set(WAY_C.x + rr * Math.cos(th), 0, WAY_C.z - rr * Math.sin(th));
     }
+    /* the walkway's heading at `s`, the way `s` grows (down the first run, round the turn, along the second) */
+    const wayHead = (s) => s <= WAY_SA ? Math.PI : s >= WAY_SB ? -Math.PI / 2 : (() => { const th = (s - WAY_SA) / WAY_RHO; return Math.atan2(-Math.sin(th), -Math.cos(th)); })();
+    /* (R76: the outer side's line, `lat` from the middle: the balustrade's solid stands at x 0.80 on the first run and z
+       -18.40 on the second, 0.80 and 0.85 out from the middle; the nearer is kept) */
+    const WAY_OUT = 0.80;
 
     /* ================================================================ SMELL (the plan's 4.1: one press; he breathes in,
        the edges of the picture darken a little, for about three seconds dark threads drift in the air FROM where the
@@ -292,7 +297,18 @@
       wayAt(s0 + ds / d * st, l0 + dl / d * st, _pw5);
       const mx = _pw5.x - g.x, mz = _pw5.z - g.z;
       g.x = _pw5.x; g.z = _pw5.z;
-      if (mx * mx + mz * mz > 1e-10) P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(mx, mz)) * Math.min(1, wdt * 5.5);
+      /* (R76, the walkway walked by the real keys on build 45: a follower stepping aside turned his whole body to face the
+         inner wall and walked at it, his stride's front toe 0.50 m before his hips, into the wall (Jun 11.4 cm, Grandmaster
+         Pho 6.4). A man who steps aside in a corridor keeps his body along it: his heading is the walkway's (whichever way
+         along it is nearer the way he goes, or, for a step straight across, nearer the way he already faces), turned at most
+         35 degrees toward his step) */
+      if (mx * mx + mz * mz > 1e-10) {
+        const hm = Math.atan2(mx, mz); let ax = wayHead(s0);
+        const across = Math.abs(Math.cos(angTo(ax, hm))) < 0.35, ref = across ? P.group.rotation.y : hm;
+        if (Math.abs(angTo(ax, ref)) > Math.PI / 2) ax += Math.PI;
+        const want = ax + Math.max(-0.61, Math.min(0.61, angTo(ax, hm)));
+        P.group.rotation.y += angTo(P.group.rotation.y, want) * Math.min(1, wdt * 5.5);
+      }
       P.rate = Math.max(0.5, Math.min(1.35, W0.v / pace));
       wayAt(s0 + Math.sign(ds || 1) * Math.min(Math.abs(ds), 0.6), tl, _pw5);
       navTellWalk(P, true, _pw5.x, _pw5.z);
@@ -310,10 +326,16 @@
         let ts = W0.s, tl = W0.lat;
         const near = Math.abs(sp - W0.s) < 1.1 && Math.abs(wayLat(myX(), myZ()) - W0.lat) < 0.9;
         /* he has walked on past: follow, a step and a half behind him and a step behind the one in front */
-        if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; }
-        else if (near) tl = FOLLOW.wall;                                // (he comes up to him: a step to the wall)
-        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side) */
-        tl = Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06);
+        if (sp > W0.s + FOLLOW.gap + FOLLOW.slack) { ts = sp - FOLLOW.gap; tl = FOLLOW.wall; W0.side = null; }
+        else if (near) {
+          /* (he comes up to him: a step aside. R76: to the side he already stands on from him, kept until he has passed:
+             Jun, on the rail's side of him, crossed the walkway in front of him to the wall's) */
+          if (W0.side == null) W0.side = wayLat(g.x, g.z) >= wayLat(myX(), myZ()) - 0.05 ? 1 : -1;
+          tl = W0.side > 0 ? FOLLOW.wall : -(WAY_OUT - footOf(W0.P).a - 0.10);
+        } else W0.side = null;
+        /* (R76: never nearer the inner wall than his own half-width and a hand: Grandmaster Pho's robe is 0.37 either side;
+           nor nearer the rail's side) */
+        tl = Math.max(-(WAY_OUT - footOf(W0.P).a - 0.06), Math.min(tl, WAY_RHO - footOf(W0.P).a - 0.06));
         ts = Math.min(ts, cap); cap = ts - FOLLOW.step;
         const pace = (W0.P.pace && W0.P.pace.Walking) || 1.2;
         const moving = walkLane(W0, ts, tl, wdt, pace);
