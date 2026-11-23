@@ -101,11 +101,16 @@ for (const t of TS) {
         /* (the wrist taken apart in the forearm's own frame: FLEX the hand's turn toward the palm (+) or its back (-), about the
            line across the wrist; DEV its turn sideways, toward the thumb (+) or the little finger (-); a wrist's own reach is
            about 80 flexion, 70 extension, 20 toward the thumb and 35 toward the little finger) */
-        ...(() => { const lat = new V3().crossVectors(nW, wF).normalize(), nn = new V3().crossVectors(wF, lat).normalize();
-          const th = bone(new RegExp('^(mixamorig:?)?' + (sd === 'L' ? 'Left' : 'Right') + 'HandThumb1$')), thW = th ? th.getWorldPosition(new V3()).sub(hb.getWorldPosition(new V3())) : null;
-          const tsg = thW ? Math.sign(thW.dot(lat)) || 1 : 1;
-          return { flexDeg: +(Math.atan2(wH.dot(nn), wH.dot(wF)) * 180 / Math.PI).toFixed(1), devDeg: +(tsg * Math.atan2(wH.dot(lat), wH.dot(wF)) * 180 / Math.PI).toFixed(1),
-                   foreUpDeg: +(Math.asin(Math.max(-1, Math.min(1, wF.y))) * 180 / Math.PI).toFixed(1) }; })() };
+        /* (and as tools/probes/jointscan.mjs reads a wrist, word for word: the palm's facing from the fingers' line and the
+           line across the knuckles (index to little finger), so no rig's own axes are assumed; flex toward the palm (+),
+           dev toward the thumb (+); its limits: flexed 70, bent back 60, toward the thumb 25, toward the little finger 40) */
+        ...(() => { const S0 = sd === 'L' ? 'Left' : 'Right', side = sd === 'L' ? 1 : -1, B = (nm) => { const b0 = bone(new RegExp('^(mixamorig:?)?' + S0 + nm + '$')); return b0 ? b0.getWorldPosition(new V3()) : null; };
+          const wr = B('Hand'), el = B('ForeArm'), i1 = B('HandIndex1'), m1 = B('HandMiddle1'), k1 = B('HandPinky1') || B('HandRing1'); if (!wr || !el || !i1 || !m1 || !k1) return { js: 'no bones' };
+          const f = m1.clone().sub(wr).normalize(), ac = i1.clone().sub(k1); ac.addScaledVector(f, -ac.dot(f)).normalize();
+          const n = new V3().crossVectors(f, ac).multiplyScalar(side).normalize(), e = wr.clone().sub(el).normalize();
+          const ne = n.clone().addScaledVector(e, -n.dot(e)).normalize(), re = ac.clone().addScaledVector(e, -ac.dot(e)).normalize(), D = 180 / Math.PI;
+          return { jsFlex: +(Math.atan2(f.dot(ne), f.dot(e)) * D).toFixed(1), jsDev: +(Math.atan2(f.dot(re), f.dot(e)) * D).toFixed(1), jsPalmUp: +(Math.acos(Math.max(-1, Math.min(1, n.y))) * D).toFixed(1),
+                   foreUpDeg: +(Math.asin(Math.max(-1, Math.min(1, e.y))) * D).toFixed(1) }; })() };
       out.palmSkin[sd] = { world: av.map(x => +x.toFixed(4)), aboveBone: +(av[1] - P[sd].y).toFixed(4), n: surf[sd].length, local: [loc.x, loc.y, loc.z].map(x => +x.toFixed(5)),
                            palmLocal: [pl.x, pl.y, pl.z].map(x => +x.toFixed(5)), upLocal: [upL.x, upL.y, upL.z].map(x => +x.toFixed(5)), boneScale: +sc.x.toFixed(5) }; }
     for (const sd of ['L', 'R']) { const c = P[sd]; if (!c) continue;
@@ -116,7 +121,7 @@ for (const t of TS) {
                   gap: top != null && low != null ? +(low - top).toFixed(4) : null, nSkin: hs.length, nStick: ss.length, handVerts: skin[sd].length }; }
     return out; }, t);
   rows.push(r); log(JSON.stringify(r));
-  await p.screenshot({ path: `${OUT}/palms-${t}.png` });
+  await p.screenshot({ path: `${OUT}/palms-${t}.png`, timeout: 180000 });
   /* FROM BESIDE HIM: two lenses square to the stick's line at the palms' height, 0.8 m off, one each side, drawn into the
      canvas's top third (a landscape frame: both hands in it) and read back in the same task (no preserveDrawingBuffer) */
   const side = await p.evaluate(() => {

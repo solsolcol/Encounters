@@ -137,39 +137,58 @@
   }
 
   /* TOGETHER (the plan's 5.5, stage 5): the ONE film inside the fight; it cannot be skipped the first time (the fight asks
-     for it with kit.film's noSkip). The stick planted; the Naga rises and lays its body round the court; the tall shape
-     comes apart into its three, laid low; Mr Koh's warmth; the boom again */
-  /* (R47, 23 Nov 2026: the water Naga's film. Up out of the stick in a spiral, hanging over the court as Grandmaster Pho
-     says the line, down over the tall shape as it bursts apart (apart), round onto the line of three and through them, its
-     head through each at p1, p2 and p3, slowing as it goes; out and round the court's three walls (wrap) to rest with its
-     head raised (rest); the three sunk low (low); Mr Koh; the boom again) */
-  const NG5 = tl(0, [[0.2], ['@plant'], [2.0], ['@rise'], [2.8], ['@apex'], [0.1], ['ph5c2', -1.9], ['@dive'], [1.3], ['@apart'], [3.3],
-                     ['@p1'], [1.15], ['@p2'], [1.15], ['@p3'], [2.2], ['@wrap'], [3.5], ['@rest'], [-3.0], ['@low'], [6.4], ['ko5c2', 0.5], ['@back'], [1.8], ['@end']]);
+     for it with kit.film's noSkip). The stick planted; the Naga rises out of it, stoops on the tall shape and goes through the
+     three it bursts into, rings the court and goes home into the stick; the three laid low; Mr Koh's warmth; the boom again */
+  /* (R63, R64, R69, R70, 23 Nov 2026: the film rebuilt, its clock now the film's own (c_yfilm.js FILMS5.together.tl(): every
+     mark read from where the flight reaches it, in STORY seconds); each pierce HOLDS the picture a moment, so a cue is laid at
+     the REAL second its mark falls on (F.real). Its sounds: the score from the first frame; the stick planted; the Naga of
+     water surging up, its climb at speed and its CRY as its eyes kindle (R70); his line over the court; the stoop down onto
+     the shape and the shape bursting; each pierce a stack of sound: the struck blow (u5nagahit1-3), its own water through it
+     (u5pierce1-3) and the fire hissing out (u5douse), with a flash in the water's white-blue, the screen shaken and the phone
+     buzzed; its ring round the court; its rush home into the stick and the stick's head bursting with light (the together
+     press's burst again, its call answered); the three laid; Mr Koh; the boom) */
   function filmTogether(c, s, api) {
-    const { tr, step, sfx, sfxFade, rawK, stage } = api, F = stage.films.together, T = NG5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together, T = F.tl(), R = (x) => F.real(x), END = R(T.end);
+    const FLASH = '#DFF5FF';
     step(0, () => F.begin(api, s));
-    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    tr(0, END, (k, t) => F.frame(t), rawK);
+    /* (R64: it opens on the white of the press, everyone set at their marks under it) */
+    fade(0, 0.5, 0.85, 0, FLASH);
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
-    sfx(T.rise, 'u5nagawater', 1.0);                                           // the Naga of water surging up out of its head
-    sfx(T.rise + 0.6, 'u5mist', 0.32); sfx(T.rise + 6.6, 'u5mist', 0.3); sfx(T.rise + 12.6, 'u5mist', 0.28); sfx(T.rise + 18.6, 'u5mist', 0.26);   // the mist off it
+    sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
+    sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
+    sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
+    sfx(T.rise + 0.6, 'u5mist', 0.3);
     sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
-    sfx(T.dive, 'u5nagapass', 0.85);                                           // down over the tall shape
+    sfx(T.stoop - 0.1, 'u5nagadive', 0.9);                                     // over, and down onto the shape
     sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
-    sfx(T.apart, 'u5shapebreak', 0.85);                                        // the tall shape bursts into its three
-    sfx(T.apart + 1.8, 'u5cagewhole', 0.7);                                    // his cage whole again
-    sfx(T.p1 - 1.4, 'u5nagapass', 0.7);                                        // round and down onto their line
-    sfx(T.p1 - 0.06, 'u5pierce1', 1.0); sfx(T.p1 + 0.12, 'u5douse', 0.8);     // through the first: its water bursts, its fire hisses out
-    sfx(T.p2 - 0.06, 'u5pierce2', 1.0); sfx(T.p2 + 0.12, 'u5douse', 0.8);     // the second
-    sfx(T.p3 - 0.06, 'u5pierce3', 1.0); sfx(T.p3 + 0.12, 'u5douse', 0.8);     // the third
-    sfx(T.wrap - 0.3, 'u5nagawrap', 0.85);                                     // round the court's three walls
-    sfx(T.rest - 0.4, 'u5nagabreathw', 0.5); sfx(T.rest + 5.6, 'u5nagabreathw', 0.45);   // its breath, its head raised
-    sfx(T.low, 'u5laid', 0.8);                                                 // the three sunk low, cool
-    sfx(T.ko5c2, 'ko5c2', 1);                                                  // "It is... warm. Why is it warm?"
-    sfxFade(T.back - 0.2, T.end - 0.1, 'u5m9naga'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5mist'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5nagabreathw');
-    step(T.end, () => F.end());
+    sfx(T.apart - 0.04, 'u5shockhit', 0.75);                                   // the shape struck by its passing
+    sfx(T.apart, 'u5shapebreak', 0.9);                                         // and bursting into its three
+    fade(T.apart, T.apart + 0.05, 0, 0.35, FLASH); fade(T.apart + 0.05, T.apart + 0.35, 0.35, 0, FLASH);
+    sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
+    sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
+    [[T.p1, 'u5nagahit1', 'u5pierce1', [40, 30, 70]], [T.p2, 'u5nagahit2', 'u5pierce2', [45, 30, 80]], [T.p3, 'u5nagahit3', 'u5pierce3', [60, 30, 120]]].forEach(([p, hit, wat, buzz], j) => {
+      const h = R(p);
+      sfx(h - 0.04, hit, 1.0);                                                 // the blow
+      sfx(h, wat, 0.85);                                                       // its water through it
+      sfx(h + 0.14, 'u5douse', 0.75);                                          // its fire hissing out
+      fade(h, h + 0.04, 0, 0.6 + 0.1 * j, FLASH); fade(h + 0.04, h + 0.42, 0.6 + 0.1 * j, 0, FLASH);
+      step(h, () => { if (api.kit && api.kit.buzz) api.kit.buzz(buzz); });
+    });
+    sfx(R(T.low), 'u5laid', 0.8);                                              // the three sunk low, cool
+    sfx(R(T.climb) + 0.1, 'u5nagawrap', 0.85);                                 // up into its ring round the court
+    sfx(R(T.ring) + 0.4, 'u5mist', 0.28);
+    sfx(R(T.ringOut) - 0.3, 'u5nagapass', 0.75);                               // the spiral down
+    sfx(R(T.home) - 0.35, 'u5nagadive', 0.85);                                 // its rush home into the stick
+    sfx(R(T.tail) - 0.05, 'u5togpress', 1.0);                                  // the stick's head bursting with light: its call answered
+    fade(R(T.tail), R(T.tail) + 0.06, 0, 0.7, FLASH); fade(R(T.tail) + 0.06, R(T.tail) + 0.6, 0.7, 0, FLASH);
+    step(R(T.tail), () => { if (api.kit && api.kit.buzz) api.kit.buzz([30, 40, 90]); });
+    sfx(R(T.ko5c2), 'ko5c2', 1);                                               // "It is... warm. Why is it warm?"
+    sfxFade(R(T.back) - 0.2, END - 0.1, 'u5m9naga'); sfxFade(END - 1.0, END - 0.1, 'u5mist');
+    step(END, () => F.end());
     c.keep.view = true;
   }
 

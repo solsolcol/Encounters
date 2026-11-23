@@ -18,7 +18,9 @@ man = json.load(open('masters/v28.0/sound/manifest.json', encoding='utf-8'))
 # (R63, 23 Nov 2026: u5nagahome, the Naga drawn back into the stick, NEVER INSTALLED: all four takes hold one level from end
 #  to end (a drone, 0.2 to 0.9 dB of swing a second, no rush in and no burst), so its end is made of layers the film cues:
 #  u5nagadive's rush and u5togpress's burst; its takes kept in sound/raw)
-RETIRED = {'u5chair', 'u5murmur2', 'u5nagarise', 'u5nagacoil', 'u5nagabreath', 'u5embers', 'u5nagahome'}
+# (R63, 23 Nov 2026: u5nagabreathw, the water Naga's breath as it lay round the court with its head raised, RETIRED: the
+#  film rebuilt, it no longer lies there but goes home into the stick; its takes kept in sound/raw)
+RETIRED = {'u5chair', 'u5murmur2', 'u5nagarise', 'u5nagacoil', 'u5nagabreath', 'u5embers', 'u5nagahome', 'u5nagabreathw'}
 names = [s['name'] for s in man['sounds'] if s['name'] not in RETIRED]
 miss = [n for n in names if not (os.path.isfile(f'assets/audio/{n}.mp3') and os.path.isfile(f'assets/audio-opus/{n}.ogg'))]
 assert not miss, ('a file missing', miss)

@@ -763,6 +763,17 @@ K.stakesStrain = await p.evaluate(async () => {
   console.log('stakesStrain', JSON.stringify({ off0, half, hot, full, empty, gone }));
   return off0 && half && hot && full && empty && gone;
 }).catch(e => { console.log('stakesStrain threw', e.message); return false; });
+/* v28.0 (R63): THE PHONE BUZZED, the seventy-second seam: in play kit.buzz sends its pattern to navigator.vibrate and says
+   so; not in play (the title, a menu) it sends nothing and says so */
+K.buzzSeam = await p.evaluate(async () => {
+  const E = window.__enc, got = [], keep = navigator.vibrate;
+  try { Object.defineProperty(navigator, 'vibrate', { configurable: true, writable: true, value: (pt) => { got.push(JSON.stringify(pt)); return true; } });
+    const inPlay = E.getState() === 'play', sent = E.kit.buzz([12, 30, 44]);
+    const okPlay = inPlay && sent === true && got.length === 1 && got[0] === '[12,30,44]';
+    console.log('buzzSeam', JSON.stringify({ inPlay, sent, got }));
+    return okPlay;
+  } finally { try { Object.defineProperty(navigator, 'vibrate', { configurable: true, writable: true, value: keep }); } catch {} }
+}).catch(e => { console.log('buzzSeam threw', e.message); return false; });
 K.stakesShowcase = await p.evaluate(async () => {
   const E = window.__enc, el = document.getElementById('unlock');
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });

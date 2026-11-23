@@ -323,30 +323,38 @@
        ITS OWN UNDERSIDE (the lowest of its drawn points within a palm's width of each palm, read once from its mesh: STICKUNDER5)
        on EACH PALM'S OWN TOP: of the hand's own points (those its hand bone carries, no finger) within 3 cm of the palm's middle
        across the palm, the farthest out on the palm's side, in the hand bone's own frame so the hand carries it (PALMSKIN5:
-       Ton's, read at 4.6 and 7.6 s, the same at both). And laid on it only once HIS PALMS ARE LEVEL: in his 'give' both wrists
-       stand bent back 55 to 57 degrees, his hands point down 21 to 35 degrees at the fingers and his palms face 22 to 39
-       degrees off the sky, so a stick on them could rest only on the heels of his hands, which from the films' lenses read as
-       his wrists (the first fix's pictures). palmsLevel5 turns each hand about its own across-the-palm line (its bone's z)
-       until the palm faces the sky, nine tenths of the way: his wrists come TOWARD straight (bent back 34 and 24 degrees, where
-       a wrist goes to 70), his fingers level, and the stick lies in his palms. Laid after the mixer on the turn the mixer last
+       Ton's, read at 4.6 and 7.6 s, the same at both). And laid on it only once HIS WRISTS ARE A REAL OFFERING HOLD: read as
+       tools/probes/jointscan.mjs reads a wrist, his 'give' bends them back 30 to 38 degrees and toward the thumb 35 to 44 (a
+       real wrist stops near 25 that way, and an offering hand holds it near straight), so his hands pointed down 21 to 35
+       degrees at the fingers and a stick on them could rest only on their heels, which from the films' lenses read as his
+       wrists. palmsHold5 turns each hand on its wrist alone (the swing that carries its fingers' line, keeping the turn the
+       forearm gives it) until the fingers' line stands 12 degrees back and 6 toward the thumb from the forearm's, a hand held
+       out to offer; the forearm, the elbow and the shoulder are the take's. Laid after the mixer on the turn the mixer last
        wrote (a hand it did not write again this frame keeps its base: nothing stacks, v11.5) */
     const PALMSKIN5 = { e4ton: { Left: [0.0472, 0.0588, -0.0064], Right: [-0.0366, 0.0649, -0.0006] } };
-    const PALMLEVEL5 = { e4ton: { Left: 1, Right: -1 } };           // (each palm's facing along its hand bone's x: this rig's, measured)
+    const PALMHOLD5 = { e4ton: { flex: -12, dev: 6 } };            // (degrees: + toward the palm, + toward the thumb)
     function palmSkin5(P, sd, out) {
       const o = PALMSKIN5[P.key] && PALMSKIN5[P.key][sd], hb = o && boneOf(P, sd + 'Hand');
       return hb ? hb.localToWorld(out.set(o[0], o[1], o[2])) : null;
     }
-    const _plU = new THREE.Vector3(), _plQ = new THREE.Quaternion(), _plW = new THREE.Quaternion(), _plZ = new THREE.Vector3(0, 0, 1);
-    function palmsLevel5(P, k = 0.9) {
-      const def = P && P.ready && PALMLEVEL5[P.key]; if (!def || !(k > 1e-4)) return;
-      const keep = P.__lvl5 || (P.__lvl5 = {}); P.group.updateWorldMatrix(true, true);
-      for (const sd of ['Left', 'Right']) { const hb = boneOf(P, sd + 'Hand'); if (!hb) continue;
+    const _phE = new THREE.Vector3(), _phF = new THREE.Vector3(), _phA = new THREE.Vector3(), _phN = new THREE.Vector3(), _phT = new THREE.Vector3(), _phQ = new THREE.Quaternion(), _qI5 = new THREE.Quaternion();
+    function palmsHold5(P, k = 1) {
+      const def = P && P.ready && PALMHOLD5[P.key]; if (!def || !(k > 1e-4)) return;
+      const keep = P.__hold5 || (P.__hold5 = {}), D = Math.PI / 180;
+      for (const [sd, side] of [['Left', 1], ['Right', -1]]) {
+        const hb = boneOf(P, sd + 'Hand'), m1 = boneOf(P, sd + 'HandMiddle1'), i1 = boneOf(P, sd + 'HandIndex1'), k1 = boneOf(P, sd + 'HandPinky1') || boneOf(P, sd + 'HandRing1');
+        if (!hb || !m1 || !i1 || !k1) continue;
         const r = keep[sd] || (keep[sd] = { base: new THREE.Quaternion(), wrote: new THREE.Quaternion(), has: false });
         if (!r.has || !hb.quaternion.equals(r.wrote)) r.base.copy(hb.quaternion);
-        hb.quaternion.copy(r.base); hb.updateMatrixWorld(true);
-        hb.getWorldQuaternion(_plW); _plU.set(0, 1, 0).applyQuaternion(_plW.invert());
-        const sg = def[sd], th = Math.max(-0.8, Math.min(0.8, Math.atan2(sg * _plU.y, sg * _plU.x)));
-        hb.quaternion.multiply(_plQ.setFromAxisAngle(_plZ, th * k));
+        /* (all in the forearm's frame, the hand bone's parent: its long line toward the wrist is the hand bone's own place) */
+        _phE.copy(hb.position).normalize();
+        _phF.copy(m1.position).normalize().applyQuaternion(r.base);                       // (the fingers' line as the take holds it)
+        _phA.copy(i1.position).sub(k1.position).applyQuaternion(r.base); _phA.addScaledVector(_phF, -_phA.dot(_phF)).normalize();   // (across the knuckles, toward the thumb)
+        _phN.crossVectors(_phF, _phA).multiplyScalar(side).normalize();                   // (the way the palm faces)
+        const ne = _phN.addScaledVector(_phE, -_phN.dot(_phE)).normalize(), re = _phA.addScaledVector(_phE, -_phA.dot(_phE)).normalize();
+        _phT.copy(_phE).addScaledVector(ne, Math.tan(def.flex * D)).addScaledVector(re, Math.tan(def.dev * D)).normalize();
+        _phQ.setFromUnitVectors(_phF, _phT); if (k < 1) _phQ.slerp(_qI5, 1 - k);
+        hb.quaternion.copy(_phQ).multiply(r.base);
         r.wrote.copy(hb.quaternion); r.has = true; hb.updateMatrixWorld(true); }
     }
     const STICKUNDER5 = new WeakMap();
@@ -400,7 +408,7 @@
       onPalms(P, which = 'stick') {
         const g = which === 'wrap' ? things.staffWrap : things.nagaStaff; if (!g || !P || !P.ready) return false;
         if (g.parent !== world) world.attach(g);
-        palmsLevel5(P);                                             // (R65: his palms level under it first)
+        palmsHold5(P);                                              // (R65: his wrists an offering hold under it first)
         P.group.updateWorldMatrix(true, true);
         const L = palmOf(P, 'Left', _stA), R = palmOf(P, 'Right', _stB); if (!L || !R) return false;
         const dx = R.x - L.x, dz = R.z - L.z, dy = R.y - L.y, hl = Math.hypot(dx, dz), yaw = Math.atan2(-dz, dx);

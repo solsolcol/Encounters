@@ -656,7 +656,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         return true;
       }
       return {
-        g, U,
+        g, U, bodyLen: BODY.L,
         ready: () => st.ready,
         /* the film's path and timing (FILMS5.together: { stick, pts, keys: [[t, point index or metres]], restSecs }) */
         plan,
@@ -1372,279 +1372,294 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (kit && kit.captions) kit.captions(null); }
     };
 
-    /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock NG5): the
-       ONE film inside the fight, which cannot be skipped the first time (the forty-first seam: the fight plays it with
-       kit.film('together', { noSkip: !ctx.sealedBefore(...) })). It begins on the fight's own picture (the boom behind the
-       one played, pulled back since the surge: c_cast.js PULL5), the tall dark shape over his student. Grandmaster Pho
-       plants the Naga stick (his Charged_Spell_Cast_1: the plan's 9.1). R47 (23 Nov 2026, Chad: "change the naga to a blue
-       one, and it needs to look more natural as it flies around and wraps the prai ... The naga should pierce through all
-       the prai's bodies with a water sound as it pierces through each. As it pierces through each prai, the fire of each prai
-       is extinguished and it cools them down. This entire sequence needs to have a very cinematic framing and angling"): THE
-       NAGA OF WATER spirals up out of the stick's head, hangs a moment over the court looking down ("The Naga guards. It
-       always has."), and dives: it sweeps low over the tall shape and the shape bursts apart, its three flung onto one line
-       across the court (where the rules lay them: c_fightrules.js spotsFor), still burning. It comes round and down onto that
-       line and goes through all three in one low pass, head first, slowing as it goes through: each one's water bursts out of
-       it, its fire goes out in steam and it is cool, dark and wet (seen side on, head on, and from above, a cut each). It
-       climbs out and lays its whole body round the court's three walls, its head rising at the end facing the house; the
-       three sink low and lie where the fight's last stage finds them. Mr Koh at the door, behind the thread: "It is... warm.
-       Why is it warm?" (what he feels, never what it was). It ends on the boom behind Grandmaster Pho, played */
+    /* ================================================================ TOGETHER (the plan's 5.5, stage 5; its clock is the film's
+       own, FILMS5.together.tl()): the ONE film inside the fight, which cannot be skipped the first time (the forty-first seam:
+       the fight plays it with kit.film('together', { noSkip: !ctx.sealedBefore(...) })). R47 (23 Nov 2026) made the Naga one
+       of WATER: it spirals up out of the stick's head, comes down on the tall shape, and goes through the three, each one's
+       fire put out in steam with a water sound.
+       R63, R64, R69, R70 (23 Nov 2026, Chad: "the naga sequence is still not good enough. The camera framing and panning on
+       both desktop and mobile does not properly frame it for the best cinematoc effect. Also it feels weak. When the naga
+       pierces through each prai, there needs to be visual impact and physical feedback, with screen shake effect, and the sound
+       effect needs to be much more powerful. Also somehow the ending of the naga part is very anticlimactic as it just stays
+       there lingering in an awkward position, what was that for?"; "it needs to properly rearrange all the characters, prai,
+       and the naga for proper staging for the cutscene so that the positions are always reliably fixed during the cutscene no
+       matter how the player plays it ... this rearranging should not be seen by the player ... The camera should look at the
+       naga head, and track it from different angles as it flies up high in the sky and go downwards to hit the prais, and as
+       it hits each prai, look and pan and track from different angles for the most powerful cinematic effect. Be like a
+       creative director."; "the way the naga circles around dont feel smooth enough ... it goes in weird boxy ways"; "show one
+       part that zooms in on the naga head showing its eyes glow with energy and it lets out a naga sound, as it flies at high
+       speed up into the air, before going down to hit the prais"). REBUILT as one film:
+         THE STAGING IS FIXED (R64). It opens on the white of the press, and under it everyone is set at fixed marks: the two of
+         them at the fight's own first places, facing the house; the tall shape over his student; the stick in his teacher's
+         hand; the three's places fixed on an arc before them toward the house (FIGHT.NUM.laidAt). The fight's last stage
+         begins from those same marks (c_fightrules.js, c_fightstage.js fsNagaGo), so nothing is seen to move.
+         THE FLIGHT IS MADE OF CURVES MEANT TO BE SMOOTH (R69): out of the stick's head straight up, a widening spiral up over
+         his teacher, one slow circle high over the court (above its walls) while he says his line, a stoop straight down
+         onto the tall shape's head, a swoop round the west of the court, a long arc across the court's house side through the
+         three, a climb into one wide ring round the whole court, a tightening spiral down, and INTO the stick's head (its
+         body pours in after it): every piece sampled every 30 cm, each joined where its way meets the next (circles eased one
+         into the next by their middles and their sizes, a cubic for the stoop and the swoop with its ends along the ways they
+         join), and its pace a smooth function of how far it has flown, so it never turns a corner nor steps its speed.
+         THE PICTURE (R63, R64, R70): from behind his teacher, low, facing the shape as he raises the stick and plants it; from
+         the paving beside the stick as it bursts up out of its head; RIDING UP WITH ITS HEAD, below it and close, the night
+         behind it, as its eyes kindle and it cries out; low behind his teacher looking up at it circling over the court while
+         he says his line; down the stoop over its head; the shape bursting, from the court's east side; THE THREE PIERCES, each
+         from its own side (beside the first as it goes through, head on at the second, from over the third), and at each A
+         HIT: the moment held (the film's clock at a twelfth for 0.16 s), the screen flashed white-blue, shaken, the phone
+         buzzed, a struck sound over the water and the hiss; the god's eye on its ring round the whole court; low by the stick
+         as it spirals down and pours itself in, and the stick's head bursts with light: its guard kept, it goes home. Then
+         Mr Koh at the doorway, and the fight's own picture again. */
+    /* (R64: the film's fixed marks, in the court's frame (c_cast.js courtWorld): the two of them where the fight began
+       (NUM.phoAt, NUM.zavAt), facing the house, and the three's places (NUM.laidAt): on an arc across the house side of the
+       court, 1.89 m apart, each 2.4 m and more from his student and 3.2 from his teacher) */
+    function nagaMarks5() {
+      const F = fightStart(), n = (typeof FIGHT === 'object' && FIGHT.NUM) || {};
+      const laid = n.laidAt && n.laidAt.length === 3 ? n.laidAt : [[-1.8, -1.12], [0, -1.7], [1.8, -1.12]];
+      return { pho: { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zav: { x: F.zav.x, z: F.zav.z }, spots: laid.map(q => q.slice()),
+               spotsW: laid.map(q => courtWorld(q[0], q[1])), za: n.zavAt || [0, 0.7], pa: n.phoAt || [1.15, 2.0] };
+    }
+    /* (each pierce HELD: the film's story clock at a twelfth of its pace for 0.16 s of its real one) */
+    const NAGA_HIT5 = { H: 0.16, r: 1 / 12 };
+    /* (where the stick, planted, carries the Naga's way out: the top of its carved head, in its own frame, read from its file:
+       the head's slices at 1.30 to 1.35 m up it stand 0.09 to 0.15 m to its -x) */
+    const STICK_HEAD5 = [-0.11, 1.36, 0];
     FILMS5.together = {
-      three: null, spots: null,                                                // the last three (the fight says which) and where they are laid (court frame)
+      three: null, spots: null,
+      /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
+      build() {
+        if (this.B) return this.B;
+        const M = nagaMarks5(), pz = M.pho, cwp = (q) => [COURT5.x - q[0], q[1], COURT5.z - q[2]];
+        /* the stick, planted at his front right (as his cast brings it down: 0.38 m before him and 0.40 to his right), turned
+           as the planted hold turns it; its carved head's top, in the court's frame */
+        const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
+        const yw = (typeof PHOGRIP5 === 'object' && PHOGRIP5.plantYaw) ? PHOGRIP5.plantYaw(pz.ry) : pz.ry, cy = Math.cos(yw), sy = Math.sin(yw);
+        const hx = sx + STICK_HEAD5[0] * cy + STICK_HEAD5[2] * sy, hz = sz - STICK_HEAD5[0] * sy + STICK_HEAD5[2] * cy;
+        const S = [COURT5.x - hx, STICK_HEAD5[1], COURT5.z - hz];
+        const Z = { x: M.za[0], z: M.za[1] }, sp = M.spots;
+        const P = [], NM = {};
+        const add = (q, nm) => { const L = P[P.length - 1]; if (!(L && Math.hypot(q[0] - L[0], q[1] - L[1], q[2] - L[2]) < 0.04)) P.push(q); if (nm) NM[nm] = P.length - 1; };
+        const run = (f, len, nm0, nm1) => { const k = Math.max(2, Math.ceil(len / 0.3)); for (let i = 0; i <= k; i++) add(f(i / k), i === 0 ? nm0 : i === k ? nm1 : null); };
+        const bez = (a, b, c, d) => (t) => { const u = 1 - t; return [0, 1, 2].map(k => u * u * u * a[k] + 3 * u * u * t * b[k] + 3 * u * t * t * c[k] + t * t * t * d[k]); };
+        const lenOf = (f) => { let L = 0, p = f(0); for (let i = 1; i <= 64; i++) { const q = f(i / 64); L += Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]); p = q; } return L; };
+        const circ = (c, r, a, y) => [c.x + r * Math.sin(a), y, c.z + r * Math.cos(a)];        // (its way round: the angle falling, as everywhere here)
+        const D2R = Math.PI / 180, sm = (u) => u * u * (3 - 2 * u);
+        /* 1. OUT OF THE STICK'S HEAD, straight up 0.55 m, then A WIDENING SPIRAL round a line over his teacher (between him and the
+           stick), a turn and a half, 0.45 m out at the start to 1.6 at the top, rising from 1.9 to 9.5 m (over the court's walls,
+           8.85), level at its top; its turning begins from nothing, so it leaves the straight rise without a corner */
+        const HA = { x: 1.35, z: 1.95 }, r0 = Math.hypot(S[0] - HA.x, S[2] - HA.z), a0 = Math.atan2(S[0] - HA.x, S[2] - HA.z), y0 = S[1] + 0.55, TURN = 3 * Math.PI;
+        add(S, 's0'); add([S[0], S[1] + 0.55, S[2]], 'out');
+        const helix = (u) => { const a = a0 - TURN * Math.pow(u, 1.5), r = r0 + (1.6 - r0) * u * u, y = y0 + (9.5 - y0) * (1 - (1 - u) * (1 - u)); return circ(HA, r, a, y); };
+        run(helix, 16, null, 'top0'); NM.helixMid = NM.out + ((NM.top0 - NM.out) >> 1);
+        /* 2. THE HIGH CIRCLE over the court (centre (1.0, -0.6), 2.2 m round, at 9.5 m), eased in from the spiral's top by its
+           middle and its size over its first 120 degrees, round to its gate side, where its way is straight across the court */
+        const a1 = a0 - TURN, TC = { x: 1.0, z: -0.6 }; let aE = 0; while (aE > a1) aE -= 2 * Math.PI;    // (the gate side, past the spiral's top)
+        const top = (u) => { const a = a1 + (aE - a1) * u, k = sm(Math.min(1, (a1 - a) / (120 * D2R))); return circ({ x: HA.x + (TC.x - HA.x) * k, z: HA.z + (TC.z - HA.z) * k }, 1.6 + 0.6 * k, a, 9.5 + 0.15 * Math.sin(u * Math.PI)); };
+        run(top, (a1 - aE) * 2.0, null, 'top1');
+        /* 3. THE STOOP: over, and straight down onto the tall shape (its head through the shape's head at 2.6 m, over his
+           student), pulled out level toward the west (a cubic each, its ends along the ways it joins) */
+        const E = top(1), V = [Z.x + 0.4, 3.7, Z.z + 0.04], A = [Z.x - 0.3, 2.65, Z.z + 0.02];
+        run(bez(E, [E[0] - 0.55, E[1], E[2]], [V[0], V[1] + 1.6, V[2]], V), lenOf(bez(E, [E[0] - 0.55, E[1], E[2]], [V[0], V[1] + 1.6, V[2]], V)), null, 'V');
+        const st2 = bez(V, [V[0], V[1] - 0.6, V[2]], [A[0] + 0.5, A[1] + 0.03, A[2]], A); run(st2, lenOf(st2), null, 'A');
+        /* 4. THE SWOOP round the west of the court (above his cage's bars, 2.05 m, until it is out past them) and down to the
+           arc's start, low, its way along the arc */
+        const RC = { x: Z.x, z: Z.z + 0.7 }, RR = Math.hypot(sp[1][0] - RC.x, sp[1][1] - RC.z);   // (the arc's circle: through the middle place)
+        const phiOf = (q) => { const a = Math.atan2(q[0] - RC.x, q[1] - RC.z); return a < 0 ? a + 2 * Math.PI : a; };   // (0 to a full turn: the arc runs from 250 degrees down to 130)
+        let aW = phiOf(sp[0]) + 34.5 * D2R; const W = circ(RC, RR, aW, 0.62), dW = [-Math.cos(aW), 0, Math.sin(aW)];
+        /* (its first control 2.75 m up: where it crosses his cage's ring, 1.35 m out, its leading line stands 2.37 m up and its
+           body's underside over the bars' 2.05) */
+        const sw = bez(A, [A[0] - 1.4, 2.75, A[2]], [W[0] - dW[0] * 1.1, 0.62, W[2] - dW[2] * 1.1], W); run(sw, lenOf(sw), null, 'W');
+        /* 5. THE ARC THROUGH THE THREE, low (its body's line 0.62 m up, its face through each one's chest), its face 0.95 m
+           ahead of its leading point: each pierce is named where the leading point is 0.95 m short of its place */
+        const LEAD = 0.95 / RR, a3e = phiOf(sp[2]) - 14.5 * D2R;
+        const arc = (u) => circ(RC, RR, aW + (a3e - aW) * u, 0.62);
+        run(arc, (aW - a3e) * RR, null, 'arcEnd');
+        const nearA = (a) => { let best = -1, bd = 1e9; for (let i = NM.W; i <= NM.arcEnd; i++) { const d = Math.abs(phiOf([P[i][0], P[i][2]]) - a); if (d < bd) { bd = d; best = i; } } return best; };
+        NM.p1 = nearA(phiOf(sp[0]) + LEAD); NM.p2 = nearA(phiOf(sp[1]) + LEAD); NM.p3 = nearA(phiOf(sp[2]) + LEAD);
+        /* 6. UP INTO ONE WIDE RING round the whole court (centre (0.2, 2.2), 2.95 m round, at 4.5 m), eased in from the arc by its
+           middle, its size and its height over 80 degrees, once round */
+        const GC = { x: 0.2, z: 2.2 }, aR0 = a3e, aR1 = aR0 - 80 * D2R;
+        const climb = (u) => { const k = sm(u), a = aR0 + (aR1 - aR0) * u; return circ({ x: RC.x + (GC.x - RC.x) * k, z: RC.z + (GC.z - RC.z) * k }, RR + (2.95 - RR) * k, a, 0.62 + (4.5 - 0.62) * k); };
+        run(climb, 80 * D2R * 3.0 + 3.0, null, 'ringIn');
+        const ring = (u) => circ(GC, 2.95, aR1 - 2 * Math.PI * u, 4.5 + 0.12 * Math.sin(u * 2 * Math.PI));
+        run(ring, 2 * Math.PI * 2.95, null, 'ringOut');
+        /* 7. HOME: a tightening spiral down round the stick's head (its middle drawn from the ring's to the stick's, its size to
+           nothing, a turn and a quarter), arriving straight down, and into the stick's head; then on down inside it, its body
+           pouring in after it */
+        const aH0 = aR1 - 2 * Math.PI, HC = { x: S[0], z: S[2] };
+        const spiral = (u) => { const k = sm(u), a = aH0 - 2.5 * Math.PI * u, r = 2.95 * Math.pow(1 - u, 1.5); return circ({ x: GC.x + (HC.x - GC.x) * k, z: GC.z + (HC.z - GC.z) * k }, r, a, 4.5 - (4.5 - (S[1] + 0.6)) * u); };
+        run(spiral, 15, null, 'down');
+        add([S[0], S[1], S[2]], 'home');
+        for (let i = 1; i <= 24; i++) add([S[0], S[1] - i, S[2]], i === 24 ? 'end' : null);
+        /* ---- ITS PACE, metres a second at the named places and eased between them by distance; its moment at every point is
+           the distance over that pace, from its rise (the high circle's pace is its own: long enough for his line) */
+        const cum = [0]; for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1], P[i][2] - P[i - 1][2]));
+        const vTop = (cum[NM.top1] - cum[NM.top0]) / 3.55;
+        const KN = [['s0', 1.2], ['out', 5], ['helixMid', 9.5], ['top0', vTop], ['top1', vTop], ['V', 14], ['A', 12], ['W', 5], ['p1', 3.4], ['p2', 3.2], ['p3', 3.2],
+                    ['arcEnd', 6], ['ringIn', 8.5], ['ringOut', 8.5], ['down', 10.5], ['home', 11], ['end', 11]].map(([k, v]) => [cum[NM[k]], v]);
+        const vAt = (s) => { let j = 0; while (j < KN.length - 2 && s > KN[j + 1][0]) j++; const [s0, v0] = KN[j], [s1, v1] = KN[j + 1]; return v0 + (v1 - v0) * Math.max(0, Math.min(1, (s - s0) / Math.max(1e-6, s1 - s0))); };
+        const RISE = 2.0, tm = [RISE];
+        for (let i = 1; i < P.length; i++) { const v = 0.5 * (vAt(cum[i - 1]) + vAt(cum[i])); tm.push(tm[i - 1] + (cum[i] - cum[i - 1]) / Math.max(0.2, v)); }
+        /* the timing keys: every third point, and every named one */
+        const keys = []; for (let i = 0; i < P.length; i++) if (i % 3 === 0 || Object.values(NM).includes(i) || i === P.length - 1) keys.push([tm[i], i]);
+        /* the tall shape bursts as its face (0.95 m ahead of the leading point, its head riding over its line) passes over the
+           shape's head, where the stoop pulls out over him */
+        let iA = NM.V; { let bd = 1e9; for (let i = NM.V; i <= NM.W; i++) { let j = i; while (j < P.length - 1 && cum[j] - cum[i] < 0.95) j++; const d = Math.hypot(P[j][0] - Z.x, P[j][2] - Z.z); if (d < bd) { bd = d; iA = i; } } }
+        const T = { plant: 0.2, rise: RISE, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
+                    swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
+                    tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
+        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 1.5; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
+        this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW,
+                   dirAt: (i) => { const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)]; const d = [-(b[0] - a[0]), 0, -(b[2] - a[2])], l = Math.hypot(d[0], d[2]) || 1; return [d[0] / l, 0, d[2] / l]; } };
+        return this.B;
+      },
+      /* the story clock against the real one: marks and the flight are in story seconds; a cue is laid at real ones */
+      tl() { return this.build().T; },
+      real(tau) { const T = this.tl(), { H, r } = NAGA_HIT5; let add = 0; for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; } return tau + add; },
+      story(t) { const T = this.tl(), { H, r } = NAGA_HIT5; let sub = 0; for (const p of [T.p1, T.p2, T.p3]) { const h = p + sub; if (t <= h) break; const d = t - h; if (d < H) return p + d * r; sub += (1 - r) * H; } return t - sub; },
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
         if (api && api.handsRoot) api.handsRoot.visible = false;
         const L = this.three && this.three.length === 3 ? this.three : PRAI5.list.map((P, i) => i).filter(i => PRAI5.list[i].group.visible).slice(-3);
         this.L = L.length === 3 ? L : [6, 7, 8];
-        /* where the two stand as the film begins (the fight's last frame) */
-        this.pho = cast.pho ? { x: cast.pho.group.position.x, z: cast.pho.group.position.z, ry: cast.pho.group.rotation.y } : null;
-        this.zav = cast.zav ? { x: cast.zav.group.position.x, z: cast.zav.group.position.z } : null;
-        this.fl = null; this.eyes = null; this.bow = null;
+        const B = this.build(); this.pho = B.M.pho; this.zav = B.M.zav; this.W = B.spotsW;
+        this.planned = false; this.eyes = null;
         PRAI5.look('trance');
       },
-      /* THE FLIGHT, once a run (from where the stick is planted, where the two stand and where the three will lie), in the
-         court's frame (x across, + to his bedroom's wall; z down the court, + to the gate; y up); NAGA5.plan makes its path */
-      flight(sx, sz, pz, zz) {
-        const T = NG5, n = (typeof FIGHT === 'object' && FIGHT.NUM) || {}, loc = (w) => ({ x: COURT5.x - w.x, z: COURT5.z - w.z });
-        const cw = (x, y, z) => [COURT5.x - x, y, COURT5.z - z];
-        const S = loc({ x: sx, z: sz }), Z = loc(zz), P = loc(pz);
-        const XM = (n.courtX || 3.85) - 0.85, Z0 = (n.courtZ0 || -3.0) + 0.9, Z1 = (n.courtZ1 || 7.3) - 1.0;
-        const cx = (x) => Math.max(-XM, Math.min(XM, x)), cz = (z) => Math.max(Z0, Math.min(Z1, z));
-        const sp = (this.spots && this.spots.length === 3 ? this.spots : (n.laidAt || [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]])).map(q => ({ x: q[0], z: q[1] }));
-        const A = sp[0], B = sp[1], C = sp[2]; let ux = C.x - A.x, uz = C.z - A.z; const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
-        const pts = [], keys = [], at = (x, y, z, t) => { pts.push(cw(x, y, z)); if (t != null) keys.push([t, pts.length - 1]); };
-        /* 1. up out of the stick's head: a turn and a quarter of a rising spiral round a point a little toward the court's
-           middle, widening as it climbs (its first 1.4 m straight up beside him, out of reach of his shoulder) */
-        /* (leaning away from him as it comes out: its first 1.3 m rises 19 degrees off upright, away from his shoulder; the
-           spiral turns round a point 0.9 m away from him the same way, toward the court's middle where that is room) */
-        at(S.x, 1.45, S.z, T.rise);
-        let ax = S.x - P.x, az = S.z - P.z; const al = Math.hypot(ax, az) || 1; ax /= al; az /= al;
-        const mx = 0 - S.x, mz = 2.1 - S.z, ml = Math.hypot(mx, mz) || 1; ax = ax * 0.7 + 0.3 * mx / ml; az = az * 0.7 + 0.3 * mz / ml; const al2 = Math.hypot(ax, az) || 1; ax /= al2; az /= al2;
-        at(S.x + ax * 0.45, 2.75, S.z + az * 0.45, null);
-        const C0 = { x: cx(S.x + ax * 1.0), z: cz(S.z + az * 1.0) }, a0 = Math.atan2(S.x + ax * 0.45 - C0.x, S.z + az * 0.45 - C0.z), turn = 2.3 * Math.PI;
-        for (let k = 1; k <= 6; k++) { const f = k / 6, r = 0.6 + 0.75 * f, a = a0 + turn * f;
-          at(cx(C0.x + r * Math.sin(a)), 2.9 + 3.1 * Math.pow(f, 0.9), cz(C0.z + r * Math.cos(a)), k === 6 ? T.apex - 0.6 : null); }
-        /* 2. it rears over the court, then arches on and BOWS: its head carried on the way it rose, over and down, to hang
-           4.9 m up with its face turned down 50 degrees to the court while he says his line, all but still (R47, the lab's
-           first pictures: it had hung level 6.5 m up, its face away, its jaw all the low lens could see). Its way on is the
-           spiral's own way out, turned half toward the court's middle, so the bow lands over the open court */
-        const pe = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }), pq = loc({ x: pts[pts.length - 2][0], z: pts[pts.length - 2][2] });
-        const AP = { x: cx(pe.x * 0.5), z: cz(pe.z * 0.5 + 1.1) };
-        at(AP.x, 6.6, AP.z, T.apex);
-        let ex = (AP.x - pq.x), ez = (AP.z - pq.z); { const l = Math.hypot(ex, ez) || 1; ex /= l; ez /= l; }
-        { let mx2 = 0 - AP.x, mz2 = 2.1 - AP.z; const l = Math.hypot(mx2, mz2) || 1; ex = ex * 0.5 + 0.5 * mx2 / l; ez = ez * 0.5 + 0.5 * mz2 / l; const l2 = Math.hypot(ex, ez) || 1; ex /= l2; ez /= l2; }
-        at(cx(AP.x + ex * 1.0), 6.35, cz(AP.z + ez * 1.0), T.apex + 0.5);
-        const HV = { x: cx(AP.x + ex * 1.75), z: cz(AP.z + ez * 1.75) };
-        at(HV.x, 5.15, HV.z, T.apex + 1.0);
-        at(cx(HV.x + ex * 0.16), 4.9, cz(HV.z + ez * 0.16), T.dive);
-        this.bow = { x: HV.x, z: HV.z, ex, ez };
-        /* 3. down over the tall shape: its lowest over his student, high enough that its body passes over the shape's head and
-           his cage (3.8 m: the shape stands 2.6 m, the cage's light 2.4 m) */
-        const ap = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] }); let dx = Z.x - ap.x, dz = Z.z - ap.z; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
-        at(cx(Z.x - dx * 1.6), 4.6, cz(Z.z - dz * 1.6), null);
-        at(Z.x, 3.8, Z.z, T.apart);
-        at(cx(Z.x + dx * 2.2), 3.4, cz(Z.z + dz * 2.2), T.apart + 0.55);
-        /* 4. round and down onto the line of the three: high behind where its run begins, then level along it */
-        const E2 = { x: A.x - ux * 2.0, z: A.z - uz * 2.0 }, E1 = { x: cx(A.x - ux * 4.2), z: cz(A.z - uz * 4.2) };
-        const q2 = loc({ x: pts[pts.length - 1][0], z: pts[pts.length - 1][2] });
-        at(cx((q2.x + E1.x) / 2 * 0.8), 3.4, cz((q2.z + E1.z) / 2), null);
-        at(E1.x, 2.2, E1.z, T.p1 - 1.45);
-        at(E2.x, 0.7, E2.z, T.p1 - 0.7);
-        /* 5. THROUGH THE THREE: its face (0.95 m before its body's leading point, 0.69 over it: the head rides over its body's
-           line, R57) through each one's chest at T.p1, T.p2, T.p3, its body after it through each one's hips; slowing
-           through them */
-        at(A.x - ux * 0.95, 0.62, A.z - uz * 0.95, T.p1); at(A.x, 0.6, A.z, null);
-        at(B.x - ux * 0.95, 0.6, B.z - uz * 0.95, T.p2); at(B.x, 0.6, B.z, null);
-        at(C.x - ux * 0.95, 0.6, C.z - uz * 0.95, T.p3); at(C.x, 0.62, C.z, null);
-        at(cx(C.x + ux * 1.1), 0.75, cz(C.z + uz * 1.1), null);
-        /* 6. up and out, to the near end of the court's three walls, and round all three (a little inside them: over the two
-           planters in the gate's corners), its head rising at the end, facing the house */
-        const sg = C.x + ux * 1.4 >= 0 ? 1 : -1;
-        const X2 = { x: cx(C.x + ux * 2.4), z: cz(C.z + uz * 2.4) };
-        at(X2.x, 2.3, X2.z, T.p3 + 1.15);
-        const xs = 3.38, zh = -1.55, zg = 6.75, PZ = (typeof PLANT_Z === 'number' ? COURT5.z - PLANT_Z : 6.65), HY = 1.12, yb = 0.32;
-        /* (the U in the court's frame, from the side `sg` at the house end, round the gate end, to the other side; each planter
-           crossed as the ruby Naga's loop crossed it, the hump's numbers by the planter it goes over: the west one's, then the
-           east's, mirrored when it begins on the east side) */
-        const hump = (side) => side > 0 ? [1.75, 2.6] : [1.25, 2.1];
-        const U = [];
-        { const s0 = sg, s1 = -sg, h0 = hump(s0), h1 = hump(s1);
-          U.push([s0 * xs * 0.85, 1.4, zh - 0.3], [s0 * xs, yb, zh + 0.6], [s0 * xs, yb, PZ - h0[1]], [s0 * (xs - 0.02), HY, PZ - h0[0]], [s0 * (xs - 0.14), HY, zg - 0.25],
-                 [s0 * (xs - 0.9), HY * 0.9, zg], [s0 * (xs - 1.6), yb, zg], [s1 * (xs - 1.6), yb, zg], [s1 * (xs - 0.9), HY * 0.9, zg], [s1 * (xs - 0.14), HY, zg - 0.25],
-                 [s1 * (xs - 0.02), HY, PZ - h1[0]], [s1 * xs, yb, PZ - h1[1]], [s1 * xs, yb, 2.3], [s1 * (xs - 0.12), 0.75, 1.35], [s1 * (xs - 0.24), 1.22, 0.7], [s1 * (xs - 0.27), 1.26, 0.42]); }
-        U.forEach((p, i) => at(p[0], p[1], p[2], i === 1 ? T.wrap : i === U.length - 1 ? T.rest : null));
-        return { stick: cw(S.x, 1.45, S.z), pts, keys, restSecs: 1, spots: sp, u: [ux, uz] };
+      /* ITS LIGHT AT THE END: a burst of white and blue out of the stick's head as the last of it goes in (painted light, one
+         card, drawn over all at its depth) */
+      burst(t, T, at) {
+        if (!this.bs) { const [c, x] = canvas(128, 128), gd = x.createRadialGradient(64, 64, 2, 64, 64, 63);
+          gd.addColorStop(0, 'rgba(255,255,255,1)'); gd.addColorStop(0.25, 'rgba(190,240,255,0.85)'); gd.addColorStop(0.6, 'rgba(70,170,255,0.25)'); gd.addColorStop(1, 'rgba(40,120,255,0)');
+          x.fillStyle = gd; x.fillRect(0, 0, 128, 128);
+          const m = new THREE.SpriteMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m);
+          this.bs = new THREE.Sprite(m); this.bs.renderOrder = 4.5; this.bs.visible = false; world.add(this.bs); }
+        const u = t - T.tail;
+        if (u < -0.05 || u > 1.4) { this.bs.visible = false; return; }
+        const k = u < 0 ? 0 : u < 0.12 ? u / 0.12 : Math.pow(1 - (u - 0.12) / 1.28, 2);
+        this.bs.visible = k > 0.003; this.bs.position.set(at[0], at[1] + 0.05, at[2]); this.bs.scale.setScalar(0.4 + 3.2 * Math.sqrt(Math.max(0, u)));
+        this.bs.material.opacity = Math.min(1, k);
       },
       frame(t) {
-        const T = NG5, F = fightStart(), pz = this.pho || { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zz = this.zav || F.zav;
-        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((t - T.rise) / 2)));
+        const T = this.tl(), B = this.build(), tau = this.story(t), pz = this.pho, zz = this.zav, F = fightStart();
+        fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6));
         /* the court low under the trance; the smell of the tall shape until it comes apart */
-        fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
-        /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted (0.38 m before
-           him and 0.40 m to his right, FIGHT-IN's measure of the strike) */
+        fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((tau - T.apart) / 2.5))) });
+        /* the stick planted where his cast brings it down (B.S: its carved head) */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.38 - fz * 0.40, sz = pz.z + fz * 0.38 + fx * 0.40;
-        /* THE NAGA: its flight made once a run, then laid at this moment (first in the frame: his look and the lens aim at
-           its head as this moment lays it) */
-        if (!this.fl) { this.fl = this.flight(sx, sz, pz, zz); NAGA5.plan(this.fl);
-          const sp = this.fl.spots, w = (q) => ({ x: COURT5.x - q.x, z: COURT5.z - q.z }), dW = [-this.fl.u[0], 0, -this.fl.u[1]];
-          this.W = sp.map(w); this.dW = dW;
-          SPLASH5.set([T.p1, T.p2, T.p3].map((t0, j) => ({ t0, p: [this.W[j].x, 1.15, this.W[j].z], d: dW }))); }
-        const aN = smo(c01((t - T.rise) / 1.0)) * lp(1, 0.3 / 0.75, smo(c01((t - T.back - 0.1) / 1.8))) * (1 - 0.25 * smo(c01((t - T.rest) / 2.5)));
-        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.fly(t, aN);
-        SPLASH5.frame(t);
-        const HEADAT = () => NAGA5.headAt() || [sx, 1.45, sz];
+        /* THE NAGA: its flight laid at this moment (first in the frame: every look and lens aims where this lays it) */
+        if (!this.planned) { this.planned = true; NAGA5.plan({ stick: B.S, pts: B.pts, keys: B.keys, restSecs: 0, home: B.NM.home });
+          const W = this.W; SPLASH5.set([T.p1, T.p2, T.p3].map((t0, j) => ({ t0, p: [W[j].x, 1.15, W[j].z], d: B.dirAt(B.NM['p' + (j + 1)]) }))); }
+        const aN = smo(c01((tau - T.rise) / 0.5)) * (tau < T.tail + 0.05 ? 1 : 0);
+        NAGA5.light(pz.x, 1.35, pz.z, 1); NAGA5.fly(tau, aN);
+        /* ITS EYES (R70): kindled as it climbs (a swell past full as it cries), bright from then, flaring at each pierce */
+        const flare = [T.p1, T.p2, T.p3, T.apart].reduce((m, p) => Math.max(m, Math.max(0, 1 - Math.abs(tau - p) / 0.35)), 0);
+        const eyeK = smo(c01((tau - T.kindle) / 0.45)) * (1 + 0.7 * Math.max(0, 1 - Math.abs(tau - T.cry - 0.35) / 0.8)) + 0.6 * flare;
+        NAGA5.eyeFrame(tau, eyeK);
+        SPLASH5.frame(tau);
+        this.burst(tau, T, B.S);
+        const HEADAT = () => NAGA5.headAt() || [B.S[0], B.S[1], B.S[2]];
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
-             its time going on at a twentieth, his hand on the stick as the Naga rises out of it; then he is handed to his rest
-             over 0.9 s) */
-          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.6) / 0.9)), ct = Math.max(0, t - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
-          if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', t);
-          if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
-          fmGaze(P, t, [[0, [sx, 1.45, sz]], [T.rise + 0.2, HEADAT], [T.wrap + 1.0, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
-        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
+             his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
+          const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
+          if (out < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], out, r[1]); else fmRest(P, 'pho', tau);
+          if (tau < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.tail - 0.4, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again once it has come apart */
-        const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart - 0.4) / 2.0));
-        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t, crack: t < T.apart + 0.4 });
-        TRANCE5.set(1, t); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
-        /* THE THREE: the tall shape over him, leaning in; as the Naga sweeps over it, it bursts apart and each is flung onto
-           its place on the line, landing burning; each struggles there until the Naga's head goes through it (its take of
-           being struck, its fire put out in steam, its dark turned cool and wet), then sinks low where the fight's last stage
-           finds it */
+        const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
+        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t: tau, crack: tau < T.apart + 0.4 });
+        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1);
+        /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
+           place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
+           in steam, cool and dark and wet), then sinks low where the fight's last stage finds it */
         const tp = [T.p1, T.p2, T.p3], Wsp = this.W || F.laid;
         this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P) return; whenReady(P, () => { fmShow(P, true);
-          const kA = smo(c01((t - T.apart - 0.1 - j * 0.12) / 1.15)), hop = Math.sin(Math.PI * kA) * 1.1 * (1 - kA * 0.2);
+          const kA = smo(c01((tau - T.apart - 0.05 - j * 0.1) / 0.85)), hop = Math.sin(Math.PI * kA) * 1.3 * (1 - kA * 0.2);
           const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j], to = Wsp[j] || { x: zz.x, z: zz.z };
           const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
-          const hit = t - tp[j], kL = smo(c01((hit - 1.1) / 1.3));
-          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - this.dW[0], to.z - this.dW[2]));
+          const hit = tau - tp[j], kL = smo(c01((tau - T.low - j * 0.15) / 1.4));
+          const d = B.dirAt(B.NM['p' + (j + 1)]);
+          put(P, x, z, kA < 0.98 ? faceTo(x, z, zz.x, zz.z) : faceTo(to.x, to.z, to.x - d[0], to.z - d[2]));
           P.group.position.y = hop * (kA < 1 ? 1 : 0);
           P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
-          if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + t * 0.6, true);
-          PRAI5.burn(P, 1 - smo(c01((hit - 0.04) / 0.6)));
-          PRAI5.cool(P, smo(c01((hit - 0.1) / 0.9)));
+          if (hit >= 0 && hit < 1.6) pose(P, 'Hit_Reaction', 0.05 + hit * 0.85, false); else pose(P, hit >= 1.6 ? 'Idle_3' : 'Electrocution_Reaction', 2 + j * 0.7 + tau * 0.6, true);
+          PRAI5.burn(P, 1 - smo(c01((hit - 0.02) / 0.5)));
+          PRAI5.cool(P, smo(c01((hit - 0.06) / 0.8)));
           PRAI5.alpha(P, 1 - 0.35 * kL); }); });
         PRAI5.tick(0.016);
         /* Mr Koh, at the doorway behind the thread, at its end */
-        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', t, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
-        /* THE LENS. The fight's picture; down low beside him, on its head as it spirals up out of the stick; on the court's
-           floor before it as it bows, looking up into its face; a cut to high over the gate end as it dives on the tall
-           shape and the shape bursts apart, easing in as it comes round onto the line; then the three pierces, a cut each:
-           SIDE ON (across the line at the first, as the head goes through it), AHEAD (before the second and round to one
-           side, the head coming at the lens through it), FROM ABOVE (over the third, looking down, as it goes through and
-           climbs out); the god's eye over the court as it lays itself round the walls; low before its raised head at rest;
-           down to the three, cooled; the doorway; the boom again */
-        const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), W = this.W || [], dW = this.dW || [0, 0, 1];
-        const LOWEYE = (e) => [Math.max(COURT.x0 + 0.3, Math.min(COURT.x1 - 0.3, e[0])), e[1], Math.max(COURT.z0 + 0.3, Math.min(HOUSE.face - 0.3, e[2]))];
-        const sideX = -dW[2], sideZ = dW[0];
-        const A = W[0] || { x: zz.x, z: zz.z }, Bp = W[1] || A, Cc = W[2] || A;
-        const sd = ((A.x - zz.x) * sideX + (A.z - zz.z) * sideZ) >= 0 ? 1 : -1;
-        /* WHERE A LENS MAY STAND (R47, the lab's pictures: each pierce's lens had been set a fixed way off the line and pushed
-           back inside the court by its walls, so the first stood 0.3 m off the house and 2 m from its Prai and the Naga's head
-           filled the frame; turned instead to find room, a lens stood on the Naga's own way in and its body passed 0.9 m from
-           it, and another saw only a Prai's back). Tried from the wanted way round (OFF degrees from it, in that order) and from
-           the wanted distance in, 0.25 m at a time: the first place 0.35 m inside the court, 0.75 m clear of everyone standing,
-           1.4 m clear of every point of the way the Naga will have flown by the shot's end (its body lies along it, its crest
-           stands 1.6 m over it), and with neither of the other two between it and what it looks at (a lens over their heads
-           minds only the walls and the Naga); none, null */
-        /* (everyone standing and how far a lens keeps from each: his student 2.3 m, his cage's ring (1.35 m round him) and its
-           bars 2.05 m tall with room past them; his teacher 0.9. At 1.5 m the lab's rest shot stood 1.06 m from a bar, a violet
-           column down a phone's right edge: build 39's pictures) */
-        const NOW = [[pz, 0.9], [zz, 2.3], [A, 0.75], [Bp, 0.75], [Cc, 0.75]];
-        const segD = (p, a0, a1) => { const vx = a1.x - a0.x, vz = a1.z - a0.z, l2 = vx * vx + vz * vz || 1, k = Math.max(0, Math.min(1, ((p.x - a0.x) * vx + (p.z - a0.z) * vz) / l2));
-          return Math.hypot(p.x - a0.x - vx * k, p.z - a0.z - vz * k); };
-        const flown = (t1) => { const out = [], u1 = NAGA5.uAt(t1); for (let u = 0; u <= u1; u += 0.3) { const q = NAGA5.pointAt(u); if (q) out.push(q); } return out; };
-        const fits = (e, h, tg, way) => {
-          if (e.x < COURT.x0 + 0.35 || e.x > COURT.x1 - 0.35 || e.z < COURT.z0 + 0.35 || e.z > HOUSE.face - 0.35) return false;
-          if (h < 2.2 && NOW.some(([p, r]) => p !== tg && Math.hypot(e.x - p.x, e.z - p.z) < r)) return false;
-          if (h < 2.2 && [A, Bp, Cc].some(p => p !== tg && segD(p, e, tg) < 0.5)) return false;
-          /* (nor through his cage's bars, unless what it looks at stands by them) */
-          if (h < 2.2 && Math.hypot(tg.x - zz.x, tg.z - zz.z) > 1.6 && segD(zz, e, tg) < 1.55) return false;
-          return !way.some(q => Math.hypot(q[0] - e.x, q[1] - h, q[2] - e.z) < 1.4); };
-        const eyeFor = (tg, ang, dist, minD, h, t1, OFF = [0, 15, -15, 30, -30]) => {
-          const way = flown(t1);
-          for (const o of OFF) for (let d = dist; d >= minD - 1e-6; d -= 0.25) {
-            const a = ang + o * Math.PI / 180, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
-            if (fits(e, h, tg, way)) return [e.x, h, e.z]; }
-          return null; };
-        /* (a lens no wanted place could hold: any way round, every 30 degrees, from a little further, higher and lower; at the
-           last, 8.5 m straight over it, above anything the Naga's flight reaches: the lab's third layout found its lens over
-           the third standing inside the Naga's body, the fallback never checked) */
-        const anyEye = (tg, ang, dist, minD, h, t1) => {
-          const way = flown(t1);
-          for (const hh of [h, h + 0.9, Math.max(1.0, h - 0.8), h + 1.8]) for (let q = 0; q < 12; q++) for (let d = dist + 0.6; d >= minD - 1e-6; d -= 0.3) {
-            const a = ang + q * Math.PI / 6, e = { x: tg.x + Math.sin(a) * d, z: tg.z + Math.cos(a) * d };
-            if (fits(e, hh, tg, way)) return [e.x, hh, e.z]; }
-          return [tg.x, 8.5, tg.z + 0.01]; };
-        const angOf = (x, z) => Math.atan2(x, z);
-        if (!this.eyes) {
-          const bw = this.bow ? { x: COURT5.x - this.bow.x, z: COURT5.z - this.bow.z, ex: -this.bow.ex, ez: -this.bow.ez } : null;
-          const RP = this.fl && this.fl.pts.length ? this.fl.pts[this.fl.pts.length - 1] : [pz.x, 1.2, pz.z];
-          const LC = { x: (A.x + Bp.x + Cc.x) / 3, z: (A.z + Bp.z + Cc.z) / 3 };
-          /* THE THREE PIERCES, every lens on ONE side of the line (a cut across it would turn the Naga's way round on the
-             screen), the side with room for both: SIDE ON to the first, 3.6 m off, its whole body and the head through it;
-             AHEAD of the second, 50 degrees round from the side toward where it goes, 4 m off and low (1.3 m), the head
-             coming out of her at the lens; OVER the third from ahead and to that side, 3.2 m up and 2.8 m off, the head
-             bursting out of her and climbing past. (The lab's pictures of build 39: the second's lens 2.7 m off and 20
-             degrees toward where it came from held one Prai's back across the whole of a phone's frame; the third's, 4 m
-             straight up from behind the head, saw only its crest laid over her) */
-          const sideAt = (ss, tw) => { const x = sideX * ss, z = sideZ * ss, c = Math.cos(tw), sn = Math.sin(tw); return angOf(x * c - dW[0] * sn, z * c - dW[2] * sn); };
-          let P1 = null, P2 = null, ssUsed = sd;
-          for (const ss of [sd, -sd]) { const a1 = eyeFor(A, sideAt(ss, 0), 3.6, 2.8, 1.25, T.p2), a2 = eyeFor(Bp, sideAt(ss, -0.87), 4.0, 2.8, 1.3, T.p3);
-            if (a1 && a2) { P1 = a1; P2 = a2; ssUsed = ss; break; } if (!P1 && a1) { P1 = a1; ssUsed = ss; } if (!P2 && a2) P2 = a2; }
-          const P3a = angOf(dW[0] * 0.6 + sideX * ssUsed, dW[2] * 0.6 + sideZ * ssUsed);
-          this.eyes = {
-            P1: P1 || anyEye(A, sideAt(ssUsed, 0), 3.6, 2.4, 1.25, T.p2), P2: P2 || anyEye(Bp, sideAt(ssUsed, -0.87), 4.0, 2.4, 1.3, T.p3),
-            P3: eyeFor(Cc, P3a, 2.8, 1.8, 3.2, T.p3 + 1.1, [0, 20, -20, 40, -40]) || anyEye(Cc, P3a, 2.8, 1.6, 3.2, T.p3 + 1.1),
-            /* the bow: 4.2 m out from where it hangs, at 1.9 m, and 35 degrees round from its way on, looking up into its
-               face from a quarter turn (straight on, its crest stood as one tall spike over its face; from 2.6 m and 1.15 m up
-               it was seen from under its jaw: the lab's pictures) */
-            BOW: (bw && (eyeFor({ x: bw.x, z: bw.z }, angOf(bw.ex, bw.ez) + 0.61, 4.2, 2.6, 1.9, T.dive, [0, -100, 15, -115, 30])))
-                 || LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]),
-            /* the god's eye: 12.5 m over the court, a little to the gate's side of its middle, looking down on it, the house at
-               the top of the frame (a phone's third of the width holds the court's 8 m from this high: R47, the court's walls
-               where it lays itself round them) */
-            GOD: [COURT5.x, 12.5, COURT5.z - 3.4], GODAT: [COURT5.x, 0, COURT5.z - 1.2],
-            /* at rest: low and before its raised head (it rests facing the house), up to 3 m off, toward the court's middle
-               (2.4 m off, its head bowing to the lens filled a phone's frame with its crest; asked for 3.4 m it found no room
-               between its head and the house, and its old fallback, a fixed place, stood beside his cage's bars: the lab's
-               pictures of builds 39 and 40). Any way round next, and every place by the same rules */
-            REST: eyeFor({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 2.0, 1.1, T.rest, [0, 20, -20, 40, -40, 60, -60])
-                  || anyEye({ x: RP[0], z: RP[2] }, angOf((COURT5.x - RP[0]) * 0.5, 1.0), 3.0, 1.8, 1.2, T.rest),
-            /* the three, cooled: from over the gate's side of their line, 5 m up */
-            THREE: eyeFor(LC, angOf(0, -1), 4.5, 2.5, 5.0, 0, [0, 25, -25, 50, -50, 75, -75]) || [LC.x, 6.0, LC.z - 2.0], LC };
-        }
-        const E = this.eyes, LC = E.LC;
-        fmTrack(t, [
-          { t: 0, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov },
-          { t: T.plant + 0.8, name: 'fightcam', eye: [B0.eye[0], B0.eye[1] - 0.4, B0.eye[2] + 0.8], yaw: B0.heading, pitch: B0.pitch + 0.1, fp: B0.fov - 6, fd: B0.fov - 6 },
-          { t: T.rise + 0.3, name: 'low', eye: LOWEYE([pz.x - 1.2, 0.9, pz.z - 1.4]), at: HEADAT, fp: 70, fd: 62 },
-          { t: T.apex + 0.4, name: 'low', eye: LOWEYE([pz.x - 1.0, 0.95, pz.z - 1.3]), at: HEADAT, fp: 74, fd: 66 },
-          { t: T.apex + 0.45, name: 'bow', eye: E.BOW, at: HEADAT, fp: 62, fd: 52, cut: true },
-          { t: T.dive - 0.05, name: 'bow', eye: [E.BOW[0], E.BOW[1] - 0.1, E.BOW[2]], at: HEADAT, fp: 58, fd: 48 },
-          { t: T.dive, name: 'high', eye: [COURT5.x, 9.2, COURT.z0 + 0.2], at: [COURT5.x + 0.05, 0.4, -9.0], fp: 66, fd: 56, cut: true },
-          { t: T.apart + 0.8, name: 'high', eye: [COURT5.x + 0.1, 8.8, COURT.z0 + 0.35], at: [LC.x * 0.5 + COURT5.x * 0.5, 0.5, LC.z * 0.5 - 9.0 * 0.5], fp: 64, fd: 54 },
-          { t: T.p1 - 0.75, name: 'high', eye: [COURT5.x + 0.15, 8.0, COURT.z0 + 0.6], at: [LC.x, 0.6, LC.z], fp: 60, fd: 50 },
-          { t: T.p1 - 0.7, name: 'side', eye: E.P1, at: [A.x - dW[0] * 0.3, 1.15, A.z - dW[2] * 0.3], fp: 52, fd: 44, cut: true },
-          { t: T.p1 + 0.5, name: 'side', eye: E.P1, at: [A.x + dW[0] * 0.2, 1.1, A.z + dW[2] * 0.2], fp: 50, fd: 42 },
-          { t: T.p2 - 0.55, name: 'ahead', eye: E.P2, at: [Bp.x, 1.1, Bp.z], fp: 50, fd: 42, cut: true },
-          { t: T.p2 + 0.42, name: 'ahead', eye: E.P2, at: [Bp.x * 0.7 + Cc.x * 0.3, 1.1, Bp.z * 0.7 + Cc.z * 0.3], fp: 50, fd: 42 },
-          { t: T.p3 - 0.45, name: 'above', eye: E.P3, at: [Cc.x, 1.2, Cc.z], fp: 56, fd: 48, cut: true },
-          { t: T.p3 + 1.0, name: 'above', eye: [E.P3[0], E.P3[1] + 0.3, E.P3[2]], at: [Cc.x + dW[0] * 0.8, 1.5, Cc.z + dW[2] * 0.8], fp: 60, fd: 52 },
-          { t: T.p3 + 1.05, name: 'god', eye: E.GOD, at: E.GODAT, fp: 72, fd: 54, cut: true },
-          { t: T.rest - 0.75, name: 'god', eye: [E.GOD[0], E.GOD[1] - 0.6, E.GOD[2]], at: E.GODAT, fp: 70, fd: 52 },
-          { t: T.rest - 0.7, name: 'rest', eye: E.REST, at: HEADAT, fp: 58, fd: 48, cut: true },
-          { t: T.rest + 1.3, name: 'rest', eye: E.REST, at: HEADAT, fp: 55, fd: 45 },
-          { t: T.rest + 1.35, name: 'three', eye: E.THREE, at: [LC.x, 0.3, LC.z], fp: 56, fd: 50, cut: true },
-          { t: T.ko5c2 - 0.05, name: 'three', eye: [E.THREE[0], E.THREE[1] - 0.2, E.THREE[2]], at: [LC.x, 0.3, LC.z], fp: 55, fd: 49 },
+        whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Talk_with_Hands_Open'); });
+        /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
+        this.lens(tau, T, B, HEADAT);
+        /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
+           shakes): a few sines of their own, falling away over half a second */
+        const hitsR = [[this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
+        let sh = 0; for (const [h, a] of hitsR) { const u = t - h; if (u >= 0 && u < 0.6) sh += a * Math.pow(1 - u / 0.6, 2); }
+        if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
+      },
+      /* THE LENS, shot by shot (R63, R64, R70). Every place a lens stands is in the court (0.35 m in from its walls and the
+         house), clear of everyone standing and of every point the Naga flies through during its shot (the lab's pictures and
+         tools/probes/framecheck.mjs measure each on a phone and a desk) */
+      lens(tau, T, B, HEADAT) {
+        const cw = (x, y, z) => [COURT5.x - x, y, COURT5.z - z], Pc = B.M.pa, Sc = B.Sc, sp = B.spots;
+        const F12 = new Float32Array(12);
+        /* the ride (R70): close below its head on the spiral's inside, a little ahead, looking up into its face with the night
+           behind it; the lens a smooth function of its frame, so it climbs and turns with it */
+        const RIDE = () => { const f = NAGA5.pose(tau, F12); if (!f) return cw(Sc[0] + 0.9, 1.0, Sc[2]);
+          const hx = COURT5.x - B.HA.x, hz = COURT5.z - B.HA.z; let ix = hx - f[0], iz = hz - f[2]; const il = Math.hypot(ix, iz) || 1; ix /= il; iz /= il;
+          return [f[0] + ix * 1.05 + f[3] * 0.55, f[1] - 0.85, f[2] + iz * 1.05 + f[5] * 0.55]; };
+        /* the stoop: over its head, behind it, looking down its way */
+        const RIDER = () => { const f = NAGA5.pose(tau, F12); if (!f) return HEADAT(); return [f[0] - f[3] * 2.1 + f[6] * 0.55, f[1] - f[4] * 2.1 + f[7] * 0.55 + 0.25, f[2] - f[5] * 2.1 + f[8] * 0.55]; };
+        const AHEAD = () => { const f = NAGA5.pose(tau, F12); if (!f) return HEADAT(); return [f[0] + f[3] * 4.0, f[1] + f[4] * 4.0, f[2] + f[5] * 4.0]; };
+        const PHO_BACK = cw(Pc[0] + 0.85, 0.95, Pc[1] + 2.0), PHO_HEAD = cw(Pc[0], 1.7, Pc[1]), SHAPE = cw(B.M.za[0], 2.1, B.M.za[1]);
+        const UPTO = () => { const h = HEADAT(); return lp3(PHO_HEAD, h, 0.72); };
+        const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
+        const s1 = cw(sp[0][0], 1.1, sp[0][1]), s2 = cw(sp[1][0], 1.1, sp[1][1]), s3 = cw(sp[2][0], 1.0, sp[2][1]);
+        /* (the first, side on from the house-west corner, 1.45 m out from its place across the arc; the second head on, 2.2 m
+           along its way past it and 0.45 m toward the house; the third from over it, 3.9 m up and behind it) */
+        const out1 = (() => { const dx = sp[0][0] - B.RC.x, dz = sp[0][1] - B.RC.z, l = Math.hypot(dx, dz) || 1; return cw(sp[0][0] + dx / l * 1.45, 0.95, sp[0][1] + dz / l * 1.45); })();
+        const P2EYE = cw(sp[1][0] + 2.2, 0.85, sp[1][1] - 0.45), P3EYE = cw(sp[2][0] - 1.0, 3.9, sp[2][1] - 0.9);
+        const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
+        const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
+        const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
+        const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
+        fmTrack(tau, [
+          { t: 0, name: 'plant', eye: PHO_BACK, at: lp3(PHO_HEAD, SHAPE, 0.45), fp: 62, fd: 52 },
+          { t: T.rise - 0.06, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
+          { t: T.rise - 0.05, name: 'erupt', eye: STICK_LOW, at: STICK_UP, fp: 74, fd: 64, cut: true },
+          { t: T.rise + 0.55, name: 'erupt', eye: STICK_LOW, at: HEADAT, fp: 76, fd: 66 },
+          { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
+          { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
+          { t: T.top + 0.2, name: 'top', eye: PHO_BACK, at: UPTO, fp: 78, fd: 66, cut: true },
+          { t: T.stoop + 0.1, name: 'top', eye: PHO_BACK, at: UPTO, fp: 76, fd: 64 },
+          { t: T.stoop + 0.15, name: 'stoop', eye: RIDER, at: AHEAD, fp: 64, fd: 56, cut: true },
+          { t: T.apart - 0.08, name: 'stoop', eye: RIDER, at: AHEAD, fp: 64, fd: 56 },
+          { t: T.apart - 0.07, name: 'burst', eye: BURST_EYE, at: BURST_AT, fp: 66, fd: 56, cut: true },
+          { t: T.p1 - 0.5, name: 'burst', eye: BURST_EYE, at: SWOOP_AT, fp: 64, fd: 54 },
+          { t: T.p1 - 0.45, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58, cut: true },
+          { t: T.p2 - 0.36, name: 'pierce1', eye: out1, at: HEADAT, fp: 66, fd: 58 },
+          { t: T.p2 - 0.35, name: 'pierce2', eye: P2EYE, at: s2, fp: 58, fd: 50, cut: true },
+          { t: T.p3 - 0.36, name: 'pierce2', eye: P2EYE, at: lp3(s2, s3, 0.35), fp: 58, fd: 50 },
+          { t: T.p3 - 0.35, name: 'pierce3', eye: P3EYE, at: s3, fp: 60, fd: 52, cut: true },
+          { t: T.ring + 0.25, name: 'pierce3', eye: [P3EYE[0], P3EYE[1] + 0.3, P3EYE[2]], at: HEADAT, fp: 62, fd: 54 },
+          { t: T.ring + 0.3, name: 'ring', eye: GOD, at: GODAT, fp: 64, fd: 50, cut: true },
+          { t: T.ringOut + 0.2, name: 'ring', eye: [GOD[0], GOD[1] - 0.8, GOD[2]], at: GODAT, fp: 62, fd: 48 },
+          { t: T.ringOut + 0.25, name: 'home', eye: STICK_LOW, at: lp3(STICK_UP, [B.S[0], B.S[1] + 2.4, B.S[2]], 0.6), fp: 72, fd: 62, cut: true },
+          { t: T.tail + 1.2, name: 'home', eye: STICK_LOW, at: STICK_UP, fp: 66, fd: 58 },
+          { t: T.tail + 1.25, name: 'three', eye: THREE_EYE, at: THREE_AT, fp: 56, fd: 50, cut: true },
+          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_AT, fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
-      end() { fmLens(PLAYFOV5); SPLASH5.off();
-        /* what the last stage finds: the three laid at their places, small, dim and cool, the Naga lying round the court */
+      end() { fmLens(PLAYFOV5); SPLASH5.off(); NAGA5.hide(); if (this.bs) this.bs.visible = false;
+        /* what the last stage finds: the three laid at their places, small, dim and cool; the Naga home in the stick */
         const W = this.W || fightStart().laid;
         this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !W[j]) return; put(P, W[j].x, W[j].z, P.group.rotation.y); P.group.position.y = 0; PRAI5.burn(P, 0); PRAI5.cool(P, 1); });
+        this.B = null;
         if (kit && kit.captions) kit.captions(null); }
     };
 

@@ -83,7 +83,7 @@
         lessonAt: [0.6, -1.6],                // where the lesson's Prai stands and strains toward him (0.6 to the side, 21 Nov:
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
                                               // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
-        laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
+        laidAt: [[-1.8, -1.12], [0, -1.7], [1.8, -1.12]],   // where the Naga lays the last three (stage 6): FIXED (R64), on its arc across the house side
         entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45, 0.09], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3, 0.39], [0.86, -2.09, 0.58], [-0.51, -2.6]],
                                               // (R25, 21 Nov: spread so no two touch: each body's own ground at every 20 cm
                                               // of height (tools/probes/footprint.mjs), turned to face him, 12 cm apart or
@@ -692,28 +692,18 @@
         st.ev.push({ e: 'surge' });
       }
       /* (R47, 23 Nov: Chad, "The naga should pierce through all the prai's bodies ... As it pierces through each prai, the fire
-         of each prai is extinguished and it cools them down": the Naga's film flings the three apart onto ONE STRAIGHT LINE
-         and its head goes through all three in one low pass, so where they are laid is chosen here, from where the two stand
-         as the Naga is called: three places 1.8 m apart on a line, with a level run of 2.0 m before the first and 1.0 m after
-         the last for its head, all of it 0.95 m inside the court's walls and the house and clear of the planters, and the
-         whole run at least 1.6 m from both of them (its body passes at their knees, his student's cage round him); of every
-         line tried (twelve ways, its middle on a grid of the court), the one farthest from them, a little nearer the house;
-         NUM.laidAt if none fits. The film reads them (c_fightstage.js fsNagaGo) and the last stage lays them there) */
-      function spotsFor(st) {
-        const n = st.n, B = [st.pho, st.zav], gap = 1.8, pre = 2.0, post = 1.0;
-        const inside = (x, z) => Math.abs(x) <= n.courtX - 0.95 && z >= n.courtZ0 + 0.95 && z <= n.courtZ1 - 0.95 && !(z >= n.notch.z - 0.5 && Math.abs(x) > n.notch.x - 0.6);
-        let best = null;
-        for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, ux = Math.sin(a), uz = Math.cos(a);
-          for (let gx = -2.4; gx <= 2.4001; gx += 0.6) for (let gz = -1.6; gz <= 5.0001; gz += 0.6) {
-            let ok = true, dmin = Infinity;
-            for (let s = -(gap + pre); s <= gap + post + 1e-6; s += 0.25) { const x = gx + ux * s, z = gz + uz * s;
-              if (!inside(x, z)) { ok = false; break; }
-              for (const b of B) dmin = Math.min(dmin, Math.hypot(x - b.x, z - b.z)); }
-            if (!ok || dmin < 1.6) continue;
-            const score = Math.min(dmin, 3.0) - 0.06 * Math.max(0, gz - 0.5);
-            if (!best || score > best.score + 1e-9) best = { score, gx, gz, ux, uz }; } }
-        if (!best) return n.laidAt.map(q => q.slice());
-        return [-gap, 0, gap].map(s => [best.gx + best.ux * s, best.gz + best.uz * s]);
+         of each prai is extinguished and it cools them down": the Naga's film flings the three apart and its head goes through
+         all three in one low pass; the film reads their places (c_fightstage.js fsNagaGo) and the last stage lays them there) */
+      /* R64 (23 Nov 2026, Chad: "it needs to properly rearrange all the characters, prai, and the naga for proper staging for
+         the cutscene so that the positions are always reliably fixed during the cutscene no matter how the player plays it"):
+         as the Naga is called, the two of them are set at the fight's first marks (NUM.phoAt, NUM.zavAt) and the three's places
+         are the fixed ones on its arc (NUM.laidAt); the film begins on them under its white, and the last stage after it begins
+         from them too. (Through R47 the places were chosen from where the two happened to stand: spotsFor, retired) */
+      function nagaMarks(st) {
+        const n = st.n;
+        st.pho.x = n.phoAt[0]; st.pho.z = n.phoAt[1]; st.zav.x = n.zavAt[0]; st.zav.z = n.zavAt[1];
+        for (const p of st.prai) if (p.st === 'shape') { p.x = st.zav.x; p.z = st.zav.z; }
+        st.three = n.laidAt.map(q => q.slice());
       }
       function layThree(st) {                                    // the Naga's film is over: stage 6
         const n = st.n, at3 = st.three && st.three.length === 3 ? st.three : n.laidAt;
@@ -781,7 +771,7 @@
           if (st.together > 0) {
             timed(st, 'fill', n.togetherSecs - st.together + dt);
             st.together -= dt;
-            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; st.three = spotsFor(st); st.ev.push({ e: 'naga' });
+            if (st.together <= 0) { st.together = 0; setStage(st, 'naga'); st.film = 0; nagaMarks(st); st.ev.push({ e: 'naga' });
               if (Math.min(wallGap(n, st.pho), wallGap(n, st.zav)) < n.wallOff - 0.01) st.stats.wallFilm++; }
           }
         } else if (st.stage === 'naga') {

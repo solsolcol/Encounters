@@ -5211,6 +5211,11 @@ function decisionClockStop() { decClock = null; $('dclock')?.classList.add('hide
 
 /* ---- haptics ------------------------------------------------------------- */
 function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} }
+/* v28.0 (R63, the seventy-second seam): THE PHONE BUZZED BY A CHAPTER (Chad, 23 Nov 2026: "When the naga pierces through
+   each prai, there needs to be visual impact and physical feedback"): a vibration pattern in milliseconds through the one
+   haptic path, only while the game is played or a film runs (never under a menu, a card or the title); a device without
+   vibration ignores it. Answers whether it was sent. Absent, nothing buzzes */
+function kitBuzz(pattern) { if (state !== 'play' && state !== 'cine') return false; haptic(pattern); return true; }
 
 /* ---- events -------------------------------------------------------------- */
 /* v18.2: every kind's briefing picture (shell.html's #evDemo classes) — the
@@ -9226,6 +9231,7 @@ const KIT = {
   tremble: kitTremble,             // v22.0: the hands shaking by k (the thirty-second seam)
   chill: kitChill,                 // v22.0: the cold at the edges of his sight — blur, blue, dim (the thirty-third seam)
   pulse: kitPulseSet,              // v22.0: his heart taken over — rate, rhythm, heard and felt, on the monitor (the thirty-fourth)
+  buzz: kitBuzz,                   // v28.0: the phone buzzed by a chapter, in play or a film (the seventy-second seam)
   smear: kitSmear,                 // v22.0: the picture lagging behind his eyes (the thirty-fifth)
   getPulse: () => (kitPulse ? { bpm: kitPulse.bpm, to: kitPulse.to, erratic: kitPulse.erratic } : null),
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
@@ -16820,7 +16826,7 @@ const STING_SAMPLE = {
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5nagawater: ['u5nagawater', 1], u5nagapass: ['u5nagapass', 1], u5pierce1: ['u5pierce1', 1],
   u5pierce2: ['u5pierce2', 1], u5pierce3: ['u5pierce3', 1], u5douse: ['u5douse', 1], u5nagawrap: ['u5nagawrap', 1],
-  u5nagabreathw: ['u5nagabreathw', 1], u5mist: ['u5mist', 1],
+  u5mist: ['u5mist', 1],
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5shockhit: ['u5shockhit', 1], u5nagahit1: ['u5nagahit1', 1], u5nagahit2: ['u5nagahit2', 1],
   u5nagahit3: ['u5nagahit3', 1], u5nagacry: ['u5nagacry', 1], u5nagaclimb: ['u5nagaclimb', 1],

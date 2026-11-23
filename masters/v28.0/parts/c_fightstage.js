@@ -1323,6 +1323,11 @@
       FS5.nagaAt = null; if (kit && kit.captions) kit.captions(null);
       const st = FS5.st, three = []; st.prai.forEach((p, i) => { if (p.st === 'shape') three.push(i); });
       if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three.length === 3 ? three : null; FILMS5.together.spots = st.three || null; }   // (R47: and where the rules lay them)
+      /* (R64: THE STAGING FIXED. The rules have put the two of them at the fight's first marks as the Naga is called; the mode's
+         bodies are set there too, under the film's opening white, so the film and the last stage after it begin from the same
+         places whatever the play was; the mode's lens is the film's until it ends) */
+      { const F0 = fightStart(); kit.tagPlace('pho', F0.pho.x, F0.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F0.zav.x, F0.zav.z, { ry: COURT5.heading + Math.PI });
+        FS5.last.pho = null; FS5.last.zav = null; }
       FS5.film = true;
       /* M8 under the surge goes down as the film comes in (the film plays M9 over everything; the fight's loops go quiet by
          themselves under it, their frame stopped) */
@@ -1537,8 +1542,8 @@
       const wind = st.pho.wind > 0 ? 1 - st.pho.wind / (FN5.windSecs || 1.5) : 0;
       TRANCE5.gold(0.35 + 0.65 * wind);                   // (the fight's lens is behind him: the card lies over his back, so a glow, full only as the gold gathers)
       if (FS5.flare > 0) courtLamps(0.15 + 0.85 * FS5.flare);
-      /* the Naga lies round the court through the last three, dimmed (its body laid once by its film; its light only here) */
-      if (st.stage === 'last' && NAGA5.U) { NAGA5.U.uNA.value = 0.3 + 0.04 * Math.sin(FS5.wall * 1.3); NAGA5.U.uNT.value = FS5.wall; }
+      /* (R63: the Naga's film ends with it gone home into the stick, so the last stage draws none of it: through R47 it lay
+         round the court here, dimmed, "lingering in an awkward position") */
       PRAI5.tick(wdt);
       if (st.stage === 'surge') fsSurgeFrame(wdt); else if (st.stage !== 'brief') fsPraiFrame(wdt);   // (under the brief the nine stand as the film left them)
       fsFxFrame(wdt, ft);
