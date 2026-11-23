@@ -203,11 +203,6 @@
       if (!S.wrote || !b.quaternion.equals(S.wrote)) S.take.copy(b.quaternion); else b.quaternion.copy(S.take); return S; }
     function limTurn(S, b, rot) { b.parent.getWorldQuaternion(_l.r); b.getWorldQuaternion(_l.s);
       b.quaternion.copy(_l.r.invert().multiply(rot).multiply(_l.s)); S.wrote = b.quaternion.clone(); b.updateWorldMatrix(false, true); }
-    /* (a bone's turn against its parent at bind, from whichever of his skins carries both) */
-    function limBindQ(P, b) { const C = P.limBQ || (P.limBQ = new Map()); if (C.has(b)) return C.get(b); let q = null;
-      P.group.traverse(o => { if (q || !o.isSkinnedMesh || !o.skeleton) return; const sk = o.skeleton, i = sk.bones.indexOf(b), ip = b.parent ? sk.bones.indexOf(b.parent) : -1; if (i < 0 || ip < 0) return;
-        const m = new THREE.Matrix4().copy(sk.boneInverses[ip]).multiply(new THREE.Matrix4().copy(sk.boneInverses[i]).invert()); q = new THREE.Quaternion(); m.decompose(new THREE.Vector3(), q, new THREE.Vector3()); });
-      C.set(b, q); return q; }
     function armLimit(P, skip) {
       const L = P.limState || (P.limState = new Map()), B = P.limBones || (P.limBones = {});
       const bo = (n) => (n in B ? B[n] : (B[n] = boneOf(P, n)));
@@ -229,15 +224,18 @@
         if (skip === S0) continue;
         const up = bo(S0 + 'Arm'), fo = bo(S0 + 'ForeArm'), hd = bo(S0 + 'Hand'); if (!up || !fo || !hd) continue;
         /* THE COLLARBONE raised (jointscan's 'raised': its rise from its root out to the shoulder joint over the plane square to
-           the torso's up, against its bind): a shrug, eased toward its bind turn, allowed more as the arm is raised (a raised
+           the torso's up, against its bind): a shrug, lowered softly to its edge, allowed more as the arm is raised (a raised
            arm lifts its collarbone with it, about a sixth of its own rise: jointscan's edge 10 degrees over its bind with the
            arm hanging, 25 with it level, 41 overhead; eased from 5 under that edge) */
         { const cl = bo(S0 + 'Shoulder'), el1 = P.limBind[S0];
           if (cl && el1 != null) { cl.updateWorldMatrix(true, false); up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
             const d = up.getWorldPosition(_l.g).sub(cl.getWorldPosition(_l.h)), u0 = d.dot(U), el0 = Math.atan2(u0, Math.sqrt(Math.max(0, d.lengthSq() - u0 * u0))) / D2R5;
             const ua = fo.getWorldPosition(_l.i).sub(up.getWorldPosition(_l.j)).normalize(), rise = Math.acos(Math.max(-1, Math.min(1, -ua.dot(U)))) / D2R5;
-            const edge = 10 + 0.17 * rise, ex = el0 - el1, ex1 = softHi(ex, edge - 5, edge), q0 = ex1 < ex - 0.05 ? limBindQ(P, cl) : null;
-            if (q0) { cl.quaternion.slerp(q0, 1 - ex1 / ex); L.get(cl).wrote = cl.quaternion.clone(); cl.updateWorldMatrix(false, true); } } }
+            const edge = 10 + 0.17 * rise, ex = el0 - el1, ex1 = softHi(ex, edge - 5, edge);
+            /* (lowered EXACTLY by what is over: turned about the line square to the collarbone and the torso's up, which moves
+               its rise and nothing else; eased toward its bind turn instead, the live build's check still read Master Zavier's
+               bind 30 to 32 degrees over, the edge 28: a blend toward a turn is not a share of an angle) */
+            if (ex1 < ex - 0.05) { const ax = _l.a.crossVectors(d, U); if (ax.lengthSq() > 1e-10) limTurn(L.get(cl), cl, _l.q.setFromAxisAngle(ax.normalize(), -(ex - ex1) * D2R5)); } } }
         /* THE SHOULDER thrown back (read on an arm below the level, as jointscan reads it) */
         { up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
           const sh = up.getWorldPosition(_l.g), u = fo.getWorldPosition(_l.h).sub(sh).normalize(), dn = -u.dot(U), ext = Math.atan2(-u.dot(F), dn) / D2R5;
