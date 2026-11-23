@@ -428,6 +428,14 @@
       skin(L.x0, WIN_A.x0, 0, h); skin(WIN_A.x1, DOOR_FRONT.x0, 0, h); skin(DOOR_FRONT.x1, WIN_B.x0, 0, h); skin(WIN_B.x1, L.x1, 0, h);
       skin(WIN_A.x0, WIN_A.x1, 0, WIN_A.sill); skin(WIN_A.x0, WIN_A.x1, WIN_A.head, h); skin(WIN_B.x0, WIN_B.x1, 0, WIN_B.sill); skin(WIN_B.x0, WIN_B.x1, WIN_B.head, h);
       skin(DOOR_FRONT.x0, DOOR_FRONT.x1, DOOR_FRONT.h, h);
+      /* (R75's debug, the devotee film at 20 s looking down through the door: a pale triangle on the floor at the west jamb.
+         The wall's own reveal stops at its inner face (z -5.6) and the inside paint stands 10 cm further in, so through the
+         door's sides the void between them showed, and through it the sky's colour. The door's reveal now runs on to the
+         paint: both jambs and the head's underside, in the inside paint) */
+      { const x0 = DOOR_FRONT.x0, x1 = DOOR_FRONT.x1, hd = DOOR_FRONT.h, zf = H.face;
+        quad(mWallIn, [x0, 0, zi], [x0, 0, zf], [x0, hd, zf], [x0, hd, zi], zi, 0);
+        quad(mWallIn, [x1, 0, zf], [x1, 0, zi], [x1, hd, zi], [x1, hd, zf], zf, 0);
+        quad(mWallIn, [x0, hd, zf], [x1, hd, zf], [x1, hd, zi], [x0, hd, zi], x0, zf); }
       /* the living room's east wall (x -5.1), its north wall (z -1.6) with the bedrooms' door (shut), the dining room's
          east wall (x -8.5) with the kitchen's door (shut), its north wall (z 1.6), and the west wall (x -12.3) with the
          terrace doors in the living room's part and a window in the dining room's */
