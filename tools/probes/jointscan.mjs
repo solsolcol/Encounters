@@ -118,7 +118,12 @@ const MEASURE = ([WHO, NAMES]) => {
           const blh = bp('LeftUpLeg'), brh = bp('RightUpLeg'), bla = bp('LeftArm'), bra = bp('RightArm'), bcl = bs ? bp(S0 + 'Shoulder') : null, bsh = bp(S0 + 'Arm');
           if (blh && brh && bla && bra && bcl && bsh) { const bU = bla.clone().add(bra).multiplyScalar(0.5).sub(blh.clone().add(brh).multiplyScalar(0.5)).normalize(), bd = bsh.clone().sub(bcl), bu = bd.dot(bU);
             const el1 = Math.atan2(bu, bd.clone().addScaledVector(bU, -bu).length()) * D; J.clavicleBind = +el1.toFixed(1);
-            if (el0 - el1 > 10) flag(S0[0] + '.shoulder.raised', el0 - el1, 'degrees over its neutral (' + el1.toFixed(1) + ')'); } } }
+            /* (v28.0, R35: a RAISED arm lifts its collarbone with it, about a sixth of its own rise: the edge is 10 degrees over
+               the neutral with the arm hanging, as v26.8 set it for a body at rest, 25 with it level, 41 overhead; the arm's rise
+               its upper arm's angle from hanging. c_cast.js LIM5 eases a shrug to this same edge) */
+            const elw = P(S0 + 'ForeArm'), rise = elw ? Math.acos(Math.max(-1, Math.min(1, -elw.clone().sub(sh).normalize().dot(U)))) * D : 0, edge = 10 + 0.17 * rise;
+            J.armRise = +rise.toFixed(1);
+            if (el0 - el1 > edge) flag(S0[0] + '.shoulder.raised', el0 - el1, 'degrees over its neutral (' + el1.toFixed(1) + '), the arm ' + rise.toFixed(0) + ' up'); } } }
       /* the arm */
       if (sh && el) { const u = el.clone().sub(sh).normalize(), e = wr.clone().sub(el).normalize();
         const phi = Math.acos(Math.max(-1, Math.min(1, u.dot(e)))) * D; J.elbow = +phi.toFixed(1);

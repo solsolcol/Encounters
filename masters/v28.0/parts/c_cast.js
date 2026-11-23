@@ -148,24 +148,36 @@
        finger, 86 points of its skin from its last joint to its tip and past it, is carried by RightHandEnd, his rig's old end
        site under his hand (the finger graft renamed it and took it to carry nothing), never by the finger's own last bone; so
        when his fingers close round the stick, that fingertip stays where his open hand held it, straight out past the others.
-       Every other finger's tip is its own last bone's. The end site is made a child of the middle finger's last bone where it
-       stands (attach keeps its place in the world, at rest the same as it was): open, nothing moves; closed, the tip goes
-       with its finger. FIRST its tracks come out of his takes: all nineteen hold it still at its rest, 0.000 cm and 0.00
-       degrees from it at every key (measured on his file), but each of them writes it again every frame as the HAND's child,
-       and under the finger those same numbers threw it 14.6 cm out along the finger and dragged the tip's skin through the
-       stick (the first try, measured by e4c5grip.mjs before it went anywhere: 124 points of his fingers inside the shaft) */
-    const END5 = /RightHandEnd\./;
+       It pulls on the other fingertips too, as a second bone (made to follow the middle finger, it drew the ring finger's tip
+       into the stick by 0.7 cm: measured before it went anywhere). So EACH POINT IT CARRIES IS GIVEN TO ITS OWN FINGER: the
+       finger whose line (its first joint to its end, past it a third) is nearest the point at bind takes the end site's share
+       on that finger's last bone, the point's other shares kept, its sum the same. The end site then carries nothing; at rest
+       every point stands where it stood (the end site and each finger's last bone are both at their bind there), and closed,
+       every tip goes with its own finger. On the geometry once, for every copy of him) */
     whenReady(cast.pho, (P) => {
-      const end = boneOf(P, 'RightHandEnd'), m3 = boneOf(P, 'RightHandMiddle3');
-      if (!end || !m3 || end.parent === m3) return;
-      let n = 0;
-      for (const name of Object.keys(P.acts)) { const A = P.acts[name], clip = A.getClip(), keep = clip.tracks.filter(t => !END5.test(t.name));
-        if (keep.length === clip.tracks.length) continue;
-        const w = P.w[name] || 0, time = A.time; A.stop(); P.mixer.uncacheAction(clip);
-        const A2 = P.mixer.clipAction(new THREE.AnimationClip(clip.name, clip.duration, keep)); A2.enabled = true; A2.setEffectiveWeight(w); A2.play(); A2.time = time;
-        P.acts[name] = A2; n += clip.tracks.length - keep.length; }
-      m3.updateWorldMatrix(true, false); end.updateWorldMatrix(true, false); m3.attach(end);
-      console.log('HANDS5: ' + P.key + "'s middle fingertip carried by its own last bone (RightHandEnd under RightHandMiddle3; " + n + ' still tracks of it out of his takes)');
+      let moved = 0, meshes = 0;
+      P.group.traverse(o => {
+        if (!o.isSkinnedMesh || !o.skeleton) return;
+        const sk = o.skeleton, g = o.geometry, bi = sk.bones.findIndex(b => /RightHandEnd$/.test(b.name));
+        if (bi < 0 || !g || g.userData.end5) return; g.userData.end5 = true; meshes++;
+        const lines = [];
+        for (const f of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) {
+          const idx = [1, 2, 3, 4].map(k => sk.bones.findIndex(b => new RegExp('RightHand' + f + k + '$').test(b.name))); if (idx.some(i => i < 0)) continue;
+          const at = idx.map(i => new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(sk.boneInverses[i]).invert()));
+          lines.push({ a: at[0], ab: at[3].clone().sub(at[0]), last: idx[2] }); }
+        if (!lines.length) return;
+        const si = g.attributes.skinIndex, sw = g.attributes.skinWeight, pos = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3();
+        for (let i = 0; i < si.count; i++) {
+          let slot = -1; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bi && sw.getComponent(i, q) > 0) slot = q;
+          if (slot < 0) continue;
+          v.fromBufferAttribute(pos, i).applyMatrix4(o.bindMatrix);
+          let best = null, bd = Infinity;
+          for (const L of lines) { const t = Math.max(0, Math.min(1.33, v.clone().sub(L.a).dot(L.ab) / L.ab.lengthSq())), d = c.copy(L.a).addScaledVector(L.ab, t).distanceTo(v); if (d < bd) { bd = d; best = L; } }
+          const w = sw.getComponent(i, slot); let to = -1; for (let q = 0; q < 4; q++) if (q !== slot && si.getComponent(i, q) === best.last) to = q;
+          if (to >= 0) { sw.setComponent(i, to, sw.getComponent(i, to) + w); sw.setComponent(i, slot, 0); } else si.setComponent(i, slot, best.last);
+          moved++; }
+        si.needsUpdate = true; sw.needsUpdate = true; });
+      if (meshes) console.log('HANDS5: ' + P.key + "'s fingertips each carried by their own finger (" + moved + ' points from the old end site RightHandEnd)');
     });
 
     /* (R35, 23 Nov: THE ARMS HELD TO A REAL BODY'S RANGE, after every take, in every pose: the class, never pose by pose. The
@@ -191,12 +203,24 @@
       if (!S.wrote || !b.quaternion.equals(S.wrote)) S.take.copy(b.quaternion); else b.quaternion.copy(S.take); return S; }
     function limTurn(S, b, rot) { b.parent.getWorldQuaternion(_l.r); b.getWorldQuaternion(_l.s);
       b.quaternion.copy(_l.r.invert().multiply(rot).multiply(_l.s)); S.wrote = b.quaternion.clone(); b.updateWorldMatrix(false, true); }
+    /* (a bone's turn against its parent at bind, from whichever of his skins carries both) */
+    function limBindQ(P, b) { const C = P.limBQ || (P.limBQ = new Map()); if (C.has(b)) return C.get(b); let q = null;
+      P.group.traverse(o => { if (q || !o.isSkinnedMesh || !o.skeleton) return; const sk = o.skeleton, i = sk.bones.indexOf(b), ip = b.parent ? sk.bones.indexOf(b.parent) : -1; if (i < 0 || ip < 0) return;
+        const m = new THREE.Matrix4().copy(sk.boneInverses[ip]).multiply(new THREE.Matrix4().copy(sk.boneInverses[i]).invert()); q = new THREE.Quaternion(); m.decompose(new THREE.Vector3(), q, new THREE.Vector3()); });
+      C.set(b, q); return q; }
     function armLimit(P, skip) {
       const L = P.limState || (P.limState = new Map()), B = P.limBones || (P.limBones = {});
       const bo = (n) => (n in B ? B[n] : (B[n] = boneOf(P, n)));
       const lh = bo('LeftUpLeg'), rh = bo('RightUpLeg'), la = bo('LeftArm'), ra = bo('RightArm'); if (!lh || !rh || !la || !ra) return;
       /* (each arm's bones as the take left them, read afresh: what was written last frame and not written again is taken back) */
-      for (const S0 of ['Left', 'Right']) { if (skip === S0) continue; for (const n of ['Arm', 'Hand']) { const b = bo(S0 + n); if (b) limKeep(L, b); } }
+      for (const S0 of ['Left', 'Right']) { if (skip === S0) continue; for (const n of ['Shoulder', 'Arm', 'Hand']) { const b = bo(S0 + n); if (b) limKeep(L, b); } }
+      /* (each collarbone's rise at bind, jointscan's neutral, read once from the skin's bind) */
+      if (!P.limBind) { P.limBind = {}; const bp = (b) => { let at = null; P.group.traverse(o => { if (at || !o.isSkinnedMesh || !o.skeleton) return; const i = o.skeleton.bones.indexOf(b);
+            if (i >= 0) at = new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(o.skeleton.boneInverses[i]).invert()); }); return at; };
+        const blh = bp(lh), brh = bp(rh), bla = bp(la), bra = bp(ra);
+        if (blh && brh && bla && bra) { const bU = bla.clone().add(bra).multiplyScalar(0.5).sub(blh.clone().add(brh).multiplyScalar(0.5)).normalize();
+          for (const S0 of ['Left', 'Right']) { const c0 = bo(S0 + 'Shoulder') && bp(bo(S0 + 'Shoulder')), s0 = bp(bo(S0 + 'Arm')); if (!c0 || !s0) continue;
+            const d = s0.sub(c0), u0 = d.dot(bU); P.limBind[S0] = Math.atan2(u0, d.addScaledVector(bU, -u0).length()) / D2R5; } } }
       P.group.updateWorldMatrix(true, false); for (const b of [lh, rh, la, ra]) b.updateWorldMatrix(true, false);
       const pa = la.getWorldPosition(_l.a), pb = ra.getWorldPosition(_l.b), mid = _l.c.copy(pa).add(pb).multiplyScalar(0.5);
       const U = _l.d.copy(mid).sub(_l.e.copy(lh.getWorldPosition(_l.e)).add(rh.getWorldPosition(_l.f)).multiplyScalar(0.5)).normalize();
@@ -204,6 +228,16 @@
       for (const [S0, side] of [['Left', 1], ['Right', -1]]) {
         if (skip === S0) continue;
         const up = bo(S0 + 'Arm'), fo = bo(S0 + 'ForeArm'), hd = bo(S0 + 'Hand'); if (!up || !fo || !hd) continue;
+        /* THE COLLARBONE raised (jointscan's 'raised': its rise from its root out to the shoulder joint over the plane square to
+           the torso's up, against its bind): a shrug, eased toward its bind turn, allowed more as the arm is raised (a raised
+           arm lifts its collarbone with it, about a sixth of its own rise: jointscan's edge 10 degrees over its bind with the
+           arm hanging, 25 with it level, 41 overhead; eased from 5 under that edge) */
+        { const cl = bo(S0 + 'Shoulder'), el1 = P.limBind[S0];
+          if (cl && el1 != null) { cl.updateWorldMatrix(true, false); up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
+            const d = up.getWorldPosition(_l.g).sub(cl.getWorldPosition(_l.h)), u0 = d.dot(U), el0 = Math.atan2(u0, Math.sqrt(Math.max(0, d.lengthSq() - u0 * u0))) / D2R5;
+            const ua = fo.getWorldPosition(_l.i).sub(up.getWorldPosition(_l.j)).normalize(), rise = Math.acos(Math.max(-1, Math.min(1, -ua.dot(U)))) / D2R5;
+            const edge = 10 + 0.17 * rise, ex = el0 - el1, ex1 = softHi(ex, edge - 5, edge), q0 = ex1 < ex - 0.05 ? limBindQ(P, cl) : null;
+            if (q0) { cl.quaternion.slerp(q0, 1 - ex1 / ex); L.get(cl).wrote = cl.quaternion.clone(); cl.updateWorldMatrix(false, true); } } }
         /* THE SHOULDER thrown back (read on an arm below the level, as jointscan reads it) */
         { up.updateWorldMatrix(true, false); fo.updateWorldMatrix(true, false);
           const sh = up.getWorldPosition(_l.g), u = fo.getWorldPosition(_l.h).sub(sh).normalize(), dn = -u.dot(U), ext = Math.atan2(-u.dot(F), dn) / D2R5;
