@@ -688,11 +688,20 @@
     world.remove(things.gate); gateHinge.add(things.gate);
     const gateShut = solidXZ(GATE.x - GATE.w / 2, WALK.turnZ, GATE.x + GATE.w / 2, WALK.turnZ + 0.2);
     const gateOpenLeaf = solidXZ(GATE.x - GATE.w / 2 - 0.08, WALK.turnZ + 0.15, GATE.x - GATE.w / 2 + 0.12, WALK.turnZ + 0.15 + GATE.w);
+    /* (R37) THE LENS'S STOP AT THE GATE, a solid only while the fight is on (b_xpeople.js worldPhase): with the court now
+       reaching 0.4 m short of the gate's low wall, the fight's boom (4.0 m behind and 3.1 m above the one he plays) would
+       pass over the gate into the walkway's storey slab; the mode draws its lens in ALONG its own line toward his head where
+       a solid stands between them (main.js tagBoomFor), so it comes down and in over his shoulder, still looking as it did,
+       instead of being held at the gate's line, where he walked out of the bottom of the picture. 6 m high, the yard's width
+       and more, from 2 cm outside the low wall's outer face out over the walkway; c_cast.js boomAt draws in the same */
+    const boomStop = solidXZ(COURT.x0 - 0.3, WALK.turnZ - 2.4, COURT.x1 + 0.3, WALK.turnZ - 0.02, 6.0);
     function gateOpen(k) { gateHinge.rotation.y = -Math.max(0, Math.min(1, k)) * 92 * DEG; }
     /* --- the court: the two planters along its sides near the gate (each 2 m long, turned to run along the court),
        SUNK into the paving until their ragged bottoms are hidden (RECORD.md 3: the first 15 cm, the second 25 cm); the
        two wall lamps either side of his door; a pair of slippers by it */
-    const PLANT_Z = -11.7;
+    /* (R37, 23 Nov: the fight's court made the yard itself (c_fightrules.js NUM): the planters moved 1.05 m toward the gate,
+       into its two corners, their far ends 5 cm off the low wall's inner face (z -13.8); was -11.7) */
+    const PLANT_Z = -12.75;
     place('w5planter', COURT.x1 - 0.373 - 0.02, -0.15, PLANT_Z, Math.PI / 2, { name: 'planterL' });        // (his LEFT, walking in)
     place('w5planter2', COURT.x0 + 0.413 + 0.02, -0.25, PLANT_Z, -Math.PI / 2, { name: 'planterR' });
     solidXZ(COURT.x1 - 0.76, PLANT_Z - 1.0, COURT.x1, PLANT_Z + 1.0, 1.4);

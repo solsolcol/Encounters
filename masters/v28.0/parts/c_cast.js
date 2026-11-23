@@ -73,6 +73,16 @@
         if (Number.isFinite(cb.minZ) && Number.isFinite(cb.maxZ)) o.z = boomSoft(o.z, cb.minZ, cb.maxZ, soft);
         if (Number.isFinite(cb.minY) && Number.isFinite(cb.maxY)) o.y = boomSoft(o.y, cb.minY, cb.maxY, soft); }
       o.x = Math.max(DATA.bounds.minX, Math.min(DATA.bounds.maxX, o.x)); o.z = Math.max(DATA.bounds.minZ, Math.min(DATA.bounds.maxZ, o.z));
+      /* (R37: then drawn in along its line toward his head where a solid stands between them, as the mode does it (main.js
+         tagBoomFor: the head 1.6 m over his feet, every solid that does not hold the head, the nearest hit less 0.22 m).
+         The gate's stop (b_world.js boomStop) counted whole whatever the phase: this boom is only ever the fight's) */
+      { const H = new THREE.Vector3(feet.x, (feet.y || 0) + 1.6, feet.z), L = new THREE.Vector3(o.x, o.y, o.z).sub(H), len = L.length();
+        if (len > 1e-4) {
+          const ray = new THREE.Ray(H, L.divideScalar(len)), hit = new THREE.Vector3(), B = (S && S.blockers) || [], iStop = solids.indexOf(boomStop);
+          let near = len;
+          for (let i = 0; i < B.length; i++) { const bx = i === iStop && block0.has(boomStop) ? block0.get(boomStop) : B[i];
+            if (bx.isEmpty() || bx.containsPoint(H)) continue; const q = ray.intersectBox(bx, hit); if (q) { const dd = q.distanceTo(H) - 0.22; if (dd < near) near = Math.max(0, dd); } }
+          if (near < len) { const k = near / len; o.x = H.x + (o.x - H.x) * k; o.y = H.y + (o.y - H.y) * k; o.z = H.z + (o.z - H.z) * k; } } }
       return { eye: [o.x, o.y, o.z], heading: h, pitch: -(+b.pitch || 0) * Math.PI / 180, fov: Math.max(20, Math.min(110, +(b.fov || d.fov) || 72)) };
     }
 

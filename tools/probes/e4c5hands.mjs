@@ -50,7 +50,7 @@ await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
 await frames(4);
 /* (the HUD and every page layer over the canvas hidden: a lab picture is the world alone) */
-await p.addStyleTag({ content: 'body > *:not(canvas):not(#game):not(#c) { visibility: hidden !important; } canvas { visibility: visible !important; }' });
+await p.addStyleTag({ content: 'body > *:not(canvas):not(#game):not(#c) { visibility: hidden !important; } canvas:not(#ecg):not(.ecg) { visibility: visible !important; }' });
 const lab = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
 const takes = await p.evaluate(() => { const C = window.__enc.stage.plan.FLOOR.cast, out = {};
   for (const k of ['zav', 'pho']) { const P = C[k]; out[k] = P && P.acts ? Object.fromEntries(Object.entries(P.acts).map(([n, a]) => [n, +a.getClip().duration.toFixed(3)])) : null; }
@@ -82,11 +82,16 @@ const aim = (who, sd, view) => p.evaluate(([who, sd, view]) => {
   if (i1 && k1 && m1) { const fl = m1.getWorldPosition(new V()).sub(h).normalize(), ac = i1.getWorldPosition(new V()).sub(k1.getWorldPosition(new V()));
     ac.addScaledVector(fl, -ac.dot(fl)).normalize(); n = new V().crossVectors(fl, ac).multiplyScalar(sd === 'L' ? 1 : -1).normalize(); }
   else { n = new V().setFromMatrixColumn(hand.matrixWorld, 2).normalize(); n.addScaledVector(along, -n.dot(along)).normalize(); }
-  const dir = (view === 'palm' ? n.clone() : n.clone().negate()).addScaledVector(along, 0.35).normalize();
-  const cam = c.clone().addScaledVector(dir, 0.42);
-  E.yaw.position.copy(cam); const d = c.clone().sub(cam); E.yaw.rotation.y = Math.atan2(-d.x, -d.z); E.pitch.rotation.x = Math.atan2(d.y, Math.hypot(d.x, d.z));
-  return { at: c.toArray().map(x => +x.toFixed(3)), cam: cam.toArray().map(x => +x.toFixed(3)), palmSeen: !!n };
+  /* (the engine keeps the lens at its own eye height whatever a probe sets (e4c5grip.mjs found it): so the lens is set
+     ACROSS the ground only, 0.75 m from the hand on the side the view wants, and aimed, once it stands, from where it is) */
+  const dir = (view === 'palm' ? n.clone() : n.clone().negate()).addScaledVector(along, 0.35); dir.y = 0;
+  if (dir.lengthSq() < 1e-6) dir.set(1, 0, 0); dir.normalize();
+  const cam = c.clone().addScaledVector(dir, 0.75);
+  E.yaw.position.x = cam.x; E.yaw.position.z = cam.z; window.__aim = c;
+  return { at: c.toArray().map(x => +x.toFixed(3)), cam: cam.toArray().map(x => +x.toFixed(3)) };
 }, [who, sd, view]);
+const aimed = () => p.evaluate(() => { const E = window.__enc, tg = window.__aim, c = E.yaw.position, d = tg.clone().sub(c);
+  E.yaw.rotation.y = Math.atan2(-d.x, -d.z); E.pitch.rotation.x = Math.atan2(d.y, Math.hypot(d.x, d.z)); return c.toArray().map(x => +x.toFixed(3)); });
 const res = { takes, rows: [], pics: [], errs, logs };
 await p.evaluate(() => { const k = window.__enc.kit; if (k.lens) k.lens(24, { secs: 0 }); });
 for (const who of WHO) {
@@ -106,9 +111,9 @@ for (const who of WHO) {
       /* (the other man taken out of the lens's way: two metres aside) */
       await lab('place', other, 2.4, 2.4); await frames(2);
       for (const sd of ['L', 'R']) for (const view of ['back', 'palm']) {
-        const a = await aim(who, sd, view); await frames(4);
+        const a = await aim(who, sd, view); await frames(4); a.lens = await aimed(); await frames(3); await aimed(); await frames(2);
         const f = `${OUT}/${who}-${take}-${t}-${sd}-${view}.png`;
-        await p.screenshot({ path: f, timeout: 300000 }); res.pics.push({ who, take, t, sd, view, f, a }); say('pic', f);
+        await p.screenshot({ path: f, timeout: 300000 }); res.pics.push({ who, take, t, sd, view, f, a }); say('pic', f, JSON.stringify(a));
       }
     }
   }

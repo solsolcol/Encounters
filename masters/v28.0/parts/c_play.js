@@ -344,7 +344,7 @@
        faint sheen moving on it; the threshold's with spots in a trail across the court to his doors. */
     const HUNT5 = {
       s1: { x: -9.45, z: -5.12 },                                   // under the shoe cabinet by the doors (inside)
-      s2: { x: -6.82, z: -11.7 },                                   // the court, at the left planter's foot (his left as he comes in)
+      s2: { x: -6.82, z: PLANT_Z },                                 // the court, at the left planter's foot (his left as he comes in; R37: its z is the planter's)
       s3: { x: GATE.x, z: -13.72 },                                 // the threshold between the gate posts
       arm: { x: -7.25, z: -2.18 }                                   // the old armchair
     };

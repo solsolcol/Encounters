@@ -158,12 +158,16 @@
     /* THE TAG MODE (the sixtieth seam, docs/V28.0-SEAMS.md; the fight's camera, the plan's 5.6 and Chad's "Behind and
        above"): the lens 4.0 m behind and 3.1 m above the one he plays, 26 degrees down, always facing down the court
        toward the house (the court's heading: c_cast.js COURT5); it never passes the gate (the storey above's walkway slab
-       begins at z -14.0, docs/V28.0-WORLD.md 4, so the lens stops there and he comes nearer it) and keeps inside the side
+       begins at z -14.0, docs/V28.0-WORLD.md 4: the fight's stop there draws it in along its line, R37) and keeps inside the side
        walls; it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
        paces and discs are the fight's (c_fightstage.js names them as it opens the mode). c_cast.js boomAt reads this same
        declaration, so the preparation's film ends on exactly the mode's first picture */
     tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
-           camBox: { minX: -10.8, maxX: -6.2, minZ: -13.9, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
+              z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
+              out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws
+              the lens in along its line toward his head instead, the mode's own wall rule: was minZ -13.9) */
+           camBox: { minX: -10.8, maxX: -6.2, minZ: -16.6, maxZ: -6.0, minY: 1.2, maxY: 4.5 }, soft: 0.6, glide: 0.4, lock: 0.8,
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'KeyF' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,

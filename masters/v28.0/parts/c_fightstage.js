@@ -1287,7 +1287,10 @@
       const st = FS5.st; if (!st || !(dt > 0) || !(st.stage === 'learn' || st.stage === 'fight' || st.stage === 'last')) return;
       const n = st.n || FN5, played = st.who === 'pho' ? st.pho : st.zav, other = st.who === 'pho' ? st.zav : st.pho, otherIsPho = st.who !== 'pho';
       if (otherIsPho && (st.pho.wind > 0 || st.pho.draw > 0)) return;
-      const lensZ = Math.min(played.z + 4.0, 5.2), half = 0.45 + 0.25 + 0.3;
+      /* (R37: the lens stops at the gate where the fight's own stop draws it in along its line, b_world.js boomStop: its box
+         grown 0.14 for the eye reaches the yard's z -13.88 and the lens stands 0.22 before it, court z 4.96; was the lens
+         box's 5.2) */
+      const lensZ = Math.min(played.z + 4.0, 4.96), half = 0.45 + 0.25 + 0.3;
       if (!(other.z > played.z - 0.2 && other.z < lensZ)) return;                    // (not between the lens and him)
       const dx = other.x - played.x; if (Math.abs(dx) >= half) return;
       const bx = n.bodyX || 1.6, room = (sg) => sg > 0 ? bx - (played.x + half) : (played.x - half) + bx;

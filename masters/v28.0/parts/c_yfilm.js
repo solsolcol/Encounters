@@ -390,8 +390,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            0.42 m deep, 2143 and 2863 crossings in the film's clipscan. The body is lifted over each, 1.12 m, from 0.85 m
            before it to round the gate end's corner, as a serpent goes over a box: measured at 32 stick places, every
            twentieth of the way, none of it in a planter, a wall or the house) */
-        const r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, -9.1], [x0 + 0.02, HY, -9.95], [x0 + 0.14, HY, -12.6], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
-                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, -12.6], [x1 - 0.02, HY, -10.45], [x1, y, -9.6], [x1, y, zm + 1.0]];
+        /* (R37, 23 Nov: the planters moved 1.05 m into the gate's corners (b_world.js PLANT_Z, -11.7 to -12.75): each hump now
+           read from where they stand, as it was laid against them: up 1.75 m before a planter's house end on his left,
+           1.25 m on his right, down from them 2.6 and 2.1 m before it, over the turn at the gate end (z0 + 0.25). With
+           PLANT_Z -11.7 these are the numbers the clipscan passed: -9.1, -9.95, -12.6, -10.45, -9.6) */
+        const PZ = PLANT_Z, r = 1.0, HY = 1.12, loop = [[x0, y, z1 - r], [x0, y, PZ + 2.6], [x0 + 0.02, HY, PZ + 1.75], [x0 + 0.14, HY, z0 + 0.25], [x0 + 0.9, HY * 0.9, z0], [x0 + 1.6, y, z0],
+                                            [x1 - 1.6, y, z0], [x1 - 0.9, HY * 0.9, z0], [x1 - 0.14, HY, z0 + 0.25], [x1 - 0.02, HY, PZ + 1.25], [x1, y, PZ + 2.1], [x1, y, zm + 1.0]];
         return new THREE.CatmullRomCurve3(pts.concat(loop).map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal', 0.5);
       }
       function make() {

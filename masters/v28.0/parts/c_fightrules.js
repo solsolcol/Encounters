@@ -44,11 +44,29 @@
       const NUM = {
         // THE COURT, in metres: x across it, z down it (the house's doorway, and the thread across it, at z -3.0; the
         // gate, and the camera behind and above the one he plays, at +3.0). The play area of the plan's 8.1
-        courtX: 1.95, courtZ0: -3.0, courtZ1: 3.0,
+        /* (R37, 23 Nov: Chad, "increase the total walkable area size of the entire fight sequence area by at least 50% bigger
+           ... the current area feels too restrictive to walk in". The court was 3.9 by 6.0 m inside the yard's 5.2 by 8.4,
+           and the two of them walked 3.2 by 4.9 m of it (15.7 square metres), held 0.65 m off each side wall and 2.3 m short
+           of the gate by lines nobody could see. Now the court is the yard: 0.15 m off its side walls (x 2.45) and 0.4 m
+           short of the gate's low wall (its inner face at the yard's z -13.8; the two planters moved into the gate's corners
+           to give the room: b_world.js PLANT_Z), 4.9 by 7.7 m; the two of them walk 4.2 by 6.6 m of it, 27.7 square metres
+           less the planters' corners, 1.7 times what they had. Was courtX 1.95, courtZ1 3.0) */
+        courtX: 2.45, courtZ0: -3.0, courtZ1: 4.7,
         praiIn: 0.2,                          // a Prai keeps this far inside the court's walls
+        notch: { z: 2.75, x: 1.45 },          // (R37) and out of the planters in the gate's corners: past z 2.75 it keeps
+                                              // within x 1.45 of the middle (their inner faces x 1.76 and -1.84 from
+                                              // z 3.05: a Prai's own half-width, 0.3, to spare)
         threadZ: -2.7,                        // and never comes nearer the doorway, or the three behind the thread, than this
-        bodyX: 1.6, bodyZ0: -2.3, bodyZ1: 2.6, // where the two of them may stand
-        wallOff: 1.1, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
+        bodyX: 2.1, bodyZ0: -2.3, bodyZ1: 4.3, // where the two of them may stand (R37: was 1.6 and 2.6; the planters in the
+                                              // gate's corners stop them as every solid does, the mode's own slide)
+        wallOff: 1.6, wallSlide: 0.6,         // from the surge on, both stand this far off the court's walls, eased in at this
+        offZ1: 1.9,                           // (R37: 1.6 with the court at the yard's walls, so they stand inside the Naga's
+                                              // loop as before, which lies 0.62 m in from the yard's walls: x 0.85 as before;
+                                              // and toward the gate no further than the old court let them, z 1.9 (offZ1):
+                                              // with the court's length let out to 4.7 the simulator's careful player could
+                                              // end the surge on the gate side of his student, and in the lane inside the
+                                              // Naga (1.7 m wide, the cage 2.9 across) never got round him to the last three:
+                                              // 6 campaigns of 300 stalled, none with offZ1. Was wallOff 1.1 in the smaller court)
                                               // pace where the surge finds one nearer (never a snap): the Naga's body lies
                                               // 0.27 to 0.97 m off them round the court, and passed through whoever stood
                                               // within about a metre of one (FILMS-2, 21 Nov)
@@ -91,16 +109,16 @@
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
         fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
         // FIRE (Grandmaster Pho's main act)
-        fireWait: 1.1, flight: 0.7, fireReach: 5.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
+        fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
         bagReach: 2.5, bagSecs: 1.0,
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown"); its wait a fifth
         // shorter at his R34 (23 Nov: "make it slightly easier to charge up the shockwave skill, it takes too long to
         // charge it up"): 40 s, was 50 (the holds' own waits below likewise; the wait after a break is a penalty, kept)
-        waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
+        waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 7, ringMax: 8.5, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
-        bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
+        bindWait: 3.5, bindReach: 6.5, bubbleSecs: 10, bubbleMax: 3,
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 30,                    // so a bubble's longest stand: bubbleSecs + stillMax
@@ -232,13 +250,15 @@
         const xm = n.courtX - n.praiIn, z0 = Math.max(n.courtZ0 + n.praiIn, n.threadZ), z1 = n.courtZ1 - n.praiIn;
         if (p.x < -xm) p.x = -xm; else if (p.x > xm) p.x = xm;
         if (p.z < z0) p.z = z0; else if (p.z > z1) p.z = z1;
+        if (n.notch && p.z > n.notch.z) { if (p.x < -n.notch.x) p.x = -n.notch.x; else if (p.x > n.notch.x) p.x = n.notch.x; }
       }
       /* (FROM THE SURGE ON: off the walls. How far the nearer wall is; each body eased in where it is nearer; and no step
          taking it nearer again) */
       const offWalls = (st) => st.stage === 'surge' || st.stage === 'naga' || st.stage === 'last';
-      const wallGap = (n, b) => Math.min(n.courtX - Math.abs(b.x), b.z - n.courtZ0, n.courtZ1 - b.z);
+      const farZ = (n) => Math.min(n.courtZ1, (n.offZ1 != null ? n.offZ1 : Infinity) + n.wallOff);   // (R37: offZ1)
+      const wallGap = (n, b) => Math.min(n.courtX - Math.abs(b.x), b.z - n.courtZ0, farZ(n) - b.z);
       function wallEase(st, b, dt) {
-        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, s = n.wallSlide * dt, ox = b.x, oz = b.z;
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff, s = n.wallSlide * dt, ox = b.x, oz = b.z;
         if (b.x > xm) b.x = Math.max(xm, b.x - s); else if (b.x < -xm) b.x = Math.min(-xm, b.x + s);
         if (b.z < z0) b.z = Math.min(z0, b.z + s); else if (b.z > z1) b.z = Math.max(z1, b.z - s);
         return [b.x - ox, b.z - oz];
@@ -249,14 +269,14 @@
         const n = st.n, ph = st.pho, z = st.zav; let dx = ph.x - z.x, dz = ph.z - z.z, d = Math.sqrt(dx * dx + dz * dz);
         if (d >= n.apart) return;
         if (d < 1e-6) { dx = -z.x || 1; dz = -z.z; d = Math.sqrt(dx * dx + dz * dz) || 1; }
-        const xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff, a0 = Math.atan2(dz, dx), r = n.apart + 1e-3;
+        const xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff, a0 = Math.atan2(dz, dx), r = n.apart + 1e-3;
         for (let i = 0; i <= 36; i++) for (const sg of i ? [1, -1] : [1]) { const a = a0 + sg * i * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
           if (Math.abs(qx) <= xm + 1e-6 && qz >= z0 - 1e-6 && qz <= z1 + 1e-6) { ph.x = qx; ph.z = qz; return; } }
         ph.x = z.x + dx / d * r; ph.z = z.z + dz / d * r;
       }
       function wallHold(st, b, ox, oz) {
         if (!offWalls(st)) return;
-        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = n.courtZ1 - n.wallOff;
+        const n = st.n, xm = n.courtX - n.wallOff, z0 = n.courtZ0 + n.wallOff, z1 = farZ(n) - n.wallOff;
         if (Math.abs(b.x) > xm && Math.abs(b.x) > Math.abs(ox)) b.x = Math.sign(b.x) * Math.max(xm, Math.abs(ox));
         if (b.z < z0 && b.z < oz) b.z = Math.min(z0, oz); else if (b.z > z1 && b.z > oz) b.z = Math.max(z1, oz);
       }
@@ -924,7 +944,7 @@
         const a0 = Math.atan2(dz, dx);
         for (let i = 0; i <= 36; i++) for (const sg of i ? [1, -1] : [1]) {
           const a = a0 + sg * i * Math.PI / 36, qx = z.x + Math.cos(a) * r, qz = z.z + Math.sin(a) * r;
-          if (Math.abs(qx) <= xm && qz >= z0 && qz <= z1) { p.x = qx; p.z = qz; return; }
+          if (Math.abs(qx) <= xm && qz >= z0 && qz <= z1 && !(n.notch && qz > n.notch.z && Math.abs(qx) > n.notch.x)) { p.x = qx; p.z = qz; return; }
         }
         p.x = z.x + Math.cos(a0) * r; p.z = z.z + Math.sin(a0) * r; clampPrai(n, p);
       }

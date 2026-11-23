@@ -58,6 +58,7 @@
       const st = STATION[p] || STATION.walk; worldAt = p;
       const shut = p === 'walk' || p === 'fight';
       gateOpen(shut ? 0 : 1); blockOn(gateShut, shut); blockOn(gateOpenLeaf, !shut);
+      blockOn(boomStop, p === 'fight');                                   // (R37: the fight's lens stops at the gate; no solid else)
       doorOpen(p === 'walk' ? 0 : 1);
       courtLamps(p === 'hunt' || p === 'fight' ? 1 : 0);                 // (lit from the evening of the hunt on)
       liftDoors(0);

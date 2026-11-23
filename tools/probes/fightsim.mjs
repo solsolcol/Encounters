@@ -372,7 +372,7 @@ function tally(F, L, who, seeds, opts) {
     if (r.lead) T.lead++;
     if (r.lostAt.length) T.firstLossAt.push(r.lostAt[0]);
     for (const w of r.where) T.where[w] = (T.where[w] || 0) + 1;
-    if (r.stalled) T.stalls[r.stalled] = (T.stalls[r.stalled] || 0) + 1;
+    if (r.stalled) { T.stalls[r.stalled] = (T.stalls[r.stalled] || 0) + 1; (T.stalledSeeds = T.stalledSeeds || []).push(seed); }
     for (const b of r.bad) { const k = b.replace(/ @.*$/, ''); if (!T.bad[k]) T.bad[k] = { n: 0, eg: b + ' seed ' + seed }; T.bad[k].n++; }
     for (const k in r.illegal) T.illegal[k] = (T.illegal[k] || 0) + r.illegal[k];
     for (const k in r.log.dwell) T.dwell[k] = Math.max(T.dwell[k] || 0, r.log.dwell[k]);
@@ -451,7 +451,7 @@ async function main() {
     const ml = t.losses.reduce((a, b) => a + b, 0) / t.n;
     rows.push([who, pct(t.firstWins, t.n).toFixed(1) + '%', pct(t.twoWins, t.n).toFixed(1) + '%', mmss(median(t.lens)), mmss(median(t.allLens)),
                ml.toFixed(2), Number.isFinite(median(t.sanity)) ? median(t.sanity).toFixed(0) : '-', pct(t.lead, t.n).toFixed(1) + '%',
-               Object.entries(t.stalls).map(([k, v]) => k + ' ' + v).join(', ') || '0']);
+               Object.entries(t.stalls).map(([k, v]) => k + ' ' + v).join(', ') + (t.stalledSeeds ? ' (seeds ' + t.stalledSeeds.slice(0, 8).join(' ') + ')' : '') || '0']);
   }
   printTable(rows);
 
