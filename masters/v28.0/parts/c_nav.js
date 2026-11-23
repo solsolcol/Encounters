@@ -30,8 +30,8 @@
        leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
        READ by tools/probes/e4c5bodies.py on the films' rows (stage.nav5: the counts): every shown standing body against the
        solids as they stand at each row and against each other, at every 0.1 s of every film. */
-    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35,
-                   standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set() };
+    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbMoved: 0,
+                   standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set(), shut: new Set() };
     const NAV_FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/;   // (who stands on the floor; the spirits are not here)
     /* EACH BODY'S OWN REACH OVER THE FLOOR (R76, Chad, 23 Nov 2026: "why isn't there some kind of universal fix to this?"
        ... "characters still walking into walls, arms of characters clipping through each other"). The map held every body
@@ -64,10 +64,15 @@
        (navFilmOpen: the lift's doors as they slide open in the opening) is no solid: play's map holds those doors shut */
     let navFilmOn = false;
     function navFilmOpen(solid, open) { if (!solid) return; if (open) NAV5.open.add(solid); else NAV5.open.delete(solid); }
+    /* (and a solid play's map has EMPTY that the film has standing: the gate's leaf swung open along the court's wall while
+       the walk phase holds the gate shut: the devotee film. Its box is the solid's own) */
+    function navFilmShut(solid, on) { if (!solid) return; if (on) NAV5.shut.add(solid); else NAV5.shut.delete(solid); }
+    const navSolidBox = new WeakMap();
+    function navBoxOf(q) { let b = navSolidBox.get(q); if (!b) { q.updateWorldMatrix(true, false); const B = new THREE.Box3().setFromObject(q); b = [B.min.x, B.max.x, B.min.z, B.max.z]; navSolidBox.set(q, b); } return b; }
     function navBoxes() {
       /* (signed at most once in 30 ms: within one picture the blockers are the same, and a nearest-point search makes up to
          1,536 calls, each of which signed every blocker again: R33's L4-11) */
-      const film = navFilmOn && NAV5.open.size > 0, C = film ? navBoxes.F : navBoxes.P, now = performance.now();
+      const film = navFilmOn && (NAV5.open.size > 0 || NAV5.shut.size > 0), C = film ? navBoxes.F : navBoxes.P, now = performance.now();
       if (C.list && now - (C.t || 0) < 30) return C.list;
       C.t = now;
       const B = (S && S.blockers) || [], g = NAV5.grow, skip = new Set();
@@ -75,15 +80,17 @@
       let sig = B.length;
       for (const b of B) sig = (Math.imul(sig, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13))) | 0;
       for (const i of skip) sig = (Math.imul(sig, 31) + i + 1) | 0;
+      if (film) for (const q of NAV5.shut) sig = (Math.imul(sig, 31) + 1000 + solids.indexOf(q)) | 0;
       if (C.list && C.sig === sig) return C.list;
       const L = [];
       B.forEach((b, i) => { if (b.isEmpty() || skip.has(i)) return; L.push([b.min.x + g, b.max.x - g, b.min.z + g, b.max.z - g]); });
+      if (film) for (const q of NAV5.shut) { const i = solids.indexOf(q); if (i >= 0 && B[i] && B[i].isEmpty()) L.push(navBoxOf(q).slice()); }
       C.sig = sig; C.list = L; C.memo = new Map(); C.routes = new Map();
       if (S && !S.nav5) S.nav5 = NAV5API;
       return L;
     }
     navBoxes.P = {}; navBoxes.F = {};
-    const navMemo = () => { navBoxes(); return (navFilmOn && NAV5.open.size > 0 ? navBoxes.F : navBoxes.P); };
+    const navMemo = () => { navBoxes(); return (navFilmOn && (NAV5.open.size > 0 || NAV5.shut.size > 0) ? navBoxes.F : navBoxes.P); };
     /* how far a body reaches INTO the solid b (> 0: it does), and out[] the way out of it: [ux, uz, hips inside the solid] */
     function footInBox(b, x, z, f, ry, walking, out) {
       const qx = Math.max(b[0], Math.min(b[1], x)), qz = Math.max(b[2], Math.min(b[3], z)), dx = x - qx, dz = z - qz, d = Math.hypot(dx, dz);
@@ -159,7 +166,7 @@
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); navFilmOn = true; }
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true; }
           try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) { try { navSettle('film'); } finally { navFilmOn = false; } } } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
@@ -199,6 +206,47 @@
       return [o.x + fd[0] * aa + nx * bb * sd, o.z + fd[1] * aa + nz * bb * sd];
     }
     const navPlayWalk = new Map();                 // (play: the walkers walking this frame, and where to)
+    /* THE ARMS (R76: "arms of characters clipping through each other"). Kept apart by their reaches, two bodies can still put
+       an arm into each other: a hand that talks, an arm that hangs wide, past the 99th hundredth the reach was measured at.
+       So what is DRAWN is read too: each pair of standing bodies within 1.6 m of each other, each as sixteen capsules along
+       its own bones (the torso, the head, the upper arms, forearms and hands, the thighs, shins and feet; the limbs' own
+       check's, tools/probes/limbclip.js, the same numbers), and where an arm or a hand of one reaches more than NAV5.limbTol
+       (3 cm) into the other (two hands meeting excepted: a thing handed from one to the other), the one that may move is
+       moved straight away from the other by what overlaps (at most 0.2 m), and off the solids again */
+    const LIMB5 = [['torso', 'Hips', 'Neck', 0, 0.13], ['head', 'Head', null, 0.2, 0.1]];
+    for (const sd of ['Left', 'Right']) LIMB5.push(['uarm', sd + 'Arm', sd + 'ForeArm', 0, 0.05], ['farm', sd + 'ForeArm', sd + 'Hand', 0, 0.04], ['hand', sd + 'Hand', null, 0.12, 0.04],
+      ['thigh', sd + 'UpLeg', sd + 'Leg', 0, 0.075], ['shin', sd + 'Leg', sd + 'Foot', 0, 0.05], ['foot', sd + 'Foot', sd + 'ToeBase', 0, 0.045]);
+    const TORSO5 = { p5koh: 0.17, p5pho: 0.15 }, _lnA = new THREE.Vector3(), _lnB = new THREE.Vector3(), _lnQ = new THREE.Quaternion();
+    const navLimbBones = new WeakMap();
+    function navCaps(P) {
+      let bs = navLimbBones.get(P);
+      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, boneOf(P, b0), b1 ? boneOf(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs); }
+      P.group.updateWorldMatrix(true, true);
+      const out = [];
+      for (const [nm, A, B, len, r] of bs) { if (!A || (len === 0 && !B)) continue;
+        A.getWorldPosition(_lnA);
+        if (B) B.getWorldPosition(_lnB); else { A.getWorldQuaternion(_lnQ); _lnB.set(0, 1, 0).applyQuaternion(_lnQ).multiplyScalar(len).add(_lnA); }
+        out.push([nm, _lnA.x, _lnA.y, _lnA.z, _lnB.x, _lnB.y, _lnB.z, r]); }
+      return out;
+    }
+    function navSegSeg(c1, c2) {
+      const d1x = c1[4] - c1[1], d1y = c1[5] - c1[2], d1z = c1[6] - c1[3], d2x = c2[4] - c2[1], d2y = c2[5] - c2[2], d2z = c2[6] - c2[3];
+      const rx = c1[1] - c2[1], ry = c1[2] - c2[2], rz = c1[3] - c2[3];
+      const A = d1x * d1x + d1y * d1y + d1z * d1z, Bq = d2x * d2x + d2y * d2y + d2z * d2z, C = d1x * rx + d1y * ry + d1z * rz, F = d2x * rx + d2y * ry + d2z * rz;
+      let s = 0, t = 0;
+      if (A < 1e-9 && Bq < 1e-9) { s = 0; t = 0; } else if (A < 1e-9) { t = Math.max(0, Math.min(1, F / Bq)); } else if (Bq < 1e-9) { s = Math.max(0, Math.min(1, -C / A)); }
+      else { const Bd = d1x * d2x + d1y * d2y + d1z * d2z, den = A * Bq - Bd * Bd; s = den > 1e-12 ? Math.max(0, Math.min(1, (Bd * F - C * Bq) / den)) : 0; t = (Bd * s + F) / Bq;
+        if (t < 0) { t = 0; s = Math.max(0, Math.min(1, -C / A)); } else if (t > 1) { t = 1; s = Math.max(0, Math.min(1, (Bd - C) / A)); } }
+      const px = c1[1] + d1x * s - (c2[1] + d2x * t), py = c1[2] + d1y * s - (c2[2] + d2y * t), pz = c1[3] + d1z * s - (c2[3] + d2z * t);
+      return Math.sqrt(px * px + py * py + pz * pz);
+    }
+    /* how far the two bodies' drawn limbs go into each other at the deepest (two hands meeting left out) */
+    function navLimbDeep(cA, cB) {
+      let d = 0;
+      for (const a of cA) for (const b of cB) { if (a[0] === 'hand' && b[0] === 'hand') continue;
+        const pen = a[7] + b[7] - navSegSeg(a, b); if (pen > d) d = pen; }
+      return d;
+    }
     /* THE SETTLE (the header): 'film' moves only the bodies the film put in this picture; 'play' any body on the floor */
     function navSettle(mode) {
       const fight = typeof FS5 !== 'undefined' && FS5.on;
@@ -228,6 +276,24 @@
         if (x !== it.x || z !== it.z) { const g = it.P.group.position, dx = x - it.x, dz = z - it.z; g.x += dx; g.z += dz; NAV5.moved++;
           const cs = navCarry.get(it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += dx; c.position.z += dz; } }
         done.push({ x, z, f: it.f, ry: it.ry, w: it.walking });
+      }
+      /* THE ARMS (above): each pair standing within 1.6 m, the later one (or the earlier, if only it may) moved off */
+      if (NAV5.limbs) {
+        const st = list.map((it, k) => ({ it, k, stands: navBody(it.P)[2] >= NAV5.standY }));
+        for (let i = 1; i < st.length; i++) for (let j = 0; j < i; j++) {
+          const A = st[j], Bq = st[i]; if (!A.stands || !Bq.stands) continue;
+          const mv = Bq.it.may ? Bq : A.it.may ? A : null; if (!mv) continue;
+          const other = mv === Bq ? A : Bq, gm = mv.it.P.group.position, go = other.it.P.group.position;
+          if (Math.hypot(gm.x - go.x, gm.z - go.z) > 1.6) continue;
+          const deep = navLimbDeep(navCaps(mv.it.P), navCaps(other.it.P));
+          if (deep <= NAV5.limbTol) continue;
+          const bm = navBody(mv.it.P), bo = navBody(other.it.P); let dx = bm[0] - bo[0], dz = bm[1] - bo[1]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
+          const by = Math.min(NAV5.limbMax, deep - NAV5.limbTol + 0.01);
+          let nx = gm.x + dx * by, nz = gm.z + dz * by;
+          if (!(film && mv.it.walking)) { const q = navPush(bm[0] + dx * by, bm[1] + dz * by, mv.it.f, mv.it.ry, mv.it.walking, null); nx += q[0] - (bm[0] + dx * by); nz += q[1] - (bm[1] + dz * by); }
+          const mx = nx - gm.x, mz = nz - gm.z; gm.x = nx; gm.z = nz; NAV5.limbMoved++;
+          const cs = navCarry.get(mv.it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += mx; c.position.z += mz; }
+        }
       }
     }
     /* THE WRAPS (each the original, called as it was) */
@@ -324,6 +390,12 @@
       get on() { return NAV5.on; }, set on(v) { NAV5.on = !!v; for (const C of [navBoxes.P, navBoxes.F]) { if (C.memo) C.memo.clear(); if (C.routes) C.routes.clear(); } },
       boxes: () => navBoxes().map(b => b.slice()), r: FOOT5.def.a, rOf: Object.fromEntries(Object.keys(FOOT5).filter(k => k !== 'def').map(k => [k, FOOT5[k].a])),
       foot: (key) => Object.assign({}, FOOT5[key] || FOOT5.def), feet: () => JSON.parse(JSON.stringify(FOOT5)), comfort: NAV5.comfort, floor: NAV_FLOOR.source,
-      counts: () => ({ moved: NAV5.moved, routed: NAV5.routed, missed: NAV5.missed, passes: NAV5.passes, deepIn: NAV5.deepIn }),
+      open: () => [...NAV5.open].map(q => solids.indexOf(q)).filter(i => i >= 0),       // (the solids the last film picture had open)
+      shutBoxes: () => [...NAV5.shut].map(q => { const b = navBoxOf(q); return [b[0], b[1], 2.2, b[2], b[3], 'shut:' + solids.indexOf(q)]; }),   // (and those it had standing)
+      counts: () => ({ moved: NAV5.moved, routed: NAV5.routed, missed: NAV5.missed, passes: NAV5.passes, deepIn: NAV5.deepIn, limbMoved: NAV5.limbMoved }),
+      /* (each solid's OWN box where it stands on: [x0, x1, top, z0, z1, index]; the blockers are all at least 1.4 m tall, for
+         his eye: the coffee table is 0.36) */
+      solidsReal: () => solids.map((q, i) => { const b = S && S.blockers && S.blockers[i]; if (!b || b.isEmpty()) return null;
+        q.updateWorldMatrix(true, false); const B = new THREE.Box3().setFromObject(q); return [B.min.x, B.max.x, B.max.y, B.min.z, B.max.z, i]; }).filter(Boolean),
       clear: (x, z, r) => navClear(x, z, discF(r || FOOT5.def.a), 0, false, null), stand: (x, z, r) => navStand(x, z, discF(r || FOOT5.def.a), 0, false, null)
     };

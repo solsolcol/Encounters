@@ -22,7 +22,8 @@
    tools/probes/clipscan.mjs so the two never differ) over R m round the lens: the pairs whose surfaces cross.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... VIEW=phone|desktop [MODE=seek|play|pics] [STEP=0.1] [STEP_MS=50] [CLIP=9] [R=14]
        [JOBS=open,devotee,prepare,together,bagtied,collector,end:A,end:B,end:C,end:D] [FROM=s] [UNTIL=s]
-       [PICS='devotee@10.5,25;end:A@5'] [DPR=1] [SETTLE=1200] [OUT=dir] node tools/probes/e4c5films.mjs
+       [PICS='devotee@10.5,25;end:A@5'] [DPR=1] [SETTLE=1200] [OUT=dir] [LIMBS=1] node tools/probes/e4c5films.mjs
+   LIMBS=1 (R76): every row also carries the limbs' own check (K: tools/probes/limbclip.js), read by tools/probes/limbread.py.
    Read by tools/probes/e4c5filmread.py. */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -36,6 +37,7 @@ const JOBS = (process.env.JOBS || 'open,devotee,prepare,together,bagtied,collect
 const OUT = process.env.OUT || '/tmp/e4c5films'; fs.mkdirSync(OUT, { recursive: true });
 const PICS = {}; for (const it of (process.env.PICS || '').split(';').filter(Boolean)) { const i = it.lastIndexOf('@'); PICS[it.slice(0, i)] = it.slice(i + 1).split(',').map(Number); }
 const WAY = { devotee: 'walk', prepare: 'hunt', together: 'fight', bagtied: 'fight', collector: 'table' };
+const LIMBS = process.env.LIMBS === '1', LIMBSRC = LIMBS ? fs.readFileSync(new URL('./limbclip.js', import.meta.url), 'utf8') : '';
 /* clipscan's own measure, its text read and made a function here */
 const CS = fs.readFileSync(new URL('./clipscan.mjs', import.meta.url), 'utf8'), A0 = CS.indexOf('const ANALYSE = '), A1 = CS.indexOf('\n};\n', A0);
 const ANALYSE = (0, eval)('(' + CS.slice(A0 + 'const ANALYSE = '.length, A1 + 2) + ')');
@@ -142,6 +144,8 @@ for (const job of JOBS) {
     errs = await reach(p, job);
     const ready = await p.waitForFunction(() => { try { return !!window.__enc.stage.ready(); } catch { return true; } }, null, { timeout: 300000, polling: 500 }).then(() => true, () => false);
     await p.evaluate(INSTALL);
+    /* (LIMBS=1, R76: every row carries the limbs' own check, K: tools/probes/limbclip.js, read by limbread.py) */
+    if (LIMBS) { await p.evaluate(LIMBSRC); await p.evaluate(() => { const r0 = window.__row; window.__row = (t, nt) => { const r = r0(t, nt); r.K = window.__limbs(); return r; }; }); }
     const dur = await p.evaluate(() => window.__enc.cine.dur()), labels = await p.evaluate(() => window.__labels());
     log(job, 'dur', dur.toFixed(2), 'people', labels.length, ready ? 'all ready' : 'NOT ALL READY');
     const res = { view: VIEW, mode: MODE, job, dur, labels, step: STEP, rows: [], rowsD: BOTH ? [] : undefined, clips: [], errs };

@@ -255,7 +255,9 @@
     /* the lift car's own places (LIFT: x -0.8..0.8, z 1.35..2.85; its doors at z 1.26, in the walkway's end wall) */
     /* (Jun and Ton a step forward of him, 0.85 to 0.95 m off, each half-turned to speak back to him: at 0.56 m Jun filled
        the phone's frame edge as a face looking up past the lens: open-phone film-00011, 21 Nov) */
-    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.5, 1.85], jun: [0.5, 1.9] };
+    /* (R76, limbread on build 44: in the car Ton's talking left hand went 14.7 cm into his teacher's body and Jun's right hand
+       6 cm into his teacher's forearm: the two a step further back and out, Ton's line said with his hands down) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.54, 1.97], jun: [0.54, 1.99] };
 
     /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
        draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
@@ -294,7 +296,7 @@
          Prai swallowed each one whole and the pierce read as a blue wall across the frame; at 0.68 its head is a Prai's
          chest from jaw to brow, its crest 1.57 m, and it goes THROUGH. Its body thinned with it, its front the neck's size) */
       const HS = 0.68;                                     // the head's scale
-      const BODY = { L: 22.0, NR: 220, NS: 22, d0: -0.12, rStub: 0.22, rMax: 0.236, rTip: 0.012, ax: 1.0, ay: 0.86, keel: 0.15 };
+      const BODY = { L: 22.0, NR: 220, NS: 22, d0: -0.12, rStub: 0.22, rMax: 0.236, rBody: 0.155, neckL: 1.4, rTip: 0.012, ax: 1.0, ay: 0.86, keel: 0.15 };
       /* (the model, measured from the file (tools: dbgnagahead; its slices by height, R52): its body 0.56 m wide and 0.7 tall
          lies along +z; from its collar its neck rises, a round post 0.64 m across round z 2.87 from y 1.2 to 1.45, and
          leans forward into the head; the snout at (0, 2.28, 4.21), the crest's tip at (0, 3.6, 4.0), the beard hanging to
@@ -464,7 +466,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* the body's girth along it: the neck's at the head, thickest a quarter of the way, to a point at the tail */
       const RAD = new Float32Array(BODY.NR), DS = new Float32Array(BODY.NR);
       for (let i = 0; i < BODY.NR; i++) { const d = BODY.d0 + i * (BODY.L - BODY.d0) / (BODY.NR - 1), f = d / BODY.L; DS[i] = d;
-        const up = BODY.rStub + (BODY.rMax - BODY.rStub) * smo(c01(f / 0.25)), down = Math.pow(1 - smo(c01((f - 0.3) / 0.7)), 0.85);
+        /* (R69's "not like a real dragon", read in build 43's pictures: in the wide shots its body was a hose as thick as the
+           head it carried. A serpent's neck narrows behind its head and its body is slimmer than its head: from the head's
+           cut (the neck's own 0.22) it thins over 1.4 m to 0.155 and holds it, then tapers to the tail as before; the
+           head is now half as wide again as the body behind it) */
+        const up = d <= 0 ? BODY.rStub : BODY.rStub + (BODY.rBody - BODY.rStub) * smo(c01(d / BODY.neckL)), down = Math.pow(1 - smo(c01((f - 0.3) / 0.7)), 0.85);
         RAD[i] = Math.max(BODY.rTip, up * down); }
       function tubeOf() {
         const NR = BODY.NR, NS = BODY.NS, nv = NR * NS;
@@ -860,8 +866,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* Ton, at his left, the wrapped staff upright in his right hand: his line turned back over his shoulder; out after
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
-          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
-            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
+          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.38 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
+            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Idle_3');
             lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry, { ry0: Math.PI });   // (turned from where he stood, never snapped to the path)
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
@@ -870,7 +876,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
           /* (each half-turns his body back to him for his line and the head does the rest (v14.5: a man talking to him turns to
              him); facing the doors, the back of Jun's head filled the phone as he spoke: open-phone film-012_5, R25) */
-          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
+          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.38 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
             fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
             lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
@@ -1123,6 +1129,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                                                     : { room: 0.5, tick: 0.22, sour: 0.18 });
         /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
         gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
+        /* (R76: the gate open in this picture is open to the walkable map's routes, its leaf standing along the court's wall:
+           the walk phase holds it shut, and Ton was routed straight through its east post, 28 cm into it, limbread on build 44) */
+        navFilmOpen(gateShut, t >= T.cut1); navFilmShut(gateOpenLeaf, t >= T.cut1);
         /* the lamp that flickers, the dining room's pendant (an ordinary fault: the electrician came three times, 4.0; R42: it
            was the armchair's reading lamp, out of the room at Chad's word) */
         lamp(LAMP_FLICK, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
@@ -1684,7 +1693,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
     const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -4.75], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
-                    liftPho: [0.35, 0.05], liftTon: [-0.6, 0.2], liftJun: [0.6, -0.3], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
+                    liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -1753,7 +1762,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
           else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
             put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7));
-            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
+            if (t > T.in + 0.45) fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.3, 1.65]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
             giveFix5(P); STICK5.onPalms(P, 'stick'); }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
@@ -1771,7 +1780,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (0.87 m from his teacher: at 0.54 his body was in Grandmaster Pho's robe, clipscan 920 to 9826 crossings) */
           else if (!atLift) { put(P, -10.15, -3.9, faceTo(-10.15, -3.9, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
-            if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
+            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, [0.25, 1.75]], 0.9, restOf5('jun', t), Math.PI); }
         });
         /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
            flickers (the pendant: R42) flickers once, and holds */
@@ -1781,6 +1790,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         WISPS5.set(t, [[T.room1 + 0.6, A.live], [T.room2 + 0.5, A.dine], [T.room3 + 0.5, A.terr]]);
         /* the lift: the doors at the end */
         liftDoors(atLift ? smo(c01((t - T.doors) / 1.4)) * (1 - smo(c01((t - T.close) / 1.3))) : 0);
+        /* (R76, limbread on build 44: Jun beside his teacher at x 0.6 stood in the walkway's railing and went round him into it
+           (35 cm), and Ton and Jun went into the car through its jamb: Jun nearer the doors and in first, Ton after him, both
+           marks clear of the railing and of each other; the doors open to the routes while they stand open) */
+        navFilmOpen(LIFT_SHUT5, atLift && t >= T.doors + 0.7 && t < T.close + 0.5);
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
         const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), ZH = [zz.x, 1.66, zz.z];   // (R46: begun on the end's pulled-back lens)
         fmTrack(t, [

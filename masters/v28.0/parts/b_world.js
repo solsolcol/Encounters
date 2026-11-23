@@ -954,7 +954,7 @@
                   court keeps his back clear of Mr Koh's front, a step behind him, as before; his walk in from the court still
                   crosses the threshold inside the doorway, 0.2 m off either jamb) */
                pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.54, z: -5.35, ry: Math.PI }, jun: { x: -7.72, z: -5.24, ry: Math.PI },   // (Jun 0.14 m east: his arm crossed Mr Koh's, clipscan)
-               koh: { x: -8.28, z: -4.98, ry: Math.PI } },
+               koh: { x: -8.3, z: -4.9, ry: Math.PI } },   // (R76, limbread on build 44: his hands went 8 cm into Ton's thigh and Jun's forearm: 8 cm further back, his back at the sofa's front)
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },
                pho: { x: SEAT.pho.x, z: SEAT.pho.z, ry: Math.PI }, collector: { x: SEAT.collector.x, z: SEAT.collector.z, ry: Math.PI / 2 },

@@ -2056,7 +2056,7 @@
                   court keeps his back clear of Mr Koh's front, a step behind him, as before; his walk in from the court still
                   crosses the threshold inside the doorway, 0.2 m off either jamb) */
                pho: { x: -8.0, z: -11.4, ry: Math.PI }, ton: { x: -8.54, z: -5.35, ry: Math.PI }, jun: { x: -7.72, z: -5.24, ry: Math.PI },   // (Jun 0.14 m east: his arm crossed Mr Koh's, clipscan)
-               koh: { x: -8.28, z: -4.98, ry: Math.PI } },
+               koh: { x: -8.3, z: -4.9, ry: Math.PI } },   // (R76, limbread on build 44: his hands went 8 cm into Ton's thigh and Jun's forearm: 8 cm further back, his back at the sofa's front)
       /* case three: seated across the table from his teacher (the play seats him) */
       table: { at: { x: SEAT.him.x, z: SEAT.him.z, ry: Math.PI },
                pho: { x: SEAT.pho.x, z: SEAT.pho.z, ry: Math.PI }, collector: { x: SEAT.collector.x, z: SEAT.collector.z, ry: Math.PI / 2 },
@@ -10787,8 +10787,8 @@
        leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
        READ by tools/probes/e4c5bodies.py on the films' rows (stage.nav5: the counts): every shown standing body against the
        solids as they stand at each row and against each other, at every 0.1 s of every film. */
-    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35,
-                   standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set() };
+    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbMoved: 0,
+                   standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set(), shut: new Set() };
     const NAV_FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/;   // (who stands on the floor; the spirits are not here)
     /* EACH BODY'S OWN REACH OVER THE FLOOR (R76, Chad, 23 Nov 2026: "why isn't there some kind of universal fix to this?"
        ... "characters still walking into walls, arms of characters clipping through each other"). The map held every body
@@ -10821,10 +10821,15 @@
        (navFilmOpen: the lift's doors as they slide open in the opening) is no solid: play's map holds those doors shut */
     let navFilmOn = false;
     function navFilmOpen(solid, open) { if (!solid) return; if (open) NAV5.open.add(solid); else NAV5.open.delete(solid); }
+    /* (and a solid play's map has EMPTY that the film has standing: the gate's leaf swung open along the court's wall while
+       the walk phase holds the gate shut: the devotee film. Its box is the solid's own) */
+    function navFilmShut(solid, on) { if (!solid) return; if (on) NAV5.shut.add(solid); else NAV5.shut.delete(solid); }
+    const navSolidBox = new WeakMap();
+    function navBoxOf(q) { let b = navSolidBox.get(q); if (!b) { q.updateWorldMatrix(true, false); const B = new THREE.Box3().setFromObject(q); b = [B.min.x, B.max.x, B.min.z, B.max.z]; navSolidBox.set(q, b); } return b; }
     function navBoxes() {
       /* (signed at most once in 30 ms: within one picture the blockers are the same, and a nearest-point search makes up to
          1,536 calls, each of which signed every blocker again: R33's L4-11) */
-      const film = navFilmOn && NAV5.open.size > 0, C = film ? navBoxes.F : navBoxes.P, now = performance.now();
+      const film = navFilmOn && (NAV5.open.size > 0 || NAV5.shut.size > 0), C = film ? navBoxes.F : navBoxes.P, now = performance.now();
       if (C.list && now - (C.t || 0) < 30) return C.list;
       C.t = now;
       const B = (S && S.blockers) || [], g = NAV5.grow, skip = new Set();
@@ -10832,15 +10837,17 @@
       let sig = B.length;
       for (const b of B) sig = (Math.imul(sig, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13))) | 0;
       for (const i of skip) sig = (Math.imul(sig, 31) + i + 1) | 0;
+      if (film) for (const q of NAV5.shut) sig = (Math.imul(sig, 31) + 1000 + solids.indexOf(q)) | 0;
       if (C.list && C.sig === sig) return C.list;
       const L = [];
       B.forEach((b, i) => { if (b.isEmpty() || skip.has(i)) return; L.push([b.min.x + g, b.max.x - g, b.min.z + g, b.max.z - g]); });
+      if (film) for (const q of NAV5.shut) { const i = solids.indexOf(q); if (i >= 0 && B[i] && B[i].isEmpty()) L.push(navBoxOf(q).slice()); }
       C.sig = sig; C.list = L; C.memo = new Map(); C.routes = new Map();
       if (S && !S.nav5) S.nav5 = NAV5API;
       return L;
     }
     navBoxes.P = {}; navBoxes.F = {};
-    const navMemo = () => { navBoxes(); return (navFilmOn && NAV5.open.size > 0 ? navBoxes.F : navBoxes.P); };
+    const navMemo = () => { navBoxes(); return (navFilmOn && (NAV5.open.size > 0 || NAV5.shut.size > 0) ? navBoxes.F : navBoxes.P); };
     /* how far a body reaches INTO the solid b (> 0: it does), and out[] the way out of it: [ux, uz, hips inside the solid] */
     function footInBox(b, x, z, f, ry, walking, out) {
       const qx = Math.max(b[0], Math.min(b[1], x)), qz = Math.max(b[2], Math.min(b[3], z)), dx = x - qx, dz = z - qz, d = Math.hypot(dx, dz);
@@ -10916,7 +10923,7 @@
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); navFilmOn = true; }
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true; }
           try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) { try { navSettle('film'); } finally { navFilmOn = false; } } } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
@@ -10956,6 +10963,47 @@
       return [o.x + fd[0] * aa + nx * bb * sd, o.z + fd[1] * aa + nz * bb * sd];
     }
     const navPlayWalk = new Map();                 // (play: the walkers walking this frame, and where to)
+    /* THE ARMS (R76: "arms of characters clipping through each other"). Kept apart by their reaches, two bodies can still put
+       an arm into each other: a hand that talks, an arm that hangs wide, past the 99th hundredth the reach was measured at.
+       So what is DRAWN is read too: each pair of standing bodies within 1.6 m of each other, each as sixteen capsules along
+       its own bones (the torso, the head, the upper arms, forearms and hands, the thighs, shins and feet; the limbs' own
+       check's, tools/probes/limbclip.js, the same numbers), and where an arm or a hand of one reaches more than NAV5.limbTol
+       (3 cm) into the other (two hands meeting excepted: a thing handed from one to the other), the one that may move is
+       moved straight away from the other by what overlaps (at most 0.2 m), and off the solids again */
+    const LIMB5 = [['torso', 'Hips', 'Neck', 0, 0.13], ['head', 'Head', null, 0.2, 0.1]];
+    for (const sd of ['Left', 'Right']) LIMB5.push(['uarm', sd + 'Arm', sd + 'ForeArm', 0, 0.05], ['farm', sd + 'ForeArm', sd + 'Hand', 0, 0.04], ['hand', sd + 'Hand', null, 0.12, 0.04],
+      ['thigh', sd + 'UpLeg', sd + 'Leg', 0, 0.075], ['shin', sd + 'Leg', sd + 'Foot', 0, 0.05], ['foot', sd + 'Foot', sd + 'ToeBase', 0, 0.045]);
+    const TORSO5 = { p5koh: 0.17, p5pho: 0.15 }, _lnA = new THREE.Vector3(), _lnB = new THREE.Vector3(), _lnQ = new THREE.Quaternion();
+    const navLimbBones = new WeakMap();
+    function navCaps(P) {
+      let bs = navLimbBones.get(P);
+      if (!bs) { bs = LIMB5.map(([nm, b0, b1, len, r]) => [nm, boneOf(P, b0), b1 ? boneOf(P, b1) : null, len, nm === 'torso' ? (TORSO5[P.key] || r) : r]); navLimbBones.set(P, bs); }
+      P.group.updateWorldMatrix(true, true);
+      const out = [];
+      for (const [nm, A, B, len, r] of bs) { if (!A || (len === 0 && !B)) continue;
+        A.getWorldPosition(_lnA);
+        if (B) B.getWorldPosition(_lnB); else { A.getWorldQuaternion(_lnQ); _lnB.set(0, 1, 0).applyQuaternion(_lnQ).multiplyScalar(len).add(_lnA); }
+        out.push([nm, _lnA.x, _lnA.y, _lnA.z, _lnB.x, _lnB.y, _lnB.z, r]); }
+      return out;
+    }
+    function navSegSeg(c1, c2) {
+      const d1x = c1[4] - c1[1], d1y = c1[5] - c1[2], d1z = c1[6] - c1[3], d2x = c2[4] - c2[1], d2y = c2[5] - c2[2], d2z = c2[6] - c2[3];
+      const rx = c1[1] - c2[1], ry = c1[2] - c2[2], rz = c1[3] - c2[3];
+      const A = d1x * d1x + d1y * d1y + d1z * d1z, Bq = d2x * d2x + d2y * d2y + d2z * d2z, C = d1x * rx + d1y * ry + d1z * rz, F = d2x * rx + d2y * ry + d2z * rz;
+      let s = 0, t = 0;
+      if (A < 1e-9 && Bq < 1e-9) { s = 0; t = 0; } else if (A < 1e-9) { t = Math.max(0, Math.min(1, F / Bq)); } else if (Bq < 1e-9) { s = Math.max(0, Math.min(1, -C / A)); }
+      else { const Bd = d1x * d2x + d1y * d2y + d1z * d2z, den = A * Bq - Bd * Bd; s = den > 1e-12 ? Math.max(0, Math.min(1, (Bd * F - C * Bq) / den)) : 0; t = (Bd * s + F) / Bq;
+        if (t < 0) { t = 0; s = Math.max(0, Math.min(1, -C / A)); } else if (t > 1) { t = 1; s = Math.max(0, Math.min(1, (Bd - C) / A)); } }
+      const px = c1[1] + d1x * s - (c2[1] + d2x * t), py = c1[2] + d1y * s - (c2[2] + d2y * t), pz = c1[3] + d1z * s - (c2[3] + d2z * t);
+      return Math.sqrt(px * px + py * py + pz * pz);
+    }
+    /* how far the two bodies' drawn limbs go into each other at the deepest (two hands meeting left out) */
+    function navLimbDeep(cA, cB) {
+      let d = 0;
+      for (const a of cA) for (const b of cB) { if (a[0] === 'hand' && b[0] === 'hand') continue;
+        const pen = a[7] + b[7] - navSegSeg(a, b); if (pen > d) d = pen; }
+      return d;
+    }
     /* THE SETTLE (the header): 'film' moves only the bodies the film put in this picture; 'play' any body on the floor */
     function navSettle(mode) {
       const fight = typeof FS5 !== 'undefined' && FS5.on;
@@ -10985,6 +11033,24 @@
         if (x !== it.x || z !== it.z) { const g = it.P.group.position, dx = x - it.x, dz = z - it.z; g.x += dx; g.z += dz; NAV5.moved++;
           const cs = navCarry.get(it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += dx; c.position.z += dz; } }
         done.push({ x, z, f: it.f, ry: it.ry, w: it.walking });
+      }
+      /* THE ARMS (above): each pair standing within 1.6 m, the later one (or the earlier, if only it may) moved off */
+      if (NAV5.limbs) {
+        const st = list.map((it, k) => ({ it, k, stands: navBody(it.P)[2] >= NAV5.standY }));
+        for (let i = 1; i < st.length; i++) for (let j = 0; j < i; j++) {
+          const A = st[j], Bq = st[i]; if (!A.stands || !Bq.stands) continue;
+          const mv = Bq.it.may ? Bq : A.it.may ? A : null; if (!mv) continue;
+          const other = mv === Bq ? A : Bq, gm = mv.it.P.group.position, go = other.it.P.group.position;
+          if (Math.hypot(gm.x - go.x, gm.z - go.z) > 1.6) continue;
+          const deep = navLimbDeep(navCaps(mv.it.P), navCaps(other.it.P));
+          if (deep <= NAV5.limbTol) continue;
+          const bm = navBody(mv.it.P), bo = navBody(other.it.P); let dx = bm[0] - bo[0], dz = bm[1] - bo[1]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
+          const by = Math.min(NAV5.limbMax, deep - NAV5.limbTol + 0.01);
+          let nx = gm.x + dx * by, nz = gm.z + dz * by;
+          if (!(film && mv.it.walking)) { const q = navPush(bm[0] + dx * by, bm[1] + dz * by, mv.it.f, mv.it.ry, mv.it.walking, null); nx += q[0] - (bm[0] + dx * by); nz += q[1] - (bm[1] + dz * by); }
+          const mx = nx - gm.x, mz = nz - gm.z; gm.x = nx; gm.z = nz; NAV5.limbMoved++;
+          const cs = navCarry.get(mv.it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += mx; c.position.z += mz; }
+        }
       }
     }
     /* THE WRAPS (each the original, called as it was) */
@@ -11081,7 +11147,13 @@
       get on() { return NAV5.on; }, set on(v) { NAV5.on = !!v; for (const C of [navBoxes.P, navBoxes.F]) { if (C.memo) C.memo.clear(); if (C.routes) C.routes.clear(); } },
       boxes: () => navBoxes().map(b => b.slice()), r: FOOT5.def.a, rOf: Object.fromEntries(Object.keys(FOOT5).filter(k => k !== 'def').map(k => [k, FOOT5[k].a])),
       foot: (key) => Object.assign({}, FOOT5[key] || FOOT5.def), feet: () => JSON.parse(JSON.stringify(FOOT5)), comfort: NAV5.comfort, floor: NAV_FLOOR.source,
-      counts: () => ({ moved: NAV5.moved, routed: NAV5.routed, missed: NAV5.missed, passes: NAV5.passes, deepIn: NAV5.deepIn }),
+      open: () => [...NAV5.open].map(q => solids.indexOf(q)).filter(i => i >= 0),       // (the solids the last film picture had open)
+      shutBoxes: () => [...NAV5.shut].map(q => { const b = navBoxOf(q); return [b[0], b[1], 2.2, b[2], b[3], 'shut:' + solids.indexOf(q)]; }),   // (and those it had standing)
+      counts: () => ({ moved: NAV5.moved, routed: NAV5.routed, missed: NAV5.missed, passes: NAV5.passes, deepIn: NAV5.deepIn, limbMoved: NAV5.limbMoved }),
+      /* (each solid's OWN box where it stands on: [x0, x1, top, z0, z1, index]; the blockers are all at least 1.4 m tall, for
+         his eye: the coffee table is 0.36) */
+      solidsReal: () => solids.map((q, i) => { const b = S && S.blockers && S.blockers[i]; if (!b || b.isEmpty()) return null;
+        q.updateWorldMatrix(true, false); const B = new THREE.Box3().setFromObject(q); return [B.min.x, B.max.x, B.max.y, B.min.z, B.max.z, i]; }).filter(Boolean),
       clear: (x, z, r) => navClear(x, z, discF(r || FOOT5.def.a), 0, false, null), stand: (x, z, r) => navStand(x, z, discF(r || FOOT5.def.a), 0, false, null)
     };
     /* R33 (23 Nov 2026; R28, the brown bits on his robe). WRITTEN BY tools/phodark.py from his body sheet (texture_0,
@@ -12884,7 +12956,9 @@
     /* the lift car's own places (LIFT: x -0.8..0.8, z 1.35..2.85; its doors at z 1.26, in the walkway's end wall) */
     /* (Jun and Ton a step forward of him, 0.85 to 0.95 m off, each half-turned to speak back to him: at 0.56 m Jun filled
        the phone's frame edge as a face looking up past the lens: open-phone film-00011, 21 Nov) */
-    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.5, 1.85], jun: [0.5, 1.9] };
+    /* (R76, limbread on build 44: in the car Ton's talking left hand went 14.7 cm into his teacher's body and Jun's right hand
+       6 cm into his teacher's forearm: the two a step further back and out, Ton's line said with his hands down) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.54, 1.97], jun: [0.54, 1.99] };
 
     /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
        draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
@@ -12923,7 +12997,7 @@
          Prai swallowed each one whole and the pierce read as a blue wall across the frame; at 0.68 its head is a Prai's
          chest from jaw to brow, its crest 1.57 m, and it goes THROUGH. Its body thinned with it, its front the neck's size) */
       const HS = 0.68;                                     // the head's scale
-      const BODY = { L: 22.0, NR: 220, NS: 22, d0: -0.12, rStub: 0.22, rMax: 0.236, rTip: 0.012, ax: 1.0, ay: 0.86, keel: 0.15 };
+      const BODY = { L: 22.0, NR: 220, NS: 22, d0: -0.12, rStub: 0.22, rMax: 0.236, rBody: 0.155, neckL: 1.4, rTip: 0.012, ax: 1.0, ay: 0.86, keel: 0.15 };
       /* (the model, measured from the file (tools: dbgnagahead; its slices by height, R52): its body 0.56 m wide and 0.7 tall
          lies along +z; from its collar its neck rises, a round post 0.64 m across round z 2.87 from y 1.2 to 1.45, and
          leans forward into the head; the snout at (0, 2.28, 4.21), the crest's tip at (0, 3.6, 4.0), the beard hanging to
@@ -13093,7 +13167,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* the body's girth along it: the neck's at the head, thickest a quarter of the way, to a point at the tail */
       const RAD = new Float32Array(BODY.NR), DS = new Float32Array(BODY.NR);
       for (let i = 0; i < BODY.NR; i++) { const d = BODY.d0 + i * (BODY.L - BODY.d0) / (BODY.NR - 1), f = d / BODY.L; DS[i] = d;
-        const up = BODY.rStub + (BODY.rMax - BODY.rStub) * smo(c01(f / 0.25)), down = Math.pow(1 - smo(c01((f - 0.3) / 0.7)), 0.85);
+        /* (R69's "not like a real dragon", read in build 43's pictures: in the wide shots its body was a hose as thick as the
+           head it carried. A serpent's neck narrows behind its head and its body is slimmer than its head: from the head's
+           cut (the neck's own 0.22) it thins over 1.4 m to 0.155 and holds it, then tapers to the tail as before; the
+           head is now half as wide again as the body behind it) */
+        const up = d <= 0 ? BODY.rStub : BODY.rStub + (BODY.rBody - BODY.rStub) * smo(c01(d / BODY.neckL)), down = Math.pow(1 - smo(c01((f - 0.3) / 0.7)), 0.85);
         RAD[i] = Math.max(BODY.rTip, up * down); }
       function tubeOf() {
         const NR = BODY.NR, NS = BODY.NS, nv = NR * NS;
@@ -13489,8 +13567,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* Ton, at his left, the wrapped staff upright in his right hand: his line turned back over his shoulder; out after
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
-          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
-            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
+          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.38 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
+            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Idle_3');
             lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry, { ry0: Math.PI });   // (turned from where he stood, never snapped to the path)
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
@@ -13499,7 +13577,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
           /* (each half-turns his body back to him for his line and the head does the rest (v14.5: a man talking to him turns to
              him); facing the doors, the back of Jun's head filled the phone as he spoke: open-phone film-012_5, R25) */
-          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
+          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.38 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
             fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
             lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
@@ -13752,6 +13830,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                                                     : { room: 0.5, tick: 0.22, sour: 0.18 });
         /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
         gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
+        /* (R76: the gate open in this picture is open to the walkable map's routes, its leaf standing along the court's wall:
+           the walk phase holds it shut, and Ton was routed straight through its east post, 28 cm into it, limbread on build 44) */
+        navFilmOpen(gateShut, t >= T.cut1); navFilmShut(gateOpenLeaf, t >= T.cut1);
         /* the lamp that flickers, the dining room's pendant (an ordinary fault: the electrician came three times, 4.0; R42: it
            was the armchair's reading lamp, out of the room at Chad's word) */
         lamp(LAMP_FLICK, inside ? 0.25 + 0.75 * (Math.sin(t * 23.0) * Math.sin(t * 7.1) > -0.35 ? 1 : 0.2) : 1);
@@ -14313,7 +14394,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
     const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
                     tie: [-7.28, -3.62], kohWin: [-10.5, -4.75], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
-                    liftPho: [0.35, 0.05], liftTon: [-0.6, 0.2], liftJun: [0.6, -0.3], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
+                    liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -14382,7 +14463,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
           else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
             put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7));
-            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
+            if (t > T.in + 0.45) fmWalk(P, t, T.in + 0.45, [A.liftTon, [-0.3, 1.65]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 });
             giveFix5(P); STICK5.onPalms(P, 'stick'); }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
@@ -14400,7 +14481,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (0.87 m from his teacher: at 0.54 his body was in Grandmaster Pho's robe, clipscan 920 to 9826 crossings) */
           else if (!atLift) { put(P, -10.15, -3.9, faceTo(-10.15, -3.9, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
-            if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
+            if (t > T.in) fmWalk(P, t, T.in, [A.liftJun, [0.25, 1.75]], 0.9, restOf5('jun', t), Math.PI); }
         });
         /* the curtains of his front windows drawn back and a window open (night air) from the knot on; the lamp that
            flickers (the pendant: R42) flickers once, and holds */
@@ -14410,6 +14491,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         WISPS5.set(t, [[T.room1 + 0.6, A.live], [T.room2 + 0.5, A.dine], [T.room3 + 0.5, A.terr]]);
         /* the lift: the doors at the end */
         liftDoors(atLift ? smo(c01((t - T.doors) / 1.4)) * (1 - smo(c01((t - T.close) / 1.3))) : 0);
+        /* (R76, limbread on build 44: Jun beside his teacher at x 0.6 stood in the walkway's railing and went round him into it
+           (35 cm), and Ton and Jun went into the car through its jamb: Jun nearer the doors and in first, Ton after him, both
+           marks clear of the railing and of each other; the doors open to the routes while they stand open) */
+        navFilmOpen(LIFT_SHUT5, atLift && t >= T.doors + 0.7 && t < T.close + 0.5);
         /* THE LENS: from the boom, forward and down into his head (the violet), then his own eyes */
         const B0 = boomAt({ x: pz.x, z: pz.z }, PULL5), ZH = [zz.x, 1.66, zz.z];   // (R46: begun on the end's pulled-back lens)
         fmTrack(t, [
