@@ -35,7 +35,7 @@ TAG = {
  'co5A1': 'surprised', 'q5A1': 'firm', 'co5A2': 'eager', 'ph5A1': 'calm', 'ph5A2': 'gentle', 'q5A2': 'regretful',
  'co5B1': 'proud', 'co5B2': 'embarrassed', 'co5B3': 'confused', 'co5B4': 'thoughtful', 'co5B5': 'thoughtful',
  'q5B1': 'gentle', 'ph5B1': 'warm', 'q5B2': 'quiet',
- 'co5C1': 'disappointed', 'ph5C1': 'calm', 'co5C2': 'embarrassed', 'ph5C2': 'gentle', 'q5C1': 'ashamed',
+ 'co5C1': 'delighted', 'ph5C1': 'calm', 'co5C2': 'embarrassed', 'ph5C2': 'gentle', 'q5C1': 'ashamed',
  'co5D1': 'excited', 'ph5D1': 'calm', 'ph5D2': 'serious', 'q5D1': 'regretful',
  'co5z1': 'relieved', 'q5z1': 'reflective', 'q5A': 'reflective', 'q5B': 'quiet', 'q5C': 'ashamed', 'q5D': 'regretful',
  # the fight (docs/V28.0-FIGHT.md 10): Grandmaster Pho calm, firm and unhurried even when urgent, a teacher guiding a

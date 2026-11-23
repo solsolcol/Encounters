@@ -212,7 +212,7 @@
     { "key": "ph5B1", "who": "pho", "at": "endB", "where": "ending B: after he has gone", "n": 57, "text": "You did not tell him what they were. You let him find out that he did not know. That is the only way it stays learned.", "secs": 8.44 },
     { "key": "q5B2", "who": "he", "at": "endB", "where": "ending B", "thought": true, "text": "He put them down himself.", "secs": 1.85 },
 
-    { "key": "co5C1", "who": "collector", "at": "endC", "where": "ending C: delighted", "text": "Three! Only three.", "secs": 1.90 },
+    { "key": "co5C1", "who": "collector", "at": "endC", "where": "ending C: delighted", "text": "Three! Only three.", "secs": 1.83 },
     { "key": "ph5C1", "who": "pho", "at": "endC", "where": "ending C: his hand flat on the case's lid", "n": 58, "text": "This one. What is it?", "secs": 2.14 },
     { "key": "co5C2", "who": "collector", "at": "endC", "where": "ending C", "text": "I... do not know.", "secs": 1.89 },
     { "key": "ph5C2", "who": "pho", "at": "endC", "where": "ending C: to the student, mildly", "n": 59, "text": "Nor does he. Your nose is not a certificate.", "secs": 4.17 },

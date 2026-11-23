@@ -2688,7 +2688,7 @@
     { id: "q5B2", who: "jamesAdult", ch: "e4c5", where: "ending B",
       text: "[quiet] He put them down himself.", secs: 1.85 },
     { id: "co5C1", who: "collector5", ch: "e4c5", where: "ending C: delighted",
-      text: "[disappointed] Three! Only three.", secs: 1.90 },
+      text: "[delighted] Three! Only three.", secs: 1.83 },
     { id: "ph5C1", who: "pho", ch: "e4c5", where: "ending C: his hand flat on the case's lid",
       text: "[calm] This one. What is it?", secs: 2.14 },
     { id: "co5C2", who: "collector5", ch: "e4c5", where: "ending C",

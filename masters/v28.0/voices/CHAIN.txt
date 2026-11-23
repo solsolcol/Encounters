@@ -79,7 +79,7 @@ co5B5   collector take a  the tighter read               voice 0.10-1.82 s of 1.
 q5B1    he   take a  the easier pace                voice 0.04-1.98 s of 2.00, 3.09 words a second  (b 1.74 s)  -> 2.01 s  [him]
 ph5B1   pho  take b  the unhurried read             voice 0.10-8.42 s of 8.48, 3.12 words a second  (a 7.90 s, c 7.56 s)  -> 8.44 s  [cast, RMS -16]
 q5B2    he   take b  the easier pace                voice 0.02-1.82 s of 1.84, 2.78 words a second  (a 1.50 s)  -> 1.85 s  [him]
-co5C1   collector take a  the tighter read               voice 0.08-1.90 s of 1.92, 1.65 words a second  (b 2.02 s)  -> 1.90 s  [cast, RMS -16]
+co5C1   collector take a  the tighter read               voice 0.14-1.68 s of 2.08, 1.95 words a second  (b 1.78 s)  -> 1.83 s  [cast, RMS -16]   (R33, 23 Nov: said again [delighted], the plan's 4.9; the two [disappointed] takes in voices/retired)
 ph5C1   pho  take b  the unhurried read             voice 0.12-1.96 s of 2.24, 2.72 words a second  (a 1.64 s, c 1.76 s)  -> 2.14 s  [cast, RMS -16]
 co5C2   collector take b  the tighter read               voice 0.08-1.70 s of 2.24, 2.47 words a second  (a 1.84 s); its silent tail cut at the voice's end + 0.3 s  -> 1.89 s  [cast, RMS -16]
 ph5C2   pho  take a  the unhurried read             voice 0.00-4.14 s of 4.16, 2.17 words a second  (b 3.36 s, c 4.04 s)  -> 4.17 s  [cast, RMS -16]

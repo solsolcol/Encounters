@@ -1450,8 +1450,8 @@
    "who": "collector5",
    "ch": "e4c5",
    "where": "ending C: delighted",
-   "text": "[disappointed] Three! Only three.",
-   "secs": 1.9
+   "text": "[delighted] Three! Only three.",
+   "secs": 1.83
   },
   {
    "id": "ph5C1",
