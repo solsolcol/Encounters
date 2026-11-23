@@ -6581,6 +6581,12 @@
         praiR: 0.26, bubR: 0.62, phoR: 0.34, steerLook: 1.4, prowl: 0.3, prowlIn: 0.3, prowlTurn: 1.2,
         slidePush: 3.0, slideThrow: 6.0,      // (R43: how fast a setback carries it back, and the gold throws it: slideTick)
         bubGrow: 0.3,                         // (R43: a bubble's disc grows round the bound one over this: prR)
+        /* (R43: the things that stand on the court, each [x, z, r] in its frame: the open black bag and the thread's reel
+           set down for the rite before the house (b_world.js RITE: 1.35 and 1.2 m off its face, 0.35 m either side of the
+           gate's line) and the slippers by his door (Jun's duffel stays with him behind the thread). A Prai goes round each
+           as it goes round a body. The chapter hands the places as they stand when the fight is made (c_fightstage.js
+           fsProps); these are the same numbers, for the simulation, which has no world) */
+        props: [[-0.35, -1.75, 0.22], [0.35, -1.9, 0.12], [0.52, -2.55, 0.18]],
         // FIRE (Grandmaster Pho's main act)
         fireWait: 1.1, flight: 0.7, fireReach: 6.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
         ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
@@ -7446,6 +7452,7 @@
         };
         one(st.pho.x, st.pho.z, n.phoR);
         for (const q of st.prai) if (q !== p && prBody(q)) one(q.x, q.z, prR(n, q));
+        for (const t of n.props || []) one(t[0], t[1], t[2]);
         if (!turned) return null;
         const L = Math.sqrt(sx * sx + sz * sz) || 1; return [sx / L, sz / L];
       }
@@ -7461,6 +7468,7 @@
         const ax = p.x + tx * (n.praiR * 2 + 0.12), az = p.z + tz * (n.praiR * 2 + 0.12);
         for (const q of st.prai) if (q !== p && prBody(q) && dist(ax, az, q.x, q.z) < prR(n, q) + n.praiR) shut = true;
         if (dist(ax, az, st.pho.x, st.pho.z) < n.phoR + n.praiR) shut = true;
+        for (const t of n.props || []) if (dist(ax, az, t[0], t[1]) < t[2] + n.praiR) shut = true;
         const bx = p.x, bz = p.z;
         if (!shut) { p.x += tx * s + ox * pull; p.z += tz * s + oz * pull; clampPrai(n, p); }
         if ((shut || dist(bx, bz, p.x, p.z) < s * 0.35) && !(p.pturn > 0)) { p.pdir = -p.pdir; p.pturn = n.prowlTurn; }
@@ -7483,8 +7491,9 @@
               const over = need - d, ux = dx / d, uz = dz / d, ka = fa ? 0 : fb ? 1 : 0.5, kb = 1 - ka;
               a.x -= ux * over * ka; a.z -= uz * over * ka; b.x += ux * over * kb; b.z += uz * over * kb; moved = true; } }
           for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
-            const dx = p.x - ph.x, dz = p.z - ph.z, d = Math.sqrt(dx * dx + dz * dz), need = n.phoR + n.praiR;
-            if (d < need - 1e-4) { const ux = d > 1e-6 ? dx / d : (p.id % 2 ? 1 : -1), uz = d > 1e-6 ? dz / d : 0; p.x = ph.x + ux * need; p.z = ph.z + uz * need; moved = true; } }
+            for (const o of [[ph.x, ph.z, n.phoR]].concat(n.props || [])) {             // (out of him, and out of each thing on the court)
+              const dx = p.x - o[0], dz = p.z - o[1], d = Math.sqrt(dx * dx + dz * dz), need = o[2] + n.praiR;
+              if (d < need - 1e-4) { const ux = d > 1e-6 ? dx / d : (p.id % 2 ? 1 : -1), uz = d > 1e-6 ? dz / d : 0; p.x = o[0] + ux * need; p.z = o[1] + uz * need; moved = true; } } }
           for (const p of L) { if (!prBody(p) || prFixed(p)) continue;
             if (p.st === 'pressing') toRing(st, p, n.pressR);
             clampPrai(n, p); }
@@ -7509,6 +7518,7 @@
       function prIn(st, p, x, z) {
         const n = st.n;
         if (Math.hypot(x - st.pho.x, z - st.pho.z) < n.phoR + n.praiR - 0.01) return true;
+        for (const t of n.props || []) if (Math.hypot(x - t[0], z - t[1]) < t[2] + n.praiR - 0.01) return true;
         for (const q of st.prai) if (q !== p && prBody(q) && Math.hypot(x - q.x, z - q.z) < prR(n, q) + n.praiR - 0.01) return true;
         return false;
       }
@@ -7958,6 +7968,15 @@
     const FN5 = (typeof FIGHT !== 'undefined' && FIGHT && FIGHT.NUM) || {};
     /* the court's frame (c_cast.js COURT5: local x across, z down the court; the house's face at local z -3.0) */
     const fsW = (lx, lz) => courtWorld(lx, lz);
+    /* (R43: the things on the court as the fight is made, in its frame, for the Prai to go round: the bag and the reel where
+       the rite sets them down (RITE), the slippers where they stand; each with its disc. c_fightrules.js NUM.props has the
+       same numbers for the simulation) */
+    function fsProps() {
+      const lc = (x, z) => [COURT5.x - x, COURT5.z - z], out = [];
+      out.push(lc(RITE.bag.x, RITE.bag.z).concat(0.22), lc(RITE.reel.x, RITE.reel.z).concat(0.12));
+      const sl = things.slippers; if (sl) out.push(lc(sl.position.x, sl.position.z).concat(0.18));
+      return out.map(a => a.map(v => +v.toFixed(3)));
+    }
     const fsL = (wx, wz) => ({ x: COURT5.x - wx, z: COURT5.z - wz });
     /* which of the rules' acts each body's buttons carry (FIGHT.SLOT), and the engine's id for each */
     const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
@@ -9526,7 +9545,7 @@
        whichever way he came (the film, or a Continue landing at the brief) */
     function fightOpen() {
       const F = fightStart(), W5 = fsWords();
-      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100 }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
+      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100, num: { props: fsProps() } }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
       if (warmSounds) warmSounds(FS_WARM.concat(FIGHT.LINES));
       /* the court */
       if (kit && kit.daylight && PRESETS.TRANCE) kit.daylight(PRESETS.TRANCE, 0);

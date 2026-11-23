@@ -24,6 +24,15 @@
     const FN5 = (typeof FIGHT !== 'undefined' && FIGHT && FIGHT.NUM) || {};
     /* the court's frame (c_cast.js COURT5: local x across, z down the court; the house's face at local z -3.0) */
     const fsW = (lx, lz) => courtWorld(lx, lz);
+    /* (R43: the things on the court as the fight is made, in its frame, for the Prai to go round: the bag and the reel where
+       the rite sets them down (RITE), the slippers where they stand; each with its disc. c_fightrules.js NUM.props has the
+       same numbers for the simulation) */
+    function fsProps() {
+      const lc = (x, z) => [COURT5.x - x, COURT5.z - z], out = [];
+      out.push(lc(RITE.bag.x, RITE.bag.z).concat(0.22), lc(RITE.reel.x, RITE.reel.z).concat(0.12));
+      const sl = things.slippers; if (sl) out.push(lc(sl.position.x, sl.position.z).concat(0.18));
+      return out.map(a => a.map(v => +v.toFixed(3)));
+    }
     const fsL = (wx, wz) => ({ x: COURT5.x - wx, z: COURT5.z - wz });
     /* which of the rules' acts each body's buttons carry (FIGHT.SLOT), and the engine's id for each */
     const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', smell: 'SMELL', lend: 'LEND' };
@@ -1592,7 +1601,7 @@
        whichever way he came (the film, or a Continue landing at the brief) */
     function fightOpen() {
       const F = fightStart(), W5 = fsWords();
-      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100 }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
+      fightReset(); FS5.on = true; FS5.st = FIGHT.create({ sanity: kit && kit.stat ? kit.stat('sanity') : 100, num: { props: fsProps() } }); FS5.rand = rng(0x2858); FS5.srand = rng(0x2859);
       if (warmSounds) warmSounds(FS_WARM.concat(FIGHT.LINES));
       /* the court */
       if (kit && kit.daylight && PRESETS.TRANCE) kit.daylight(PRESETS.TRANCE, 0);
