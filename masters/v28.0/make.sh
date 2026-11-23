@@ -246,3 +246,21 @@
 #   H-handL-out, H-handR-out, H-neck-front, H-sideL-front, H-sideR-back, H-sideR-front, H-torso-back, H-feet-front),
 #   N-whole-front, N-whole-back, WN03-front, WN03-side; feet on the ground, joints in motion. All of it when his takes are made.
 # src/zavier-people.log is this run's now; the copy on the sources branch is the first run's (it goes up with the next pushnew).
+
+# 9. MASTER ZAVIER'S RUN, HIS REST AND HIS THREE CASTS (23 Nov 2026, plan R34: "make him use a running animation
+#    instead of a walking animation ... add animations to show him casting or using his ability ... the lending, the
+#    smell, and the bind"). Every take is Meshy's own, on the rig his first body already has (no body made again: R10),
+#    every job id in src/jobs.json (zavier.takes.*), the sources on the sources branch (chunk 118):
+#      running   the rig task's own basic run (free: it came with the rig)            takes-zavier-running.glb
+#      idle      Idle_3 (library 243), his rest in the films and the fight, 3 credits takes-zavier-idle.glb
+#      acts      five library takes tried (132, 133, 135, 336, 338), 15 credits; kept: mage_soell_cast_3 (BIND: both
+#                palms driven out) and mage_soell_cast_6 (LEND: the rising sweep of his right hand)    takes-zavier-acts.glb
+#      acts2     three more (2, 260, 220), 9 credits; kept: Alert (SMELL: the crouch and the look round)  takes-zavier-acts2.glb
+#    27 credits in all. Each take was MEASURED as a motion before it was cast (tools/probes/takefk.mjs: its hips' and
+#    head's travel and speed over its whole length on his body): only the window each act plays is cast (FS_ZAV_TAKE in
+#    c_fightstage.js: a, top, b), turned so the push lands on what he aims at. Stripped onto his rig with
+#      node tools/mergetakes.mjs strip <take>.glb <takes>.glb assets/p5zavier.glb --same-rig
+#    (its own exit code read before any file is let go: a refused strip once deleted a take, refetched free with
+#    python3 -I masters/v28.0/meshy28.py refetch zavier acts), and the bodies made again by people.sh's zavier line:
+#    the mesh and the paint byte for byte as before (only the takes differ: p5zavier.glb 2,611,112 bytes; the near and
+#    full bodies' geometry and images hashed the same).
