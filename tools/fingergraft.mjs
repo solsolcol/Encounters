@@ -38,7 +38,8 @@ if (!IN || !OUT || !REP) { console.error('usage: node tools/fingergraft.mjs <in.
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder });
 const doc = await io.read(IN), root = doc.getRoot();
 const log = (...a) => console.log('fingergraft:', ...a);
-const SIDE = 'Right';
+/* (SIDE=Left grafts the left hand the same way: v28.0, R40) */
+const SIDE = process.env.SIDE === 'Left' ? 'Left' : 'Right';
 const skins = root.listSkins(); if (skins.length !== 1) throw new Error('one skin expected, found ' + skins.length);
 const skin = skins[0], joints0 = skin.listJoints(), IBM0 = skin.getInverseBindMatrices(), ibm0 = IBM0.getArray().slice();
 const jIdx = (re) => joints0.findIndex(j => re.test(j.getName()));
@@ -172,24 +173,34 @@ let changed = 0, touched = 0; const perFinger = Object.fromEntries(ALL.map(F => 
 prims.forEach((pr, pi) => { const J = pr.getAttribute('JOINTS_0'), W = pr.getAttribute('WEIGHTS_0'), P = pr.getAttribute('POSITION');
   const jArr = J.getArray(), wArr = W.getArray(), e = [0, 0, 0], norm = W.getNormalized(), MAXW = norm ? (W.getComponentType() === 5121 ? 255 : 65535) : 1;
   for (let i = 0; i < P.getCount(); i++) {
-    let hs = 0; for (let q = 0; q < 4; q++) if (jArr[i * 4 + q] === HI) hs += wArr[i * 4 + q];
+    /* (v28.0, R39/R40: the hand's old END SITE is NOT empty on every scan. On Grandmaster Pho's it carried the end of his
+       middle finger, 86 points, which stayed straight when his finger closed: Chad, "Why does the middle finger keep sticking
+       out like that". Its share is weighed along the finger with the hand's, so a point at a fingertip goes to that finger's
+       last bone, and where no finger reaches it is the hand's, which it always moved with) */
+    let hs = 0; for (let q = 0; q < 4; q++) { const j = jArr[i * 4 + q]; if (j === HI || (endJ >= 0 && j === endJ)) hs += wArr[i * 4 + q]; }
     if (!(hs > 0)) continue;
     const h = H(new THREE.Vector3(...P.getElement(i, e)));
     let best = null; for (const F of ALL) { const s = shares(F, h); if (s && (!best || s.r < best.s.r)) best = { F, s }; }
-    touched++; if (!best || best.s.w[0] > 0.999) continue;
-    /* the hand's share split along the finger, every other bone's kept */
-    const inf = new Map(); for (let q = 0; q < 4; q++) { const j = jArr[i * 4 + q], w = wArr[i * 4 + q]; if (w > 0 && j !== HI) inf.set(j, (inf.get(j) || 0) + w); }
+    touched++;
+    const onEnd = endJ >= 0 && [0, 1, 2, 3].some(q => jArr[i * 4 + q] === endJ && wArr[i * 4 + q] > 0);
+    if ((!best || best.s.w[0] > 0.999) && !onEnd) continue;
+    if (!best) best = { F: null, s: { w: [1, 0, 0, 0] } };
+    /* the hand's share (and the end site's) split along the finger, every other bone's kept */
+    const inf = new Map(); for (let q = 0; q < 4; q++) { const j = jArr[i * 4 + q], w = wArr[i * 4 + q]; if (w > 0 && j !== HI && j !== endJ) inf.set(j, (inf.get(j) || 0) + w); }
     const add = (j, w) => { if (w > 1e-6) inf.set(j, (inf.get(j) || 0) + w); };
-    add(HI, hs * best.s.w[0]); for (let k = 0; k < 3; k++) add(best.F.nodes[k].index, hs * best.s.w[k + 1]);
+    add(HI, hs * best.s.w[0]); if (best.F) for (let k = 0; k < 3; k++) add(best.F.nodes[k].index, hs * best.s.w[k + 1]);
     let L = [...inf.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
     const tot = L.reduce((s, x) => s + x[1], 0), sum0 = (() => { let s = 0; for (let q = 0; q < 4; q++) s += wArr[i * 4 + q]; return s; })();
     /* quantized back: the largest remainder keeps the sum the point had */
     const raw = L.map(x => x[1] / tot * sum0), flo = raw.map(x => Math.floor(x + 1e-9)); let rest = Math.round(sum0 - flo.reduce((s, x) => s + x, 0));
     const ord = raw.map((x, k) => [x - flo[k], k]).sort((a, b) => b[0] - a[0]); for (const [, k] of ord) { if (rest <= 0) break; flo[k]++; rest--; }
     for (let q = 0; q < 4; q++) { jArr[i * 4 + q] = q < L.length ? L[q][0] : 0; wArr[i * 4 + q] = q < L.length ? flo[q] : 0; }
-    changed++; perFinger[best.F.name]++; }
+    changed++; if (best.F) perFinger[best.F.name]++; }
   J.setArray(jArr); W.setArray(wArr); void MAXW; });
 log('points with a hand share', touched, 'given finger bones', changed, JSON.stringify(perFinger));
+/* (v28.0, R40: proved, not assumed: no point of either piece is left on the end site) */
+if (endJ >= 0) { let left = 0; prims.forEach(pr => { const J = pr.getAttribute('JOINTS_0').getArray(), W = pr.getAttribute('WEIGHTS_0').getArray(); for (let k = 0; k < J.length; k++) if (J[k] === endJ && W[k] > 0) left++; });
+  if (left) throw new Error('the end site still carries ' + left + ' shares'); log('the end site carries nothing'); }
 
 /* ---- 6. checked against his file, then written */
 const before = await io.read(IN), b = before.getRoot(), a = root;

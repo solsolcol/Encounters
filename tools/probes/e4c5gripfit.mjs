@@ -70,7 +70,9 @@ await p.evaluate(() => {
       let handIn = 0, handDeep = 0, bodyIn = 0, bodyGap = 9, bodyAt = null; const fing = {}; const v = new V();
       P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return;
         const A = o.geometry.attributes, si = A.skinIndex, sw = A.skinWeight, cnt = A.position.count;
-        const fam = o.skeleton.bones.map(b0 => { const m = /RightHand(Thumb|Index|Middle|Ring|Pinky)?\d*$/.exec(b0.name); return m ? (m[1] || 'Palm') : null; });
+        /* (v28.0, R40: a point carried by a bone of his hand that names no finger, his rig's old end site, is counted as 'Other',
+           never dropped: dropped, the 86 points of his middle fingertip were in no count, and its sticking out was not seen) */
+        const fam = o.skeleton.bones.map(b0 => { const m = /RightHand(Thumb|Index|Middle|Ring|Pinky)?\d*$/.exec(b0.name); return m ? (m[1] || 'Palm') : (/RightHand\w+$/.test(b0.name) ? 'Other' : null); });
         for (let i = 0; i < cnt; i++) { let best = -1, bw = 0; for (let q = 0; q < 4; q++) { const w = sw.getComponent(i, q); if (w > bw) { bw = w; best = si.getComponent(i, q); } }
           o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld).applyMatrix4(inv);
           if (v.y < -0.02 || v.y > 1.15) continue;

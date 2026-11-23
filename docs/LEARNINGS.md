@@ -8866,3 +8866,45 @@ And proving a world identical by photographs fails on a living scene (fans, cand
 browser and under the simulated phone with the fix). Two harnesses run side by side starved each other on this box once
 the hall was in (inv's browser closed, leak's fetches failed); each passed alone: when a pair fails, run each alone before
 reading it as the change's.
+
+## v28.0 — a hand that holds a staff, and the skin a measure never counted (R35, R36, R39, R40)
+
+**Measure the skin against its OWN bones before any hand is posed** (tools/probes/fingerskin.mjs: every point of a hand's
+skin set against each finger's line at bind, and the bone that carries most of it read; a finger whose points are carried
+by the hand or by a bone that is no finger's stays straight while its bones bend). Grandmaster Pho's grafted right hand
+(R26) passed every check made of it and still showed Chad a middle finger sticking straight out (R39): the end of that
+finger, 86 points, was carried by his rig's old END SITE under the hand, which the graft had renamed and taken to carry
+nothing. The joint check (jointscan) reads BONES, and the bones bent right; the contact check grouped points by their
+bone's NAME with a pattern that did not name the end site, so those 86 points were in no count at all. The one clue was
+there (the longest finger had the fewest points, 156 of 1,586) and was not chased. Three laws:
+- A measure that groups points by a name COUNTS WHAT IT CANNOT NAME ('Other'), never drops it (e4c5grip.mjs,
+  e4c5gripfit.mjs).
+- A graft or re-rig PROVES what it assumed: tools/fingergraft.mjs now weighs the end site's share along the fingers with
+  the hand's and fails unless the end site carries nothing (SIDE=Left grafts a left hand the same way).
+- A bone moved to a new parent takes its TRACKS' meaning with it: all nineteen of his takes held the end site still at its
+  rest (0.000 cm, 0.00 degrees at every key) yet wrote it every frame as the hand's child; under the finger the same numbers
+  threw it 14.6 cm out (124 points of his fingers in the stick, caught by the contact measure before anything shipped). And
+  a bone that carries a second share of its neighbours (the end site pulled every fingertip a little) is FOLDED, point by
+  point to each point's own finger, never re-parented whole.
+
+**A hand round a staff, by numbers** (c_fightstage.js PHOGRIP5, built against its own diagnosis, lab.gripDiag: the joints
+the solve meant set beside the joints drawn, equal to the hundredth of a centimetre, so every remaining fault was geometry):
+- Each finger joint turns about ITS OWN HINGE (the axis square to the finger and the palm's facing), only toward the palm,
+  within a hand's range (MCP 90, PIP 110, DIP 85). A shortest-arc turn onto a target bent his little finger BACKWARD 15.4
+  degrees in every pose (R36).
+- A finger's bend is shared as a hand closing round a bar shares it: the knuckle 0.30 to 0.48 of it, the rest two to one
+  between the middle and end joints (one tendon works both). Searched freely, the joints met the wood as a hook (knuckle
+  65-70, middle joint 6-24).
+- The shaft lies UNDER THE KNUCKLES, not in the palm's middle: 2.5 cm back, the knuckles stood 2.4-3.0 cm off the wood and
+  a natural finger could reach it only with its tip, the rest curled in air.
+- The shaft runs ACROSS THE PALM ON A SLANT (22 degrees, from the heel under the little finger up between thumb and first
+  finger): square to it, a forearm that comes down to the fist leaves the wrist 20-35 degrees toward the thumb (a real one's
+  range is 25); on the slant, 0-2.
+- A hand on a PLANTED upright pole turns about the pole as the body turns: held facing the way it was planted, the wrist
+  bent 176 degrees in the planting cast.
+
+**Arms held to a real body's range after every take, the check's own formulas** (c_cast.js LIM5): soft limits (a knee and
+an edge, tanh between, so a swinging arm slows into its edge and never stops dead on it) for the shoulder thrown back, the
+wrist's four bends and the collarbone's shrug, the shrug's edge rising with the arm (10 degrees over its bind hanging, 25
+level, 41 overhead), the same edge jointscan now holds a collarbone to. A take's value is kept as the mixer last wrote it
+and taken back before each frame's limit (v11.5's law), so nothing stacks.

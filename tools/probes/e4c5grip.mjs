@@ -66,7 +66,9 @@ for (const [name0, t] of POSES) { const name = pass ? name0 + '-T' + pass : name
     const R = 0.036, CX = 0.082, CZ = -0.003, per = {}; let n = 0, inside = 0, deep = 0;
     P.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return;
       const sk = o.skeleton, A = o.geometry.attributes, si = A.skinIndex, sw = A.skinWeight, cnt = A.position.count;
-      const fam = sk.bones.map(b => { const m = /RightHand(Thumb|Index|Middle|Ring|Pinky)?\d*$/.exec(b.name); return m ? (m[1] || 'Palm') : null; });
+      /* (v28.0, R40: a point carried by a bone of his hand that names no finger, his rig's old end site, is counted as 'Other',
+         never dropped: dropped, the 86 points of his middle fingertip were in no count, and its sticking out was not seen) */
+      const fam = sk.bones.map(b => { const m = /RightHand(Thumb|Index|Middle|Ring|Pinky)?\d*$/.exec(b.name); return m ? (m[1] || 'Palm') : (/RightHand\w+$/.test(b.name) ? 'Other' : null); });
       if (!fam.some(Boolean)) return;
       const v = new V();
       for (let i = 0; i < cnt; i++) { let best = -1, bw = 0; for (let q = 0; q < 4; q++) { const w = sw.getComponent(i, q); if (w > bw) { bw = w; best = si.getComponent(i, q); } }

@@ -457,6 +457,14 @@ that fits it, with the version it came from.
   words in the plan with their checksums in the research note, and are asked of him again if the machine is replaced. No
   part of a photograph that shows a face or a name is sent to a picture service, and nobody in one is copied into the
   game (no face, no tattoo, no name, no group's badge). (v26.0) His photograph of Master Zavier (20 Nov 2026, R5 of docs/V28.0-E4C5-PLAN.md), sent for his model to be made from it, is the one exception at his word: it goes to the picture services, cut out of its place; it is still never committed.
+- A HAND'S SKIN IS MEASURED AGAINST ITS OWN BONES before any hand is posed ("Why did you not see this problem all this time,
+  and needed me to tell you it?" ... "How do you ensure this kind of finger fix can be saved for future reuse?": Grandmaster
+  Pho's middle fingertip, carried by his rig's old end site, stuck out while every joint check passed, because the checks
+  read bones and the contact check dropped the points it could not name): tools/probes/fingerskin.mjs on every rigged body
+  whose fingers a chapter bends; a measure that groups points by a bone's name counts what it cannot name, never drops it;
+  a graft proves what it assumed (tools/fingergraft.mjs fails unless the old end site carries nothing). A staff held in a
+  hand and the arms' range after every take are written down by number in docs/LEARNINGS.md (v28.0), the reference code
+  chapter 5's PHOGRIP5 and LIM5. (v28.0, R39/R40)
 
 ### Models and assets
 
