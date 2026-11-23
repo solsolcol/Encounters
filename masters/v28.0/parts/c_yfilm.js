@@ -314,12 +314,15 @@
       const ARC = PHI * NK.R * HS;                                                                      // the arc's length at full size
       BODY.d0 = -(ARC + 0.07);                                                                          // the body's first rings: up the curve and 7 cm into the head
       const FACE = [0, 2.45 - J0[1], 3.9 - J0[2]], SNOUT = [0, 2.28 - J0[1], 4.21 - J0[2]];             // from the foot, in the model's metres
+      /* (R70: its eyes, read from the file: each side's eye is its paint's dark red at (0.352, 2.262, 3.507) and the mirror, its
+         ball standing out to x 0.36 (masters/v28.0 nagaeye: its points drawn from the side by their colours). From the foot) */
+      const EYE = [[0.352, 2.262 - J0[1], 3.507 - J0[2]], [-0.352, 2.262 - J0[1], 3.507 - J0[2]]];
       const U = { uNA: { value: 0 }, uNT: { value: 0 }, uNGW: { value: 0.115 },
                   uNPho: { value: new THREE.Vector4(0, 0, 0, 0) },
                   uNDeep: { value: new THREE.Color(0x03163a) }, uNCol: { value: new THREE.Color(0x0d63d8) }, uNRim: { value: new THREE.Color(0x86ecff) },
                   uNBelly: { value: new THREE.Color(0xa8dcff) }, uNGlowC: { value: new THREE.Color(0x2aa6ff) }, uNGold: { value: new THREE.Color(0xffc860) },
                   uNLook: { value: new THREE.Vector4(1.0, 2.4, 0.62, 0.30) } };   // (core alpha, rim power, glow strength, scale strength)
-      const st = { ready: false, head: null, tube: null, tgeo: null, plan: null, uH: 0, grow: 0, laid: '', fw: null, sw: null, emb: null };
+      const st = { ready: false, head: null, tube: null, tgeo: null, plan: null, uH: 0, grow: 0, laid: '', fw: null, sw: null, emb: null, eyes: null, eyeN: null, hs: 1, eyeG: null };
       const SH5 = {};
       SH5.vsHead = `attribute float aS; attribute float aReg; attribute vec2 aCS; attribute float aW; attribute float aF;
 uniform float uNGW;
@@ -508,6 +511,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
               sh.fragmentShader = 'uniform float uNA; varying float vEA;\n' + out; };
             em.customProgramCacheKey = () => 'e4c5nagaMist';
             const pts = new THREE.Points(eg, em); pts.frustumCulled = false; Object.defineProperty(pts, 'renderOrder', { get: () => 2.8, set: () => {}, configurable: true }); g.add(pts); st.emb = { ev, eg, pts }; }
+          /* R70: ITS EYES' LIGHT. On each eye a white core and a blue halo, and behind each a trail of eight where the eye was a
+             moment before, seen only at speed (light streaming off it as it climbs); painted light, added, drawn over its head
+             (a card of light among a body is drawn over what stands at its depth: v25.5) and faded out where the eye turns
+             away from the lens. The film says how bright (eyeFrame) */
+          { const NE = 20, eg = new THREE.BufferGeometry(), at = (a, k) => new THREE.BufferAttribute(a, k).setUsage(THREE.DynamicDrawUsage);
+            eg.setAttribute('position', at(new Float32Array(NE * 3), 3)); eg.setAttribute('aC', at(new Float32Array(NE * 3), 3));
+            eg.setAttribute('aS', at(new Float32Array(NE), 1)); eg.setAttribute('aA', at(new Float32Array(NE), 1)); owned.push(eg);
+            const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, uniforms: { uScale: { value: 500 } },
+              vertexShader: 'attribute vec3 aC; attribute float aS; attribute float aA; varying vec3 vC; varying float vA; uniform float uScale; void main(){ vC = aC; vA = aA; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+              fragmentShader: 'varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float f = pow(1.0 - d, 1.7); gl_FragColor = vec4(vC, vA * f); }' });
+            mats.push(m);
+            const pts = new THREE.Points(eg, m); pts.frustumCulled = false; pts.visible = false;
+            Object.defineProperty(pts, 'renderOrder', { get: () => 2.95, set: () => {}, configurable: true }); world.add(pts); st.eyeG = { eg, m, pts, NE }; }
           st.ready = true;
           if (st.plan && st.want) layAt(st.want.t, st.want.a);
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
@@ -559,7 +575,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         for (let i = 0; i < m - 1; i++) { if (Math.abs(dd[i]) < 1e-9) { mm[i] = mm[i + 1] = 0; continue; }
           const a = mm[i] / dd[i], b = mm[i + 1] / dd[i], s = a * a + b * b; if (s > 9) { const tau = 3 / Math.sqrt(s); mm[i] = tau * a * dd[i]; mm[i + 1] = tau * b * dd[i]; } }
         if (spec.restSecs > 0 && m > 0) mm[m - 1] = 0;
-        st.plan = { cv, len, T, NT, ds, uAt, K, mm, stick: spec.stick || [pts[0].x, pts[0].y, pts[0].z], spec };
+        /* (R64: where along it the stick's head is on its way home, metres; past it the creature is inside the stick) */
+        const home = typeof spec.home === 'number' && spec.home % 1 === 0 && spec.home < n ? uAt[spec.home] : null;
+        st.plan = { cv, len, T, NT, ds, uAt, K, mm, stick: spec.stick || [pts[0].x, pts[0].y, pts[0].z], spec, home };
         st.laid = '';
         return { len, uAt: uAt.slice() };
       }
@@ -571,7 +589,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const h = K[i + 1][0] - K[i][0], s = (t - K[i][0]) / h, s2 = s * s, s3 = s2 * s;
         return (2 * s3 - 3 * s2 + 1) * K[i][1] + (s3 - 2 * s2 + s) * h * mm[i] + (-2 * s3 + 3 * s2) * K[i + 1][1] + (s3 - s2) * h * mm[i + 1];
       }
-      const FR = new Float32Array(12);
+      const FR = new Float32Array(12), FRE = new Float32Array(12), _ev = new THREE.Vector3();
       function frameAt(u, out) {
         const P = st.plan, x = Math.max(0, Math.min(P.NT - 1, u / P.ds)), j = Math.min(P.NT - 2, Math.floor(x)), w = x - j, a = j * 12, b = a + 12;
         for (let q = 0; q < 12; q++) out[q] = P.T[a + q] + (P.T[b + q] - P.T[a + q]) * w;
@@ -586,13 +604,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         st.uH = uH; st.speed = sp;
         if (st.laid === key) return true; st.laid = key;
         const grow = smo(c01(uH / 1.4)); st.grow = grow;
+        /* (R64: on its way home it goes INTO the stick's head: the head drawn smaller over its last 1.6 m and gone once in,
+           each ring of its body the same as it reaches the stick, those past it inside) */
+        const H = st.plan.home, sinkOf = (u) => (H == null ? 1 : smo(c01((H - u) / 1.6))), sink = sinkOf(uH);
         /* THE HEAD on the leader, its along the path's along, its up the path's banked up */
-        const F = frameAt(uH, FR), s = Math.max(0.02, grow);
+        const F = frameAt(uH, FR), s = Math.max(0.02, grow * sink); st.hs = s;
+        st.head.visible = sink > 0.02;
         const bx = F[9], by = F[10], bz = F[11], nx = F[6], ny = F[7], nz = F[8], tx = F[3], ty = F[4], tz = F[5];
         HM.set(bx * s, nx * s, tx * s, F[0], by * s, ny * s, ty * s, F[1], bz * s, nz * s, tz * s, F[2], 0, 0, 0, 1);
         st.head.matrix.copy(HM); st.head.matrixWorldNeedsUpdate = true;
         const fw = (p) => [F[0] + (bx * p[0] + nx * p[1] + tx * p[2]) * HS * s, F[1] + (by * p[0] + ny * p[1] + ty * p[2]) * HS * s, F[2] + (bz * p[0] + nz * p[1] + tz * p[2]) * HS * s];
-        st.fw = fw(FACE); st.sw = fw(SNOUT);
+        st.fw = sink > 0.02 ? fw(FACE) : null; st.sw = sink > 0.02 ? fw(SNOUT) : null;
+        st.eyes = sink > 0.02 ? EYE.map(fw) : null;
+        st.eyeN = [1, -1].map(sg => { const x = bx * sg + tx * 0.35, y = by * sg + ty * 0.35, z = bz * sg + tz * 0.35, l = Math.hypot(x, y, z) || 1; return [x / l, y / l, z / l]; });
         /* THE BODY: each ring where the leader was; thin where it is still coming out of the stick; a wave travelling down it
            while it flies (none while it lies still), across and a little up and down */
         const NR = BODY.NR, NS = BODY.NS, pa = st.tgeo.attributes.position.array, na = st.tgeo.attributes.normal.array, wa = st.tgeo.attributes.aW.array;
@@ -610,11 +634,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             const sn = Math.sin(th), cs = Math.cos(th), k = smo(c01(th / PHI));
             Tx = nx * sn + tx * cs; Ty = ny * sn + ty * cs; Tz = nz * sn + tz * cs;
             Nx = nx * cs - tx * sn; Ny = ny * cs - ty * sn; Nz = nz * cs - tz * sn; Bx = bx; By = by; Bz = bz;
-            rx = lp(BODY.rStub, NK.HX * HS * 1.03, k) * grow; ry = lp(BODY.rStub, NK.HN * HS * 1.03 / 0.9, k) * grow; r = rx;
+            rx = lp(BODY.rStub, NK.HX * HS * 1.03, k) * grow * sink; ry = lp(BODY.rStub, NK.HN * HS * 1.03 / 0.9, k) * grow * sink; r = rx;
             const off = -0.11 * ry * k;                                   // (the cross-section's keel lifts its middle 0.11 of it: set back on the cut's middle)
             cx = F[0] + (nx * ly + tx * lz) * s + Nx * off; cy = F[1] + (ny * ly + ty * lz) * s + Ny * off; cz = F[2] + (nz * ly + tz * lz) * s + Nz * off; }
           else if (u <= 0) { r = 0; cx = stick[0]; cy = stick[1]; cz = stick[2]; Tx = 0; Ty = 1; Tz = 0; Nx = 0; Ny = 0; Nz = 1; Bx = 1; By = 0; Bz = 0; }
-          else { frameAt(u, G); r *= smo(c01(u / 0.9)); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11];
+          else if (H != null && u >= H) { r = 0; frameAt(H, G); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11]; }
+          else { frameAt(u, G); r *= smo(c01(u / 0.9)) * sinkOf(u); cx = G[0]; cy = G[1]; cz = G[2]; Tx = G[3]; Ty = G[4]; Tz = G[5]; Nx = G[6]; Ny = G[7]; Nz = G[8]; Bx = G[9]; By = G[10]; Bz = G[11];
             const A = 0.14 * mov * smo(c01((d - 0.6) / 2.8)) * (1 - 0.45 * d / BODY.L) * smo(c01(u / 1.5)), wv = Math.sin(6.2832 * (d / 3.4) - 5.2 * t), wv2 = Math.sin(6.2832 * (d / 4.6) - 3.6 * t + 1.3);
             cx += Bx * A * wv + Nx * A * 0.45 * wv2; cy += By * A * wv + Ny * A * 0.45 * wv2; cz += Bz * A * wv + Nz * A * 0.45 * wv2;
             cy = Math.max(cy, r * BODY.ay + 0.015); }
@@ -639,12 +664,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            another moment) */
         fly(t, a) {
           st.want = { t, a };
-          if (!st.ready || !st.plan || !(a > 0.001)) { g.visible = false; st.fw = null; st.sw = null; return; }
+          if (!st.ready || !st.plan || !(a > 0.001)) { g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; return; }
           g.visible = true; U.uNA.value = a; U.uNT.value = t; layAt(t, a);
         },
         /* (kept for the callers that only ever hid it: set(0, ...)) */
-        set(k, a) { if (!(a > 0.001)) { st.want = null; g.visible = false; st.fw = null; st.sw = null; } },
-        hide() { st.want = null; g.visible = false; st.fw = null; st.sw = null; },
+        set(k, a) { if (!(a > 0.001)) { st.want = null; g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; } },
+        hide() { st.want = null; g.visible = false; st.fw = null; st.sw = null; if (st.eyeG) st.eyeG.pts.visible = false; },
         /* HIS LIGHT on it: where his gold stands (his shoulders) and how strong (0 none) */
         light(x, y, z, k) { U.uNPho.value.set(x, y, z, k); },
         /* the middle of its face as last laid, and its snout's tip (films aim at them), or null */
@@ -654,6 +679,31 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         uAt: (t) => uOf(t),
         pointAt(u) { if (!st.plan) return null; const F = frameAt(u, new Float32Array(12)); return [F[0], F[1], F[2]]; },
         stickAt: () => (st.plan ? st.plan.stick.slice() : null),
+        /* (R64, R70) the leader's frame at film time t, from its plan alone ([x, y, z, along, up, side]: a tracking shot rides it) */
+        pose(t, out) { if (!st.plan) return null; return frameAt(uOf(t), out || new Float32Array(12)); },
+        /* one eye's place at film time t, from the plan alone (its trail) */
+        eyeAt(t, e) { if (!st.plan) return null; const u = uOf(t), H = st.plan.home, F = frameAt(u, FRE);
+          const s = Math.max(0.02, smo(c01(u / 1.4)) * (H == null ? 1 : smo(c01((H - u) / 1.6)))), p = EYE[e];
+          return [F[0] + (F[9] * p[0] + F[6] * p[1] + F[3] * p[2]) * HS * s, F[1] + (F[10] * p[0] + F[7] * p[1] + F[4] * p[2]) * HS * s, F[2] + (F[11] * p[0] + F[8] * p[1] + F[5] * p[2]) * HS * s]; },
+        /* its eyes' light at film time t, k bright (0 none; over 1 they flare): after fly(), each frame */
+        eyeFrame(t, k) {
+          const E = st.eyeG; if (!E) return;
+          if (!(k > 0.002) || !st.ready || !st.plan || !g.visible || !st.eyes || !st.head.visible) { E.pts.visible = false; return; }
+          E.pts.visible = true;
+          E.m.uniforms.uScale.value = Math.min(devicePixelRatio || 1, LOW ? 1.6 : 2) * innerHeight / (2 * Math.tan(camera.fov * Math.PI / 360));
+          const A = E.eg.attributes, Pp = A.position.array, Cc = A.aC.array, Ss = A.aS.array, Aa = A.aA.array;
+          camera.getWorldPosition(_ev);
+          const trail = smo(c01(((st.speed || 0) - 2.5) / 4)), s = st.hs || 1;
+          for (let e = 0; e < 2; e++) {
+            const p = st.eyes[e], nr = st.eyeN[e], vx = _ev.x - p[0], vy = _ev.y - p[1], vz = _ev.z - p[2], vl = Math.hypot(vx, vy, vz) || 1;
+            const face = smo(c01(((nr[0] * vx + nr[1] * vy + nr[2] * vz) / vl + 0.2) / 0.4));
+            for (let j = 0; j < 10; j++) { const i = e * 10 + j; let q = p, a, sz, c0, c1, c2;
+              if (j === 0) { a = Math.min(1, k) * face; sz = 0.075 * s * (0.8 + 0.25 * k); c0 = 1.0; c1 = 1.0; c2 = 1.0; }
+              else if (j === 1) { a = 0.6 * Math.min(1.4, k) * face; sz = 0.3 * s * (0.75 + 0.3 * k); c0 = 0.3; c1 = 0.82; c2 = 1.0; }
+              else { const f = (j - 2) / 8; q = this.eyeAt(t - (j - 1) * 0.028, e) || p; a = 0.55 * Math.min(1, k) * trail * (1 - f) * face; sz = 0.11 * s * (1 - 0.6 * f); c0 = 0.42; c1 = 0.88; c2 = 1.0; }
+              Pp[i * 3] = q[0]; Pp[i * 3 + 1] = q[1]; Pp[i * 3 + 2] = q[2]; Cc[i * 3] = c0; Cc[i * 3 + 1] = c1; Cc[i * 3 + 2] = c2; Ss[i] = sz; Aa[i] = a; } }
+          A.position.needsUpdate = true; A.aC.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true;
+        },
         /* (a probe's lab: its state, its draws; tools/probes/e4c5nagalab.mjs) */
         lab: () => Object.assign(st, { SH: SH5, U, BODY, HS, J0, FACE, SNOUT, geo: st.tgeo, meshes: [st.head, st.tube && st.tube[1]] })
       };
@@ -1180,7 +1230,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (api && api.handsRoot) api.handsRoot.visible = false;
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
         fmShow(cast.pho, true); fmShow(cast.ton, true); fmShow(cast.zav, false); whenReady(cast.jun, (P) => fmShow(P, true)); whenReady(cast.koh, (P) => fmShow(P, true));
-        STICK5.to('tonWrap'); DUFFEL5.to('away');
+        STICK5.to('tonWrap'); DUFFEL5.to('away'); STICK5.warm();                // (R65: its underside read now, on the film's first frame, not as he unwraps it)
         const N = NINE5(); PRAI5.list.forEach((P, i) => { const a = N[i % N.length]; P.hidden = false; put(P, a[0], a[1], faceTo(a[0], a[1], a[0], HOUSE.face)); if (P.ready) P.group.visible = true; });
         PRAI5.look('vision');
         if (things.staffCloth) things.staffCloth.visible = false;

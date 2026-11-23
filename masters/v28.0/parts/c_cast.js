@@ -313,6 +313,55 @@
        where his hand goes in every take); and Ton again in both hands after. Never levelled at a person (the plan's 5.3) */
     const STICK_LEN = 1.40;
     const _stA = new THREE.Vector3(), _stB = new THREE.Vector3(), _stM = new THREE.Matrix4(), _stQ = new THREE.Quaternion(), _stS = new THREE.Vector3();
+    const _stC = new THREE.Vector3(), _stD = new THREE.Vector3(), _stE = new THREE.Vector3(), _stF = new THREE.Vector3();
+    /* R65 (23 Nov 2026, Chad: "when ton hands over the naga stick, it does not properly sit in his hands, instead it is
+       floating higher. Fix it properly"). Measured (tools/probes/e4c5palms.mjs, the preparation film at 4.6 to 7.6 s): its
+       underside stood 1.1 cm over the skin of his right palm and 5.5 cm over his left. The cause is the stick's own file: its
+       shaft does not run along its origin's line. Prep set the origin on the middle of its box's foot, and the carved head at
+       its top leans 0.17 m to one side, so the shaft stands 0.066 to 0.134 m off that line along its local x (its slices every
+       5 cm, read from the file); laid by its origin with that x turned up, the whole shaft rode 9 cm high. It is laid now by
+       ITS OWN UNDERSIDE (the lowest of its drawn points within a palm's width of each palm, read once from its mesh: STICKUNDER5)
+       on EACH PALM'S OWN TOP: of the hand's own points (those its hand bone carries, no finger) within 3 cm of the palm's middle
+       across the palm, the farthest out on the palm's side, in the hand bone's own frame so the hand carries it (PALMSKIN5:
+       Ton's, read at 4.6 and 7.6 s, the same at both). And laid on it only once HIS PALMS ARE LEVEL: in his 'give' both wrists
+       stand bent back 55 to 57 degrees, his hands point down 21 to 35 degrees at the fingers and his palms face 22 to 39
+       degrees off the sky, so a stick on them could rest only on the heels of his hands, which from the films' lenses read as
+       his wrists (the first fix's pictures). palmsLevel5 turns each hand about its own across-the-palm line (its bone's z)
+       until the palm faces the sky, nine tenths of the way: his wrists come TOWARD straight (bent back 34 and 24 degrees, where
+       a wrist goes to 70), his fingers level, and the stick lies in his palms. Laid after the mixer on the turn the mixer last
+       wrote (a hand it did not write again this frame keeps its base: nothing stacks, v11.5) */
+    const PALMSKIN5 = { e4ton: { Left: [0.0472, 0.0588, -0.0064], Right: [-0.0366, 0.0649, -0.0006] } };
+    const PALMLEVEL5 = { e4ton: { Left: 1, Right: -1 } };           // (each palm's facing along its hand bone's x: this rig's, measured)
+    function palmSkin5(P, sd, out) {
+      const o = PALMSKIN5[P.key] && PALMSKIN5[P.key][sd], hb = o && boneOf(P, sd + 'Hand');
+      return hb ? hb.localToWorld(out.set(o[0], o[1], o[2])) : null;
+    }
+    const _plU = new THREE.Vector3(), _plQ = new THREE.Quaternion(), _plW = new THREE.Quaternion(), _plZ = new THREE.Vector3(0, 0, 1);
+    function palmsLevel5(P, k = 0.9) {
+      const def = P && P.ready && PALMLEVEL5[P.key]; if (!def || !(k > 1e-4)) return;
+      const keep = P.__lvl5 || (P.__lvl5 = {}); P.group.updateWorldMatrix(true, true);
+      for (const sd of ['Left', 'Right']) { const hb = boneOf(P, sd + 'Hand'); if (!hb) continue;
+        const r = keep[sd] || (keep[sd] = { base: new THREE.Quaternion(), wrote: new THREE.Quaternion(), has: false });
+        if (!r.has || !hb.quaternion.equals(r.wrote)) r.base.copy(hb.quaternion);
+        hb.quaternion.copy(r.base); hb.updateMatrixWorld(true);
+        hb.getWorldQuaternion(_plW); _plU.set(0, 1, 0).applyQuaternion(_plW.invert());
+        const sg = def[sd], th = Math.max(-0.8, Math.min(0.8, Math.atan2(sg * _plU.y, sg * _plU.x)));
+        hb.quaternion.multiply(_plQ.setFromAxisAngle(_plZ, th * k));
+        r.wrote.copy(hb.quaternion); r.has = true; hb.updateMatrixWorld(true); }
+    }
+    const STICKUNDER5 = new WeakMap();
+    function stickUnder5(g) {
+      if (STICKUNDER5.has(g)) return STICKUNDER5.get(g);
+      const N = Math.round(STICK_LEN * 100) + 1, lo = new Float32Array(N).fill(Infinity), M = new THREE.Matrix4(), v = new THREE.Vector3();
+      g.updateWorldMatrix(true, true); const inv = new THREE.Matrix4().copy(g.matrixWorld).invert(); let any = false;
+      g.traverse(m => { if (!m.isMesh || !m.geometry || !m.geometry.attributes.position) return; any = true;
+        M.multiplyMatrices(inv, m.matrixWorld); const A = m.geometry.attributes.position;
+        for (let i = 0; i < A.count; i++) { v.fromBufferAttribute(A, i).applyMatrix4(M); const j = Math.round(v.y * 100); if (j >= 0 && j < N && v.x < lo[j]) lo[j] = v.x; } });
+      if (!any) return null;                                     // (not landed yet: nothing is drawn, read it when it is)
+      const out = { under(y, w = 0.035) { let m = Infinity; for (let j = Math.max(0, Math.round((y - w) * 100)); j <= Math.min(N - 1, Math.round((y + w) * 100)); j++) m = Math.min(m, lo[j]);
+                                           return isFinite(m) ? m : 0.09; } };
+      STICKUNDER5.set(g, out); return out;
+    }
     /* each palm's middle (halfway from its wrist to its middle finger's root, as chapter 3 laid the roll: e4c3 matOnArms) */
     function palmOf(P, sd, out) {
       const hb = boneOf(P, sd + 'Hand'), kb = boneOf(P, sd + 'HandMiddle1');
@@ -351,15 +400,25 @@
       onPalms(P, which = 'stick') {
         const g = which === 'wrap' ? things.staffWrap : things.nagaStaff; if (!g || !P || !P.ready) return false;
         if (g.parent !== world) world.attach(g);
+        palmsLevel5(P);                                             // (R65: his palms level under it first)
         P.group.updateWorldMatrix(true, true);
         const L = palmOf(P, 'Left', _stA), R = palmOf(P, 'Right', _stB); if (!L || !R) return false;
         const dx = R.x - L.x, dz = R.z - L.z, dy = R.y - L.y, hl = Math.hypot(dx, dz), yaw = Math.atan2(-dz, dx);
         const mid = L.clone().add(R).multiplyScalar(0.5); mid.y += 0.02;
         if (which === 'wrap') { g.position.copy(mid); g.rotation.set(0, yaw, Math.atan2(dy, hl), 'YXZ'); }
-        else { /* the stick's length is its y: laid down along the palms' line, its head to his left hand's side */
-          g.position.set(mid.x, mid.y, mid.z); g.rotation.set(0, yaw, Math.PI / 2 + Math.atan2(dy, hl), 'YXZ');
+        else { /* the stick's length is its y: laid down along the palms' line, its head to his left hand's side; its underside
+                  on each palm's skin (R65: the line its origin runs along set under each palm by the stick's own underside there;
+                  3 mm over the skin's highest points, resting on them) */
+          const pr = stickUnder5(g), sL = palmSkin5(P, 'Left', _stC), sR = palmSkin5(P, 'Right', _stD);
+          let aL = L, aR = R, lift = 0.02;
+          if (pr && sL && sR) { const d = Math.hypot(dx, dy, dz);
+            aL = _stE.set(L.x, sL.y - pr.under(STICK_LEN * 0.5 + d * 0.5), L.z); aR = _stF.set(R.x, sR.y - pr.under(STICK_LEN * 0.5 - d * 0.5), R.z); lift = 0.003; }
+          const ex = aR.x - aL.x, ez = aR.z - aL.z, ey = aR.y - aL.y, el = Math.hypot(ex, ez);
+          g.position.set((aL.x + aR.x) * 0.5, (aL.y + aR.y) * 0.5 + lift, (aL.z + aR.z) * 0.5); g.rotation.set(0, Math.atan2(-ez, ex), Math.PI / 2 + Math.atan2(ey, el), 'YXZ');
           g.translateY(-STICK_LEN * 0.5); }
         g.visible = true; navCarried(P, g); return true; },
+      /* (R65: its underside read from its mesh once it has landed: stickUnder5) */
+      warm() { const g = things.nagaStaff; if (g) stickUnder5(g); },
       /* stood upright by itself at a point (the Naga's film: planted, "the stick stands by itself once planted") */
       plant(x, z, ry = 0) { const g = things.nagaStaff; if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, 0, z); g.rotation.set(0, ry, 0); g.visible = true; this.who = 'planted'; },
       /* the wrapped stick carried upright in Ton's right hand, its foot a hand over the floor (laid from his standing rest
