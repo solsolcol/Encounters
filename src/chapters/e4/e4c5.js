@@ -14519,6 +14519,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (R76's limbs check: talking with his hands open, a step behind the two in his doorway, his hands went into Ton's thigh
            and Jun's arm (7 cm); his chatting take keeps them nearer him) */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Stand_and_Chat'); });
+        /* (R75's debug: Ton and Jun held by the film's clock at their places in the doorway, as the films before and after it
+           hold them: under it they ran on their own clocks, which a seek cannot lay, and the look laid on Ton below was
+           undone by his own take before he was drawn, photographed: he still faced the lens) */
+        whenReady(cast.ton, (P) => { const s0 = STATION.fight.ton; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'ton', tau); });
+        whenReady(cast.jun, (P) => { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', tau); });
         /* (R75's debug: as he speaks, Mr Koh looks out to his teacher and the stick that burst with light, and Ton turns to Mr Koh,
            each carried over 0.6 s: neither film had directed them, so through the line Ton stared into the lens, smiling, and
            Mr Koh spoke to the floor at his left) */
