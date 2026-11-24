@@ -2179,12 +2179,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
       const h = threeHome5[key]; g.position.set(h.x, h.y, lp(h.z, 240.225, u)); } }
-    /* (ending C) something small that his nose never caught, on a piece he has already packed: a pale thing lifting its
-       head out of the case's foam, seen only in his sight (drawn as the play's presences are: ctx.spirit) */
-    const SMALL5 = (() => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), matProxy); owned.push(m.geometry); g.add(m); g.visible = false; world.add(g);
-      const fx = ctx.spirit ? ctx.spirit(g, { color: 0xd8c8ff, fill: 0.16, rim: 1.6, flicker: 0.12, power: 2.2, xray: 0.4 }) : null;
-      return { set(k, t) { g.visible = k > 0.01; if (!g.visible) return; const pc = things.padcase, x = pc ? pc.position.x : -0.36, z = pc ? pc.position.z : 239.95;
-        g.position.set(x + 0.03, 0.43 + 0.05 * k + 0.006 * Math.sin(t * 2.1), z - 0.02); g.scale.setScalar(0.6 + 0.4 * k); if (fx) fx.set('uAlpha', k); } };
+    /* (ending C) something small that his nose never caught, on a piece he has already packed: seen only in his sight, a
+       pale smoke rising out of the case's foam (R98's ruling, 24 Nov: a smoke like the doll's, c_play.js SMOKE5's 'small';
+       it was a pale sphere with a glowing rim, ctx.spirit) */
+    const SMALL5 = (() => { const _sp = new THREE.Vector3();
+      return { set(k, t) { const pc = things.padcase, x = pc ? pc.position.x : -0.36, z = pc ? pc.position.z : 239.95;
+        _sp.set(x + 0.03, 0.43, z - 0.02); SMOKE5.frame('small', t, _sp, k, 0); } };
     })();
     const ENDS5 = {
       /* A · "None of them. Let them all go." (good): he flinches, then nods, too quickly; "All." He pushes the case over as

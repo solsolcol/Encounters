@@ -343,9 +343,10 @@
     for (const P of fsSmokes) P.fx = fxCard('smoke', { heat: 0, glow: 0, smoke: 1 }, 4);
     /* (the burst's frames are played over this long: its sixty-four, simulated at 24 a second, about 1.8 times as fast) */
     const FX_BURST_SECS = 1.5;
-    /* (the smoke's card against the drawn puff's size, and its strength against the drawn puff's: the simulated puff fills
-       part of its picture and is denser than the drawn one's soft blobs; the burst's card against its picture's own metres) */
-    const FX_SMOKE_K = 1.9, FX_SMOKE_A = 1.6, FX_BURST_K = 0.95;
+    /* (the smoke's card against the drawn puff's size, and its strength against the drawn puff's: the simulated puff swells
+       from a fifth of its picture to the whole of it over its frames 3 to 30, the ones the puff plays (past them it spreads
+       out of its picture), and is denser than the drawn one's soft blobs; the burst's card against its picture's metres) */
+    const FX_SMOKE_K = 1.7, FX_SMOKE_A = 1.6, FX_BURST_K = 0.95;
     /* R94: A HIT FELT. The frame it lands, the effects hold still for a split second (FS5.stopUntil: fsFxFrame's clock and
        the struck one's recoil wait), the picture jolts, the screen's edge flashes warm, the phone buzzes, the struck Prai is
        thrown back along the fire's way and comes back, and the hit is heard in layers over the landing it always had (a
@@ -962,7 +963,7 @@
         /* (R94: the simulated puff in the drawn one's place once its picture is in: the same place, rise, turn and fading,
            its frames running through its own billowing; the card the larger, as the puff fills part of its picture) */
         if (fxOn('smoke')) { P.s.visible = false; P.fx.visible = true; fxFace(P.fx); P.fx.position.copy(P.s.position); P.fx.scale.setScalar(P.s.scale.x * FX_SMOKE_K);
-          const US = P.fx.material.uniforms; US.uF.value = 4 + u * 52; US.uRot.value = P.s.material.rotation; US.uA.value = Math.min(1, P.a * FX_SMOKE_A) * Math.min(1, u / 0.12) * (1 - u); } }
+          const US = P.fx.material.uniforms; US.uF.value = 3 + u * 27; US.uRot.value = P.s.material.rotation; US.uA.value = Math.min(1, P.a * FX_SMOKE_A) * Math.min(1, u / 0.12) * (1 - u); } }
       for (const F of fsFlares) { if (F.t < 0) continue; F.t += wdt; const u = F.t / 0.22; if (u >= 1) { F.t = -1; F.s.visible = false; continue; }
         F.s.visible = true; F.s.scale.setScalar((0.35 + 0.7 * u) * F.k); F.s.material.opacity = 0.95 * (1 - u); }
       for (const S of fsScorches) { if (S.t < 0) continue; S.t += wdt; const u = S.t / 2.4; if (u >= 1) { S.t = -1; S.m.visible = false; continue; }
@@ -1971,6 +1972,9 @@
         else if (name === 'labLend') fsEvents([{ e: 'lend' }]);                        // (R34: his LEND as the game plays it: his act, the beam)
         else return false;
         void w;
+        /* (R94: a lab moment shows the effect `secs` into it: a hit's freeze is play's feel, and the lab's own loop never moves
+           the fight's wall clock, so it would hold the moment at its first frame) */
+        FS5.stopUntil = 0;
         for (let t = 0; t < secs; t += 1 / 30) fsFxFrame(1 / 30, (st.t || 0) + t);
         FS5.labHold = true; return true;
       }

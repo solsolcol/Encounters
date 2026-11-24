@@ -606,11 +606,14 @@
       const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.75, turn: 2.4 }),
                   hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.7, turn: 1.2 }),
                   /* (R92: the one looking for energy, pale and slow, its lean given by the caller: toward him) */
-                  energy: mk(0xe4ecff, 28773, { life: 2.6, rise: 0.20, sway: 0.006, wob: 1.2, lean: 0.0, size: 0.045, alpha: 0.6, turn: 0.9 }) };
+                  energy: mk(0xe4ecff, 28773, { life: 2.6, rise: 0.20, sway: 0.006, wob: 1.2, lean: 0.0, size: 0.045, alpha: 0.6, turn: 0.9 }),
+                  /* (R98's ruling, 24 Nov: ending C's small pale thing in the case's foam a smoke like the doll's, smaller and
+                     fainter, a pale violet: c_yfilm.js SMALL5) */
+                  small: mk(0xdcd0ff, 28774, { life: 2.2, rise: 0.13, sway: 0.004, wob: 1.4, lean: 0.0, size: 0.03, alpha: 0.55, turn: 1.0 }) };
       /* WHERE EACH RISES FROM: the top of its own piece, wherever the piece is (laid out, pushed across, set in the rite),
          its height over its foot measured once from its drawn meshes when they have landed (4 cm until then); without the
          piece, under the presence's own place over it */
-      const off = { angry: -0.02, hungry: 0.03, energy: -0.10 }, PIECE = { angry: 'w5wuathanu', hungry: 'w5rakyom', energy: 'w5hunphayon' }, top = {};
+      const off = { angry: -0.02, hungry: 0.03, energy: -0.10, small: 0 }, PIECE = { angry: 'w5wuathanu', hungry: 'w5rakyom', energy: 'w5hunphayon' }, top = {};
       const _bx = new THREE.Box3(), _bm = new THREE.Box3(), _wp = new THREE.Vector3(), _b = { x: 0, y: 0, z: 0 };
       const topOf = (k, o) => {
         if (top[k] != null) return top[k];

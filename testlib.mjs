@@ -19,6 +19,9 @@ export const LAUNCH = {
   args: [
     ...(process.env.REAL_GPU ? [] :
       ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']),
+    /* v28.0 (R97, 24 Nov 2026: "Do everything that you need to on the gpu including the testing"): a rented GPU box's
+       headless Chromium reaches its card only by the flags that box needs (GPU_ARGS, space-separated; with REAL_GPU=1) */
+    ...(process.env.GPU_ARGS ? process.env.GPU_ARGS.split(/\s+/).filter(Boolean) : []),
     '--no-sandbox',
   ],
 };

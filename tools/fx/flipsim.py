@@ -11,7 +11,10 @@
 #   OUTDIR/b_####.exr  the smoke alone on a transparent film, lit by one sun from above (no fire): its cover and shade
 # The colour is the game's (a ramp over the heat), so the fire is rendered white. Every number here is the recipe.
 # Env: FX_HEAT (the flame's emission per unit of flame, 8), FX_NOISE (Mantaflow's noise upres, 0 = none),
-#      FX_SKIPBAKE=1 (render an existing cache again), FX_ONLYBAKE=1 (bake and check, no render).
+#      FX_STEP (Cycles' volume step rate, 0.5; 1.0 renders a heavy volume about twice as fast), FX_ONLYBAKE=1 (bake and
+#      check, no render). FX_SKIPBAKE=1 is NOT a way to render a cache again: setting a new domain's properties frees the
+#      cache in its directory (24 Nov, on the box: the burst's 66 baked frames gone, the check reading an empty domain), so
+#      a render without its bake stops at the check (exit 3); a second render bakes again.
 # The bake is CHECKED before anything renders: the cache's files counted, and the density and flame grids read at
 # three frames; an empty simulation stops the run with exit code 3 (the first test on the box rendered an empty
 # domain without a word, because its bake had been skipped).
@@ -223,7 +226,7 @@ sc.view_settings.look = 'None'
 sc.cycles.samples = SPP
 sc.cycles.use_denoising = True
 sc.cycles.denoiser = 'OPENIMAGEDENOISE'
-sc.cycles.volume_step_rate = 0.5
+sc.cycles.volume_step_rate = float(os.environ.get('FX_STEP', '0.5'))
 sc.cycles.volume_max_steps = 1024
 sc.cycles.max_bounces = 4
 sc.cycles.volume_bounces = 1
