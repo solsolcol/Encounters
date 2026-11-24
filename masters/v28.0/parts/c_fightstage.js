@@ -172,12 +172,14 @@
        the drawn fire stands (FS_FLAME_FS, the sprites' smoke), so a failed download costs the upgrade, never the fire; the
        curtain waits for them (parsePend), and each rides its materials as `fxAtlas` so the engine's warm (warmWorld, which
        uploads every texture a material holds) has it on the chip before the black lifts. */
-    const FX_KEYS = { fire: 'fx5fire', burst: 'fx5burst', smoke: 'fx5smoke' };
+    /* (the head's key is `head`, never the quoted word for fire: that is chapter 1's sound's name, and a chapter that names
+       another's sound in quotes makes it everyone's download: the assembler refuses it) */
+    const FX_KEYS = { head: 'fx5fire', burst: 'fx5burst', smoke: 'fx5smoke' };
     /* (each picture's own frame: where its emitter stands in it and its radius, as flipsim.py's camera has it: the fire's
        ortho 1.30 m about z 0.28 (its ball of 0.20 m at 0.285 up), the burst's 2.60 m about z 0.45 (its emitter at 0.327 up,
        swelling from 0.14 m), the smoke's 1.60 m about z 0.30 (0.3125 up, from 0.10 m); `m` the picture's side in metres) */
-    const FX_FRAME = { fire: { ox: 0.5, oy: 0.2846, r: 0.1538, m: 1.30 }, burst: { ox: 0.5, oy: 0.3269, r: 0.0538, m: 2.60 }, smoke: { ox: 0.5, oy: 0.3125, r: 0.0625, m: 1.60 } };
-    const FX5 = { fire: null, burst: null, smoke: null, mats: { fire: [], burst: [], smoke: [] }, grab: true, grabErr: 0 };
+    const FX_FRAME = { head: { ox: 0.5, oy: 0.2846, r: 0.1538, m: 1.30 }, burst: { ox: 0.5, oy: 0.3269, r: 0.0538, m: 2.60 }, smoke: { ox: 0.5, oy: 0.3125, r: 0.0625, m: 1.60 } };
+    const FX5 = { head: null, burst: null, smoke: null, mats: { head: [], burst: [], smoke: [] }, grab: true, grabErr: 0 };
     const FX_DUMMY = tex(new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1)); FX_DUMMY.needsUpdate = true;
     for (const k of Object.keys(FX_KEYS)) {
       const key = FX_KEYS[k]; if (!have(key)) continue; parsePend++;
@@ -233,7 +235,7 @@
       const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, fog: false, toneMapped: false,
         blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
         blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
-        uniforms: { uMap: { value: FX5[kind] || FX_DUMMY }, uF: { value: 0 }, uN: { value: 64 }, uC: { value: 8 }, uLoop: { value: kind === 'fire' ? 1 : 0 },
+        uniforms: { uMap: { value: FX5[kind] || FX_DUMMY }, uF: { value: 0 }, uN: { value: 64 }, uC: { value: 8 }, uLoop: { value: kind === 'head' ? 1 : 0 },
           uA: { value: 0 }, uHeat: { value: o.heat != null ? o.heat : 1.5 }, uSmoke: { value: o.smoke != null ? o.smoke : 1 }, uGlow: { value: o.glow != null ? o.glow : 0.5 },
           uMode: { value: o.head ? 1 : 0 }, uW: { value: 0.5 }, uL: { value: 0.5 }, uRot: { value: 0 }, uTail: { value: o.tail != null ? o.tail : 3.4 }, uR: { value: o.r != null ? o.r : F.r * 1.3 },
           uO: { value: new THREE.Vector2(F.ox, F.oy) }, uK0: { value: R[0] }, uK1: { value: R[1] }, uK2: { value: R[2] }, uK3: { value: R[3] }, uK4: { value: R[4] },
@@ -338,7 +340,7 @@
       if (n) { S.g.attributes.position.needsUpdate = true; S.g.attributes.aC.needsUpdate = true; }
     }
     /* (each ball its head of real fire and its shimmer; each landing its burst; each puff of smoke its own) */
-    for (const B of fsBalls) { B.fx = fxCard('fire', { head: true, heat: 1.15, glow: 0.6, smoke: 0.55 }, 6); B.sh = fxShimmer(); }
+    for (const B of fsBalls) { B.fx = fxCard('head', { head: true, heat: 1.15, glow: 0.6, smoke: 0.55 }, 6); B.sh = fxShimmer(); }
     for (const L of fsBlooms) L.fxb = fxCard('burst', { heat: 1.1, glow: 0.6, smoke: 0.95 }, 7);
     for (const P of fsSmokes) P.fx = fxCard('smoke', { heat: 0, glow: 0, smoke: 1 }, 4);
     /* (the burst's frames are played over this long: its first 52 of 64 (past them its smoke has gone), simulated at 24 a
@@ -933,7 +935,7 @@
         B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = true;
         /* (R94: the head of real fire in the drawn one's place once its picture is in, laid the same way along the flight,
            and the air shimmering round it and behind it) */
-        if (fxOn('fire')) {
+        if (fxOn('head')) {
           fsFlameLay(B.fx, _fsA, B.d, 0.62 * sz * fl, Math.min(1.45 * sz, 1.25 * _fsA.distanceTo(B.a)));
           const UF = B.fx.material.uniforms; UF.uF.value = fxt * 32 + B.seed * 11; UF.uA.value = 1; B.fx.visible = true; B.flame.visible = false;
           if (FX5.grab) { fxFace(B.sh); B.sh.position.copy(_fsA).addScaledVector(B.d, -0.3 * sz); B.sh.scale.setScalar(1.5 * sz);
@@ -954,8 +956,8 @@
         if (wdt > 0) { B.hist.unshift(_fsA.clone()); if (B.hist.length > FS_TRAIL * 2) B.hist.length = FS_TRAIL * 2; }
         /* (the trail of fire behind: orange, deepening, the stick's ruby at its end) */
         B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; const v = 1 - j / FS_TRAIL;
-          s.position.copy(q); s.scale.setScalar(0.42 * sz * v); s.material.opacity = (fxOn('fire') ? 0.2 : 0.5) * v * v; s.material.color.setHex(j < 2 ? FS_FIRE.orange : (j < 4 ? FS_FIRE.deep : FS_COL.ruby)); });
-        B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.3 * sz, 1, 1.3 * sz); B.pool.material.opacity = (fxOn('fire') ? 0.5 * (0.86 + 0.14 * Math.sin(fxt * 41 + B.seed)) : 0.38) * (0.35 + 0.65 * (1 - Math.min(1, Math.max(0, _fsA.y - 0.3) / 2.2)));
+          s.position.copy(q); s.scale.setScalar(0.42 * sz * v); s.material.opacity = (fxOn('head') ? 0.2 : 0.5) * v * v; s.material.color.setHex(j < 2 ? FS_FIRE.orange : (j < 4 ? FS_FIRE.deep : FS_COL.ruby)); });
+        B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.3 * sz, 1, 1.3 * sz); B.pool.material.opacity = (fxOn('head') ? 0.5 * (0.86 + 0.14 * Math.sin(fxt * 41 + B.seed)) : 0.38) * (0.35 + 0.65 * (1 - Math.min(1, Math.max(0, _fsA.y - 0.3) / 2.2)));
         if (u >= 1) B.on = false;
       }
       /* the fire's smoke, its flares at the Naga's mouth, and the scorches fading off the paving */
