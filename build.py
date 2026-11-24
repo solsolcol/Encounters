@@ -892,6 +892,11 @@ ASSETS = {
     'w5wuathanu':   ('assets/w5wuathanu.glb', True, False),     # a Wua Thanu, the cast humped bull (0.054 m): the angry presence
     'w5rakyom':     ('assets/w5rakyom.glb', True, False),     # a Rak Yom, two small figures in a bottle of oil (0.060 m): the hungry one
     'w5hunphayon':  ('assets/w5hunphayon.glb', True, False),     # a Hun Phayon, a bound black effigy (0.100 m): the one looking for energy
+    # e4c5: THE ESTATE'S GROUND BELOW THE WALKWAY (R105, 24 Nov 2026: Chad, 'The outdoor environment below the corridor
+    # can be improved further'), each made once: a checked picture on white, Meshy at its highest and its remesh
+    # (masters/v28.0/props/RECORD.md, TABLE.txt, prop.sh); placed by masters/v28.0/parts/b_world.js buildEstate
+    'w5playground': ('assets/w5playground.glb', True, False),     # the children's playground on its mat, 3.3 m to its roof
+    'w5gardenlamp': ('assets/w5gardenlamp.glb', True, False),     # the garden lamps along its paths, 3.2 m, their globes lit
     # <<< e4c5 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -1061,7 +1066,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
            'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
            'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
-           'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+           'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

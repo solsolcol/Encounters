@@ -22,6 +22,11 @@ const ALL = {
   below2:     ['walk', 0.4, -8.0, -Math.PI / 2, -0.55],
   below3:     ['walk', 0.4, -12.5, -Math.PI / 2 - 0.45, -0.4],
   belowwide:  ['walk', 0.4, -6.0, -Math.PI / 2 - 0.2, -0.22],
+  outlow:     ['walk', 26, -7.5, Math.PI / 2 - 0.08, 0.30, -5.92],    // (R105: the block from the estate's ground, east, a man's eye)
+  outhigh:    ['walk', 34, -2.0, Math.PI / 2 - 0.25, -0.30, 12.0],     // (and from high over the pool's side: the establishing shot's start)
+  outmid:     ['walk', 16, -10.5, Math.PI / 2 + 0.15, 0.22, -2.0],    // (half way, the walkway's storey ahead)
+  outnorth:   ['walk', 14, 14, Math.PI * 0.80, 0.05, 2.0],            // (from the north-east: the block's north end)
+  outsouth:   ['walk', 18, -34, Math.PI * 0.20, 0.10, 2.0],           // (from the south-east: the turn and the court's side)
   turn:       ['walk', 0.0, -13.6, Math.PI / 4, -0.05],
   run2:       ['walk', -3.0, -14.95, Math.PI / 2, -0.04],
   gate:       ['walk', -8.5, -15.2, Math.PI, -0.12],

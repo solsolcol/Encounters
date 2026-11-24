@@ -469,10 +469,11 @@
       'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
       'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
       'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon',
+      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
       /* <<< this chapter's own keys <<< */
-      /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
-      'w4angsana', 'w4foxpalm',
+      /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
+         street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
+      'w4angsana', 'w4foxpalm', 'w4streetlamp', 'e4sedanfar', 'e4suvfar',
       /* (the shared cast, masters/v28.0/parts/c_cast.js: each a declared reuse in the episode, reuseInEpisode) Grandmaster
          Pho and Ton, chapter 3's; the white cloth over his crossed legs, chapter 3's (the rite's fan taken out of his hand at
          Chad's word, R88: "Remove the peacock feather fan from pho's hand in the final cutscene"); the holy-water bowls,
@@ -485,7 +486,9 @@
     ],
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
-    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool",
+    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool and along the block's path",
+      w4streetlamp: "chapter 4's street lamps, along the estate's road below the walkway (R105)", e4sedanfar: "chapter 1's lighter sedan (its taxi street's traffic), parked in the estate's car park (R105)",
+      e4suvfar: "chapter 1's lighter SUV, parked in the estate's car park (R105)",
       pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): seated at the table in case three (standing, he is this chapter's copy of it with finger bones on his right hand, p5pho, R26)",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
@@ -1601,20 +1604,116 @@
        balustrade and from the terrace): its ground 5.9 m below, its lawn, its pool, its paths, the other blocks of the
        same condominium round it (six storeys, the same paint, every home's windows its own: lit warm, cool, or dark at
        dusk), and the city's haze. Painted light only (v9.4). Seeded (v6.15): the same estate every run. */
+    /* (R105) THE ESTATE'S GROUND WITH THE HOUR: its painted surfaces as painted for dusk, darker and bluer in the evening and
+       at night, and its lamps' light the other way (their globes, the glow round them, their light on the ground). Set by
+       the play's look (c_story.js lookAt0) and a film's (c_yfilm.js fmLook); filled by buildEstate. Its numbers: each hour's
+       red, green and blue on the painted ground, and the lamps' light */
+    const EST5 = { est: [], glow: null, look: null };
+    const EST_LOOK5 = { DUSK: [1, 1, 1, 0.6], EVENING: [0.74, 0.76, 0.88, 0.85], NIGHT: [0.44, 0.47, 0.64, 1.0], TRANCE: [0.44, 0.47, 0.64, 1.0], DAY: [1, 1, 1, 0] };
+    function estateLook5(name) {
+      const L = EST_LOOK5[name] || EST_LOOK5.DUSK; if (EST5.look === L) return; EST5.look = L;
+      for (const e of EST5.est) e.m.color.setRGB(e.c.r * L[0], e.c.g * L[1], e.c.b * L[2]);
+      if (EST5.glow) EST5.glow(L[3]);
+    }
     function buildEstate() {
       const G = GROUND_Y;
-      const mGrass = B({ fog: true, map: (() => { const [c, x] = canvas(256, 256), r = rng(28530);
-        x.fillStyle = '#3d4a28'; x.fillRect(0, 0, 256, 256);
-        for (let s = 0; s < 4000; s++) { x.fillStyle = `rgba(${50 + r() * 40},${70 + r() * 40},${28 + r() * 20},0.5)`; x.fillRect(r() * 256, r() * 256, 2, 2); }
-        return pic(c, 5, 5); })() });
-      const mDeck = B({ color: 0x8e8574, fog: true });
-      const mPool = B({ fog: true, map: (() => { const [c, x] = canvas(256, 256), r = rng(28531);
-        const g = x.createLinearGradient(0, 0, 256, 256); g.addColorStop(0, '#3f7f98'); g.addColorStop(1, '#2d6a86'); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
-        for (let s = 0; s < 60; s++) { x.strokeStyle = `rgba(230,240,255,${0.05 + r() * 0.08})`; x.beginPath(); const yy = r() * 256; x.moveTo(0, yy); x.bezierCurveTo(80, yy + 8, 170, yy - 8, 256, yy + 4); x.stroke(); }
+      /* (R105, 24 Nov 2026: Chad, "The outdoor environment below the corridor can be improved further". It was a lawn, a
+         deck, a pool and four trees. It is laid out now as a 1980s condominium's grounds are: a paved path along the
+         block's foot under a row of foxtail palms, a bed of ixora along the block (w5shrub), two paths across the lawn and
+         one along the estate's road; in the middle of the lawn the children's playground on its poured rubber mat
+         (w5playground), ixora behind it and at the paths' corners; garden lamps along the paths, their globes lit and
+         their light on the ground (w5gardenlamp: the light painted, never a lamp added, v15.1); the road along the east
+         block with its kerb, its markings and its car park, cars parked in it (chapter 1's, declared), its street lamps
+         (chapter 4's, declared); the pool's coping, its water lit from below, its deck of pavers; a contact shadow under
+         every standing thing (v9.3). Every place was read from the walkway's views (tools/probes/e4c5world.mjs below*,
+         belowwide) and from the opening film's first shot, which looks out over it (c_yfilm.js FILMS5.open) */
+      const EB = (o) => { const m = B(Object.assign({ fog: true }, o)); EST5.est.push({ m, c: m.color.clone() }); return m; };
+      /* THE LAWN: a mown evening green, lighter and darker over a few metres (one picture of 7 m: its repeat is not read
+         across the lawn), fine blades speckled in it */
+      const mGrass = EB({ map: (() => { const [c, x] = canvas(512, 512), r = rng(28530);
+        x.fillStyle = '#334420'; x.fillRect(0, 0, 512, 512);
+        const blob = (cx, cy, q, col) => { for (const ox of [-512, 0, 512]) for (const oy of [-512, 0, 512]) { const X = cx + ox, Y = cy + oy;
+          if (X + q < 0 || X - q > 512 || Y + q < 0 || Y - q > 512) continue;
+          const g = x.createRadialGradient(X, Y, 0, X, Y, q); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(X - q, Y - q, q * 2, q * 2); } };
+        for (let s = 0; s < 70; s++) { const v = r(); blob(r() * 512, r() * 512, 40 + r() * 110, v < 0.45 ? 'rgba(86,106,48,0.30)' : v < 0.8 ? 'rgba(20,30,12,0.32)' : 'rgba(106,100,54,0.22)'); }
+        for (let s = 0; s < 9000; s++) { x.fillStyle = r() < 0.5 ? `rgba(${70 + r() * 40},${92 + r() * 40},${36 + r() * 20},0.55)` : `rgba(${18 + r() * 14},${30 + r() * 16},${10 + r() * 10},0.5)`;
+          x.fillRect(r() * 512, r() * 512, 1 + r() * 1.5, 1 + r() * 2.5); }
+        return pic(c, 7, 7); })() });
+      /* the paths: 200 by 100 mm concrete pavers in a stretcher bond, a warm grey, a few a shade darker (one picture 1.6 m) */
+      const mPaver = EB({ map: (() => { const [c, x] = canvas(512, 512), r = rng(28561), W = 64, H = 32;
+        x.fillStyle = '#4c473f'; x.fillRect(0, 0, 512, 512);
+        for (let j = 0; j < 16; j++) for (let i = 0; i <= 8; i++) { const k = 0.88 + r() * 0.18, ox = (j % 2) * W / 2;
+          x.fillStyle = `rgb(${(150 * k) | 0},${(141 * k) | 0},${(128 * k) | 0})`; x.fillRect(i * W - ox + 1.5, j * H + 1.5, W - 3, H - 3); }
+        for (let s = 0; s < 1600; s++) { x.fillStyle = r() < 0.5 ? 'rgba(40,36,32,0.22)' : 'rgba(232,228,218,0.14)'; x.fillRect(r() * 512, r() * 512, 1.5, 1.5); }
+        return pic(c, 1.6, 1.6); })() });
+      const mEdge = EB({ color: 0x5c574f });
+      const mKerb = EB({ color: 0x9a958a });
+      /* the estate's road: asphalt, its grit speckled, a little worn pale where the wheels run (one picture 4 m) */
+      const mRoad = EB({ map: (() => { const [c, x] = canvas(256, 256), r = rng(28562);
+        x.fillStyle = '#2a2a2c'; x.fillRect(0, 0, 256, 256);
+        for (let s = 0; s < 6000; s++) { const v = 28 + r() * 52; x.fillStyle = `rgba(${v},${v},${v + 3},0.55)`; x.fillRect(r() * 256, r() * 256, 1, 1); }
+        return pic(c, 4, 4); })() });
+      const mLine = EB({ color: 0xc4c0b4 });
+      /* the playground's mat: poured rubber, terracotta red, a band of green round it */
+      const rubber = (base, seed) => { const [c, x] = canvas(256, 256), r = rng(seed);
+        x.fillStyle = base; x.fillRect(0, 0, 256, 256);
+        for (let s = 0; s < 7000; s++) { const k = 0.7 + r() * 0.6; x.fillStyle = `rgba(${(255 * k) | 0},${(255 * k) | 0},${(255 * k) | 0},0.07)`; x.fillRect(r() * 256, r() * 256, 1.4, 1.4); }
+        return pic(c, 2, 2); };
+      const mEpdm = EB({ map: rubber('#8c3b2b', 28563) });
+      const mEpdmG = EB({ map: rubber('#2e6538', 28564) });
+      /* the beds: dark bark mulch */
+      const mMulch = EB({ map: (() => { const [c, x] = canvas(256, 256), r = rng(28565);
+        x.fillStyle = '#33251a'; x.fillRect(0, 0, 256, 256);
+        for (let s = 0; s < 2600; s++) { const k = 0.6 + r() * 0.8; x.save(); x.translate(r() * 256, r() * 256); x.rotate(r() * 3.14);
+          x.fillStyle = `rgba(${(98 * k) | 0},${(68 * k) | 0},${(44 * k) | 0},0.7)`; x.fillRect(-3, -1, 6 + r() * 6, 2); x.restore(); }
+        return pic(c, 1.5, 1.5); })() });
+      /* the pool's deck: pale 400 mm pavers; its coping a pale stone; its water lit from below at dusk (a turquoise, brighter
+         in the middle, the light's net of ripples over it) */
+      const mDeck = EB({ map: pic(tiles(512, 4, [172, 166, 152], '#6a645b', 28566, 0.08, 300), 1.6, 1.6) });
+      const mCoping = EB({ color: 0xcfc8b8 });
+      const mWater = EB({ map: (() => { const [c, x] = canvas(512, 512), r = rng(28531);
+        const g = x.createRadialGradient(256, 256, 30, 256, 256, 360); g.addColorStop(0, '#5fc4cf'); g.addColorStop(1, '#2e8aa6'); x.fillStyle = g; x.fillRect(0, 0, 512, 512);
+        x.lineWidth = 2;
+        for (let s = 0; s < 260; s++) { x.strokeStyle = `rgba(225,250,255,${0.08 + r() * 0.16})`; x.beginPath(); const px = r() * 512, py = r() * 512;
+          x.moveTo(px, py); x.bezierCurveTo(px + r() * 40 - 20, py + r() * 40 - 20, px + r() * 60 - 30, py + r() * 60 - 30, px + r() * 70 - 35, py + r() * 70 - 35); x.stroke(); }
         return pic(c, 6, 6); })() });
+
       floor(mGrass, -90, -80, 80, 40, G);
-      floor(mDeck, 4, -40, 28, -18, G + 0.02); floor(mPool, 7, -37, 25, -24, G + 0.04);
-      floor(mDeck, -40, -26, 4, -21, G + 0.02); floor(mDeck, 4, -18, 8, 20, G + 0.02);
+      /* the deck, from the path along the block's foot to the road's end, and its strip west along the block's south side */
+      floor(mDeck, 2.4, -40, 28, -18, G + 0.02); floor(mDeck, -40, -26, 2.4, -21, G + 0.02);
+      floor(mWater, 7, -37, 25, -24, G + 0.045);
+      box(mCoping, 16, G + 0.05, -37.2, 18.8, 0.06, 0.4); box(mCoping, 16, G + 0.05, -23.8, 18.8, 0.06, 0.4);
+      box(mCoping, 6.8, G + 0.05, -30.5, 0.4, 0.06, 13.0); box(mCoping, 25.2, G + 0.05, -30.5, 0.4, 0.06, 13.0);
+      /* THE PATHS: along the block's foot (x 2.4 to 4.2), across the lawn to the road twice (z -10.4 to -8.6 and 7.4 to 9.2),
+         and the road's footpath (x 23.3 to 25.1); a darker edge where a path meets the grass, a kerb at the road */
+      const PATHS = [[2.4, -18.0, 4.2, 16.5], [4.2, -10.4, 23.3, -8.6], [4.2, 7.4, 23.3, 9.2], [23.3, -18.0, 25.1, 40.0]];
+      for (const [x0, z0, x1, z1] of PATHS) floor(mPaver, x0, z0, x1, z1, G + 0.025);
+      for (const z of [-10.4, -8.68, 7.4, 9.12]) floor(mEdge, 4.2, z, 23.3, z + 0.08, G + 0.03);
+      floor(mEdge, 4.12, -18.0, 4.2, -10.4, G + 0.03); floor(mEdge, 4.12, -8.6, 4.2, 7.4, G + 0.03); floor(mEdge, 4.12, 9.2, 4.2, 16.5, G + 0.03);
+      floor(mEdge, 23.3, -18.0, 23.38, -10.4, G + 0.03); floor(mEdge, 23.3, -8.6, 23.38, 7.4, G + 0.03); floor(mEdge, 23.3, 9.2, 23.38, 40.0, G + 0.03);
+      box(mKerb, 2.32, G + 0.06, -0.75, 0.16, 0.12, 34.5);                                  // (the kerb between the path and the bed along the block)
+      /* THE ROAD (x 25.1 to 30.5) and its car park (x 30.5 to 35.3) at the east block's foot, from the deck's end north out
+         of the estate: its kerbs, its dashed middle line, the bays' lines (2.5 m) and their line along the road */
+      floor(mRoad, 25.1, -17.5, 35.4, 40, G + 0.02);
+      box(mKerb, 25.1, G + 0.06, 11.25, 0.16, 0.12, 57.5); box(mKerb, 30.25, G + 0.06, -17.5, 10.3, 0.12, 0.16);
+      box(mKerb, 35.38, G + 0.06, 11.25, 0.16, 0.12, 57.5);
+      for (let z = -15.5; z < 39; z += 4.5) floor(mLine, 27.72, z, 27.86, z + 2.2, G + 0.03);
+      for (let z = -16.0; z <= 38.6; z += 2.5) floor(mLine, 30.5, z - 0.05, 35.3, z + 0.05, G + 0.03);
+      floor(mLine, 30.45, -16.0, 30.55, 38.5, G + 0.03);
+      /* THE PLAYGROUND'S MAT, round the frame's fall zone (8.0 by 7.6 m), its kerb of concrete */
+      const PG = { x: 14.0, z: -0.6, w: 8.0, d: 7.6 };
+      floor(mEpdmG, PG.x - PG.w / 2, PG.z - PG.d / 2, PG.x + PG.w / 2, PG.z + PG.d / 2, G + 0.03);
+      floor(mEpdm, PG.x - PG.w / 2 + 0.4, PG.z - PG.d / 2 + 0.4, PG.x + PG.w / 2 - 0.4, PG.z + PG.d / 2 - 0.4, G + 0.04);
+      box(mKerb, PG.x, G + 0.05, PG.z - PG.d / 2 - 0.08, PG.w + 0.32, 0.1, 0.16); box(mKerb, PG.x, G + 0.05, PG.z + PG.d / 2 + 0.08, PG.w + 0.32, 0.1, 0.16);
+      box(mKerb, PG.x - PG.w / 2 - 0.08, G + 0.05, PG.z, 0.16, 0.1, PG.d); box(mKerb, PG.x + PG.w / 2 + 0.08, G + 0.05, PG.z, 0.16, 0.1, PG.d);
+      /* THE BEDS of mulch: along the block's foot, behind the playground, at the paths' corners by the road and where the
+         first path leaves the block's; the deck's palms in theirs */
+      const bed = (cx, cz, rx, rz, y = G + 0.022) => { const P = []; for (let i = 0; i < 20; i++) { const a = i / 20 * Math.PI * 2; P.push([cx + rx * Math.cos(a), y, cz - rz * Math.sin(a)]); } planar(mMulch, P); };
+      floor(mMulch, 0.4, -17.6, 2.24, 16.2, G + 0.022);
+      floor(mMulch, 18.6, -4.4, 20.4, 3.2, G + 0.022);
+      bed(21.6, -12.1, 1.45, 1.05); bed(21.6, -6.9, 1.45, 1.05); bed(21.6, 5.7, 1.45, 1.05); bed(21.6, 10.9, 1.45, 1.05);
+      bed(6.5, -12.6, 1.6, 1.2); bed(6.7, -6.4, 1.6, 1.2); bed(5.8, 1.5, 0.9, 0.9); bed(5.8, 12.6, 0.9, 0.9);
+      bed(5, -20, 0.95, 0.95, G + 0.035); bed(27, -21, 0.95, 0.95, G + 0.035);
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
       box(mFace, -6.8, (G - 0.35) / 2, -7.35, 11.6, -G - 0.35, 18.7);   // (R46: under the wider, longer court too; was x -11..-1, z -14..2)
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
@@ -1655,19 +1754,91 @@
       slab(36, -30, 36, 22, 6, 28541);          // east, across the pool, its face to the west
       slab(-30, -52, 26, -52, 6, 28542);        // south, beyond the deck
       slab(-44, 12, -44, -40, 6, 28543);        // west, seen from the terrace
-      /* the estate's trees on the lawn (chapter 4's real models of Singapore's street trees: declared, reuseInEpisode) */
+      /* THE ESTATE'S TREES (chapter 4's real models of Singapore's street trees: declared, reuseInEpisode): angsanas on the
+         lawn, 6 m and more from every lamp; foxtail palms along the block's path, two of them in the beds where the first path
+         leaves it, and round the pool as before */
       /* (each a model of ~28,000 triangles: a few where they are seen, past the balustrade and the terrace, in cells of
          24 m, each cell its own instanced mesh culled by its own sphere: the phone's budget, the plan's 13) */
       const TREES = [], PALMS = [], tr = rng(28544);
-      for (const [x, z] of [[17, -11], [24, -4], [18, 9], [30, 4], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
-        TREES.push({ x: x + (tr() - 0.5) * 2, y: G, z: z + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.75 + tr() * 0.25 });
-      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22]])
+      for (const [x, z] of [[12.5, -16.5], [11.0, 15.0], [19.0, -17.0], [19.5, 15.5], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
+        TREES.push({ x: x + (tr() - 0.5) * 1.2, y: G, z: z + (tr() - 0.5) * 1.2, ry: tr() * 6.28, s: 0.72 + tr() * 0.18 });
+      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22], [6.5, -12.6], [6.7, -6.4], [5.8, 1.5], [5.8, 12.6]])
         PALMS.push({ x, y: G, z, ry: tr() * 6.28, s: 0.85 + tr() * 0.2 });
       const cells = (list) => { const m = new Map(); for (const it of list) { const k = Math.floor(it.x / 24) + ',' + Math.floor(it.z / 24); if (!m.has(k)) m.set(k, []); m.get(k).push(it); } return [...m.values()]; };
       for (const c of cells(TREES)) many('w4angsana', c, world, 0.03);
       for (const c of cells(PALMS)) many('w4foxpalm', c, world, 0.03);
-    }
 
+      /* THE PLAYGROUND (w5playground: 4.0 by 4.35 m, its roof 3.3 m): in the middle of its mat, its slides toward the walkway */
+      stand('w5playground', PG.x, G + 0.04, PG.z, -Math.PI / 2);
+      /* THE IXORA (w5shrub, 1.1 m): along the block's foot, behind the playground, at the paths' corners */
+      const SHRUBS = [], sr = rng(28567), sh = (x, z, s = 1) => SHRUBS.push({ x: x + (sr() - 0.5) * 0.3, y: G + 0.02, z: z + (sr() - 0.5) * 0.3, ry: sr() * 6.28, s: s * (0.85 + sr() * 0.3) });
+      for (let z = -16.4; z < 15.8; z += 2.9) sh(1.32, z, 0.9);
+      for (let z = -3.5; z < 3.0; z += 1.6) sh(19.5, z, 1.0);
+      for (const [x, z] of [[21.2, -12.4], [21.95, -11.7], [21.3, -6.6], [21.95, -7.3], [21.2, 5.4], [21.95, 6.0], [21.3, 11.2], [21.95, 10.5]]) sh(x, z, 0.85);
+      for (const [x, z] of [[5.5, -12.9], [7.5, -12.2], [5.7, -6.1], [7.7, -6.7]]) sh(x, z, 0.9);
+      for (const c of cells(SHRUBS)) many('w5shrub', c, world, 0.03);
+      /* THE GARDEN LAMPS (w5gardenlamp, 3.2 m, the middle of its globe 2.95 m up): along the cross paths, along the block's
+         path, two by the playground. Its globe is lit: what is pale in its picture glows (the opal glass; the dark pole
+         does not), by the hour (EST5.glow) */
+      const LAMPS = [];
+      for (const x of [8.0, 15.5, 21.0]) { LAMPS.push([x, -11.0]); LAMPS.push([x, 9.8]); }
+      for (const z of [-16.0, -4.0, 4.0, 15.0]) LAMPS.push([4.75, z]);
+      LAMPS.push([9.4, -5.0], [18.6, 3.9]);
+      const uGlobe = { value: 0 };
+      many('w5gardenlamp', LAMPS.map(([x, z], i) => ({ x, y: G, z, ry: i * 1.3 })), world, 0.03, (made) => { for (const im of made) {
+        const mt = im.material; mt.onBeforeCompile = (sh2) => { sh2.uniforms.uGlobe = uGlobe;
+          sh2.fragmentShader = 'uniform float uGlobe;\n' + sh2.fragmentShader.replace('#include <emissivemap_fragment>',
+            '#include <emissivemap_fragment>\n{ float gl = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)); totalEmissiveRadiance += vec3(1.0, 0.86, 0.62) * smoothstep(0.42, 0.72, gl) * uGlobe; }'); };
+        mt.customProgramCacheKey = () => 'globe5'; mt.needsUpdate = true; } });
+      /* THE ESTATE ROAD'S STREET LAMPS (chapter 4's w4streetlamp, 7 m, its arm 1.45 m from its pole: declared,
+         reuseInEpisode): on its footpath, the arm over the road; the file's pole stands 0.75 m off its middle, so turned
+         half round each stands 0.75 m to the west of where it is placed */
+      const STREET = [-12, 4, 20, 36];
+      many('w4streetlamp', STREET.map(z => ({ x: 24.4 + 0.75, y: G, z, ry: Math.PI })), world, 0.02);
+      /* THE CARS parked in the bays (chapter 1's lighter sedan and SUV: declared, reuseInEpisode), nose in or backed in as
+         people park; one of each in its own paint (a black sedan, a maroon SUV) */
+      const CARS = [[-14.75, 'e4sedanfar', 0], [-9.75, 'e4suvfar', 0], [-2.25, 'e4sedanfar', 1], [5.25, 'e4suvfar', 1], [12.75, 'e4sedanfar', 0], [17.75, 'e4suvfar', 0]];
+      for (const key of ['e4sedanfar', 'e4suvfar']) for (const paint of [0, 1]) {
+        const L = CARS.filter(c => c[1] === key && c[2] === paint).map(([z], i) => ({ x: 32.85, y: G + 0.02, z, ry: (Math.round(z * 7) % 2 ? 1 : -1) * Math.PI / 2 }));
+        if (L.length) many(key, L, world, 0.02, paint ? (made) => { for (const im of made) im.material.color.multiply(new THREE.Color(key === 'e4sedanfar' ? 0x3a3a40 : 0x8a4848)); } : null); }
+
+      /* THE LAMPS' LIGHT, painted (v15.1): a soft glow round each globe and head (one draw for all), and its pool of light on
+         the ground (one draw for all); both by the hour */
+      const glow5 = (() => { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 64, 1, 64, 64, 62);
+        g.addColorStop(0, 'rgba(255,240,206,1)'); g.addColorStop(0.3, 'rgba(255,214,150,0.42)'); g.addColorStop(1, 'rgba(255,200,130,0)');
+        x.fillStyle = g; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); })();
+      const HALO = [];
+      for (const [x, z] of LAMPS) HALO.push(x, G + 2.95, z);
+      for (const z of STREET) HALO.push(25.85, G + 6.75, z);
+      const haloG = new THREE.BufferGeometry(); haloG.setAttribute('position', new THREE.Float32BufferAttribute(HALO, 3)); owned.push(haloG);
+      const mHalo = new THREE.PointsMaterial({ map: glow5, color: 0xffd9a8, size: 1.5, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(mHalo);
+      const halos = new THREE.Points(haloG, mHalo); halos.name = 'estate:halos'; world.add(halos);
+      const mPoolL = new THREE.MeshBasicMaterial({ map: glow5, color: 0xffd49a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mPoolL);
+      const pool = (x, z, r, y = G + 0.06) => quadUV(mPoolL, [x - r, y, z + r], [x + r, y, z + r], [x + r, y, z - r], [x - r, y, z - r]);
+      for (const [x, z] of LAMPS) pool(x, z, 3.4);
+      for (const z of STREET) pool(26.6, z, 6.5);
+      /* the pool's lamps under its edge: their light in the water */
+      const mPoolW = new THREE.MeshBasicMaterial({ map: glow5, color: 0x9ef0ff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mPoolW);
+      for (const x of [9.5, 14, 18.5, 23]) for (const z of [-36.3, -24.7]) quadUV(mPoolW, [x - 2.2, G + 0.05, z + 2.2], [x + 2.2, G + 0.05, z + 2.2], [x + 2.2, G + 0.05, z - 2.2], [x - 2.2, G + 0.05, z - 2.2]);
+      EST5.glow = (k) => { mHalo.opacity = 0.95 * k; mPoolL.opacity = 0.42 * k; mPoolW.opacity = 0.6 * k; uGlobe.value = 1.3 * k; halos.visible = k > 0.01; };
+      EST5.glow(EST_LOOK5.DUSK[3]);
+      /* CONTACT SHADOWS (v9.3: on a phone nothing casts one): under each tree, palm, bush, lamp, car and the playground, a
+         soft dark pool a little toward the east and south, away from the evening's light */
+      const mShade = (() => { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        g.addColorStop(0, 'rgba(6,8,12,0.6)'); g.addColorStop(0.55, 'rgba(6,8,12,0.3)'); g.addColorStop(1, 'rgba(6,8,12,0)');
+        x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+        const m = new THREE.MeshBasicMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, fog: true, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }); mats.push(m); return m; })();
+      const shade = (x, z, sx, sz, a = 0, y = G + 0.05) => { const c = Math.cos(a), s = Math.sin(a), hx = sx / 2, hz = sz / 2;
+        const P = (u, v) => [x + u * c + v * s, y, z - u * s + v * c];
+        quadUV(mShade, P(-hx, hz), P(hx, hz), P(hx, -hz), P(-hx, -hz)); };
+      const OFF = [0.18, -0.12];
+      for (const t of TREES) { const r = 7.6 * t.s; shade(t.x + OFF[0] * r, t.z + OFF[1] * r, r * 1.5, r * 1.3); }
+      for (const p of PALMS) { const r = 2.8 * p.s; shade(p.x + OFF[0] * r, p.z + OFF[1] * r, r * 1.4, r * 1.2); }
+      for (const b of SHRUBS) { const r = 0.9 * b.s; shade(b.x + 0.15, b.z - 0.1, r * 2.0, r * 1.8, 0, G + 0.045); }
+      for (const [x, z] of LAMPS) shade(x + 0.1, z - 0.06, 0.9, 0.8);
+      for (const [z] of CARS) shade(32.95, z - 0.05, 5.2, 2.6, 0, G + 0.035);
+      shade(PG.x + 0.3, PG.z - 0.2, 6.2, 5.8, 0, G + 0.055);
+    }
     /* ================================================================ THE LIFT CAR (the opening film: through his eyes,
        no chapter has stood him in one). Behind the walkway's end wall: brushed steel, a grey rubber floor, a lit panel
        over, the car's panel of buttons (w5liftpanel) on its right wall, and its two doors, which slide (liftDoors) */
@@ -13259,7 +13430,7 @@
     /* ---------------------------------------------------------------- the light of each phase (the chapter's own
        presets; TODO-WORLD: the dusk going to night over the court is a tween of the film before the fight) */
     const LOOK_OF = { walk: 'DUSK', hunt: 'EVENING', fight: 'NIGHT', table: 'DAY', ask: 'DAY' };   // (the world's: the plan's 8.1 hours; EVENING is a_head.js's)
-    function lookAt0(name, secs = 0) { lookName = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); }
+    function lookAt0(name, secs = 0) { lookName = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); estateLook5(name); }   // (R105: the estate's ground with the hour, b_world.js)
 
     /* ---------------------------------------------------------------- the chapter's clock and its one voice at a time
        (chapter 3's queue, as chapter 4 copies it). The clock runs in play only, on wall time, so a panel stands it
@@ -13779,7 +13950,7 @@
        people stand at that phase's stations. */
     const FM5 = { once: new Set(), shot: '', lit: '', vis: false, s: null };
     const PLAYFOV5 = 72;
-    function fmLook(name, secs = 0) { phoLevel(name); if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
+    function fmLook(name, secs = 0) { phoLevel(name); if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); estateLook5(name); } }   // (R105: the estate's ground with the hour)
     /* (R33, lens 4's L4-01: his look D draws his face, hands and beads unlit at the level the chapter sets for its light;
        this chapter never set it, so at dusk, at night and in the trance they shone at the day's brightness, and its lift
        drew his robe toward its unlit white in the dark. Chapter 4's measure for its dark, 0.55; the dusk and the evening
@@ -14620,8 +14791,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       frame(t) {
         const T = OP5;
         fmLook('DUSK');
-        /* the walkway's evening comes in as the doors open; the smell under it from his step out */
-        fmBeds({ walk: 0.55 * smo(c01((t - T.open) / 1.6)), sour: 0.32 * smo(c01((t - T.sour) / 2.0)) });
+        /* the walkway's evening comes in as the doors open; the smell under it from his step out (R105: and the estate's
+           evening over the first shot, before the cut into the lift) */
+        fmBeds({ walk: t < T.estate ? 0.55 : 0.55 * smo(c01((t - T.open) / 1.6)), sour: 0.32 * smo(c01((t - T.sour) / 2.0)) });
         /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
@@ -14651,14 +14823,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
-        /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held */
-        if (kit && kit.chill) { const k = smo(c01((t - T.sour) / 2.4)) * 0.85 * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
+        /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held (R105: "then a pungent
+           smell hit me": it HITS, past where it settles in its first fifth of a second and easing back over the next) */
+        const hit5 = (d) => d <= 0 ? 0 : d < 0.18 ? d / 0.18 : Math.exp(-(d - 0.18) / 0.7);
+        if (kit && kit.chill) { const k = Math.min(1, smo(c01((t - T.sour) / 2.4)) * 0.85 + 0.4 * hit5(t - T.sour)) * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
         /* THE LENS (his eyes): the number, close; the car, wide (a cramped room gets a wider lens on a phone: v24.21);
            Jun's line, Ton's; the doors; his step out, a breath of a bob; the walkway, where play begins (its snapshot) */
         const D = [0, 2.2, LIFT.z0], W = [0, 1.45, -8.0];
         fmTrack(t, [
-          { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
+          /* (R105) THE ESTATE AT DUSK, first: a crane over the lawn, outside the block and looking away from it (so its own face,
+             which no shot looks at, is never in the frame), tilting up from the playground on its mat, its lamps lit, over
+             the road and the cars to the east block's lit windows and the sky over it; then the cut into the lift */
+          { t: 0, name: 'estate', eye: [3.0, 12.0, -0.5], at: [15.5, -5.9, -0.8], fp: 56, fd: 48 },
+          { t: T.estate - 0.02, name: 'estate', eye: [3.8, 9.0, -2.5], at: [30.0, -1.5, -5.5], fp: 54, fd: 46 },
+          { t: T.estate, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22, cut: true },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           /* (the car wide at the lens Jun's shot keeps: at 74 and 62 the lens went out and came back 6 and 10 degrees inside
              1.1 s as the look came round to him, a breathing lens, e4c5filmread BOUNCE) */
@@ -14682,6 +14861,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         /* (a step's own small bob of the eye, as a man's walk carries it: two steps, 0.6 s each) */
         if (t > T.step && t < T.step + 2.2) yaw.position.y += -0.018 * Math.abs(Math.sin((t - T.step) * Math.PI / 0.6));
+        /* (R105) THE HIT: his head jerks back and aside from it as it reaches him, in a sixth of a second, his breath caught
+           (u5zbreath), and comes back to the walkway it comes from over a second and a half (laid on what the track wrote:
+           every one of these is the track's own each frame) */
+        { const d = t - T.sour; if (d > 0 && d < 1.8) { const a = d < 0.16 ? smo(d / 0.16) : 1 - smo((d - 0.16) / 1.6);
+          yaw.position.z += 0.07 * a; yaw.rotation.y += 0.10 * a; pitch.rotation.x -= 0.05 * a; camera.rotation.z += 0.025 * a; } }
       },
       end() { fmLens(PLAYFOV5); LIFTNUM5.set(-1); liftDoors(0); if (kit && kit.chill && FM5.sour) kit.chill(0, { tint: 'sour' }); FM5.sour = false;
         endPhase5('walk'); }
@@ -16183,16 +16367,20 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      his teacher out first, then Ton, then Jun; his step out; the sour; his thought; black, the title over it */
   const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [0.6],
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
-  OP5.num2 = 6.0; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
+  OP5.num2 = 7.6; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
+  /* (R105, 24 Nov 2026: Chad, "Intro cutscene can be improved further". It opens now on the estate at dusk (c_yfilm.js FILMS5.open:
+     its first shot, a crane tilting up from the playground to the east block over the lamps coming on), and cuts into the lift
+     at OP5.estate, under his first line; the lift's hum and cable come in on the cut, and the number climbs while it is seen) */
+  OP5.estate = 6.3;
   function intro(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.open, T = OP5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(1.3, 2.8, 1, 0);                                                      // (v7.7: the picture comes up as he speaks)
-    sfx(0.05, 'u5lifthum', 0.55); sfx(13.85, 'u5lifthum', 0.55);              // the car's hum (its 14.2 s, twice, end to end)
+    sfx(T.estate - 0.05, 'u5lifthum', 0.55); sfx(T.estate + 13.75, 'u5lifthum', 0.55);   // the car's hum from the cut into it (its 14.2 s, twice, end to end)
     sfx(0.3, 'u5m1open', 0.7);                                                 // M1: a drone with no tune, dread
     sfx(T.q5o1, 'q5o1', 1);                                                    // "Case two. A devotee's home. He had been quarrelling with people outside, and at home he could not rest."
-    sfx(3.0, 'u5cable', 0.45);                                                 // the cable, as the picture comes up on the number
+    sfx(T.estate + 0.4, 'u5cable', 0.45);                                      // the cable, as the picture comes up on the number
     sfx(T.ju5o1, 'ju5o1', 1);                                                  // "Mr Koh says the lights keep going off. Electrician came three times already."
     sfx(T.tn5o1, 'tn5o1', 1);                                                  // "He also says he fights with everybody. His own words."
     sfx(T.chime - 1.1, 'u5cable', 0.5);                                        // the car slowing
@@ -16205,8 +16393,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.junOut + 0.3, 'u5step1', 0.3); sfx(T.junOut + 0.9, 'u5step2', 0.24);                                          // Jun
     sfx(T.step + 0.1, 'u5step2', 0.45); sfx(T.step + 0.7, 'u5step1', 0.45);                                             // his own two steps out
     sfx(T.sour, 'u5souring', 0.8);                                             // and it hits him: the picture sours
+    sfx(T.sour + 0.05, 'u5zbreath', 0.5);                                      // (R105) his breath caught as it reaches him
     sfx(T.sour + 1.0, 'u5heart', 0.55); sfx(T.sour + 1.7, 'u5heart', 0.6);     // his breath stopped; his heart
-    sfx(T.q5o2, 'q5o2', 1);                                                    // "The doors opened, and it hit me."
+    sfx(T.q5o2, 'q5o2', 1);                                                    // "The doors opened, then a pungent smell hit me." (R105)
     fade(T.black, T.end - 0.15, 0, 1);
     sfxFade(T.black, T.end - 0.2, 'u5m1open');                                 // (the music goes down with the picture: v15.3)
     step(T.end, () => F.end());

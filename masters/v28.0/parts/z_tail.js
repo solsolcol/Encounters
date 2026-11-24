@@ -14,16 +14,20 @@
      his teacher out first, then Ton, then Jun; his step out; the sour; his thought; black, the title over it */
   const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [0.6],
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
-  OP5.num2 = 6.0; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
+  OP5.num2 = 7.6; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
+  /* (R105, 24 Nov 2026: Chad, "Intro cutscene can be improved further". It opens now on the estate at dusk (c_yfilm.js FILMS5.open:
+     its first shot, a crane tilting up from the playground to the east block over the lamps coming on), and cuts into the lift
+     at OP5.estate, under his first line; the lift's hum and cable come in on the cut, and the number climbs while it is seen) */
+  OP5.estate = 6.3;
   function intro(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.open, T = OP5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(1.3, 2.8, 1, 0);                                                      // (v7.7: the picture comes up as he speaks)
-    sfx(0.05, 'u5lifthum', 0.55); sfx(13.85, 'u5lifthum', 0.55);              // the car's hum (its 14.2 s, twice, end to end)
+    sfx(T.estate - 0.05, 'u5lifthum', 0.55); sfx(T.estate + 13.75, 'u5lifthum', 0.55);   // the car's hum from the cut into it (its 14.2 s, twice, end to end)
     sfx(0.3, 'u5m1open', 0.7);                                                 // M1: a drone with no tune, dread
     sfx(T.q5o1, 'q5o1', 1);                                                    // "Case two. A devotee's home. He had been quarrelling with people outside, and at home he could not rest."
-    sfx(3.0, 'u5cable', 0.45);                                                 // the cable, as the picture comes up on the number
+    sfx(T.estate + 0.4, 'u5cable', 0.45);                                      // the cable, as the picture comes up on the number
     sfx(T.ju5o1, 'ju5o1', 1);                                                  // "Mr Koh says the lights keep going off. Electrician came three times already."
     sfx(T.tn5o1, 'tn5o1', 1);                                                  // "He also says he fights with everybody. His own words."
     sfx(T.chime - 1.1, 'u5cable', 0.5);                                        // the car slowing
@@ -36,8 +40,9 @@
     sfx(T.junOut + 0.3, 'u5step1', 0.3); sfx(T.junOut + 0.9, 'u5step2', 0.24);                                          // Jun
     sfx(T.step + 0.1, 'u5step2', 0.45); sfx(T.step + 0.7, 'u5step1', 0.45);                                             // his own two steps out
     sfx(T.sour, 'u5souring', 0.8);                                             // and it hits him: the picture sours
+    sfx(T.sour + 0.05, 'u5zbreath', 0.5);                                      // (R105) his breath caught as it reaches him
     sfx(T.sour + 1.0, 'u5heart', 0.55); sfx(T.sour + 1.7, 'u5heart', 0.6);     // his breath stopped; his heart
-    sfx(T.q5o2, 'q5o2', 1);                                                    // "The doors opened, and it hit me."
+    sfx(T.q5o2, 'q5o2', 1);                                                    // "The doors opened, then a pungent smell hit me." (R105)
     fade(T.black, T.end - 0.15, 0, 1);
     sfxFade(T.black, T.end - 0.2, 'u5m1open');                                 // (the music goes down with the picture: v15.3)
     step(T.end, () => F.end());

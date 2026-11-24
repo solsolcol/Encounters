@@ -51,3 +51,11 @@ ceilfan       w5ceilfan     1.30  w  12000  1024  0
 wuathanu      w5wuathanu    0.054 l  20000  2048  0
 rakyom        w5rakyom      0.060 h  20000  2048  0
 hunphayon     w5hunphayon   0.100 h  20000  2048  0
+# ---- 24 Nov 2026 (R105, Chad: "The outdoor environment below the corridor can be improved further"): the estate's
+# children's playground, seen from the walkway five storeys up and in the opening film's establishing shot (never walked
+# to): its tower's roof 3.3 m over its mat, as such a frame stands; 1024 (seen across the lawn)
+playground    w5playground  3.30  h  50000  1024  0
+# the garden lamps along its paths, their globes lit at dusk (a 3.2 m post-top lamp; seen from the walkway and the
+# opening film's first shot): 512. And the ixora in its beds (a 1.1 m bush, a few dozen of them): 512, few triangles
+gardenlamp    w5gardenlamp  3.20  h   2500   512  0
+shrub         w5shrub       1.10  h   3000   512  0

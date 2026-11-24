@@ -15,7 +15,7 @@
        people stand at that phase's stations. */
     const FM5 = { once: new Set(), shot: '', lit: '', vis: false, s: null };
     const PLAYFOV5 = 72;
-    function fmLook(name, secs = 0) { phoLevel(name); if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); } }
+    function fmLook(name, secs = 0) { phoLevel(name); if (FM5.lit !== name) { FM5.lit = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); estateLook5(name); } }   // (R105: the estate's ground with the hour)
     /* (R33, lens 4's L4-01: his look D draws his face, hands and beads unlit at the level the chapter sets for its light;
        this chapter never set it, so at dusk, at night and in the trance they shone at the day's brightness, and its lift
        drew his robe toward its unlit white in the dark. Chapter 4's measure for its dark, 0.55; the dusk and the evening
@@ -856,8 +856,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       frame(t) {
         const T = OP5;
         fmLook('DUSK');
-        /* the walkway's evening comes in as the doors open; the smell under it from his step out */
-        fmBeds({ walk: 0.55 * smo(c01((t - T.open) / 1.6)), sour: 0.32 * smo(c01((t - T.sour) / 2.0)) });
+        /* the walkway's evening comes in as the doors open; the smell under it from his step out (R105: and the estate's
+           evening over the first shot, before the cut into the lift) */
+        fmBeds({ walk: t < T.estate ? 0.55 : 0.55 * smo(c01((t - T.open) / 1.6)), sour: 0.32 * smo(c01((t - T.sour) / 2.0)) });
         /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
@@ -887,14 +888,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
-        /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held */
-        if (kit && kit.chill) { const k = smo(c01((t - T.sour) / 2.4)) * 0.85 * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
+        /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held (R105: "then a pungent
+           smell hit me": it HITS, past where it settles in its first fifth of a second and easing back over the next) */
+        const hit5 = (d) => d <= 0 ? 0 : d < 0.18 ? d / 0.18 : Math.exp(-(d - 0.18) / 0.7);
+        if (kit && kit.chill) { const k = Math.min(1, smo(c01((t - T.sour) / 2.4)) * 0.85 + 0.4 * hit5(t - T.sour)) * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
         /* THE LENS (his eyes): the number, close; the car, wide (a cramped room gets a wider lens on a phone: v24.21);
            Jun's line, Ton's; the doors; his step out, a breath of a bob; the walkway, where play begins (its snapshot) */
         const D = [0, 2.2, LIFT.z0], W = [0, 1.45, -8.0];
         fmTrack(t, [
-          { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
+          /* (R105) THE ESTATE AT DUSK, first: a crane over the lawn, outside the block and looking away from it (so its own face,
+             which no shot looks at, is never in the frame), tilting up from the playground on its mat, its lamps lit, over
+             the road and the cars to the east block's lit windows and the sky over it; then the cut into the lift */
+          { t: 0, name: 'estate', eye: [3.0, 12.0, -0.5], at: [15.5, -5.9, -0.8], fp: 56, fd: 48 },
+          { t: T.estate - 0.02, name: 'estate', eye: [3.8, 9.0, -2.5], at: [30.0, -1.5, -5.5], fp: 54, fd: 46 },
+          { t: T.estate, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22, cut: true },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           /* (the car wide at the lens Jun's shot keeps: at 74 and 62 the lens went out and came back 6 and 10 degrees inside
              1.1 s as the look came round to him, a breathing lens, e4c5filmread BOUNCE) */
@@ -918,6 +926,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         /* (a step's own small bob of the eye, as a man's walk carries it: two steps, 0.6 s each) */
         if (t > T.step && t < T.step + 2.2) yaw.position.y += -0.018 * Math.abs(Math.sin((t - T.step) * Math.PI / 0.6));
+        /* (R105) THE HIT: his head jerks back and aside from it as it reaches him, in a sixth of a second, his breath caught
+           (u5zbreath), and comes back to the walkway it comes from over a second and a half (laid on what the track wrote:
+           every one of these is the track's own each frame) */
+        { const d = t - T.sour; if (d > 0 && d < 1.8) { const a = d < 0.16 ? smo(d / 0.16) : 1 - smo((d - 0.16) / 1.6);
+          yaw.position.z += 0.07 * a; yaw.rotation.y += 0.10 * a; pitch.rotation.x -= 0.05 * a; camera.rotation.z += 0.025 * a; } }
       },
       end() { fmLens(PLAYFOV5); LIFTNUM5.set(-1); liftDoors(0); if (kit && kit.chill && FM5.sour) kit.chill(0, { tint: 'sour' }); FM5.sour = false;
         endPhase5('walk'); }

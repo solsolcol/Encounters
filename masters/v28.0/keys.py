@@ -92,6 +92,12 @@ group("e4c5: THE COLLECTOR'S THREE PIECES (THINGS-2, 29245cb), each from real ph
       [('w5wuathanu', 'w5wuathanu.glb', 'a Wua Thanu, the cast humped bull (0.054 m): the angry presence'),
        ('w5rakyom', 'w5rakyom.glb', 'a Rak Yom, two small figures in a bottle of oil (0.060 m): the hungry one'),
        ('w5hunphayon', 'w5hunphayon.glb', 'a Hun Phayon, a bound black effigy (0.100 m): the one looking for energy')])
+group("e4c5: THE ESTATE'S GROUND BELOW THE WALKWAY (R105, 24 Nov 2026: Chad, 'The outdoor environment below the corridor\n"
+      "can be improved further'), each made once: a checked picture on white, Meshy at its highest and its remesh\n"
+      "(masters/v28.0/props/RECORD.md, TABLE.txt, prop.sh); placed by masters/v28.0/parts/b_world.js buildEstate",
+      [('w5playground', 'w5playground.glb', "the children's playground on its mat, 3.3 m to its roof"),
+       ('w5gardenlamp', 'w5gardenlamp.glb', 'the garden lamps along its paths, 3.2 m, their globes lit'),
+       ('w5shrub', 'w5shrub.glb', 'the ixora in its beds, 1.1 m')])
 
 B0, B1 = '    # >>> e4c5 keys: written by masters/v28.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c5 keys: the rows end <<<'
 S0, S1 = '           # >>> e4c5 keys (masters/v28.0/keys.py) >>>\n', '           # <<< e4c5 keys <<<'

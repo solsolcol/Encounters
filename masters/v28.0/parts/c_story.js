@@ -49,7 +49,7 @@
     /* ---------------------------------------------------------------- the light of each phase (the chapter's own
        presets; TODO-WORLD: the dusk going to night over the court is a tween of the film before the fight) */
     const LOOK_OF = { walk: 'DUSK', hunt: 'EVENING', fight: 'NIGHT', table: 'DAY', ask: 'DAY' };   // (the world's: the plan's 8.1 hours; EVENING is a_head.js's)
-    function lookAt0(name, secs = 0) { lookName = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); }
+    function lookAt0(name, secs = 0) { lookName = name; if (kit && kit.daylight) kit.daylight(PRESETS[name] || DUSK, secs); estateLook5(name); }   // (R105: the estate's ground with the hour, b_world.js)
 
     /* ---------------------------------------------------------------- the chapter's clock and its one voice at a time
        (chapter 3's queue, as chapter 4 copies it). The clock runs in play only, on wall time, so a panel stands it

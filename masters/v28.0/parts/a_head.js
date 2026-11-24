@@ -220,10 +220,11 @@
       'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
       'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
       'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon',
+      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
       /* <<< this chapter's own keys <<< */
-      /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
-      'w4angsana', 'w4foxpalm',
+      /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
+         street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
+      'w4angsana', 'w4foxpalm', 'w4streetlamp', 'e4sedanfar', 'e4suvfar',
       /* (the shared cast, masters/v28.0/parts/c_cast.js: each a declared reuse in the episode, reuseInEpisode) Grandmaster
          Pho and Ton, chapter 3's; the white cloth over his crossed legs, chapter 3's (the rite's fan taken out of his hand at
          Chad's word, R88: "Remove the peacock feather fan from pho's hand in the final cutscene"); the holy-water bowls,
@@ -236,7 +237,9 @@
     ],
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
-    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool",
+    reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool and along the block's path",
+      w4streetlamp: "chapter 4's street lamps, along the estate's road below the walkway (R105)", e4sedanfar: "chapter 1's lighter sedan (its taxi street's traffic), parked in the estate's car park (R105)",
+      e4suvfar: "chapter 1's lighter SUV, parked in the estate's car park (R105)",
       pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): seated at the table in case three (standing, he is this chapter's copy of it with finger bones on his right hand, p5pho, R26)",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
