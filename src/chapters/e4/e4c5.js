@@ -8620,7 +8620,7 @@
       pale: [0x000000, 0x24304a, 0x7fa0d8, 0xc8daf6, 0xf6fbff].map(h => new THREE.Color(h))
     };
     const FX_FS = [
-      'varying vec2 vUv; uniform sampler2D uMap; uniform float uF, uN, uC, uLoop, uA, uHeat, uSmoke, uGlow, uMode, uW, uL, uRot, uTail, uR, uS, uFr;',
+      'varying vec2 vUv; varying float vD; uniform sampler2D uMap; uniform float uF, uN, uC, uLoop, uA, uHeat, uSmoke, uGlow, uMode, uW, uL, uRot, uTail, uR, uS, uFr;',
       'uniform vec2 uO; uniform vec3 uK0, uK1, uK2, uK3, uK4, uSm;',
       'vec4 cell(float f, vec2 p){ float cx = mod(f, uC), cy = floor(f / uC + 1e-3); return texture2D(uMap, (vec2(cx, cy) + vec2(p.x, 1.0 - p.y)) / uC); }',
       'vec3 ramp(float t){ return t < 0.25 ? mix(uK0, uK1, t * 4.0) : t < 0.5 ? mix(uK1, uK2, t * 4.0 - 1.0) : t < 0.75 ? mix(uK2, uK3, t * 4.0 - 2.0) : mix(uK3, uK4, clamp(t * 4.0 - 3.0, 0.0, 1.0)); }',
@@ -8649,8 +8649,11 @@
       '  vec3 fire = (ramp(h) * pow(h, 1.25) * uHeat + ramp(0.55) * (a.b * a.b) * uGlow) * e;',
       '  vec3 col = uSm * (0.28 + 0.72 * a.g * a.g) * cov + fire;',
       '  if (col.r + col.g + col.b + cov < 0.003) discard;',
-      '  gl_FragColor = vec4(col * uA, cov * uA); }'].join('\n');
-    const FX_VS = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+      '  float nf = uA * smoothstep(0.6, 2.2, vD);',
+      '  gl_FragColor = vec4(col * nf, cov * nf); }'].join('\n');
+    /* (vD the depth from the lens: build 73's photographs had a puff of the wheel's dust a metre from the lens drawn as a grey
+       smear over a sixth of the screen; a card thins away inside 2.2 m of it) */
+    const FX_VS = 'varying vec2 vUv; varying float vD; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }';
     const fxGeo = (() => { const g = new THREE.PlaneGeometry(1, 1); owned.push(g); return g; })();
     function fxMat(kind, o = {}) {
       const R = FX_RAMP[o.ramp || 'orange'], F = FX_FRAME[kind];
@@ -8680,8 +8683,8 @@
        gathering round Grandmaster Pho, LEND's violet rising round him, and TOGETHER's gold and violet round the two of them.
        Its picture is the fireball's head (FX5.head), so it waits for the same file and costs no other */
     const FX_RING_FS = [
-      'varying vec2 vUv; uniform sampler2D uMap; uniform float uF, uN, uC, uA, uHeat, uGlow, uTiles, uY0, uY1;',
-      'uniform vec3 uK0, uK1, uK2, uK3, uK4;',
+      'varying vec2 vUv; varying float vD, vF; uniform sampler2D uMap; uniform float uF, uN, uC, uA, uHeat, uGlow, uTiles, uY0, uY1, uFres;',
+      'uniform vec2 uNear; uniform vec3 uK0, uK1, uK2, uK3, uK4;',
       'vec4 cell(float f, vec2 p){ float cx = mod(f, uC), cy = floor(f / uC + 1e-3); return texture2D(uMap, (vec2(cx, cy) + vec2(p.x, 1.0 - p.y)) / uC); }',
       'vec3 ramp(float t){ return t < 0.25 ? mix(uK0, uK1, t * 4.0) : t < 0.5 ? mix(uK1, uK2, t * 4.0 - 1.0) : t < 0.75 ? mix(uK2, uK3, t * 4.0 - 2.0) : mix(uK3, uK4, clamp(t * 4.0 - 3.0, 0.0, 1.0)); }',
       'vec3 flame(float sh){ float xi = vUv.x * uTiles + sh, ti = floor(xi), fx = fract(xi);',
@@ -8689,9 +8692,10 @@
       '  vec2 p = vec2(0.3 + 0.4 * fx, mix(uY0, uY1, vUv.y));',
       '  vec4 a = mix(cell(f0, p), cell(f1, p), k);',
       '  return (ramp(a.r) * pow(a.r, 1.25) * uHeat + ramp(0.55) * (a.b * a.b) * uGlow) * sin(3.14159 * fx) * smoothstep(0.995, 0.8, p.y); }',
-      'void main(){ vec3 c = (flame(0.0) + flame(0.5)) * smoothstep(0.0, 0.08, vUv.y);',
+      'void main(){ vec3 c = (flame(0.0) + flame(0.5)) * smoothstep(0.0, 0.2, vUv.y) * mix(1.0, 0.1 + 0.9 * vF * vF, uFres) * smoothstep(uNear.x, uNear.y, vD);',
       '  if (c.r + c.g + c.b < 0.003) discard;',
       '  gl_FragColor = vec4(c * uA, 0.0); }'].join('\n');
+    const FX_RING_VS = 'varying vec2 vUv; varying float vD, vF; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; vec3 n = normalize(normalMatrix * normal); vF = 1.0 - abs(dot(n, normalize(-mv.xyz))); gl_Position = projectionMatrix * mv; }';
     const fxRingGeo = (() => { const g = new THREE.CylinderGeometry(1, 1, 1, 64, 1, true); g.translate(0, 0.5, 0); owned.push(g); return g; })();
     function fxRing(ramp, o = {}) {
       const R = FX_RAMP[ramp];
@@ -8700,18 +8704,21 @@
         blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
         uniforms: { uMap: { value: FX5.head || FX_DUMMY }, uF: { value: 0 }, uN: { value: 64 }, uC: { value: 8 }, uA: { value: 0 },
           uHeat: { value: o.heat || 1.2 }, uGlow: { value: o.glow != null ? o.glow : 0.5 }, uTiles: { value: o.tiles || 24 },
-          uY0: { value: o.y0 != null ? o.y0 : 0.2 }, uY1: { value: o.y1 || 0.98 },
+          uY0: { value: o.y0 != null ? o.y0 : 0.2 }, uY1: { value: o.y1 || 0.98 }, uFres: { value: o.fres || 0 }, uNear: { value: new THREE.Vector2(o.near ? o.near[0] : 0.6, o.near ? o.near[1] : 2.2) },
           uK0: { value: R[0] }, uK1: { value: R[1] }, uK2: { value: R[2] }, uK3: { value: R[3] }, uK4: { value: R[4] } },
-        vertexShader: FX_VS, fragmentShader: FX_RING_FS });
+        vertexShader: FX_RING_VS, fragmentShader: FX_RING_FS });
       if (FX5.head) m.fxAtlas = FX5.head;
       mats.push(m); FX5.mats.head.push(m);
       const me = new THREE.Mesh(fxRingGeo, m); me.visible = false; me.renderOrder = o.ro || 5; me.frustumCulled = false; FSG.add(me); return me;
     }
     /* (the five: the wheel's rim (thirty flames round it, so they widen as it goes out), the gathering (fourteen, closing in
        on him), LEND's and TOGETHER's columns (ten each), with the clocks of the last three) */
-    const FXR = { wheel: fxRing('gold', { tiles: 30, heat: 1.35, glow: 0.6, ro: 3 }), gather: fxRing('gold', { tiles: 14, heat: 1.1, glow: 0.5 }),
-      lend: fxRing('violet', { tiles: 10, heat: 1.25, glow: 0.6 }), togP: fxRing('gold', { tiles: 10, heat: 1.35, glow: 0.7 }),
-      togZ: fxRing('violet', { tiles: 10, heat: 1.35, glow: 0.7 }), lendT: -1, togT: -1 };
+    /* (build 73's photographs: LEND's and TOGETHER's columns drawn whole were tubes of white that hid the two of them, so a
+       column flames at its edges and thins on the face it turns to the eye (uFres), and burns lower; the wheel, which passes
+       under the lens, thins within 4 m of it) */
+    const FXR = { wheel: fxRing('gold', { tiles: 30, heat: 1.2, glow: 0.5, ro: 3, near: [1.5, 4.0] }), gather: fxRing('gold', { tiles: 14, heat: 1.1, glow: 0.5 }),
+      lend: fxRing('violet', { tiles: 10, heat: 1.0, glow: 0.4, fres: 1 }), togP: fxRing('gold', { tiles: 10, heat: 1.0, glow: 0.45, fres: 1 }),
+      togZ: fxRing('violet', { tiles: 10, heat: 1.0, glow: 0.45, fres: 1 }), lendT: -1, togT: -1 };
     /* THE HEAT SHIMMER: the picture behind a fireball, copied as it stands at the card's turn in the draw (before the fire
        and its smoke are drawn over it) and drawn back a few pixels astray in a rising, wavering pattern, strongest at the
        head and gone at the card's edge. The copy is the drawn bytes (tone-mapped, in the screen's colour space) and goes back
@@ -9022,7 +9029,7 @@
     const FS_STREAK = 14;
     const fsStreaks = [0, 1, 2].map(() => ({ on: false, id: 0, t: 0, T: 1, gold: false, a: new THREE.Vector3(), m: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(),
       dots: Array.from({ length: FS_STREAK }, () => fsSprite(0x2a2f38, false, 5)), glints: Array.from({ length: 9 }, () => fsSprite(FS_COL.pale, true, 6)) }));
-    for (const S of fsStreaks) S.fx = fxCard('head', { head: true, heat: 1.3, glow: 0.7, smoke: 0, side: 2.5, front: 1.45, tail: 3.6, ramp: 'pale' }, 6);   // (R94 E3: its comet's head)
+    for (const S of fsStreaks) S.fx = fxCard('head', { head: true, heat: 1.05, glow: 0.55, smoke: 0, side: 2.5, front: 1.45, tail: 3.6, ramp: 'pale' }, 6);   // (R94 E3: its comet's head)
     const fsReach = (() => { const m = new THREE.Mesh(fsQuad, fsGroundMat(null, FS_COL.pale, true)); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; })();
     /* (R71: the bag takes every one at once, so a line to each it will take: three more like the first, sharing its paint) */
     const fsReachAll = [fsReach].concat([0, 1, 2].map(() => { const m = new THREE.Mesh(fsQuad, fsReach.material); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; }));
@@ -9563,11 +9570,11 @@
       if (FXR.lendT >= 0) { FXR.lendT += wdt; const u = FXR.lendT / 1.4, F = FXR.lend, P = cast.pho;
         F.visible = u < 1 && !!P && fxOn('head'); if (u >= 1) FXR.lendT = -1;
         if (F.visible) { const g = P.group.position, U = F.material.uniforms, rr = 0.55 + 0.1 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.2 * (0.55 + 0.45 * Math.min(1, u / 0.25)), rr);
-          U.uF.value = fxt * 36; U.uA.value = Math.min(1, u / 0.12) * (1 - smo(c01((u - 0.55) / 0.45))); } }
+          U.uF.value = fxt * 36; U.uA.value = 0.75 * Math.min(1, u / 0.12) * (1 - smo(c01((u - 0.55) / 0.45))); } }
       if (FXR.togT >= 0) { FXR.togT += wdt; const u = FXR.togT / 1.3, on = u < 1 && fxOn('head'); if (u >= 1) FXR.togT = -1;
         for (const [F, P] of [[FXR.togP, cast.pho], [FXR.togZ, cast.zav]]) { F.visible = on && !!P; if (!F.visible) continue;
           const g = P.group.position, U = F.material.uniforms, rr = 0.6 + 0.5 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.6 * (0.5 + 0.5 * Math.min(1, u / 0.2)), rr);
-          U.uF.value = fxt * 38; U.uA.value = Math.min(1, u / 0.1) * (1 - smo(c01((u - 0.5) / 0.5))); } }
+          U.uF.value = fxt * 38; U.uA.value = 0.8 * Math.min(1, u / 0.1) * (1 - smo(c01((u - 0.5) / 0.5))); } }
       FS5.flare = Math.max(0, FS5.flare - wdt * 2.2);
       /* the streaks: drawn to his mouth, and down into the bag (gold when the gold gathers it) */
       for (const S of fsStreaks) {
@@ -9981,8 +9988,7 @@
           case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
             fsPhoAct('wave', FN5.windSecs || 1.5); FS5.windT = FS5.wall; break; }
           case 'wave': fsFx('u5wave', 1.0, null); fsFx('u5goldboom', 0.9, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.3 }); FS5.flared = false; fsPhoRelease('wave');
-            if (kit && kit.buzz) kit.buzz([45]);                                       // (R94 E3: its boom under it, the phone's buzz)
-            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBloom(pw.x, pw.z, FS_COL.gold, 1.0, false, 1.0, { ramp: 'gold', k: 1.1, heat: 1.6 }); }
+            if (kit && kit.buzz) kit.buzz([45]);                                       // (R94 E3: its boom under it, the phone's buzz; no burst on him: build 73's hid him in white)
             { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.13, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 });
               if (pw) fsWaveCast(pw); }
             break;
@@ -10039,8 +10045,8 @@
             /* (R94 E3: gold flame round him and violet round his student, a burst of each, one great boom, the phone's buzz) */
             FXR.togT = 0; fsFx('u5togboom', 0.95, null); if (kit && kit.buzz) kit.buzz([40, 30, 70]);
             { const pw = cast.pho ? cast.pho.group.position : null, zw = cast.zav ? cast.zav.group.position : null;
-              if (pw) fsBloom(pw.x, pw.z, FS_COL.gold, 1.0, false, 1.1, { ramp: 'gold', k: 0.9, heat: 1.6 });
-              if (zw) fsBloom(zw.x, zw.z, FS_COL.violet, 1.0, false, 1.1, { ramp: 'violet', k: 0.9, heat: 1.6 }); }
+              if (pw) fsBloom(pw.x, pw.z, FS_COL.gold, 1.0, false, 0.15, { ramp: 'gold', k: 0.5, heat: 1.2 });       // (at their feet: never over them)
+              if (zw) fsBloom(zw.x, zw.z, FS_COL.violet, 1.0, false, 0.15, { ramp: 'violet', k: 0.5, heat: 1.2 }); }
             break;
           case 'won': fsFx('u5done', 0.8, null); FS5.wonAt = FS5.wall; break;
           case 'lost': fsFx('u5broken', 0.8, null); FS5.lostAt = FS5.wall; break;
