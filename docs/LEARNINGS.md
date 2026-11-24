@@ -8991,3 +8991,19 @@ than a bar), so the first aim left the middle one half out of a phone's edge.
 lent, switched, and the lend ran out before he could press the gold, for 27 minutes without winning or losing. A soft lock
 that only the slowest hand finds is found only by a simulated slowest hand: fightsim's `slowest` player is kept, and a
 rule change is proved by breaking it (the old rules stalled 12 of 20 campaigns, the new none).
+
+**A standing take can walk a man out of his shot, and a look aimed at a fallback height is not a look at a face**
+(v28.0, R75's debug, builds 61 and 62; b_xpeople.js, c_yfilm.js). Mr Koh's chatting take carried his hips 0.17 m sideways
+over its third second, behind the doorway's jamb: no look could hold a face the body had taken away, and making his look
+stronger (build 60) changed nothing measurable. The films probe's face angle (each face's world turn and its angle off the
+lens, at every step) found it in one run where three rounds of photographs had not; the take's floor travel was taken
+out of his own copy (v25.5's standing take). And `fmHead(P, fallback)` returns the place a man STANDS at the height the
+FALLBACK names, never his eyes: Ton's look at Mr Koh aimed 18 cm over his head, and with a short reach Ton turned his
+chin up into the room. Aim at the other's eye height (about 1.45 m for a standing man here), and read the look's result
+as a face angle before calling it directed.
+
+**A portrait screen's HUD owns the top third** (v28.0, R75's debug, build 62; c_story.js SIT5). On a 390 x 844 phone the
+stat bars and a two-line objective reach 250 CSS points down: a seated view's first look that put his teacher's eyes at
+235 hid them under the objective while he spoke. A first look is solved for the screen's shape (a portrait screen 3.4
+degrees higher, a landscape one as it was), with the frame's foot checked too: the nearest row of the table's pieces
+must stay inside it.
