@@ -9468,6 +9468,30 @@ What the baseline contains, by release:
   to it; with one source left the waypoint now points at it; and a tap on a person or a thing in the chapter now presses
   it, the test having measured screen points against -1 to 1 so that only the badge ever worked).
 
+- **v28.0 · 21 to 24 Nov 2026 · EPISODE 4 CHAPTER 5 · THE HOUSE WITH NINE PRAI, live, and with it all five chapters of
+  episode 4.** Chad's direction of 20 Nov (docs/V28.0-E4C5-PLAN.md §0, R1 to R87 verbatim, each written down and pushed
+  before any work on it): the casebook's S1·14 and S1·15, both in Singapore: the smell nobody else could smell, the Prai,
+  and at the climax a TAG-TEAM fight in third person (Grandmaster Pho with the Naga stick's fire and a golden shockwave,
+  Master Zavier in defence and support, made from his photograph and rigged), then first person again. Built on Opus at his
+  word (R17, R32), from the tracker docs/V28.0-E4C5-BUILD.md (the log build by build, §5 every ask against the live build).
+  First live 21 Nov (build 25: the walkable map); the engine's seams sixty to seventy-three for it (the tag mode, the
+  chapter's own button, the sour chill, the caption over the thumbs, the briefing's picture, the retry, the party list, the
+  boom, the call, the arrow, the buzz, a body's width on the walls, a film laid at its first instant), each proved in
+  fixturetest. Two full debug rounds at his word: R33 (23 Nov) and R75 (24 Nov, docs/V28.0-E4C5-DEBUG.md: four read-only
+  lenses over builds 30 to 49's code, every lead verified before it was touched, then a real-input phone play-through to
+  every ending on the live build: A on build 58, B and C on build 61, D on build 64, every film read full size, the voices
+  never over one another, every cue from its sample, no page error). His notes while it was played (24 Nov): R77, my own
+  small fixes batched into one deploy (written into CLAUDE.md); R78, Mr Koh out of his teacher's shot in the bag-tied film;
+  R79, Ton's shaking off Mr Koh's hand (the arms' check eased on the film's clock, measured as one smooth step); R80/R81,
+  the arrow just over each head with a margin (each body's highest head over any take, tools/probes/headtop.mjs); R82, the
+  fight a little harder (a break-out and a Prai close cost sanity; careful first try 80 % from 96, within two 98 %); R83, a
+  closed door in a probe's picture was the probe's own jump before the chapter's start (my first reason was wrong and was
+  taken back; the probe waits now); R84 to R86, the arrow remade (a bevelled arrowhead, its edge his own colour darkened,
+  no ring); R87, Higgsfield's GPU answered from the tools, nothing rented. Live now: build 65, deploy
+  `6b0505051539159f98f2f5ee`, 661 of 661 served files byte-identical. Sheet v155 (24 Nov). The backup bundle could not be
+  made this round: the history is about 2.7 GB and the working machine has 1.4 GB free; GitHub holds the branch and
+  Netlify every deploy.
+
 ## The sheet, version by version
 
 **v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`, sha256 435b63ed...3020f4d4b): v154 with
