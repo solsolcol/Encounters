@@ -9512,7 +9512,9 @@ What the baseline contains, by release:
   lit surface, no scene light added), a bloom of the frame's saturated brights, a hit's radial blur with its colours split
   and the gold's ripple along the wheel's rim, ribbons of flame behind the fireballs and pale ones behind the bag's
   streaks; photographed here, no box (build 75's gold hid Pho in white: tuned at build 76). R101 answered from the
-  account: the box 147.34 credits, about $7.50 to $12.50. Live: build 76, deploy `6b0565ac17b769151678fcb3`.
+  account: the box 147.34 credits, about $7.50 to $12.50. Then swirls of energy round the two of them for the gathering,
+  LEND and TOGETHER (builds 77 and 78, tuned from their photographs), and R102 and R103: the fight's camera 0.4 m higher
+  with its look down steepened so the played one stands where he stood. Live: build 79, deploy `6b056baed7e13e4f39cd3a86`.
 
 ## The sheet, version by version
 

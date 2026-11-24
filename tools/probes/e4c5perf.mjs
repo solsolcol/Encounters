@@ -33,6 +33,11 @@ await measure('FIGHT BRIEF');
 await p.evaluate(() => document.getElementById('evBtn').click());
 await p.waitForFunction(() => window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 }).catch(() => say('(not live)'));
 await measure('FIGHT LIVE');
+/* (R100: the fight's own bloom, the last thing the world draws (renderOrder 1e9), taken off: what it costs) */
+await p.evaluate(() => { window.__bl = []; const E = window.__enc; const sc = E.stage.plan.FLOOR.cast.pho.group.parent; let root = sc; while (root.parent) root = root.parent;
+  root.traverse(o => { if (o.renderOrder >= 1e8 && o.visible) { window.__bl.push(o); o.visible = false; } }); });
+await measure('FIGHT LIVE, the bloom off (' + await p.evaluate(() => window.__bl.length) + ' hidden)');
+await p.evaluate(() => { for (const o of window.__bl) o.visible = true; });
 await p.evaluate(() => { const g = window.__enc.stage.films; void g; });
 /* the mist and the court's own painted cards hidden: what the overdraw costs */
 await p.evaluate(() => { window.__hid = []; const E = window.__enc; const sc = E.stage.plan.FLOOR.cast.pho.group.parent; let root = sc; while (root.parent) root = root.parent;
