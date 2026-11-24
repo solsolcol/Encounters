@@ -470,12 +470,43 @@
     const PRAI_EDGE = { color: 0xdfe4f0, fill: 0.0, rim: 1.35, power: 2.6, flicker: 0.45, xray: 0 };
     const PRAI_FILL = { color: 0x000000, fill: 0.92, rim: 0.0, power: 2.0, flicker: 0.0, xray: 0 };
     const PRAI_SHADE = /gl_FragColor\s*=\s*vec4\(\s*normalize\(\s*normal\s*\)\s*\*\s*0\.5\s*\+\s*0\.5\s*,\s*diffuseColor\.a\s*\);/;
+    /* R100 (24 Nov 2026, Chad: "it still looks simplistic to me, not quite AAA game quality"): THE EFFECTS' LIGHT. Four
+       lights of the fight's own (a fireball, a burst, the gold, the violet), never three's lights: no light is added to the
+       scene (v9.4, v15.1: a light's count builds shaders on screen and costs the phone a shadow pass), so the count never
+       changes; the court's own lit surfaces, the two of them and the nine each carry a few lines that read these four and add
+       their light as a light's (falling off with distance, brighter on a side that faces it, a little on the other).
+       Their places are put in the lens's frame as the picture is drawn, their colours and strengths each frame of the fight
+       (c_fightstage.js fxlHook, fxlFrame); outside it there are none (uFxlN 0: the same picture as before) */
+    const FXL5 = { V: [0, 1, 2, 3].map(() => new THREE.Vector4()), W: [0, 1, 2, 3].map(() => new THREE.Vector4()), C: [0, 1, 2, 3].map(() => new THREE.Vector4()), done: new WeakSet(), counts: null };
+    FXL5.U = { uFxlV: { value: FXL5.V }, uFxlC: { value: FXL5.C }, uFxlN: { value: 0 } };
+    FXL5.GLSL = 'uniform vec4 uFxlV[4];\nuniform vec4 uFxlC[4];\nuniform float uFxlN;\n'
+      + 'vec3 fxlAt(vec3 vp, vec3 nv) { vec3 s = vec3(0.0);\n'
+      + '  for (int i = 0; i < 4; i++) { if (float(i) >= uFxlN) break;\n'
+      + '    vec3 lp = uFxlV[i].xyz - vp; float d2 = dot(lp, lp), r = uFxlV[i].w, win = clamp(1.0 - d2 / (r * r), 0.0, 1.0);\n'
+      + '    s += uFxlC[i].rgb * (win * win / (1.0 + 2.5 * d2)) * (0.15 + 0.85 * max(dot(nv, lp * inversesqrt(max(d2, 1e-6))), 0.0)); }\n'
+      + '  return s; }\n';
+    /* (a lit material given them: its own light first, then these four added as direct light on the same surface; a patch
+       made before (Grandmaster Pho's look D) runs first and is kept, and his unlit skin carries them too) */
+    function fxlPatch(m) {
+      if (!m || FXL5.done.has(m) || !(m.isMeshStandardMaterial || m.isMeshLambertMaterial || m.isMeshPhongMaterial)) return false;
+      FXL5.done.add(m);
+      const prev = m.onBeforeCompile, pk = m.customProgramCacheKey;
+      m.onBeforeCompile = function (sh, r) { if (prev) prev.call(this, sh, r);
+        const at = '#include <lights_fragment_end>';
+        if (sh.fragmentShader.indexOf(at) < 0) return;
+        Object.assign(sh.uniforms, FXL5.U);
+        let fs = sh.fragmentShader.replace(at, at + '\nvec3 fxlD = fxlAt(geometryPosition, geometryNormal);\nreflectedLight.directDiffuse += fxlD * BRDF_Lambert(material.diffuseColor);');
+        fs = fs.replace('vec3 unl = diffuseColor.rgb * uLevel;', 'vec3 unl = diffuseColor.rgb * (uLevel + fxlD * 0.3183);');
+        sh.fragmentShader = FXL5.GLSL + fs; };
+      m.customProgramCacheKey = function () { return (pk ? pk.call(this) : '') + ':fxl5'; };
+      m.needsUpdate = true; return true;
+    }
     const praiU = { uPT: { value: 0 }, uPBody: { value: new THREE.Color(PRAI_LOOK.body) }, uPEdge: { value: new THREE.Color(PRAI_LOOK.edge) }, uPSheen: { value: new THREE.Color(PRAI_LOOK.sheen) } };
     function praiTranceMat() {
       const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide }); mats.push(m);
       m.transparent = true; m.depthWrite = true; m.fog = false; m.toneMapped = false;
       const U = Object.assign({ uPA: { value: 1 }, uPCool: { value: 0 } }, praiU);
-      m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
+      m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U, FXL5.U);
         sh.vertexShader = 'varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vPw = (modelMatrix * vec4(transformed, 1.0)).xyz;');
         /* (R47: COOLED by the Naga's water (uPCool, PRAI5.cool): its black turned a wet dark slate, its edge a pale blue-grey,
            its sheen running stronger, as a wet thing shines) */
@@ -485,10 +516,11 @@
            vec3 pc = mix(uPBody, uPEdge, pf * 0.85) + uPSheen * ps * 0.28 * (1.0 - pf);
            vec3 pw = mix(vec3(0.04, 0.065, 0.09), vec3(0.58, 0.7, 0.82), pf * 0.8) + vec3(0.45, 0.58, 0.72) * ps * 0.5 * (1.0 - pf);
            pc = mix(pc, pw, uPCool);
+           pc += fxlAt((viewMatrix * vec4(vPw, 1.0)).xyz, pN) * 0.3;
            gl_FragColor = vec4(pc, uPA * (0.9 + 0.1 * pf));`);
         if (out === sh.fragmentShader) console.warn('e4c5: the Prai\'s trance look found no colour line to write (three changed?)');
-        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA, uPCool;\n' + out; };
-      m.customProgramCacheKey = () => 'e4c5praiTrance';
+        sh.fragmentShader = 'varying vec3 vPw;\nuniform vec3 uPBody, uPEdge, uPSheen;\nuniform float uPT, uPA, uPCool;\n' + FXL5.GLSL + out; };
+      m.customProgramCacheKey = () => 'e4c5praiTrance:fxl5';
       m.userData.U = U; return m;
     }
     /* R43 (23 Nov 2026, Chad: "add a red flaming effect to every prai around their silhouette"): a THIRD twin of each body in
