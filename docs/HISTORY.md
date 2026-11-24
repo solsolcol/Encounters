@@ -9531,6 +9531,20 @@ What the baseline contains, by release:
   the voice chain's fade kept off a last word; "the gold" named the shockwave in eight lines and two words; the painting
   inside TOGETHER (seam 74); and nothing painted behind any window (plain glass and built parapets on the other blocks,
   a plain dark room behind the court's windows). Live: build 83, deploy `6b05b5318d084771882f9d44`. Sheet v156.
+  Then R109 to R120 (24 Nov): ending A's and B's case slid along the cloth's free side, clear of the twenty pieces; the
+  faint Grandmaster Pho that stayed fixed on the screen in Spirit Vision (R109, then R114, "why dont you read the code"):
+  a phone whose browser offers WEBGL_multisampled_render_to_texture never resolved the sight's depth picture, because
+  three r185's render-to-texture path skips the resolve, so its edges were traced from an old frame; the world's target
+  kept off that path (src/vision.js, said again before each use because a restored context forgets it), and R115's proof:
+  nothing changes where the extension is absent, and the phone's new path drawn right in chapters 4 and 5 at two samples,
+  before and after a lost context. R110 to R112: the fight's camera higher (boom 4.0 m at 35.2 degrees), LEND named
+  SHIELD, the hold's orders one step at a time, Master Zavier calling for the shockwave and asking why they keep breaking
+  out (R111, his words) with Grandmaster Pho's answer, and every word the player reads in the chapter made plain (a
+  standing rule); five act icons painted in the manner of World of Warcraft's spells (R116 refused the first set as "ai
+  slop", R117 named the manner). Live: build 85, deploy `6b05d597e0c519a1561c2495`. Then R118, TOGETHER a wide rectangle
+  slanted at both ends with its painting made wide (the engine's seventy-fifth seam), and R120, every act's word large on
+  its own dark plate (build 86 was photographed and held back: SHOCKWAVE still shrank to 9.6 px). Live: build 87, deploy
+  `6b05dae7c8b764eb20593e37`. Sheet v157.
 
 ## The sheet, version by version
 

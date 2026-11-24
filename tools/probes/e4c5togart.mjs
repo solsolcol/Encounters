@@ -1,4 +1,4 @@
-/* v28.0 (E4C5, R107) · THE TOGETHER CALL WITH ITS PAINTING, photographed in the fight at a phone's real size (390 x 844 CSS px at two device px, a touch context): the fight's lab set to its surge (lab.toSurge), the call waited for, the whole phone and the button's own piece at full size. usage: ENC_DIST=<dist> OUT=<dir> node tools/probes/e4c5togart.mjs */
+/* v28.0 (E4C5, R107) · THE TOGETHER CALL WITH ITS PAINTING, photographed in the fight at a phone's real size (390 x 844 CSS px at two device px, a touch context): the fight's lab set to its surge (lab.toSurge), the call waited for (polled as `.tagBtn.call`: since R110 every act button carries a picture, so `.tagBtn.art` no longer singles it out), the whole phone and the button's own piece at full size. usage: ENC_DIST=<dist> OUT=<dir> node tools/probes/e4c5togart.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -26,9 +26,9 @@ await p.waitForTimeout(1500);
 say('toSurge', JSON.stringify(await lab('toSurge')));
 const fstate = () => p.evaluate(() => { const f = window.__enc.stage.snap().story.fight; return JSON.stringify({ stage: f.stage, stageT: f.stageT, who: f.who, left: f.left, act: f.act }); });
 for (let i = 0; i < 6; i++) { await p.waitForTimeout(5000); say('fight', await fstate(), JSON.stringify(await p.evaluate(() => [...document.querySelectorAll('.tagBtn')].map(e => e.className + ':' + getComputedStyle(e).display)))); }
-await p.waitForFunction(() => { const e = document.querySelector('.tagBtn.art'); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 10 && getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden'; }, null, { timeout: 300000, polling: 300 });
+await p.waitForFunction(() => { const e = document.querySelector('.tagBtn.call'); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 10 && getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden'; }, null, { timeout: 300000, polling: 300 });
 await p.waitForTimeout(2500);
-const info = await p.evaluate(() => { const e = document.querySelector('.tagBtn.art'); const r = e.getBoundingClientRect(); const im = e.querySelector('canvas,img'); return { cls: e.className, r: [r.x, r.y, r.width, r.height].map(v => +v.toFixed(1)), inner: im ? [im.tagName, im.width, im.height] : null, text: e.textContent.trim() }; });
+const info = await p.evaluate(() => { const e = document.querySelector('.tagBtn.call'); const r = e.getBoundingClientRect(); const im = e.querySelector('canvas,img'); return { cls: e.className, r: [r.x, r.y, r.width, r.height].map(v => +v.toFixed(1)), inner: im ? [im.tagName, im.width, im.height] : null, text: e.textContent.trim() }; });
 say('button', JSON.stringify(info));
 await p.screenshot({ path: OUT + '/phone-together.png', timeout: 300000 });
 const r = info.r, pad = 30;

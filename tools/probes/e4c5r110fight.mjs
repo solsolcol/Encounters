@@ -65,7 +65,10 @@ for (const [k, txt] of [['objFight3w', "Keep them bound. Pho's SHOCKWAVE is char
   await shot('obj-' + k);
 }
 say('toSurge', JSON.stringify(await lab('toSurge')));
-await p.waitForTimeout(9000);
+/* (the call comes 1.5 s of FIGHT time into the surge (togetherAfter), and on a box with no graphics card the fight's clock
+   runs a tenth of a second a frame at most: polled, never a fixed wait (build 86's 9 s photographed the surge before it)) */
+await p.waitForFunction(() => { const e = document.querySelector('.tagBtn.call'); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 10 && getComputedStyle(e).display !== 'none'; }, null, { timeout: 600000, polling: 500 });
+await p.waitForTimeout(1500);
 await shot('surge');
 say('fit surge', JSON.stringify(await fit()));
 fs.writeFileSync(`${OUT}/${VIEW}-fit.json`, JSON.stringify({ pho: fitPho, zav: fitZav }, null, 1));
