@@ -468,10 +468,11 @@
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
       /* (the shared cast, masters/v28.0/parts/c_cast.js: each a declared reuse in the episode, reuseInEpisode) Grandmaster
-         Pho and Ton, chapter 3's; the white cloth over his crossed legs and the rite's fan, chapter 3's; the holy-water
-         bowls, chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
+         Pho and Ton, chapter 3's; the white cloth over his crossed legs, chapter 3's (the rite's fan taken out of his hand at
+         Chad's word, R88: "Remove the peacock feather fan from pho's hand in the final cutscene"); the holy-water bowls,
+         chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
          rows (the plan's 9.4) */
-      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
+      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w4waterbowl', 'w4bigbowl',
       'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
@@ -482,7 +483,6 @@
       pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): seated at the table in case three (standing, he is this chapter's copy of it with finger bones on his right hand, p5pho, R26)",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
-      w3fan: "chapter 3's peacock-feather fan, from his own Wai Kru's photographs: the rite's fan (the plan's 16: his photograph was asked and not sent)",
       w4waterbowl: "chapter 4's small silver bowl of holy water: the rite of case three", w4bigbowl: "chapter 4's larger bowl: the rite of case three",
       e4kuman: "chapter 1's Kuman Thong, another man's piece in the collector's rows", e4ngang: "chapter 1's Phra Ngang, in the collector's rows",
       e4tani: "chapter 1's Nang Tani, in the collector's rows", e4phraioil: "chapter 1's phial of oil, in the collector's rows",
@@ -12158,14 +12158,22 @@
        which piece is the game's own picture (docs/research/V28.0-PIECES.md): the ANGRY knot on the charging bull (Wua
        Thanu), the HUNGRY reaching shape on the bottle of oil (Rak Yom), the one LOOKING FOR ENERGY on the bound effigy (Hun
        Phayon). The three are placed here (stage.things by key: the films move and show them, c_yfilm.js PIECES5, THREE5) */
+    /* (R89, Chad, 24 Nov: "the amulets on the table are not arranged properly and some are floating outside". MEASURED on
+       the live build (the cloth's own triangles, a line down through every corner of every piece): the cloth's flat top
+       runs x -0.50..0.50 and z -0.28..0.28 about the room's middle, at 0.3369 to 0.3388 m (higher toward the case, by 4.3
+       mm a metre); the front row stood at z -0.30, its pieces' fronts over the hanging drape, 7 to 29 cm above the cloth
+       under them, two more past the ends; and every piece stood at 0.345, 6.5 mm over the top. Now: twenty in a grid of
+       four by five inside the top by 4 cm or more and clear of the case (GRID5), each set on the cloth where it stands
+       (CLOTHY5, sunk half a millimetre), the collector's pieces grouped by kind and turned to him, the three that carry
+       the presences in the back row; the bowl and the tied bag inside the top too) */
+    const CLOTHY5 = (x) => 0.3383 - 0.0043 * x;
+    const GRID5 = { xs: [-0.08, 0.035, 0.15, 0.265], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
     const TABLE5 = (() => {
-      const R = ROOM, top = 0.345;
-      /* (inside the cloth's top by a hand's breadth: photographed on the phone, the effigy at x 0.42 stood on the cloth's
-         hanging corner) */
-      const P = { angry: { x: R.cx - 0.04, y: top, z: R.cz - 0.17, key: 'w5wuathanu', ry: Math.PI + 0.5 },
-                  hungry: { x: R.cx + 0.13, y: top, z: R.cz - 0.10, key: 'w5rakyom', ry: Math.PI },
-                  energy: { x: R.cx + 0.30, y: top, z: R.cz - 0.18, key: 'w5hunphayon', ry: Math.PI - 0.2 } };
-      return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: top + 0.06, z: R.cz - 0.05 } };
+      const R = ROOM, G = GRID5, at = (i, j) => ({ x: R.cx + G.xs[i], y: CLOTHY5(R.cx + G.xs[i]), z: R.cz + G.zs[j] });
+      const P = { angry: Object.assign(at(1, 4), { key: 'w5wuathanu', ry: Math.PI + 0.5 }),
+                  hungry: Object.assign(at(2, 4), { key: 'w5rakyom', ry: Math.PI }),
+                  energy: Object.assign(at(3, 4), { key: 'w5hunphayon', ry: Math.PI - 0.2 }) };
+      return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: 0.345 + 0.06, z: R.cz - 0.05 } };
     })();
     FLOOR.pieces = TABLE5;
     for (const k of ['angry', 'hungry', 'energy']) { const q = TABLE5.P[k];
@@ -12195,13 +12203,64 @@
       { const g = new THREE.SphereGeometry(0.032, 16, 12); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.energy.x, q.energy.y + 0.12, q.energy.z); world.add(grp);
         pres.energy = { grp, m, home: grp.position.clone() }; }
       for (const k in pres) { pres[k].grp.visible = false; pres[k].fx = ctx.spirit ? ctx.spirit(pres[k].grp, PRES_LOOK[k]) : null; }
+      /* (R90, Chad, 24 Nov: "the green and red effects seen in spirit vision on the amulets look very strange, can you change
+         it to something simple, like red and green smoke coming out from the amulet". The angry knot and the hungry tube are
+         hidden (their groups kept: the marks, the taps and the films ride on them) and each piece gives off SMOKE5 in its own
+         colour; the pale one on the effigy, which he did not name, is as it was) */
+      pres.angry.m.visible = false; pres.hungry.m.visible = false;
+    })();
+    /* R90: A THIN SMOKE IN EACH PRESENCE'S COLOUR, rising off its piece and fading: soft puffs drawn only through his sight
+       (the vision's own layer, laid on as its spirits are: premultiplied and added, so the compositor reads the colour
+       true), each a pure function of the clock it is given (play's wall clock, a film's own), so a seek lands on the same
+       smoke. The red rises quick and restless (the angry one, shaking more as it flinches), the green slow and leaning
+       toward the collector's hands at the table's west end (the hungry one reaching) */
+    const SMOKE5 = (() => {
+      const NP = 18, _db = new THREE.Vector2();
+      const mk = (color, seed, o) => {
+        const g = new THREE.BufferGeometry(), pos = new Float32Array(NP * 3), siz = new Float32Array(NP), alp = new Float32Array(NP), rot = new Float32Array(NP);
+        const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
+        g.setAttribute('position', at(pos, 3)); g.setAttribute('aS', at(siz, 1)); g.setAttribute('aA', at(alp, 1)); g.setAttribute('aR', at(rot, 1)); owned.push(g);
+        const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false,
+          blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendEquation: THREE.AddEquation,
+          blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor, blendEquationAlpha: THREE.AddEquation,
+          uniforms: { uColor: { value: new THREE.Color(color) }, uScale: { value: 400 } },
+          vertexShader: 'attribute float aS; attribute float aA; attribute float aR; varying float vA; varying float vR; uniform float uScale; void main(){ vA = aA; vR = aR; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+          fragmentShader: 'uniform vec3 uColor; varying float vA; varying float vR; void main(){ vec2 p = gl_PointCoord - 0.5; float c = cos(vR), s = sin(vR); p = vec2(c * p.x - s * p.y, s * p.x + c * p.y); float d = length(p) * 2.0; if (d > 1.0) discard; float n = 0.72 + 0.28 * sin(p.x * 12.0 + vR * 3.0) * sin(p.y * 10.0 - vR * 2.0); float a = clamp(pow(1.0 - d, 1.6) * n * vA, 0.0, 1.0); gl_FragColor = vec4(uColor * a, a); }' });
+        mats.push(m);
+        const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.visible = false; pts.renderOrder = 3;
+        if (ctx.visionLayer != null) pts.layers.set(ctx.visionLayer);
+        /* (a point's size in the target it is drawn into: the vision draws its spirits at half the screen) */
+        pts.onBeforeRender = (r, sc, cam) => { const tg = r.getRenderTarget(), h = tg ? tg.height : r.getDrawingBufferSize(_db).y;
+          m.uniforms.uScale.value = h * 0.5 / Math.tan(((cam && cam.fov) || 50) * Math.PI / 360); };
+        world.add(pts);
+        const r = rng(seed), P = Array.from({ length: NP }, (q, i) => ({ life: o.life * (0.85 + 0.3 * r()), ph: i / NP + 0.04 * r(), sw: r() * 6.28, sw2: r() * 6.28, rr: r() * 6.28, h: o.rise * (0.8 + 0.4 * r()), s1: o.size * (0.85 + 0.3 * r()) }));
+        return {
+          pts,
+          /* the smoke at clock t, off the point b (its piece's top), at strength k (0 none), shaken by `agit` (0..1) */
+          frame(t, b, k, agit) {
+            pts.visible = k > 0.002; if (!pts.visible) return;
+            for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = 1 - (1 - a) * (1 - a);
+              const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
+              pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
+              siz[i] = q.s1 * (0.35 + 1.2 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+            const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
+        };
+      };
+      const S = { angry: mk(0xff2c1e, 28771, { life: 2.0, rise: 0.24, sway: 0.012, wob: 5.5, lean: 0.0, size: 0.085, alpha: 0.5, turn: 2.4 }),
+                  hungry: mk(0x84ff42, 28772, { life: 3.0, rise: 0.28, sway: 0.010, wob: 1.6, lean: -0.07, size: 0.095, alpha: 0.46, turn: 1.2 }) };
+      /* where each rises from: the top of its piece, below the presence's own place over it */
+      const off = { angry: -0.02, hungry: 0.03 };
+      return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; e.frame(t, { x: gp.x, y: gp.y + off[k], z: gp.z }, strength, agit || 0); },
+               off() { for (const k in S) S[k].pts.visible = false; } };
     })();
     function presTick(wdt) {
       if (getState() === 'cine') return;                      // (a film directs them itself: the rite's endings)
       const on = phase === 'table' || phase === 'ask';
       for (const k in pres) pres[k].grp.visible = on;
-      if (!on) return;
+      if (!on) { SMOKE5.off(); return; }
       const t = wallClock.t;
+      /* (R90: the smoke off each piece, from where its presence sits at home: not the knot's shaking place) */
+      SMOKE5.frame('angry', t, pres.angry.home, 1, pres.angry.flinch); SMOKE5.frame('hungry', t, pres.hungry.home, 1, 0);
       const A = pres.angry; A.flinch = Math.max(0, A.flinch - wdt * 1.6);
       const j = 0.006 + 0.02 * A.flinch;
       A.grp.position.set(A.home.x + Math.sin(t * 23) * j, A.home.y + Math.sin(t * 17 + 1) * j - 0.02 * A.flinch, A.home.z + Math.cos(t * 19) * j);
@@ -13760,28 +13819,33 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     })();
 
     /* ---------------------------------------------------------------- THE RITE'S THINGS (case three, every ending: the
-       plan's 4.9). The holy water in chapter 4's bowl on the cloth, the fan (chapter 3's, declared) in Grandmaster Pho's
-       hand, the drops it throws (painted light: a fixed set, the same every run), the black bag and its white string */
+       plan's 4.9). The holy water in chapter 4's bowl on the cloth, the drops his hand throws (painted light: a fixed set,
+       the same every run), the black bag and its white string. (R88, Chad, 24 Nov: "Remove the peacock feather fan from
+       pho's hand in the final cutscene": no fan; the water leaves his raised hand as it sweeps down, RITE_AT.handFrom.
+       R89: the bowl inside the cloth's top, its back third had stood over the hanging drape, and on the cloth itself) */
     const RITE5 = (() => {
-      const R = ROOM, top = 0.345;
-      const bowl = place('w4waterbowl', R.cx + 0.34, top, R.cz + 0.26, 0, { name: 'riteBowl' }); bowl.visible = false;
-      const fan = place('w3fan', 0, 0, 0, 0, { name: 'riteFan' }); fan.visible = false;
-      /* the drops: a fixed set of soft points, each flying its own arc from the fan to the cloth (v6.15: seeded) */
+      const R = ROOM, top = CLOTHY5(ROOM.cx + 0.40);
+      const bowl = place('w4waterbowl', R.cx + 0.40, top, R.cz + 0.19, 0, { name: 'riteBowl' }); bowl.visible = false;
+      const fan = null;
+      /* the drops: a fixed set of soft points, each flying its own arc from his hand to the pieces on the cloth (v6.15:
+         seeded) */
       const soft = (() => { const [c, x] = canvas(64, 64); const gr = x.createRadialGradient(32, 32, 1, 32, 32, 31);
         gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(220,235,255,0.5)'); gr.addColorStop(1, 'rgba(200,220,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
       const drops = [], r = rng(28640);
       for (let i = 0; i < 26; i++) { const m = new THREE.SpriteMaterial({ map: soft, color: 0xdfefff, transparent: true, opacity: 0, depthWrite: false }); mats.push(m);
         const sp = new THREE.Sprite(m); sp.scale.setScalar(0.012 + r() * 0.01); sp.visible = false; world.add(sp);
-        drops.push({ sp, m, dx: (r() - 0.5) * 0.9, dz: (r() - 0.5) * 0.55, up: 0.05 + r() * 0.12, lag: r() * 0.18, life: 0.55 + r() * 0.25 }); }
+        drops.push({ sp, m, dx: (r() - 0.5) * 0.36, dz: (r() - 0.5) * 0.36, up: 0.05 + r() * 0.12, lag: r() * 0.18, life: 0.55 + r() * 0.25 }); }
       /* the white sacred string round the bag's neck (the case file: "sealed tightly with sacred string"): a ring of cord */
       const mStr = new THREE.MeshStandardMaterial({ color: 0xf4f0e4, roughness: 0.8 }); mats.push(mStr);
       const gStr = new THREE.TorusGeometry(0.034, 0.0035, 6, 28); gStr.rotateX(Math.PI / 2); owned.push(gStr);
       const strRing = new THREE.Group(); for (let i = 0; i < 3; i++) { const me = new THREE.Mesh(gStr, mStr); me.position.y = i * 0.0065; strRing.add(me); } strRing.visible = false; world.add(strRing);
       return {
         bowl, fan, drops, strRing,
-        /* one throw of the fan: the drops leave the fan's head at `t0` toward the pieces (cx, cz) and fall on the cloth */
-        throwAt(t, t0, from, cx, cz) {
-          for (const d of drops) { const u = (t - t0 - d.lag) / d.life;
+        /* one throw of his hand: the drops leave it at `t0` toward the pieces (cx, cz) and fall on the cloth; `prev` (the
+           throws' period, 0 for the first) lets the last throw's drops finish their fall as the next begins */
+        throwAt(t, t0, from, cx, cz, prev) {
+          for (const d of drops) { let u = (t - t0 - d.lag) / d.life;
+            if ((u < 0 || u > 1) && prev > 0) u = (t + prev - t0 - d.lag) / d.life;
             if (u < 0 || u > 1) { d.sp.visible = false; continue; }
             d.sp.visible = true; d.m.opacity = 0.85 * (1 - u * u);
             d.sp.position.set(lp(from[0], cx + d.dx, u), lp(from[1], top + 0.01, u) + d.up * 4 * u * (1 - u), lp(from[2], cz + d.dz, u)); } },
@@ -13797,21 +13861,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        Yin pieces of chapter 1 as other men's pieces of the same kinds (declared): twenty on the cloth, and the case's foam
        beside them. Laid out by the film in (they are not on the table before it), and gathered into the bag in the rite */
     const PIECES5 = (() => {
-      const R = ROOM, top = 0.345, keys = ['e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'];
+      const R = ROOM, keys = ['e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'];
       const list = [];
       /* three rows across the table's front half (the cloth's x -0.55 .. 0.55), the presences' three where the play
          puts them (TABLE5.P) and the rest about them, a little apart, each turned to him */
       /* (CLEAR OF THE PADDED CASE, PLAY's finding: the case stands at (cx - 0.36, cz - 0.05), 0.34 by 0.27 m turned 18
          degrees, so its footprint runs to x -0.17 over z cz - 0.21 .. cz + 0.11, and four pieces of the two rows behind the
          first stood inside it. Those rows now start east of it (x -0.15), and a fourth row behind them takes the rest) */
-      const rowsZ = [R.cz - 0.30, R.cz - 0.18, R.cz - 0.06, R.cz + 0.06], xs = [-0.52, -0.40, -0.28, -0.16, -0.04, 0.08, 0.20, 0.32, 0.44, 0.54];
-      const caseX = R.cx - 0.15, caseZ0 = R.cz - 0.24, caseZ1 = R.cz + 0.14;
-      let n = 0; const r = rng(28650);
-      for (let j = 0; j < rowsZ.length && n < 17; j++) for (let i = 0; i < xs.length && n < 17; i++) {
-        const x = xs[i] + (j % 2) * 0.05, z = rowsZ[j];
-        const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.09);
-        if (clash || x > 0.56 || x < -0.56 || (x < caseX && z > caseZ0 && z < caseZ1)) continue;
-        const key = keys[n % keys.length], g = place(key, x, top, z, Math.PI + (r() - 0.5) * 0.3, { name: 'piece' + n }); list.push({ g, x, z }); n++;
+      /* (R89: the grid's twenty places (c_play.js GRID5), front row first, the three's taken in the back row; the seventeen
+         grouped by kind in that order, each turned square to him, set on the cloth where it stands) */
+      let n = 0;
+      for (let j = 0; j < GRID5.zs.length && n < 17; j++) for (let i = 0; i < GRID5.xs.length && n < 17; i++) {
+        const x = R.cx + GRID5.xs[i], z = R.cz + GRID5.zs[j];
+        const clash = [TABLE5.P.angry, TABLE5.P.hungry, TABLE5.P.energy].some(p => Math.hypot(p.x - x, p.z - z) < 0.05);
+        if (clash) continue;
+        const key = keys[Math.floor(n * keys.length / 17)], g = place(key, x, CLOTHY5(x), z, Math.PI, { name: 'piece' + n }); list.push({ g, x, z }); n++;
       }
       return { list, set(on) { for (const p of list) p.g.visible = on; for (const k of ['w5wuathanu', 'w5rakyom', 'w5hunphayon']) if (things[k]) things[k].visible = on; } };
     })();
@@ -15017,7 +15081,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        Grandmaster Pho's hand resting on it, the empty case open beside it: "Understanding first. Then possession."
        Their clocks: EN5[k] (each ending's own beats, its rite at EN5[k].rite, its close after); the rite's own beats RT5,
        the close's CL5. Each ends on its black: the card lies over it */
-    const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.22], fanFrom: [ROOM.cx + 0.12, 0.72, ROOM.cz + 0.48] };
+    /* (R88: the drops leave his right hand as his seated cheer sweeps it down, measured on his body where he sits: the take
+       at 1.7 s, the hand at (0.217, 1.109, 0.638) about the room's middle, the throw's release in its cycle (1.7). R89: the
+       tied bag inside the cloth's top: at 0.22 and turned 0.5 its back stood 7 cm over the hanging drape) */
+    const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.16], handFrom: [ROOM.cx + 0.217, 1.109, ROOM.cz + 0.638] };
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
     const BAGBLOB5 = { m: null, o: null };
     /* (each bag's own painted contact shadow, carried with it: the open bag on the low table at the knot read as floating,
@@ -15048,7 +15115,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const gathered = tr >= RT.bag;
         PIECES5.set(!gathered);
         const bag = things.bagTied;
-        if (bag) { bag.visible = gathered; if (gathered) { bag.position.set(RITE_AT.bag[0], 0.345, RITE_AT.bag[1]); bag.rotation.set(0, 0.5, 0); } }
+        if (bag) { bag.visible = gathered; if (gathered) { bag.position.set(RITE_AT.bag[0], CLOTHY5(RITE_AT.bag[0]), RITE_AT.bag[1]); bag.rotation.set(0, 0.2, 0); } }
         RITE5.string(gathered ? smo(c01((tr - RT.string) / 0.6)) : 0, bag);
         /* the ending's own things (the case pushed across, the lid, the three), set before the presences, which ride on
            the three (R33) */
@@ -15065,7 +15132,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const pk = things[TABLE5.P[nm].key], ph = threeHome5[TABLE5.P[nm].key];
           const hx = q.home.x + (pk && ph ? pk.position.x - ph.x : 0), hz = q.home.z + (pk && ph ? pk.position.z - ph.z : 0);
           if (q.grp.visible) { q.grp.position.set(hx + (hx - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, hz + 0.9 * u);
-            if (q.fx) q.fx.set('uAlpha', 1 - u); } }
+            if (q.fx) q.fx.set('uAlpha', 1 - u); }
+          /* (R90: its smoke goes with it, thinning as it lifts away) */
+          if (nm !== 'energy') SMOKE5.frame(nm, t, q.grp.position, q.grp.visible ? 1 - u : 0, 0); }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
         /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
@@ -15086,12 +15155,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (wf > 0) { const cyc = ((tr - RT.dip) % 2.2 + 2.2) % 2.2, wc = smo(c01(cyc / 0.25)) * (1 - smo(c01((cyc - 1.95) / 0.25))), r = restOf5('phoS', t);
             pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + cyc * 0.85, false, r[0], 1 - wf * wc, r[1]); }
           else fmSpeak(P, 'phoS', t, (E.pho || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions']));
-          if (tr >= 0 && tr < RT.bag) FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); else RITE5.fan.visible = false;
           const L = [[0, COLH]];
           for (const [key, at, to] of (E.pho || [])) if (to === 'me') { L.push([at - 0.2, 'lens']); L.push([at + (SECS[key] || 2) + 0.2, COLH]); }
           L.push([r0, CLOTH]); L.push([r0 + RT.end, COLH]); L.sort((a, b) => a[0] - b[0]);
           fmGaze(P, t, L, 0.7, 0.7, 0.03, 0.6); });
-        if (tr > RT.dip && tr < RT.bag) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
+        if (tr > RT.dip && tr < RT.bag) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 1.7, RITE_AT.handFrom, R.cx + 0.09, R.cz - 0.02, tr - RT.dip >= 2.2 ? 2.2 : 0); } else RITE5.dropsOff();
         /* the collector: his own story first; still through the rite; lighter after it; standing at the door, and gone */
         whenReady(cast.col, (P) => { const s0 = STATION.table.collector;
           const gone = E.gone != null && t >= E.gone;
@@ -15132,9 +15200,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (tc >= 0) caseAt5(RITE_AT.bag[0] - 0.36, RITE_AT.bag[1] - 0.04, 0.3);
         /* THE LAST PICTURE: his teacher's right hand laid on the bag (the people's own hand laid on a thing: handTo, its
            palm on the bag's shoulder, the fingers toward the student) */
-        if (tc >= 0 && bag) whenReady(cast.phoS, (P) => handTo(P, 'R', [RITE_AT.bag[0] - 0.02, 0.345 + 0.16, RITE_AT.bag[1] + 0.03], [0.05, -0.35, -0.93], [0, -1, 0.2], smo(c01(tc / 0.6)), { out: 0.22, down: 0.3 }));
+        if (tc >= 0 && bag) whenReady(cast.phoS, (P) => handTo(P, 'R', [RITE_AT.bag[0] - 0.02, CLOTHY5(RITE_AT.bag[0]) + 0.16, RITE_AT.bag[1] + 0.03], [0.05, -0.35, -0.93], [0, -1, 0.2], smo(c01(tc / 0.6)), { out: 0.22, down: 0.3 }));
       },
-      end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null);
+      end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null);
         fmBeds(null);
         /* (the presences put back where the play keeps them, whole: the rite carried them off the table) */
         { const P5 = presOf5(); if (P5) for (const nm in P5) { const q = P5[nm]; if (q && q.grp && q.home) { q.grp.position.copy(q.home); if (q.fx) q.fx.set('uAlpha', 1); } } }
@@ -15154,7 +15222,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
-      const h = threeHome5[key]; g.position.set(lp(h.x, h.x * 0.4 + 0.05, u), h.y, lp(h.z, 240.28, u)); } }
+      const h = threeHome5[key]; g.position.set(lp(h.x, h.x * 0.4 + 0.05, u), h.y, lp(h.z, 240.225, u)); } }
     /* (ending C) something small that his nose never caught, on a piece he has already packed: a pale thing lifting its
        head out of the case's foam, seen only in his sight (drawn as the play's presences are: ctx.spirit) */
     const SMALL5 = (() => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), matProxy); owned.push(m.geometry); g.add(m); g.visible = false; world.add(g);
@@ -15216,7 +15284,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 each line's first word, the lens eased from one man to the other all through every line, R25 framing) */
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.co5C1 + SECS.co5C1 - 0.1, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
-             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.1, 0.37, 239.95], fp: 42, fd: 36 },
+             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.13, 0.37, 240.12], fp: 42, fd: 36 },
              { t: E.pack, name: 'pack', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.34, 0.4, 239.95], fp: 40, fd: 34, cut: true },
              { t: E.see + 1.2, name: 'small', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.33, 0.45, 239.93], fp: 32, fd: 28 },
              { t: E.ph5C1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },

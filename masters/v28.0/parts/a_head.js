@@ -219,10 +219,11 @@
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
       /* (the shared cast, masters/v28.0/parts/c_cast.js: each a declared reuse in the episode, reuseInEpisode) Grandmaster
-         Pho and Ton, chapter 3's; the white cloth over his crossed legs and the rite's fan, chapter 3's; the holy-water
-         bowls, chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
+         Pho and Ton, chapter 3's; the white cloth over his crossed legs, chapter 3's (the rite's fan taken out of his hand at
+         Chad's word, R88: "Remove the peacock feather fan from pho's hand in the final cutscene"); the holy-water bowls,
+         chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
          rows (the plan's 9.4) */
-      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
+      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w4waterbowl', 'w4bigbowl',
       'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
@@ -233,7 +234,6 @@
       pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): seated at the table in case three (standing, he is this chapter's copy of it with finger bones on his right hand, p5pho, R26)",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
-      w3fan: "chapter 3's peacock-feather fan, from his own Wai Kru's photographs: the rite's fan (the plan's 16: his photograph was asked and not sent)",
       w4waterbowl: "chapter 4's small silver bowl of holy water: the rite of case three", w4bigbowl: "chapter 4's larger bowl: the rite of case three",
       e4kuman: "chapter 1's Kuman Thong, another man's piece in the collector's rows", e4ngang: "chapter 1's Phra Ngang, in the collector's rows",
       e4tani: "chapter 1's Nang Tani, in the collector's rows", e4phraioil: "chapter 1's phial of oil, in the collector's rows",

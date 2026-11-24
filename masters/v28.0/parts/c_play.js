@@ -502,14 +502,22 @@
        which piece is the game's own picture (docs/research/V28.0-PIECES.md): the ANGRY knot on the charging bull (Wua
        Thanu), the HUNGRY reaching shape on the bottle of oil (Rak Yom), the one LOOKING FOR ENERGY on the bound effigy (Hun
        Phayon). The three are placed here (stage.things by key: the films move and show them, c_yfilm.js PIECES5, THREE5) */
+    /* (R89, Chad, 24 Nov: "the amulets on the table are not arranged properly and some are floating outside". MEASURED on
+       the live build (the cloth's own triangles, a line down through every corner of every piece): the cloth's flat top
+       runs x -0.50..0.50 and z -0.28..0.28 about the room's middle, at 0.3369 to 0.3388 m (higher toward the case, by 4.3
+       mm a metre); the front row stood at z -0.30, its pieces' fronts over the hanging drape, 7 to 29 cm above the cloth
+       under them, two more past the ends; and every piece stood at 0.345, 6.5 mm over the top. Now: twenty in a grid of
+       four by five inside the top by 4 cm or more and clear of the case (GRID5), each set on the cloth where it stands
+       (CLOTHY5, sunk half a millimetre), the collector's pieces grouped by kind and turned to him, the three that carry
+       the presences in the back row; the bowl and the tied bag inside the top too) */
+    const CLOTHY5 = (x) => 0.3383 - 0.0043 * x;
+    const GRID5 = { xs: [-0.08, 0.035, 0.15, 0.265], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
     const TABLE5 = (() => {
-      const R = ROOM, top = 0.345;
-      /* (inside the cloth's top by a hand's breadth: photographed on the phone, the effigy at x 0.42 stood on the cloth's
-         hanging corner) */
-      const P = { angry: { x: R.cx - 0.04, y: top, z: R.cz - 0.17, key: 'w5wuathanu', ry: Math.PI + 0.5 },
-                  hungry: { x: R.cx + 0.13, y: top, z: R.cz - 0.10, key: 'w5rakyom', ry: Math.PI },
-                  energy: { x: R.cx + 0.30, y: top, z: R.cz - 0.18, key: 'w5hunphayon', ry: Math.PI - 0.2 } };
-      return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: top + 0.06, z: R.cz - 0.05 } };
+      const R = ROOM, G = GRID5, at = (i, j) => ({ x: R.cx + G.xs[i], y: CLOTHY5(R.cx + G.xs[i]), z: R.cz + G.zs[j] });
+      const P = { angry: Object.assign(at(1, 4), { key: 'w5wuathanu', ry: Math.PI + 0.5 }),
+                  hungry: Object.assign(at(2, 4), { key: 'w5rakyom', ry: Math.PI }),
+                  energy: Object.assign(at(3, 4), { key: 'w5hunphayon', ry: Math.PI - 0.2 }) };
+      return { P, pieces: [P.angry, P.hungry, P.energy], caseAt: { x: R.cx - 0.36, y: 0.345 + 0.06, z: R.cz - 0.05 } };
     })();
     FLOOR.pieces = TABLE5;
     for (const k of ['angry', 'hungry', 'energy']) { const q = TABLE5.P[k];
@@ -539,13 +547,64 @@
       { const g = new THREE.SphereGeometry(0.032, 16, 12); const m = new THREE.Mesh(g, matProxy); const grp = new THREE.Group(); grp.add(m); grp.position.set(q.energy.x, q.energy.y + 0.12, q.energy.z); world.add(grp);
         pres.energy = { grp, m, home: grp.position.clone() }; }
       for (const k in pres) { pres[k].grp.visible = false; pres[k].fx = ctx.spirit ? ctx.spirit(pres[k].grp, PRES_LOOK[k]) : null; }
+      /* (R90, Chad, 24 Nov: "the green and red effects seen in spirit vision on the amulets look very strange, can you change
+         it to something simple, like red and green smoke coming out from the amulet". The angry knot and the hungry tube are
+         hidden (their groups kept: the marks, the taps and the films ride on them) and each piece gives off SMOKE5 in its own
+         colour; the pale one on the effigy, which he did not name, is as it was) */
+      pres.angry.m.visible = false; pres.hungry.m.visible = false;
+    })();
+    /* R90: A THIN SMOKE IN EACH PRESENCE'S COLOUR, rising off its piece and fading: soft puffs drawn only through his sight
+       (the vision's own layer, laid on as its spirits are: premultiplied and added, so the compositor reads the colour
+       true), each a pure function of the clock it is given (play's wall clock, a film's own), so a seek lands on the same
+       smoke. The red rises quick and restless (the angry one, shaking more as it flinches), the green slow and leaning
+       toward the collector's hands at the table's west end (the hungry one reaching) */
+    const SMOKE5 = (() => {
+      const NP = 18, _db = new THREE.Vector2();
+      const mk = (color, seed, o) => {
+        const g = new THREE.BufferGeometry(), pos = new Float32Array(NP * 3), siz = new Float32Array(NP), alp = new Float32Array(NP), rot = new Float32Array(NP);
+        const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
+        g.setAttribute('position', at(pos, 3)); g.setAttribute('aS', at(siz, 1)); g.setAttribute('aA', at(alp, 1)); g.setAttribute('aR', at(rot, 1)); owned.push(g);
+        const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false,
+          blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendEquation: THREE.AddEquation,
+          blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor, blendEquationAlpha: THREE.AddEquation,
+          uniforms: { uColor: { value: new THREE.Color(color) }, uScale: { value: 400 } },
+          vertexShader: 'attribute float aS; attribute float aA; attribute float aR; varying float vA; varying float vR; uniform float uScale; void main(){ vA = aA; vR = aR; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aS * uScale / max(0.05, -mv.z); gl_Position = projectionMatrix * mv; }',
+          fragmentShader: 'uniform vec3 uColor; varying float vA; varying float vR; void main(){ vec2 p = gl_PointCoord - 0.5; float c = cos(vR), s = sin(vR); p = vec2(c * p.x - s * p.y, s * p.x + c * p.y); float d = length(p) * 2.0; if (d > 1.0) discard; float n = 0.72 + 0.28 * sin(p.x * 12.0 + vR * 3.0) * sin(p.y * 10.0 - vR * 2.0); float a = clamp(pow(1.0 - d, 1.6) * n * vA, 0.0, 1.0); gl_FragColor = vec4(uColor * a, a); }' });
+        mats.push(m);
+        const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.visible = false; pts.renderOrder = 3;
+        if (ctx.visionLayer != null) pts.layers.set(ctx.visionLayer);
+        /* (a point's size in the target it is drawn into: the vision draws its spirits at half the screen) */
+        pts.onBeforeRender = (r, sc, cam) => { const tg = r.getRenderTarget(), h = tg ? tg.height : r.getDrawingBufferSize(_db).y;
+          m.uniforms.uScale.value = h * 0.5 / Math.tan(((cam && cam.fov) || 50) * Math.PI / 360); };
+        world.add(pts);
+        const r = rng(seed), P = Array.from({ length: NP }, (q, i) => ({ life: o.life * (0.85 + 0.3 * r()), ph: i / NP + 0.04 * r(), sw: r() * 6.28, sw2: r() * 6.28, rr: r() * 6.28, h: o.rise * (0.8 + 0.4 * r()), s1: o.size * (0.85 + 0.3 * r()) }));
+        return {
+          pts,
+          /* the smoke at clock t, off the point b (its piece's top), at strength k (0 none), shaken by `agit` (0..1) */
+          frame(t, b, k, agit) {
+            pts.visible = k > 0.002; if (!pts.visible) return;
+            for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = 1 - (1 - a) * (1 - a);
+              const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
+              pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
+              siz[i] = q.s1 * (0.35 + 1.2 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+            const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
+        };
+      };
+      const S = { angry: mk(0xff2c1e, 28771, { life: 2.0, rise: 0.24, sway: 0.012, wob: 5.5, lean: 0.0, size: 0.085, alpha: 0.5, turn: 2.4 }),
+                  hungry: mk(0x84ff42, 28772, { life: 3.0, rise: 0.28, sway: 0.010, wob: 1.6, lean: -0.07, size: 0.095, alpha: 0.46, turn: 1.2 }) };
+      /* where each rises from: the top of its piece, below the presence's own place over it */
+      const off = { angry: -0.02, hungry: 0.03 };
+      return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; e.frame(t, { x: gp.x, y: gp.y + off[k], z: gp.z }, strength, agit || 0); },
+               off() { for (const k in S) S[k].pts.visible = false; } };
     })();
     function presTick(wdt) {
       if (getState() === 'cine') return;                      // (a film directs them itself: the rite's endings)
       const on = phase === 'table' || phase === 'ask';
       for (const k in pres) pres[k].grp.visible = on;
-      if (!on) return;
+      if (!on) { SMOKE5.off(); return; }
       const t = wallClock.t;
+      /* (R90: the smoke off each piece, from where its presence sits at home: not the knot's shaking place) */
+      SMOKE5.frame('angry', t, pres.angry.home, 1, pres.angry.flinch); SMOKE5.frame('hungry', t, pres.hungry.home, 1, 0);
       const A = pres.angry; A.flinch = Math.max(0, A.flinch - wdt * 1.6);
       const j = 0.006 + 0.02 * A.flinch;
       A.grp.position.set(A.home.x + Math.sin(t * 23) * j, A.home.y + Math.sin(t * 17 + 1) * j - 0.02 * A.flinch, A.home.z + Math.cos(t * 19) * j);
