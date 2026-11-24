@@ -88,7 +88,13 @@ const INSTALL = () => {
           for (let i = 0; i < N; i += 9) { m.getVertexPosition(i, v); m.localToWorld(v); n.copy(v).project(cam); if (n.z >= 1 || n.z <= -1) continue; any = true;
             if (n.x < a[0]) a[0] = n.x; if (n.x > a[1]) a[1] = n.x; if (n.y < a[2]) a[2] = n.y; if (n.y > a[3]) a[3] = n.y; } });
         if (any) ext = a.map(q => +q.toFixed(3)); }
-      return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9, hands[0], hands[1]]; });
+      /* (R75's debug: the face's own facing, its yaw in the world and its angle off the lens, 0 facing it: a look is read as a
+         number, not from a picture of one moment) */
+      let face = null;
+      if (Q.head && Q.headRest) { const hq = Q.head.getWorldQuaternion(new cam.quaternion.constructor()), f = new v.constructor(0, 0, 1).applyQuaternion(Q.headRest).applyQuaternion(hq).normalize();
+        const hp = Q.head.getWorldPosition(new v.constructor()), tl = cam.getWorldPosition(new v.constructor()).sub(hp).normalize();
+        face = [+(Math.atan2(f.x, f.z) * 180 / Math.PI).toFixed(1), +(Math.acos(Math.max(-1, Math.min(1, f.dot(tl)))) * 180 / Math.PI).toFixed(1)]; }
+      return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9, hands[0], hands[1], face]; });
     const T = {};
     if (!noThings)
     for (const o of things()) { const vis = seen(o) ? 1 : 0; o.getWorldPosition(v); const k = o.name + '|' + o.uuid.slice(0, 4);

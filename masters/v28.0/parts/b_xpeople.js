@@ -21,6 +21,20 @@
     const cast = {};
     cast.koh = mkPerson('p5koh', STATION.hunt.koh.x, STATION.hunt.koh.z, STATION.hunt.koh.ry, { take: 'Idle_3', phase: 0.35,
       talk: 'Talk_with_Hands_Open', skins: { 0: 'p5kohh', 2: 'p5kohm' }, blobW: 0.85, blobD: 0.65 });
+    /* (R75's debug: HIS CHATTING TAKE HELD ON HIS MARK, as a standing take's travel is (v25.5, episode 4 chapter 2's
+       centreStand). Played for his line in the doorway at the Naga film's end (and only there: its hands stay near him
+       between Ton and Jun), it carried his hips 0.17 m east over its third second and his head 0.22 m, measured by the films
+       probe's seek, so from the door shot's lens his face went behind the doorway's jamb. The hips' travel on the floor is
+       taken out of his own copy of the take, every key held where its first key stands (its height kept): his feet, which
+       slide for it, are out of that shot's frame) */
+    whenReady(cast.koh, (P) => {
+      const a = P.acts && P.acts.Stand_and_Chat, tr = a && a.getClip().tracks.find(q => /Hips(_\d+)?\.position$/.test(q.name));
+      if (!tr || !P.hips || !P.hips.parent) { console.warn('p5koh: no chatting hips to hold'); return; }
+      P.group.updateMatrixWorld(true);
+      const m = new THREE.Matrix3().setFromMatrix4(P.hips.parent.matrixWorld), mi = m.clone().invert(), v = tr.values, n = v.length / 3, d = new THREE.Vector3();
+      for (let i = 1; i < n; i++) { d.set(v[i * 3] - v[0], v[i * 3 + 1] - v[1], v[i * 3 + 2] - v[2]).applyMatrix3(m); d.x = 0; d.z = 0; d.applyMatrix3(mi);
+        v[i * 3] = v[0] + d.x; v[i * 3 + 1] = v[1] + d.y; v[i * 3 + 2] = v[2] + d.z; }
+    });
     cast.jun = mkPerson('p5jun', STATION.walk.jun.x, STATION.walk.jun.z, STATION.walk.jun.ry, { take: 'Idle_3', phase: 0.6,
       talk: 'Talk_with_Right_Hand_Open', skins: { 0: 'p5junh', 2: 'p5junm' }, blobW: 0.8, blobD: 0.6 });
 
