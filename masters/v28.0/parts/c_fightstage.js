@@ -1732,7 +1732,10 @@
           if (slot === 'main') {
             const callOn = H.together.live || H.together.fill > 0;
             kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togart' });   // (R107: the two of them painted, inside it)
+                             call: callOn, wide: true, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togwide' });
+            /* (R107: the two of them painted, inside it. R118, 24 Nov 2026: "The together button, can you make it more
+               rectangular instead with the skewed angle edges?": the call drawn wide with its two ends slanted (the
+               seventy-fifth seam, `wide`), its picture painted again wide for it) */
             if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
           } else kit.tagAct(id, { hidden: true, pulse: false, call: false, art: null });
           continue;

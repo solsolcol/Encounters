@@ -36,7 +36,7 @@ group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the c
       "(masters/v28.0/props/portraits2.py --painted)",
       [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)"),
        ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)"),
-       ('p5togart', 'p5togart.jpg', "R107: the two of them fighting together, painted, inside the TOGETHER button (512 x 512)")])
+       ('p5togwide', 'p5togwide.jpg', "R107/R118: the two of them fighting together, painted wide (GPT Image from R107's round picture), inside the wide slanted TOGETHER button (768 x 330)")])
 group("e4c5: THE FIGHT'S ABILITY ICONS (R110, 24 Nov 2026: 'improve how the icons of the ability buttons look like. They look way\n"
       "too basic. Maybe generate the icons so they look like diablo style ability icons'; then R116/R117: 'Actually diablo isnt a\n"
       "good example, world of warcraft icons are better'), painted by GPT Image in that manner, each filling its round button\n"

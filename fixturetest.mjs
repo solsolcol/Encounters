@@ -3625,7 +3625,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagWideSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3802,6 +3802,25 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       kit.tagAct('zap', { art: null }); await frames(4);
       R.gone = !B().classList.contains('art') && getComputedStyle(B().querySelector('.tgArt')).display === 'none' && !B().querySelector('.tgArt canvas');
       R._r = [rb, ra].map(r => r && [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]);
+      return R;`);
+    /* v28.0 · THE WIDE CALL (the seventy-fifth seam; Chad's R118: "can you make it more rectangular instead with the skewed
+       angle edges?"): absent, no button has the class or the fill's value; asked for with the call, the call stands in the
+       middle as a wide shape (more than twice as wide as tall), its ring hidden and its fill carried in --tgFill; let go,
+       the button is back to its round self */
+    K.tagWideSeam = await pCheck('wideSeam', `
+      const R = {}, B = () => document.getElementById('tagA0');
+      await frames(2);
+      R.absentNoWide = !document.querySelector('#tagHud .tagBtn.wide') && !B().style.getPropertyValue('--tgFill');
+      kit.tagAct('zap', { call: true, wide: true, fill: 0.5 }); await frames(4);
+      const r1 = B().getBoundingClientRect();
+      R.wide = B().classList.contains('wide') && B().classList.contains('call') && r1.width > r1.height * 2;
+      R.middle = Math.abs(r1.left + r1.width / 2 - innerWidth / 2) < innerWidth * 0.08;
+      R.fillVar = Math.abs(parseFloat(B().style.getPropertyValue('--tgFill')) - 0.5) < 0.01;
+      R.ringHidden = getComputedStyle(B().querySelector('.tgRing')).display === 'none';
+      kit.tagAct('zap', { call: false, wide: false, fill: 0 }); await frames(4);
+      const r2 = B().getBoundingClientRect();
+      R.gone = !B().classList.contains('wide') && !B().classList.contains('call') && Math.abs(r2.width - r2.height) < 2;
+      R._r = [r1, r2].map(r => [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]);
       return R;`);
     K.tagPartyFilm = await pCheck('partyFilm', `
       const R = {};

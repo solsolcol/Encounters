@@ -472,7 +472,7 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'p5icofire', 'p5icoshock',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togwide', 'p5icofire', 'p5icoshock',
       'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
       'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
       'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain',
@@ -10455,7 +10455,10 @@
           if (slot === 'main') {
             const callOn = H.together.live || H.together.fill > 0;
             kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togart' });   // (R107: the two of them painted, inside it)
+                             call: callOn, wide: true, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togwide' });
+            /* (R107: the two of them painted, inside it. R118, 24 Nov 2026: "The together button, can you make it more
+               rectangular instead with the skewed angle edges?": the call drawn wide with its two ends slanted (the
+               seventy-fifth seam, `wide`), its picture painted again wide for it) */
             if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
           } else kit.tagAct(id, { hidden: true, pulse: false, call: false, art: null });
           continue;

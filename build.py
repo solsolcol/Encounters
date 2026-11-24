@@ -821,7 +821,7 @@ ASSETS = {
     # (masters/v28.0/props/portraits2.py --painted)
     'p5portpho':    ('assets/p5portpho.png', True, False),     # Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)
     'p5portzav':    ('assets/p5portzav.png', True, False),     # Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)
-    'p5togart':     ('assets/p5togart.jpg', True, False),     # R107: the two of them fighting together, painted, inside the TOGETHER button (512 x 512)
+    'p5togwide':    ('assets/p5togwide.jpg', True, False),     # R107/R118: the two of them fighting together, painted wide (GPT Image from R107's round picture), inside the wide slanted TOGETHER button (768 x 330)
     # e4c5: THE FIGHT'S ABILITY ICONS (R110, 24 Nov 2026: 'improve how the icons of the ability buttons look like. They look way
     # too basic. Maybe generate the icons so they look like diablo style ability icons'; then R116/R117: 'Actually diablo isnt a
     # good example, world of warcraft icons are better'), painted by GPT Image in that manner, each filling its round button
@@ -1069,7 +1069,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
-           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'p5icofire', 'p5icoshock',
+           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togwide', 'p5icofire', 'p5icoshock',
            'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
            'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
            'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab',

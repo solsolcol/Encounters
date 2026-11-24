@@ -8643,6 +8643,10 @@ function kitTagAct(id, p) {
   if ('label' in p) st.label = p.label == null ? undefined : String(p.label);
   if ('icon' in p) st.icon = p.icon == null ? undefined : p.icon;
   if ('art' in p) st.art = p.art == null ? undefined : p.art;   // v28.0 (seam 74): AN ACT'S PICTURE filling its button's face (shell.html .tagBtn.art)
+  /* v28.0 (seam 75): THE WIDE CALL. Chad, R118 (24 Nov 2026): "The together button, can you make it more rectangular
+     instead with the skewed angle edges?": a call drawn as a wide rectangle with both ends cut on a slant (shell.html
+     .tagBtn.call.wide), its fill a bar along its foot. Absent, never set, and no button changes */
+  if ('wide' in p) st.wide = !!p.wide;
   if ('waitSay' in p) st.waitSay = p.waitSay ? String(p.waitSay) : null;
   /* an act taken away or locked while it is held is let go (said as an up, cut) */
   if (st.hidden || st.blocked) for (const [pid, d] of [...tag.down]) if (d.act === id) {
@@ -8727,7 +8731,10 @@ function tagFitLbl(b, art) {
   if (b.fitOf === key) return;
   b.fitOf = key;
   L.style.fontSize = ''; L.style.letterSpacing = '';
-  const need = L.scrollWidth, room = w * (art ? 0.66 : 0.78);
+  /* (R120, 24 Nov 2026: Chad, "The skill button text are too small too hard to read now": a pictured act's word stands on
+     its own plate at the face's foot and may reach past the round face, so it is let stand at its own size up to 1.3 of
+     the button's width before it is made any smaller) */
+  const need = L.scrollWidth, room = w * (art ? 1.3 : 0.78);
   if (!(need > room)) return;
   const base = parseFloat(getComputedStyle(L).fontSize) || 12, k = Math.max(0.55, room / need);
   L.style.fontSize = (base * k).toFixed(2) + 'px'; L.style.letterSpacing = '0.01em';
@@ -8754,7 +8761,7 @@ function tagPaintBtn(b, a, st) {
     if (b.artEl) { b.artEl.textContent = ''; if (art) b.artEl.appendChild(evIconNode(art, 'tgArtIn')); }
     cl.toggle('art', !!art);
   }
-  const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + (st.call ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3);
+  const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + (st.call ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3) + (st.wide ? '|w' : '');
   if (sig === b.sig) return;
   b.sig = sig;
   cl.remove('hide');
@@ -8764,6 +8771,8 @@ function tagPaintBtn(b, a, st) {
   if (b.keyOf !== kn) { b.keyOf = kn; if (b.kbd) b.kbd.textContent = kn; cl.toggle('noKey', !kn); }
   cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked); cl.toggle('on', !!st.on);
   cl.toggle('call', !!st.call);                 // (seam 70: absent, never set: every button as it always was)
+  /* (seam 75: the wide call and its fill along its foot; a button never given `wide` has neither the class nor the value) */
+  if (st.wide || cl.contains('wide')) { cl.toggle('wide', !!(st.call && st.wide)); b.el.style.setProperty('--tgFill', (st.fill || 0).toFixed(3)); }
   cl.toggle('waiting', wait > 0); cl.toggle('ready', !wait && !st.blocked);
   tagRing(b.wait, 1 - wait); tagRing(b.fill, st.fill);
 }

@@ -227,3 +227,17 @@ masters/v28.0/props/unused/p5icosmell.jpg.)
     base", ground "deep indigo and blue-violet": f080065d-6d78-4de2-b752-7d86801f357e, PICKED.
 - Prep: each 1024 picture scaled to 512 x 512 (Lanczos), RGB, JPEG quality 88, no EXIF or colour profile; full bleed, no
   padding (the button's own circle crops the corners, as the prompts allowed for). Looked at full size, one at a time.
+
+## R118: the TOGETHER painting made wide (24 Nov 2026)
+
+Chad: "The together button, can you make it more rectangular instead with the skewed angle edges?" R107's painting was
+generated round (black outside its circle), so a wide button would show black corners. It was painted again wide from
+itself: Higgsfield `gpt_image_2_6`, 21:9, quality `max`, 1k (1344 x 576), its own job c8aa2649-3ac6-480a-a1ad-1bc7debac262
+as the reference image, two pictures (9 credits): 01b975e0-8075-4e01-bad0-b8c930c2212a PICKED (both faces well inside the
+ends), f8f4a90b-9022-4e81-92fa-54599db047a3 kept unused. Prompt: "Repaint the reference illustration as a wide 21:9 banner in
+exactly the same hand-painted Final Fantasy style of fantasy illustration: the same two men in the same poses, with the same
+faces, clothes, staff and colours ... Recompose them side by side across the wide frame, seen from the chest up, both faces
+in the middle band of the picture and well inside its left and right ends. The painted background of gold fire, dark smoke
+and violet energy fills the whole frame edge to edge. No circle, no round frame, no black border, no vignette, no text, no
+letters." Every hand counted (five fingers each). Scaled to 768 x 330 (Lanczos), JPEG 88, as `p5togwide`; `p5togart`
+(the round one) retired from the build and the repository (git history keeps it).
