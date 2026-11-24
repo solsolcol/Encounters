@@ -302,6 +302,13 @@ that fits it, with the version it came from.
   the steps, the spend he has already allowed (a rented box's hours, a few credits of sound), the order and the defaults
   are mine to decide and to report; a step is never held on a question. What only he can give (a photograph, his ear on a
   taste) is asked once beside the work, never in front of it. (v28.0, R98)
+- EVERY WORD THE PLAYER READS IS PLAIN, DIRECT, EVERYDAY ENGLISH ("Seriously how hard is it to talk in very simple, direct,
+  human, natural way to the user?"; "You write in very weird ways using non standard words and expect the user to guess what
+  you r even saying. Like the gold example before. You keep doing this in so many HUD objective text and all the text
+  cues."): an objective, a HUD cue, a button's word, a refusal, a briefing or a hint says what to do and why, in the words
+  a person would say to a friend beside him: a thing by the name the player was told (the shockwave, never "the gold"), a
+  verb he can act on, a whole short sentence; no coined, poetic or clipped words, no name he was never told, no riddle.
+  Each is read cold, as a player who never saw the plan reads it, before it ships. (v28.0, R112)
 
 ### How the work is done and checked
 
