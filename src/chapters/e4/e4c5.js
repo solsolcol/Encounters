@@ -14528,7 +14528,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            each carried over 0.6 s: neither film had directed them, so through the line Ton stared into the lens, smiling, and
            Mr Koh spoke to the floor at his left) */
         { const kl = smo(c01((tau - T.ko5c2 + 0.6) / 0.6));
-          if (kl > 0.001) { whenReady(cast.koh, (P) => lookNow(P, fmHead(cast.pho, [pz.x, 1.5, pz.z]), 0.75 * kl, 0.7));
+          /* (his look held at 0.95 within 0.9 rad: at 0.75 within 0.7 his talking take swung his face away left as he spoke,
+             behind the doorway's jamb from the lens, photographed at 22.5 s) */
+          if (kl > 0.001) { whenReady(cast.koh, (P) => lookNow(P, fmHead(cast.pho, [pz.x, 1.5, pz.z]), 0.95 * kl, 0.9));
             whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.6, STATION.fight.koh.z]), 0.8 * kl, 0.7)); } }
         /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
         this.lens(tau, T, B, HEADAT);
