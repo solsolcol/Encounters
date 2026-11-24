@@ -16904,6 +16904,9 @@ const STING_SAMPLE = {
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5boom1: ['u5boom1', 1], u5boom2: ['u5boom2', 1], u5cinders: ['u5cinders', 1], u5punch: ['u5punch', 1],
   u5roar: ['u5roar', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5goldboom: ['u5goldboom', 1], u5goldhit: ['u5goldhit', 1], u5bindsnap: ['u5bindsnap', 1],
+  u5auraup: ['u5auraup', 1], u5bagrush: ['u5bagrush', 1], u5togboom: ['u5togboom', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

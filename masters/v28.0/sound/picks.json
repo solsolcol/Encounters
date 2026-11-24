@@ -1281,6 +1281,49 @@
   "where": "R94: the ball let go, under the reed's puff",
   "why": "a: 45 % where a phone plays, loudest 50 ms -8.7 dBFS (others, phone/loudest: b 0.25/-5.7)"
  },
+ "u5goldboom": {
+  "kind": "fx",
+  "take": "u5goldboom_c",
+  "family": "fx",
+  "where": "R94 E3: the golden shockwave let go, under its own sound (u5wave)",
+  "why": "c: 98 % where a phone plays, loudest 50 ms -21.7 dBFS (others, phone/loudest: a 0.15/-9.2, b 0.52/-10.2)"
+ },
+ "u5goldhit": {
+  "kind": "fx",
+  "take": "u5goldhit_a",
+  "family": "fx",
+  "where": "R94 E3: the gold striking each Prai, over its hit (u5shockhit)",
+  "why": "a: 23 % where a phone plays, loudest 50 ms -10.2 dBFS (others, phone/loudest: b 0.16/-11.4, c 0.07/-8.3); HARMONISED (a phone plays 23 %)",
+  "harm": true
+ },
+ "u5bindsnap": {
+  "kind": "fx",
+  "take": "u5bindsnap_b",
+  "family": "fx",
+  "where": "R94 E3: the bind's bubble closing, over its own sound",
+  "why": "b: 87 % where a phone plays, loudest 50 ms -13.2 dBFS (others, phone/loudest: a 0.31/-18.7, c 0.33/-15.6)"
+ },
+ "u5auraup": {
+  "kind": "fx",
+  "take": "u5auraup_b",
+  "family": "fx",
+  "where": "R94 E3: LEND, the violet rising round Grandmaster Pho",
+  "why": "b: 99 % where a phone plays, loudest 50 ms -27.9 dBFS (others, phone/loudest: a 0.99/-28.2)"
+ },
+ "u5bagrush": {
+  "kind": "fx",
+  "take": "u5bagrush_a",
+  "family": "fx",
+  "where": "R94 E3: a Prai drawn into the bag, its streak arriving",
+  "why": "a: 100 % where a phone plays, loudest 50 ms -24.4 dBFS (others, phone/loudest: b 0.90/-17.6)"
+ },
+ "u5togboom": {
+  "kind": "fx",
+  "take": "u5togboom_b",
+  "family": "fx",
+  "where": "R94 E3: TOGETHER pressed, over its own sound (u5togpress)",
+  "why": "b: 86 % where a phone plays, loudest 50 ms -11.5 dBFS (others, phone/loudest: a 0.25/-18.9)"
+ },
  "u5vison": {
   "kind": "copy",
   "from": "u4vison",

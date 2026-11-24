@@ -48,5 +48,65 @@
   "prompt": "A fireball igniting and roaring as it is hurled through the air: a fast rushing roar of flame that builds and trails away, crackling, close, magical. Clear in the middle and high frequencies, no deep sub bass.",
   "family": "fx",
   "where": "R94: the ball let go, under the reed's puff"
+ },
+ {
+  "name": "u5goldboom",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A wave of golden holy light bursting outward from a monk: a deep warm whoosh that blooms into a bright shimmering ring of chimes and rushing air going out, powerful and sacred, not an explosion, not a gunshot. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: the golden shockwave let go, under its own sound (u5wave)"
+ },
+ {
+  "name": "u5goldhit",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A burst of golden holy light striking a ghostly body: a bright shimmering impact with a soft thump and a quick sparkle of light scattering away, short and close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: the gold striking each Prai, over its hit (u5shockhit)"
+ },
+ {
+  "name": "u5bindsnap",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A sphere of violet spirit energy snapping shut around something: a crisp crystalline lock with a short electric hum that tightens and stops, magical, close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: the bind's bubble closing, over its own sound"
+ },
+ {
+  "name": "u5auraup",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Spirit energy flowing from one person into another: a rising shimmering whoosh of soft violet light, swelling and settling into a warm hum, magical and calm, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: LEND, the violet rising round Grandmaster Pho"
+ },
+ {
+  "name": "u5bagrush",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A ghostly wisp sucked swiftly into a small cloth bag: a fast airy inward whoosh that narrows and ends in a soft muffled thump, eerie and close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: a Prai drawn into the bag, its streak arriving"
+ },
+ {
+  "name": "u5togboom",
+  "secs": 2.4,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "Two kinds of spirit energy, gold and violet, joining in one great blast: a huge rising swell of shimmering light that bursts with a deep warm boom and a ringing chord of chimes fading out, triumphant and sacred, not a bomb. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94 E3: TOGETHER pressed, over its own sound (u5togpress)"
  }
 ]
