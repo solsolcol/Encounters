@@ -13,6 +13,8 @@ sound/picks.json, each pick with its reason (masters/v28.0/sound/make.sh carries
 import json, os
 R = os.path.dirname(os.path.abspath(__file__))
 SFX = json.load(open(os.path.join(R, 'sfx.json'))); MS = json.load(open(os.path.join(R, 'measures-sfx.json')))
+# (R94, 24 Nov 2026: the fire's new layers, sfxR94.json, picked by the same rules; their names are new, so no pick before moves)
+SFX += json.load(open(os.path.join(R, 'sfxR94.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR94.json'))))
 MUS = json.load(open(os.path.join(R, 'music.json'))); MM = json.load(open(os.path.join(R, 'measures-music.json')))
 MM.update(json.load(open(os.path.join(R, 'measures-music4.json'))))
 AGAIN = {'u5m6prep': 'u5m6prep2'}      # made again (music4.json): the game's name keeps the cue's, the takes are the new ones

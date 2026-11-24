@@ -1601,6 +1601,48 @@
    "why": "b: 91 % where a phone plays, loudest 50 ms -35.5 dBFS (others, phone/loudest: a 0.51/-38.6)"
   },
   {
+   "name": "u5boom1",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R94: a fireball landing, laid over its landing (dealt in turn)",
+   "why": "a: 14 % where a phone plays, loudest 50 ms -3.6 dBFS (others, phone/loudest: b 0.14/-6.2, c 0.20/-6.3); HARMONISED (a phone plays 14 %)",
+   "group": "u5boom"
+  },
+  {
+   "name": "u5boom2",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R94: a fireball landing (dealt in turn)",
+   "why": "b: 94 % where a phone plays, loudest 50 ms -12.4 dBFS (others, phone/loudest: a 0.90/-13.6, c 0.88/-14.4)",
+   "group": "u5boom"
+  },
+  {
+   "name": "u5cinders",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R94: the tail of a landing: what the burst throws out settling",
+   "why": "b: 97 % where a phone plays, loudest 50 ms -33.0 dBFS (others, phone/loudest: a 0.98/-35.6)"
+  },
+  {
+   "name": "u5punch",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R94: the hit itself, on the frame of its freeze (a Prai struck)",
+   "why": "c: 16 % where a phone plays, loudest 50 ms -9.1 dBFS (others, phone/loudest: a 0.11/-17.0, b 0.11/-13.9); HARMONISED (a phone plays 16 %)"
+  },
+  {
+   "name": "u5roar",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R94: the ball let go, under the reed's puff",
+   "why": "a: 45 % where a phone plays, loudest 50 ms -8.7 dBFS (others, phone/loudest: b 0.25/-5.7)"
+  },
+  {
    "name": "u5vison",
    "family": "vision",
    "kind": "one-shot",

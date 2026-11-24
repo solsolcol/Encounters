@@ -1244,6 +1244,43 @@
   "where": "the preparation: the lamps sink",
   "why": "b: 91 % where a phone plays, loudest 50 ms -35.5 dBFS (others, phone/loudest: a 0.51/-38.6)"
  },
+ "u5boom1": {
+  "kind": "fx",
+  "take": "u5boom1_a",
+  "family": "fx",
+  "where": "R94: a fireball landing, laid over its landing (dealt in turn)",
+  "why": "a: 14 % where a phone plays, loudest 50 ms -3.6 dBFS (others, phone/loudest: b 0.14/-6.2, c 0.20/-6.3); HARMONISED (a phone plays 14 %)",
+  "harm": true
+ },
+ "u5boom2": {
+  "kind": "fx",
+  "take": "u5boom2_b",
+  "family": "fx",
+  "where": "R94: a fireball landing (dealt in turn)",
+  "why": "b: 94 % where a phone plays, loudest 50 ms -12.4 dBFS (others, phone/loudest: a 0.90/-13.6, c 0.88/-14.4)"
+ },
+ "u5cinders": {
+  "kind": "fx",
+  "take": "u5cinders_b",
+  "family": "fx",
+  "where": "R94: the tail of a landing: what the burst throws out settling",
+  "why": "b: 97 % where a phone plays, loudest 50 ms -33.0 dBFS (others, phone/loudest: a 0.98/-35.6)"
+ },
+ "u5punch": {
+  "kind": "fx",
+  "take": "u5punch_c",
+  "family": "fx",
+  "where": "R94: the hit itself, on the frame of its freeze (a Prai struck)",
+  "why": "c: 16 % where a phone plays, loudest 50 ms -9.1 dBFS (others, phone/loudest: a 0.11/-17.0, b 0.11/-13.9); HARMONISED (a phone plays 16 %)",
+  "harm": true
+ },
+ "u5roar": {
+  "kind": "fx",
+  "take": "u5roar_a",
+  "family": "fx",
+  "where": "R94: the ball let go, under the reed's puff",
+  "why": "a: 45 % where a phone plays, loudest 50 ms -8.7 dBFS (others, phone/loudest: b 0.25/-5.7)"
+ },
  "u5vison": {
   "kind": "copy",
   "from": "u4vison",

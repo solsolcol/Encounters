@@ -1,0 +1,52 @@
+[
+ {
+  "name": "u5boom1",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A ball of fire exploding as it strikes: a punchy burst of flame flaring outward with a sharp crackling snap at its front, then a short roar of fire dying away. Powerful and magical, not a gunshot, not a bomb. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94: a fireball landing, laid over its landing (dealt in turn)"
+ },
+ {
+  "name": "u5boom2",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A magical fireball bursting against a body: a heavy whoosh of flame flaring out with a crack and a rolling crackle of fire that fades quickly. Close, powerful, not a gunshot. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94: a fireball landing (dealt in turn)"
+ },
+ {
+  "name": "u5cinders",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Hot cinders and sparks scattering and skittering across stone paving after a burst of fire, crackling and hissing as they cool and fade away. Close, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94: the tail of a landing: what the burst throws out settling"
+ },
+ {
+  "name": "u5punch",
+  "secs": 0.7,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A heavy blow landing on something soft and ghostly: one dense punchy impact with a short gust of air, very short and close. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94: the hit itself, on the frame of its freeze (a Prai struck)"
+ },
+ {
+  "name": "u5roar",
+  "secs": 1.3,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A fireball igniting and roaring as it is hurled through the air: a fast rushing roar of flame that builds and trails away, crackling, close, magical. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R94: the ball let go, under the reed's puff"
+ }
+]

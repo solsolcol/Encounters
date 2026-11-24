@@ -12,6 +12,8 @@ wrapped.html
 !assets/master_*.png
 # (and the party list's two portraits, cut out with their own alpha: R54, 23 Nov 2026; a JPEG cannot carry it)
 !assets/p5port*.png
+# (and the fight's flipbooks, data in four channels: R94, 24 Nov 2026; a JPEG would smear them)
+!assets/fx5*.png
 view/
 
 # original asset archives (the .glb files that matter are committed)
