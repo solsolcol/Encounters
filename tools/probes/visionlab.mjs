@@ -15,6 +15,11 @@
      { "until": "E.vision().r === 0", "ms": 60000 }   polled until true
      { "tap": "#visionBtn" }              the element's middle tapped as a finger taps it (the real input path), or
                                           clicked by the mouse on a desktop view
+     { "loseContext": 1500 }              (R115) the page's WebGL context lost through WEBGL_lose_context, that many ms
+                                          held lost, then restored, as a phone does after an app switch
+   MAXSAMPLES=n (R115) makes the browser answer n for MAX_SAMPLES before the game starts, so every multisampled target
+   is made with at most n: MAXSAMPLES=2 draws Spirit Vision's world target as a phone offering
+   WEBGL_multisampled_render_to_texture now draws it (two samples, resolved colour and depth both, src/vision.js).
    Page errors and console errors are printed at the end, and the run exits non-zero if there were any. */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -28,6 +33,12 @@ const PHONES = { phone: [390, 844], low: [360, 780], land: [844, 390] };
 const b = await chromium.launch(LAUNCH);
 const ctx = PHONES[VIEW] ? await b.newContext({ viewport: { width: PHONES[VIEW][0], height: PHONES[VIEW][1] }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true })
                          : await b.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: DSF });
+if (+process.env.MAXSAMPLES > 0) await ctx.addInitScript((n) => {
+  for (const C of [window.WebGL2RenderingContext, window.WebGLRenderingContext]) if (C) {
+    const g = C.prototype.getParameter;
+    C.prototype.getParameter = function (q) { const v = g.call(this, q); return q === 0x8D57 ? Math.min(v, n) : v; };
+  }
+}, +process.env.MAXSAMPLES);
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
@@ -50,6 +61,8 @@ for (const s of STEPS) {
     else if (s.view) { await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; E.yaw.position.x = v[0]; if (v[1] != null) E.yaw.position.y = v[1]; E.yaw.position.z = v[2]; E.yaw.rotation.y = v[3] * d; E.pitch.rotation.x = (v[4] || 0) * d; }, s.view); await frames(3); }
     else if (s.look) { await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; E.yaw.rotation.y = v[0] * d; E.pitch.rotation.x = (v[1] || 0) * d; }, s.look); await frames(3); }
     else if (s.eval) { const r = await p.evaluate(new Function('const E = window.__enc; return (' + s.eval + ');')).catch(e => 'THREW ' + e.message); if (r !== undefined && r !== null) log('eval', String(s.eval).slice(0, 70), '->', JSON.stringify(r).slice(0, 1600)); }
+    else if (s.loseContext) { const r = await p.evaluate(async (ms) => { const gl = window.__enc.renderer.getContext(), x = gl.getExtension('WEBGL_lose_context'); if (!x) return 'no WEBGL_lose_context';
+        x.loseContext(); await new Promise(r => setTimeout(r, ms)); x.restoreContext(); return 'lost ' + ms + ' ms, restored'; }, s.loseContext); log('context', r); await frames(6); }
     else if (s.tap) { const r = await p.evaluate((q) => { const e = document.querySelector(q); if (!e) return null; const b = e.getBoundingClientRect(); return b.width ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : null; }, s.tap);
       if (!r) log('tap: nothing to tap at', s.tap); else { if (PHONES[VIEW]) await p.touchscreen.tap(r.x, r.y); else await p.mouse.click(r.x, r.y); log('tapped', s.tap); await frames(2); } }
     if (s.shot) { await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot); }

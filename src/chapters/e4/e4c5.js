@@ -80,10 +80,10 @@
      books its window by it and every film's times are built from it, so a measured take moves what follows it: v5.15).
      The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when the chapter names it in
      quotes (v21.1). */
-  const SECS = {      // 174 of 187 MEASURED from their takes; the other 13 PROVISIONAL (words / 2.3 s)
+  const SECS = {      // 187 of 187 MEASURED from their takes; the other 0 PROVISIONAL (words / 2.3 s)
     /* Master Zavier (the player) */
     'q5o1': 9.05, 'q5o2': 3.45, 'q5w1': 1.43, 'q5w2': 2.49, 'q5w3': 2.25, 'q5w4': 1.05, 'q5h1': 5.05, 'q5h2': 3.13,
-    'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5fb1': 5.22, 'q5fw1': 3.04, 'q5c0': 6.65, 'q5c1': 4.25,
+    'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5fb1': 4.17, 'q5fw1': 2.81, 'q5c0': 6.65, 'q5c1': 4.25,
     'q5c2': 1.69, 'q5c3': 1.37, 'q5c4': 5.45, 'q5c5': 4.49, 'q5b1': 1.37, 'q5b2': 4.65, 'q5t1': 7.13, 'q5A1': 0.91,
     'q5A2': 5.21, 'q5B1': 2.01, 'q5B2': 1.85, 'q5C1': 6.73, 'q5D1': 4.81, 'q5z1': 3.13, 'q5A': 6.01, 'q5B': 4.97,
     'q5C': 4.97, 'q5D': 4.33,
@@ -91,14 +91,14 @@
     'ph5w1': 5.69, 'ph5w2': 5.53, 'ph5w3': 2.81, 'ph5w4': 1.69, 'ph5w5': 8.23, 'ph5w6': 1.2, 'ph5w7': 3.44,
     'ph5d1': 1.56, 'ph5d2': 7.53, 'ph5h1': 1.37, 'ph5h2': 2.17, 'ph5h3': 7.29, 'ph5h4': 4.89, 'ph5h5': 1.37,
     'ph5h6': 1.69, 'ph5h7': 1.27, 'ph5v1': 5.05, 'ph5v2': 3.56, 'ph5p1': 4.57, 'ph5p2': 6.09, 'ph5f0': 3.53,
-    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.73, 'ph5f5': 3.45, 'ph5f6': 1.53, 'ph5f8': 2.47, 'ph5f9': 3.04,
-    'ph5f10': 6.18, 'ph5fa': 4.65, 'ph5fc': 3.45, 'ph5fd': 5.84, 'ph5fe': 4.78, 'ph5fi': 9.13, 'ph5fj': 3.65,
-    'ph5fh': 8.7, 'ph5fb1': 10, 'ph5fb2': 7.39, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28,
+    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.73, 'ph5f5': 3.45, 'ph5f6': 1.53, 'ph5f8': 2.47, 'ph5f9': 3.05,
+    'ph5f10': 6.18, 'ph5fa': 4.65, 'ph5fc': 3.45, 'ph5fd': 5.84, 'ph5fe': 4.17, 'ph5fi': 7.5, 'ph5fj': 3.65,
+    'ph5fh': 8.57, 'ph5fb1': 10.81, 'ph5fb2': 6.65, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28,
     'ph5nb2': 2.57, 'ph5nc2': 2.57, 'ph5nc3': 1.85, 'ph5nd2': 2.65, 'ph5nd3': 0.83, 'ph5ne1': 4.33, 'ph5ng1': 2.33,
     'ph5ng2': 1.85, 'ph5nh1': 3.25, 'ph5nh2': 0.97, 'ph5ni1': 2.25, 'ph5ni2': 1.53, 'ph5nj1': 2.28, 'ph5nj2': 1.93,
     'ph5nk1': 3.05, 'ph5nk2': 3.04, 'ph5nl1': 2.65, 'ph5nl2': 1.77, 'ph5nl3': 2.73, 'ph5no1': 1.53, 'ph5no2': 1.79,
     'ph5np1': 1.61, 'ph5nq1': 2.27, 'ph5nr1': 3.37, 'ph5nr2': 3.05, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 3.84,
-    'ph5nt2': 2.09, 'ph5nu1': 2.61, 'ph5nu2': 1.3, 'ph5nv1': 1.3, 'ph5nv2': 2.17, 'ph5nv3': 0.43, 'ph5nw1': 3.45,
+    'ph5nt2': 2.09, 'ph5nu1': 2.49, 'ph5nu2': 1.34, 'ph5nv1': 1.69, 'ph5nv2': 2.89, 'ph5nv3': 0.75, 'ph5nw1': 3.45,
     'ph5nw2': 3.61, 'ph5nx1': 2.17, 'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.93, 'ph5g3': 3.29, 'ph5g4': 2.45,
     'ph5ca': 2.2, 'ph5cb': 0.97, 'ph5c1': 2.65, 'ph5c2': 3.2, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93,
     'ph5l2': 3.53, 'ph5b1': 1.51, 'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13, 'ph5b6': 1,
@@ -422,7 +422,11 @@
        if needed to fit the new height": the boom 0.4 m higher, 3.5 m where it stood 3.1, its look down steepened from 26 to
        30.3 degrees so his hips (1.0 m over his feet) stand where they stood on the screen; nothing else moved. The end's
        pulled-back boom the same (c_cast.js PULL5)) */
-    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.5, pitch: 30.3 }, fov: 72,
+    /* (R110, 24 Nov 2026, Chad: "the camera view can still be placed slightly higher than what it is at currently. Also re
+       adjust the camera angle accordingly to fit this new height. So that everything can be seen clearly": 0.5 m higher
+       again, 4.0 where it stood 3.5, its look down steepened from 30.3 to 35.2 degrees so his hips stand where they stood on
+       the screen; the end's pulled-back boom the same, c_cast.js PULL5) */
+    tag: { heading: Math.PI, boom: { back: 4.0, up: 4.0, pitch: 35.2 }, fov: 72,
            /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
               z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
               out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws
@@ -434,7 +438,8 @@
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
            /* (R46: the court 8.0 by 11.0 m, x -12.5..-4.5 and z -16.6..-5.6: the box 0.3 m inside its side walls, its z line
               at the new gate's (the walkway's slab above begins at -16.6), and high enough for the end's pulled-back boom) */
-           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 5.4 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R110: maxY 6.0, was 5.4, so the end's boom at 5.2 is never drawn down by the box's soft edge) */
+           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 6.0 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
            /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
@@ -467,14 +472,15 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'fx5fire', 'fx5burst',
-      'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
-      'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
-      'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp',
-      'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
-      'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
-      'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'p5icofire', 'p5icoshock',
+      'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
+      'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
+      'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain',
+      'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
+      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
+      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+      'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
@@ -522,8 +528,11 @@
       actLine: 'Press E to answer',
       actLineTouch: 'Tap to answer',
       // PLAY I · the walkway (the plan's 4.1)
-      objAsk: 'Something smells. Ask the others.',
-      objFollow: 'Follow the smell.',
+      /* (R112, 24 Nov 2026: Chad, "You write in very weird ways using non standard words and expect the user to guess what
+         you r even saying ... Seriously how hard is it to talk in very simple, direct, human, natural way to the user?": every
+         word below read cold and said the way a person says it, what to do and why. The old words are in this file's history) */
+      objAsk: 'You smell something bad. Ask Ton and Jun if they smell it too.',
+      objFollow: 'Follow the smell to where it is coming from.',
       /* the input, beside the order, for the device he is on (v18.5): N for the nose; no voice ever names an input */
       smellTouch: 'Tap SMELL',
       smellKey: 'Press N',
@@ -532,44 +541,49 @@
       hotDrain: 'Smell the drain',
       hotGate: 'Go to the gate',
       /* said under the reticle when the eye is pressed on the walkway (the engine's visionHeldSay), as his teacher said it */
-      visionHeld: 'Not yet. First your nose.',
+      visionHeld: 'Not yet. Use SMELL first.',
       // PLAY II · the hunt (the plan's 4.3): the count is derived on the frame from what is found, never stored (v11.6)
-      objHunt: 'Find where the smell is strongest. {n}/3',
-      objOpen: 'Open Spirit Vision.',
+      objHunt: 'Find the 3 places where the smell is strongest. {n}/3',
+      objOpen: 'Open Spirit Vision with the eye button.',
       hotStain: 'Look here',
       // THE CLEANSING (the plan's 5.2, 5.5 and 5.8), as the fight's specification gives them (docs/V28.0-FIGHT.md 11,
       // 21 Nov: R14's kit, BIND, SMELL and LEND beside FIRE, SHOCKWAVE and BAG). Every objective is true whoever is played
-      fightTitle: 'THE CLEANSING',
+      fightTitle: 'FIGHT THE PRAI',
       // (R66, 23 Nov: his own two sentences, "bounded" written "bound", "or" written "and" and "prai" with the game's
       //  capital, each said to him; R67: then the controls of the device he is on, one to a line, in very direct terms)
       fightBrief1: 'Switch between Grandmaster Pho and Zavier.',
       fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
       fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
-      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and lend: E.',
-      objFight1: 'Grandmaster Pho: fire at the Prai.',
-      objFight1b: 'It hid. Master Zavier smells it out.',
-      objFight2: 'Master Zavier: bind it.',
-      objFight2b: 'Grandmaster Pho: fire at it, then bag it.',
-      objFight3: 'Bag the Prai: {n} left',
-      objFight3h: 'They cling. Only the shockwave takes them: bind them.',
-      objFight4: 'Together.',
-      objFight6: 'Bag the last three.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and shield: E.',
+      objFight1: 'FIRE at the Prai with Grandmaster Pho.',
+      objFight1b: 'The Prai ran and hid. Zavier will sniff out where it is.',
+      objFight2: 'Switch to Zavier and BIND the Prai.',
+      objFight2b: 'Now switch to Pho. FIRE at the bound Prai, then BAG it.',
+      objFight3: 'BIND a Prai with Zavier, then FIRE and BAG it with Pho. {n} left.',
+      /* (R110: in a hold the order says the next thing to do: bind them, shield him the first time, then the shockwave;
+         c_fightrules.js objectiveOf) */
+      objFight3h: "The bag can't catch these. BIND them with Zavier.",
+      objFight3w: "Keep them bound. Pho's SHOCKWAVE is charging.",
+      objFight3s: "Use Zavier's SHIELD to protect Pho first.",
+      objFight3g: "Use Pho's SHOCKWAVE now! It takes every bound Prai.",
+      objFight4: 'Press TOGETHER for the final attack.',
+      objFight6: 'Catch the last three Prai in the bag.',
       btnFire: 'FIRE',
       btnShockwave: 'SHOCKWAVE',
       btnBag: 'BAG',
       btnBind: 'BIND',
-      btnLend: 'LEND',
+      btnLend: 'SHIELD',
       btnSmell: 'SMELL',
       // why a button cannot act now, said on its face (FIGHT.why: the button and the press read the one answer)
-      whyFull: 'Three bound',
-      whyNone: 'Nothing in reach',
-      whyGold: 'Only the shockwave now',
-      whyLendFirst: 'Lend the cage first',
-      whyBindFirst: 'Bind one first',
+      whyFull: 'Zavier can only hold 3',
+      whyNone: 'No Prai close enough',
+      whyGold: 'Use SHOCKWAVE instead',
+      whyLendFirst: 'Shield Pho with Zavier first',
+      whyBindFirst: 'BIND a Prai first',
       // (the switch, said and never pressed, until the lesson's first chase shows it: the engine shows it from the first frame)
-      whySwitchFirst: 'Fire first',
-      whySwitchNow: 'Not now',
+      whySwitchFirst: 'FIRE at the Prai first',
+      whySwitchNow: "You can't switch right now",
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
       // (R49: the small line over each name on the party list's tiles)
@@ -577,18 +591,19 @@
       btnZavierTitle: 'MASTER',
       btnTogether: 'TOGETHER',
       // the card when the fight is lost (the fight begins again, never the chapter: R14)
-      lostSay: 'The cleansing was broken.',
-      lostAgain: 'BEGIN AGAIN',
-      lostLead: 'Let Grandmaster Pho lead',
+      lostSay: 'You lost the fight.',
+      lostAgain: 'TRY AGAIN',
+      lostLead: 'Try an easier fight',
       // the card between the two cases (the plan's 4.6: the next case, never the future; a day is the plan's own)
       cardNext: 'The next afternoon.',
       // PLAY III · the collector (the plan's 4.7)
-      objSmell: 'Something smells. SMELL.',
-      objLook: 'Open Spirit Vision. Look at the pieces.',
-      hotLook: 'Look',
+      objSmell: 'You smell something. Find which amulet it comes from.',
+      /* (objLook begins with objOpen's words: once his sight is open the order is the rest of it, c_story.js lookOpenWords) */
+      objLook: 'Open Spirit Vision with the eye button. Look at each amulet giving off smoke.',
+      hotLook: 'Look closer',
       // THE SKELETON'S STAND-INS (TODO-PLAY, TODO-FIGHT): what is pressed in each phase until its play is built. Mine,
       // not the plan's: each goes when the play it stands for is built
-      hotCleanse: 'Begin the cleansing'
+      hotCleanse: 'Start the fight'
     },
     sayPrefix: 'q5'
   };
@@ -6163,7 +6178,9 @@
        the films that begin or end on the mode's picture in those stages ask boomAt for it (its second argument)) */
     /* (R102 and R103: 0.4 m higher, 4.7 where it stood 4.3, its look down 37 degrees where it was 34, so his hips stand where
        they stood on the screen, as the fight's own boom: a_head.js) */
-    const PULL5 = { back: 5.4, up: 4.7, pitch: 37 };
+    /* (R110: 0.5 m higher again, 5.2 where it stood 4.7, its look down 40.5 degrees where it was 37, his hips kept where they
+       stood on the screen, as the fight's own boom: a_head.js) */
+    const PULL5 = { back: 5.4, up: 5.2, pitch: 40.5 };
     function boomAt(feet, over) {
       const d = DATA.tag || {}, portrait = camera.aspect < 1;
       const b1 = Object.assign({ back: 4.0, up: 3.5, pitch: 30.3 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
@@ -7346,7 +7363,10 @@
         ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
         ph5g1: 2, ph5g2: 2, ph5g3: 2, ph5g4: 2,
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
-        tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
+        tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0,
+        /* (R110/R111, 24 Nov 2026: his question when they keep breaking out of the bind and his teacher's answer, in the open
+           fight or in a hold; and his call the first time the moment asks for the shockwave itself) */
+        q5fb1: 3, ph5fb1: 3, ph5fb2: 3, q5fw1: 3
       };
       /* the needs that cost him while they stand: their prompt is said at once, ahead of praise and colour */
       const URGENT = { athimF: 1, athimS: 1, athimB: 1, athimSw: 1, beneath: 1, cage: 1, press: 1, waveGo: 1 };
@@ -7444,6 +7464,7 @@
           cage: { str: n.cageMax, broken: false, lent: 0, lentUp: 0, lentFor: 0 },
           prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
+          brk: { plain: 0, hold: 0 },             // (R111: break-outs from the bind in the fight, in the open and in a hold)
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
@@ -8364,6 +8385,14 @@
         st.ev.push({ e: 'unbind', id: p.id });
         /* (R82: a break-out from the bind costs him, in the fight; the lesson's bubbles teach, and cost nothing) */
         if (st.stage === 'fight' && st.n.breakHit > 0) { st.owe += st.n.breakHit; st.stats.breakHits = (st.stats.breakHits || 0) + 1; st.ev.push({ e: 'breakHit', id: p.id }); }
+        /* (R110/R111, 24 Nov 2026: Chad, "The user will just keep binding the prais and the prais keep breaking out of the cage,
+           and the player will wonder whats going on and what they need to do"; "Zavier should have some voicelines saying
+           'they keep breaking out of the binding cage? What should i do?' ... and pho will answer him". At the second break-out
+           in the open fight his student asks and his teacher says what to do (the bind lasts seconds: bind, switch, fire,
+           bag); at the second in a hold, the teacher says what a hold asks (bind them, shield him, the shockwave). Queued in
+           that order with time to be said: a line already in the air, or a need that costs him, is let finish first) */
+        if (st.stage === 'fight') { const k = st.hold > 0 ? 'hold' : 'plain'; st.brk = st.brk || { plain: 0, hold: 0 }; st.brk[k]++;
+          if (st.brk[k] === 2) { if (!st.said.q5fb1) sayOnce(st, 'q5fb1', 20); sayOnce(st, k === 'hold' ? 'ph5fb2' : 'ph5fb1', 26); } }
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
@@ -8609,8 +8638,17 @@
         sanityTick(st, dt, fed);
         if (st.stage !== 'lost') stageTick(st, dt, io);
         st.cur = need(st);
+        cueTick(st);
         if (st.stage !== 'lost') voiceTick(st, io);
         return st.ev;
+      }
+      /* (R110, 24 Nov 2026: Chad, "have some voicelines that tell player to use the shockwave ability at the right time, i
+         think this is not clear enough to the user": the first time the moment asks for the shockwave itself (it is ready, Prai
+         are bound, and it is the next press), his student calls it out once; his teacher's own orders for it go on as needs) */
+      function cueTick(st) {
+        if (st.stage !== 'fight' || st.said.q5fw1) return;
+        const nd = st.cur;
+        if (nd && (nd.id === 'waveSafe' || nd.id === 'waveGo')) sayOnce(st, 'q5fw1');
       }
       function slotAct(st, slot) {
         if (slot === 'swap') return 'SWITCH';
@@ -8660,7 +8698,20 @@
                     : p.st === 'shown' ? 'objFight2' : 'objFight2b';
           return { key, step: { objFight1: 1, objFight1b: 2, objFight2: 3, objFight2b: 4 }[key] };
         }
-        if (st.stage === 'fight') return st.hold ? { key: 'objFight3h', step: 5 } : { key: 'objFight3', n: st.left, step: 5 };
+        /* (R110/R112: in a hold, and while the shockwave's own lesson waits, the order says the NEXT thing to do: bind them,
+           then shield him the first time, then the shockwave; the words are the chapter's, a_head.js objFight3h/w/s/g) */
+        if (st.stage === 'fight') {
+          const hold = st.hold > 0, plain = { key: 'objFight3', n: st.left, step: 5 };
+          if (!hold && st.lesson.wave !== 'pending') return plain;
+          let bound = 0; for (const p of st.prai) if (p.st === 'bound' || p.st === 'held') bound++;
+          const ph = st.pho, ready = st.seen.shock && ph.waveWait <= 0 && ph.wind <= 0 && !ph.ring;
+          /* (the shockwave's lesson waits for one bound and the wave ready) */
+          if (!hold && (!bound || !ready)) return plain;
+          if (!bound) return { key: 'objFight3h', step: 5 };
+          if (!ready) return { key: 'objFight3w', step: 5 };
+          if (!st.firsts.wave && !(st.cage.lent > 0)) return { key: 'objFight3s', step: 5 };
+          return { key: 'objFight3g', step: 5 };
+        }
         if (st.stage === 'surge') return { key: 'objFight4' };
         // (the last three bagged, nothing is asked while his last line is said)
         if (st.stage === 'last') return st.left > 0 ? { key: 'objFight6' } : null;
@@ -8710,6 +8761,13 @@
     /* (R62, 23 Nov 2026: Master Zavier's SMELL is no longer a button: it goes out by itself, FIGHT's smellTick) */
     const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', lend: 'LEND' };
     const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', third: 'lend' } };
+    /* (R110, 24 Nov 2026: Chad, "improve how the icons of the ability buttons look like. They look way too basic. Maybe
+       generate the icons so they look like diablo style ability icons": each act's button filled with its own painted icon
+       (masters/v28.0/keys.py, the fight's ability icons), its word laid low over it, as TOGETHER's painting is (the
+       seventy-fourth seam), each key declared in the chapter's assets as TOGETHER's is. R116/R117 (the same evening: "They
+       look like ai slop icons and not true diablo style icons", then "Actually diablo isnt a good example, world of warcraft
+       icons are better"): painted again in that manner, a small painting filling the whole tile in its spell's colour) */
+    const FS_ART = { flame: 'p5icofire', shock: 'p5icoshock', bag: 'p5icobag', bind: 'p5icobind', lend: 'p5icoshield' };
     const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0, hitQ: [],
@@ -10408,7 +10466,7 @@
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: null });
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: FS_ART[id] || null });
       }
       /* (R75's debug, GD: the other one's tile shows his main act's readiness as it is now: only the played one's acts were
          told, so his gauge stood where it was left when he was last played, and showed BIND ready before he had any) */

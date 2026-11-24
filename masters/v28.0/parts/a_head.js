@@ -168,7 +168,11 @@
        if needed to fit the new height": the boom 0.4 m higher, 3.5 m where it stood 3.1, its look down steepened from 26 to
        30.3 degrees so his hips (1.0 m over his feet) stand where they stood on the screen; nothing else moved. The end's
        pulled-back boom the same (c_cast.js PULL5)) */
-    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.5, pitch: 30.3 }, fov: 72,
+    /* (R110, 24 Nov 2026, Chad: "the camera view can still be placed slightly higher than what it is at currently. Also re
+       adjust the camera angle accordingly to fit this new height. So that everything can be seen clearly": 0.5 m higher
+       again, 4.0 where it stood 3.5, its look down steepened from 30.3 to 35.2 degrees so his hips stand where they stood on
+       the screen; the end's pulled-back boom the same, c_cast.js PULL5) */
+    tag: { heading: Math.PI, boom: { back: 4.0, up: 4.0, pitch: 35.2 }, fov: 72,
            /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
               z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
               out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws
@@ -180,7 +184,8 @@
               and the court before him to the house wall. Was minZ -16.6 with the stop) */
            /* (R46: the court 8.0 by 11.0 m, x -12.5..-4.5 and z -16.6..-5.6: the box 0.3 m inside its side walls, its z line
               at the new gate's (the walkway's slab above begins at -16.6), and high enough for the end's pulled-back boom) */
-           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 5.4 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
+           /* (R110: maxY 6.0, was 5.4, so the end's boom at 5.2 is never drawn down by the box's soft edge) */
+           camBox: { minX: -12.2, maxX: -4.8, minZ: -16.5, maxZ: -6.0, minY: 1.2, maxY: 6.0 }, crane: { max: 50 }, soft: 0.6, glide: 0.4, lock: 0.8,
            /* (R49 and R50, 23 Nov: Chad, "Instead of a round button to switch betwen pho and zavier, i want a switching ui like
               what final fantasy usually has ... aligned to the right of the screen ... On the desktop, press the 'tab' button":
               the switch drawn as the party list, the engine's sixty-eighth seam; its key Tab, was F) */
@@ -213,14 +218,15 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'fx5fire', 'fx5burst',
-      'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
-      'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
-      'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp',
-      'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
-      'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
-      'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'p5icofire', 'p5icoshock',
+      'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
+      'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
+      'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain',
+      'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
+      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
+      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
+      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+      'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
@@ -268,8 +274,11 @@
       actLine: 'Press E to answer',
       actLineTouch: 'Tap to answer',
       // PLAY I · the walkway (the plan's 4.1)
-      objAsk: 'Something smells. Ask the others.',
-      objFollow: 'Follow the smell.',
+      /* (R112, 24 Nov 2026: Chad, "You write in very weird ways using non standard words and expect the user to guess what
+         you r even saying ... Seriously how hard is it to talk in very simple, direct, human, natural way to the user?": every
+         word below read cold and said the way a person says it, what to do and why. The old words are in this file's history) */
+      objAsk: 'You smell something bad. Ask Ton and Jun if they smell it too.',
+      objFollow: 'Follow the smell to where it is coming from.',
       /* the input, beside the order, for the device he is on (v18.5): N for the nose; no voice ever names an input */
       smellTouch: 'Tap SMELL',
       smellKey: 'Press N',
@@ -278,44 +287,49 @@
       hotDrain: 'Smell the drain',
       hotGate: 'Go to the gate',
       /* said under the reticle when the eye is pressed on the walkway (the engine's visionHeldSay), as his teacher said it */
-      visionHeld: 'Not yet. First your nose.',
+      visionHeld: 'Not yet. Use SMELL first.',
       // PLAY II · the hunt (the plan's 4.3): the count is derived on the frame from what is found, never stored (v11.6)
-      objHunt: 'Find where the smell is strongest. {n}/3',
-      objOpen: 'Open Spirit Vision.',
+      objHunt: 'Find the 3 places where the smell is strongest. {n}/3',
+      objOpen: 'Open Spirit Vision with the eye button.',
       hotStain: 'Look here',
       // THE CLEANSING (the plan's 5.2, 5.5 and 5.8), as the fight's specification gives them (docs/V28.0-FIGHT.md 11,
       // 21 Nov: R14's kit, BIND, SMELL and LEND beside FIRE, SHOCKWAVE and BAG). Every objective is true whoever is played
-      fightTitle: 'THE CLEANSING',
+      fightTitle: 'FIGHT THE PRAI',
       // (R66, 23 Nov: his own two sentences, "bounded" written "bound", "or" written "and" and "prai" with the game's
       //  capital, each said to him; R67: then the controls of the device he is on, one to a line, in very direct terms)
       fightBrief1: 'Switch between Grandmaster Pho and Zavier.',
       fightBrief2: 'Use Zavier to bind each Prai, and use Grandmaster Pho to fire at the bound Prai, and then bag them.',
       // the brief names the input for the device he is on (v18.5); no voice ever names one
       fightInTouch: 'Switch: tap a portrait.\nWalk: drag on the left.\nAct: tap the buttons.',
-      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and lend: E.',
-      objFight1: 'Grandmaster Pho: fire at the Prai.',
-      objFight1b: 'It hid. Master Zavier smells it out.',
-      objFight2: 'Master Zavier: bind it.',
-      objFight2b: 'Grandmaster Pho: fire at it, then bag it.',
-      objFight3: 'Bag the Prai: {n} left',
-      objFight3h: 'They cling. Only the shockwave takes them: bind them.',
-      objFight4: 'Together.',
-      objFight6: 'Bag the last three.',
+      fightInKey: 'Switch: Tab.\nWalk: WASD or the arrow keys.\nBind and fire: Space or a click.\nShockwave: Q.\nBag and shield: E.',
+      objFight1: 'FIRE at the Prai with Grandmaster Pho.',
+      objFight1b: 'The Prai ran and hid. Zavier will sniff out where it is.',
+      objFight2: 'Switch to Zavier and BIND the Prai.',
+      objFight2b: 'Now switch to Pho. FIRE at the bound Prai, then BAG it.',
+      objFight3: 'BIND a Prai with Zavier, then FIRE and BAG it with Pho. {n} left.',
+      /* (R110: in a hold the order says the next thing to do: bind them, shield him the first time, then the shockwave;
+         c_fightrules.js objectiveOf) */
+      objFight3h: "The bag can't catch these. BIND them with Zavier.",
+      objFight3w: "Keep them bound. Pho's SHOCKWAVE is charging.",
+      objFight3s: "Use Zavier's SHIELD to protect Pho first.",
+      objFight3g: "Use Pho's SHOCKWAVE now! It takes every bound Prai.",
+      objFight4: 'Press TOGETHER for the final attack.',
+      objFight6: 'Catch the last three Prai in the bag.',
       btnFire: 'FIRE',
       btnShockwave: 'SHOCKWAVE',
       btnBag: 'BAG',
       btnBind: 'BIND',
-      btnLend: 'LEND',
+      btnLend: 'SHIELD',
       btnSmell: 'SMELL',
       // why a button cannot act now, said on its face (FIGHT.why: the button and the press read the one answer)
-      whyFull: 'Three bound',
-      whyNone: 'Nothing in reach',
-      whyGold: 'Only the shockwave now',
-      whyLendFirst: 'Lend the cage first',
-      whyBindFirst: 'Bind one first',
+      whyFull: 'Zavier can only hold 3',
+      whyNone: 'No Prai close enough',
+      whyGold: 'Use SHOCKWAVE instead',
+      whyLendFirst: 'Shield Pho with Zavier first',
+      whyBindFirst: 'BIND a Prai first',
       // (the switch, said and never pressed, until the lesson's first chase shows it: the engine shows it from the first frame)
-      whySwitchFirst: 'Fire first',
-      whySwitchNow: 'Not now',
+      whySwitchFirst: 'FIRE at the Prai first',
+      whySwitchNow: "You can't switch right now",
       btnPho: 'PHO',
       btnZavier: 'ZAVIER',
       // (R49: the small line over each name on the party list's tiles)
@@ -323,18 +337,19 @@
       btnZavierTitle: 'MASTER',
       btnTogether: 'TOGETHER',
       // the card when the fight is lost (the fight begins again, never the chapter: R14)
-      lostSay: 'The cleansing was broken.',
-      lostAgain: 'BEGIN AGAIN',
-      lostLead: 'Let Grandmaster Pho lead',
+      lostSay: 'You lost the fight.',
+      lostAgain: 'TRY AGAIN',
+      lostLead: 'Try an easier fight',
       // the card between the two cases (the plan's 4.6: the next case, never the future; a day is the plan's own)
       cardNext: 'The next afternoon.',
       // PLAY III · the collector (the plan's 4.7)
-      objSmell: 'Something smells. SMELL.',
-      objLook: 'Open Spirit Vision. Look at the pieces.',
-      hotLook: 'Look',
+      objSmell: 'You smell something. Find which amulet it comes from.',
+      /* (objLook begins with objOpen's words: once his sight is open the order is the rest of it, c_story.js lookOpenWords) */
+      objLook: 'Open Spirit Vision with the eye button. Look at each amulet giving off smoke.',
+      hotLook: 'Look closer',
       // THE SKELETON'S STAND-INS (TODO-PLAY, TODO-FIGHT): what is pressed in each phase until its play is built. Mine,
       // not the plan's: each goes when the play it stands for is built
-      hotCleanse: 'Begin the cleansing'
+      hotCleanse: 'Start the fight'
     },
     sayPrefix: 'q5'
   };

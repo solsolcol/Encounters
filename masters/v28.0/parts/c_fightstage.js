@@ -38,6 +38,13 @@
     /* (R62, 23 Nov 2026: Master Zavier's SMELL is no longer a button: it goes out by itself, FIGHT's smellTick) */
     const FS_ACT = { flame: 'FIRE', shock: 'SHOCKWAVE', bag: 'BAG', bind: 'BIND', lend: 'LEND' };
     const FS_ID = { pho: { main: 'flame', second: 'shock', third: 'bag' }, zavier: { main: 'bind', third: 'lend' } };
+    /* (R110, 24 Nov 2026: Chad, "improve how the icons of the ability buttons look like. They look way too basic. Maybe
+       generate the icons so they look like diablo style ability icons": each act's button filled with its own painted icon
+       (masters/v28.0/keys.py, the fight's ability icons), its word laid low over it, as TOGETHER's painting is (the
+       seventy-fourth seam), each key declared in the chapter's assets as TOGETHER's is. R116/R117 (the same evening: "They
+       look like ai slop icons and not true diablo style icons", then "Actually diablo isnt a good example, world of warcraft
+       icons are better"): painted again in that manner, a small painting filling the whole tile in its spell's colour) */
+    const FS_ART = { flame: 'p5icofire', shock: 'p5icoshock', bag: 'p5icobag', bind: 'p5icobind', lend: 'p5icoshield' };
     const FS_SLOT = { flame: 'main', shock: 'second', bag: 'third', bind: 'main', lend: 'third' };
     /* the controller: one per fight (fightBegin makes it; fightReset puts it all back) */
     const FS5 = { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, run: 0, wall: 0, hitQ: [],
@@ -1736,7 +1743,7 @@
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: null });
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: FS_ART[id] || null });
       }
       /* (R75's debug, GD: the other one's tile shows his main act's readiness as it is now: only the played one's acts were
          told, so his gauge stood where it was left when he was last played, and showed BIND ready before he had any) */

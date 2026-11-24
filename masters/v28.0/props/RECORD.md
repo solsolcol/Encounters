@@ -139,3 +139,91 @@ masters/v28.0/parts/b_world.js buildEstate; keys by masters/v28.0/keys.py.
 
 What it cost: Meshy 2 x 40 + 3 x 5 = 95 (the shrub's remesh the third) (1,127 before the lamp, 1,087 after it; the refused jobs took nothing); Higgsfield
 4 pictures and the shrub's model.
+
+## R110 ability icons
+
+Chad, 24 Nov 2026: "improve how the icons of the ability buttons look like. They look way too basic. Maybe generate
+the icons so they look like diablo style ability icons." Six painted icons for the tag-team fight's round buttons
+(laid as an act's `art`, like R107's p5togart).
+
+- Model: Higgsfield `gpt_image_2_6` (GPT Image 2.6), 1:1, quality `max`, 1k (4.5 credits a picture).
+- Shared style words in every prompt: "A single dark-fantasy action-RPG ability icon in the style of Diablo skill
+  icons: ... Richly hand-painted, high contrast, gritty painterly texture, dramatic rim light, out of a near-black
+  background. One bold shape with a strong silhouette, centred, nothing important near the corners so a circle crop
+  keeps all of it. No frame, no border, no text, no letters, no symbols, no faces."
+- Subjects (the part of each prompt that differs):
+  - FIRE: "a roaring orange-gold fireball flying diagonally toward the upper right, a bright white-gold core, licking
+    flames, sparks and dark smoke trailing behind it"
+  - SHOCKWAVE: "a shockwave of golden light bursting outward from a blazing centre point, one bright expanding ring of
+    gold energy, cracked stone fragments, debris and dust thrown outward by the blast"
+  - BAG: "a black cloth sack tied loosely at the neck, its open mouth glowing with warm golden light, drawing in
+    swirling streaks of pale ghostly spirit-light that spiral into it" (golden rim light on the cloth folds)
+  - BIND: "a translucent glowing violet sphere of light, like a bubble, holding trapped inside it a small featureless
+    spirit silhouette made of red flame, with a ring of faint violet glowing runic marks circling the sphere"
+  - SHIELD: "a protective dome-shaped cage made of glowing violet bars of light, curved bars meeting at the top, a soft
+    violet energy barrier shimmering between them, empty inside, standing on a faint glowing ring at its base" (+ "no
+    figures")
+  - SMELL, first prompt: "wisps of sour grey-green smoke curling upward and spiralling inward toward the viewer, a faint
+    pale glow at their centre" (+ "no nose, no face, no figures"). Both came back as one S-shaped ribbon that reads as a
+    letter S / a dollar sign small, so it was asked once more: "five or six thin wisps of sour grey-green smoke rising
+    from the lower edge and from both sides, each curling inward and converging on one small faint pale-green glowing
+    point in the exact centre ... a symmetrical upward-opening fan or tulip of smoke around the glow, NOT an S-curve,
+    NOT a single serpentine ribbon" (+ "no letter shapes").
+- Jobs (ids only). A rate limit (8 at once) refused two of the first batch, and the resubmission doubled SHOCKWAVE and
+  SHIELD, so those two had three candidates each:
+  - FIRE: b0278a96-ff48-4698-a95f-799f00958e64 (a, PICKED), 3f03d6f8-fe6e-4d7b-8cf9-7bc9ee66448c (b)
+  - SHOCKWAVE: 67256edb-1d79-4277-96da-82be20536802 (x), f51a3229-5fe1-4112-b2c9-96b0360c6586 (y),
+    bc757788-65b7-4481-91aa-062b76b76e36 (z, PICKED)
+  - BAG: 52d1ed87-8a44-4c56-9aee-8f64cacefdd4 (a), 3c9ebcec-bcd9-450a-b427-0eae80d2d2ab (b, PICKED)
+  - BIND: ad04a891-af24-4a8a-815a-c79d9ebbdc20 (a), 479dc26c-5dba-4f73-9bda-accb60e9ef05 (b, PICKED)
+  - SHIELD: 2ed5343a-26c7-4df2-9e88-f040e15c06b0 (x), 0faac1e9-e763-4ef6-969f-24df820e87cb (y, PICKED),
+    57cdc207-a514-477d-a82a-98f82b28eee6 (z)
+  - SMELL: 0faaf2a8-33ba-4150-bc18-80a026603210 (a), ea2ea17d-0841-4094-b62c-ea3221c2e00c (b) (both refused: an S);
+    abf9e75b-f731-4631-a814-440fc730e6bb (c), b0b354ac-fefc-43fc-8b1c-94fe6dd6b946 (d, PICKED)
+- Why each pick: FIRE a, the head more compact and further inside the circle; SHOCKWAVE z, the ring narrowest and the
+  least debris across it (all three nearly alike); BAG b, the streaks plainly flow INTO the mouth (a's read as coming
+  out); BIND b, the red spirit larger and bolder, so it still reads at 64 px; SHIELD y, five thick bars instead of
+  seven thinner ones, the clearest cage small; SMELL d, the glow at the centre and the wisps converging on it still
+  read at 64 px, where c's two big outer wisps read as horns. Every candidate was looked at full size, and the picks
+  again at 64 and 128 px in a circle.
+- Prep (each 1024 PNG): scaled to 0.84 to 0.92 of 512 (fire 0.88, shock 0.86, bag 0.84, bind 0.90, shield 0.86, smell
+  0.92) on a black 512 x 512 field, its edge feathered into the black so nothing the circle crop would cut is lost;
+  JPEG quality 88, RGB, no EXIF or ICC: assets/p5icofire.jpg, p5icoshock.jpg, p5icobag.jpg, p5icobind.jpg,
+  p5icoshield.jpg, p5icosmell.jpg.
+- Credits: 145.16 before, 73.16 after (72 used: 16 pictures at 4.5).
+
+## R116 and R117: the five fight icons painted again (24 Nov 2026)
+
+Chad, the same evening, on seeing the R110 set: "They look like ai slop icons and not true diablo style icons", then "Actually
+diablo isnt a good example, world of warcraft icons are better". The R110 set (above) floated glossy generated effects on a
+black void, each in its own manner; it is refused and replaced, never shipped. (Its SMELL icon, never used, is kept at
+masters/v28.0/props/unused/p5icosmell.jpg.)
+
+- Model: Higgsfield `gpt_image_2_6`, 1:1, quality `max`, 1k (4.5 credits a picture); 7 pictures, 31.5 credits (73.16 before).
+- The game is never named in a prompt and no picture of another game goes in: the manner is described in words. Shared
+  words: "A square spell icon for a fantasy MMORPG action bar, hand-painted digital painting in the classic style of those
+  games' ability icons. The painting fills the entire square edge to edge with a richly coloured painted background: no black
+  void, no empty space. Saturated, luminous colour, soft painterly brushwork with visible strokes, stylised and slightly
+  exaggerated like hand-painted game art. One large, bold central subject with a clear silhouette that still reads at 40
+  pixels, its brightest glow at its heart, darker toward the corners. Everything important sits inside the central circle,
+  because the corners will be cut off by a round button. ... No text, no letters, no runes, no symbols, no border, no frame,
+  no UI elements; not a photograph, not a 3D render."
+- Each icon's own words and job (ids only):
+  - FIRE (Grandmaster Pho): "a blazing fireball streaking toward the viewer from the lower left to the upper right, a
+    white-hot yellow core wrapped in curling tongues of orange and red flame, a short flaming tail, a few hot embers";
+    ground "deep crimson and orange". c549b4da-d0f4-4398-a20d-227e46ea8db7, PICKED.
+  - SHOCKWAVE (Grandmaster Pho): "a shockwave of golden light, one thick blazing ring of gold force bursting outward across
+    cracked stone ground from a brilliant white-gold centre, seen from a little above, dust thrown up along the ring"; ground
+    "warm amber and burnt orange". 8fc4c41e-7f0f-4ab6-948f-811beea0964d, PICKED.
+  - BAG (Grandmaster Pho): first f8cc2a53-9449-49e8-8994-c2b157cf8de9, refused (its wisps came back as cartoon ghosts with
+    faces); again with "faceless pale blue-white wisps of spirit-smoke ... only smoke: no faces, no eyes, no mouths, no ghost
+    shapes", ground "deep teal-blue and slate": 76bb78f0-3e18-4a0b-8246-cbacba28fc6a, PICKED.
+  - BIND (Master Zavier): "a glowing violet sphere of light with bright vertical bands of light around it like the bars of a
+    round cage, a small red flame-spirit trapped inside, its clawed hands pressing against the bars"; ground "deep purple and
+    magenta". 33d65578-74cf-4658-a57f-91fb9c7dec3d, PICKED.
+  - SHIELD (Master Zavier): first 56d61f88-7e45-4690-b13b-af540e8ca673, refused (a hooded wizard, and Grandmaster Pho wears
+    no hood); again with "an older man with short grey hair in a plain loose robe, seen from behind in dark silhouette,
+    standing calm and upright with his arms at his sides; no hood, no hat, no staff ... a glowing ring on the ground at its
+    base", ground "deep indigo and blue-violet": f080065d-6d78-4de2-b752-7d86801f357e, PICKED.
+- Prep: each 1024 picture scaled to 512 x 512 (Lanczos), RGB, JPEG quality 88, no EXIF or colour profile; full bleed, no
+  padding (the button's own circle crops the corners, as the prompts allowed for). Looked at full size, one at a time.

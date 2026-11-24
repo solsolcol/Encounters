@@ -270,7 +270,10 @@
         ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
         ph5g1: 2, ph5g2: 2, ph5g3: 2, ph5g4: 2,
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
-        tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
+        tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0,
+        /* (R110/R111, 24 Nov 2026: his question when they keep breaking out of the bind and his teacher's answer, in the open
+           fight or in a hold; and his call the first time the moment asks for the shockwave itself) */
+        q5fb1: 3, ph5fb1: 3, ph5fb2: 3, q5fw1: 3
       };
       /* the needs that cost him while they stand: their prompt is said at once, ahead of praise and colour */
       const URGENT = { athimF: 1, athimS: 1, athimB: 1, athimSw: 1, beneath: 1, cage: 1, press: 1, waveGo: 1 };
@@ -368,6 +371,7 @@
           cage: { str: n.cageMax, broken: false, lent: 0, lentUp: 0, lentFor: 0 },
           prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
+          brk: { plain: 0, hold: 0 },             // (R111: break-outs from the bind in the fight, in the open and in a hold)
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
           said: {}, cur: null,
           log: { dwell: {}, trans: {}, stage: {}, timed: {} },
@@ -1288,6 +1292,14 @@
         st.ev.push({ e: 'unbind', id: p.id });
         /* (R82: a break-out from the bind costs him, in the fight; the lesson's bubbles teach, and cost nothing) */
         if (st.stage === 'fight' && st.n.breakHit > 0) { st.owe += st.n.breakHit; st.stats.breakHits = (st.stats.breakHits || 0) + 1; st.ev.push({ e: 'breakHit', id: p.id }); }
+        /* (R110/R111, 24 Nov 2026: Chad, "The user will just keep binding the prais and the prais keep breaking out of the cage,
+           and the player will wonder whats going on and what they need to do"; "Zavier should have some voicelines saying
+           'they keep breaking out of the binding cage? What should i do?' ... and pho will answer him". At the second break-out
+           in the open fight his student asks and his teacher says what to do (the bind lasts seconds: bind, switch, fire,
+           bag); at the second in a hold, the teacher says what a hold asks (bind them, shield him, the shockwave). Queued in
+           that order with time to be said: a line already in the air, or a need that costs him, is let finish first) */
+        if (st.stage === 'fight') { const k = st.hold > 0 ? 'hold' : 'plain'; st.brk = st.brk || { plain: 0, hold: 0 }; st.brk[k]++;
+          if (st.brk[k] === 2) { if (!st.said.q5fb1) sayOnce(st, 'q5fb1', 20); sayOnce(st, k === 'hold' ? 'ph5fb2' : 'ph5fb1', 26); } }
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
@@ -1533,8 +1545,17 @@
         sanityTick(st, dt, fed);
         if (st.stage !== 'lost') stageTick(st, dt, io);
         st.cur = need(st);
+        cueTick(st);
         if (st.stage !== 'lost') voiceTick(st, io);
         return st.ev;
+      }
+      /* (R110, 24 Nov 2026: Chad, "have some voicelines that tell player to use the shockwave ability at the right time, i
+         think this is not clear enough to the user": the first time the moment asks for the shockwave itself (it is ready, Prai
+         are bound, and it is the next press), his student calls it out once; his teacher's own orders for it go on as needs) */
+      function cueTick(st) {
+        if (st.stage !== 'fight' || st.said.q5fw1) return;
+        const nd = st.cur;
+        if (nd && (nd.id === 'waveSafe' || nd.id === 'waveGo')) sayOnce(st, 'q5fw1');
       }
       function slotAct(st, slot) {
         if (slot === 'swap') return 'SWITCH';
@@ -1584,7 +1605,20 @@
                     : p.st === 'shown' ? 'objFight2' : 'objFight2b';
           return { key, step: { objFight1: 1, objFight1b: 2, objFight2: 3, objFight2b: 4 }[key] };
         }
-        if (st.stage === 'fight') return st.hold ? { key: 'objFight3h', step: 5 } : { key: 'objFight3', n: st.left, step: 5 };
+        /* (R110/R112: in a hold, and while the shockwave's own lesson waits, the order says the NEXT thing to do: bind them,
+           then shield him the first time, then the shockwave; the words are the chapter's, a_head.js objFight3h/w/s/g) */
+        if (st.stage === 'fight') {
+          const hold = st.hold > 0, plain = { key: 'objFight3', n: st.left, step: 5 };
+          if (!hold && st.lesson.wave !== 'pending') return plain;
+          let bound = 0; for (const p of st.prai) if (p.st === 'bound' || p.st === 'held') bound++;
+          const ph = st.pho, ready = st.seen.shock && ph.waveWait <= 0 && ph.wind <= 0 && !ph.ring;
+          /* (the shockwave's lesson waits for one bound and the wave ready) */
+          if (!hold && (!bound || !ready)) return plain;
+          if (!bound) return { key: 'objFight3h', step: 5 };
+          if (!ready) return { key: 'objFight3w', step: 5 };
+          if (!st.firsts.wave && !(st.cage.lent > 0)) return { key: 'objFight3s', step: 5 };
+          return { key: 'objFight3g', step: 5 };
+        }
         if (st.stage === 'surge') return { key: 'objFight4' };
         // (the last three bagged, nothing is asked while his last line is said)
         if (st.stage === 'last') return st.left > 0 ? { key: 'objFight6' } : null;

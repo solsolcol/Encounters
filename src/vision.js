@@ -31,18 +31,33 @@ export function makeVision(THREE, renderer, opts = {}) {
   const ext = renderer.extensions;
   const floatOk = caps.isWebGL2 && (ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float'));
   const SAMPLES = Math.min(caps.maxSamples || 0, opts.samples == null ? 4 : opts.samples);
+  /* (v28.0, R109/R115: where the browser offers WEBGL_multisampled_render_to_texture, the world's target leaves that path
+     (targets(), below) and its samples are kept in real buffers instead of on the chip: at a phone's 2 px a point, four of
+     them came to about 60 MB more while the vision is drawn. Two hold the edges as smooth to the eye at that density for
+     half of it. Everywhere else, a desktop and the probes' browser among them, the four as before: nothing there changes) */
+  const MSRTT = !!(ext && ext.has && ext.has('WEBGL_multisampled_render_to_texture'));
+  const W_SAMPLES = MSRTT ? Math.min(SAMPLES, 2) : SAMPLES;
   const V = { ok: !!caps.isWebGL2, w: 0, h: 0, world: null, hands: null, spirit: null, depth: null, frames: 0,
               prevVP: new THREE.Matrix4(), havePrev: false, mats: new Set(), err: null };
   const _sz = new THREE.Vector2(), _eye = new THREE.Vector3(), _vp = new THREE.Matrix4(), _cc = new THREE.Color();
 
+  /* (R115: the flag below lives in three's own table of what each target is, and a lost and restored context makes that
+     table afresh (three's initGLContext): kept only at the target's making, the next frame after an app switch would set
+     the target up on the extension's path again, and the faint picture would come back. So it is said again before every
+     use, ahead of the frame that sets the target up: a lookup a frame, and nothing changes where it already holds) */
+  function keepOff() {
+    if (!V.world) return;
+    const pr = renderer.properties.get(V.world);
+    if (pr.__useRenderToTexture !== false) pr.__useRenderToTexture = false;
+  }
   function targets(w, h) {
-    if (V.world && V.w === w && V.h === h) return;
+    if (V.world && V.w === w && V.h === h) { keepOff(); return; }
     free();
     V.w = w; V.h = h;
     const type = floatOk ? THREE.HalfFloatType : THREE.UnsignedByteType;
     V.depth = new THREE.DepthTexture(w, h);
     V.depth.type = THREE.UnsignedIntType;
-    V.world = new THREE.WebGLRenderTarget(w, h, { type, samples: SAMPLES, depthTexture: V.depth, depthBuffer: true,
+    V.world = new THREE.WebGLRenderTarget(w, h, { type, samples: W_SAMPLES, depthTexture: V.depth, depthBuffer: true,
                                                    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
     V.world.texture.colorSpace = THREE.LinearSRGBColorSpace;
     /* (v28.0, R109/R114, 24 Nov 2026: Chad, "when i open spirit vision and move the camera around, i can see a faint print
@@ -55,7 +70,7 @@ export function makeVision(THREE, renderer, opts = {}) {
        screen. A desktop and the probes' browser never offer the extension, so every photograph here was right. This target
        is kept off that path: the multisampled picture is drawn into renderbuffers and resolved, colour and depth both, into
        the textures every frame (three's own resolve, blitFramebuffer). The hands' and the spirits' targets read no depth) */
-    renderer.properties.get(V.world).__useRenderToTexture = false;
+    keepOff();
     V.hands = new THREE.WebGLRenderTarget(w, h, { type, samples: SAMPLES, depthBuffer: true,
                                                    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
     const sw = Math.max(2, w >> 1), sh = Math.max(2, h >> 1);
@@ -411,5 +426,8 @@ export function makeVision(THREE, renderer, opts = {}) {
     V.mats.clear();
   }
   function forget(m) { if (m && V.mats.delete(m)) m.dispose(); }
-  return { render, idle, warm, dispose, spiritMaterial, forget, state: V, floatOk, samples: SAMPLES };
+  /* (R115: what a probe reads back of the world's target: its samples, and whether three draws it through the
+     render-to-texture path; false wherever the vision has been drawn once, by construction since R109) */
+  const worldPath = () => V.world ? { samples: V.world.samples, rtt: renderer.properties.get(V.world).__useRenderToTexture !== false && MSRTT } : null;
+  return { render, idle, warm, dispose, spiritMaterial, forget, state: V, floatOk, samples: SAMPLES, msrtt: MSRTT, worldPath };
 }

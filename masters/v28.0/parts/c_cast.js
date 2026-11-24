@@ -71,7 +71,9 @@
        the films that begin or end on the mode's picture in those stages ask boomAt for it (its second argument)) */
     /* (R102 and R103: 0.4 m higher, 4.7 where it stood 4.3, its look down 37 degrees where it was 34, so his hips stand where
        they stood on the screen, as the fight's own boom: a_head.js) */
-    const PULL5 = { back: 5.4, up: 4.7, pitch: 37 };
+    /* (R110: 0.5 m higher again, 5.2 where it stood 4.7, its look down 40.5 degrees where it was 37, his hips kept where they
+       stood on the screen, as the fight's own boom: a_head.js) */
+    const PULL5 = { back: 5.4, up: 5.2, pitch: 40.5 };
     function boomAt(feet, over) {
       const d = DATA.tag || {}, portrait = camera.aspect < 1;
       const b1 = Object.assign({ back: 4.0, up: 3.5, pitch: 30.3 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,

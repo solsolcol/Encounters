@@ -37,6 +37,15 @@ group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the c
       [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)"),
        ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)"),
        ('p5togart', 'p5togart.jpg', "R107: the two of them fighting together, painted, inside the TOGETHER button (512 x 512)")])
+group("e4c5: THE FIGHT'S ABILITY ICONS (R110, 24 Nov 2026: 'improve how the icons of the ability buttons look like. They look way\n"
+      "too basic. Maybe generate the icons so they look like diablo style ability icons'; then R116/R117: 'Actually diablo isnt a\n"
+      "good example, world of warcraft icons are better'), painted by GPT Image in that manner, each filling its round button\n"
+      "with the act's word low over it (the seventy-fourth seam's `art`; masters/v28.0/props/RECORD.md, R116 and R117)",
+      [('p5icofire', 'p5icofire.jpg', "Grandmaster Pho's FIRE: a fireball (512 x 512)"),
+       ('p5icoshock', 'p5icoshock.jpg', "Grandmaster Pho's SHOCKWAVE: a ring of gold bursting across cracked ground (512 x 512)"),
+       ('p5icobag', 'p5icobag.jpg', "Grandmaster Pho's BAG: a tied sack glowing gold, drawing pale spirit-smoke in (512 x 512)"),
+       ('p5icobind', 'p5icobind.jpg', "Master Zavier's BIND: a violet bubble round a red-flame spirit (512 x 512)"),
+       ('p5icoshield', 'p5icoshield.jpg', "Master Zavier's SHIELD: a violet dome of light over his grey-haired teacher (512 x 512)")])
 group("e4c5: THE FIRE'S PICTURES (R94, 24 Nov 2026, his pick \"Full upgrade\": real fire, smoke and energy made in Blender as\n"
       "moving pictures): three flipbooks SIMULATED in Blender (Mantaflow) and rendered in Cycles on the rented GPU box\n"
       "(tools/fx/flipsim.py, tools/fx/flippack.py; masters/v28.0/fx/make.sh every number), each 8 x 8 frames whose channels\n"
