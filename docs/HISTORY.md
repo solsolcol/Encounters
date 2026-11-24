@@ -9515,6 +9515,12 @@ What the baseline contains, by release:
   account: the box 147.34 credits, about $7.50 to $12.50. Then swirls of energy round the two of them for the gathering,
   LEND and TOGETHER (builds 77 and 78, tuned from their photographs), and R102 and R103: the fight's camera 0.4 m higher
   with its look down steepened so the played one stands where he stood. Live: build 79, deploy `6b056baed7e13e4f39cd3a86`.
+  R104 ("What else is not done") answered on one screen; then the chapter's milestone backup bundle, the first since
+  v26.0's: the history is 3.26 GiB and the disk had 1.8 GB free, so 127 folders of old probe photographs were cleared
+  (835 MB) and the bundle made in two halves, each streamed straight into 20 MB pieces: half 1 the whole history to
+  v25.0 (`3e83766`) and its 34 tags (84 pieces, 1.7 GB, sha256 cf4c0605...), half 2 the rest to `8f0d3e9` and the
+  other 23 tags, needing half 1 (58 pieces, 1.2 GB, sha256 cd2d97d7...); each half's pieces rejoin byte for byte and
+  pass `git bundle verify`; sent to him with a README of how they restore, and the sent pieces cleared.
 
 ## The sheet, version by version
 
