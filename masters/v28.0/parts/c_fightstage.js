@@ -339,10 +339,11 @@
     }
     /* (each ball its head of real fire and its shimmer; each landing its burst; each puff of smoke its own) */
     for (const B of fsBalls) { B.fx = fxCard('fire', { head: true, heat: 1.15, glow: 0.6, smoke: 0.55 }, 6); B.sh = fxShimmer(); }
-    for (const L of fsBlooms) L.fxb = fxCard('burst', { heat: 1.5, glow: 0.65, smoke: 0.95 }, 7);
+    for (const L of fsBlooms) L.fxb = fxCard('burst', { heat: 1.1, glow: 0.6, smoke: 0.95 }, 7);
     for (const P of fsSmokes) P.fx = fxCard('smoke', { heat: 0, glow: 0, smoke: 1 }, 4);
-    /* (the burst's frames are played over this long: its sixty-four, simulated at 24 a second, about 1.8 times as fast) */
-    const FX_BURST_SECS = 1.5;
+    /* (the burst's frames are played over this long: its first 52 of 64 (past them its smoke has gone), simulated at 24 a
+       second, about 1.7 times as fast: the ball of fire swells for a third of a second and rolls up into dark smoke) */
+    const FX_BURST_SECS = 1.3, FX_BURST_N = 52;
     /* (the smoke's card against the drawn puff's size, and its strength against the drawn puff's: the simulated puff swells
        from a fifth of its picture to the whole of it over its frames 3 to 30, the ones the puff plays (past them it spreads
        out of its picture), and is denser than the drawn one's soft blobs; the burst's card against its picture's metres) */
@@ -981,7 +982,7 @@
           if (fb) { L.ball.visible = false; L.fxb.visible = ue < 1; fxFace(L.fxb); const W = FX_FRAME.burst.m * FX_BURST_K * L.k;
             camera.getWorldQuaternion(_fxQ); _fbY.set(0, 1, 0).applyQuaternion(_fxQ);
             L.fxb.position.copy(L.s.position).addScaledVector(_fbY, (0.5 - FX_FRAME.burst.oy) * W); L.fxb.scale.set(W, W, 1);
-            const UB = L.fxb.material.uniforms; UB.uF.value = ue * 63; UB.uA.value = 1 - smo(c01((ue - 0.82) / 0.18)); }
+            const UB = L.fxb.material.uniforms; UB.uF.value = ue * FX_BURST_N; UB.uA.value = 1 - smo(c01((ue - 0.82) / 0.18)); }
           else { L.fxb.visible = false; L.ball.visible = ub < 1;
             L.ball.position.y = L.y + 0.3 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.5 + 1.7 * Math.sqrt(ub)) * L.k, 0);
             const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.2); } }
