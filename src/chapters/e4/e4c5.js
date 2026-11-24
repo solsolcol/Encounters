@@ -12167,7 +12167,9 @@
        (CLOTHY5, sunk half a millimetre), the collector's pieces grouped by kind and turned to him, the three that carry
        the presences in the back row; the bowl and the tied bag inside the top too) */
     const CLOTHY5 = (x) => 0.3383 - 0.0043 * x;
-    const GRID5 = { xs: [-0.08, 0.035, 0.15, 0.265], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
+    /* (centred on his line of sight, 9 cm apart: off-centre at 11.5 cm its fourth column stood half out of a phone's frame at
+       the near rows; the case's east edge, x -0.178, keeps 1.8 cm from the nearest) */
+    const GRID5 = { xs: [-0.135, -0.045, 0.045, 0.135], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
     const TABLE5 = (() => {
       const R = ROOM, G = GRID5, at = (i, j) => ({ x: R.cx + G.xs[i], y: CLOTHY5(R.cx + G.xs[i]), z: R.cz + G.zs[j] });
       const P = { angry: Object.assign(at(1, 4), { key: 'w5wuathanu', ry: Math.PI + 0.5 }),
@@ -12215,7 +12217,7 @@
        smoke. The red rises quick and restless (the angry one, shaking more as it flinches), the green slow and leaning
        toward the collector's hands at the table's west end (the hungry one reaching) */
     const SMOKE5 = (() => {
-      const NP = 18, _db = new THREE.Vector2();
+      const NP = 26, _db = new THREE.Vector2();
       const mk = (color, seed, o) => {
         const g = new THREE.BufferGeometry(), pos = new Float32Array(NP * 3), siz = new Float32Array(NP), alp = new Float32Array(NP), rot = new Float32Array(NP);
         const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
@@ -12242,12 +12244,14 @@
             for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = 1 - (1 - a) * (1 - a);
               const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
               pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
-              siz[i] = q.s1 * (0.35 + 1.2 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+              siz[i] = q.s1 * (0.3 + 1.0 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
             const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
         };
       };
-      const S = { angry: mk(0xff2c1e, 28771, { life: 2.0, rise: 0.24, sway: 0.012, wob: 5.5, lean: 0.0, size: 0.085, alpha: 0.5, turn: 2.4 }),
-                  hungry: mk(0x84ff42, 28772, { life: 3.0, rise: 0.28, sway: 0.010, wob: 1.6, lean: -0.07, size: 0.095, alpha: 0.46, turn: 1.2 }) };
+      /* (a thin column, photographed on a phone on build 66: puffs of 8.5 to 9.5 cm read as two large soft blobs over his
+         teacher's robe; now 1 to 5 cm, more of them, fainter each) */
+      const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.4, turn: 2.4 }),
+                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.36, turn: 1.2 }) };
       /* where each rises from: the top of its piece, below the presence's own place over it */
       const off = { angry: -0.02, hungry: 0.03 };
       return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; e.frame(t, { x: gp.x, y: gp.y + off[k], z: gp.z }, strength, agit || 0); },
@@ -15085,6 +15089,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        at 1.7 s, the hand at (0.217, 1.109, 0.638) about the room's middle, the throw's release in its cycle (1.7). R89: the
        tied bag inside the cloth's top: at 0.22 and turned 0.5 its back stood 7 cm over the hanging drape) */
     const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.16], handFrom: [ROOM.cx + 0.217, 1.109, ROOM.cz + 0.638] };
+    const _smk5 = new THREE.Vector3();             // (R90: where a piece's smoke rises from, in the endings)
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
     const BAGBLOB5 = { m: null, o: null };
     /* (each bag's own painted contact shadow, carried with it: the open bag on the low table at the knot read as floating,
@@ -15133,8 +15138,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const hx = q.home.x + (pk && ph ? pk.position.x - ph.x : 0), hz = q.home.z + (pk && ph ? pk.position.z - ph.z : 0);
           if (q.grp.visible) { q.grp.position.set(hx + (hx - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, hz + 0.9 * u);
             if (q.fx) q.fx.set('uAlpha', 1 - u); }
-          /* (R90: its smoke goes with it, thinning as it lifts away) */
-          if (nm !== 'energy') SMOKE5.frame(nm, t, q.grp.position, q.grp.visible ? 1 - u : 0, 0); }
+          /* (R90: its smoke rises off the piece where the piece lies, and dies away as the water reaches it: carried off with
+             the presence it read as two coloured blobs adrift over his teacher, build 66) */
+          if (nm !== 'energy') { _smk5.set(hx, q.home.y, hz); SMOKE5.frame(nm, t, _smk5, q.grp.visible ? 1 - u : 0, 0); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
         /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
@@ -15222,7 +15228,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
-      const h = threeHome5[key]; g.position.set(lp(h.x, h.x * 0.4 + 0.05, u), h.y, lp(h.z, 240.225, u)); } }
+      const h = threeHome5[key]; g.position.set(h.x, h.y, lp(h.z, 240.225, u)); } }
     /* (ending C) something small that his nose never caught, on a piece he has already packed: a pale thing lifting its
        head out of the case's foam, seen only in his sight (drawn as the play's presences are: ctx.spirit) */
     const SMALL5 = (() => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), matProxy); owned.push(m.geometry); g.add(m); g.visible = false; world.add(g);
@@ -15284,7 +15290,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 each line's first word, the lens eased from one man to the other all through every line, R25 framing) */
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.co5C1 + SECS.co5C1 - 0.1, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
-             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.13, 0.37, 240.12], fp: 42, fd: 36 },
+             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.045, 0.37, 240.14], fp: 42, fd: 36 },
              { t: E.pack, name: 'pack', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.34, 0.4, 239.95], fp: 40, fd: 34, cut: true },
              { t: E.see + 1.2, name: 'small', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.33, 0.45, 239.93], fp: 32, fd: 28 },
              { t: E.ph5C1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },

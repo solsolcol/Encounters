@@ -511,7 +511,9 @@
        (CLOTHY5, sunk half a millimetre), the collector's pieces grouped by kind and turned to him, the three that carry
        the presences in the back row; the bowl and the tied bag inside the top too) */
     const CLOTHY5 = (x) => 0.3383 - 0.0043 * x;
-    const GRID5 = { xs: [-0.08, 0.035, 0.15, 0.265], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
+    /* (centred on his line of sight, 9 cm apart: off-centre at 11.5 cm its fourth column stood half out of a phone's frame at
+       the near rows; the case's east edge, x -0.178, keeps 1.8 cm from the nearest) */
+    const GRID5 = { xs: [-0.135, -0.045, 0.045, 0.135], zs: [-0.20, -0.11, -0.02, 0.07, 0.16] };
     const TABLE5 = (() => {
       const R = ROOM, G = GRID5, at = (i, j) => ({ x: R.cx + G.xs[i], y: CLOTHY5(R.cx + G.xs[i]), z: R.cz + G.zs[j] });
       const P = { angry: Object.assign(at(1, 4), { key: 'w5wuathanu', ry: Math.PI + 0.5 }),
@@ -559,7 +561,7 @@
        smoke. The red rises quick and restless (the angry one, shaking more as it flinches), the green slow and leaning
        toward the collector's hands at the table's west end (the hungry one reaching) */
     const SMOKE5 = (() => {
-      const NP = 18, _db = new THREE.Vector2();
+      const NP = 26, _db = new THREE.Vector2();
       const mk = (color, seed, o) => {
         const g = new THREE.BufferGeometry(), pos = new Float32Array(NP * 3), siz = new Float32Array(NP), alp = new Float32Array(NP), rot = new Float32Array(NP);
         const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
@@ -586,12 +588,14 @@
             for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = 1 - (1 - a) * (1 - a);
               const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
               pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
-              siz[i] = q.s1 * (0.35 + 1.2 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+              siz[i] = q.s1 * (0.3 + 1.0 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
             const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
         };
       };
-      const S = { angry: mk(0xff2c1e, 28771, { life: 2.0, rise: 0.24, sway: 0.012, wob: 5.5, lean: 0.0, size: 0.085, alpha: 0.5, turn: 2.4 }),
-                  hungry: mk(0x84ff42, 28772, { life: 3.0, rise: 0.28, sway: 0.010, wob: 1.6, lean: -0.07, size: 0.095, alpha: 0.46, turn: 1.2 }) };
+      /* (a thin column, photographed on a phone on build 66: puffs of 8.5 to 9.5 cm read as two large soft blobs over his
+         teacher's robe; now 1 to 5 cm, more of them, fainter each) */
+      const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.4, turn: 2.4 }),
+                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.36, turn: 1.2 }) };
       /* where each rises from: the top of its piece, below the presence's own place over it */
       const off = { angry: -0.02, hungry: 0.03 };
       return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; e.frame(t, { x: gp.x, y: gp.y + off[k], z: gp.z }, strength, agit || 0); },

@@ -2039,6 +2039,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        at 1.7 s, the hand at (0.217, 1.109, 0.638) about the room's middle, the throw's release in its cycle (1.7). R89: the
        tied bag inside the cloth's top: at 0.22 and turned 0.5 its back stood 7 cm over the hanging drape) */
     const RITE_AT = { bag: [ROOM.cx + 0.05, ROOM.cz + 0.16], handFrom: [ROOM.cx + 0.217, 1.109, ROOM.cz + 0.638] };
+    const _smk5 = new THREE.Vector3();             // (R90: where a piece's smoke rises from, in the endings)
     const presOf5 = () => (typeof pres !== 'undefined' ? pres : null);
     const BAGBLOB5 = { m: null, o: null };
     /* (each bag's own painted contact shadow, carried with it: the open bag on the low table at the knot read as floating,
@@ -2087,8 +2088,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           const hx = q.home.x + (pk && ph ? pk.position.x - ph.x : 0), hz = q.home.z + (pk && ph ? pk.position.z - ph.z : 0);
           if (q.grp.visible) { q.grp.position.set(hx + (hx - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, hz + 0.9 * u);
             if (q.fx) q.fx.set('uAlpha', 1 - u); }
-          /* (R90: its smoke goes with it, thinning as it lifts away) */
-          if (nm !== 'energy') SMOKE5.frame(nm, t, q.grp.position, q.grp.visible ? 1 - u : 0, 0); }
+          /* (R90: its smoke rises off the piece where the piece lies, and dies away as the water reaches it: carried off with
+             the presence it read as two coloured blobs adrift over his teacher, build 66) */
+          if (nm !== 'energy') { _smk5.set(hx, q.home.y, hz); SMOKE5.frame(nm, t, _smk5, q.grp.visible ? 1 - u : 0, 0); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
         /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
@@ -2176,7 +2178,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
-      const h = threeHome5[key]; g.position.set(lp(h.x, h.x * 0.4 + 0.05, u), h.y, lp(h.z, 240.225, u)); } }
+      const h = threeHome5[key]; g.position.set(h.x, h.y, lp(h.z, 240.225, u)); } }
     /* (ending C) something small that his nose never caught, on a piece he has already packed: a pale thing lifting its
        head out of the case's foam, seen only in his sight (drawn as the play's presences are: ctx.spirit) */
     const SMALL5 = (() => { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), matProxy); owned.push(m.geometry); g.add(m); g.visible = false; world.add(g);
@@ -2238,7 +2240,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 each line's first word, the lens eased from one man to the other all through every line, R25 framing) */
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.co5C1 + SECS.co5C1 - 0.1, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
-             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.13, 0.37, 240.12], fp: 42, fd: 36 },
+             { t: E.three + 0.5, name: 'three', eye: [me[0], me[1] - 0.04, me[2]], at: [0.045, 0.37, 240.14], fp: 42, fd: 36 },
              { t: E.pack, name: 'pack', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.34, 0.4, 239.95], fp: 40, fd: 34, cut: true },
              { t: E.see + 1.2, name: 'small', eye: [me[0] - 0.12, me[1] - 0.04, me[2]], at: [-0.33, 0.45, 239.93], fp: 32, fd: 28 },
              { t: E.ph5C1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40 },
