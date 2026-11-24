@@ -98,7 +98,12 @@ REFUSED = {'ph5na2': {'a': 'says "FIRE. FIRE." (a word twice)'},
 CHOSEN = {'ph5f7': ('c', 'every take drags (0.97-1.16 w/s: the pause before SMELL is the read); the least, and its end the cleanest'),
           'ph5l1': ('b', 'every take drags (1.03-1.29 w/s: three sentences, each let land); the least'),
           'ph5fc': ('c', 'every take ends on its release (-13 to -21 dB under the voice, a breath rising in its last 40 ms); c the unhurried read, the chain\'s fade over that breath'),
-          'q5c4': ('a', 'both whole takes hold 1.80 s between the sentences (his limit 1.7; c cut, d dropped the first sentence); the tighter')}
+          'q5c4': ('a', 'both whole takes hold 1.80 s between the sentences (his limit 1.7; c cut, d dropped the first sentence); the tighter'),
+          # (R110-R112, 24 Nov 2026: heard again by an UNPROMPTED transcriber, because the prompted one writes the script
+          #  back: the voice's "shield" came out "show", "shoo", "chill", "shoot" in most takes, and "BIND" "buy")
+          'ph5nv1': ('b', 'the one take whose "Shield" an unprompted transcriber hears ("Shield me, Savior."); a "Xiumi Xavier", c "Shoot me"'),
+          'ph5fb2': ('a', 'the one take whose "Bind" and "shield" an unprompted transcriber hears; b and c "buy them", c "shoe me"'),
+          'ph5nu2': ('a', 'no take\'s "Shield" is heard unprompted (a "Chill me", b "Xiumi", c "Shoot me"): a, never "shoot"')}
 
 def score(t, who, nwords, med=None):
     ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8 and not t.get('refused')

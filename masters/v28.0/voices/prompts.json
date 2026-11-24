@@ -368,7 +368,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The shockwave is ready. Lend me your cage first."
+  "prompt": "[serious] The shockwave is ready. Shield me first."
  },
  {
   "key": "ph5f10",
@@ -403,7 +403,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] They broke the shockwave. Lend me your cage before I gather it."
+  "prompt": "[serious] They broke the shockwave. Shield me before I use it again."
  },
  {
   "key": "ph5fg",
@@ -417,7 +417,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] They draw together. The bag cannot take them now. Only the shockwave, and only what is bound."
+  "prompt": "[serious] They are holding on to the house now. The bag cannot take them. BIND them, and the shockwave takes them all."
  },
  {
   "key": "ph5fj",
@@ -431,7 +431,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The last of them cling to the house. Only the shockwave can take them. BIND them, Zavier."
+  "prompt": "[serious] The last ones are holding on to the house. The bag cannot take them. BIND them, Zavier, then the shockwave."
  },
  {
   "key": "ph5na1",
@@ -704,35 +704,35 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Switch to Zavier, and lend me your cage."
+  "prompt": "[calm] Switch to Zavier, and shield me."
  },
  {
   "key": "ph5nu2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Lend me your cage first."
+  "prompt": "[firm] Shield me first."
  },
  {
   "key": "ph5nv1",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Lend me your cage, Zavier."
+  "prompt": "[calm] Shield me, Zavier."
  },
  {
   "key": "ph5nv2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The shockwave is ready. LEND."
+  "prompt": "[serious] The shockwave is ready. SHIELD."
  },
  {
   "key": "ph5nv3",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] LEND."
+  "prompt": "[firm] SHIELD."
  },
  {
   "key": "ph5nw1",
@@ -1321,5 +1321,33 @@
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
   "prompt": "[regretful] I gave him a rule about kinds. It was never the kind."
+ },
+ {
+  "key": "ph5fb1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The bind lasts only a few seconds. BIND one, then switch to me at once. FIRE, then BAG it, before it breaks free."
+ },
+ {
+  "key": "ph5fb2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The bag cannot take these. BIND them, SHIELD me, then I take them all with the SHOCKWAVE."
+ },
+ {
+  "key": "q5fb1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[frustrated] They keep breaking out of the binding cage. What should I do?"
+ },
+ {
+  "key": "q5fw1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[urgent] They are bound, Master! Use the shockwave!"
  }
 ]

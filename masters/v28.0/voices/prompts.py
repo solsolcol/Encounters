@@ -55,7 +55,9 @@ TAG = {
  'ph5c1': 'calm', 'ph5c2': 'serious', 'ph5c3': 'gentle', 'ph5c4': 'gentle', 'ph5l1': 'gentle', 'ph5l2': 'warm',
  'q5c0': 'reflective', 'q5c1': 'shaken', 'q5c2': 'shaken', 'q5c3': 'quiet', 'q5c4': 'reflective', 'q5c5': 'awed',
  'tn5c0': 'concerned', 'ko5c1': 'puzzled', 'tn5c1': 'firm', 'ju5c1': 'awed', 'tn5c2': 'afraid', 'ju5c2': 'afraid',
- 'ko5c2': 'awed', 'tn5c3': 'concerned'}
+ 'ko5c2': 'awed', 'tn5c3': 'concerned',
+ # R110-R112 (24 Nov 2026): his answer under pressure, unhurried; his own question in the fight, said aloud; his call for the shockwave
+ 'ph5fb1': 'calm', 'ph5fb2': 'calm', 'q5fb1': 'frustrated', 'q5fw1': 'urgent'}
 out = []
 for r in L['lines']:
     k = r['key']
@@ -65,7 +67,10 @@ for r in L['lines']:
     assert 'LP' not in words.split() and 'L.P.' not in words, k + ': an abbreviated title'
     out.append(dict(key=k, speaker=r['who'], voice_id=VOICE[r['who']], takes=3 if r['who'] == 'pho' else 2,
                     prompt='[%s] %s' % (TAG[k], words)))
-assert not set(TAG) - {o['key'] for o in out}, set(TAG) - {o['key'] for o in out}
+# (R75, 595fa1e: ten fight lines retired whole, their rows out of the script; their tags kept here as the record of how
+#  their takes in raw/ were asked for, and left out of the check that every tag has a row)
+RETIRED = {'ph5f3', 'ph5f7', 'ph5fg', 'ph5nd1', 'ph5nf2', 'ph5nm1', 'ph5nn1', 'ph5nn2', 'ph5ny2'}
+assert not set(TAG) - RETIRED - {o['key'] for o in out}, set(TAG) - RETIRED - {o['key'] for o in out}
 json.dump(out, open(os.path.join(HERE, 'prompts.json'), 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
 json.dump(COPY, open(os.path.join(HERE, 'copies.json'), 'w'), indent=1)
 print(len(out), 'lines to say;', len(COPY), 'copied;', sum(len(o['prompt']) * o['takes'] for o in out), 'characters for every take')

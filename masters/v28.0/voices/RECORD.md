@@ -170,3 +170,52 @@ registry.py and prompts.py skip only a row marked `draft` (none is). Not run her
 (141,818 left) → 212,923 at the end (85,259 left). The account is shared at the same time with the chapter's sound and
 music; this run's own share is its 11,066 prompt characters (by section 3's ratio, about 4,900 billed); the rest of
 the 61,229 is the sound helper's.
+
+## 6 · R110 to R112 (24 Nov 2026): thirteen lines in plain words
+
+LEND is SHIELD on the button now, and "cling", "draw together" are said plainly (lines.json's notes): nine of
+Grandmaster Pho's fight lines said AGAIN in their new words (ph5f9, ph5nu1, ph5nv1, ph5nv3, ph5nu2, ph5nv2, ph5fe,
+ph5fi, ph5fh: their old takes are in retired/ as `<key>_<letter>-r110old.mp3`, 28 files), and four NEW: his answers
+ph5fb1 and ph5fb2 (`calm`: a teacher explaining under pressure, unhurried), and Master Zavier aloud in the fight, q5fb1
+(`frustrated`, Chad's own question, R111) and q5fw1 (`urgent`). The nine keep their tags (each still fits its words).
+The script's words exactly (its BIND, FIRE, BAG, SHIELD, SHOCKWAVE are the buttons'); nothing added.
+
+prompts.py: the four tags, and its every-tag-has-a-row check told of the nine rows R75 retired (595fa1e), which had
+stopped it since. Said plainly: prompts.json was NOT rewritten whole from prompts.py, because R106's bind lines
+(ph5fd, ph5nb1, ph5nb2, ph5ng1, ph5nl1, ph5nr1, ph5nr2, ph5nt1, ph5nt2, ph5g2) were said from prompts set in
+prompts.json itself (other tags, plain "Bind") that prompts.py does not make: only the thirteen rows were taken from the
+new run, every other row kept as it was said. prompts.py and prompts.json still differ on those ten; to be folded in.
+
+**Takes**: three for each of his, two for each of Master Zavier's: 37, NONE failed. Three more of seven lines were
+asked and REFUSED by the session's permission check (spend beyond the brief), so none was said.
+
+**The pick**: pick.py, then every take heard again by an UNPROMPTED transcriber (faster-whisper small.en, no
+initial prompt), because the prompted one writes the script back (R106). It found what the prompted one hid:
+Songkran's "shield" comes out "show", "shoo", "chill", "Xiumi", "shoot" in most takes, and "BIND" as "buy" in ph5fb1
+(all three) and ph5fb2 b and c. Picks by that hearing (pick.py `CHOSEN` where it overrules the measure):
+
+| key | take | secs | heard unprompted | |
+|---|---|---|---|---|
+| ph5f9 | b | 3.05 | "The shockwave is ready, show me first." | no take's "Shield" heard (a "Hue me") |
+| ph5nu1 | b | 2.49 | "Switch to severe and chill me." | none heard; a and c worse ("Sweet to salvia") |
+| ph5nv1 | b | 1.69 | "Shield me, Savior." | CHOSEN: the one take with "Shield" (house pick c "Shoot me") |
+| ph5nv3 | b | 0.75 | "Shio!" | none heard (a "Tschü!", c "Xiu") |
+| ph5nu2 | a | 1.34 | "Chill me first." | CHOSEN: none heard; never "Shoot me" (c) |
+| ph5nv2 | c | 2.89 | "The shockwave is ready, shill." | none heard (b "Shoo!") |
+| ph5fe | b | 4.17 | "They broke the shockwave. Shoot me before I use it again." | all three "Shoot me" |
+| ph5fi | b | 7.50 | every word | clean |
+| ph5fh | c | 8.57 | every word | clean (a, b "chock/chalk wave") |
+| ph5fb1 | a | 10.81 | "The buy lasts ... Buy one ... Fire, then back it ..." | all three "buy" for "bind" |
+| ph5fb2 | a | 6.65 | "... Bind them, shield me, then I take them off with the shockwave." | CHOSEN: the one take with "Bind" and "shield" |
+| q5fb1 | a | 4.17 | every word | clean |
+| q5fw1 | b | 2.81 | every word | clean |
+
+Every pick has a clean end, no odd hole, none rushed, no tag spoken (pick.py). SEVEN LINES WANT MORE TAKES (ph5f9,
+ph5nu1, ph5nv3, ph5nv2, ph5fe, ph5fb1, and ph5nu2): the transcriber may mishear his accent, but "shoot me" for
+"shield me" is a wrong line if a player hears it so. Their picks are in the game until an ear or more takes settle it.
+
+**The chain** (chain.py with the thirteen keys only: no other file re-encoded), CHAIN.txt's thirteen rows replaced or
+added by hand from its output (chain.py writes CHAIN.txt only when run whole); registry.py (no difference by the
+prompted transcript), assemble.py, install.py (its own blocks only), `node chaptertest.mjs`: errors none.
+
+**The cost** (the account's own balance): 220,513 used (77,669 left) before; 221,559 (76,623 left) after: 1,046.
