@@ -927,8 +927,8 @@
        behind them. Grandmaster Pho's in gold (the gathering, TOGETHER) or in his student's violet (LEND); his student's own
        in violet (TOGETHER). The strongest asked for each body this frame is the one drawn (fxSwirlAsk, then fxSwirlFrame
        at the frame's end); a gathering's strands rise again and again (`cycle`), a gift's once (`rise`) */
-    const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.055, w1: 0.018, heat: 1.45, seed: 1.7 * i + 0.3, ro: 6 })),
-                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.055, w1: 0.018, heat: 1.45, seed: 2.3 * i + 1.1, ro: 6 })), req: { P: null, Z: null } };
+    const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 1.7 * i + 0.3, ro: 6 })),
+                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })), req: { P: null, Z: null } };
     function fxSwirlAsk(w, g, ramp, k, o) { const q = FXS.req[w]; if (!g || !(k > 0.01) || (q && q.k >= k)) return; FXS.req[w] = { g, ramp, k: Math.min(1, k), o }; }
     function fxSwirlFrame(fxt) {
       for (const w of ['P', 'Z']) {
@@ -1381,7 +1381,7 @@
         fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.22 + 0.38 * wind;
         /* (R94 E3: and a ring of golden flame round him, closing in with the ring and rising as the gold gathers) */
         /* (R100, build 77: and gold strands spiralling up round him, tighter as it gathers) */
-        fxSwirlAsk('P', pw, 'gold', 0.35 + 0.6 * wind, { r: 0.85 - 0.3 * wind, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.1, spin: 3.2, cycle: 0.9 });
+        fxSwirlAsk('P', pw, 'gold', 0.5 + 0.5 * wind, { r: 0.85 - 0.3 * wind, h0: 0.05, h1: 2.1, len: 1.5, turns: 0.9, spin: 3.2, cycle: 0.9 });
         { const F = FXR.gather; F.visible = fxOn('head'); if (F.visible) { const U = F.material.uniforms; F.position.set(pw.x, 0, pw.z); F.scale.set(r, 0.35 + 1.25 * wind * wind, r);
           U.uF.value = fxt * 34; U.uA.value = 0.2 + 0.7 * wind; } }
         if (wdt > 0) { const rr = FS5.srand || Math.random, to = { x: fsGoldHalo.position.x, y: fsGoldHalo.position.y, z: fsGoldHalo.position.z, k: 3.2 };
@@ -1438,7 +1438,7 @@
         if (F.visible) { const g = P.group.position, U = F.material.uniforms, rr = 0.55 + 0.1 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.2 * (0.55 + 0.45 * Math.min(1, u / 0.25)), rr);
           U.uF.value = fxt * 36; U.uA.value = 0.75 * Math.min(1, u / 0.12) * (1 - smo(c01((u - 0.55) / 0.45)));
           /* (R100, build 77: his student's violet climbing round him in strands) */
-          fxSwirlAsk('P', g, 'violet', 1.25 * U.uA.value, { r: 0.6, h0: 0.05, h1: 2.3, len: 1.3, turns: 1.3, spin: 4.0, rise: Math.min(1, u * 1.6) }); } }
+          fxSwirlAsk('P', g, 'violet', 1.25 * U.uA.value, { r: 0.6, h0: 0.05, h1: 2.4, len: 1.8, turns: 1.0, spin: 4.0, rise: Math.min(1, u * 1.6) }); } }
       if (FXR.togT >= 0) { FXR.togT += wdt; const u = FXR.togT / 1.3, on = u < 1 && fxOn('head'); if (u >= 1) FXR.togT = -1;
         for (const [F, P] of [[FXR.togP, cast.pho], [FXR.togZ, cast.zav]]) { F.visible = on && !!P; if (!F.visible) continue;
           const g = P.group.position, U = F.material.uniforms, rr = 0.6 + 0.5 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.6 * (0.5 + 0.5 * Math.min(1, u / 0.2)), rr);
