@@ -669,10 +669,17 @@ await lbl('vision-hands');
   const hidden = await corner();
   const gated = await p.evaluate(() => window.__enc.visionGate(false)); await fr(4);
   const stale = await corner();
-  await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
-  const dHidden = diff(shown, hidden), dStale = diff(shown, stale), dNoise = diff(shown, shown2);
-  K.visionHandsHidden = gated && dHidden > 3 && dHidden > 2.5 * dNoise && dStale < Math.max(dHidden * 0.25, 1.6 * dNoise + 0.3);
-  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2), '| shown vs shown (its noise)', dNoise.toFixed(2));
+  /* (24 Nov, build 64: the old way's picture is taken three pictures after the shown one, the noise one picture after it,
+     and in a quiet run (0.68) the noise's limit fell under the old way's own drift (1.61, where it had read 1.43 to 2.67
+     in five runs that passed): the check failed on how far apart its pictures were. The drift is now also measured over the
+     old way's own span, the hands shown again with the gate on after it (shownLate), and the old way is judged against the
+     larger; never past half the hidden hands' change, so an old way that hid them too is still caught) */
+  await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; }); await fr(4);
+  const shownLate = await corner();
+  await p.evaluate(() => { const E = window.__enc; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
+  const dHidden = diff(shown, hidden), dStale = diff(shown, stale), dNoise = diff(shown, shown2), dLate = diff(shown, shownLate);
+  K.visionHandsHidden = gated && dHidden > 3 && dHidden > 2.5 * dNoise && dStale < Math.min(0.5 * dHidden, Math.max(dHidden * 0.25, 1.6 * Math.max(dNoise, dLate) + 0.3));
+  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2), '| shown vs shown (its noise)', dNoise.toFixed(2), '| over the old way\'s span', dLate.toFixed(2));
 }
 await settle();
 

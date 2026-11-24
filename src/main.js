@@ -9042,6 +9042,9 @@ function tagPaintArrow() {
       el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px)';
       if (el.dataset.who !== B.id) {
         const first = !el.dataset.who; el.dataset.who = B.id; el.style.setProperty('--ac', tagHexRgb(B.color || '#F4ECD8'));
+        /* (R85: the arrow's edge is his colour darkened, never a flat black: 0.55 of it at the top, 0.35 at the tip) */
+        const rgb = tagHexRgb(B.color || '#F4ECD8').split(',').map(Number), dk = (k) => rgb.map(v => Math.round(v * k)).join(',');
+        el.style.setProperty('--ad1', dk(0.55)); el.style.setProperty('--ad2', dk(0.35));
         if (!first) { const s = el.firstElementChild; if (s) { s.classList.remove('pop'); void s.offsetWidth; s.classList.add('pop'); } }
       }
     }
