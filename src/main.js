@@ -9001,6 +9001,7 @@ function tagPaint() {
    tip showing below them): the lowest bottom of the top of the HUD that stands over the world in the mode (the order's box,
    the count), read at most twice a second, 0 when neither is drawn */
 const tagFloorC = { t: -1e9, v: 0 };
+const TAG_AR_REACH = 39;                       // (R84: the arrow's drawn top over its point, its bob at its highest: shell.html #tagArrow)
 function tagHudFloor() {
   const now = performance.now();
   if (now - tagFloorC.t < 500) return tagFloorC.v;
@@ -9027,15 +9028,16 @@ function tagPaintArrow() {
     if (q.z <= 1 && Math.abs(q.x) <= 1.05 && Math.abs(q.y) <= 1.05) {
       show = true;
       const x = (q.x * 0.5 + 0.5) * innerWidth, yy0 = (-q.y * 0.5 + 0.5) * innerHeight;
-      /* (the arrow is 30 px tall over its point: where it would reach into the box or the count, it comes down until it
-         clears them by 6 px, but never past just over the played one's head (`head`, metres over his feet; absent, half a
-         metre under the arrow's own height); where his head itself stands under them it points from just over his head.
-         Clear of them, it is where it always was) */
+      /* (the arrow reaches TAG_AR_REACH px over its point at its bob's highest (R84's arrowhead: its drawn top 32 px over its
+         tip, its bob lifting it 7 more): where it would reach into the box or the count, it comes down until it clears them
+         by 6 px, but never past just over the played one's head (`head`, metres over his feet; absent, half a metre under
+         the arrow's own height); where his head itself stands under them it points from just over his head. Clear of them,
+         it is where it always was) */
       let yy = yy0;
       const floor = tagHudFloor();
-      if (floor > 0 && yy0 - 30 < floor + 6) {
+      if (floor > 0 && yy0 - TAG_AR_REACH < floor + 6) {
         const hd = yb != null ? yb : Number.isFinite(+A.head) ? +A.head : y - 0.5, h = projectTo(o.x, o.y + hd, o.z), hy = (-h.y * 0.5 + 0.5) * innerHeight;
-        yy = Math.min(Math.max(yy0, floor + 36), Math.max(yy0, hy - 2));
+        yy = Math.min(Math.max(yy0, floor + TAG_AR_REACH + 6), Math.max(yy0, hy - 2));
       }
       el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px)';
       if (el.dataset.who !== B.id) {

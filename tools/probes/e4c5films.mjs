@@ -121,6 +121,10 @@ async function reach(p, job) {
   await p.evaluate(() => document.getElementById('startBtn').click());
   if (job !== 'open') {
     await toPlay(p, 1500000); await p.waitForTimeout(8000);
+    /* (R83: the chapter's first frame in play applies its own phase (d_play.js, booted), so a phase applied before it was put
+       back on the walkway the moment it came: on a box that draws a frame in seconds, eight seconds was not always enough,
+       and the Naga film was photographed from the walkway, the front door shut. Wait for the chapter's own start first) */
+    await p.waitForFunction(() => window.__enc.stage && window.__enc.stage.phase != null, null, { timeout: 900000, polling: 500 });
     if (job.startsWith('end:')) {
       await p.evaluate(() => window.__enc.stage.applyPhase('ask'));
       await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 900000, polling: 500 });

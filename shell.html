@@ -614,17 +614,38 @@ body.cardup #tagMarks,body.cine #tagMarks,body.evopen #tagMarks,body.retryopen #
 #tagMate.on{display:flex}
 /* v28.0 · THE SEVENTY-FIRST SEAM: THE PLAYED ONE'S ARROW (R60): a down-pointing arrow over his head in his own colour,
    glowing, bobbing; it pops in over the other at a switch. Inside #tagHud, so it is gone wherever the mode's HUD is */
-#tagArrow{position:fixed;left:0;top:0;z-index:3;display:none;pointer-events:none;width:26px;height:30px;margin:-30px 0 0 -13px;--ac:244,236,216;
-  filter:drop-shadow(0 0 5px rgba(var(--ac),1)) drop-shadow(0 0 1.5px rgba(255,255,255,.95)) drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+/* (v28.0, R84, Chad: "Can you also improve the look of the floating arrow?": a notched arrowhead, bevelled in two facets
+   (the left lit from the white down into his colour, the right his colour shaded toward the tip), a dark edge round it so it
+   reads over the lamps and over the night, his colour's glow outside that, a glint crossing it every 2.6 s and a ring as it
+   pops in over the other. Its tip is the element's foot, on the point tagPaintArrow places (R80/R81's height, unchanged);
+   its bob only LIFTS it (7 px), so the head's margin under it is never spent) */
+#tagArrow{position:fixed;left:0;top:0;z-index:3;display:none;pointer-events:none;width:32px;height:35px;margin:-35px 0 0 -16px;--ac:244,236,216;
+  filter:drop-shadow(0 0 5px rgba(var(--ac),.9)) drop-shadow(0 1.5px 2px rgba(0,0,0,.55))}
 #tagArrow.on{display:block}
-#tagArrow span,#tagArrow b,#tagArrow i{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
-#tagArrow b{animation:tagArrowBob 1.05s ease-in-out infinite}
-#tagArrow i{clip-path:polygon(0 0,100% 0,50% 100%);-webkit-clip-path:polygon(0 0,100% 0,50% 100%);
-  background:linear-gradient(180deg,rgba(255,255,255,.98),rgb(var(--ac)) 62%,rgba(var(--ac),.95))}
+#tagArrow span,#tagArrow b{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+#tagArrow svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+#tagArrow b{animation:tagArrowBob 1.1s ease-in-out infinite}
+#tagArrow .ol{fill:rgba(16,11,24,.94);stroke:rgba(16,11,24,.94);stroke-width:2.4;stroke-linejoin:round}
+#tagArrow .fl{fill:url(#tagArGL)}
+#tagArrow .fr{fill:url(#tagArGR)}
+#tagArrow .fd{fill:url(#tagArGD)}
+#tagArrow .hl{fill:none;stroke:rgba(255,255,255,.92);stroke-width:1.1;stroke-linecap:round}
+#tagArrow .hr{fill:none;stroke:rgba(255,255,255,.38);stroke-width:.9;stroke-linecap:round}
+#tagArrow .rg{fill:none;stroke:rgba(255,255,255,.4);stroke-width:.7;stroke-linecap:round}
+#tagArrow .s0{stop-color:#fff;stop-opacity:.97}
+#tagArrow .s1{stop-color:rgb(var(--ac))}
+#tagArrow .d0{stop-color:#000;stop-opacity:.1}
+#tagArrow .d1{stop-color:#000;stop-opacity:.4}
+#tagArrow .sh{fill:rgba(255,255,255,.8);animation:tagArShine 2.6s ease-in-out infinite}
+#tagArrow em{position:absolute;left:50%;top:44%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;box-sizing:border-box;
+  border:2px solid rgba(var(--ac),.95);opacity:0}
 #tagArrow span.pop{animation:tagArrowPop .42s cubic-bezier(.2,1.6,.4,1)}
-@keyframes tagArrowBob{0%,100%{transform:translateY(-3px)}50%{transform:translateY(5px)}}
+#tagArrow span.pop em{animation:tagArRing .6s ease-out}
+@keyframes tagArrowBob{0%,100%{transform:translateY(-7px)}50%{transform:translateY(0)}}
+@keyframes tagArShine{0%{transform:translateX(0)}55%,100%{transform:translateX(56px)}}
 @keyframes tagArrowPop{0%{transform:scale(1.9);opacity:0}45%{opacity:1}100%{transform:scale(1);opacity:1}}
-@media (prefers-reduced-motion:reduce){#tagArrow b,#tagArrow span.pop{animation:none}}
+@keyframes tagArRing{0%{transform:scale(.35);opacity:.95}100%{transform:scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){#tagArrow b,#tagArrow span.pop,#tagArrow span.pop em,#tagArrow .sh{animation:none}}
 body.cardup #tagMate.on,body.cine #tagMate.on,body.evopen #tagMate.on,body.retryopen #tagMate.on{display:none}
 #tagMate .tmRing{width:18px;height:18px;transform:rotate(-90deg)}
 #tagMate .tmRing circle{fill:none;stroke-width:3}
@@ -3669,7 +3690,22 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   <button id="tagSw" class="tagBtn tagSw" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgFace"></span><span class="tgName"></span><span class="wpnKey"><kbd></kbd></span></button>
   <button id="tagA1" class="tagBtn tag2" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
   <button id="tagA2" class="tagBtn tag3" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
-  <div id="tagArrow" aria-hidden="true"><span><b><i></i></b></span></div>
+  <div id="tagArrow" aria-hidden="true"><span><b><svg viewBox="0 0 32 35" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="tagArGL" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" class="s0"/><stop offset=".72" class="s1"/></linearGradient>
+      <linearGradient id="tagArGR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="s1"/><stop offset="1" class="s1"/></linearGradient>
+      <linearGradient id="tagArGD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="d0"/><stop offset="1" class="d1"/></linearGradient>
+      <clipPath id="tagArC"><path d="M3 4 L16 11.5 L29 4 L16 35 Z"/></clipPath>
+    </defs>
+    <path class="ol" d="M3 4 L16 11.5 L29 4 L16 35 Z"/>
+    <path class="fl" d="M3 4 L16 11.5 L16 35 Z"/>
+    <path class="fr" d="M16 11.5 L29 4 L16 35 Z"/>
+    <path class="fd" d="M16 11.5 L29 4 L16 35 Z"/>
+    <g clip-path="url(#tagArC)"><path class="sh" d="M-12 0 L-5 0 L-17 38 L-24 38 Z"/></g>
+    <path class="hl" d="M4.2 4.9 L15.4 11.4"/>
+    <path class="hr" d="M16.6 11.4 L27.8 4.9"/>
+    <path class="rg" d="M16 12.6 L16 33"/>
+  </svg></b><em></em></span></div>
   <button id="tagA0" class="tagBtn tagMain" type="button"><svg class="tgRing" viewBox="0 0 100 100" aria-hidden="true"><circle class="tgTrack" cx="50" cy="50" r="47"/><circle class="tgWait" cx="50" cy="50" r="47"/><circle class="tgFill" cx="50" cy="50" r="47"/></svg><span class="tgIco"></span><span class="tgLbl"></span><span class="wpnKey"><kbd></kbd></span></button>
 </div>
 <!-- the marks over the chapter's targets (a tap or a click on one picks it), the other one's mark at the screen's edge while
