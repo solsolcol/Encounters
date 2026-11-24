@@ -1520,9 +1520,11 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
 and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
-Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 79 live now, deploy
-`6b056baed7e13e4f39cd3a86`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
-the bodies and the court, ribbons, swirls, a hit's blur and the gold's ripple; R102's camera a little higher): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 83 live now, deploy
+`6b05b5318d084771882f9d44`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
+the bodies and the court, ribbons, swirls, a hit's blur and the gold's ripple; R102's camera a little higher; R105's estate at
+dusk below the walkway and the opening's crane over it; R107's painting in the TOGETHER button; R108: nothing painted behind any
+window): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
 asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
 by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five
@@ -1664,15 +1666,15 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`: v154 with chapter 5's fight
-words as they now stand (the brief in two lines, each device's keys, the party tiles' titles, the switch's "Not now"),
-`co5C1` re-said and ten retired voice lines, made from the live tree (deploy `6b04e4fabbaf266dcdea1b82`)).
+**THE SHEET IS v156, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v156.xlsx`: v155 with R105's `q5o2`
+re-said and R106's lines and fight words saying the shockwave where they said the gold, and BIND with its d, made from
+the live tree (deploy `6b05b5318d084771882f9d44`)).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit
+https://docs.google.com/spreadsheets/d/1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v155 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v156 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

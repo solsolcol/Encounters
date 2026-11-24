@@ -11,7 +11,8 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (24 Nov 2026): Master Z's Encounters — GAME TEXT v155 (edit here)**, id `1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM`
+**THE CURRENT SHEET (24 Nov 2026): Master Z's Encounters — GAME TEXT v156 (edit here)**, id `1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY`
+(<https://docs.google.com/spreadsheets/d/1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY/edit>; v155 with 40 cells changed, R105's `q5o2` and R106's shockwave and bind lines, made from the live tree (deploy `6b05b5318d084771882f9d44`; docs/HISTORY.md, "The sheet, version by version"); 11,929 cells read back, mismatched 0; v155 checked first: created 01:18:03.3, modified 01:18:04.4, the conversion itself). The one before it, v155, id `1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM`
 (<https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit>; v154 with chapter 5's fight words
 as they now stand, `co5C1` re-said and ten retired voice lines, made from the live tree (deploy `6b04e4fabbaf266dcdea1b82`;
 docs/HISTORY.md, "The sheet, version by version"); 11,929 cells read back, mismatched 0; created 01:18:03.3, modified

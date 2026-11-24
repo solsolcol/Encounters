@@ -9521,8 +9521,20 @@ What the baseline contains, by release:
   v25.0 (`3e83766`) and its 34 tags (84 pieces, 1.7 GB, sha256 cf4c0605...), half 2 the rest to `8f0d3e9` and the
   other 23 tags, needing half 1 (58 pieces, 1.2 GB, sha256 cd2d97d7...); each half's pieces rejoin byte for byte and
   pass `git bundle verify`; sent to him with a README of how they restore, and the sent pieces cleared.
+  R105 ("Intro cutscene can be improved further. The outdoor environment below the corridor can be improved further. And
+  the voiceline 'then it hit me' needs to be more specific"), R106 (Pho's "bin" for "bind"; "the gold" said where he
+  meant the shockwave) and R107 (a Final Fantasy painting of the two inside the TOGETHER button), then R108 ("Adding
+  those fake details behind the windows look even worse than no details", sent while build 82 was photographed, so its
+  painted balconies never went live): the ground below the walkway a 1980s condominium's grounds at dusk, three models
+  made for it (the playground, the garden lamp, and the ixora, which Meshy refused seven times and Hunyuan3D v3 made);
+  the opening begun on a crane over the estate before the lift; `q5o2` re-said; every BIND line re-said with its d and
+  the voice chain's fade kept off a last word; "the gold" named the shockwave in eight lines and two words; the painting
+  inside TOGETHER (seam 74); and nothing painted behind any window (plain glass and built parapets on the other blocks,
+  a plain dark room behind the court's windows). Live: build 83, deploy `6b05b5318d084771882f9d44`. Sheet v156.
 
 ## The sheet, version by version
+
+**v156, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v156.xlsx`, sha256 4d40a14d...b831c427132): v155 with exactly these 40 cells changed, made by `textsync export` from the tree that is live (deploy `6b05b5318d084771882f9d44`, build 83; R108 changes no word): EPISODE 4 two, `e4c5.words.objFight3h` ("They cling. Only the shockwave takes them: bind them.") and `e4c5.words.whyGold` ("Only the shockwave now"), R106's "the gold" named the shockwave; VOICE LINES `voice.q5o2` re-said "[uneasy] The doors opened, then a pungent smell hit me." (3.45 s, R105), and R106's lines: `ph5f9`, `ph5f10`, `ph5fe`, `ph5fi`, `ph5fh`, `ph5nh1`, `ph5nv2` say the shockwave where they said the gold, `ph5fd`, `ph5nb1`, `ph5nb2`, `ph5ng1`, `ph5nl1`, `ph5nr1`, `ph5nr2`, `ph5nt1`, `ph5nt2`, `ph5g2` re-said until "bind" was heard with its d (three reworded to end on it), and the lengths of `ph5f4`, `ph5f5`, `ph5f8`, `ph5fc`, `ph5nl2` measured again. Published whole through the Drive connector's file reference, id `1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY` (<https://docs.google.com/spreadsheets/d/1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY/edit>); v155 checked first (created 01:18:03.3, modified 01:18:04.4: the conversion itself); read back tab by tab and compared by `tools/sheetcmp.py`: 11,929 cells, mismatched 0.
 
 **v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`, sha256 435b63ed...3020f4d4b): v154 with
 exactly these rows changed, made by `textsync export` from the tree that is live (deploy `6b04e4fabbaf266dcdea1b82`,
