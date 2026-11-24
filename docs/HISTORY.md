@@ -9496,6 +9496,17 @@ What the baseline contains, by release:
   (photographed on a phone at builds 67 and 68 and corrected twice before it went live). Then R92, "Change the doll to smoke too": the pale
   sphere over the effigy a pale smoke as well, leaning toward him. Live: build 70, deploy `6b0525b69efd908421c2b415`,
   661 of 661 served files byte-identical.
+  Then R94, his pick "Full upgrade" of the abilities' effects (R95 to R98: a rented L40S for everything a graphics card
+  speeds up, carried all the way without asking): three flipbooks simulated in Blender (Mantaflow) and rendered in Cycles
+  on the box (tools/fx/flipsim.py, flippack.py): the fireball's head as a seamless loop of real flame, its burst where it
+  lands, a puff of smoke; Grandmaster Pho's fire made with them (heat shimmer, spark streaks, the ground's light, a hit's
+  freeze, jolt, flash, buzz and recoil, five layered sounds), live at build 72 (build 71 refused by the release for a
+  key that was another chapter's sound name, and its glow cut by its card's sides); then the shockwave's rim a ring of
+  the same flames in gold, the gathering closing in as gold flame, the bind's violet burst and snap, LEND a column of
+  violet flame round Pho, the bag's streaks comet-headed and a pale burst into the bag, TOGETHER gold and violet round
+  the two of them, six more layered sounds; live at build 74 (build 73's columns hid the two men and were remade to
+  flame at their edges). The box: 147.34 credits. Ending C's small pale thing a pale smoke (R98). R99 answered: what the
+  box made faster and what it did not. Live: build 74, deploy `6b054e41cdd7597acbf2f093`.
 
 ## The sheet, version by version
 
