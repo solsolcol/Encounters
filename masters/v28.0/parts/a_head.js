@@ -163,7 +163,12 @@
        whole boom puts it on the screen, 50 degrees at most: the engine's crane); it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
        paces and discs are the fight's (c_fightstage.js names them as it opens the mode). c_cast.js boomAt reads this same
        declaration, so the preparation's film ends on exactly the mode's first picture */
-    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
+    /* (R102 and R103, 24 Nov 2026, Chad: "the camera view during the entire fight sequence can be placed just slightly higher
+       than the current height, so more can be seen at once. Just slightly higher only, do it cleanly"; "And adjust the angle
+       if needed to fit the new height": the boom 0.4 m higher, 3.5 m where it stood 3.1, its look down steepened from 26 to
+       30.3 degrees so his hips (1.0 m over his feet) stand where they stood on the screen; nothing else moved. The end's
+       pulled-back boom the same (c_cast.js PULL5)) */
+    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.5, pitch: 30.3 }, fov: 72,
            /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
               z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
               out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws

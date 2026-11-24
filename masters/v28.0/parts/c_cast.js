@@ -69,10 +69,12 @@
        where it stood 4.0 and 3.1, looking down 34 degrees where it looked 26, so the court round the two of them and the
        Naga's coil stand in the picture. The fight asks the engine for it (kit.tagBoom, the sixty-ninth seam, eased 1.4 s);
        the films that begin or end on the mode's picture in those stages ask boomAt for it (its second argument)) */
-    const PULL5 = { back: 5.4, up: 4.3, pitch: 34 };
+    /* (R102 and R103: 0.4 m higher, 4.7 where it stood 4.3, its look down 37 degrees where it was 34, so his hips stand where
+       they stood on the screen, as the fight's own boom: a_head.js) */
+    const PULL5 = { back: 5.4, up: 4.7, pitch: 37 };
     function boomAt(feet, over) {
       const d = DATA.tag || {}, portrait = camera.aspect < 1;
-      const b1 = Object.assign({ back: 4.0, up: 3.1, pitch: 26 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
+      const b1 = Object.assign({ back: 4.0, up: 3.5, pitch: 30.3 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
             b = over ? Object.assign({}, b0, over) : b0;
       const h = d.heading != null ? d.heading : COURT5.heading, soft = d.soft != null ? d.soft : 0.6, cb = d.camBox || null;
       const o = { x: feet.x + b.back * Math.sin(h), y: (feet.y || 0) + b.up, z: feet.z + b.back * Math.cos(h) };

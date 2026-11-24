@@ -2105,7 +2105,7 @@
       /* 3b. THE ONE NOT PLAYED KEEPS OUT OF THE LENS'S LINE (the lead's word on R25, measured on the after-pictures: with
          Master Zavier played, Grandmaster Pho stood between the lens and him and filled a third of a phone's screen; never
          a fade, which reads as R25's "disappearing and reappearing characters"). The lens stands 4.0 m behind the played one
-         down the court (the boom; the court's frame, the lens's box at most 5.2) and 3.1 m up: whoever stands in that strip
+         down the court (the boom; the court's frame, the lens's box at most 5.2) and 3.5 m up (R102): whoever stands in that strip
          (his disc and the played one's half against the line, 0.3 m to spare) steps aside to the nearer side at his walk,
          inside the court and never inside the other's cage ring, and holds his place there; nothing while he gathers the
          gold or draws the bag, nor under the brief, a loss or the win */

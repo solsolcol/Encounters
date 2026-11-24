@@ -412,7 +412,12 @@
        whole boom puts it on the screen, 50 degrees at most: the engine's crane); it glides 0.4 s at a switch; the switch's lock is the rules' own (FIGHT.NUM switchLock, 0.8 s). The bodies'
        paces and discs are the fight's (c_fightstage.js names them as it opens the mode). c_cast.js boomAt reads this same
        declaration, so the preparation's film ends on exactly the mode's first picture */
-    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.1, pitch: 26 }, fov: 72,
+    /* (R102 and R103, 24 Nov 2026, Chad: "the camera view during the entire fight sequence can be placed just slightly higher
+       than the current height, so more can be seen at once. Just slightly higher only, do it cleanly"; "And adjust the angle
+       if needed to fit the new height": the boom 0.4 m higher, 3.5 m where it stood 3.1, its look down steepened from 26 to
+       30.3 degrees so his hips (1.0 m over his feet) stand where they stood on the screen; nothing else moved. The end's
+       pulled-back boom the same (c_cast.js PULL5)) */
+    tag: { heading: Math.PI, boom: { back: 4.0, up: 3.5, pitch: 30.3 }, fov: 72,
            /* (R37, 23 Nov: the court now runs to 0.4 m short of the gate's low wall; at its gate end the box's soft line at
               z -13.9 held the lens there while he walked on under it, out of the bottom of the picture. Its z line is let
               out past the walkway, and the fight's own solid at the gate (b_world.js boomStop, the fight's phase only) draws
@@ -5935,10 +5940,12 @@
        where it stood 4.0 and 3.1, looking down 34 degrees where it looked 26, so the court round the two of them and the
        Naga's coil stand in the picture. The fight asks the engine for it (kit.tagBoom, the sixty-ninth seam, eased 1.4 s);
        the films that begin or end on the mode's picture in those stages ask boomAt for it (its second argument)) */
-    const PULL5 = { back: 5.4, up: 4.3, pitch: 34 };
+    /* (R102 and R103: 0.4 m higher, 4.7 where it stood 4.3, its look down 37 degrees where it was 34, so his hips stand where
+       they stood on the screen, as the fight's own boom: a_head.js) */
+    const PULL5 = { back: 5.4, up: 4.7, pitch: 37 };
     function boomAt(feet, over) {
       const d = DATA.tag || {}, portrait = camera.aspect < 1;
-      const b1 = Object.assign({ back: 4.0, up: 3.1, pitch: 26 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
+      const b1 = Object.assign({ back: 4.0, up: 3.5, pitch: 30.3 }, d.boom || {}), b0 = portrait && d.portrait ? Object.assign({}, b1, d.portrait) : b1,
             b = over ? Object.assign({}, b0, over) : b0;
       const h = d.heading != null ? d.heading : COURT5.heading, soft = d.soft != null ? d.soft : 0.6, cb = d.camBox || null;
       const o = { x: feet.x + b.back * Math.sin(h), y: (feet.y || 0) + b.up, z: feet.z + b.back * Math.cos(h) };
@@ -10549,7 +10556,7 @@
       /* 3b. THE ONE NOT PLAYED KEEPS OUT OF THE LENS'S LINE (the lead's word on R25, measured on the after-pictures: with
          Master Zavier played, Grandmaster Pho stood between the lens and him and filled a third of a phone's screen; never
          a fade, which reads as R25's "disappearing and reappearing characters"). The lens stands 4.0 m behind the played one
-         down the court (the boom; the court's frame, the lens's box at most 5.2) and 3.1 m up: whoever stands in that strip
+         down the court (the boom; the court's frame, the lens's box at most 5.2) and 3.5 m up (R102): whoever stands in that strip
          (his disc and the played one's half against the line, 0.3 m to spare) steps aside to the nearer side at his walk,
          inside the court and never inside the other's cage ring, and holds his place there; nothing while he gathers the
          gold or draws the bag, nor under the brief, a loss or the win */
