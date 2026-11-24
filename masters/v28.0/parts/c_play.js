@@ -554,6 +554,9 @@
          hidden (their groups kept: the marks, the taps and the films ride on them) and each piece gives off SMOKE5 in its own
          colour; the pale one on the effigy, which he did not name, is as it was) */
       pres.angry.m.visible = false; pres.hungry.m.visible = false;
+      /* (R92, Chad, 24 Nov: "Change the doll to smoke too": the pale sphere over the effigy hidden as well, and the doll
+         gives off a pale smoke of its own) */
+      pres.energy.m.visible = false;
     })();
     /* R90: A THIN SMOKE IN EACH PRESENCE'S COLOUR, rising off its piece and fading: soft puffs drawn only through his sight
        (the vision's own layer, laid on as its spirits are: premultiplied and added, so the compositor reads the colour
@@ -586,11 +589,13 @@
              leaves the top at once, at its brightest there, and rises at an even pace, widening and thinning as it goes (build
              67's puffs, eased up fast and brightest half way, were seen only 15 cm over their pieces: no smoke came OUT of
              anything) */
-          frame(t, b, k, agit) {
+          frame(t, b, k, agit, lv) {
             pts.visible = k > 0.002; if (!pts.visible) return;
+            /* (its lean over its whole rise: the emitter's own along x, or `lv` where the caller leans it: R92's toward him) */
+            const lx = lv ? lv.x : o.lean, lz = lv ? lv.z : 0;
             for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = a;
               const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
-              pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
+              pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + lx * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7 + lz * up;
               siz[i] = q.s1 * (0.5 + 1.1 * a); alp[i] = o.alpha * k * Math.min(1, a / 0.04) * Math.pow(1 - a, 1.1) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
             const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
         };
@@ -599,11 +604,13 @@
          teacher's robe; now 2 to 7 cm, more of them. Build 68's, faint at 0.36 to 0.4 and thinning fast, hardly showed in
          a phone's picture: brighter now, densest where it leaves the piece, under the look's own mark) */
       const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.75, turn: 2.4 }),
-                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.7, turn: 1.2 }) };
+                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.7, turn: 1.2 }),
+                  /* (R92: the one looking for energy, pale and slow, its lean given by the caller: toward him) */
+                  energy: mk(0xe4ecff, 28773, { life: 2.6, rise: 0.20, sway: 0.006, wob: 1.2, lean: 0.0, size: 0.045, alpha: 0.6, turn: 0.9 }) };
       /* WHERE EACH RISES FROM: the top of its own piece, wherever the piece is (laid out, pushed across, set in the rite),
          its height over its foot measured once from its drawn meshes when they have landed (4 cm until then); without the
          piece, under the presence's own place over it */
-      const off = { angry: -0.02, hungry: 0.03 }, PIECE = { angry: 'w5wuathanu', hungry: 'w5rakyom' }, top = {};
+      const off = { angry: -0.02, hungry: 0.03, energy: -0.10 }, PIECE = { angry: 'w5wuathanu', hungry: 'w5rakyom', energy: 'w5hunphayon' }, top = {};
       const _bx = new THREE.Box3(), _bm = new THREE.Box3(), _wp = new THREE.Vector3(), _b = { x: 0, y: 0, z: 0 };
       const topOf = (k, o) => {
         if (top[k] != null) return top[k];
@@ -612,12 +619,13 @@
           _bm.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld); _bx.union(_bm); });
         if (_bx.isEmpty()) return 0.04;
         const h = _bx.max.y - o.getWorldPosition(_wp).y; if (h > 0.005 && h < 0.4) { top[k] = h; return h; } return 0.04; };
-      return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; const o = things[PIECE[k]];
+      return { S, frame(k, t, gp, strength, agit, lv) { const e = S[k]; if (!e) return; const o = things[PIECE[k]];
                  if (o) { const h = topOf(k, o); o.getWorldPosition(_wp); _b.x = _wp.x; _b.y = _wp.y + h - 0.004; _b.z = _wp.z; }
                  else { _b.x = gp.x; _b.y = gp.y + off[k]; _b.z = gp.z; }
-                 e.frame(t, _b, strength, agit || 0); },
+                 e.frame(t, _b, strength, agit || 0, lv); },
                off() { for (const k in S) S[k].pts.visible = false; } };
     })();
+    const _lv5 = { x: 0, z: 0 };                     // (R92: the pale smoke's lean toward him)
     function presTick(wdt) {
       if (getState() === 'cine') return;                      // (a film directs them itself: the rite's endings)
       const on = phase === 'table' || phase === 'ask';
@@ -635,6 +643,10 @@
       const E = pres.energy; camera.getWorldPosition(_pv5);
       const to = _pw5.set(_pv5.x - E.home.x, _pv5.y - E.home.y, _pv5.z - E.home.z), L = to.length() || 1, k = Math.min(0.16, 0.42 / Math.max(0.5, L)) * 0.6;
       E.grp.position.set(E.home.x + to.x / L * k + Math.sin(t * 0.9) * 0.01, E.home.y + to.y / L * k * 0.5 + Math.sin(t * 1.3) * 0.012, E.home.z + to.z / L * k);
+      /* (R92: its smoke leans toward him over its rise, further the nearer he leans in: 6.7 cm from his seat, 10 at most) */
+      const hl = Math.hypot(to.x, to.z) || 1, lean = Math.min(0.10, 0.06 / Math.max(0.4, L));
+      _lv5.x = to.x / hl * lean; _lv5.z = to.z / hl * lean;
+      SMOKE5.frame('energy', t, E.home, 1, 0, _lv5);
     }
     /* each presence's own place on the screen, for its mark and its tap */
     const presAt = (k) => () => { const g = pres[k].grp.position; return { x: g.x, y: g.y, z: g.z }; };

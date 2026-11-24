@@ -2089,8 +2089,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (q.grp.visible) { q.grp.position.set(hx + (hx - R.cx) * 2.2 * u, q.home.y + 1.1 * u * u, hz + 0.9 * u);
             if (q.fx) q.fx.set('uAlpha', 1 - u); }
           /* (R90: its smoke rises off the piece where the piece lies, and dies away as the water reaches it: carried off with
-             the presence it read as two coloured blobs adrift over his teacher, build 66) */
-          if (nm !== 'energy') { _smk5.set(hx, q.home.y, hz); SMOKE5.frame(nm, t, _smk5, q.grp.visible ? 1 - u : 0, 0); } }
+             the presence it read as two coloured blobs adrift over his teacher, build 66. R92: the doll's pale one too) */
+          { _smk5.set(hx, q.home.y, hz); SMOKE5.frame(nm, t, _smk5, q.grp.visible ? 1 - u : 0, 0); } }
         /* HIS SIGHT held open for the rite's length (a scene shuts it on its first frame; the film holds it); ending C opens
            it earlier, on his hands at the case */
         /* (ending C opens it a first time on the case, for the small thing, and shuts it again for the talk: held open from
