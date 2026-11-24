@@ -9490,7 +9490,11 @@ What the baseline contains, by release:
   no ring); R87, Higgsfield's GPU answered from the tools, nothing rented. Live now: build 65, deploy
   `6b0505051539159f98f2f5ee`, 661 of 661 served files byte-identical. Sheet v155 (24 Nov). The backup bundle could not be
   made this round: the history is about 2.7 GB and the working machine has 1.4 GB free; GitHub holds the branch and
-  Netlify every deploy.
+  Netlify every deploy. Then R88 to R90 (24 Nov): the peacock-feather fan out of Grandmaster Pho's hand in the final
+  rite (the water from his own raised hand), the twenty pieces laid in a centred grid on the cloth's measured top, and
+  in Spirit Vision a thin red and green smoke rising out of the two pieces in place of the red knot and the green tube
+  (photographed on a phone at builds 67 and 68 and corrected twice before it went live). Live: build 69, deploy
+  `6b0517a4dbb7e90b53db297a`, 661 of 661 served files byte-identical.
 
 ## The sheet, version by version
 

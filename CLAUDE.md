@@ -1514,8 +1514,8 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
 and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
-Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 65 live now, deploy
-`6b0505051539159f98f2f5ee`): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 69 live now, deploy
+`6b0517a4dbb7e90b53db297a`): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
 asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
 by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five
