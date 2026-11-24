@@ -391,7 +391,10 @@
        table, his feet still (kit.pose 'lying' is the engine's way to hold the eye low; kit.root keeps him there) */
     /* (pitch: he looks down at the pieces on the cloth as play begins, what the play needs first in his line of sight, v12.3;
        a film that hands to the table ends on this look) */
-    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, pitch: -0.38 };   // (R25: at -0.5 his teacher's face stood under the HUD's objective on a phone; -0.38 keeps it clear and the pieces in view)
+    /* (R75's debug, build 62: on a portrait screen -0.32, 3.4 degrees higher: at -0.38 the objective's two lines on a phone
+       hid his teacher's eyes and brow, photographed at the table's first frame in the ending A play-through; the nearest
+       row of pieces still stands inside the frame's foot. A landscape screen keeps -0.38, its objective off to the left) */
+    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, get pitch() { return innerHeight > innerWidth ? -0.32 : -0.38; } };   // (R25: at -0.5 his teacher's face stood under the HUD's objective on a phone; -0.38 keeps it clear and the pieces in view)
     function seatHim() {
       if (!kit) return;
       yaw.position.set(STATION.table.at.x, yaw.position.y, STATION.table.at.z);

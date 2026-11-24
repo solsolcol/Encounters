@@ -12760,7 +12760,10 @@
        table, his feet still (kit.pose 'lying' is the engine's way to hold the eye low; kit.root keeps him there) */
     /* (pitch: he looks down at the pieces on the cloth as play begins, what the play needs first in his line of sight, v12.3;
        a film that hands to the table ends on this look) */
-    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, pitch: -0.38 };   // (R25: at -0.5 his teacher's face stood under the HUD's objective on a phone; -0.38 keeps it clear and the pieces in view)
+    /* (R75's debug, build 62: on a portrait screen -0.32, 3.4 degrees higher: at -0.38 the objective's two lines on a phone
+       hid his teacher's eyes and brow, photographed at the table's first frame in the ending A play-through; the nearest
+       row of pieces still stands inside the frame's foot. A landscape screen keeps -0.38, its objective off to the left) */
+    const SIT5 = { y: 1.02, span: 1.05, lo: -1.0, hi: 0.5, get pitch() { return innerHeight > innerWidth ? -0.32 : -0.38; } };   // (R25: at -0.5 his teacher's face stood under the HUD's objective on a phone; -0.38 keeps it clear and the pieces in view)
     function seatHim() {
       if (!kit) return;
       yaw.position.set(STATION.table.at.x, yaw.position.y, STATION.table.at.z);
@@ -14545,7 +14548,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (his look held at 0.95 within 0.9 rad: at 0.75 within 0.7 his talking take swung his face away left as he spoke,
              behind the doorway's jamb from the lens, photographed at 22.5 s) */
           if (kl > 0.001) { whenReady(cast.koh, (P) => lookNow(P, fmHead(cast.pho, [pz.x, 1.5, pz.z]), 0.95 * kl, 0.9));
-            whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.6, STATION.fight.koh.z]), 0.8 * kl, 0.7)); } }
+            whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.45, STATION.fight.koh.z]), kl, 0.95)); } }
+        /* (R75's debug, build 62: Ton's turn to Mr Koh aimed at his eyes, 1.45 m, and carried 54 degrees: aimed at 1.6 m, 18 cm
+           over Mr Koh's head, and held to 36, he turned his chin up and away into the room, read on a phone as gazing at the
+           ceiling, measured by the films probe's face angle at 22.5 s) */
         /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
         this.lens(tau, T, B, HEADAT);
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still

@@ -1625,7 +1625,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (his look held at 0.95 within 0.9 rad: at 0.75 within 0.7 his talking take swung his face away left as he spoke,
              behind the doorway's jamb from the lens, photographed at 22.5 s) */
           if (kl > 0.001) { whenReady(cast.koh, (P) => lookNow(P, fmHead(cast.pho, [pz.x, 1.5, pz.z]), 0.95 * kl, 0.9));
-            whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.6, STATION.fight.koh.z]), 0.8 * kl, 0.7)); } }
+            whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.45, STATION.fight.koh.z]), kl, 0.95)); } }
+        /* (R75's debug, build 62: Ton's turn to Mr Koh aimed at his eyes, 1.45 m, and carried 54 degrees: aimed at 1.6 m, 18 cm
+           over Mr Koh's head, and held to 36, he turned his chin up and away into the room, read on a phone as gazing at the
+           ceiling, measured by the films probe's face angle at 22.5 s) */
         /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
         this.lens(tau, T, B, HEADAT);
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
