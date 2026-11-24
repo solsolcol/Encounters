@@ -35,6 +35,11 @@ remember how to be efficient"*. A promise does not survive a session; this parag
 4. At most two browsers at once on this box (five at once made spurious failures, 18 Nov).
 5. A question from him is answered at once, on one phone screen, while the work goes on.
 
+**BUT NOT ONE DEPLOY PER SMALL FIX** (Chad, 24 Nov 2026: *"I think you deploy way too excessively now, even 1 small
+change gets deployed and wasting time"*). My own small fixes (a debug round's findings, a tweak) are BATCHED: made and
+checked on a local build, and live ONCE when the batch is in. One of HIS asks still goes live as soon as it is built
+and seen to boot, so he can play it at once; rule 1 is about never waiting on a test, and stands.
+
 ## Who you are working with
 
 Chad (chadsor@gmail.com) has **zero game-dev experience** and often works
@@ -147,7 +152,7 @@ that fits it, with the version it came from.
 - Episode 4 chapter 1's black ajahn "is supposed to be evil": he chants no Buddhist chant ("should be chanting something else"), and his chants cannot be made out at all. Chad's word for this one character, the stated exception to the rule that no practitioner is the villain (Architecture, v21.30). (v24.25)
 - Anumodana is said only by a monk ("that can only be said by a monk"); a lay master or anyone else says thank you. (v24.25)
 - Every build is deployed as a FULL RELEASE, in the run, whatever its state; never a preview chapter (`preview: true` is never used again: "I also never asked for what preview bullshit you are doing, it should always be deployed as full release no matter the status"). (v27.0)
-- Efficiency comes first: build and deploy at once, the tests after on the live build, a rebuild only on a new finding (the block at the top of this file, his words). (v27.0)
+- Efficiency comes first: build and deploy at once, the tests after on the live build, a rebuild only on a new finding (the block at the top of this file, his words). (v27.0) My own small fixes are batched into one deploy, never one deploy each ("I think you deploy way too excessively now"). (v28.0, R77)
 - A restart loses nothing of his ("how can you lose my transcript due to a restart? you are supposed to build resilience for such scenarios"; "make sure there is zero possbility that somehow some of my messages got skipped"): each message is written word for word into the chapter's plan §0 AND committed and pushed the moment it arrives, before any work on it (a session's own log can be cut short by a restart; GitHub keeps it whatever happens). After a restart, the plan's §0 is read against everything re-delivered, and he is sent the numbered list of every message on record to hold against his own screen. (v27.0)
 - Change only what he asked and keep everything else exactly as it was; if an addition does not fit a shot, say so and ask instead of re-staging it; never remove built flow unless told. (v14.10)
 - Use his models as he delivered them: never alter his files or their paint (a ruling such as 'no green' is applied at runtime), and leave a scan's own flaws as delivered. (v12.4)
