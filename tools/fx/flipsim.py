@@ -58,9 +58,12 @@ K = {
     'burst': dict(r=0.16, dom=((0, 0, 0.45), (1.2, 1.2, 1.35)), cam=((0, 0, 0.30), 2.30),
                   vel=3.4, flow=(1, 3), fuel=2.2, smoke=0.9, temp=2.6, vort=0.45, fvort=1.0, burn=0.70,
                   dissolve=30, alpha=0.4, beta=1.2),
-    'smoke': dict(r=0.15, dom=((0, 0, 0.50), (1.0, 1.0, 1.10)), cam=((0, 0, 0.35), 1.80),
-                  vel=1.3, flow=(1, 6), fuel=0.0, smoke=1.4, temp=0.6, vort=0.40, fvort=0.0, burn=0.0,
-                  dissolve=34, alpha=0.6, beta=0.5),
+    # (the smoke made again, 24 Nov: the first, thrown at 1.3 m/s and dissolved over 34 frames, hardly grew past its
+    #  emitter and was gone by its middle; this one is thrown harder, churns, rises a little and never dissolves: the
+    #  game's sprite grows it, lifts it and fades it, and the frames carry its billowing)
+    'smoke': dict(r=0.12, dom=((0, 0, 0.35), (0.9, 0.9, 1.0)), cam=((0, 0, 0.22), 1.25),
+                  vel=2.6, flow=(1, 4), fuel=0.0, smoke=2.2, temp=1.0, vort=0.65, fvort=0.0, burn=0.0,
+                  dissolve=0, alpha=0.3, beta=0.6),
 }[KIND]
 
 # --- the emitter, and the flow and the domain made by hand (quick_smoke run under a pinned context gave its domain's
@@ -87,9 +90,10 @@ ds.cache_frame_end = END
 ds.vorticity = K['vort']
 ds.alpha = K['alpha']
 ds.beta = K['beta']
-ds.use_dissolve_smoke = True
-ds.dissolve_speed = K['dissolve']
-ds.use_dissolve_smoke_log = True
+ds.use_dissolve_smoke = K['dissolve'] > 0
+if K['dissolve'] > 0:
+    ds.dissolve_speed = K['dissolve']
+    ds.use_dissolve_smoke_log = True
 for side in ('front', 'back', 'right', 'left', 'top', 'bottom'):
     setattr(ds, 'use_collision_border_' + side, False)
 if FIRE:
