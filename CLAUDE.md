@@ -1647,15 +1647,15 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v154, PUBLISHED 23 Nov 2026** (`masters/v28.0/masterz-text-v154.xlsx`: v153 with chapter 4's R139 to
-R142 words (Restart chapter, the fight's brief without reloading, the dry flick's two lines gone, Grandmaster Pho's four
-lines on her karmic creditors) and episode 4 chapter 5's words and voice lines, made from the LIVE chapters (deploy 25)).
+**THE SHEET IS v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`: v154 with chapter 5's fight
+words as they now stand (the brief in two lines, each device's keys, the party tiles' titles, the switch's "Not now"),
+`co5C1` re-said and ten retired voice lines, made from the live tree (deploy `6b04e4fabbaf266dcdea1b82`)).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0/edit
+https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v154 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v155 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

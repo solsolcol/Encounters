@@ -8967,3 +8967,27 @@ fresh load; chaptertest caught all twelve. Before writing a film's sounds, re-re
 out whole, its time a plain name (`const P1 = R(T.p1)` first). And a film whose marks come from a live clock the stage
 hands it has no length at all to a walk without a world: write the marks beside the film, and have the film say on the
 console when the live clock parts from them (z_tail.js TOG5; tools/probes/e4c5tog5.mjs proves the check by breaking it).
+
+**A film directs every person it shows, or his own clock does** (v28.0, R75's debug, build 59; c_yfilm.js the Naga film).
+Ton and Jun stood in the doorway through the Naga film, never posed by it: their takes ran on their own clocks under it,
+so a seek could not lay them, and the look a later fix laid on Ton (to turn him to Mr Koh as he spoke) was undone by his
+own take before he was drawn: photographed, he still smiled into the lens. Mr Koh's look worked, because the film posed
+him (fmTalk) before it. A person a film shows is posed by the film's clock (fmRest, fmTalk, fmWalk) BEFORE any look is laid
+on him; read the frame for every body the shot can see, not only the ones the scene is about.
+
+**A fight photographed from its start is not the fight a player leaves** (v28.0, R75's debug; c_fightstage.js FS_LAB
+toSurge, tools/probes/e4c5films.mjs SURGE=1). The Naga film's probe had always begun the film from the fight's first frame:
+every Prai of the start stood burning through it, extras no player sees, and the court the film was framed on was the
+wrong one. Stage a probe's world the way the real path leaves it (the surge: five gathered and hidden, three left, the
+cage up), and photograph what the player gets.
+
+**A pan that crosses the man in the middle needs height, not a wider lens** (v28.0, R75's debug; tools/probes/threeaim.mjs).
+The three laid low lie on an arc round him; from 3 m behind him any pan from the first two to the last two looks through
+his head. 4.4 m up, he stands below them on both shapes. Measure a framing by NDC boxes in the court's own frame before a
+build, then photograph it: the probe's boxes ran 0.15 narrower than a crouched body really lies (a laid body is wider
+than a bar), so the first aim left the middle one half out of a phone's edge.
+
+**A lend's clock begins again where the switch lands** (v28.0, R75's debug; c_fightrules.js). A player at 3.2 s a press
+lent, switched, and the lend ran out before he could press the gold, for 27 minutes without winning or losing. A soft lock
+that only the slowest hand finds is found only by a simulated slowest hand: fightsim's `slowest` player is kept, and a
+rule change is proved by breaking it (the old rules stalled 12 of 20 campaigns, the new none).

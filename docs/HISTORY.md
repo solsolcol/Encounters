@@ -9470,6 +9470,20 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`, sha256 435b63ed...3020f4d4b): v154 with
+exactly these rows changed, made by `textsync export` from the tree that is live (deploy `6b04e4fabbaf266dcdea1b82`,
+build 58; build 59 changes no word): EPISODE 4 three added, `e4c5.words.btnPhoTitle` "GRANDMASTER" and
+`e4c5.words.btnZavierTitle` "MASTER" (the party tiles' titles) and `e4c5.words.whySwitchNow` "Not now" (the switch's
+refusal after the win, a loss and the Naga's call); five changed, `fightBrief1` and `fightBrief2` (the brief cut to two
+lines), `fightInKey` and `fightInTouch` (each device's keys, one to a line), `objFight1b` ("It hid. Master Zavier smells
+it out."); one retired, `fightBrief3`; VOICE LINES one changed, `voice.co5C1` ("[delighted] Three! Only three.", 1.83
+s, re-said), ten retired (`voice.ph5f3`, `ph5f7`, `ph5fg`, `ph5nd1`, `ph5nf2`, `ph5nf3`, `ph5nm1`, `ph5nn1`, `ph5nn2`,
+`ph5ny2`: lines the fight no longer says). Published whole through the Drive connector's file reference, id
+`1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM`
+(<https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit>), created 01:18:03.3,
+modified 01:18:03.1 (the conversion itself); read back tab by tab and compared by `tools/sheetcmp.py`: 11,929 cells,
+mismatched 0.
+
 **v154, PUBLISHED 23 Nov 2026** (`masters/v28.0/masterz-text-v154.xlsx`, sha256 266ab1bf...edd046e8): v153 with
 exactly these rows changed, made by `textsync export` from the LIVE chapters (deploy 25: chapter 5 the release's
 e4c5 05c67b1d, not the tree's own assembly, which carries helpers' unproven parts): UI TEXT four added,

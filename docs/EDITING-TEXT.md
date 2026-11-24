@@ -11,7 +11,11 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (23 Nov 2026): Master Z's Encounters — GAME TEXT v154 (edit here)**, id `1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0`
+**THE CURRENT SHEET (24 Nov 2026): Master Z's Encounters — GAME TEXT v155 (edit here)**, id `1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM`
+(<https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit>; v154 with chapter 5's fight words
+as they now stand, `co5C1` re-said and ten retired voice lines, made from the live tree (deploy `6b04e4fabbaf266dcdea1b82`;
+docs/HISTORY.md, "The sheet, version by version"); 11,929 cells read back, mismatched 0; created 01:18:03.3, modified
+01:18:03.1, the conversion itself). The one before it, v154, id `1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0`
 (<https://docs.google.com/spreadsheets/d/1OW1wFBQdOSTspvLOFgn-lnoeR7cH4NisF2TmDpLGQc0/edit>; v153 with chapter 4's R139 to
 R142 rows and episode 4 chapter 5's words and voice lines, made from the LIVE chapters, deploy 25 (docs/HISTORY.md, "The
 sheet, version by version"); 11,983 cells read back, mismatched 0; v153 checked first: created 14:27:22.9, modified
