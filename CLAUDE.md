@@ -297,6 +297,11 @@ that fits it, with the version it came from.
   QUESTION ("I dont need another 10,000 simulations, you are burning all my credits", of a tuning I had briefed to be
   checked by the full 10,000-fight table again): a short run where a short run answers, the big table only where it was
   asked for, and never again after a tweak; a helper finishes its piece in the fewest steps and stops. (v28.0, R22)
+- WHEN HE HAS SET A PIECE OF WORK'S DIRECTION, IT IS CARRIED ALL THE WAY WITHOUT ASKING HIS PERMISSION AGAIN ("Stop asking
+  me for permission, just do it all the way", 24 Nov 2026, after the effects' upgrade was picked and the GPU box rented):
+  the steps, the spend he has already allowed (a rented box's hours, a few credits of sound), the order and the defaults
+  are mine to decide and to report; a step is never held on a question. What only he can give (a photograph, his ear on a
+  taste) is asked once beside the work, never in front of it. (v28.0, R98)
 
 ### How the work is done and checked
 
