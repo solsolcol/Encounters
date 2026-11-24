@@ -1215,6 +1215,11 @@
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null, V = p ? fsVis[p.id - 1] : null, sc = V ? V.s : 1;
             if (w) fsShatter(w.x, 0.92 * sc, w.z, sc);                                 // (R74: its bubble breaks like glass, with its own sound)
             else fsFx('u5bindpop', 0.8, null); break; }
+          /* (R82: a Prai that breaks out of the bind costs him: he staggers, the picture jolts and the phone buzzes once, as the
+             glass of its bubble flies; the cost itself is the rules' drain, on his bar) */
+          case 'breakHit': { const zw = cast.zav ? cast.zav.group.position : null;
+            fsFx('u5stagger', 0.7, zw ? zw.x : null, zw ? zw.z : null); fsShake(0.028, 0.3, 0.01);
+            if (kit && kit.buzz) kit.buzz([30, 40, 30]); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
             /* (R62: it goes out by itself now, whoever is played and while he walks: his crouch and look round only while he
                stands, so a walking body never slides through a crouch; the breath, the ripple and the sounds always) */

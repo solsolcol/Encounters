@@ -1263,7 +1263,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         THREAD5.set(t >= T.thread - 0.1, [DOOR_FRONT.x0 + 0.05, 0.52, HOUSE.face - 0.12], [STATION.fight.jun.x - 0.18, 0.86, STATION.fight.jun.z - 0.25]);
         /* the household behind the thread, in the doorway: Mr Koh's question; Ton and Jun either side */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry);
-          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Talk_with_Hands_Open'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Stand_and_Chat'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+        /* (R79, Chad: "his hand movement causes collision to ton, and because of that, ton jerks repeatedly to clear the
+           collision but ends up vibrating": his question was asked with his hands thrown open, a step behind Ton, and each
+           sweep of a hand into Ton moved Ton off it in that picture and back in the next. Asked with his chatting take, as
+           his line in the Naga film is since R76, his hands stay by him; and the arms' move itself is eased now, c_nav.js) */
         whenReady(cast.jun, (P) => { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, turned ? fmHead(cast.zav, [F.zav.x, 1.6, F.zav.z]) : fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); });
         /* Ton: the wrapped stick at his side; unwrapped and held out on both palms ('give'); back to the doorway */
         whenReady(cast.ton, (P) => {
@@ -1750,6 +1754,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                     /* (R75's debug, F8: their places in the car, 1.6 by 1.5 m: Jun and Ton at its back, his teacher at the doors' right,
                        his own eye at their left, each 0.6 m and more from the next) */
                     inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };
+    /* (R78, Chad: "there is one part in the cutscene with framing issue and the customer model is blocking pho as he sucks in
+       the prais": through the three rooms Mr Koh stood at his place in the hunt, (-9.85, -2.25), 0.71 m in front of the
+       dining room's eye and 12 degrees off its middle, on the same side as his teacher 1.58 m away at 7 degrees: his body
+       filled the shot his teacher draws the smell into the bag in. He watches from the living room's east side now, by the
+       armchair: behind the dining and terrace eyes, and in the living room's shot only on a desktop, 27 degrees out, beyond
+       his teacher and clear of him) */
+    const BT5KOH = [-6.3, -2.2];
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -1843,7 +1854,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         whenReady(cast.koh, (P) => {
           if (!inEyes) { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'koh', t); }
           else if (atLift) fmShow(P, false);
-          else if (t < T.knot) { put(P, -9.85, -2.25, STATION.hunt.koh.ry); fmRest(P, 'koh', t); }
+          else if (t < T.knot) { put(P, BT5KOH[0], BT5KOH[1], faceTo(BT5KOH[0], BT5KOH[1], A.live[0], A.live[1])); fmRest(P, 'koh', t);
+            if (t < T.room2) lookNow(P, fmHead(cast.pho, [A.live[0], 1.55, A.live[1]]), 0.7, 0.7); }
           else { fmShow(P, true); put(P, A.kohWin[0], A.kohWin[1], faceTo(A.kohWin[0], A.kohWin[1], A.phoKoh[0], A.phoKoh[1]));
             fmTalk(P, 'koh', t, T.ko5b1, SECS.ko5b1, 'Talk_with_Hands_Open');
             const bow = smo(c01((t - T.wai) / 0.6)) * (1 - smo(c01((t - T.wai - 1.4) / 0.8)));

@@ -3614,7 +3614,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3862,6 +3862,23 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       st.fightEnd('restore'); await frames(2);
       /* (and the mode closed while the arrow is shown: it goes with the mode and forgets whose it was) */
       R.goneWithMode = !A.classList.contains('on') && !A.dataset.who;
+      return R;`);
+    /* (v28.0, R80/R81: a body's own height, the arrow's `by`: the played one's arrow stands at HIS height, never at `y`, and
+       a HUD in the way brings it no lower than that same height) */
+    K.tagArrowBy = await pCheck('arrowBy', `
+      await frames(2);
+      const R = {}, A = document.getElementById('tagArrow');
+      const prj = (x, y, z) => { const v = new E.camera.position.constructor(x, y, z); E.camera.updateMatrixWorld(true); v.project(E.camera); return (-v.y * 0.5 + 0.5) * innerHeight; };
+      const played = () => { const s0 = kit.tagState(); return s0.bodies.find(q => q.id === s0.played); };
+      R.opened = st.fightOpen({ party: true, keys: { switch: 'Tab' }, arrow: { y: 1.6, by: { a: 1.05, b: 1.25 } } }) === true;
+      await poll(() => kit.tagState().live, 20000); await frames(6); await new Promise(r => setTimeout(r, 900)); await frames(2);
+      const b0 = played(), ar = A.getBoundingClientRect(), his = b0.id === 'a' ? 1.05 : 1.25;
+      const want = prj(b0.x, (b0.y || 0) + his, b0.z), atY = prj(b0.x, (b0.y || 0) + 1.6, b0.z);
+      R.on = A.classList.contains('on');
+      R.atHis = Math.abs(ar.bottom - want) < 2.5;
+      R.notAtY = Math.abs(ar.bottom - atY) > 5;
+      R._m = { who: b0.id, bottom: Math.round(ar.bottom), want: Math.round(want), y: Math.round(atY) };
+      st.fightEnd('restore'); await frames(2);
       return R;`);
   } catch (e) {
     console.log('tag phone threw', e && e.message);

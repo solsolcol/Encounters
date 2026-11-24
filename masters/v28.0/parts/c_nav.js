@@ -30,7 +30,7 @@
        leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
        READ by tools/probes/e4c5bodies.py on the films' rows (stage.nav5: the counts): every shown standing body against the
        solids as they stand at each row and against each other, at every 0.1 s of every film. */
-    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbMoved: 0,
+    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbOut: 0.8, limbBack: 0.2, limbHold: 0.8, limbMoved: 0,
                    standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set(), shut: new Set() };
     const NAV_FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/;   // (who stands on the floor; the spirits are not here)
     /* EACH BODY'S OWN REACH OVER THE FLOOR (R76, Chad, 23 Nov 2026: "why isn't there some kind of universal fix to this?"
@@ -155,7 +155,8 @@
     /* the bodies a film put in THIS PICTURE (each call of a film's frame is one picture: its frame(t) puts every one of its
        people for that t, so a seek, a skip, a probe's run of seeks and play all land on the same picture), and whether each
        walks in it (fmWalk's own answer) along which way (its route) */
-    const navFrame = { put: new Map(), depth: 0 };
+    /* (t, f: the film's clock and which film, for the arms' ease: R79) */
+    const navFrame = { put: new Map(), depth: 0, t: null, f: null };
     /* THE THINGS A BODY CARRIES in the world (laid at its hands this picture by handHold5 and STICK5, world-attached): when the
        settle moves the body they go with it, by the same amount (R33, lens 4's L4-08: Ton's wrapped staff, Jun's duffel,
        his teacher's tied bag, the stick laid on Ton's palms were laid before the settle and left where the body had been) */
@@ -166,7 +167,8 @@
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true; }
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true;
+            navFrame.t = typeof a[0] === 'number' ? a[0] : typeof a[1] === 'number' ? a[1] : null; navFrame.f = typeof a[0] === 'string' ? 'ending:' + a[0] : o; }
           try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) { try { navSettle('film'); } finally { navFilmOn = false; } } } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
@@ -288,6 +290,7 @@
       /* THE ARMS (above): each pair standing within 1.6 m, the later one (or the earlier, if only it may) moved off */
       if (NAV5.limbs) {
         const st = list.map((it, k) => ({ it, k, stands: navBody(it.P)[2] >= NAV5.standY }));
+        const easeOn = film && navFrame.t != null, want = new Map();
         for (let i = 1; i < st.length; i++) for (let j = 0; j < i; j++) {
           const A = st[j], Bq = st[i]; if (!A.stands || !Bq.stands) continue;
           const mv = Bq.it.may ? Bq : A.it.may ? A : null; if (!mv) continue;
@@ -299,10 +302,43 @@
           const by = Math.min(NAV5.limbMax, deep - NAV5.limbTol + 0.01);
           let nx = gm.x + dx * by, nz = gm.z + dz * by;
           if (!(film && mv.it.walking)) { const q = navPush(bm[0] + dx * by, bm[1] + dz * by, mv.it.f, mv.it.ry, mv.it.walking, null); nx += q[0] - (bm[0] + dx * by); nz += q[1] - (bm[1] + dz * by); }
-          const mx = nx - gm.x, mz = nz - gm.z; gm.x = nx; gm.z = nz; NAV5.limbMoved++;
+          const mx = nx - gm.x, mz = nz - gm.z;
+          if (easeOn && !mv.it.walking) { const w = want.get(mv.it) || [0, 0]; w[0] += mx; w[1] += mz; want.set(mv.it, w); continue; }
+          gm.x = nx; gm.z = nz; NAV5.limbMoved++;
           const cs = navCarry.get(mv.it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += mx; c.position.z += mz; }
         }
+        if (easeOn) navLimbEase(list, want);
       }
+    }
+    /* THE ARMS' MOVE, EASED IN A FILM (R79, Chad, 24 Nov 2026: "his hand movement causes collision to ton, and because of
+       that, ton jerks repeatedly to clear the collision but ends up vibrating"). A film puts its people again in every
+       picture, so the move above, made afresh from each picture's overlap, followed a talking hand in and out of a body
+       standing still beside it: moved off in one picture, put back in the next, many times a second. In a film a STANDING
+       body's move off another's arm is eased on the film's own clock instead: out toward what this picture asks at
+       NAV5.limbOut metres a second, held while an arm is still there, and back at NAV5.limbBack once it has been clear for
+       NAV5.limbHold seconds. A seek, a skip, another film or a picture more than a quarter second from the last lands on
+       what its own picture asks at once, so a probe's seeks see each picture's own move, as before. A walker's move, and
+       play's (where a body is not put again each frame, so a move once made stays), are as they were */
+    const navEase = new Map();
+    function navLimbEase(list, want) {
+      const T = navFrame.t, F = navFrame.f;
+      for (const it of list) {
+        if (!it.may || it.walking) continue;
+        const w = want.get(it) || [0, 0], s = navEase.get(it.P);
+        if (!s || s.f !== F || T < s.t || T - s.t > 0.25) { navEase.set(it.P, { x: w[0], z: w[1], t: T, f: F, held: T }); navLimbApply(it.P, w[0], w[1]); continue; }
+        const cur = Math.hypot(s.x, s.z), tg = Math.hypot(w[0], w[1]);
+        let rate = 0;
+        if (tg >= cur - 1e-4) { s.held = T; rate = NAV5.limbOut; } else if (T - s.held >= NAV5.limbHold) rate = NAV5.limbBack;
+        const dx = w[0] - s.x, dz = w[1] - s.z, d = Math.hypot(dx, dz), step = Math.min(d, rate * (T - s.t));
+        if (d > 1e-6 && step > 0) { s.x += dx / d * step; s.z += dz / d * step; }
+        s.t = T;
+        navLimbApply(it.P, s.x, s.z);
+      }
+    }
+    function navLimbApply(P, x, z) {
+      if (Math.abs(x) < 1e-5 && Math.abs(z) < 1e-5) return;
+      const g = P.group.position; g.x += x; g.z += z; NAV5.limbMoved++;
+      const cs = navCarry.get(P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += x; c.position.z += z; }
     }
     /* THE WRAPS (each the original, called as it was) */
     const navPut0 = put;

@@ -118,6 +118,16 @@
         cageMax: 100, wear: 6, mend: 6, whole: 30,
         // HIS SANITY (the game's own stat)
         drain: 2, gather: 2.0, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
+        // (R82, 24 Nov 2026, Chad: "I think the fight needs a little more difficulty, maybe add a damage to sanity if the prais
+        //  breaks out of the bind, and damage over time to sanity when the prais gets too close to zavier's protection cage or
+        //  clings to the cage"): a bound one breaking out of its bubble costs breakHit at once; each free one within closeR of
+        //  him (coming close, clinging to his bars, or through them and not yet at him) costs closeDrain a second while it
+        //  stays; one already at him costs `drain`, as before, never both. Both 0: the fight before R82, bit for bit.
+        //  Sized by short runs of fightsim (300 fights a player, R22): 4 and 0.8 left the careful first-timer 1.7 % at the
+        //  first try, a cliff (0.10 to 0.15 a second took him from 68 % to 3 % with a 2-3 hit); the hit is what tells (3
+        //  alone: 20 %; the drain alone at 0.08: 94 %). At 1 and 0.15: careful 80.0 % first try (was 95.7), 98.0 % within
+        //  two; slow 100; late 97.3 and 100; the masher 7.0 % (was 14.7); every invariant held
+        breakHit: 1, closeDrain: 0.15, closeR: 1.6,
         // THE PRAI
         paceCome: 0.75, paceSlip: 0.95, paceHide: 0.7, paceHidden: 0.6, rush: 2.2,   // (R73: were 0.6, 0.8, 0.55, 0.5)
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
@@ -284,6 +294,10 @@
       const dist = (ax, az, bx, bz) => { const dx = ax - bx, dz = az - bz; return Math.sqrt(dx * dx + dz * dz); };
       const isP = (st) => st.who === 'pho';
       const atHim = (p) => p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2);
+      /* (R82: a free one too close to his cage, or clinging to it: coming within closeR, at his bars, rushing, shown, or
+         through the bars and not yet at him) */
+      const CLOSE_ST = { coming: 1, pressing: 1, through: 1, rushing: 1, shown: 1 };
+      const closeTo = (st, p) => !!CLOSE_ST[p.st] && Math.hypot(p.x - st.zav.x, p.z - st.zav.z) <= st.n.closeR;
       const free = (p) => p.st === 'entering' || p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'fleeing' ||
                           p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || p.st === 'rushing';
       const onCourt = (p) => p.st !== 'waiting' && p.st !== 'gathered';
@@ -1272,6 +1286,8 @@
         else setSt(st, p, 'coming', 'the bubble ends');
         p.hold = '';
         st.ev.push({ e: 'unbind', id: p.id });
+        /* (R82: a break-out from the bind costs him, in the fight; the lesson's bubbles teach, and cost nothing) */
+        if (st.stage === 'fight' && st.n.breakHit > 0) { st.owe += st.n.breakHit; st.stats.breakHits = (st.stats.breakHits || 0) + 1; st.ev.push({ e: 'breakHit', id: p.id }); }
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
@@ -1306,11 +1322,12 @@
       function sanityTick(st, dt, fed) {
         const n = st.n;
         if (st.stage !== 'fight') { st.owe = 0; return; }
-        let k = 0;
-        for (const p of st.prai) if (atHim(p) && p.gath <= 0) k++;
+        let k = 0, near = 0;
+        for (const p of st.prai) { if (atHim(p) && p.gath <= 0) k++; else if (n.closeDrain > 0 && closeTo(st, p)) near++; }
         const owe = st.owe; st.owe = 0;
-        if (!k && !owe) return;
-        const amt = (n.drain * k * dt + owe) * (1 - st.guard);
+        if (!k && !near && !owe) return;
+        const amt = (n.drain * k * dt + n.closeDrain * near * dt + owe) * (1 - st.guard);
+        if (near) st.stats.closeT = (st.stats.closeT || 0) + dt;
         st.sanity -= amt; st.stats.drained += amt;
         st.ev.push({ e: 'drain', amt });
         /* (where the engine feeds its own number back, the loss is judged on THAT, the next step (step(), at its top): it is

@@ -184,7 +184,13 @@
               engine's seventy-first seam, 2.35 m over his feet, half a metre over either head; R75's debug: on a phone it
               stood under the order's box and the count, so the engine brings it down until it clears them, never lower
               than its point at `head`, 1.95 m, just over either head) */
-           arrow: { y: 2.35, head: 1.95 },
+           /* (R80 and R81, 24 Nov: "the arrow can be moved downwards even more, so that it is almost right above the head",
+              "But give some little space buffer so that any poses that moves the character head wont clip into the arrow":
+              each body's own height, the seventy-first seam's `by`: the highest his head's top reaches in any take of his
+              file, over his feet (tools/probes/headtop.mjs, every take sampled 48 times over its length and his head's own
+              points skinned as the GPU draws them: Grandmaster Pho 1.861 m in his walk, Master Zavier 1.794 m in his), and
+              8 cm over it, the arrow's bob 5 px under its point at most, about 3 cm at the boom's distance) */
+           arrow: { y: 2.35, head: 1.95, by: { pho: 1.94, zavier: 1.87 } },
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,

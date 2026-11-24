@@ -433,7 +433,13 @@
               engine's seventy-first seam, 2.35 m over his feet, half a metre over either head; R75's debug: on a phone it
               stood under the order's box and the count, so the engine brings it down until it clears them, never lower
               than its point at `head`, 1.95 m, just over either head) */
-           arrow: { y: 2.35, head: 1.95 },
+           /* (R80 and R81, 24 Nov: "the arrow can be moved downwards even more, so that it is almost right above the head",
+              "But give some little space buffer so that any poses that moves the character head wont clip into the arrow":
+              each body's own height, the seventy-first seam's `by`: the highest his head's top reaches in any take of his
+              file, over his feet (tools/probes/headtop.mjs, every take sampled 48 times over its length and his head's own
+              points skinned as the GPU draws them: Grandmaster Pho 1.861 m in his walk, Master Zavier 1.794 m in his), and
+              8 cm over it, the arrow's bob 5 px under its point at most, about 3 cm at the boom's distance) */
+           arrow: { y: 2.35, head: 1.95, by: { pho: 1.94, zavier: 1.87 } },
            radius: 0.45, speed: 1.2, turn: 16, eye: 1.62, keys: { switch: 'Tab' },
            /* (R25, "sluggish, make it faster and more responsive": a body comes to the stick's pace at 18 a second, 90 % of
               it in 0.13 s where the walk's own 7.6 took 0.30 s; full pace at 0.7 of the stick's travel, 36 px of its 52,
@@ -6928,6 +6934,16 @@
         cageMax: 100, wear: 6, mend: 6, whole: 30,
         // HIS SANITY (the game's own stat)
         drain: 2, gather: 2.0, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
+        // (R82, 24 Nov 2026, Chad: "I think the fight needs a little more difficulty, maybe add a damage to sanity if the prais
+        //  breaks out of the bind, and damage over time to sanity when the prais gets too close to zavier's protection cage or
+        //  clings to the cage"): a bound one breaking out of its bubble costs breakHit at once; each free one within closeR of
+        //  him (coming close, clinging to his bars, or through them and not yet at him) costs closeDrain a second while it
+        //  stays; one already at him costs `drain`, as before, never both. Both 0: the fight before R82, bit for bit.
+        //  Sized by short runs of fightsim (300 fights a player, R22): 4 and 0.8 left the careful first-timer 1.7 % at the
+        //  first try, a cliff (0.10 to 0.15 a second took him from 68 % to 3 % with a 2-3 hit); the hit is what tells (3
+        //  alone: 20 %; the drain alone at 0.08: 94 %). At 1 and 0.15: careful 80.0 % first try (was 95.7), 98.0 % within
+        //  two; slow 100; late 97.3 and 100; the masher 7.0 % (was 14.7); every invariant held
+        breakHit: 1, closeDrain: 0.15, closeR: 1.6,
         // THE PRAI
         paceCome: 0.75, paceSlip: 0.95, paceHide: 0.7, paceHidden: 0.6, rush: 2.2,   // (R73: were 0.6, 0.8, 0.55, 0.5)
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
@@ -7094,6 +7110,10 @@
       const dist = (ax, az, bx, bz) => { const dx = ax - bx, dz = az - bz; return Math.sqrt(dx * dx + dz * dz); };
       const isP = (st) => st.who === 'pho';
       const atHim = (p) => p.st === 'through' || p.st === 'beneath' || (p.st === 'shown' && p.at === 2);
+      /* (R82: a free one too close to his cage, or clinging to it: coming within closeR, at his bars, rushing, shown, or
+         through the bars and not yet at him) */
+      const CLOSE_ST = { coming: 1, pressing: 1, through: 1, rushing: 1, shown: 1 };
+      const closeTo = (st, p) => !!CLOSE_ST[p.st] && Math.hypot(p.x - st.zav.x, p.z - st.zav.z) <= st.n.closeR;
       const free = (p) => p.st === 'entering' || p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'fleeing' ||
                           p.st === 'hidden' || p.st === 'beneath' || p.st === 'shown' || p.st === 'rushing';
       const onCourt = (p) => p.st !== 'waiting' && p.st !== 'gathered';
@@ -8082,6 +8102,8 @@
         else setSt(st, p, 'coming', 'the bubble ends');
         p.hold = '';
         st.ev.push({ e: 'unbind', id: p.id });
+        /* (R82: a break-out from the bind costs him, in the fight; the lesson's bubbles teach, and cost nothing) */
+        if (st.stage === 'fight' && st.n.breakHit > 0) { st.owe += st.n.breakHit; st.stats.breakHits = (st.stats.breakHits || 0) + 1; st.ev.push({ e: 'breakHit', id: p.id }); }
       }
       function leftLines(st) {
         if (st.stage === 'learn') sayOnce(st, 'ph5g1');
@@ -8116,11 +8138,12 @@
       function sanityTick(st, dt, fed) {
         const n = st.n;
         if (st.stage !== 'fight') { st.owe = 0; return; }
-        let k = 0;
-        for (const p of st.prai) if (atHim(p) && p.gath <= 0) k++;
+        let k = 0, near = 0;
+        for (const p of st.prai) { if (atHim(p) && p.gath <= 0) k++; else if (n.closeDrain > 0 && closeTo(st, p)) near++; }
         const owe = st.owe; st.owe = 0;
-        if (!k && !owe) return;
-        const amt = (n.drain * k * dt + owe) * (1 - st.guard);
+        if (!k && !near && !owe) return;
+        const amt = (n.drain * k * dt + n.closeDrain * near * dt + owe) * (1 - st.guard);
+        if (near) st.stats.closeT = (st.stats.closeT || 0) + dt;
         st.sanity -= amt; st.stats.drained += amt;
         st.ev.push({ e: 'drain', amt });
         /* (where the engine feeds its own number back, the loss is judged on THAT, the next step (step(), at its top): it is
@@ -9604,6 +9627,11 @@
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null, V = p ? fsVis[p.id - 1] : null, sc = V ? V.s : 1;
             if (w) fsShatter(w.x, 0.92 * sc, w.z, sc);                                 // (R74: its bubble breaks like glass, with its own sound)
             else fsFx('u5bindpop', 0.8, null); break; }
+          /* (R82: a Prai that breaks out of the bind costs him: he staggers, the picture jolts and the phone buzzes once, as the
+             glass of its bubble flies; the cost itself is the rules' drain, on his bar) */
+          case 'breakHit': { const zw = cast.zav ? cast.zav.group.position : null;
+            fsFx('u5stagger', 0.7, zw ? zw.x : null, zw ? zw.z : null); fsShake(0.028, 0.3, 0.01);
+            if (kit && kit.buzz) kit.buzz([30, 40, 30]); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
             /* (R62: it goes out by itself now, whoever is played and while he walks: his crouch and look round only while he
                stands, so a walking body never slides through a crouch; the breath, the ripple and the sounds always) */
@@ -10956,7 +10984,7 @@
        leaf, by phase) is no solid. A SWITCH, NAV5.on: off, nothing moves.
        READ by tools/probes/e4c5bodies.py on the films' rows (stage.nav5: the counts): every shown standing body against the
        solids as they stand at each row and against each other, at every 0.1 s of every film. */
-    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbMoved: 0,
+    const NAV5 = { on: true, gap: 0.02, grow: 0.14, ring: 0.025, far: 1.2, dirs: 32, cell: 0.1, comfort: 0.10, near: 0.35, limbs: true, limbTol: 0.03, limbMax: 0.2, limbOut: 0.8, limbBack: 0.2, limbHold: 0.8, limbMoved: 0,
                    standY: 0.65, moved: 0, routed: 0, missed: 0, passes: 0, deepIn: 0, open: new Set(), shut: new Set() };
     const NAV_FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/;   // (who stands on the floor; the spirits are not here)
     /* EACH BODY'S OWN REACH OVER THE FLOOR (R76, Chad, 23 Nov 2026: "why isn't there some kind of universal fix to this?"
@@ -11081,7 +11109,8 @@
     /* the bodies a film put in THIS PICTURE (each call of a film's frame is one picture: its frame(t) puts every one of its
        people for that t, so a seek, a skip, a probe's run of seeks and play all land on the same picture), and whether each
        walks in it (fmWalk's own answer) along which way (its route) */
-    const navFrame = { put: new Map(), depth: 0 };
+    /* (t, f: the film's clock and which film, for the arms' ease: R79) */
+    const navFrame = { put: new Map(), depth: 0, t: null, f: null };
     /* THE THINGS A BODY CARRIES in the world (laid at its hands this picture by handHold5 and STICK5, world-attached): when the
        settle moves the body they go with it, by the same amount (R33, lens 4's L4-08: Ton's wrapped staff, Jun's duffel,
        his teacher's tied bag, the stick laid on Ton's palms were laid before the settle and left where the body had been) */
@@ -11092,7 +11121,8 @@
       let F = null; try { F = FILMS5; } catch (e) { return; }      // (not yet made while the parts after this one build)
       navHook.done = true;
       const wrap = (o) => { if (!o || typeof o.frame !== 'function' || o.frame.__nav) return; const f0 = o.frame;
-        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true; }
+        const f = function (...a) { navFrame.depth++; if (navFrame.depth === 1) { navFrame.put.clear(); navCarry.clear(); NAV5.open.clear(); NAV5.shut.clear(); navFilmOn = true;
+            navFrame.t = typeof a[0] === 'number' ? a[0] : typeof a[1] === 'number' ? a[1] : null; navFrame.f = typeof a[0] === 'string' ? 'ending:' + a[0] : o; }
           try { return f0.apply(this, a); } finally { navFrame.depth--; if (!navFrame.depth) { try { navSettle('film'); } finally { navFilmOn = false; } } } };
         f.__nav = true; o.frame = f; };
       for (const k of Object.keys(F)) wrap(F[k]);
@@ -11214,6 +11244,7 @@
       /* THE ARMS (above): each pair standing within 1.6 m, the later one (or the earlier, if only it may) moved off */
       if (NAV5.limbs) {
         const st = list.map((it, k) => ({ it, k, stands: navBody(it.P)[2] >= NAV5.standY }));
+        const easeOn = film && navFrame.t != null, want = new Map();
         for (let i = 1; i < st.length; i++) for (let j = 0; j < i; j++) {
           const A = st[j], Bq = st[i]; if (!A.stands || !Bq.stands) continue;
           const mv = Bq.it.may ? Bq : A.it.may ? A : null; if (!mv) continue;
@@ -11225,10 +11256,43 @@
           const by = Math.min(NAV5.limbMax, deep - NAV5.limbTol + 0.01);
           let nx = gm.x + dx * by, nz = gm.z + dz * by;
           if (!(film && mv.it.walking)) { const q = navPush(bm[0] + dx * by, bm[1] + dz * by, mv.it.f, mv.it.ry, mv.it.walking, null); nx += q[0] - (bm[0] + dx * by); nz += q[1] - (bm[1] + dz * by); }
-          const mx = nx - gm.x, mz = nz - gm.z; gm.x = nx; gm.z = nz; NAV5.limbMoved++;
+          const mx = nx - gm.x, mz = nz - gm.z;
+          if (easeOn && !mv.it.walking) { const w = want.get(mv.it) || [0, 0]; w[0] += mx; w[1] += mz; want.set(mv.it, w); continue; }
+          gm.x = nx; gm.z = nz; NAV5.limbMoved++;
           const cs = navCarry.get(mv.it.P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += mx; c.position.z += mz; }
         }
+        if (easeOn) navLimbEase(list, want);
       }
+    }
+    /* THE ARMS' MOVE, EASED IN A FILM (R79, Chad, 24 Nov 2026: "his hand movement causes collision to ton, and because of
+       that, ton jerks repeatedly to clear the collision but ends up vibrating"). A film puts its people again in every
+       picture, so the move above, made afresh from each picture's overlap, followed a talking hand in and out of a body
+       standing still beside it: moved off in one picture, put back in the next, many times a second. In a film a STANDING
+       body's move off another's arm is eased on the film's own clock instead: out toward what this picture asks at
+       NAV5.limbOut metres a second, held while an arm is still there, and back at NAV5.limbBack once it has been clear for
+       NAV5.limbHold seconds. A seek, a skip, another film or a picture more than a quarter second from the last lands on
+       what its own picture asks at once, so a probe's seeks see each picture's own move, as before. A walker's move, and
+       play's (where a body is not put again each frame, so a move once made stays), are as they were */
+    const navEase = new Map();
+    function navLimbEase(list, want) {
+      const T = navFrame.t, F = navFrame.f;
+      for (const it of list) {
+        if (!it.may || it.walking) continue;
+        const w = want.get(it) || [0, 0], s = navEase.get(it.P);
+        if (!s || s.f !== F || T < s.t || T - s.t > 0.25) { navEase.set(it.P, { x: w[0], z: w[1], t: T, f: F, held: T }); navLimbApply(it.P, w[0], w[1]); continue; }
+        const cur = Math.hypot(s.x, s.z), tg = Math.hypot(w[0], w[1]);
+        let rate = 0;
+        if (tg >= cur - 1e-4) { s.held = T; rate = NAV5.limbOut; } else if (T - s.held >= NAV5.limbHold) rate = NAV5.limbBack;
+        const dx = w[0] - s.x, dz = w[1] - s.z, d = Math.hypot(dx, dz), step = Math.min(d, rate * (T - s.t));
+        if (d > 1e-6 && step > 0) { s.x += dx / d * step; s.z += dz / d * step; }
+        s.t = T;
+        navLimbApply(it.P, s.x, s.z);
+      }
+    }
+    function navLimbApply(P, x, z) {
+      if (Math.abs(x) < 1e-5 && Math.abs(z) < 1e-5) return;
+      const g = P.group.position; g.x += x; g.z += z; NAV5.limbMoved++;
+      const cs = navCarry.get(P); if (cs) for (const c of cs) if (c.parent === world) { c.position.x += x; c.position.z += z; }
     }
     /* THE WRAPS (each the original, called as it was) */
     const navPut0 = put;
@@ -14186,7 +14250,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         THREAD5.set(t >= T.thread - 0.1, [DOOR_FRONT.x0 + 0.05, 0.52, HOUSE.face - 0.12], [STATION.fight.jun.x - 0.18, 0.86, STATION.fight.jun.z - 0.25]);
         /* the household behind the thread, in the doorway: Mr Koh's question; Ton and Jun either side */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry);
-          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Talk_with_Hands_Open'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Stand_and_Chat'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+        /* (R79, Chad: "his hand movement causes collision to ton, and because of that, ton jerks repeatedly to clear the
+           collision but ends up vibrating": his question was asked with his hands thrown open, a step behind Ton, and each
+           sweep of a hand into Ton moved Ton off it in that picture and back in the next. Asked with his chatting take, as
+           his line in the Naga film is since R76, his hands stay by him; and the arms' move itself is eased now, c_nav.js) */
         whenReady(cast.jun, (P) => { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, turned ? fmHead(cast.zav, [F.zav.x, 1.6, F.zav.z]) : fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); });
         /* Ton: the wrapped stick at his side; unwrapped and held out on both palms ('give'); back to the doorway */
         whenReady(cast.ton, (P) => {
@@ -14673,6 +14741,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                     /* (R75's debug, F8: their places in the car, 1.6 by 1.5 m: Jun and Ton at its back, his teacher at the doors' right,
                        his own eye at their left, each 0.6 m and more from the next) */
                     inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };
+    /* (R78, Chad: "there is one part in the cutscene with framing issue and the customer model is blocking pho as he sucks in
+       the prais": through the three rooms Mr Koh stood at his place in the hunt, (-9.85, -2.25), 0.71 m in front of the
+       dining room's eye and 12 degrees off its middle, on the same side as his teacher 1.58 m away at 7 degrees: his body
+       filled the shot his teacher draws the smell into the bag in. He watches from the living room's east side now, by the
+       armchair: behind the dining and terrace eyes, and in the living room's shot only on a desktop, 27 degrees out, beyond
+       his teacher and clear of him) */
+    const BT5KOH = [-6.3, -2.2];
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -14766,7 +14841,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         whenReady(cast.koh, (P) => {
           if (!inEyes) { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'koh', t); }
           else if (atLift) fmShow(P, false);
-          else if (t < T.knot) { put(P, -9.85, -2.25, STATION.hunt.koh.ry); fmRest(P, 'koh', t); }
+          else if (t < T.knot) { put(P, BT5KOH[0], BT5KOH[1], faceTo(BT5KOH[0], BT5KOH[1], A.live[0], A.live[1])); fmRest(P, 'koh', t);
+            if (t < T.room2) lookNow(P, fmHead(cast.pho, [A.live[0], 1.55, A.live[1]]), 0.7, 0.7); }
           else { fmShow(P, true); put(P, A.kohWin[0], A.kohWin[1], faceTo(A.kohWin[0], A.kohWin[1], A.phoKoh[0], A.phoKoh[1]));
             fmTalk(P, 'koh', t, T.ko5b1, SECS.ko5b1, 'Talk_with_Hands_Open');
             const bow = smo(c01((t - T.wai) / 0.6)) * (1 - smo(c01((t - T.wai - 1.4) / 0.8)));

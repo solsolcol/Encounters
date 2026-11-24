@@ -9017,7 +9017,13 @@ function tagPaintArrow() {
   const A = tag.cfg && tag.cfg.arrow, B = tag.on ? tag.bodies[tag.played] : null;
   let show = false;
   if (A && B && B.obj && tagLive()) {
-    const o = B.obj.position, y = Number.isFinite(+A.y) ? +A.y : 2.3, q = projectTo(o.x, o.y + y, o.z);
+    /* (v28.0, R80/R81, Chad: "the arrow can be moved downwards even more, so that it is almost right above the head" ...
+       "But give some little space buffer so that any poses that moves the character head wont clip into the arrow": a
+       chapter may name each body's own height, `by: { <id>: metres }`, the highest his head reaches in any take he plays
+       and a little over it; that is also the lowest a HUD in the way may bring the arrow. Absent, `y` for every body, and
+       `head` as before) */
+    const yb = A.by && Number.isFinite(+A.by[B.id]) ? +A.by[B.id] : null;
+    const o = B.obj.position, y = yb != null ? yb : Number.isFinite(+A.y) ? +A.y : 2.3, q = projectTo(o.x, o.y + y, o.z);
     if (q.z <= 1 && Math.abs(q.x) <= 1.05 && Math.abs(q.y) <= 1.05) {
       show = true;
       const x = (q.x * 0.5 + 0.5) * innerWidth, yy0 = (-q.y * 0.5 + 0.5) * innerHeight;
@@ -9028,7 +9034,7 @@ function tagPaintArrow() {
       let yy = yy0;
       const floor = tagHudFloor();
       if (floor > 0 && yy0 - 30 < floor + 6) {
-        const hd = Number.isFinite(+A.head) ? +A.head : y - 0.5, h = projectTo(o.x, o.y + hd, o.z), hy = (-h.y * 0.5 + 0.5) * innerHeight;
+        const hd = yb != null ? yb : Number.isFinite(+A.head) ? +A.head : y - 0.5, h = projectTo(o.x, o.y + hd, o.z), hy = (-h.y * 0.5 + 0.5) * innerHeight;
         yy = Math.min(Math.max(yy0, floor + 36), Math.max(yy0, hy - 2));
       }
       el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px)';
