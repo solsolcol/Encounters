@@ -922,6 +922,29 @@
       Rb.w0 = 0.17 * sz; Rb.w1 = 0.025 * sz; fxRibbonLay(Rb, n);
       const U = Rb.me.material.uniforms; U.uT.value = fxt + B.seed; U.uA.value = a * (B.ai ? 0.8 : 1);
     }
+    /* SWIRLS (R100, build 77): strands of energy spiralling up round a body as its power gathers or is given: three ribbons
+       each, a third of a turn apart, their bright heads climbing from the feet to over the shoulders, their tails wound down
+       behind them. Grandmaster Pho's in gold (the gathering, TOGETHER) or in his student's violet (LEND); his student's own
+       in violet (TOGETHER). The strongest asked for each body this frame is the one drawn (fxSwirlAsk, then fxSwirlFrame
+       at the frame's end); a gathering's strands rise again and again (`cycle`), a gift's once (`rise`) */
+    const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.055, w1: 0.018, heat: 1.45, seed: 1.7 * i + 0.3, ro: 6 })),
+                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.055, w1: 0.018, heat: 1.45, seed: 2.3 * i + 1.1, ro: 6 })), req: { P: null, Z: null } };
+    function fxSwirlAsk(w, g, ramp, k, o) { const q = FXS.req[w]; if (!g || !(k > 0.01) || (q && q.k >= k)) return; FXS.req[w] = { g, ramp, k: Math.min(1, k), o }; }
+    function fxSwirlFrame(fxt) {
+      for (const w of ['P', 'Z']) {
+        const q = FXS.req[w], S3 = FXS[w]; FXS.req[w] = null;
+        if (!q || !fxOn('head')) { for (const Rb of S3) if (Rb.me.visible) Rb.me.visible = false; continue; }
+        const o = q.o;
+        for (let j = 0; j < 3; j++) {
+          const Rb = S3[j], rise = o.cycle ? (((fxt * o.cycle + j / 3) % 1) + 1) % 1 : c01(o.rise - j * 0.08);
+          const a0 = fxt * o.spin + j * 2.0944, yH = o.h0 + (o.h1 - o.h0) * rise, n = FXRB_N;
+          for (let i = 0; i < n; i++) { const u = i / (n - 1), y = Math.max(o.h0, yH - u * o.len), a = a0 - u * o.turns * 6.2832, r = o.r * (1 + 0.3 * u);
+            Rb.pts[i].set(q.g.x + Math.cos(a) * r, y, q.g.z + Math.sin(a) * r); }
+          fxRibbonLay(Rb, n); fxRampSet(Rb.me.material, q.ramp);
+          const U = Rb.me.material.uniforms; U.uT.value = fxt * 1.4 + j * 1.7; U.uA.value = q.k * (o.cycle ? Math.sin(Math.PI * rise) : 1);
+        }
+      }
+    }
 
     /* ---------------------------------------------------------------- THE BUTTONS' PICTURES (drawn things, each in its
        act's own colour so a phone reads the act at a glance; no person is drawn: v21.16) */
@@ -1357,6 +1380,8 @@
       if (wind > 0 && pw) { fsGatherRing.visible = true; fsGatherRing.position.set(pw.x, 0.021, pw.z); const r = 2.6 - 1.9 * wind; fsGatherRing.scale.set(r * 2, 1, r * 2); fsGatherRing.material.opacity = 0.35 + 0.5 * wind;
         fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.22 + 0.38 * wind;
         /* (R94 E3: and a ring of golden flame round him, closing in with the ring and rising as the gold gathers) */
+        /* (R100, build 77: and gold strands spiralling up round him, tighter as it gathers) */
+        fxSwirlAsk('P', pw, 'gold', 0.35 + 0.6 * wind, { r: 0.85 - 0.3 * wind, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.1, spin: 3.2, cycle: 0.9 });
         { const F = FXR.gather; F.visible = fxOn('head'); if (F.visible) { const U = F.material.uniforms; F.position.set(pw.x, 0, pw.z); F.scale.set(r, 0.35 + 1.25 * wind * wind, r);
           U.uF.value = fxt * 34; U.uA.value = 0.2 + 0.7 * wind; } }
         if (wdt > 0) { const rr = FS5.srand || Math.random, to = { x: fsGoldHalo.position.x, y: fsGoldHalo.position.y, z: fsGoldHalo.position.z, k: 3.2 };
@@ -1411,11 +1436,15 @@
       if (FXR.lendT >= 0) { FXR.lendT += wdt; const u = FXR.lendT / 1.4, F = FXR.lend, P = cast.pho;
         F.visible = u < 1 && !!P && fxOn('head'); if (u >= 1) FXR.lendT = -1;
         if (F.visible) { const g = P.group.position, U = F.material.uniforms, rr = 0.55 + 0.1 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.2 * (0.55 + 0.45 * Math.min(1, u / 0.25)), rr);
-          U.uF.value = fxt * 36; U.uA.value = 0.75 * Math.min(1, u / 0.12) * (1 - smo(c01((u - 0.55) / 0.45))); } }
+          U.uF.value = fxt * 36; U.uA.value = 0.75 * Math.min(1, u / 0.12) * (1 - smo(c01((u - 0.55) / 0.45)));
+          /* (R100, build 77: his student's violet climbing round him in strands) */
+          fxSwirlAsk('P', g, 'violet', 1.25 * U.uA.value, { r: 0.6, h0: 0.05, h1: 2.3, len: 1.3, turns: 1.3, spin: 4.0, rise: Math.min(1, u * 1.6) }); } }
       if (FXR.togT >= 0) { FXR.togT += wdt; const u = FXR.togT / 1.3, on = u < 1 && fxOn('head'); if (u >= 1) FXR.togT = -1;
         for (const [F, P] of [[FXR.togP, cast.pho], [FXR.togZ, cast.zav]]) { F.visible = on && !!P; if (!F.visible) continue;
           const g = P.group.position, U = F.material.uniforms, rr = 0.6 + 0.5 * u; F.position.set(g.x, 0, g.z); F.scale.set(rr, 2.6 * (0.5 + 0.5 * Math.min(1, u / 0.2)), rr);
-          U.uF.value = fxt * 38; U.uA.value = 0.8 * Math.min(1, u / 0.1) * (1 - smo(c01((u - 0.5) / 0.5))); } }
+          U.uF.value = fxt * 38; U.uA.value = 0.8 * Math.min(1, u / 0.1) * (1 - smo(c01((u - 0.5) / 0.5)));
+          /* (R100, build 77: strands climbing round each, gold round him, violet round his student) */
+          fxSwirlAsk(F === FXR.togP ? 'P' : 'Z', g, F === FXR.togP ? 'gold' : 'violet', 1.2 * U.uA.value, { r: 0.7, h0: 0.05, h1: 2.6, len: 1.4, turns: 1.4, spin: 4.5, rise: Math.min(1, u * 1.8) }); } }
       FS5.flare = Math.max(0, FS5.flare - wdt * 2.2);
       /* the streaks: drawn to his mouth, and down into the bag (gold when the gold gathers it) */
       for (const S of fsStreaks) {
@@ -1452,7 +1481,7 @@
         if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * 24) fsSpark(s.position.x, 0.5 + rr() * 1.1, s.position.z, { vx: dx / d * (0.4 + rr() * 0.6), vy: (rr() - 0.4) * 1.2, vz: dz / d * (0.4 + rr() * 0.6), life: 0.22 + 0.15 * rr(), s0: 0.05, col: rr() < 0.3 ? 0xffffff : FS_COL.violet, grav: -1, drag: 3 }); } });
       fsPtsFrame(wdt);
       fxStreakFrame(wdt);
-      fxlFrame(); fxbFrame();
+      fxSwirlFrame(fxt); fxlFrame(); fxbFrame();
     }
 
     /* ---------------------------------------------------------------- THE TWO OF THEM: their takes, their faces */
@@ -2008,7 +2037,7 @@
       for (const C of fsPillars) C.t = -1; fsWaveFlash.t = -1; fsRayState.t = -1; for (const B of fsBeams) B.t = -1; for (const L of fsLockRings) L.t = -1; fsBreath.t = -1;
       for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null; fsShardsClear(); FXR.lendT = FXR.togT = -1;
       for (const o of FSG.children) o.visible = false;
-      fxbMesh.visible = fxlHook.visible = true; fxbClear(); FXL5.U.uFxlN.value = 0; for (const B of fsBalls) B.rbEnd = -1;
+      fxbMesh.visible = fxlHook.visible = true; fxbClear(); FXL5.U.uFxlN.value = 0; for (const B of fsBalls) B.rbEnd = -1; FXS.req.P = FXS.req.Z = null;
     }
 
     /* ---------------------------------------------------------------- ONE STEP OF THE FIGHT, from the part */
