@@ -9493,8 +9493,9 @@ What the baseline contains, by release:
   Netlify every deploy. Then R88 to R90 (24 Nov): the peacock-feather fan out of Grandmaster Pho's hand in the final
   rite (the water from his own raised hand), the twenty pieces laid in a centred grid on the cloth's measured top, and
   in Spirit Vision a thin red and green smoke rising out of the two pieces in place of the red knot and the green tube
-  (photographed on a phone at builds 67 and 68 and corrected twice before it went live). Live: build 69, deploy
-  `6b0517a4dbb7e90b53db297a`, 661 of 661 served files byte-identical.
+  (photographed on a phone at builds 67 and 68 and corrected twice before it went live). Then R92, "Change the doll to smoke too": the pale
+  sphere over the effigy a pale smoke as well, leaning toward him. Live: build 70, deploy `6b0525b69efd908421c2b415`,
+  661 of 661 served files byte-identical.
 
 ## The sheet, version by version
 
