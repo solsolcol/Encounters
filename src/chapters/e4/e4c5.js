@@ -14519,6 +14519,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (R76's limbs check: talking with his hands open, a step behind the two in his doorway, his hands went into Ton's thigh
            and Jun's arm (7 cm); his chatting take keeps them nearer him) */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry); fmTalk(P, 'koh', tau, T.ko5c2, SECS.ko5c2 || 2.6, 'Stand_and_Chat'); });
+        /* (R75's debug: as he speaks, Mr Koh looks out to his teacher and the stick that burst with light, and Ton turns to Mr Koh,
+           each carried over 0.6 s: neither film had directed them, so through the line Ton stared into the lens, smiling, and
+           Mr Koh spoke to the floor at his left) */
+        { const kl = smo(c01((tau - T.ko5c2 + 0.6) / 0.6));
+          if (kl > 0.001) { whenReady(cast.koh, (P) => lookNow(P, fmHead(cast.pho, [pz.x, 1.5, pz.z]), 0.75 * kl, 0.7));
+            whenReady(cast.ton, (P) => lookNow(P, fmHead(cast.koh, [STATION.fight.koh.x, 1.6, STATION.fight.koh.z]), 0.8 * kl, 0.7)); } }
         /* THE LENS (its keys in story seconds: a held pierce holds the picture with it) */
         this.lens(tau, T, B, HEADAT);
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
@@ -14551,7 +14557,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (and from 4.4 m up, behind his left shoulder: from 3.0 m the pan's end looked through his head at the third of them, his
            head and back in the middle of a phone's frame; from here he stands below the three on both shapes and out of a
            phone's first frame, measured by tools/probes/threeaim.mjs) */
-        const THREE_A = cw(-1.0, 0.35, -1.45), THREE_B = cw(1.0, 0.35, -1.35);
+        /* (B 0.65 m, was 1.0: photographed on a phone, the middle one by the door stood half out of its left edge at 1.0) */
+        const THREE_A = cw(-1.0, 0.35, -1.45), THREE_B = cw(0.65, 0.35, -1.35);
         const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
         const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
         /* (R75's lab, 23 Nov, each candidate photographed full size on a phone before it was written here: the three pierces
@@ -14597,10 +14604,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.tail + 1.0, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
           { t: T.tail + 1.05, name: 'three', eye: THREE_EYE, at: THREE_A, fp: 56, fd: 50, cut: true },
           { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_B, fp: 55, fd: 49 },
-          /* (R75's debug: his line seen between Ton and Jun, 0.35 m east: from straight in front Ton's head and shoulder hid 38 % of
-             his face on a phone and 36 % on a desktop, Ton's smile the picture's while Mr Koh spoke) */
-          { t: T.ko5c2, name: 'door', eye: [-7.95, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
-          { t: T.back - 0.05, name: 'door', eye: [-7.95, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
+          /* (R75's debug: straight in, as it was: 0.35 m east, the doorway's east jamb covered half of him on a phone, photographed;
+             his face was clear of Ton's head from here, and the two of them are now directed, below) */
+          { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
+          { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);

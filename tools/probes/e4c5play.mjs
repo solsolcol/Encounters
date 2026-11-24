@@ -4,7 +4,7 @@
    (SMELL, the eye), CDP touch events with their own timestamps. Where he walks is set (the walk test walks the ground; this
    probe tests what is pressed and said). A picture at every beat; the story's state, the lines heard and the objective
    written beside it (OUT/log.txt). Every page error and console error is kept.
-     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] node tools/probes/e4c5play.mjs */
+     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] [OPT=A|B|C|D] node tools/probes/e4c5play.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -133,6 +133,31 @@ if (PART.includes('table')) {
   await wait(() => window.__enc.stage.info().heard.includes('co5t6'), null); await pic('table-question');
   await wait(() => window.__enc.getState() === 'decide', null, 120).then(() => log('decision open')).catch(() => log('  no decision'));
   await frames(4); await pic('table-decision');
+  /* (R75's debug: OPT=A|B|C|D: the decision's card tapped by a finger once its panel has settled, the ending WATCHED whole by its
+     own clock, a picture every 5 s of it, then the outcome card; every voice against the one before it, every cue from its
+     sample) */
+  const OPT = process.env.OPT, OPT_I = OPT ? 'ABCD'.indexOf(OPT) : -1;
+  if (OPT_I >= 0) {
+    await p.waitForFunction(() => { const P = document.querySelector('#decide .panel'); return P && P.getAnimations().every(a => a.playState === 'finished'); }, null, { timeout: 120000, polling: 200 }).catch(() => {});
+    const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')]; const r = B[i] && B[i].getBoundingClientRect();
+      return { n: B.length, txt: B[i] ? B[i].textContent.trim().slice(0, 60) : null, at: r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null }; }, OPT_I);
+    if (bt.at) await p.touchscreen.tap(bt.at.x, bt.at.y); log('decision: tapped', OPT, JSON.stringify(bt.txt), 'of', bt.n);
+    await wait(() => window.__enc.getState() === 'cine', null, 120).catch(() => log('  no ending film'));
+    let nextPic = 0, dur = 0;
+    for (;;) { const c = await p.evaluate(() => { const E = window.__enc, on = E.cine && E.cine.active(); return { st: E.getState(), t: on ? E.cine.t() : null, dur: on ? E.cine.dur() : null }; });
+      if (c.st !== 'cine') break; if (c.dur) dur = c.dur;
+      if (c.t !== null && c.t >= nextPic) { await pic('end' + OPT + '-' + String(Math.round(c.t)).padStart(3, '0')); nextPic = Math.floor(c.t / 5) * 5 + 5; }
+      await new Promise(r => setTimeout(r, 400)); }
+    log('ending film over', dur ? 'of ' + dur.toFixed(1) + ' s' : '');
+    await wait(() => ['result', 'complete'].includes(window.__enc.getState()), null, 300).then(() => log('the card')).catch(() => log('  NO CARD'));
+    await new Promise(r => setTimeout(r, 2500)); await pic('end' + OPT + '-card');
+    const V = await p.evaluate(() => window.__enc.voices ? window.__enc.voices() : []), over = [];
+    for (let i = 1; i < V.length; i++) { const a = V[i - 1], c = V[i], aEnd = a.t1 === null ? Infinity : a.t1; if (c.t0 < aEnd - 0.05 && c.t0 >= a.t0) over.push(a.name + ' x ' + c.name); }
+    log('VOICES', V.length, over.length ? 'OVERLAPS: ' + over.join('; ') : 'none over another');
+    const cues = await p.evaluate(() => window.__enc.stings ? window.__enc.stings().map(s => s.kind + (s.how === 'sample' ? '' : '(' + s.how + ')')) : []);
+    const silent = cues.filter(c => /\(/.test(c)); log('CUES', cues.length, silent.length ? 'NOT FROM A SAMPLE: ' + silent.join(' ') : 'every one from its sample');
+    if (over.length) errs.push('VOICE OVER VOICE ' + over.join('; '));
+  }
 }
 log('errors', errs.length ? errs.join('\n') : 'none');
 await b.close(); process.exit(errs.length ? 1 : 0);
