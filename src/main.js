@@ -8713,6 +8713,25 @@ function tagEls() {
   return tag.el;
 }
 function tagRing(c, k) { if (c) c.style.strokeDashoffset = (TAG_RING_C * (1 - Math.max(0, Math.min(1, k)))).toFixed(1); }
+/* v28.0 (R110, 24 Nov 2026: Chad, "many ability buttons have the text misaligned or overflowing the button area. Fix it"):
+   an act's word is FITTED to its own round button. Its font is the stylesheet's (.tgLbl, .long), and where the word laid
+   out at that size is wider than the button's circle at the word's height (the chord there: 78% of the button across the
+   middle, 66% low over a picture's dark foot), the font is scaled down to fit, never under 55% of the stylesheet's; the
+   letters' spacing goes down with it. Measured once a word and a size (a word, a button's width, a picture or none), so a
+   frame does no layout; a button not drawn yet (no width) is fitted the first frame it is. A word that already fits is
+   left exactly as the stylesheet sets it (its inline size cleared) */
+function tagFitLbl(b, art) {
+  const L = b && b.lbl, el = b && b.el; if (!L || !el) return;
+  const w = el.clientWidth; if (!(w > 0)) return;
+  const key = (b.lblOf || '') + '|' + w + '|' + (art ? 1 : 0);
+  if (b.fitOf === key) return;
+  b.fitOf = key;
+  L.style.fontSize = ''; L.style.letterSpacing = '';
+  const need = L.scrollWidth, room = w * (art ? 0.66 : 0.78);
+  if (!(need > room)) return;
+  const base = parseFloat(getComputedStyle(L).fontSize) || 12, k = Math.max(0.55, room / need);
+  L.style.fontSize = (base * k).toFixed(2) + 'px'; L.style.letterSpacing = '0.01em';
+}
 function tagPaintBtn(b, a, st) {
   if (!b) return;
   if (!a || !st || st.hidden) { if (b.sig !== '-') { b.sig = '-'; b.el.classList.add('hide'); } return; }
@@ -8739,7 +8758,8 @@ function tagPaintBtn(b, a, st) {
   if (sig === b.sig) return;
   b.sig = sig;
   cl.remove('hide');
-  if (b.lblOf !== label) { b.lblOf = label; if (b.lbl) b.lbl.textContent = label; b.el.setAttribute('aria-label', label || a.id); cl.toggle('long', label.length > 7); }
+  if (b.lblOf !== label) { b.lblOf = label; if (b.lbl) b.lbl.textContent = label; b.el.setAttribute('aria-label', label || a.id); cl.toggle('long', label.length > 7); b.fitOf = ''; }
+  tagFitLbl(b, !!art);
   const kn = tagKeyName(a.key);
   if (b.keyOf !== kn) { b.keyOf = kn; if (b.kbd) b.kbd.textContent = kn; cl.toggle('noKey', !kn); }
   cl.toggle('blocked', !!st.blocked); cl.toggle('pulse', !!st.pulse && !st.blocked); cl.toggle('on', !!st.on);
@@ -11528,9 +11548,9 @@ const ADULT_TAKES = new Set([
   /* E4C4 ADULT END */
   /* E4C5 ADULT BEGIN: v28.0, episode 4 chapter 5 (masters/v28.0/voices/install.py) */
   'q5o1', 'q5o2', 'q5w1', 'q5w2', 'q5w3', 'q5w4', 'q5h1', 'q5h2', 'q5h3', 'q5h4',
-  'q5h5', 'q5p1', 'q5c0', 'q5c1', 'q5c2', 'q5c3', 'q5c4', 'q5c5', 'q5b1', 'q5b2',
-  'q5t1', 'q5A1', 'q5A2', 'q5B1', 'q5B2', 'q5C1', 'q5D1', 'q5z1', 'q5A', 'q5B',
-  'q5C', 'q5D',
+  'q5h5', 'q5p1', 'q5fb1', 'q5fw1', 'q5c0', 'q5c1', 'q5c2', 'q5c3', 'q5c4', 'q5c5',
+  'q5b1', 'q5b2', 'q5t1', 'q5A1', 'q5A2', 'q5B1', 'q5B2', 'q5C1', 'q5D1', 'q5z1',
+  'q5A', 'q5B', 'q5C', 'q5D',
   /* E4C5 ADULT END */]);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
@@ -11639,18 +11659,18 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'ph5w5', 'tn5w3', 'ph5w6', 'ph5w7', 'tn5w4', 'ko5d1', 'ko5d2', 'ko5d3', 'ko5d4', 'ph5d1',
   'ph5d2', 'ph5h1', 'ph5h2', 'ph5h3', 'ph5h4', 'ph5h5', 'ph5h6', 'ph5h7', 'ph5v1', 'ph5v2',
   'ph5p1', 'ko5p1', 'ph5p2', 'ph5f0', 'ph5f1', 'ph5f2', 'ph5f4', 'ph5f5', 'ph5f6', 'ph5f8',
-  'ph5f9', 'ph5f10', 'ph5fa', 'ph5fc', 'ph5fd', 'ph5fe', 'ph5fi', 'ph5fj', 'ph5fh', 'ph5na1',
-  'ph5na2', 'ph5na3', 'ph5nb1', 'ph5nb2', 'ph5nc2', 'ph5nc3', 'ph5nd2', 'ph5nd3', 'ph5ne1', 'ph5ng1',
-  'ph5ng2', 'ph5nh1', 'ph5nh2', 'ph5ni1', 'ph5ni2', 'ph5nj1', 'ph5nj2', 'ph5nk1', 'ph5nk2', 'ph5nl1',
-  'ph5nl2', 'ph5nl3', 'ph5no1', 'ph5no2', 'ph5np1', 'ph5nq1', 'ph5nr1', 'ph5nr2', 'ph5ns2', 'ph5ns3',
-  'ph5nt1', 'ph5nt2', 'ph5nu1', 'ph5nu2', 'ph5nv1', 'ph5nv2', 'ph5nv3', 'ph5nw1', 'ph5nw2', 'ph5nx1',
-  'ph5nx2', 'ph5g1', 'ph5g2', 'ph5g3', 'ph5g4', 'ph5ca', 'ph5cb', 'ph5c1', 'ph5c2', 'ph5c3',
-  'ph5c4', 'ph5l1', 'ph5l2', 'tn5c0', 'ko5c1', 'tn5c1', 'ju5c1', 'tn5c2', 'ju5c2', 'ko5c2',
-  'tn5c3', 'tn5b1', 'ko5b1', 'ph5b1', 'ph5b2', 'ph5b3', 'ph5b4', 'ph5b5', 'ju5b1', 'ph5b6',
-  'co5t1', 'co5t2', 'ph5t1', 'ph5t2', 'ph5t3', 'co5t3', 'ph5t4', 'co5t4', 'co5t5', 'co5t6',
-  'ph5t5', 'ph5t6', 'co5t7', 'co5A1', 'co5A2', 'ph5A1', 'ph5A2', 'co5B1', 'co5B2', 'co5B3',
-  'co5B4', 'co5B5', 'ph5B1', 'co5C1', 'ph5C1', 'co5C2', 'ph5C2', 'co5D1', 'ph5D1', 'ph5D2',
-  'co5z1',
+  'ph5f9', 'ph5f10', 'ph5fa', 'ph5fc', 'ph5fd', 'ph5fe', 'ph5fi', 'ph5fj', 'ph5fh', 'ph5fb1',
+  'ph5fb2', 'ph5na1', 'ph5na2', 'ph5na3', 'ph5nb1', 'ph5nb2', 'ph5nc2', 'ph5nc3', 'ph5nd2', 'ph5nd3',
+  'ph5ne1', 'ph5ng1', 'ph5ng2', 'ph5nh1', 'ph5nh2', 'ph5ni1', 'ph5ni2', 'ph5nj1', 'ph5nj2', 'ph5nk1',
+  'ph5nk2', 'ph5nl1', 'ph5nl2', 'ph5nl3', 'ph5no1', 'ph5no2', 'ph5np1', 'ph5nq1', 'ph5nr1', 'ph5nr2',
+  'ph5ns2', 'ph5ns3', 'ph5nt1', 'ph5nt2', 'ph5nu1', 'ph5nu2', 'ph5nv1', 'ph5nv2', 'ph5nv3', 'ph5nw1',
+  'ph5nw2', 'ph5nx1', 'ph5nx2', 'ph5g1', 'ph5g2', 'ph5g3', 'ph5g4', 'ph5ca', 'ph5cb', 'ph5c1',
+  'ph5c2', 'ph5c3', 'ph5c4', 'ph5l1', 'ph5l2', 'tn5c0', 'ko5c1', 'tn5c1', 'ju5c1', 'tn5c2',
+  'ju5c2', 'ko5c2', 'tn5c3', 'tn5b1', 'ko5b1', 'ph5b1', 'ph5b2', 'ph5b3', 'ph5b4', 'ph5b5',
+  'ju5b1', 'ph5b6', 'co5t1', 'co5t2', 'ph5t1', 'ph5t2', 'ph5t3', 'co5t3', 'ph5t4', 'co5t4',
+  'co5t5', 'co5t6', 'ph5t5', 'ph5t6', 'co5t7', 'co5A1', 'co5A2', 'ph5A1', 'ph5A2', 'co5B1',
+  'co5B2', 'co5B3', 'co5B4', 'co5B5', 'ph5B1', 'co5C1', 'ph5C1', 'co5C2', 'ph5C2', 'co5D1',
+  'ph5D1', 'ph5D2', 'co5z1',
   /* E4C5 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -16823,31 +16843,31 @@ const STING_SAMPLE = {
   ph5f0: ['ph5f0', 1], ph5f1: ['ph5f1', 1], ph5f2: ['ph5f2', 1], ph5f4: ['ph5f4', 1], ph5f5: ['ph5f5', 1],
   ph5f6: ['ph5f6', 1], ph5f8: ['ph5f8', 1], ph5f9: ['ph5f9', 1], ph5f10: ['ph5f10', 1], ph5fa: ['ph5fa', 1],
   ph5fc: ['ph5fc', 1], ph5fd: ['ph5fd', 1], ph5fe: ['ph5fe', 1], ph5fi: ['ph5fi', 1], ph5fj: ['ph5fj', 1],
-  ph5fh: ['ph5fh', 1], ph5na1: ['ph5na1', 1], ph5na2: ['ph5na2', 1], ph5na3: ['ph5na3', 1], ph5nb1: ['ph5nb1', 1],
-  ph5nb2: ['ph5nb2', 1], ph5nc2: ['ph5nc2', 1], ph5nc3: ['ph5nc3', 1], ph5nd2: ['ph5nd2', 1], ph5nd3: ['ph5nd3', 1],
-  ph5ne1: ['ph5ne1', 1], ph5ng1: ['ph5ng1', 1], ph5ng2: ['ph5ng2', 1], ph5nh1: ['ph5nh1', 1], ph5nh2: ['ph5nh2', 1],
-  ph5ni1: ['ph5ni1', 1], ph5ni2: ['ph5ni2', 1], ph5nj1: ['ph5nj1', 1], ph5nj2: ['ph5nj2', 1], ph5nk1: ['ph5nk1', 1],
-  ph5nk2: ['ph5nk2', 1], ph5nl1: ['ph5nl1', 1], ph5nl2: ['ph5nl2', 1], ph5nl3: ['ph5nl3', 1], ph5no1: ['ph5no1', 1],
-  ph5no2: ['ph5no2', 1], ph5np1: ['ph5np1', 1], ph5nq1: ['ph5nq1', 1], ph5nr1: ['ph5nr1', 1], ph5nr2: ['ph5nr2', 1],
-  ph5ns2: ['ph5ns2', 1], ph5ns3: ['ph5ns3', 1], ph5nt1: ['ph5nt1', 1], ph5nt2: ['ph5nt2', 1], ph5nu1: ['ph5nu1', 1],
-  ph5nu2: ['ph5nu2', 1], ph5nv1: ['ph5nv1', 1], ph5nv2: ['ph5nv2', 1], ph5nv3: ['ph5nv3', 1], ph5nw1: ['ph5nw1', 1],
-  ph5nw2: ['ph5nw2', 1], ph5nx1: ['ph5nx1', 1], ph5nx2: ['ph5nx2', 1], ph5g1: ['ph5g1', 1], ph5g2: ['ph5g2', 1],
-  ph5g3: ['ph5g3', 1], ph5g4: ['ph5g4', 1], ph5ca: ['ph5ca', 1], ph5cb: ['ph5cb', 1], ph5c1: ['ph5c1', 1],
-  ph5c2: ['ph5c2', 1], ph5c3: ['ph5c3', 1], ph5c4: ['ph5c4', 1], ph5l1: ['ph5l1', 1], ph5l2: ['ph5l2', 1],
-  q5c0: ['q5c0', 1], q5c1: ['q5c1', 1], q5c2: ['q5c2', 1], q5c3: ['q5c3', 1], q5c4: ['q5c4', 1], q5c5: ['q5c5', 1],
-  tn5c0: ['tn5c0', 1], ko5c1: ['ko5c1', 1], tn5c1: ['tn5c1', 1], ju5c1: ['ju5c1', 1], tn5c2: ['tn5c2', 1],
-  ju5c2: ['ju5c2', 1], ko5c2: ['ko5c2', 1], tn5c3: ['tn5c3', 1], tn5b1: ['tn5b1', 1], q5b1: ['q5b1', 1],
-  ko5b1: ['ko5b1', 1], ph5b1: ['ph5b1', 1], ph5b2: ['ph5b2', 1], ph5b3: ['ph5b3', 1], q5b2: ['q5b2', 1],
-  ph5b4: ['ph5b4', 1], ph5b5: ['ph5b5', 1], ju5b1: ['ju5b1', 1], ph5b6: ['ph5b6', 1], co5t1: ['co5t1', 1],
-  co5t2: ['co5t2', 1], q5t1: ['q5t1', 1], ph5t1: ['ph5t1', 1], ph5t2: ['ph5t2', 1], ph5t3: ['ph5t3', 1],
-  co5t3: ['co5t3', 1], ph5t4: ['ph5t4', 1], co5t4: ['co5t4', 1], co5t5: ['co5t5', 1], co5t6: ['co5t6', 1],
-  ph5t5: ['ph5t5', 1], ph5t6: ['ph5t6', 1], co5t7: ['co5t7', 1], co5A1: ['co5A1', 1], q5A1: ['q5A1', 1],
-  co5A2: ['co5A2', 1], ph5A1: ['ph5A1', 1], ph5A2: ['ph5A2', 1], q5A2: ['q5A2', 1], co5B1: ['co5B1', 1],
-  co5B2: ['co5B2', 1], co5B3: ['co5B3', 1], co5B4: ['co5B4', 1], co5B5: ['co5B5', 1], q5B1: ['q5B1', 1],
-  ph5B1: ['ph5B1', 1], q5B2: ['q5B2', 1], co5C1: ['co5C1', 1], ph5C1: ['ph5C1', 1], co5C2: ['co5C2', 1],
-  ph5C2: ['ph5C2', 1], q5C1: ['q5C1', 1], co5D1: ['co5D1', 1], ph5D1: ['ph5D1', 1], ph5D2: ['ph5D2', 1],
-  q5D1: ['q5D1', 1], co5z1: ['co5z1', 1], q5z1: ['q5z1', 1], q5A: ['q5A', 1], q5B: ['q5B', 1], q5C: ['q5C', 1],
-  q5D: ['q5D', 1],
+  ph5fh: ['ph5fh', 1], q5fb1: ['q5fb1', 1], ph5fb1: ['ph5fb1', 1], ph5fb2: ['ph5fb2', 1], q5fw1: ['q5fw1', 1],
+  ph5na1: ['ph5na1', 1], ph5na2: ['ph5na2', 1], ph5na3: ['ph5na3', 1], ph5nb1: ['ph5nb1', 1], ph5nb2: ['ph5nb2', 1],
+  ph5nc2: ['ph5nc2', 1], ph5nc3: ['ph5nc3', 1], ph5nd2: ['ph5nd2', 1], ph5nd3: ['ph5nd3', 1], ph5ne1: ['ph5ne1', 1],
+  ph5ng1: ['ph5ng1', 1], ph5ng2: ['ph5ng2', 1], ph5nh1: ['ph5nh1', 1], ph5nh2: ['ph5nh2', 1], ph5ni1: ['ph5ni1', 1],
+  ph5ni2: ['ph5ni2', 1], ph5nj1: ['ph5nj1', 1], ph5nj2: ['ph5nj2', 1], ph5nk1: ['ph5nk1', 1], ph5nk2: ['ph5nk2', 1],
+  ph5nl1: ['ph5nl1', 1], ph5nl2: ['ph5nl2', 1], ph5nl3: ['ph5nl3', 1], ph5no1: ['ph5no1', 1], ph5no2: ['ph5no2', 1],
+  ph5np1: ['ph5np1', 1], ph5nq1: ['ph5nq1', 1], ph5nr1: ['ph5nr1', 1], ph5nr2: ['ph5nr2', 1], ph5ns2: ['ph5ns2', 1],
+  ph5ns3: ['ph5ns3', 1], ph5nt1: ['ph5nt1', 1], ph5nt2: ['ph5nt2', 1], ph5nu1: ['ph5nu1', 1], ph5nu2: ['ph5nu2', 1],
+  ph5nv1: ['ph5nv1', 1], ph5nv2: ['ph5nv2', 1], ph5nv3: ['ph5nv3', 1], ph5nw1: ['ph5nw1', 1], ph5nw2: ['ph5nw2', 1],
+  ph5nx1: ['ph5nx1', 1], ph5nx2: ['ph5nx2', 1], ph5g1: ['ph5g1', 1], ph5g2: ['ph5g2', 1], ph5g3: ['ph5g3', 1],
+  ph5g4: ['ph5g4', 1], ph5ca: ['ph5ca', 1], ph5cb: ['ph5cb', 1], ph5c1: ['ph5c1', 1], ph5c2: ['ph5c2', 1],
+  ph5c3: ['ph5c3', 1], ph5c4: ['ph5c4', 1], ph5l1: ['ph5l1', 1], ph5l2: ['ph5l2', 1], q5c0: ['q5c0', 1],
+  q5c1: ['q5c1', 1], q5c2: ['q5c2', 1], q5c3: ['q5c3', 1], q5c4: ['q5c4', 1], q5c5: ['q5c5', 1], tn5c0: ['tn5c0', 1],
+  ko5c1: ['ko5c1', 1], tn5c1: ['tn5c1', 1], ju5c1: ['ju5c1', 1], tn5c2: ['tn5c2', 1], ju5c2: ['ju5c2', 1],
+  ko5c2: ['ko5c2', 1], tn5c3: ['tn5c3', 1], tn5b1: ['tn5b1', 1], q5b1: ['q5b1', 1], ko5b1: ['ko5b1', 1],
+  ph5b1: ['ph5b1', 1], ph5b2: ['ph5b2', 1], ph5b3: ['ph5b3', 1], q5b2: ['q5b2', 1], ph5b4: ['ph5b4', 1],
+  ph5b5: ['ph5b5', 1], ju5b1: ['ju5b1', 1], ph5b6: ['ph5b6', 1], co5t1: ['co5t1', 1], co5t2: ['co5t2', 1],
+  q5t1: ['q5t1', 1], ph5t1: ['ph5t1', 1], ph5t2: ['ph5t2', 1], ph5t3: ['ph5t3', 1], co5t3: ['co5t3', 1],
+  ph5t4: ['ph5t4', 1], co5t4: ['co5t4', 1], co5t5: ['co5t5', 1], co5t6: ['co5t6', 1], ph5t5: ['ph5t5', 1],
+  ph5t6: ['ph5t6', 1], co5t7: ['co5t7', 1], co5A1: ['co5A1', 1], q5A1: ['q5A1', 1], co5A2: ['co5A2', 1],
+  ph5A1: ['ph5A1', 1], ph5A2: ['ph5A2', 1], q5A2: ['q5A2', 1], co5B1: ['co5B1', 1], co5B2: ['co5B2', 1],
+  co5B3: ['co5B3', 1], co5B4: ['co5B4', 1], co5B5: ['co5B5', 1], q5B1: ['q5B1', 1], ph5B1: ['ph5B1', 1],
+  q5B2: ['q5B2', 1], co5C1: ['co5C1', 1], ph5C1: ['ph5C1', 1], co5C2: ['co5C2', 1], ph5C2: ['ph5C2', 1],
+  q5C1: ['q5C1', 1], co5D1: ['co5D1', 1], ph5D1: ['ph5D1', 1], ph5D2: ['ph5D2', 1], q5D1: ['q5D1', 1],
+  co5z1: ['co5z1', 1], q5z1: ['q5z1', 1], q5A: ['q5A', 1], q5B: ['q5B', 1], q5C: ['q5C', 1], q5D: ['q5D', 1],
   /* E4C5 VOICES END */
   /* E4C5 FX BEGIN: v28.0, its effects, beds and music (masters/v28.0/sound/install.py) */
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
@@ -20201,7 +20221,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                    ? { decl: !!vis.decl, on: vis.on, r: +vis.r.toFixed(3), k: +vis.k.toFixed(3), dir: vis.dir, drawn: vis.drawn, switches: vis.switches,
                        wt: +vis.wt.toFixed(3), r0: +vis.r0.toFixed(3), ldir: vis.ldir,
                        ok: vis.fx ? !!vis.fx.state.ok : null, err: vis.fx && vis.fx.state ? vis.fx.state.err || null : null,
-                       float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0 }
+                       float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0,
+                       msrtt: vis.fx ? !!vis.fx.msrtt : null, world: vis.fx && vis.fx.worldPath ? vis.fx.worldPath() : null }
                    : kitVision(v)),
                  visionToggle,
                  /* (R105) the probes' STILL of the wave: { t, dir, r0, age } puts it where it would be t seconds into a wave
