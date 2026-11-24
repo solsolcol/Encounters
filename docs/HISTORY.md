@@ -9506,7 +9506,13 @@ What the baseline contains, by release:
   violet flame round Pho, the bag's streaks comet-headed and a pale burst into the bag, TOGETHER gold and violet round
   the two of them, six more layered sounds; live at build 74 (build 73's columns hid the two men and were remade to
   flame at their edges). The box: 147.34 credits. Ending C's small pale thing a pale smoke (R98). R99 answered: what the
-  box made faster and what it did not. Live: build 74, deploy `6b054e41cdd7597acbf2f093`.
+  box made faster and what it did not. R100 ("it still looks simplistic to me, not quite AAA game quality") answered
+  honestly (the box made the simulations and the photographs fast; the look is the game's drawing) and carried on without
+  asking (R98): the effects' own light on the court, the two of them and the nine (four lights of the fight's own in every
+  lit surface, no scene light added), a bloom of the frame's saturated brights, a hit's radial blur with its colours split
+  and the gold's ripple along the wheel's rim, ribbons of flame behind the fireballs and pale ones behind the bag's
+  streaks; photographed here, no box (build 75's gold hid Pho in white: tuned at build 76). R101 answered from the
+  account: the box 147.34 credits, about $7.50 to $12.50. Live: build 76, deploy `6b0565ac17b769151678fcb3`.
 
 ## The sheet, version by version
 

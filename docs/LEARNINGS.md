@@ -9037,3 +9037,26 @@ in a script file and kill by its name, or by a pid file.
 shockwave's ring of flame passing a metre under the lens and LEND's and TOGETHER's columns drawn whole were walls of white
 in the photographs. Effects fade with the depth from the lens (a card within 2.2 m, the wheel within 4 m), and a column
 round someone flames at its silhouette and thins on the face it turns to the eye (a fresnel), so the body inside stays seen.
+
+**A bloom a chapter draws for itself, and what it costs the effects already tuned** (v28.0, R100, builds 75 and 76). The
+frame is copied in the onBeforeRender of a full-screen mesh drawn last (renderOrder 1e9), the passes are NESTED renders
+into small targets (three keeps a stack for exactly this: Reflector does it), and three things have to be right: the
+renderer's counters are kept (`info.autoReset` off during the passes, or every probe that reads `renderer.info` after the
+world's render reads only the bloom's draws); the pass materials are RAW shaders (a raw shader's program key carries no
+output colour space, so the same program draws into a target and onto the screen, and the curtain's compile of the
+chapter makes it from a hidden mesh); and the material a mesh draws with is taken BEFORE its onBeforeRender runs, so a
+swap decided there lands a frame late (decide it in the chapter's frame). The threshold is a colour's brightest channel
+against a level that rises as the colour greys (0.80 for a pure colour, 0.93 for a grey): fire, gold and violet bloom,
+Grandmaster Pho's white robe and the faces do not (measured on the last build's pictures before any code). And a bloom
+COMPOUNDS every bright effect tuned without it: build 75's golden shockwave, bright but readable in build 74, hid Pho in
+white for half a second. When a glow is added, every effect's own strength is photographed again at its brightest moment.
+
+**Light on surfaces without adding a light** (v28.0, R100). Four lights of the chapter's own (a place in the lens's frame,
+a colour, a reach) added by a few lines after `#include <lights_fragment_end>` of every lit material that should take them
+(geometryPosition, geometryNormal and BRDF_Lambert(material.diffuseColor) are there), so the scene's light count, which
+builds shaders, never changes. A patch on a material that already has one runs AFTER it (wrapped, its program key
+extended), and patched materials are tracked in a WeakSet (userData is copied by clone). The places are put in the lens's
+frame by an empty mesh drawn first (renderOrder -1e9), where the lens is final (boom and shake laid on).
+
+**The project's Playwright and this box's browser** (24 Nov 2026). The project's Playwright asks for headless shell 1234;
+the box has 1243: `CHROMIUM_PATH=/opt/pw-browsers/chromium` for every probe run here.
