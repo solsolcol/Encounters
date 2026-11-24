@@ -14545,10 +14545,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const UPTO = () => { const h = HEADAT(); return lp3(PHO_HEAD, h, 0.72); };
         const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
-        const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
+        const THREE_EYE = cw(-1.6, 4.4, 2.6), THREE_AT = cw(0, 0.35, -1.35);
         /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
            the three across 3.6 m at once, so its lens goes from the first two to the last two: a desktop's holds all three) */
-        const THREE_A = cw(-0.6, 0.35, -1.45), THREE_B = cw(0.9, 0.35, -1.35);
+        /* (and from 4.4 m up, behind his left shoulder: from 3.0 m the pan's end looked through his head at the third of them, his
+           head and back in the middle of a phone's frame; from here he stands below the three on both shapes and out of a
+           phone's first frame, measured by tools/probes/threeaim.mjs) */
+        const THREE_A = cw(-1.0, 0.35, -1.45), THREE_B = cw(1.0, 0.35, -1.35);
         const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
         const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
         /* (R75's lab, 23 Nov, each candidate photographed full size on a phone before it was written here: the three pierces
@@ -14594,8 +14597,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.tail + 1.0, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
           { t: T.tail + 1.05, name: 'three', eye: THREE_EYE, at: THREE_A, fp: 56, fd: 50, cut: true },
           { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_B, fp: 55, fd: 49 },
-          { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
-          { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
+          /* (R75's debug: his line seen between Ton and Jun, 0.35 m east: from straight in front Ton's head and shoulder hid 38 % of
+             his face on a phone and 36 % on a desktop, Ton's smile the picture's while Mr Koh spoke) */
+          { t: T.ko5c2, name: 'door', eye: [-7.95, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
+          { t: T.back - 0.05, name: 'door', eye: [-7.95, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
