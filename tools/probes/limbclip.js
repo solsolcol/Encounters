@@ -35,6 +35,10 @@
   /* each shown floor body's capsules in the world: [{ who, key, low, caps: [[name, ax, ay, az, bx, by, bz, r]] }] */
   function bodies() {
     const F = S.films || {}, P = F.people ? F.people() : [], out = [];
+    /* (R75's debug, B12: what the chapter lays on at the render (its arms held to a real range, c_cast.js LIM5) runs in the
+       world's updateMatrixWorld, and a seek poses the bodies and draws nothing: the world is updated here first, as a render
+       updates it, so what is read is what is drawn) */
+    { let r = null; for (const Q of P) if (Q && Q.group) { r = Q.group; while (r.parent) r = r.parent; break; } if (r) r.updateMatrixWorld(); }
     P.forEach((Q, i) => {
       if (!Q || !Q.ready || !Q.key || !FLOOR.test(Q.key) || !Q.group || !seen(Q.group) || Q.hidden) return;
       Q.group.updateWorldMatrix(true, true);

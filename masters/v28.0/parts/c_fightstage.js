@@ -1688,7 +1688,7 @@
          the tall shape over his student as the rules' surge leaves them, the film told which three as the stage tells it;
          the films probe's SURGE=1 sets it before the film, which a bookmark of the fight's start does not: R75's debug) */
       toSurge() { const st = FS5.st; if (!st) return false; let i = 0; const three = [];
-        for (const p of st.prai) { if (p.id === 1 || i++ < 5) { p.st = 'gathered'; continue; }
+        for (const p of st.prai) { if (p.id === 1 || i++ < 5) { p.st = 'gathered'; const B = PRAI5.list[st.prai.indexOf(p)]; if (B && B.group) B.group.visible = false; continue; }
           p.st = 'shape'; p.hold = ''; p.bub = 0; p.show = 0; p.stop = 0; p.at = 0; p.gath = 0; p.x = st.zav.x; p.z = st.zav.z - 0.2; three.push(st.prai.indexOf(p)); }
         st.left = 3; st.stage = 'surge'; st.stageT = 0;
         if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three; FILMS5.together.spots = st.three || null; }

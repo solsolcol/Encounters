@@ -134,6 +134,13 @@ const MEASURE = ([WHO, NAMES]) => {
              reaches 45, a real shoulder's limit is near 60) */
           const ext = Math.atan2(-u.dot(F), -u.dot(U)) * D; J.shoulderBack = +ext.toFixed(1); if (ext > 55 && -u.dot(U) > 0.2) flag(S0[0] + '.shoulder.back', ext);
           const lat = wr.clone().sub(mid).dot(Lf) * side; J.handOut = +lat.toFixed(3); if (lat < -0.1) flag(S0[0] + '.hand.across', lat * 100, 'cm past the middle'); }
+        /* (R75's debug, B7: a hand with no finger bones, Grandmaster Pho's left in his chapter 5 copy, its fingers one with
+           it, was measured not at all and said nothing. Counted now, never dropped: its whole bend, the hand's own line out
+           to the bone at its end against the forearm's, flagged past 70, and the hand said unmeasured where it has no end) */
+        if (!n) { const hb = bn[S0 + 'Hand'], kid = hb && hb.children.find(c => c.isBone);
+          if (kid) { const fl = kid.getWorldPosition(v()).sub(wr).normalize(), bend = Math.acos(Math.max(-1, Math.min(1, fl.dot(e)))) * D;
+            J.wristBend = +bend.toFixed(1); J.wristBy = 'its end bone (no fingers)'; if (bend > 70) flag(S0[0] + '.wrist.bent', bend); }
+          else { J.wristUnmeasured = 'no finger bones and no end bone'; flag(S0[0] + '.wrist.unmeasured', 0); } }
         if (n) {
           /* the wrist: the fingers' line against the forearm's, toward the palm (+) or the back, toward the thumb (+) or the little finger */
           const ne = n.clone().addScaledVector(e, -n.dot(e)).normalize(), re = rad.clone().addScaledVector(e, -rad.dot(e)).normalize();

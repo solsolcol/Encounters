@@ -268,6 +268,7 @@
     const DRUM_REST = { pos: drum.position.clone(), rotZ: drum.rotation.z };
     function reset() {
       drum.position.copy(DRUM_REST.pos); drum.rotation.z = DRUM_REST.rotZ;
+      drum.rotation.y = 0;               // v28.0: the `lay` film's turn, if a reset comes inside it
       ash.visible = true; heroNote.visible = true; noteStorm = 1;
       fightReset();                      // v28.0: and no fight left open (kitReset has already left the mode)
     }
@@ -745,6 +746,18 @@
     c.keep.view = true;
   };
 
+  /* v28.0 · the seventy-third seam: a film LAID AT ITS FIRST INSTANT (kit.film's `layFirst`): its first track turns the
+     drum the moment the film is asked for, not one drawn frame later; the drum is given back at its end, so play finds
+     it as it left it whether the film ran or was skipped */
+  const fiLay = (c, s, api) => {
+    const { tr, step, fade, stage } = api;
+    tr(0, 0.6, k => { stage.drum.rotation.y = 0.9 + 0.3 * k; });
+    fade(0.7, 1.0, 0, 1);
+    step(1.05, () => { stage.drum.rotation.y = 0; });
+    c.keepFade = true;
+    c.endFade = 1;
+  };
+
   /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
      film goes on, and hands back to play, once it resolves */
   const fiClimb = (c, s, api) => {
@@ -758,7 +771,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash, keepView: fiKeepView },
+    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash, keepView: fiKeepView, lay: fiLay },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();

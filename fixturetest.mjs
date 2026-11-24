@@ -1804,6 +1804,20 @@ K.fadeColour = await p.evaluate(() => { const e = window.__enc, el = document.ge
   && await p.evaluate(() => { const F = window.__fc, el = document.getElementById('cineFade');
     return F.inline0 === '' && F.white >= 1 && F.whiteWrong === 0 && F.black >= 1 && F.blackWrong === 0
       && el.style.background === '' && getComputedStyle(el).backgroundColor === 'rgb(0, 0, 0)'; });
+/* v28.0 · THE SEVENTY-THIRD SEAM — a film laid at its first instant (`layFirst`). Asked for with it, the fixture's `lay`
+   film's first track (the drum turned to 0.9) stands the moment kit.film returns; asked for without it, the drum stands
+   as play left it until the film's first frame is drawn (absent = unchanged: the check that it discriminates); each
+   film gives the drum back at its end */
+K.layFirstOff = await p.evaluate(() => { const e = window.__enc, d = e.stage.drum; d.rotation.y = 0; window.__lfDone = null;
+  const ok = e.kit.film('lay', { onDone: () => { window.__lfDone = true; e.kit.fade(0, 0.3); } });
+  return ok && d.rotation.y === 0; })
+  && await until(() => window.__lfDone === true && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+  && await p.evaluate(() => window.__enc.stage.drum.rotation.y === 0);
+K.layFirstOn = await p.evaluate(() => { const e = window.__enc, d = e.stage.drum; d.rotation.y = 0; window.__lfDone = null;
+  const ok = e.kit.film('lay', { layFirst: true, onDone: () => { window.__lfDone = true; e.kit.fade(0, 0.3); } });
+  return ok && Math.abs(d.rotation.y - 0.9) < 1e-6; })
+  && await until(() => window.__lfDone === true && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+  && await p.evaluate(() => window.__enc.stage.drum.rotation.y === 0);
 /* v24.0 · S46: A CHAPTER'S OWN KIT — the fixture plants a stand of two kinds of its own (a cone, a post) through the
    engine's plantTrees; it lands with one instanced mesh a kind, every spot planted (one marked `always`) */
 K.kitStand = await until(() => { const k = window.__enc.stage.kitStandInfo && window.__enc.stage.kitStandInfo(); return !!k && k.parts === 2; }, 60000).then(() => true, () => false)

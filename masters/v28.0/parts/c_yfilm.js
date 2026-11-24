@@ -1795,7 +1795,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
         whenReady(cast.ton, (P) => {
           if (!inEyes) { const s0 = STATION.fight.ton; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'ton', t); }
-          else if (t < T.knot) { const at = t < T.room2 ? [-7.02, -4.8] : t < T.room3 ? [-9.1, -2.0] : [-10.5, -2.9];   // (behind his teacher, each clear of the furniture; R76: and of Mr Koh and Jun, whose places the second and third stood on)
+          /* (R75's debug, B11: the living room's place behind the sofa's back, fully inside a desktop's frame and fully outside a
+             phone's, his stick's head too: on the old camera's spot, left when the camera moved at build 47, he stood cut in half
+             at a desktop's right edge and his stick's head poked into a phone's corner; 0.74 m from Jun, 1.18 from Mr Koh) */
+          else if (t < T.knot) { const at = t < T.room2 ? [-9.6, -3.4] : t < T.room3 ? [-9.1, -2.0] : [-10.5, -2.9];   // (behind his teacher, each clear of the furniture; R76: and of Mr Koh and Jun, whose places the second and third stood on)
             put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); giveFix5(P); STICK5.onPalms(P, 'stick');
             lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
           else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); giveFix5(P); STICK5.onPalms(P, 'stick');
