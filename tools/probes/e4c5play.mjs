@@ -4,7 +4,7 @@
    (SMELL, the eye), CDP touch events with their own timestamps. Where he walks is set (the walk test walks the ground; this
    probe tests what is pressed and said). A picture at every beat; the story's state, the lines heard and the objective
    written beside it (OUT/log.txt). Every page error and console error is kept.
-     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] [OPT=A|B|C|D] node tools/probes/e4c5play.mjs */
+     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] [OPT=A|B|C|D] [CHFILE=<chapter.js>] node tools/probes/e4c5play.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -14,6 +14,11 @@ const PART = (process.env.PART || 'walk,hunt,table').split(',');
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
+/* (CHFILE=<file.js>: the chapter served from that file instead of the build's, src/chapters/e4/e4c5.js as just assembled,
+   as e4c5films.mjs does: a chapter file is copied into the build byte for byte, so a change to the chapter alone is
+   photographed with no build) */
+if (process.env.CHFILE) { const CHSRC = fs.readFileSync(process.env.CHFILE, 'utf8');
+  await p.route(new RegExp('/assets/e4c5\\.[0-9a-f]+\\.js$'), (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: CHSRC })); }
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
 p.on('console', m => { if (m.type() === 'error' || /threw|has no take|no line/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 240)); });
 const T0 = Date.now(), logf = fs.createWriteStream(OUT + '/log.txt');

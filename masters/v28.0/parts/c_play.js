@@ -582,13 +582,16 @@
         const r = rng(seed), P = Array.from({ length: NP }, (q, i) => ({ life: o.life * (0.85 + 0.3 * r()), ph: i / NP + 0.04 * r(), sw: r() * 6.28, sw2: r() * 6.28, rr: r() * 6.28, h: o.rise * (0.8 + 0.4 * r()), s1: o.size * (0.85 + 0.3 * r()) }));
         return {
           pts,
-          /* the smoke at clock t, off the point b (its piece's top), at strength k (0 none), shaken by `agit` (0..1) */
+          /* the smoke at clock t, off the point b (its piece's top), at strength k (0 none), shaken by `agit` (0..1): each puff
+             leaves the top at once, at its brightest there, and rises at an even pace, widening and thinning as it goes (build
+             67's puffs, eased up fast and brightest half way, were seen only 15 cm over their pieces: no smoke came OUT of
+             anything) */
           frame(t, b, k, agit) {
             pts.visible = k > 0.002; if (!pts.visible) return;
-            for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = 1 - (1 - a) * (1 - a);
+            for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = a;
               const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
               pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
-              siz[i] = q.s1 * (0.3 + 1.0 * a); alp[i] = o.alpha * k * Math.pow(Math.sin(Math.PI * Math.min(1, a * 1.12)), 1.3) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+              siz[i] = q.s1 * (0.35 + 1.1 * a); alp[i] = o.alpha * k * Math.min(1, a / 0.06) * Math.pow(1 - a, 1.6) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
             const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
         };
       };
@@ -596,9 +599,22 @@
          teacher's robe; now 1 to 5 cm, more of them, fainter each) */
       const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.4, turn: 2.4 }),
                   hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.36, turn: 1.2 }) };
-      /* where each rises from: the top of its piece, below the presence's own place over it */
-      const off = { angry: -0.02, hungry: 0.03 };
-      return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; e.frame(t, { x: gp.x, y: gp.y + off[k], z: gp.z }, strength, agit || 0); },
+      /* WHERE EACH RISES FROM: the top of its own piece, wherever the piece is (laid out, pushed across, set in the rite),
+         its height over its foot measured once from its drawn meshes when they have landed (4 cm until then); without the
+         piece, under the presence's own place over it */
+      const off = { angry: -0.02, hungry: 0.03 }, PIECE = { angry: 'w5wuathanu', hungry: 'w5rakyom' }, top = {};
+      const _bx = new THREE.Box3(), _bm = new THREE.Box3(), _wp = new THREE.Vector3(), _b = { x: 0, y: 0, z: 0 };
+      const topOf = (k, o) => {
+        if (top[k] != null) return top[k];
+        o.updateWorldMatrix(true, true); _bx.makeEmpty();
+        o.traverse(m => { if (!m.isMesh || !m.visible || !m.geometry) return; if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+          _bm.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld); _bx.union(_bm); });
+        if (_bx.isEmpty()) return 0.04;
+        const h = _bx.max.y - o.getWorldPosition(_wp).y; if (h > 0.005 && h < 0.4) { top[k] = h; return h; } return 0.04; };
+      return { S, frame(k, t, gp, strength, agit) { const e = S[k]; if (!e) return; const o = things[PIECE[k]];
+                 if (o) { const h = topOf(k, o); o.getWorldPosition(_wp); _b.x = _wp.x; _b.y = _wp.y + h - 0.004; _b.z = _wp.z; }
+                 else { _b.x = gp.x; _b.y = gp.y + off[k]; _b.z = gp.z; }
+                 e.frame(t, _b, strength, agit || 0); },
                off() { for (const k in S) S[k].pts.visible = false; } };
     })();
     function presTick(wdt) {
