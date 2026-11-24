@@ -91,6 +91,10 @@
        stick's fire; gold stays his alone). It still rises over whoever stands between (never across a person), lower than
        before: a fireball's flight, not a lob. Four in the air at most (his own, and his teacher's when he is not played) */
     const FS_FIRE = { core: 0xfff3cf, yel: 0xffc23a, orange: 0xff7417, deep: 0xff4a0e, ember: 0xffa640, smoke: 0x2e2119, scorch: 0x050302 };
+    /* (R94: the simulated smoke's colour where it is fully lit, drawn as this hex (no colour conversion: the flipbook's shader
+       writes its colour as it stands), shaded down to 0.28 of it in its own shadow: a warm smoke-grey that reads against the
+       yard's night wall both lighter and darker, where the first build's near-black smoke was lost on it) */
+    const FX_SMOKE_HEX = 0x5a4d43;
     const FS_FLAME_FS = [
       'varying vec2 vUv; uniform float uT, uA, uW, uL, uSeed, uRound, uFlow;',
       'float h2(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }',
@@ -134,8 +138,13 @@
       _fbZ.copy(_fbF).negate(); _fbX.crossVectors(_fbY, _fbZ).normalize(); _fbY.crossVectors(_fbZ, _fbX);
       const L = W + tail * Math.min(1, vp);
       _fbM.makeBasis(_fbX, _fbY, _fbZ); me.quaternion.setFromRotationMatrix(_fbM);
-      me.position.copy(x).addScaledVector(_fbY, -(L - W) / 2); me.scale.set(W, L, 1);
-      const U = me.material.uniforms; U.uW.value = W; U.uL.value = L;
+      /* (R94: a card may be wider than its head, `uS` head radii either side, and reach `uFr` radii ahead of it: the
+         simulated head's card, so its flames and glow thin away inside the card and are never cut by the card's sides; a
+         card without them is laid exactly as before) */
+      const U = me.material.uniforms, sd = U.uS ? U.uS.value : 1, fr = U.uFr ? U.uFr.value : 1;
+      if (sd === 1 && fr === 1) { me.position.copy(x).addScaledVector(_fbY, -(L - W) / 2); me.scale.set(W, L, 1); }
+      else { const r = W / 2; me.position.copy(x).addScaledVector(_fbY, 0.5 * (fr * r - L + r)); me.scale.set(2 * sd * r, fr * r + L - r, 1); }
+      U.uW.value = W; U.uL.value = L;
     }
     const FS_TRAIL = 6;
     const fsBalls = [0, 1, 2, 3].map((i) => ({ on: false, flame: fsFlame(false, 6), core: fsSprite(FS_FIRE.core, true, 7), glow: fsSprite(FS_FIRE.orange, true, 6), halo: fsSprite(FS_FIRE.deep, true, 5),
@@ -154,7 +163,7 @@
     function fsSmoke(x, y, z, o = {}) { const P = fsSmokes[fsSmokeI++ % fsSmokes.length], r = FS5.srand || Math.random;
       P.t = 0; P.T = o.life || 0.9; P.s0 = o.s0 || 0.12; P.s1 = o.s1 || 0.5; P.a = o.a != null ? o.a : 0.3; P.vy = o.vy != null ? o.vy : 0.25; P.rot = (r() - 0.5) * 1.2;
       P.s.material.color.setHex(o.col != null ? o.col : FS_FIRE.smoke);
-      if (P.fx) P.fx.material.uniforms.uSm.value.setHex(o.col != null ? o.col : FS_FIRE.smoke);
+      if (P.fx) P.fx.material.uniforms.uSm.value.setHex(o.col != null ? o.col : FX_SMOKE_HEX, THREE.LinearSRGBColorSpace);
       P.s.position.set(x, y, z); P.s.material.rotation = r() * Math.PI * 2; P.s.visible = true; }
     /* the flare at the Naga's mouth as a ball is let go */
     const fsFlares = [0, 1].map(() => ({ s: fsSprite(FS_FIRE.yel, true, 8), t: -1 }));
@@ -198,7 +207,7 @@
       violet: [0x000000, 0x3a1a8a, 0x8a5cff, 0xc4a8ff, 0xf6f0ff].map(h => new THREE.Color(h))
     };
     const FX_FS = [
-      'varying vec2 vUv; uniform sampler2D uMap; uniform float uF, uN, uC, uLoop, uA, uHeat, uSmoke, uGlow, uMode, uW, uL, uRot, uTail, uR;',
+      'varying vec2 vUv; uniform sampler2D uMap; uniform float uF, uN, uC, uLoop, uA, uHeat, uSmoke, uGlow, uMode, uW, uL, uRot, uTail, uR, uS, uFr;',
       'uniform vec2 uO; uniform vec3 uK0, uK1, uK2, uK3, uK4, uSm;',
       'vec4 cell(float f, vec2 p){ float cx = mod(f, uC), cy = floor(f / uC + 1e-3); return texture2D(uMap, (vec2(cx, cy) + vec2(p.x, 1.0 - p.y)) / uC); }',
       'vec3 ramp(float t){ return t < 0.25 ? mix(uK0, uK1, t * 4.0) : t < 0.5 ? mix(uK1, uK2, t * 4.0 - 1.0) : t < 0.75 ? mix(uK2, uK3, t * 4.0 - 2.0) : mix(uK3, uK4, clamp(t * 4.0 - 3.0, 0.0, 1.0)); }',
@@ -208,8 +217,8 @@
          fire rises from its emitter (uO, uR a head's radius): ahead of the head at one scale, behind it the plume pressed or
          stretched to end where the card's tail ends) */
       '  if (uMode > 0.5) {',
-      '    float r = 0.5 * uW, tl = max(0.0, uL - uW) / max(r, 1e-4);',
-      '    vec2 q = ((vUv - 0.5) * vec2(uW, uL) - vec2(0.0, 0.5 * uL - r)) / max(r, 1e-4);',
+      '    float r = 0.5 * uW, tl = max(0.0, uL - uW) / max(r, 1e-4), cl = uFr * r + uL - r, off = 0.5 * (uFr * r - uL + r);',
+      '    vec2 q = ((vUv - 0.5) * vec2(2.0 * uS * r, cl) + vec2(0.0, off)) / max(r, 1e-4);',
       '    float g = q.y < 0.0 ? uTail / (1.0 + tl) : 1.0;',
       '    p = vec2(uO.x + q.x * uR, uO.y - q.y * uR * g);',
       '  } else {',
@@ -238,8 +247,9 @@
         uniforms: { uMap: { value: FX5[kind] || FX_DUMMY }, uF: { value: 0 }, uN: { value: 64 }, uC: { value: 8 }, uLoop: { value: kind === 'head' ? 1 : 0 },
           uA: { value: 0 }, uHeat: { value: o.heat != null ? o.heat : 1.5 }, uSmoke: { value: o.smoke != null ? o.smoke : 1 }, uGlow: { value: o.glow != null ? o.glow : 0.5 },
           uMode: { value: o.head ? 1 : 0 }, uW: { value: 0.5 }, uL: { value: 0.5 }, uRot: { value: 0 }, uTail: { value: o.tail != null ? o.tail : 3.4 }, uR: { value: o.r != null ? o.r : F.r * 1.3 },
+          uS: { value: o.side || 1 }, uFr: { value: o.front || 1 },
           uO: { value: new THREE.Vector2(F.ox, F.oy) }, uK0: { value: R[0] }, uK1: { value: R[1] }, uK2: { value: R[2] }, uK3: { value: R[3] }, uK4: { value: R[4] },
-          uSm: { value: new THREE.Color(o.sm != null ? o.sm : 0x2a211b) } },
+          uSm: { value: new THREE.Color().setHex(o.sm != null ? o.sm : FX_SMOKE_HEX, THREE.LinearSRGBColorSpace) } },
         vertexShader: FX_VS, fragmentShader: FX_FS });
       if (FX5[kind]) m.fxAtlas = FX5[kind];
       mats.push(m); FX5.mats[kind].push(m); return m;
@@ -340,7 +350,7 @@
       if (n) { S.g.attributes.position.needsUpdate = true; S.g.attributes.aC.needsUpdate = true; }
     }
     /* (each ball its head of real fire and its shimmer; each landing its burst; each puff of smoke its own) */
-    for (const B of fsBalls) { B.fx = fxCard('head', { head: true, heat: 1.15, glow: 0.6, smoke: 0.55 }, 6); B.sh = fxShimmer(); }
+    for (const B of fsBalls) { B.fx = fxCard('head', { head: true, heat: 1.15, glow: 0.6, smoke: 0.55, side: 2.5, front: 1.45, tail: 3.6 }, 6); B.sh = fxShimmer(); }
     for (const L of fsBlooms) L.fxb = fxCard('burst', { heat: 1.1, glow: 0.6, smoke: 0.95 }, 7);
     for (const P of fsSmokes) P.fx = fxCard('smoke', { heat: 0, glow: 0, smoke: 1 }, 4);
     /* (the burst's frames are played over this long: its first 52 of 64 (past them its smoke has gone), simulated at 24 a
