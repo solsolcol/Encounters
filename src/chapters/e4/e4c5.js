@@ -469,7 +469,7 @@
       'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
       'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
       'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
@@ -1329,18 +1329,11 @@
     }
 
     /* A HOME'S WINDOW SEEN FROM OUTSIDE (the storeys over his home, the court's side walls): in the wall's opening its
-       aluminium frame and mullion, its glass (the sky's reflection), a ledge under it, and the room behind: a curtain
-       drawn 0.32 m in, lit warm, lit by a television, or dark (ROOMS, four kinds dealt by a seeded stream). `axis` 'x':
-       a wall along x whose outer face is at z = face, `n` the way it faces (+1 / -1 in z); 'z': along z, face at x. */
-    const ROOMS = (() => { const [c, x] = canvas(512, 512), r = rng(28525);
-      const kinds = [['#efc68a', '#f8dcae', 0.95], ['#9fb2d8', '#c9d6ee', 0.75], ['#3a3632', '#4c4640', 0.0], ['#e8d2a8', '#fbe8c4', 0.85]];
-      kinds.forEach(([a, b2, glow], k) => { const ox = (k % 2) * 256, oy = ((k / 2) | 0) * 256;
-        const g = x.createLinearGradient(ox, oy, ox + 256, oy); for (let i = 0; i <= 12; i++) g.addColorStop(i / 12, i % 2 ? a : b2);
-        x.fillStyle = g; x.fillRect(ox, oy, 256, 256);
-        for (let i = 0; i < 26; i++) { x.fillStyle = `rgba(0,0,0,${0.03 + r() * 0.05})`; x.fillRect(ox + r() * 256, oy, 2 + r() * 6, 256); }
-        if (glow) { const rg = x.createRadialGradient(ox + 128, oy + 60, 10, ox + 128, oy + 60, 200); rg.addColorStop(0, `rgba(255,248,230,${0.35 * glow})`); rg.addColorStop(1, 'rgba(0,0,0,0.18)'); x.fillStyle = rg; x.fillRect(ox, oy, 256, 256); }
-        x.fillStyle = 'rgba(0,0,0,0.25)'; x.fillRect(ox, oy, 256, 10); });
-      const t = tex(done(THREE, c, false)); t.anisotropy = 4; return B({ map: t }); })();
+       aluminium frame and mullion, its glass (the sky's reflection), a ledge under it, and the room behind it in shadow:
+       one plain dark surface 0.32 m in (R108, Chad: "Adding those fake details behind the windows look even worse than no
+       details": the painted curtains, lit rooms and televisions that stood there are gone). `axis` 'x': a wall along x
+       whose outer face is at z = face, `n` the way it faces (+1 / -1 in z); 'z': along z, face at x. */
+    const ROOMS = B({ color: 0x24252a });
     function quadSub(mat, a, b, c, d, u0, v0, u1, v1) { const Bt = batchOf(mat); let nx = (b[1] - a[1]) * (d[2] - a[2]) - (b[2] - a[2]) * (d[1] - a[1]), ny = (b[2] - a[2]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[2] - a[2]), nz = (b[0] - a[0]) * (d[1] - a[1]) - (b[1] - a[1]) * (d[0] - a[0]);
       const nl = Math.hypot(nx, ny, nz) || 1, P = [a, b, c, a, c, d], U = [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]];
       for (let i = 0; i < 6; i++) { Bt.p.push(P[i][0], P[i][1], P[i][2]); Bt.n.push(nx / nl, ny / nl, nz / nl); Bt.u.push(U[i][0], U[i][1]); } }
@@ -1732,12 +1725,13 @@
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
       box(mFace, -6.8, (G - 0.35) / 2, -7.35, 11.6, -G - 0.35, 18.7);   // (R46: under the wider, longer court too; was x -11..-1, z -14..2)
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
-      /* (R105) THE OTHER BLOCKS' FACES, painted again: each bay of each storey a condominium's balcony as the estate sees it
-         from below (its slab's shadow over it, its sliding doors behind a metal railing, lit warm, cool or dark at dusk, an
-         air-con unit, plants in pots, a laundry pole with the day's washing), dealt from 18 households (3 by 6 cells of 512
-         by 256: a bay is 7 m by a storey's 2.95 m); before, 16 cells of two flat windows each, which the opening film's first
-         shot came to rest on and read as a picture of a block. Its colour is the low sun's on a face that turns to it, and
-         the hour's (EST5.sun) */
+      /* (R105, R108) THE OTHER BLOCKS' FACES: each bay of each storey a condominium's balcony as the estate sees it (its
+         slab's shadow over it, its sliding doors in aluminium, their glass plain with the sky in it), dealt from 18 cells (3
+         by 6 of 512 by 256: a bay is 7 m by a storey's 2.95 m). R105 painted the homes' lives on it (lit curtains, air-con
+         units, plants, washing, a railing) and R108 took every one of them off at Chad's word ("Adding those fake details
+         behind the windows look even worse than no details"): the face's depth is what slab() BUILDS in front of it (each
+         balcony's slab, its solid parapet, the fins). Its colour is the low sun's on a face that turns to it, and the hour's
+         (EST5.sun) */
       const NW = 8, ATL = { cols: 3, rows: 6 }, atlas = (() => { const CW = 512, CH = 256, [c, x] = canvas(CW * ATL.cols, CH * ATL.rows), r = rng(28532);
         for (let i = 0; i < ATL.cols; i++) for (let j = 0; j < ATL.rows; j++) { const ox = i * CW, oy = j * CH;
           /* the wall either side, the recess behind the railing, the slab over it and its shadow */
@@ -1746,32 +1740,17 @@
           const sh = x.createLinearGradient(0, oy, 0, oy + 70); sh.addColorStop(0, 'rgba(40,34,28,0.55)'); sh.addColorStop(1, 'rgba(40,34,28,0)');
           x.fillStyle = sh; x.fillRect(ox + 34, oy, CW - 68, 70);
           x.fillStyle = 'rgba(60,52,44,0.25)'; x.fillRect(ox + 34, oy, 6, CH - 24); x.fillRect(ox + CW - 40, oy, 6, CH - 24);
-          /* the sliding doors: three or four panels in aluminium, each lit warm through its curtain, cool, or dark with the
-             sky in it */
-          const np = r() < 0.5 ? 3 : 4, dx0 = ox + 66, dw = CW - 132, pw = dw / np, lit = r();
-          const glass = lit < 0.42 ? '#f3c47c' : lit < 0.56 ? '#cfdcee' : lit < 0.64 ? '#8aa0da' : '#232831';
+          /* the sliding doors: three or four panels in aluminium, their glass PLAIN (R108, Chad: "Adding those fake details
+             behind the windows look even worse than no details": no curtain, no lit room, nothing on the balcony painted on
+             the face), the sky in it a little lighter at its head, a home's panes a shade darker or lighter than the next */
+          const np = r() < 0.5 ? 3 : 4, dx0 = ox + 66, dw = CW - 132, pw = dw / np, shade = 0.78 + r() * 0.22;
           for (let p = 0; p < np; p++) { const px = dx0 + p * pw;
             x.fillStyle = '#9fa3a6'; x.fillRect(px, oy + 30, pw, CH - 56);
-            const gx = px + 4, gy = oy + 34, gw = pw - 8, gh = CH - 64;
-            if (lit >= 0.64) { const g = x.createLinearGradient(0, gy, 0, gy + gh); g.addColorStop(0, '#46506a'); g.addColorStop(1, '#1d2129'); x.fillStyle = g; }
-            else x.fillStyle = glass;
-            x.fillRect(gx, gy, gw, gh);
-            if (lit < 0.56) { x.fillStyle = 'rgba(120,70,30,0.16)'; for (let k = 0; k < gw; k += 9) x.fillRect(gx + k, gy, 3, gh); }   // (the curtain's folds)
-            x.fillStyle = 'rgba(255,255,255,0.10)'; x.beginPath(); x.moveTo(gx, gy + gh * 0.8); x.lineTo(gx + gw * 0.5, gy); x.lineTo(gx + gw * 0.7, gy); x.lineTo(gx, gy + gh); x.fill(); }
-          /* what stands on the balcony: an air-con unit, plants, a laundry pole */
-          if (r() < 0.45) { const ax = r() < 0.5 ? ox + 48 : ox + CW - 118; x.fillStyle = '#c9c7c0'; x.fillRect(ax, oy + CH - 92, 70, 52);
-            x.fillStyle = '#55575a'; x.beginPath(); x.arc(ax + 28, oy + CH - 66, 18, 0, 6.29); x.fill(); x.fillStyle = '#8a8c8f'; x.fillRect(ax + 52, oy + CH - 86, 12, 40); }
-          for (let k = 0, n = r() < 0.55 ? 1 + ((r() * 3) | 0) : 0; k < n; k++) { const px = ox + 70 + r() * (CW - 160), h = 26 + r() * 30;
-            x.fillStyle = '#7a4a32'; x.fillRect(px, oy + CH - 52, 22, 22);
-            x.fillStyle = r() < 0.5 ? '#3f6a32' : '#2f5a2c'; x.beginPath(); x.ellipse(px + 11, oy + CH - 52 - h * 0.45, 18 + r() * 8, h * 0.6, 0, 0, 6.29); x.fill(); }
-          if (r() < 0.3) { const ly = oy + 44; x.fillStyle = '#b8b8b4'; x.fillRect(ox + 60, ly, CW - 120, 3);
-            for (let px = ox + 80; px < ox + CW - 90; px += 20 + r() * 26) { const cols = ['#d9534f', '#f0f0ea', '#5b7fc4', '#e8c547', '#7fbf7a', '#444444'];
-              x.fillStyle = cols[(r() * cols.length) | 0]; x.fillRect(px, ly + 3, 14 + r() * 12, 22 + r() * 30); } }
-          /* the railing: a top rail, balusters and a bottom rail, dark, across the balcony's front; its kerb */
-          const ry = oy + CH - 94;
-          x.fillStyle = '#3c3e40'; x.fillRect(ox + 34, ry, CW - 68, 5); x.fillRect(ox + 34, oy + CH - 32, CW - 68, 4);
-          x.fillStyle = 'rgba(52,54,56,0.85)'; for (let bx = ox + 38; bx < ox + CW - 36; bx += 11) x.fillRect(bx, ry + 5, 2.5, CH - 32 - (ry - oy) - 5);
-          x.fillStyle = '#cfc6b3'; x.fillRect(ox + 34, oy + CH - 28, CW - 68, 6);
+            const gx = px + 4, gy = oy + 34, gw = pw - 8, gh = CH - 64, k = shade * (0.94 + r() * 0.06);
+            const g = x.createLinearGradient(0, gy, 0, gy + gh);
+            g.addColorStop(0, `rgb(${(122 * k) | 0},${(131 * k) | 0},${(150 * k) | 0})`); g.addColorStop(1, `rgb(${(46 * k) | 0},${(52 * k) | 0},${(64 * k) | 0})`);
+            x.fillStyle = g; x.fillRect(gx, gy, gw, gh); }
+          /* (the balcony's parapet and its slab are BUILT in front of this face, slab() below: R108) */
           /* the slab's edge at the storey's foot */
           x.fillStyle = '#8f8a82'; x.fillRect(ox, oy + CH - 22, CW, 22); x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(ox, oy + CH - 22, CW, 4); }
         const t = tex(done(THREE, c, false)); t.anisotropy = 8; return B({ map: t, fog: true }); })();
@@ -1791,6 +1770,9 @@
            homes, ground to roof: seen across the estate a real block's ledges and shadows, not a picture of one) */
         const along = Math.abs(ax) > 0.5, bxAt = (u, y, w, la, h, ld) => { const c = P(u, y, w); box(mBand, c[0], c[1], c[2], along ? la : ld, h, along ? ld : la); };
         for (let st = 1; st < storeys; st++) bxAt(L / 2, G + st * STOREY + 0.05, -0.25, L, 0.16, 0.5);
+        /* (R108: each balcony's solid parapet, 0.95 m, on its slab's edge, its face a centimetre behind the slab's and the
+           fins': the depth a 1980s block's face has, built, where a railing and the homes' lives were painted on the face) */
+        for (let st = 1; st < storeys; st++) bxAt(L / 2, G + st * STOREY + 0.12 + 0.475, -0.43, L, 0.95, 0.12);
         for (let i = 0; i <= nb; i += 2) bxAt(Math.min(L - 0.1, Math.max(0.1, i * bw)), G + (top - G) / 2, -0.25, 0.22, top - G, 0.5);
         const e0 = P(0, 0), e1 = P(L, 0), b0 = P(0, 0, dp), b1 = P(L, 0, dp);
         quad(mFaceD, [b0[0], G, b0[2]], [e0[0], G, e0[2]], [e0[0], top, e0[2]], [b0[0], top, b0[2]]);

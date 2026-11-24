@@ -897,6 +897,7 @@ ASSETS = {
     # (masters/v28.0/props/RECORD.md, TABLE.txt, prop.sh); placed by masters/v28.0/parts/b_world.js buildEstate
     'w5playground': ('assets/w5playground.glb', True, False),     # the children's playground on its mat, 3.3 m to its roof
     'w5gardenlamp': ('assets/w5gardenlamp.glb', True, False),     # the garden lamps along its paths, 3.2 m, their globes lit
+    'w5shrub':      ('assets/w5shrub.glb', True, False),     # the ixora in its beds, 1.1 m
     # <<< e4c5 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -1067,6 +1068,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
            'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
            'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+           'w5shrub',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

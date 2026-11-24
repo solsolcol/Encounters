@@ -220,7 +220,7 @@
       'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
       'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
       'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */

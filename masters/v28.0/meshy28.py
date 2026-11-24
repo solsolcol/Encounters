@@ -269,8 +269,11 @@ def cmd_remesh(name, polys):
     if tag in rm and not os.environ.get('AGAIN'):
         tid = rm[tag]; print('  remesh %s %s: the job is in the ledger (%s): waited for, not started again' % (name, tag, tid), flush=True)
     else:
-        tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': topo,
-                                       'target_polycount': int(polys)})['result']
+        # (MODEL_FILE=<a .glb>: a model another generator made, sent whole as a data URI in place of a Meshy task: R105's
+        #  ixora, which Meshy refused to make seven times and Hunyuan3D made; the file is read, never its address sent)
+        mf = os.environ.get('MODEL_FILE')
+        src = {'model_url': 'data:model/gltf-binary;base64,' + base64.b64encode(open(mf, 'rb').read()).decode()} if mf else {'input_task_id': L['image_to_3d']}
+        tid = call('POST', '/remesh', dict(src, target_formats=['glb'], topology=topo, target_polycount=int(polys)))['result']
         with locked():
             L2 = ledger(); r2 = L2.setdefault(name, {}).setdefault('remesh', {}); r2[tag] = tid; save(L2)
     t = wait('/remesh', tid, 'remesh %s %s' % (name, tag))

@@ -1283,8 +1283,23 @@
   }
  },
  "shrub": {
+  "hunyuan3d": {
+   "credits": 15,
+   "face_count": 40000,
+   "file": "original-shrub.glb (40,000 triangles, one 4096 PNG sheet)",
+   "image": "masters/v28.0/props/refs/shrub-c-1024.jpg",
+   "job": "cf0ca79c-c200-4ad6-a28c-3ed19a83b850",
+   "model": "hunyuan3d_v3_image_to_3d (Higgsfield)"
+  },
   "image": "masters/v28.0/props/refs/shrub-c-1024.jpg",
-  "image_to_3d": "01a20e2e-b4d1-708d-b94b-b2b64c486a6f",
+  "image_to_3d": null,
+  "meshy_refused": {
+   "image_to_3d": "01a20e2e-b4d1-708d-b94b-b2b64c486a6f",
+   "why": "image_too_complex (and invalid_input on six earlier pictures): Meshy would not make the ixora"
+  },
+  "remesh": {
+   "3000": "01a20e39-6f0b-70d7-b82e-923b154f7349"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
