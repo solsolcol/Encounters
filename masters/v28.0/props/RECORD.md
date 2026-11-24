@@ -123,3 +123,19 @@ figures. Mend here at no credits: lay it on the cloth with its front to the play
 are not seen from either seat), and darken the grey glass a little at runtime so it reads as old glass; a see-through
 bottle would need another job (45 credits) and the generator may well come back opaque again, or a bottle built here
 with the figures as their own model inside (free, a few hours, untried). Default: the mend.
+
+## The estate's ground below the walkway (24 Nov 2026, R105: Chad, "The outdoor environment below the corridor can be improved further")
+
+Three things for the grounds of a 1980s condominium, each a checked picture on white (GPT Image 2.6 through Higgsfield,
+1k, max, two takes each, looked at full size; the pick named), then made once. Where Meshy refused a picture outright
+the same picture went to Higgsfield's image-to-3D (the house's rule: try the engines on one picture, v25.5). Placed by
+masters/v28.0/parts/b_world.js buildEstate; keys by masters/v28.0/keys.py.
+
+| thing | key | pictures (Higgsfield jobs; the pick) | model | size m (w x h x l) | tris | sheet | what is wrong |
+|---|---|---|---|---|---|---|---|
+| playground | w5playground | 09356811-a084-4db5-abfd-030d82ae4155 (a), 6bbbcea4-a8a2-4bff-af68-b296f4395111 (b, the pick: a compact frame, a tube slide and an open slide, a net, stairs, a roofed tower) | Meshy 01a20e0c-719a-77e4-ae49-d1a90250777e (40), remesh 01a20e12-51ab-738d-9c05-2b1078e1d8fd (5) | 4.01 x 3.30* x 4.35 | 50,000 | 1024 | nothing broken; its panels' paint a little painterly close up (it is seen from 8 m and more); the tube slide's mouth has a doubled lip |
+| gardenlamp | w5gardenlamp | 0accecfd-68cc-4602-bb04-4a460d14f6c1 (a, the pick: a footing plate), 520e7f00-f608-4ecd-b8b2-6e0b165671f3 (b) | Meshy 01a20e16-4715-76e1-979c-5e888ad25f9e (40), remesh 01a20e1e-9d14-71aa-9d00-9178b361ba76 (5) | 0.43 x 3.20* x 0.43 | 2,500 | 512 | its globe lit by the world (what is pale in its picture glows: b_world.js `globe5`) |
+| shrub | w5shrub | d160c1f0-140a-46d5-963a-0b1d1f0cbb7a (a, the pick: rounder, denser), 195f1bc4-6052-4def-a788-00d3d8fc0ca4 (b) | Meshy REFUSED six times at 9 to 10 % ('invalid_input'; no credits taken): a then b at 100,000 and 60,000, a at standard geometry with no symmetry, a as a JPEG, a without the picture's enhancement (jobs-p8 to p8f.json; the last 01a20e24-0576-73ca-8492-d221892cacfe). Then Higgsfield image-to-3D on picture a: job 6c2e975a-20de-4ca4-a516-2458b76c43c4 (30 credits) | (below) | | | |
+
+What it cost: Meshy 2 x 40 + 2 x 5 = 90 (1,127 before the lamp, 1,087 after it; the refused jobs took nothing); Higgsfield
+4 pictures and the shrub's model.

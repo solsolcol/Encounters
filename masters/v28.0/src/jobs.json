@@ -1283,13 +1283,13 @@
   }
  },
  "shrub": {
-  "image": "masters/v28.0/props/refs/shrub-a-1024.jpg",
-  "image_to_3d": "01a20e24-0576-73ca-8492-d221892cacfe",
+  "image": "masters/v28.0/props/refs/shrub-c-1024.jpg",
+  "image_to_3d": "01a20e2e-b4d1-708d-b94b-b2b64c486a6f",
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
    "geometry_resolution": "4k",
-   "image_enhancement": false,
+   "image_enhancement": true,
    "model_type": "standard",
    "multi_view_thumbnails": true,
    "save_pre_remeshed_model": false,

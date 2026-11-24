@@ -891,7 +891,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held (R105: "then a pungent
            smell hit me": it HITS, past where it settles in its first fifth of a second and easing back over the next) */
         const hit5 = (d) => d <= 0 ? 0 : d < 0.18 ? d / 0.18 : Math.exp(-(d - 0.18) / 0.7);
-        if (kit && kit.chill) { const k = Math.min(1, smo(c01((t - T.sour) / 2.4)) * 0.85 + 0.4 * hit5(t - T.sour)) * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
+        if (kit && kit.chill) { const k = Math.min(1, smo(c01((t - T.sour) / 2.4)) * 0.85 + 0.75 * hit5(t - T.sour)) * (1 - smo(c01((t - T.black - 0.2) / 0.6)));
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
         /* THE LENS (his eyes): the number, close; the car, wide (a cramped room gets a wider lens on a phone: v24.21);
            Jun's line, Ton's; the doors; his step out, a breath of a bob; the walkway, where play begins (its snapshot) */
@@ -901,7 +901,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              which no shot looks at, is never in the frame), tilting up from the playground on its mat, its lamps lit, over
              the road and the cars to the east block's lit windows and the sky over it; then the cut into the lift */
           { t: 0, name: 'estate', eye: [3.0, 12.0, -0.5], at: [15.5, -5.9, -0.8], fp: 56, fd: 48 },
-          { t: T.estate - 0.02, name: 'estate', eye: [3.8, 9.0, -2.5], at: [30.0, -1.5, -5.5], fp: 54, fd: 46 },
+          { t: T.estate - 0.02, name: 'estate', eye: [4.2, 12.6, -3.2], at: [34.0, 4.5, -7.0], fp: 54, fd: 46 },
           { t: T.estate, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22, cut: true },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           /* (the car wide at the lens Jun's shot keeps: at 74 and 62 the lens went out and came back 6 and 10 degrees inside

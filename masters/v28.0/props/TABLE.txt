@@ -56,6 +56,6 @@ hunphayon     w5hunphayon   0.100 h  20000  2048  0
 # to): its tower's roof 3.3 m over its mat, as such a frame stands; 1024 (seen across the lawn)
 playground    w5playground  3.30  h  50000  1024  0
 # the garden lamps along its paths, their globes lit at dusk (a 3.2 m post-top lamp; seen from the walkway and the
-# opening film's first shot): 512. And the ixora in its beds (a 1.1 m bush, a few dozen of them): 512, few triangles
+# opening film's first shot): 512. And the ixora in its beds (a clipped 1.0 m dome, a score of them): 512, few triangles
 gardenlamp    w5gardenlamp  3.20  h   2500   512  0
-shrub         w5shrub       1.10  h   3000   512  0
+shrub         w5shrub       1.00  h   3000   512  0

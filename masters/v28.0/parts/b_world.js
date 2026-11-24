@@ -499,13 +499,25 @@
        at night, and its lamps' light the other way (their globes, the glow round them, their light on the ground). Set by
        the play's look (c_story.js lookAt0) and a film's (c_yfilm.js fmLook); filled by buildEstate. Its numbers: each hour's
        red, green and blue on the painted ground, and the lamps' light */
-    const EST5 = { est: [], glow: null, look: null };
-    const EST_LOOK5 = { DUSK: [1, 1, 1, 0.6], EVENING: [0.74, 0.76, 0.88, 0.85], NIGHT: [0.44, 0.47, 0.64, 1.0], TRANCE: [0.44, 0.47, 0.64, 1.0], DAY: [1, 1, 1, 0] };
+    const EST5 = { est: [], sun: [], shade: [], glow: null, low: null, look: null, name: 'DUSK' };
+    const EST_LOOK5 = { DUSK: [1, 1, 1, 0.8], EVENING: [0.74, 0.76, 0.88, 0.85], NIGHT: [0.44, 0.47, 0.64, 1.0], TRANCE: [0.44, 0.47, 0.64, 1.0], DAY: [1, 1, 1, 0] };
+    /* (the other blocks' faces, turned to the low sun, and what stands in the long shadow our block lays over the lawn at
+       dusk: their colours by the hour, the shadow's own strength the fourth) */
+    const SUN_LOOK5 = { DUSK: [1.0, 0.86, 0.70], EVENING: [0.72, 0.72, 0.86], NIGHT: [0.46, 0.48, 0.64], TRANCE: [0.46, 0.48, 0.64], DAY: [1, 1, 1] };
+    const SHADE_LOOK5 = { DUSK: [0.66, 0.68, 0.80, 1], EVENING: [1, 1, 1, 0], NIGHT: [1, 1, 1, 0], TRANCE: [1, 1, 1, 0], DAY: [1, 1, 1, 0] };
     function estateLook5(name) {
-      const L = EST_LOOK5[name] || EST_LOOK5.DUSK; if (EST5.look === L) return; EST5.look = L;
+      const L = EST_LOOK5[name] || EST_LOOK5.DUSK; if (EST5.look === L) return; EST5.look = L; EST5.name = EST_LOOK5[name] ? name : 'DUSK';
+      const S = SUN_LOOK5[name] || SUN_LOOK5.DUSK, H = SHADE_LOOK5[name] || SHADE_LOOK5.DUSK;
       for (const e of EST5.est) e.m.color.setRGB(e.c.r * L[0], e.c.g * L[1], e.c.b * L[2]);
+      for (const e of EST5.sun) e.m.color.setRGB(e.c.r * S[0], e.c.g * S[1], e.c.b * S[2]);
+      for (const e of EST5.shade) e.m.color.setRGB(e.c.r * H[0], e.c.g * H[1], e.c.b * H[2]);
       if (EST5.glow) EST5.glow(L[3]);
+      if (EST5.low) EST5.low(H[3]);
     }
+    /* a model's materials into the long shadow's list, each with its own colour, at once in the hour that stands */
+    function shaded5(made) { const K = SHADE_LOOK5[EST5.name] || SHADE_LOOK5.DUSK; for (const im of [].concat(made)) im.traverse(q => { if (!q.isMesh) return;
+      for (const mt of [].concat(q.material)) { if (!mt || !mt.color || EST5.shade.some(e => e.m === mt)) continue; const e = { m: mt, c: mt.color.clone() }; EST5.shade.push(e);
+        mt.color.setRGB(e.c.r * K[0], e.c.g * K[1], e.c.b * K[2]); } }); }
     function buildEstate() {
       const G = GROUND_Y;
       /* (R105, 24 Nov 2026: Chad, "The outdoor environment below the corridor can be improved further". It was a lawn, a
@@ -600,31 +612,68 @@
       /* THE BEDS of mulch: along the block's foot, behind the playground, at the paths' corners by the road and where the
          first path leaves the block's; the deck's palms in theirs */
       const bed = (cx, cz, rx, rz, y = G + 0.022) => { const P = []; for (let i = 0; i < 20; i++) { const a = i / 20 * Math.PI * 2; P.push([cx + rx * Math.cos(a), y, cz - rz * Math.sin(a)]); } planar(mMulch, P); };
-      floor(mMulch, 0.4, -17.6, 2.24, 16.2, G + 0.022);
-      floor(mMulch, 18.6, -4.4, 20.4, 3.2, G + 0.022);
-      bed(21.6, -12.1, 1.45, 1.05); bed(21.6, -6.9, 1.45, 1.05); bed(21.6, 5.7, 1.45, 1.05); bed(21.6, 10.9, 1.45, 1.05);
-      bed(6.5, -12.6, 1.6, 1.2); bed(6.7, -6.4, 1.6, 1.2); bed(5.8, 1.5, 0.9, 0.9); bed(5.8, 12.6, 0.9, 0.9);
+      /* (the ixora's beds only where the ixora is: a bed of bare mulch reads as dug earth, not a garden) */
+      if (have('w5shrub')) {
+        floor(mMulch, 0.4, -17.6, 2.24, 16.2, G + 0.022);
+        floor(mMulch, 18.6, -4.4, 20.4, 3.2, G + 0.022);
+        bed(21.6, -12.1, 1.45, 1.05); bed(21.6, -6.9, 1.45, 1.05); bed(21.6, 5.7, 1.45, 1.05); bed(21.6, 10.9, 1.45, 1.05);
+        bed(6.5, -12.6, 1.6, 1.2); bed(6.7, -6.4, 1.6, 1.2);
+      }
       bed(5, -20, 0.95, 0.95, G + 0.035); bed(27, -21, 0.95, 0.95, G + 0.035);
       /* the block itself, seen from below and beyond: its body under the walkway down to the ground, its void deck */
       box(mFace, -6.8, (G - 0.35) / 2, -7.35, 11.6, -G - 0.35, 18.7);   // (R46: under the wider, longer court too; was x -11..-1, z -14..2)
       /* the other blocks: a six-storey slab of homes, each storey's band and its windows, from an atlas of households */
-      const NW = 8, atlas = (() => { const [c, x] = canvas(1024, 1024), r = rng(28532), cw = 1024 / 4, ch = 1024 / 4;
-        x.fillStyle = '#e2dccd'; x.fillRect(0, 0, 1024, 1024);
-        for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { const ox = i * cw, oy = j * ch;
-          x.fillStyle = '#8f8a82'; x.fillRect(ox, oy + ch - 26, cw, 26);                                         // the slab's band
-          x.fillStyle = '#cfc8b8'; x.fillRect(ox, oy + ch - 70, cw, 44);                                         // the balcony's parapet
-          for (const wx of [0.12, 0.56]) { const lit = r(), col = lit < 0.35 ? '#f0c27a' : lit < 0.5 ? '#c9d8ec' : lit < 0.58 ? '#7f97d6' : '#2a2e36';
-            x.fillStyle = '#5f5a52'; x.fillRect(ox + wx * cw - 3, oy + 34, cw * 0.32 + 6, ch * 0.5 + 6);
-            x.fillStyle = col; x.fillRect(ox + wx * cw, oy + 37, cw * 0.32, ch * 0.5);
-            if (lit < 0.58) { x.fillStyle = 'rgba(0,0,0,0.18)'; for (let k = 0; k < 6; k++) x.fillRect(ox + wx * cw + k * cw * 0.055, oy + 37, 3, ch * 0.5); }
-            x.fillStyle = '#b9bcbd'; x.fillRect(ox + wx * cw + cw * 0.155, oy + 37, 3, ch * 0.5); } }
+      /* (R105) THE OTHER BLOCKS' FACES, painted again: each bay of each storey a condominium's balcony as the estate sees it
+         from below (its slab's shadow over it, its sliding doors behind a metal railing, lit warm, cool or dark at dusk, an
+         air-con unit, plants in pots, a laundry pole with the day's washing), dealt from 18 households (3 by 6 cells of 512
+         by 256: a bay is 7 m by a storey's 2.95 m); before, 16 cells of two flat windows each, which the opening film's first
+         shot came to rest on and read as a picture of a block. Its colour is the low sun's on a face that turns to it, and
+         the hour's (EST5.sun) */
+      const NW = 8, ATL = { cols: 3, rows: 6 }, atlas = (() => { const CW = 512, CH = 256, [c, x] = canvas(CW * ATL.cols, CH * ATL.rows), r = rng(28532);
+        for (let i = 0; i < ATL.cols; i++) for (let j = 0; j < ATL.rows; j++) { const ox = i * CW, oy = j * CH;
+          /* the wall either side, the recess behind the railing, the slab over it and its shadow */
+          x.fillStyle = '#e6decd'; x.fillRect(ox, oy, CW, CH);
+          x.fillStyle = '#d3c9b5'; x.fillRect(ox + 34, oy, CW - 68, CH - 24);
+          const sh = x.createLinearGradient(0, oy, 0, oy + 70); sh.addColorStop(0, 'rgba(40,34,28,0.55)'); sh.addColorStop(1, 'rgba(40,34,28,0)');
+          x.fillStyle = sh; x.fillRect(ox + 34, oy, CW - 68, 70);
+          x.fillStyle = 'rgba(60,52,44,0.25)'; x.fillRect(ox + 34, oy, 6, CH - 24); x.fillRect(ox + CW - 40, oy, 6, CH - 24);
+          /* the sliding doors: three or four panels in aluminium, each lit warm through its curtain, cool, or dark with the
+             sky in it */
+          const np = r() < 0.5 ? 3 : 4, dx0 = ox + 66, dw = CW - 132, pw = dw / np, lit = r();
+          const glass = lit < 0.42 ? '#f3c47c' : lit < 0.56 ? '#cfdcee' : lit < 0.64 ? '#8aa0da' : '#232831';
+          for (let p = 0; p < np; p++) { const px = dx0 + p * pw;
+            x.fillStyle = '#9fa3a6'; x.fillRect(px, oy + 30, pw, CH - 56);
+            const gx = px + 4, gy = oy + 34, gw = pw - 8, gh = CH - 64;
+            if (lit >= 0.64) { const g = x.createLinearGradient(0, gy, 0, gy + gh); g.addColorStop(0, '#46506a'); g.addColorStop(1, '#1d2129'); x.fillStyle = g; }
+            else x.fillStyle = glass;
+            x.fillRect(gx, gy, gw, gh);
+            if (lit < 0.56) { x.fillStyle = 'rgba(120,70,30,0.16)'; for (let k = 0; k < gw; k += 9) x.fillRect(gx + k, gy, 3, gh); }   // (the curtain's folds)
+            x.fillStyle = 'rgba(255,255,255,0.10)'; x.beginPath(); x.moveTo(gx, gy + gh * 0.8); x.lineTo(gx + gw * 0.5, gy); x.lineTo(gx + gw * 0.7, gy); x.lineTo(gx, gy + gh); x.fill(); }
+          /* what stands on the balcony: an air-con unit, plants, a laundry pole */
+          if (r() < 0.45) { const ax = r() < 0.5 ? ox + 48 : ox + CW - 118; x.fillStyle = '#c9c7c0'; x.fillRect(ax, oy + CH - 92, 70, 52);
+            x.fillStyle = '#55575a'; x.beginPath(); x.arc(ax + 28, oy + CH - 66, 18, 0, 6.29); x.fill(); x.fillStyle = '#8a8c8f'; x.fillRect(ax + 52, oy + CH - 86, 12, 40); }
+          for (let k = 0, n = r() < 0.55 ? 1 + ((r() * 3) | 0) : 0; k < n; k++) { const px = ox + 70 + r() * (CW - 160), h = 26 + r() * 30;
+            x.fillStyle = '#7a4a32'; x.fillRect(px, oy + CH - 52, 22, 22);
+            x.fillStyle = r() < 0.5 ? '#3f6a32' : '#2f5a2c'; x.beginPath(); x.ellipse(px + 11, oy + CH - 52 - h * 0.45, 18 + r() * 8, h * 0.6, 0, 0, 6.29); x.fill(); }
+          if (r() < 0.3) { const ly = oy + 44; x.fillStyle = '#b8b8b4'; x.fillRect(ox + 60, ly, CW - 120, 3);
+            for (let px = ox + 80; px < ox + CW - 90; px += 20 + r() * 26) { const cols = ['#d9534f', '#f0f0ea', '#5b7fc4', '#e8c547', '#7fbf7a', '#444444'];
+              x.fillStyle = cols[(r() * cols.length) | 0]; x.fillRect(px, ly + 3, 14 + r() * 12, 22 + r() * 30); } }
+          /* the railing: a top rail, balusters and a bottom rail, dark, across the balcony's front; its kerb */
+          const ry = oy + CH - 94;
+          x.fillStyle = '#3c3e40'; x.fillRect(ox + 34, ry, CW - 68, 5); x.fillRect(ox + 34, oy + CH - 32, CW - 68, 4);
+          x.fillStyle = 'rgba(52,54,56,0.85)'; for (let bx = ox + 38; bx < ox + CW - 36; bx += 11) x.fillRect(bx, ry + 5, 2.5, CH - 32 - (ry - oy) - 5);
+          x.fillStyle = '#cfc6b3'; x.fillRect(ox + 34, oy + CH - 28, CW - 68, 6);
+          /* the slab's edge at the storey's foot */
+          x.fillStyle = '#8f8a82'; x.fillRect(ox, oy + CH - 22, CW, 22); x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(ox, oy + CH - 22, CW, 4); }
         const t = tex(done(THREE, c, false)); t.anisotropy = 8; return B({ map: t, fog: true }); })();
-      const BAYW = 7.0, mFaceD = B({ color: 0xcfc8b8, fog: true, side: THREE.DoubleSide });
+      EST5.sun.push({ m: atlas, c: new THREE.Color(1, 1, 1) });
+      const BAYW = 7.0, mFaceD = B({ color: 0xcfc8b8, fog: true, side: THREE.DoubleSide }); EST5.sun.push({ m: mFaceD, c: mFaceD.color.clone() });
+      for (const e of EST5.sun) e.m.color.setRGB(e.c.r * SUN_LOOK5.DUSK[0], e.c.g * SUN_LOOK5.DUSK[1], e.c.b * SUN_LOOK5.DUSK[2]);   // (the hour it opens in)
       const slab = (x0, z0, x1, z1, storeys, seed) => {
         const r = rng(seed), L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, nb = Math.max(1, Math.round(L / BAYW)), bw = L / nb;
         const P = (u, y, w = 0) => [x0 + ax * u + az * w, y, z0 + az * u - ax * w];
-        for (let st = 0; st < storeys; st++) for (let i = 0; i < nb; i++) { const y = G + st * STOREY, k = (r() * 16) | 0, ci = k % 4, cj = (k / 4) | 0;
-          const u0 = ci / 4, u1 = (ci + 1) / 4, v0 = 1 - (cj + 1) / 4, v1 = 1 - cj / 4;
+        for (let st = 0; st < storeys; st++) for (let i = 0; i < nb; i++) { const y = G + st * STOREY, k = (r() * ATL.cols * ATL.rows) | 0, ci = k % ATL.cols, cj = (k / ATL.cols) | 0;
+          const u0 = ci / ATL.cols, u1 = (ci + 1) / ATL.cols, v0 = 1 - (cj + 1) / ATL.rows, v1 = 1 - cj / ATL.rows;
           const a = P(i * bw, y), b = P((i + 1) * bw, y), c = P((i + 1) * bw, y + STOREY), d = P(i * bw, y + STOREY), Bt = batchOf(atlas);
           const PP = [a, b, c, a, c, d], U = [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]];
           for (let q = 0; q < 6; q++) { Bt.p.push(PP[q][0], PP[q][1], PP[q][2]); Bt.n.push(-az, 0, ax); Bt.u.push(U[q][0], U[q][1]); } }
@@ -646,28 +695,30 @@
       slab(-30, -52, 26, -52, 6, 28542);        // south, beyond the deck
       slab(-44, 12, -44, -40, 6, 28543);        // west, seen from the terrace
       /* THE ESTATE'S TREES (chapter 4's real models of Singapore's street trees: declared, reuseInEpisode): angsanas on the
-         lawn, 6 m and more from every lamp; foxtail palms along the block's path, two of them in the beds where the first path
-         leaves it, and round the pool as before */
+         lawn, 6 m and more from every lamp; foxtail palms round the pool as before */
       /* (each a model of ~28,000 triangles: a few where they are seen, past the balustrade and the terrace, in cells of
          24 m, each cell its own instanced mesh culled by its own sphere: the phone's budget, the plan's 13) */
       const TREES = [], PALMS = [], tr = rng(28544);
       for (const [x, z] of [[12.5, -16.5], [11.0, 15.0], [19.0, -17.0], [19.5, 15.5], [-14, -30], [-28, -24], [6, -46], [-34, 2]])
         TREES.push({ x: x + (tr() - 0.5) * 1.2, y: G, z: z + (tr() - 0.5) * 1.2, ry: tr() * 6.28, s: 0.72 + tr() * 0.18 });
-      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22], [6.5, -12.6], [6.7, -6.4], [5.8, 1.5], [5.8, 12.6]])
+      for (const [x, z] of [[5, -20], [27, -21], [5, -41], [27, -41], [-20, -22]])
         PALMS.push({ x, y: G, z, ry: tr() * 6.28, s: 0.85 + tr() * 0.2 });
       const cells = (list) => { const m = new Map(); for (const it of list) { const k = Math.floor(it.x / 24) + ',' + Math.floor(it.z / 24); if (!m.has(k)) m.set(k, []); m.get(k).push(it); } return [...m.values()]; };
-      for (const c of cells(TREES)) many('w4angsana', c, world, 0.03);
-      for (const c of cells(PALMS)) many('w4foxpalm', c, world, 0.03);
+      const onLawn = (c) => c.some(t => t.x > 0 && t.x < 26 && t.z > -19 && t.z < 30) ? shaded5 : null;     // (in the long shadow at dusk)
+      for (const c of cells(TREES)) many('w4angsana', c, world, 0.03, onLawn(c));
+      for (const c of cells(PALMS)) many('w4foxpalm', c, world, 0.03, onLawn(c));
 
       /* THE PLAYGROUND (w5playground: 4.0 by 4.35 m, its roof 3.3 m): in the middle of its mat, its slides toward the walkway */
-      stand('w5playground', PG.x, G + 0.04, PG.z, -Math.PI / 2);
+      stand('w5playground', PG.x, G + 0.04, PG.z, -Math.PI / 2, { done: (m) => shaded5(m) });
       /* THE IXORA (w5shrub, 1.1 m): along the block's foot, behind the playground, at the paths' corners */
       const SHRUBS = [], sr = rng(28567), sh = (x, z, s = 1) => SHRUBS.push({ x: x + (sr() - 0.5) * 0.3, y: G + 0.02, z: z + (sr() - 0.5) * 0.3, ry: sr() * 6.28, s: s * (0.85 + sr() * 0.3) });
-      for (let z = -16.4; z < 15.8; z += 2.9) sh(1.32, z, 0.9);
+      for (let z = -16.4; z < 15.8; z += 3.6) sh(1.32, z, 0.9);
       for (let z = -3.5; z < 3.0; z += 1.6) sh(19.5, z, 1.0);
-      for (const [x, z] of [[21.2, -12.4], [21.95, -11.7], [21.3, -6.6], [21.95, -7.3], [21.2, 5.4], [21.95, 6.0], [21.3, 11.2], [21.95, 10.5]]) sh(x, z, 0.85);
-      for (const [x, z] of [[5.5, -12.9], [7.5, -12.2], [5.7, -6.1], [7.7, -6.7]]) sh(x, z, 0.9);
-      for (const c of cells(SHRUBS)) many('w5shrub', c, world, 0.03);
+      for (const [x, z] of [[21.6, -12.2], [21.6, -6.8], [21.6, 5.6], [21.6, 11.0]]) sh(x, z, 0.9);
+      /* (where the first path leaves the block's: its two beds' ixora (the palms first set in them stood at the walkway's eye,
+         their crowns across its view: below1)) */
+      for (const [x, z] of [[6.0, -12.9], [7.1, -12.3], [6.2, -6.1], [7.3, -6.7]]) sh(x, z, 0.95);
+      if (have('w5shrub')) for (const c of cells(SHRUBS)) many('w5shrub', c, world, 0.03, shaded5);
       /* THE GARDEN LAMPS (w5gardenlamp, 3.2 m, the middle of its globe 2.95 m up): along the cross paths, along the block's
          path, two by the playground. Its globe is lit: what is pale in its picture glows (the opal glass; the dark pole
          does not), by the hour (EST5.glow) */
@@ -676,7 +727,7 @@
       for (const z of [-16.0, -4.0, 4.0, 15.0]) LAMPS.push([4.75, z]);
       LAMPS.push([9.4, -5.0], [18.6, 3.9]);
       const uGlobe = { value: 0 };
-      many('w5gardenlamp', LAMPS.map(([x, z], i) => ({ x, y: G, z, ry: i * 1.3 })), world, 0.03, (made) => { for (const im of made) {
+      many('w5gardenlamp', LAMPS.map(([x, z], i) => ({ x, y: G, z, ry: i * 1.3 })), world, 0.03, (made) => { shaded5(made); for (const im of made) {
         const mt = im.material; mt.onBeforeCompile = (sh2) => { sh2.uniforms.uGlobe = uGlobe;
           sh2.fragmentShader = 'uniform float uGlobe;\n' + sh2.fragmentShader.replace('#include <emissivemap_fragment>',
             '#include <emissivemap_fragment>\n{ float gl = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)); totalEmissiveRadiance += vec3(1.0, 0.86, 0.62) * smoothstep(0.42, 0.72, gl) * uGlobe; }'); };
@@ -688,11 +739,22 @@
       many('w4streetlamp', STREET.map(z => ({ x: 24.4 + 0.75, y: G, z, ry: Math.PI })), world, 0.02);
       /* THE CARS parked in the bays (chapter 1's lighter sedan and SUV: declared, reuseInEpisode), nose in or backed in as
          people park; one of each in its own paint (a black sedan, a maroon SUV) */
-      const CARS = [[-14.75, 'e4sedanfar', 0], [-9.75, 'e4suvfar', 0], [-2.25, 'e4sedanfar', 1], [5.25, 'e4suvfar', 1], [12.75, 'e4sedanfar', 0], [17.75, 'e4suvfar', 0]];
+      /* (four: each file is 30,000 triangles, a weight the walkway's views pay; measured, tools/probes/e4c5world.mjs) */
+      const CARS = [[-9.75, 'e4suvfar', 0], [-2.25, 'e4sedanfar', 1], [5.25, 'e4suvfar', 1], [12.75, 'e4sedanfar', 0]];
       for (const key of ['e4sedanfar', 'e4suvfar']) for (const paint of [0, 1]) {
         const L = CARS.filter(c => c[1] === key && c[2] === paint).map(([z], i) => ({ x: 32.85, y: G + 0.02, z, ry: (Math.round(z * 7) % 2 ? 1 : -1) * Math.PI / 2 }));
         if (L.length) many(key, L, world, 0.02, paint ? (made) => { for (const im of made) im.material.color.multiply(new THREE.Color(key === 'e4sedanfar' ? 0x3a3a40 : 0x8a4848)); } : null); }
 
+      /* THE LONG SHADOW: at dusk the low sun in the west lays our block's shadow across the lawn toward the road, the east
+         block's face still in the sun; painted over the lawn, darkest at the block's foot and gone by the road (drawn before the
+         lamps' light, so their pools lie over it: one draw); only at dusk (EST5.low), the hours after it have no sun */
+      const mLow = (() => { const [c, x] = canvas(256, 64), img = x.createImageData(256, 64);
+        for (let j = 0; j < 64; j++) for (let i = 0; i < 256; i++) { const u = i / 255, v = j / 63, fx = u < 0.5 ? 1 - 0.2 * u / 0.5 : Math.max(0, 0.8 * (1 - (u - 0.5) / 0.47)),
+          fz = Math.min(1, v / 0.08, (1 - v) / 0.08), a = 0.55 * fx * fz, p = (j * 256 + i) * 4; img.data[p] = 10; img.data[p + 1] = 14; img.data[p + 2] = 26; img.data[p + 3] = Math.round(255 * a); }
+        x.putImageData(img, 0, 0);
+        const m = new THREE.MeshBasicMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, fog: true, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }); mats.push(m); return m; })();
+      quadUV(mLow, [0.4, G + 0.044, 30], [27, G + 0.044, 30], [27, G + 0.044, -19], [0.4, G + 0.044, -19]);
+      EST5.low = (k) => { mLow.opacity = k; mLow.visible = k > 0.01; };
       /* THE LAMPS' LIGHT, painted (v15.1): a soft glow round each globe and head (one draw for all), and its pool of light on
          the ground (one draw for all); both by the hour */
       const glow5 = (() => { const [c, x] = canvas(128, 128); const g = x.createRadialGradient(64, 64, 1, 64, 64, 62);
@@ -702,7 +764,7 @@
       for (const [x, z] of LAMPS) HALO.push(x, G + 2.95, z);
       for (const z of STREET) HALO.push(25.85, G + 6.75, z);
       const haloG = new THREE.BufferGeometry(); haloG.setAttribute('position', new THREE.Float32BufferAttribute(HALO, 3)); owned.push(haloG);
-      const mHalo = new THREE.PointsMaterial({ map: glow5, color: 0xffd9a8, size: 1.5, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(mHalo);
+      const mHalo = new THREE.PointsMaterial({ map: glow5, color: 0xffd9a8, size: 1.8, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(mHalo);
       const halos = new THREE.Points(haloG, mHalo); halos.name = 'estate:halos'; world.add(halos);
       const mPoolL = new THREE.MeshBasicMaterial({ map: glow5, color: 0xffd49a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mPoolL);
       const pool = (x, z, r, y = G + 0.06) => quadUV(mPoolL, [x - r, y, z + r], [x + r, y, z + r], [x + r, y, z - r], [x - r, y, z - r]);
@@ -725,7 +787,7 @@
       const OFF = [0.18, -0.12];
       for (const t of TREES) { const r = 7.6 * t.s; shade(t.x + OFF[0] * r, t.z + OFF[1] * r, r * 1.5, r * 1.3); }
       for (const p of PALMS) { const r = 2.8 * p.s; shade(p.x + OFF[0] * r, p.z + OFF[1] * r, r * 1.4, r * 1.2); }
-      for (const b of SHRUBS) { const r = 0.9 * b.s; shade(b.x + 0.15, b.z - 0.1, r * 2.0, r * 1.8, 0, G + 0.045); }
+      if (have('w5shrub')) for (const b of SHRUBS) { const r = 0.9 * b.s; shade(b.x + 0.15, b.z - 0.1, r * 2.0, r * 1.8, 0, G + 0.048); }
       for (const [x, z] of LAMPS) shade(x + 0.1, z - 0.06, 0.9, 0.8);
       for (const [z] of CARS) shade(32.95, z - 0.05, 5.2, 2.6, 0, G + 0.035);
       shade(PG.x + 0.3, PG.z - 0.2, 6.2, 5.8, 0, G + 0.055);
