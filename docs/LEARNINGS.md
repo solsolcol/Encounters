@@ -9007,3 +9007,33 @@ stat bars and a two-line objective reach 250 CSS points down: a seated view's fi
 235 hid them under the objective while he spoke. A first look is solved for the screen's shape (a portrait screen 3.4
 degrees higher, a landscape one as it was), with the frame's foot checked too: the nearest row of the table's pieces
 must stay inside it.
+
+**A flipbook drawn on a card as wide as its subject is cut by the card's sides** (v28.0, R94, builds 71 and 72;
+c_fightstage.js FX_FS). The fireball's simulated head was mapped onto a card exactly the ball's width, so the picture's
+glow (its heat blurred wide) ended in two straight orange edges beside the ball in flight: a pale band 13 levels over the
+wall, read in the photographs as a "triangle" and a "band" before its colour (106,64,62 against 70,55,61) said it was
+the glow. A card is made large enough for its picture's OWN edges (where the picture thins to nothing) to fall inside it:
+five head-radii wide and 1.45 ahead. Read a pale shape's colour before guessing what drew it.
+
+**A ShaderMaterial writes its colour raw; a THREE.Color set from a hex is stored linear** (v28.0, R94, build 72). The
+flipbook smoke's colour 0x2a211b came out at 6/255, near black and lost on a night wall, because `new THREE.Color(hex)`
+converts the hex to linear and a shader without colour chunks writes that number as it stands. A colour meant to be SEEN
+as its hex in such a shader is set with `setHex(hex, THREE.LinearSRGBColorSpace)` (no conversion).
+
+**A chapter may not name another chapter's sound in quotes, even as an unrelated key** (v28.0, R94, build 71). The
+release refused `'fire'` (chapter 1's burner sound) used as a flipbook's key: the build's sound split treats a quoted
+name as a cue and would have made the sound everyone's download. Name keys so they never collide with a sound.
+
+**Blender frees a fluid domain's cache when a domain's properties are set** (v28.0, R94; tools/fx/flipsim.py). A script
+that rebuilds the scene to re-render an existing bake (FX_SKIPBAKE) finds the cache gone the moment it sets the domain up,
+and renders empty frames; a render from a bake must come from the same run that baked, or from a .blend saved after it.
+A run's bake is checked by its grids' statistics before anything is rendered (flipsim exits 3 on an empty bake).
+
+**On a rented box, never `pgrep -f`/`pkill -f` a pattern that appears in the command running it** (v28.0, R94). The exec
+call's own shell carries the pattern in its command line, so the kill took the call itself twice (exit 143). Put the work
+in a script file and kill by its name, or by a pid file.
+
+**Light added near the lens floods the screen; a column round a body hides the body** (v28.0, R94, builds 73 and 74). The
+shockwave's ring of flame passing a metre under the lens and LEND's and TOGETHER's columns drawn whole were walls of white
+in the photographs. Effects fade with the depth from the lens (a card within 2.2 m, the wheel within 4 m), and a column
+round someone flames at its silhouette and thins on the face it turns to the eye (a fresnel), so the body inside stays seen.
