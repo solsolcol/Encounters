@@ -152,9 +152,10 @@
      marks in story seconds, read off build 48's live clock; the film draws from its live clock, is walked from these when
      there is no world, and says so on the console the moment the two part by more than a fiftieth of a second. Each pierce
      is held a moment (c_yfilm.js NAGA_HIT5: a twelfth of its pace for 0.16 s), which TOG5_REAL carries the same way */
+  /* (R75's debug, V7: Mr Koh's line 1.1 s later, the three laid held for it: ko5c2, back and end each 1.1 later) */
   const TOG5 = { plant: 0.2, rise: 2, kindle: 2.55, cry: 2.75, top: 4.2333, ph5c2: 4.3533, stoop: 7.7833, apart: 8.5259, swoop: 8.6344,
                  p1: 9.3315, p2: 9.9579, p3: 10.5114, climb: 10.9086, ring: 11.8067, low: 12.1114, ringOut: 13.9873, home: 15.1729,
-                 tail: 17.1729, ko5c2: 18.6729, back: 23.2029, end: 24.8029 };
+                 tail: 17.1729, ko5c2: 19.7729, back: 24.3029, end: 25.9029 };
   const TOG5_REAL = (T, tau) => { const H = 0.16, r = 1 / 12; let add = 0;
     for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; }
     return tau + add; };
@@ -221,7 +222,7 @@
      film begins on it, with the card) */
   const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [0.9], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
-                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.0], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
+                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.bagtied, T = BT5;
     step(0, () => F.begin(api, s));
@@ -272,6 +273,9 @@
     /* (R75's debug, F8: everyone goes in now, his teacher after Ton, he last, the doors closing in front of him: their steps
        where their feet go. The doors had closed between him and the two inside while these steps walked him in) */
     sfx(T.in + 1.25, 'u5phostep', 0.35); sfx(T.in + 1.85, 'u5phostep', 0.3); sfx(T.in + 2.2, 'u5step1', 0.3); sfx(T.in + 2.45, 'u5phostep', 0.3); sfx(T.in + 2.75, 'u5step2', 0.35);   // in
+    /* (R75's debug: the cut inside waits for his teacher at his place, his last steps and his own to the doors: 3.8 s from
+       in to close, was 3.0, his teacher's bare shoulder had crossed the edge of a phone's frame as the cut came) */
+    sfx(T.in + 3.05, 'u5phostep', 0.26); sfx(T.in + 3.25, 'u5step1', 0.3);
     sfx(T.close - 0.05, 'u5liftshut', 0.75);                                   // the doors close
     sfx(T.close + 0.4, 'u5lifthum', 0.4);                                      // the car's hum again, on the black
     fade(T.black, T.end - 0.1, 0, 1);

@@ -157,7 +157,9 @@
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 27,                    // so a bubble's longest stand: bubbleSecs + stillMax (R73: 7 + 20)
-        lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
+        // (R75's debug: a lend's 6 s begin again once in his teacher's hands, once a lend, so its longest is 6 before the
+        // switch, 6 after it, and the gold gathered and gone out under it: 6 + 6 + 1.5 + 1.21 + 0.3, was 9)
+        lendLongest: 15.1,                    // a lend, and the gold gathered and loosed under it
         // A SMELL OPENED FOR NOTHING COSTS HIM (Chad's R21: "A button masher should not win so easily"): with nothing hidden,
         // they feel him open, and it costs his sanity, seen on its bar (and said once: ph5fg)
         smellCost: 4,
@@ -349,7 +351,7 @@
           // cz: where he stood at the last step, so what is at him and at his bars is carried where he goes)
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, waveFrom: n.waveWait, wind: 0, ring: null, draw: 0 },
           zav: { x: n.zavAt[0], z: n.zavAt[1], cx: n.zavAt[0], cz: n.zavAt[1], bindWait: 0, smellWait: 0, look: 0 },
-          cage: { str: n.cageMax, broken: false, lent: 0 },
+          cage: { str: n.cageMax, broken: false, lent: 0, lentUp: 0, lentFor: 0 },
           prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
@@ -585,6 +587,12 @@
             if (n.switchCost > 0 && st.stage === 'fight' && st.t - (st.lastSw == null ? -99 : st.lastSw) < n.switchSpam) { st.owe += n.switchCost; st.stats.spam = (st.stats.spam || 0) + 1; }
             st.lastSw = st.t;
             st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
+            /* (R75's debug: THE SLOWEST HAND'S GOLD. A lend's 6 s ran out under a hand that took 3 s a press: lend, "Now
+               switch to me.", the switch, and the gold pressed 0.6 s after the cage had come back; "Switch to Zavier, and
+               lend me your cage.", round and round, never won and never lost (fightsim, a follower 3.2 s a press: 27
+               minutes at the cap). The cage is in his teacher's hands once the switch reaches him: its 6 s begin again
+               there, once a lend. A lend never switched to still runs out in 6 s: V28.0-FIGHT.md, "lends, then never switches") */
+            if (isP(st) && st.cage.lent > 0 && !st.cage.lentUp) { st.cage.lent = Math.max(st.cage.lent, n.lendSecs); st.cage.lentUp = 1; }
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
             st.ev.push({ e: 'switch', to: st.who });
             return;
@@ -644,7 +652,7 @@
             return;
           }
           case 'LEND':
-            st.cage.lent = n.lendSecs; st.stats.lends++;
+            st.cage.lent = n.lendSecs; st.cage.lentUp = 0; st.cage.lentFor = 0; st.stats.lends++;
             for (const p of st.prai) if (p.st === 'pressing') { p.gath = n.gather; p.at = 2; setSt(st, p, 'through', 'the cage is lent'); }
             st.ev.push({ e: 'lend' });
             return;
@@ -671,7 +679,7 @@
         setStage(st, 'fight');
         for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
         st.left = 8; st.lead = !!lead;
-        st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0;
+        st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0; st.cage.lentUp = 0; st.cage.lentFor = 0;
         st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1; st.owe = 0;
         // (a breath taken for nothing in the lost fight, and what it cost, are not carried into the next)
         const ph = st.pho, z = st.zav;
@@ -767,7 +775,10 @@
                count to exactly six had left the long wait set as it went out (50 s for the hold's 40, when it was found); the ring's
                end changes it only if it ends the hold, and the wait does not run while the ring is out. A hold cannot begin
                while the gold gathers: nothing is bagged or gathered then) */
-            if (!(ph0(st).wind > 0)) setWave(ph0(st), n.holdSecs);
+            /* (R75's GG: a gold already taught and waiting, its lesson's words still asking him to lend, stays ready: the
+               slowest player, whose 40 s ran out before six were left, was told the gold was ready and then had it taken
+               back for 34 s while the words still asked for it, v14.2) */
+            if (!(ph0(st).wind > 0) && st.lesson.wave !== 'pending') setWave(ph0(st), n.holdSecs);
             st.ev.push({ e: 'hold', n: st.hold, secs: ph0(st).waveWait });
             sayOnce(st, st.hold === n.holdAt.length ? 'ph5fh' : 'ph5fi', n.holdLate);   // the last hold, or the first
           }
@@ -1272,7 +1283,7 @@
       function cageTick(st, dt) {
         const n = st.n, c = st.cage;
         if (c.lent > 0) {
-          timed(st, 'lend', n.lendSecs - c.lent + dt);
+          c.lentFor = (c.lentFor || 0) + dt; timed(st, 'lend', c.lentFor);   // (from the lend's own start: its 6 s may begin again)
           c.lent -= dt;
           if (c.lent <= 0) { c.lent = 0; st.ev.push({ e: 'lendEnd' }); }
           return;                                                 // round his teacher it is neither worn nor mended

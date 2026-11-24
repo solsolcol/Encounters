@@ -21,7 +21,7 @@
    CLIP=<s> (seek mode): at every CLIP s of each film and at its last moment, clipscan's own measure (its ANALYSE, read from
    tools/probes/clipscan.mjs so the two never differ) over R m round the lens: the pairs whose surfaces cross.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... VIEW=phone|desktop [MODE=seek|play|pics] [STEP=0.1] [STEP_MS=50] [CLIP=9] [R=14]
-       [JOBS=open,devotee,prepare,together,bagtied,collector,end:A,end:B,end:C,end:D] [FROM=s] [UNTIL=s]
+       [JOBS=open,devotee,prepare,together,bagtied,collector,end:A,end:B,end:C,end:D] [FROM=s] [UNTIL=s] [SURGE=1]
        [PICS='devotee@10.5,25;end:A@5'] [DPR=1] [SETTLE=1200] [OUT=dir] [LIMBS=1] node tools/probes/e4c5films.mjs
    LIMBS=1 (R76): every row also carries the limbs' own check (K: tools/probes/limbclip.js), read by tools/probes/limbread.py.
    Read by tools/probes/e4c5filmread.py. */
@@ -131,6 +131,10 @@ async function reach(p, job) {
       await p.waitForFunction(() => { const o = parseFloat(getComputedStyle(document.getElementById('cineFade')).opacity) || 0, now = performance.now();
         if (o >= 0.02) { window.__fsClear = 0; return false; } if (!window.__fsClear) window.__fsClear = now; return now - window.__fsClear > 2500; }, null, { timeout: 900000, polling: 250 });
       await p.waitForTimeout(1500);
+      /* SURGE=1 (R75's debug): the Naga's film begun as a real fight begins it, five Prai gathered and three in the tall shape
+         (the chapter's lab.toSurge), where a bookmark of the fight's start left every Prai of its start standing, burning */
+      if (process.env.SURGE === '1' && job === 'together') { log(job, 'surge', JSON.stringify(await p.evaluate(() => {
+        const L = window.__enc.stage.snap().story.fight.lab; return L && L.toSurge ? L.toSurge() : 'no toSurge'; }))); await p.waitForTimeout(1500); }
       log(job, 'film started', await p.evaluate((k) => window.__enc.kit.film(k), job));
     }
   }

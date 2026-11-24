@@ -22,6 +22,9 @@
                1.5, the reading by 0.8 to 1.2 and the wrong presses by 0.5 to 1.5 (person())
      slow      a slow human: 400 ms to answer what the screen asks, 15% wrong presses
      late      the pair played as the screen asks, a second and a half late on every press (the plan's 14.1)
+     slowest   the same, 3.2 s on every press (R75's debug: the lend's loop, lend, switch, the gold pressed after
+               the cage had come back, round and round, never won and never lost; held to: it never stalls. It
+               wins nothing: 2.6 s a press wins 52.5 % within two tries, 2.8 s 30 %, 3.0 s none, 23 Nov)
      optimal   knows the rules: answers in 150 ms, never wrong, binds several before the golden shockwave, keeps
                Grandmaster Pho where he can reach the court
      masher    presses a random button (the switch among them) every 0.12 to 0.30 s, taps random Prai, swings the stick
@@ -162,7 +165,8 @@ const PROF = {
   fast:    { brief: 3, card: 1, lead: true, listen: false, read: 0, fresh: [0.15, 0.15], known: [0.15, 0.15], again: 0.15, gap: 0.15, wrong: 0 },
   careful: { brief: 9, card: 3, lead: true, listen: true, read: 4.5, think: 0.5, fresh: [0.9, 1.7], known: [0.7, 1.3], again: 0.5, gap: 0.45, wrong: 0.04 },
   slow:    { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [0.4, 0.4], known: [0.4, 0.4], again: 0.4, gap: 0.4, wrong: 0.15 },
-  late:    { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [1.5, 1.5], known: [1.5, 1.5], again: 1.5, gap: 1.5, wrong: 0 }
+  late:    { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [1.5, 1.5], known: [1.5, 1.5], again: 1.5, gap: 1.5, wrong: 0 },
+  slowest: { brief: 6, card: 2, lead: true, listen: false, read: 0, fresh: [3.2, 3.2], known: [3.2, 3.2], again: 3.2, gap: 3.2, wrong: 0 }
 };
 
 /* THE OPTIMAL PLAYER: what the rules allow, played at once and never wrong. Its own reading of the court, not the
@@ -260,6 +264,7 @@ const PLAYERS = {
   careful: (r) => follower(person(PROF.careful, r)),
   slow: () => follower(PROF.slow),
   late: () => follower(PROF.late),
+  slowest: () => follower(PROF.slowest),
   optimal: () => optimal(''),
   masher: () => masher({ brief: 2, card: 1, lead: false }),
   never: () => afterLesson((st, mem, r) => {
@@ -275,7 +280,7 @@ const PLAYERS = {
   nothing: () => afterLesson(() => ({})),
   fuzz: () => masher({ brief: 0.5, card: 0.3, lead: true })
 };
-const ORDER = ['careful', 'slow', 'late', 'optimal', 'masher', 'never', 'onlyPho', 'onlyZav', 'nothing', 'fuzz'];
+const ORDER = ['careful', 'slow', 'late', 'slowest', 'optimal', 'masher', 'never', 'onlyPho', 'onlyZav', 'nothing', 'fuzz'];
 
 /* ------------------------------------------------------------------ one campaign: a fight, begun again after each loss */
 const MAX_TRIES = 6, MAX_CLOCK = 1800;
@@ -551,7 +556,7 @@ async function main() {
   req(!Object.keys(bad).length, 'no invariant broken in any step');
   req(det, 'the same seed gives the same end');
   req(!missing.length && !dropped.length, 'every line the rules say has its words, and none is a dropped one');
-  const stalls = all.filter(t => ['careful', 'slow', 'late', 'optimal'].includes(t.who)).reduce((a, t) => a + Object.entries(t.stalls).filter(([k]) => !/^lost /.test(k)).reduce((x, [, y]) => x + y, 0), 0);
+  const stalls = all.filter(t => ['careful', 'slow', 'late', 'slowest', 'optimal'].includes(t.who)).reduce((a, t) => a + Object.entries(t.stalls).filter(([k]) => !/^lost /.test(k)).reduce((x, [, y]) => x + y, 0), 0);
   req(!stalls, `no campaign of a player who follows the screen stalled (${stalls})`);
   console.log('\nTHE REQUIREMENTS');
   for (const [k, w] of R) console.log('  ' + k + ' ' + w);

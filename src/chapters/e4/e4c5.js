@@ -6953,7 +6953,9 @@
         stillMax: 20,                         // the most a bubble stands still in all (the gold's grace, the lent cage, the gold
                                               // gathered and gone out: 8 + 9 + 1.5 + 1.2 is under it)
         bubbleLongest: 27,                    // so a bubble's longest stand: bubbleSecs + stillMax (R73: 7 + 20)
-        lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
+        // (R75's debug: a lend's 6 s begin again once in his teacher's hands, once a lend, so its longest is 6 before the
+        // switch, 6 after it, and the gold gathered and gone out under it: 6 + 6 + 1.5 + 1.21 + 0.3, was 9)
+        lendLongest: 15.1,                    // a lend, and the gold gathered and loosed under it
         // A SMELL OPENED FOR NOTHING COSTS HIM (Chad's R21: "A button masher should not win so easily"): with nothing hidden,
         // they feel him open, and it costs his sanity, seen on its bar (and said once: ph5fg)
         smellCost: 4,
@@ -7145,7 +7147,7 @@
           // cz: where he stood at the last step, so what is at him and at his bars is carried where he goes)
           pho: { x: n.phoAt[0], z: n.phoAt[1], fireWait: 0, aiWait: n.aiFireWait, waveWait: n.waveWait, waveFrom: n.waveWait, wind: 0, ring: null, draw: 0 },
           zav: { x: n.zavAt[0], z: n.zavAt[1], cx: n.zavAt[0], cz: n.zavAt[1], bindWait: 0, smellWait: 0, look: 0 },
-          cage: { str: n.cageMax, broken: false, lent: 0 },
+          cage: { str: n.cageMax, broken: false, lent: 0, lentUp: 0, lentFor: 0 },
           prai: [], clouds: [], flights: [], nextCloud: 1, lastEntry: -99, together: 0, joined: 0, film: 0,
           firsts: {}, lesson: { wave: '' }, hold: 0, holdsDone: 0, goldAt: -1, seen: { swap: false, bind: false, smell: false, shock: false },
           voice: { until: 0, last: -99, q: [], need: '', needSince: 0, needSaid: -99, count: {} },
@@ -7381,6 +7383,12 @@
             if (n.switchCost > 0 && st.stage === 'fight' && st.t - (st.lastSw == null ? -99 : st.lastSw) < n.switchSpam) { st.owe += n.switchCost; st.stats.spam = (st.stats.spam || 0) + 1; }
             st.lastSw = st.t;
             st.who = isP(st) ? 'zavier' : 'pho'; st.lock = n.switchLock; st.lockUntil = st.t + n.switchLock; st.stats.switches++;
+            /* (R75's debug: THE SLOWEST HAND'S GOLD. A lend's 6 s ran out under a hand that took 3 s a press: lend, "Now
+               switch to me.", the switch, and the gold pressed 0.6 s after the cage had come back; "Switch to Zavier, and
+               lend me your cage.", round and round, never won and never lost (fightsim, a follower 3.2 s a press: 27
+               minutes at the cap). The cage is in his teacher's hands once the switch reaches him: its 6 s begin again
+               there, once a lend. A lend never switched to still runs out in 6 s: V28.0-FIGHT.md, "lends, then never switches") */
+            if (isP(st) && st.cage.lent > 0 && !st.cage.lentUp) { st.cage.lent = Math.max(st.cage.lent, n.lendSecs); st.cage.lentUp = 1; }
             if (!isP(st)) { st.seen.bind = true; st.seen.smell = true; }   // his two buttons, the first time he is played
             st.ev.push({ e: 'switch', to: st.who });
             return;
@@ -7440,7 +7448,7 @@
             return;
           }
           case 'LEND':
-            st.cage.lent = n.lendSecs; st.stats.lends++;
+            st.cage.lent = n.lendSecs; st.cage.lentUp = 0; st.cage.lentFor = 0; st.stats.lends++;
             for (const p of st.prai) if (p.st === 'pressing') { p.gath = n.gather; p.at = 2; setSt(st, p, 'through', 'the cage is lent'); }
             st.ev.push({ e: 'lend' });
             return;
@@ -7467,7 +7475,7 @@
         setStage(st, 'fight');
         for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
         st.left = 8; st.lead = !!lead;
-        st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0;
+        st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0; st.cage.lentUp = 0; st.cage.lentFor = 0;
         st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1; st.owe = 0;
         // (a breath taken for nothing in the lost fight, and what it cost, are not carried into the next)
         const ph = st.pho, z = st.zav;
@@ -7563,7 +7571,10 @@
                count to exactly six had left the long wait set as it went out (50 s for the hold's 40, when it was found); the ring's
                end changes it only if it ends the hold, and the wait does not run while the ring is out. A hold cannot begin
                while the gold gathers: nothing is bagged or gathered then) */
-            if (!(ph0(st).wind > 0)) setWave(ph0(st), n.holdSecs);
+            /* (R75's GG: a gold already taught and waiting, its lesson's words still asking him to lend, stays ready: the
+               slowest player, whose 40 s ran out before six were left, was told the gold was ready and then had it taken
+               back for 34 s while the words still asked for it, v14.2) */
+            if (!(ph0(st).wind > 0) && st.lesson.wave !== 'pending') setWave(ph0(st), n.holdSecs);
             st.ev.push({ e: 'hold', n: st.hold, secs: ph0(st).waveWait });
             sayOnce(st, st.hold === n.holdAt.length ? 'ph5fh' : 'ph5fi', n.holdLate);   // the last hold, or the first
           }
@@ -8068,7 +8079,7 @@
       function cageTick(st, dt) {
         const n = st.n, c = st.cage;
         if (c.lent > 0) {
-          timed(st, 'lend', n.lendSecs - c.lent + dt);
+          c.lentFor = (c.lentFor || 0) + dt; timed(st, 'lend', c.lentFor);   // (from the lend's own start: its 6 s may begin again)
           c.lent -= dt;
           if (c.lent <= 0) { c.lent = 0; st.ev.push({ e: 'lendEnd' }); }
           return;                                                 // round his teacher it is neither worn nor mended
@@ -8981,7 +8992,9 @@
       else if (own && V.spd > FS_WALK.minSpd) {
         name = V.spd > FS_WALK.fastAt ? FS_WALK.fast : FS_WALK.slow;
         const pace = (P.praiPace && P.praiPace[name]) || (name === 'Walking' ? 1.1 : 0.45);
-        rate = Math.max(0.5, Math.min(1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
+        /* (R75's debug, B9: a Prai rushing him comes on at 2.2 m a second on a walk whose pace is 1.1: held to 1.7 times, its
+           feet slid back a fifth of its speed; rushing, up to 2.1 times, its steps go with the ground, a frantic scuttle) */
+        rate = Math.max(0.5, Math.min(p.st === 'rushing' ? 2.1 : 1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
         ry = V.hd;
       }
       /* (carried back by a setback or thrown by the gold: turned against the push; thrown, it staggers) */
@@ -10046,6 +10059,15 @@
                  spd: V ? +V.spd.toFixed(2) : null, vis: P ? P.group.visible : false, pace: P && P.praiPace ? P.praiPace : null, flame: !!(P && P.tr && P.tr.flames && P.tr.flames.length && P.tr.flames[0].visible) }; }); },
       /* (a probe's: the rules set in the fight's last stage as the Naga's film leaves them: five gathered, three laid where the
          Naga lays them; the two where they stand) */
+      /* (a probe's: the rules as the Naga's film finds them after a real fight, five gathered and the last three drawn into
+         the tall shape over his student as the rules' surge leaves them, the film told which three as the stage tells it;
+         the films probe's SURGE=1 sets it before the film, which a bookmark of the fight's start does not: R75's debug) */
+      toSurge() { const st = FS5.st; if (!st) return false; let i = 0; const three = [];
+        for (const p of st.prai) { if (p.id === 1 || i++ < 5) { p.st = 'gathered'; continue; }
+          p.st = 'shape'; p.hold = ''; p.bub = 0; p.show = 0; p.stop = 0; p.at = 0; p.gath = 0; p.x = st.zav.x; p.z = st.zav.z - 0.2; three.push(st.prai.indexOf(p)); }
+        st.left = 3; st.stage = 'surge'; st.stageT = 0;
+        if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three; FILMS5.together.spots = st.three || null; }
+        return three; },
       toLast() { const st = FS5.st; if (!st) return false; const n = st.n; let i = 0;
         for (const p of st.prai) { if (p.id === 1) continue; if (i < 5) p.st = 'gathered'; else { const at = n.laidAt[i - 5]; p.x = at[0]; p.z = at[1]; p.st = 'laid'; } i++; }
         st.left = 3; st.stage = 'last'; st.stageT = 0; return true; },
@@ -10618,9 +10640,14 @@
          weight. The take's own turn of it is kept as the mixer last wrote it (a bone the mixer finds unchanged is not written
          again: v11.5), so nothing stacks; it is given back when the act is done */
       let clB = null, clWrote = null; const clTake = new THREE.Quaternion();
+      /* (R75's debug, B8: the arms' range check, LIM5, writes the collarbone after this, from what this laid; what it wrote
+         is this one's own work too, so the take is kept: read as a new take, the act's weight was laid on again over its own
+         trim each frame the take held still, a held act halving the shrug twice) */
+      const clavOurs = (P, b, wrote) => { const S = P.limState && P.limState.get(b);
+        return !!wrote && (b.quaternion.equals(wrote) || !!(S && S.wrote && b.quaternion.equals(S.wrote))); };
       function clavLay(P, w) {
         if (!clB) clB = boneOf(P, 'RightShoulder'); if (!clB || !HIPS.restClav) return;
-        if (!clWrote || !clB.quaternion.equals(clWrote)) clTake.copy(clB.quaternion);
+        if (!clavOurs(P, clB, clWrote)) clTake.copy(clB.quaternion);
         if (w > 0.001) { clB.quaternion.copy(clTake).slerp(HIPS.restClav, w); clWrote = clB.quaternion.clone(); clB.updateWorldMatrix(false, true); }
         else if (clWrote) { clB.quaternion.copy(clTake); clWrote = null; clB.updateWorldMatrix(false, true); }
       }
@@ -10632,7 +10659,7 @@
       let clL = null, clLWrote = null; const clLTake = new THREE.Quaternion();
       function clavLayL(P, w) {
         if (!clL) clL = boneOf(P, 'LeftShoulder'); if (!clL || !HIPS.restClavL) return;
-        if (!clLWrote || !clL.quaternion.equals(clLWrote)) clLTake.copy(clL.quaternion);
+        if (!clavOurs(P, clL, clLWrote)) clLTake.copy(clL.quaternion);
         if (w > 0.001) { clL.quaternion.copy(clLTake).slerp(HIPS.restClavL, w); clLWrote = clL.quaternion.clone(); clL.updateWorldMatrix(false, true); }
         else if (clLWrote) { clL.quaternion.copy(clLTake); clLWrote = null; clL.updateWorldMatrix(false, true); }
       }
@@ -14398,7 +14425,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const T = { plant: 0.2, rise: RISE, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
                     swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
                     tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
-        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 1.5; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
+        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 2.6; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
         this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW,
                    dirAt: (i) => { const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)]; const d = [-(b[0] - a[0]), 0, -(b[2] - a[2])], l = Math.hypot(d[0], d[2]) || 1; return [d[0] / l, 0, d[2] / l]; } };
         return this.B;
@@ -14519,6 +14546,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
+        /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
+           the three across 3.6 m at once, so its lens goes from the first two to the last two: a desktop's holds all three) */
+        const THREE_A = cw(-0.6, 0.35, -1.45), THREE_B = cw(0.9, 0.35, -1.35);
         const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
         const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
         /* (R75's lab, 23 Nov, each candidate photographed full size on a phone before it was written here: the three pierces
@@ -14561,9 +14591,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.ringOut + 0.2, name: 'ring', eye: [GOD[0], GOD[1] - 0.8, GOD[2]], at: GODAT, fp: 62, fd: 48 },
           { t: T.ringOut + 0.25, name: 'home', eye: HOME_EYE, at: HOME_UP, fp: 70, fd: 60, cut: true },
           { t: T.home, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
-          { t: T.tail + 1.2, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
-          { t: T.tail + 1.25, name: 'three', eye: THREE_EYE, at: THREE_AT, fp: 56, fd: 50, cut: true },
-          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_AT, fp: 55, fd: 49 },
+          { t: T.tail + 1.0, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
+          { t: T.tail + 1.05, name: 'three', eye: THREE_EYE, at: THREE_A, fp: 56, fd: 50, cut: true },
+          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_B, fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
@@ -14603,7 +14633,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                     liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55],
                     /* (R75's debug, F8: their places in the car, 1.6 by 1.5 m: Jun and Ton at its back, his teacher at the doors' right,
                        his own eye at their left, each 0.6 m and more from the next) */
-                    inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
+                    inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -14756,7 +14786,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (R75's debug, F8: his eye goes after his teacher toward the doors, then, cut, he is in the car with them, turned to
              the doors as they close on the walkway: "The lift doors close on black", the plan's 4.6) */
           { t: T.in + 2.45, name: 'doors', eye: [-0.15, EYE, -0.35], at: [0.1, 1.45, 1.9], fp: 62, fd: 54 },
-          { t: T.in + 2.5, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
+          /* (R75's debug: on to the doors while his teacher reaches his place and turns to them, and only then the cut:
+             cut at 2.5 s, his teacher was still coming in past the lens, his bare shoulder a sliver at a phone's edge) */
+          { t: T.in + 3.3, name: 'doors', eye: [-0.15, EYE, 0.5], at: [0.3, 1.5, 1.9], fp: 62, fd: 54 },
+          { t: T.in + 3.35, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
           { t: T.end, name: 'in', eye: [A.inEye[0], EYE, A.inEye[2] + 0.05], at: [A.inEye[0], 1.33, -1.6], fp: 66, fd: 58 }
         ]);
       },
@@ -15382,9 +15415,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      marks in story seconds, read off build 48's live clock; the film draws from its live clock, is walked from these when
      there is no world, and says so on the console the moment the two part by more than a fiftieth of a second. Each pierce
      is held a moment (c_yfilm.js NAGA_HIT5: a twelfth of its pace for 0.16 s), which TOG5_REAL carries the same way */
+  /* (R75's debug, V7: Mr Koh's line 1.1 s later, the three laid held for it: ko5c2, back and end each 1.1 later) */
   const TOG5 = { plant: 0.2, rise: 2, kindle: 2.55, cry: 2.75, top: 4.2333, ph5c2: 4.3533, stoop: 7.7833, apart: 8.5259, swoop: 8.6344,
                  p1: 9.3315, p2: 9.9579, p3: 10.5114, climb: 10.9086, ring: 11.8067, low: 12.1114, ringOut: 13.9873, home: 15.1729,
-                 tail: 17.1729, ko5c2: 18.6729, back: 23.2029, end: 24.8029 };
+                 tail: 17.1729, ko5c2: 19.7729, back: 24.3029, end: 25.9029 };
   const TOG5_REAL = (T, tau) => { const H = 0.16, r = 1 / 12; let add = 0;
     for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; }
     return tau + add; };
@@ -15451,7 +15485,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      film begins on it, with the card) */
   const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [0.9], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
-                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.0], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
+                     ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.bagtied, T = BT5;
     step(0, () => F.begin(api, s));
@@ -15502,6 +15536,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     /* (R75's debug, F8: everyone goes in now, his teacher after Ton, he last, the doors closing in front of him: their steps
        where their feet go. The doors had closed between him and the two inside while these steps walked him in) */
     sfx(T.in + 1.25, 'u5phostep', 0.35); sfx(T.in + 1.85, 'u5phostep', 0.3); sfx(T.in + 2.2, 'u5step1', 0.3); sfx(T.in + 2.45, 'u5phostep', 0.3); sfx(T.in + 2.75, 'u5step2', 0.35);   // in
+    /* (R75's debug: the cut inside waits for his teacher at his place, his last steps and his own to the doors: 3.8 s from
+       in to close, was 3.0, his teacher's bare shoulder had crossed the edge of a phone's frame as the cut came) */
+    sfx(T.in + 3.05, 'u5phostep', 0.26); sfx(T.in + 3.25, 'u5step1', 0.3);
     sfx(T.close - 0.05, 'u5liftshut', 0.75);                                   // the doors close
     sfx(T.close + 0.4, 'u5lifthum', 0.4);                                      // the car's hum again, on the black
     fade(T.black, T.end - 0.1, 0, 1);

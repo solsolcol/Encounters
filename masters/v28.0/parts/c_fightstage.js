@@ -617,7 +617,9 @@
       else if (own && V.spd > FS_WALK.minSpd) {
         name = V.spd > FS_WALK.fastAt ? FS_WALK.fast : FS_WALK.slow;
         const pace = (P.praiPace && P.praiPace[name]) || (name === 'Walking' ? 1.1 : 0.45);
-        rate = Math.max(0.5, Math.min(1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
+        /* (R75's debug, B9: a Prai rushing him comes on at 2.2 m a second on a walk whose pace is 1.1: held to 1.7 times, its
+           feet slid back a fifth of its speed; rushing, up to 2.1 times, its steps go with the ground, a frantic scuttle) */
+        rate = Math.max(0.5, Math.min(p.st === 'rushing' ? 2.1 : 1.7, V.spd / Math.max(0.05, pace * (V.s || 1))));
         ry = V.hd;
       }
       /* (carried back by a setback or thrown by the gold: turned against the push; thrown, it staggers) */
@@ -1682,6 +1684,15 @@
                  spd: V ? +V.spd.toFixed(2) : null, vis: P ? P.group.visible : false, pace: P && P.praiPace ? P.praiPace : null, flame: !!(P && P.tr && P.tr.flames && P.tr.flames.length && P.tr.flames[0].visible) }; }); },
       /* (a probe's: the rules set in the fight's last stage as the Naga's film leaves them: five gathered, three laid where the
          Naga lays them; the two where they stand) */
+      /* (a probe's: the rules as the Naga's film finds them after a real fight, five gathered and the last three drawn into
+         the tall shape over his student as the rules' surge leaves them, the film told which three as the stage tells it;
+         the films probe's SURGE=1 sets it before the film, which a bookmark of the fight's start does not: R75's debug) */
+      toSurge() { const st = FS5.st; if (!st) return false; let i = 0; const three = [];
+        for (const p of st.prai) { if (p.id === 1 || i++ < 5) { p.st = 'gathered'; continue; }
+          p.st = 'shape'; p.hold = ''; p.bub = 0; p.show = 0; p.stop = 0; p.at = 0; p.gath = 0; p.x = st.zav.x; p.z = st.zav.z - 0.2; three.push(st.prai.indexOf(p)); }
+        st.left = 3; st.stage = 'surge'; st.stageT = 0;
+        if (typeof FILMS5 === 'object' && FILMS5.together) { FILMS5.together.three = three; FILMS5.together.spots = st.three || null; }
+        return three; },
       toLast() { const st = FS5.st; if (!st) return false; const n = st.n; let i = 0;
         for (const p of st.prai) { if (p.id === 1) continue; if (i < 5) p.st = 'gathered'; else { const at = n.laidAt[i - 5]; p.x = at[0]; p.z = at[1]; p.st = 'laid'; } i++; }
         st.left = 3; st.stage = 'last'; st.stageT = 0; return true; },
@@ -2254,9 +2265,14 @@
          weight. The take's own turn of it is kept as the mixer last wrote it (a bone the mixer finds unchanged is not written
          again: v11.5), so nothing stacks; it is given back when the act is done */
       let clB = null, clWrote = null; const clTake = new THREE.Quaternion();
+      /* (R75's debug, B8: the arms' range check, LIM5, writes the collarbone after this, from what this laid; what it wrote
+         is this one's own work too, so the take is kept: read as a new take, the act's weight was laid on again over its own
+         trim each frame the take held still, a held act halving the shrug twice) */
+      const clavOurs = (P, b, wrote) => { const S = P.limState && P.limState.get(b);
+        return !!wrote && (b.quaternion.equals(wrote) || !!(S && S.wrote && b.quaternion.equals(S.wrote))); };
       function clavLay(P, w) {
         if (!clB) clB = boneOf(P, 'RightShoulder'); if (!clB || !HIPS.restClav) return;
-        if (!clWrote || !clB.quaternion.equals(clWrote)) clTake.copy(clB.quaternion);
+        if (!clavOurs(P, clB, clWrote)) clTake.copy(clB.quaternion);
         if (w > 0.001) { clB.quaternion.copy(clTake).slerp(HIPS.restClav, w); clWrote = clB.quaternion.clone(); clB.updateWorldMatrix(false, true); }
         else if (clWrote) { clB.quaternion.copy(clTake); clWrote = null; clB.updateWorldMatrix(false, true); }
       }
@@ -2268,7 +2284,7 @@
       let clL = null, clLWrote = null; const clLTake = new THREE.Quaternion();
       function clavLayL(P, w) {
         if (!clL) clL = boneOf(P, 'LeftShoulder'); if (!clL || !HIPS.restClavL) return;
-        if (!clLWrote || !clL.quaternion.equals(clLWrote)) clLTake.copy(clL.quaternion);
+        if (!clavOurs(P, clL, clLWrote)) clLTake.copy(clL.quaternion);
         if (w > 0.001) { clL.quaternion.copy(clLTake).slerp(HIPS.restClavL, w); clLWrote = clL.quaternion.clone(); clL.updateWorldMatrix(false, true); }
         else if (clLWrote) { clL.quaternion.copy(clLTake); clLWrote = null; clL.updateWorldMatrix(false, true); }
       }

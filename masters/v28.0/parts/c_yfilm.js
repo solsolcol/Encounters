@@ -1519,7 +1519,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const T = { plant: 0.2, rise: RISE, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
                     swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
                     tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
-        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 1.5; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
+        T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 2.6; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
         this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW,
                    dirAt: (i) => { const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)]; const d = [-(b[0] - a[0]), 0, -(b[2] - a[2])], l = Math.hypot(d[0], d[2]) || 1; return [d[0] / l, 0, d[2] / l]; } };
         return this.B;
@@ -1640,6 +1640,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.25, 3.0, 2.7), THREE_AT = cw(0, 0.35, -1.35);
+        /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
+           the three across 3.6 m at once, so its lens goes from the first two to the last two: a desktop's holds all three) */
+        const THREE_A = cw(-0.6, 0.35, -1.45), THREE_B = cw(0.9, 0.35, -1.35);
         const BURST_EYE = cw(2.95, 1.05, 2.75), BURST_AT = cw(B.M.za[0] - 0.4, 1.4, B.M.za[1] - 0.3), SWOOP_AT = cw(-1.8, 0.9, 0.2);
         const B0 = boomAt({ x: this.pho.x, z: this.pho.z }, PULL5);
         /* (R75's lab, 23 Nov, each candidate photographed full size on a phone before it was written here: the three pierces
@@ -1682,9 +1685,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.ringOut + 0.2, name: 'ring', eye: [GOD[0], GOD[1] - 0.8, GOD[2]], at: GODAT, fp: 62, fd: 48 },
           { t: T.ringOut + 0.25, name: 'home', eye: HOME_EYE, at: HOME_UP, fp: 70, fd: 60, cut: true },
           { t: T.home, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
-          { t: T.tail + 1.2, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
-          { t: T.tail + 1.25, name: 'three', eye: THREE_EYE, at: THREE_AT, fp: 56, fd: 50, cut: true },
-          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_AT, fp: 55, fd: 49 },
+          { t: T.tail + 1.0, name: 'home', eye: HOME_EYE, at: HOME_AT, fp: 62, fd: 54 },
+          { t: T.tail + 1.05, name: 'three', eye: THREE_EYE, at: THREE_A, fp: 56, fd: 50, cut: true },
+          { t: T.ko5c2 - 0.05, name: 'three', eye: [THREE_EYE[0], THREE_EYE[1] - 0.2, THREE_EYE[2]], at: THREE_B, fp: 55, fd: 49 },
           { t: T.ko5c2, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 44, fd: 38, cut: true },
           { t: T.back - 0.05, name: 'door', eye: [-8.3, 1.62, -7.3], at: () => fmHead(cast.koh, [-8.5, 1.55, -4.7]), fp: 42, fd: 36 },
           { t: T.back, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov, cut: true },
@@ -1724,7 +1727,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                     liftPho: [0.35, 0.05], liftTon: [-0.55, 0.45], liftJun: [-0.1, 0.8], liftEye: [-0.1, EYE, -1.55],
                     /* (R75's debug, F8: their places in the car, 1.6 by 1.5 m: Jun and Ton at its back, his teacher at the doors' right,
                        his own eye at their left, each 0.6 m and more from the next) */
-                    inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
+                    inJun: [0.42, 2.45], inTon: [-0.42, 2.4], inPho: [0.38, 1.8], inEye: [-0.28, EYE, 1.72] };
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -1877,7 +1880,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (R75's debug, F8: his eye goes after his teacher toward the doors, then, cut, he is in the car with them, turned to
              the doors as they close on the walkway: "The lift doors close on black", the plan's 4.6) */
           { t: T.in + 2.45, name: 'doors', eye: [-0.15, EYE, -0.35], at: [0.1, 1.45, 1.9], fp: 62, fd: 54 },
-          { t: T.in + 2.5, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
+          /* (R75's debug: on to the doors while his teacher reaches his place and turns to them, and only then the cut:
+             cut at 2.5 s, his teacher was still coming in past the lens, his bare shoulder a sliver at a phone's edge) */
+          { t: T.in + 3.3, name: 'doors', eye: [-0.15, EYE, 0.5], at: [0.3, 1.5, 1.9], fp: 62, fd: 54 },
+          { t: T.in + 3.35, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
           { t: T.end, name: 'in', eye: [A.inEye[0], EYE, A.inEye[2] + 0.05], at: [A.inEye[0], 1.33, -1.6], fp: 66, fd: 58 }
         ]);
       },
