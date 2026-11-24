@@ -677,9 +677,13 @@ await lbl('vision-hands');
   await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; }); await fr(4);
   const shownLate = await corner();
   await p.evaluate(() => { const E = window.__enc; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
-  const dHidden = diff(shown, hidden), dStale = diff(shown, stale), dNoise = diff(shown, shown2), dLate = diff(shown, shownLate);
-  K.visionHandsHidden = gated && dHidden > 3 && dHidden > 2.5 * dNoise && dStale < Math.min(0.5 * dHidden, Math.max(dHidden * 0.25, 1.6 * Math.max(dNoise, dLate) + 0.3));
-  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2), '| shown vs shown (its noise)', dNoise.toFixed(2), '| over the old way\'s span', dLate.toFixed(2));
+  /* (and on build 65 the drift over that span was 3.97, the hidden hands' change 6.29: the scene moves nearly as much in
+     three pictures' time as the hands do, so the old way is judged instead against the picture taken just before it, the
+     hands hidden the new way, one step apart: the old way must differ from it about as much as the shown hands do (it
+     still shows them), never only by a step's noise (it hid them too)) */
+  const dHidden = diff(shown, hidden), dStale = diff(shown, stale), dNoise = diff(shown, shown2), dLate = diff(shown, shownLate), dHS = diff(hidden, stale);
+  K.visionHandsHidden = gated && dHidden > 3 && dHidden > 2.5 * dNoise && dHS > Math.max(2.5 * dNoise, 0.5 * dHidden);
+  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| hidden vs the old way', dHS.toFixed(2), '| shown vs the old way', dStale.toFixed(2), '| shown vs shown (its noise)', dNoise.toFixed(2), '| over the old way\'s span', dLate.toFixed(2));
 }
 await settle();
 
