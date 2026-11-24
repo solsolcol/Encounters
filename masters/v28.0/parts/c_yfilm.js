@@ -2187,7 +2187,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const casePos0 = { x: null, z: null, ry: null };
     function caseAt5(x, z, ry) { const pc = things.padcase; if (!pc) return; if (casePos0.x === null) { casePos0.x = pc.position.x; casePos0.z = pc.position.z; casePos0.ry = pc.rotation.y; }
       pc.position.set(x != null ? x : casePos0.x, 0.34, z != null ? z : casePos0.z); pc.rotation.set(0, ry != null ? ry : casePos0.ry, 0); }
-    function casePush5(t, t0, t1, to) { caseAt5(); const u = smo(c01((t - t0) / Math.max(0.05, t1 - t0))); caseAt5(lp(casePos0.x, to[0], u), lp(casePos0.z, to[1], u), casePos0.ry + 0.35 * u); }
+    function casePush5(t, t0, t1, to) { caseAt5(); const u = smo(c01((t - t0) / Math.max(0.05, t1 - t0))); caseAt5(lp(casePos0.x, to[0], u), lp(casePos0.z, to[1], u), lp(casePos0.ry, to[2], u)); }
+    /* (R109, 24 Nov 2026: "when the black box slides over the table it clips into all the amulets": pushed to [0.14, 240.3]
+       it crossed the twenty pieces' rows, x -0.135 to 0.135, and stood on the back row's three. It is pushed now along the
+       cloth's free left side toward his teacher, turned a little square to the table: its right edge 5 cm off the left
+       column's pieces at the end of the push and further off all the way there, its far edge 3 cm inside the cloth's) */
+    const CASE_TO5 = [ROOM.cx - 0.40, ROOM.cz + 0.16, 8 * DEG];
     const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
@@ -2206,8 +2211,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       A: { shots: (me, COL, PHO, E) => [
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.q5A1 + 0.4, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
-             { t: E.push + 0.2, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.18, 0.42, 240.02], fp: 46, fd: 40 },
-             { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+             { t: E.push + 0.2, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.33, 0.42, 240.0], fp: 52, fd: 44 },
+             { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.35, 0.42, 240.12], fp: 52, fd: 44 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
              { t: E.ph5A1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
@@ -2219,7 +2224,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 the middle of his line and he was off a phone's and a desktop's frame from 40.9 s, e4c5filmread FRAME) */
              { t: E.ph5A2 + SECS.ph5A2 - 0.1, name: 'pho', eye: me, at: PHO, fp: 43, fd: 37 },
              { t: E.q5A2 + 1.0, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
-           things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
+           things: (t, E) => casePush5(t, E.push, E.push + 1.4, CASE_TO5) },
       /* B · "Tell me what each one is, and where it came from." (best): he starts confidently at the first row; the second;
          the third he turns over twice; he stops with his hand on the fourth, looks along the rows, and is quiet. He closes
          the case's lid himself and pushes it across. After the rite, at the door: "If I ever buy another..." "Ask it those
@@ -2230,8 +2235,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              { t: E.co5B3 + 0.2, name: 'row3', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [0.12, 0.36, 239.94], fp: 40, fd: 34 },
              { t: E.co5B4 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.lid - 0.2, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
-             { t: E.lid + 0.4, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.2, 0.42, 240.02], fp: 46, fd: 40 },
-             { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+             { t: E.lid + 0.4, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.33, 0.42, 240.0], fp: 52, fd: 44 },
+             { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.35, 0.42, 240.12], fp: 52, fd: 44 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
              /* (to his teacher on the cut BEFORE the collector goes, so he goes out of shot: on the door until his teacher's
@@ -2241,7 +2246,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              /* (held on him to his line's last word: eased to the table from his first, the look left him all through it) */
              { t: E.ph5B1 + SECS.ph5B1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5B2 + 0.6, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
-           things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
+           things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, CASE_TO5),
            colLooks: (E) => [[0, [-0.2, 0.36, 239.8]], [E.co5B4, [0.2, 0.36, 239.85]], [E.lid, 'lens']] },
       /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
          across with one finger and fits the seventeen back into their foam; the film opens his sight on the case: on a

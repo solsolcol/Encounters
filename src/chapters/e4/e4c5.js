@@ -80,29 +80,30 @@
      books its window by it and every film's times are built from it, so a measured take moves what follows it: v5.15).
      The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when the chapter names it in
      quotes (v21.1). */
-  const SECS = {      // 183 of 183 MEASURED from their takes; the other 0 PROVISIONAL (words / 2.3 s)
+  const SECS = {      // 174 of 187 MEASURED from their takes; the other 13 PROVISIONAL (words / 2.3 s)
     /* Master Zavier (the player) */
     'q5o1': 9.05, 'q5o2': 3.45, 'q5w1': 1.43, 'q5w2': 2.49, 'q5w3': 2.25, 'q5w4': 1.05, 'q5h1': 5.05, 'q5h2': 3.13,
-    'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5c0': 6.65, 'q5c1': 4.25, 'q5c2': 1.69, 'q5c3': 1.37,
-    'q5c4': 5.45, 'q5c5': 4.49, 'q5b1': 1.37, 'q5b2': 4.65, 'q5t1': 7.13, 'q5A1': 0.91, 'q5A2': 5.21, 'q5B1': 2.01,
-    'q5B2': 1.85, 'q5C1': 6.73, 'q5D1': 4.81, 'q5z1': 3.13, 'q5A': 6.01, 'q5B': 4.97, 'q5C': 4.97, 'q5D': 4.33,
+    'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5fb1': 5.22, 'q5fw1': 3.04, 'q5c0': 6.65, 'q5c1': 4.25,
+    'q5c2': 1.69, 'q5c3': 1.37, 'q5c4': 5.45, 'q5c5': 4.49, 'q5b1': 1.37, 'q5b2': 4.65, 'q5t1': 7.13, 'q5A1': 0.91,
+    'q5A2': 5.21, 'q5B1': 2.01, 'q5B2': 1.85, 'q5C1': 6.73, 'q5D1': 4.81, 'q5z1': 3.13, 'q5A': 6.01, 'q5B': 4.97,
+    'q5C': 4.97, 'q5D': 4.33,
     /* Grandmaster Pho */
     'ph5w1': 5.69, 'ph5w2': 5.53, 'ph5w3': 2.81, 'ph5w4': 1.69, 'ph5w5': 8.23, 'ph5w6': 1.2, 'ph5w7': 3.44,
     'ph5d1': 1.56, 'ph5d2': 7.53, 'ph5h1': 1.37, 'ph5h2': 2.17, 'ph5h3': 7.29, 'ph5h4': 4.89, 'ph5h5': 1.37,
     'ph5h6': 1.69, 'ph5h7': 1.27, 'ph5v1': 5.05, 'ph5v2': 3.56, 'ph5p1': 4.57, 'ph5p2': 6.09, 'ph5f0': 3.53,
-    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.73, 'ph5f5': 3.45, 'ph5f6': 1.53, 'ph5f8': 2.47, 'ph5f9': 4.12,
-    'ph5f10': 6.18, 'ph5fa': 4.65, 'ph5fc': 3.45, 'ph5fd': 5.84, 'ph5fe': 4.59, 'ph5fi': 7.13, 'ph5fj': 3.65,
-    'ph5fh': 7.05, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28, 'ph5nb2': 2.57, 'ph5nc2': 2.57,
-    'ph5nc3': 1.85, 'ph5nd2': 2.65, 'ph5nd3': 0.83, 'ph5ne1': 4.33, 'ph5ng1': 2.33, 'ph5ng2': 1.85, 'ph5nh1': 3.25,
-    'ph5nh2': 0.97, 'ph5ni1': 2.25, 'ph5ni2': 1.53, 'ph5nj1': 2.28, 'ph5nj2': 1.93, 'ph5nk1': 3.05, 'ph5nk2': 3.04,
-    'ph5nl1': 2.65, 'ph5nl2': 1.77, 'ph5nl3': 2.73, 'ph5no1': 1.53, 'ph5no2': 1.79, 'ph5np1': 1.61, 'ph5nq1': 2.27,
-    'ph5nr1': 3.37, 'ph5nr2': 3.05, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 3.84, 'ph5nt2': 2.09, 'ph5nu1': 3.05,
-    'ph5nu2': 2.01, 'ph5nv1': 2.13, 'ph5nv2': 3.1, 'ph5nv3': 0.68, 'ph5nw1': 3.45, 'ph5nw2': 3.61, 'ph5nx1': 2.17,
-    'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.93, 'ph5g3': 3.29, 'ph5g4': 2.45, 'ph5ca': 2.2, 'ph5cb': 0.97,
-    'ph5c1': 2.65, 'ph5c2': 3.2, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93, 'ph5l2': 3.53, 'ph5b1': 1.51,
-    'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13, 'ph5b6': 1, 'ph5t1': 0.84, 'ph5t2': 0.97,
-    'ph5t3': 4.65, 'ph5t4': 8.27, 'ph5t5': 1.2, 'ph5t6': 3.05, 'ph5A1': 5.21, 'ph5A2': 6.89, 'ph5B1': 8.44,
-    'ph5C1': 2.14, 'ph5C2': 4.17, 'ph5D1': 4.09, 'ph5D2': 6.17,
+    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.73, 'ph5f5': 3.45, 'ph5f6': 1.53, 'ph5f8': 2.47, 'ph5f9': 3.04,
+    'ph5f10': 6.18, 'ph5fa': 4.65, 'ph5fc': 3.45, 'ph5fd': 5.84, 'ph5fe': 4.78, 'ph5fi': 9.13, 'ph5fj': 3.65,
+    'ph5fh': 8.7, 'ph5fb1': 10, 'ph5fb2': 7.39, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28,
+    'ph5nb2': 2.57, 'ph5nc2': 2.57, 'ph5nc3': 1.85, 'ph5nd2': 2.65, 'ph5nd3': 0.83, 'ph5ne1': 4.33, 'ph5ng1': 2.33,
+    'ph5ng2': 1.85, 'ph5nh1': 3.25, 'ph5nh2': 0.97, 'ph5ni1': 2.25, 'ph5ni2': 1.53, 'ph5nj1': 2.28, 'ph5nj2': 1.93,
+    'ph5nk1': 3.05, 'ph5nk2': 3.04, 'ph5nl1': 2.65, 'ph5nl2': 1.77, 'ph5nl3': 2.73, 'ph5no1': 1.53, 'ph5no2': 1.79,
+    'ph5np1': 1.61, 'ph5nq1': 2.27, 'ph5nr1': 3.37, 'ph5nr2': 3.05, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 3.84,
+    'ph5nt2': 2.09, 'ph5nu1': 2.61, 'ph5nu2': 1.3, 'ph5nv1': 1.3, 'ph5nv2': 2.17, 'ph5nv3': 0.43, 'ph5nw1': 3.45,
+    'ph5nw2': 3.61, 'ph5nx1': 2.17, 'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.93, 'ph5g3': 3.29, 'ph5g4': 2.45,
+    'ph5ca': 2.2, 'ph5cb': 0.97, 'ph5c1': 2.65, 'ph5c2': 3.2, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93,
+    'ph5l2': 3.53, 'ph5b1': 1.51, 'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13, 'ph5b6': 1,
+    'ph5t1': 0.84, 'ph5t2': 0.97, 'ph5t3': 4.65, 'ph5t4': 8.27, 'ph5t5': 1.2, 'ph5t6': 3.05, 'ph5A1': 5.21,
+    'ph5A2': 6.89, 'ph5B1': 8.44, 'ph5C1': 2.14, 'ph5C2': 4.17, 'ph5D1': 4.09, 'ph5D2': 6.17,
     /* Ton, the follower who carries the Naga stick */
     'tn5o1': 4.17, 'tn5w1': 0.97, 'tn5w2': 1.76, 'tn5w3': 1.45, 'tn5w4': 2.81, 'tn5c0': 2.81, 'tn5c1': 2.01,
     'tn5c2': 2.09, 'tn5c3': 1.21, 'tn5b1': 7.13,
@@ -171,15 +172,19 @@
     'ph5f5': ['pho', 'fight', "It is bound. Now switch to me."],
     'ph5f6': ['pho', 'fight', "FIRE. Then BAG it."],
     'ph5f8': ['pho', 'fight', "There. BIND it, before it sinks again."],
-    'ph5f9': ['pho', 'fight', "The shockwave is ready. Lend me your cage first."],
+    'ph5f9': ['pho', 'fight', "The shockwave is ready. Shield me first."],
     'ph5f10': ['pho', 'fight', "The shockwave gathers what is bound. The rest, it only drives back."],
     'ph5fa': ['pho', 'fight', "A bound Prai cannot run. Now the fire tires it."],
     'ph5fc': ['pho', 'fight', "Now they all come. BIND them, and I will gather them."],
     'ph5fd': ['pho', 'fight', "The shockwave gathers only what is bound. First, BIND."],
-    'ph5fe': ['pho', 'fight', "They broke the shockwave. Lend me your cage before I gather it."],
-    'ph5fi': ['pho', 'fight', "They draw together. The bag cannot take them now. Only the shockwave, and only what is bound."],
+    'ph5fe': ['pho', 'fight', "They broke the shockwave. Shield me before I use it again."],
+    'ph5fi': ['pho', 'fight', "They are holding on to the house now. The bag cannot take them. BIND them, and the shockwave takes them all."],
     'ph5fj': ['pho', 'fight', "Three is all you can hold. Let me take one."],
-    'ph5fh': ['pho', 'fight', "The last of them cling to the house. Only the shockwave can take them. BIND them, Zavier."],
+    'ph5fh': ['pho', 'fight', "The last ones are holding on to the house. The bag cannot take them. BIND them, Zavier, then the shockwave."],
+    'q5fb1': ['he', 'fight', "They keep breaking out of the binding cage. What should I do?"],
+    'ph5fb1': ['pho', 'fight', "The bind lasts only a few seconds. BIND one, then switch to me at once. FIRE, then BAG it, before it breaks free."],
+    'ph5fb2': ['pho', 'fight', "The bag cannot take these. BIND them, SHIELD me, then I take them all with the SHOCKWAVE."],
+    'q5fw1': ['he', 'fight', "They are bound, Master! Use the shockwave!"],
     'ph5na1': ['pho', 'fight', "His cage is breaking. FIRE."],
     'ph5na2': ['pho', 'fight', "Chase them off his cage. FIRE."],
     'ph5na3': ['pho', 'fight', "They press at his cage. Switch to Zavier."],
@@ -213,11 +218,11 @@
     'ph5ns3': ['pho', 'fight', "Switch to Zavier."],
     'ph5nt1': ['pho', 'fight', "Zavier has found it. Switch to Zavier, and BIND it."],
     'ph5nt2': ['pho', 'fight', "Switch to Zavier. BIND."],
-    'ph5nu1': ['pho', 'fight', "Switch to Zavier, and lend me your cage."],
-    'ph5nu2': ['pho', 'fight', "Lend me your cage first."],
-    'ph5nv1': ['pho', 'fight', "Lend me your cage, Zavier."],
-    'ph5nv2': ['pho', 'fight', "The shockwave is ready. LEND."],
-    'ph5nv3': ['pho', 'fight', "LEND."],
+    'ph5nu1': ['pho', 'fight', "Switch to Zavier, and shield me."],
+    'ph5nu2': ['pho', 'fight', "Shield me first."],
+    'ph5nv1': ['pho', 'fight', "Shield me, Zavier."],
+    'ph5nv2': ['pho', 'fight', "The shockwave is ready. SHIELD."],
+    'ph5nv3': ['pho', 'fight', "SHIELD."],
     'ph5nw1': ['pho', 'fight', "That Prai slips the fire. Switch to Zavier."],
     'ph5nw2': ['pho', 'fight', "Only Zavier can hold it. Switch to Zavier."],
     'ph5nx1': ['pho', 'fight', "BIND the one that slips."],
@@ -310,7 +315,7 @@
     devotee: ['ko5d1', 'ko5d2', 'ko5d3', 'ko5d4', 'ph5d1', 'ph5d2'],
     hunt: ['q5h1', 'q5h2', 'q5h3', 'ph5h1', 'q5h4', 'ph5h2', 'ph5h3', 'ph5h4', 'q5h5', 'ph5h5', 'ph5h6', 'ph5h7', 'ph5v1', 'ph5v2'],
     prepare: ['ph5p1', 'ko5p1', 'ph5p2', 'q5p1'],
-    fight: ['ph5f0', 'ph5f1', 'ph5f2', 'ph5f4', 'ph5f5', 'ph5f6', 'ph5f8', 'ph5f9', 'ph5f10', 'ph5fa', 'ph5fc', 'ph5fd', 'ph5fe', 'ph5fi', 'ph5fj', 'ph5fh', 'ph5na1', 'ph5na2', 'ph5na3', 'ph5nb1', 'ph5nb2', 'ph5nc2', 'ph5nc3', 'ph5nd2', 'ph5nd3', 'ph5ne1', 'ph5ng1', 'ph5ng2', 'ph5nh1', 'ph5nh2', 'ph5ni1', 'ph5ni2', 'ph5nj1', 'ph5nj2', 'ph5nk1', 'ph5nk2', 'ph5nl1', 'ph5nl2', 'ph5nl3', 'ph5no1', 'ph5no2', 'ph5np1', 'ph5nq1', 'ph5nr1', 'ph5nr2', 'ph5ns2', 'ph5ns3', 'ph5nt1', 'ph5nt2', 'ph5nu1', 'ph5nu2', 'ph5nv1', 'ph5nv2', 'ph5nv3', 'ph5nw1', 'ph5nw2', 'ph5nx1', 'ph5nx2', 'ph5g1', 'ph5g2', 'ph5g3', 'ph5g4', 'ph5ca', 'ph5cb', 'ph5c1', 'ph5c2', 'ph5c3', 'ph5c4', 'ph5l1', 'ph5l2', 'q5c0', 'q5c1', 'q5c2', 'q5c3', 'q5c4', 'q5c5', 'tn5c0', 'ko5c1', 'tn5c1', 'ju5c1', 'tn5c2', 'ju5c2', 'ko5c2', 'tn5c3'],
+    fight: ['ph5f0', 'ph5f1', 'ph5f2', 'ph5f4', 'ph5f5', 'ph5f6', 'ph5f8', 'ph5f9', 'ph5f10', 'ph5fa', 'ph5fc', 'ph5fd', 'ph5fe', 'ph5fi', 'ph5fj', 'ph5fh', 'q5fb1', 'ph5fb1', 'ph5fb2', 'q5fw1', 'ph5na1', 'ph5na2', 'ph5na3', 'ph5nb1', 'ph5nb2', 'ph5nc2', 'ph5nc3', 'ph5nd2', 'ph5nd3', 'ph5ne1', 'ph5ng1', 'ph5ng2', 'ph5nh1', 'ph5nh2', 'ph5ni1', 'ph5ni2', 'ph5nj1', 'ph5nj2', 'ph5nk1', 'ph5nk2', 'ph5nl1', 'ph5nl2', 'ph5nl3', 'ph5no1', 'ph5no2', 'ph5np1', 'ph5nq1', 'ph5nr1', 'ph5nr2', 'ph5ns2', 'ph5ns3', 'ph5nt1', 'ph5nt2', 'ph5nu1', 'ph5nu2', 'ph5nv1', 'ph5nv2', 'ph5nv3', 'ph5nw1', 'ph5nw2', 'ph5nx1', 'ph5nx2', 'ph5g1', 'ph5g2', 'ph5g3', 'ph5g4', 'ph5ca', 'ph5cb', 'ph5c1', 'ph5c2', 'ph5c3', 'ph5c4', 'ph5l1', 'ph5l2', 'q5c0', 'q5c1', 'q5c2', 'q5c3', 'q5c4', 'q5c5', 'tn5c0', 'ko5c1', 'tn5c1', 'ju5c1', 'tn5c2', 'ju5c2', 'ko5c2', 'tn5c3'],
     bagtied: ['tn5b1', 'q5b1', 'ko5b1', 'ph5b1', 'ph5b2', 'ph5b3', 'q5b2', 'ph5b4', 'ph5b5', 'ju5b1', 'ph5b6'],
     table: ['co5t1', 'co5t2', 'q5t1', 'ph5t1', 'ph5t2', 'ph5t3', 'co5t3', 'ph5t4', 'co5t4', 'co5t5', 'co5t6', 'ph5t5', 'ph5t6', 'co5t7'],
     endA: ['co5A1', 'q5A1', 'co5A2', 'ph5A1', 'ph5A2', 'q5A2'],
@@ -16166,7 +16171,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const casePos0 = { x: null, z: null, ry: null };
     function caseAt5(x, z, ry) { const pc = things.padcase; if (!pc) return; if (casePos0.x === null) { casePos0.x = pc.position.x; casePos0.z = pc.position.z; casePos0.ry = pc.rotation.y; }
       pc.position.set(x != null ? x : casePos0.x, 0.34, z != null ? z : casePos0.z); pc.rotation.set(0, ry != null ? ry : casePos0.ry, 0); }
-    function casePush5(t, t0, t1, to) { caseAt5(); const u = smo(c01((t - t0) / Math.max(0.05, t1 - t0))); caseAt5(lp(casePos0.x, to[0], u), lp(casePos0.z, to[1], u), casePos0.ry + 0.35 * u); }
+    function casePush5(t, t0, t1, to) { caseAt5(); const u = smo(c01((t - t0) / Math.max(0.05, t1 - t0))); caseAt5(lp(casePos0.x, to[0], u), lp(casePos0.z, to[1], u), lp(casePos0.ry, to[2], u)); }
+    /* (R109, 24 Nov 2026: "when the black box slides over the table it clips into all the amulets": pushed to [0.14, 240.3]
+       it crossed the twenty pieces' rows, x -0.135 to 0.135, and stood on the back row's three. It is pushed now along the
+       cloth's free left side toward his teacher, turned a little square to the table: its right edge 5 cm off the left
+       column's pieces at the end of the push and further off all the way there, its far edge 3 cm inside the cloth's) */
+    const CASE_TO5 = [ROOM.cx - 0.40, ROOM.cz + 0.16, 8 * DEG];
     const THREE5 = ['w5wuathanu', 'w5rakyom', 'w5hunphayon'];
     const threeHome5 = {};
     function threeAt5(u) { for (const key of THREE5) { const g = things[key]; if (!g) continue; if (!threeHome5[key]) threeHome5[key] = g.position.clone();
@@ -16185,8 +16195,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       A: { shots: (me, COL, PHO, E) => [
              { t: 0, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.q5A1 + 0.4, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
-             { t: E.push + 0.2, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.18, 0.42, 240.02], fp: 46, fd: 40 },
-             { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+             { t: E.push + 0.2, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.33, 0.42, 240.0], fp: 52, fd: 44 },
+             { t: E.rite - 0.05, name: 'push', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.35, 0.42, 240.12], fp: 52, fd: 44 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
              { t: E.ph5A1 - 0.05, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44 },
@@ -16198,7 +16208,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                 the middle of his line and he was off a phone's and a desktop's frame from 40.9 s, e4c5filmread FRAME) */
              { t: E.ph5A2 + SECS.ph5A2 - 0.1, name: 'pho', eye: me, at: PHO, fp: 43, fd: 37 },
              { t: E.q5A2 + 1.0, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
-           things: (t, E) => casePush5(t, E.push, E.push + 1.4, [0.14, 240.3]) },
+           things: (t, E) => casePush5(t, E.push, E.push + 1.4, CASE_TO5) },
       /* B · "Tell me what each one is, and where it came from." (best): he starts confidently at the first row; the second;
          the third he turns over twice; he stops with his hand on the fourth, looks along the rows, and is quiet. He closes
          the case's lid himself and pushes it across. After the rite, at the door: "If I ever buy another..." "Ask it those
@@ -16209,8 +16219,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              { t: E.co5B3 + 0.2, name: 'row3', eye: [me[0] - 0.05, me[1] - 0.03, me[2]], at: [0.12, 0.36, 239.94], fp: 40, fd: 34 },
              { t: E.co5B4 + 0.3, name: 'col', eye: me, at: COL, fp: 44, fd: 38 },
              { t: E.lid - 0.2, name: 'col', eye: me, at: COL, fp: 42, fd: 36 },
-             { t: E.lid + 0.4, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.2, 0.42, 240.02], fp: 46, fd: 40 },
-             { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.02, 0.42, 240.16], fp: 46, fd: 40 } ],
+             { t: E.lid + 0.4, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.33, 0.42, 240.0], fp: 52, fd: 44 },
+             { t: E.rite - 0.05, name: 'lid', eye: [me[0] - 0.08, me[1] - 0.04, me[2]], at: [-0.35, 0.42, 240.12], fp: 52, fd: 44 } ],
            after: (me, COL, PHO, E) => [
              { t: E.door, name: 'door', eye: me, at: () => fmHead(cast.col, DOOR5), fp: 50, fd: 44, cut: true },
              /* (to his teacher on the cut BEFORE the collector goes, so he goes out of shot: on the door until his teacher's
@@ -16220,7 +16230,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              /* (held on him to his line's last word: eased to the table from his first, the look left him all through it) */
              { t: E.ph5B1 + SECS.ph5B1 - 0.1, name: 'pho', eye: me, at: PHO, fp: 44, fd: 38 },
              { t: E.q5B2 + 0.6, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
-           things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
+           things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, CASE_TO5),
            colLooks: (E) => [[0, [-0.2, 0.36, 239.8]], [E.co5B4, [0.2, 0.36, 239.85]], [E.lid, 'lens']] },
       /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
          across with one finger and fits the seventeen back into their foam; the film opens his sight on the case: on a

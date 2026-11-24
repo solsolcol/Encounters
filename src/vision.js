@@ -45,6 +45,17 @@ export function makeVision(THREE, renderer, opts = {}) {
     V.world = new THREE.WebGLRenderTarget(w, h, { type, samples: SAMPLES, depthTexture: V.depth, depthBuffer: true,
                                                    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
     V.world.texture.colorSpace = THREE.LinearSRGBColorSpace;
+    /* (v28.0, R109/R114, 24 Nov 2026: Chad, "when i open spirit vision and move the camera around, i can see a faint print
+       of pho stuck in the middle of the screen no matter where i move it", and "why dont you read the code". The world's
+       DEPTH is read back every frame (the edges, the negative by distance, the wave, the spirits hidden behind things), and
+       this target is multisampled. Where a browser offers WEBGL_multisampled_render_to_texture (Chrome on Android phones),
+       three attaches the depth texture through it and never resolves it (updateMultisampleRenderTarget does nothing on that
+       path): the extension resolves COLOUR only, and the depth texture keeps whatever a mid-frame flush last stored, an old
+       picture of the room, which every frame's edges were then traced from: his teacher across the table, fixed on the
+       screen. A desktop and the probes' browser never offer the extension, so every photograph here was right. This target
+       is kept off that path: the multisampled picture is drawn into renderbuffers and resolved, colour and depth both, into
+       the textures every frame (three's own resolve, blitFramebuffer). The hands' and the spirits' targets read no depth) */
+    renderer.properties.get(V.world).__useRenderToTexture = false;
     V.hands = new THREE.WebGLRenderTarget(w, h, { type, samples: SAMPLES, depthBuffer: true,
                                                    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
     const sw = Math.max(2, w >> 1), sh = Math.max(2, h >> 1);

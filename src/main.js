@@ -19842,6 +19842,9 @@ function showDiag() {
         add('GPU', dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
         add('Limits', `texture ${gl.getParameter(gl.MAX_TEXTURE_SIZE)}, anisotropy ${r.capabilities.getMaxAnisotropy()}` +
                       `, fragment highp ${hp && hp.precision ? hp.precision + ' bits' : 'NONE'}`);
+        /* (v28.0, R109: whether the browser offers multisampled render-to-texture, the path that left Spirit Vision's depth
+           unresolved on a phone: src/vision.js keeps the vision's world target off it) */
+        add('Multisample to texture', r.extensions && r.extensions.has('WEBGL_multisampled_render_to_texture') ? 'offered (Spirit Vision keeps off it)' : 'not offered');
       }
     } catch (e) { add(name, 'error ' + e.message); }
   };
