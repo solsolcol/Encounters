@@ -12217,7 +12217,7 @@
        smoke. The red rises quick and restless (the angry one, shaking more as it flinches), the green slow and leaning
        toward the collector's hands at the table's west end (the hungry one reaching) */
     const SMOKE5 = (() => {
-      const NP = 26, _db = new THREE.Vector2();
+      const NP = 34, _db = new THREE.Vector2();
       const mk = (color, seed, o) => {
         const g = new THREE.BufferGeometry(), pos = new Float32Array(NP * 3), siz = new Float32Array(NP), alp = new Float32Array(NP), rot = new Float32Array(NP);
         const at = (a, n) => { const b = new THREE.BufferAttribute(a, n); b.setUsage(THREE.DynamicDrawUsage); return b; };
@@ -12247,14 +12247,15 @@
             for (let i = 0; i < NP; i++) { const q = P[i], a = ((t / q.life + q.ph) % 1 + 1) % 1, up = a;
               const amp = (o.sway + 0.03 * a) * (1 + 1.6 * agit), w = t * o.wob;
               pos[i * 3] = b.x + Math.sin(w + q.sw) * amp + o.lean * up; pos[i * 3 + 1] = b.y + q.h * up; pos[i * 3 + 2] = b.z + Math.cos(w * 0.8 + q.sw2) * amp * 0.7;
-              siz[i] = q.s1 * (0.35 + 1.1 * a); alp[i] = o.alpha * k * Math.min(1, a / 0.06) * Math.pow(1 - a, 1.6) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
+              siz[i] = q.s1 * (0.5 + 1.1 * a); alp[i] = o.alpha * k * Math.min(1, a / 0.04) * Math.pow(1 - a, 1.1) * (1 + 0.5 * agit); rot[i] = q.rr + a * o.turn; }
             const A = g.attributes; A.position.needsUpdate = true; A.aS.needsUpdate = true; A.aA.needsUpdate = true; A.aR.needsUpdate = true; }
         };
       };
       /* (a thin column, photographed on a phone on build 66: puffs of 8.5 to 9.5 cm read as two large soft blobs over his
-         teacher's robe; now 1 to 5 cm, more of them, fainter each) */
-      const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.4, turn: 2.4 }),
-                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.36, turn: 1.2 }) };
+         teacher's robe; now 2 to 7 cm, more of them. Build 68's, faint at 0.36 to 0.4 and thinning fast, hardly showed in
+         a phone's picture: brighter now, densest where it leaves the piece, under the look's own mark) */
+      const S = { angry: mk(0xff2c1e, 28771, { life: 1.8, rise: 0.20, sway: 0.007, wob: 5.5, lean: 0.0, size: 0.042, alpha: 0.75, turn: 2.4 }),
+                  hungry: mk(0x84ff42, 28772, { life: 2.8, rise: 0.24, sway: 0.006, wob: 1.6, lean: -0.05, size: 0.048, alpha: 0.7, turn: 1.2 }) };
       /* WHERE EACH RISES FROM: the top of its own piece, wherever the piece is (laid out, pushed across, set in the rite),
          its height over its foot measured once from its drawn meshes when they have landed (4 cm until then); without the
          piece, under the presence's own place over it */
