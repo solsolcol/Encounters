@@ -11,7 +11,8 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (24 Nov 2026): Master Z's Encounters — GAME TEXT v156 (edit here)**, id `1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY`
+**THE CURRENT SHEET (24 Nov 2026): Master Z's Encounters — GAME TEXT v157 (edit here)**, id `1XO08mCH6U8AJtWoiwY_XxQD4ECeylQkBCWb-D2rUJhM`
+(<https://docs.google.com/spreadsheets/d/1XO08mCH6U8AJtWoiwY_XxQD4ECeylQkBCWb-D2rUJhM/edit>; v156 with 33 EPISODE 4 rows (30 changed, 3 new) and 13 VOICE LINES rows (9 changed, 4 new): R110 to R112's plain words, SHIELD for LEND, and the four new lines, made from the live tree (deploy `6b05d597e0c519a1561c2495`, build 85; build 86's tree exports the same workbook byte for byte; docs/HISTORY.md, "The sheet, version by version"); 11,962 cells read back, mismatched 0; v156 checked first: created 16:05:15.8, modified 16:05:16.9, the conversion itself). The one before it, v156, id `1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY`
 (<https://docs.google.com/spreadsheets/d/1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY/edit>; v155 with 40 cells changed, R105's `q5o2` and R106's shockwave and bind lines, made from the live tree (deploy `6b05b5318d084771882f9d44`; docs/HISTORY.md, "The sheet, version by version"); 11,929 cells read back, mismatched 0; v155 checked first: created 01:18:03.3, modified 01:18:04.4, the conversion itself). The one before it, v155, id `1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM`
 (<https://docs.google.com/spreadsheets/d/1mRmmwYvCL7_fAht5PLF7pWm8SU6A-UK61ioqMZ6vfGM/edit>; v154 with chapter 5's fight words
 as they now stand, `co5C1` re-said and ten retired voice lines, made from the live tree (deploy `6b04e4fabbaf266dcdea1b82`;

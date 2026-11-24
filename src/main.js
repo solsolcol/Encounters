@@ -8732,9 +8732,11 @@ function tagFitLbl(b, art) {
   b.fitOf = key;
   L.style.fontSize = ''; L.style.letterSpacing = '';
   /* (R120, 24 Nov 2026: Chad, "The skill button text are too small too hard to read now": a pictured act's word stands on
-     its own plate at the face's foot and may reach past the round face, so it is let stand at its own size up to 1.3 of
-     the button's width before it is made any smaller) */
-  const need = L.scrollWidth, room = w * (art ? 1.3 : 0.78);
+     its own plate at the face's foot and may reach past the round face, so it is let stand at its own size up to 1.45 of
+     the button's width before it is made any smaller: build 86's 1.3 still shrank SHOCKWAVE to 9.6 px on a phone, where
+     the others stand at 12.8 and 14.4; at 1.45, its spacing taken out, it stands at its own 12.2 and its plate's rounded
+     end stays clear of the main button's ring) */
+  const need = L.scrollWidth, room = w * (art ? 1.45 : 0.78);
   if (!(need > room)) return;
   const base = parseFloat(getComputedStyle(L).fontSize) || 12, k = Math.max(0.55, room / need);
   L.style.fontSize = (base * k).toFixed(2) + 'px'; L.style.letterSpacing = '0.01em';

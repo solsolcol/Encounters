@@ -9534,6 +9534,23 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v157, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v157.xlsx`, sha256 26fc96d3...a354614702; id
+`1XO08mCH6U8AJtWoiwY_XxQD4ECeylQkBCWb-D2rUJhM`): v156 with exactly these rows changed, made by `textsync export` from
+the tree that is live (deploy `6b05d597e0c519a1561c2495`, build 85; build 86's tree exports the same workbook byte for
+byte): EPISODE 4 three added, `e4c5.words.objFight3w` ("Keep them bound. Pho's SHOCKWAVE is charging."), `objFight3s`
+("Use Zavier's SHIELD to protect Pho first.") and `objFight3g` ("Use Pho's SHOCKWAVE now! It takes every bound
+Prai."), the hold's orders step by step (R110); thirty changed, R112's plain words: `objAsk`, `objFollow`, `visionHeld`,
+`objHunt`, `objOpen`, `fightTitle` ("FIGHT THE PRAI"), `fightInKey`, `objFight1`, `objFight1b`, `objFight2`,
+`objFight2b`, `objFight3`, `objFight3h`, `objFight4` ("Press TOGETHER for the final attack."), `objFight6`, `btnLend`
+("SHIELD"), `whyFull`, `whyNone`, `whyGold`, `whyLendFirst`, `whyBindFirst`, `whySwitchFirst`, `whySwitchNow`,
+`lostSay` ("You lost the fight."), `lostAgain` ("TRY AGAIN"), `lostLead`, `objSmell`, `objLook`, `hotLook`,
+`hotCleanse` ("Start the fight"); VOICE LINES four added, `voice.q5fw1` ("[urgent] They are bound, Master! Use the
+shockwave!", 2.81 s, R110), `voice.q5fb1` ("[frustrated] They keep breaking out of the binding cage. What should I
+do?", 4.17 s, R111) and Grandmaster Pho's two answers, `voice.ph5fb1` (10.81 s, the bag open) and `voice.ph5fb2`
+(6.65 s, in a hold); nine changed, LEND said as SHIELD: `ph5f9`, `ph5fe`, `ph5fi`, `ph5fh`, `ph5nu1`, `ph5nu2`,
+`ph5nv1`, `ph5nv2`, `ph5nv3`, each with its measured length. 11,962 cells read back tab by tab, mismatched 0. v156
+was checked first: created 16:05:15.8, modified 16:05:16.9, the conversion itself (he had not edited it).
+
 **v156, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v156.xlsx`, sha256 4d40a14d...b831c427132): v155 with exactly these 40 cells changed, made by `textsync export` from the tree that is live (deploy `6b05b5318d084771882f9d44`, build 83; R108 changes no word): EPISODE 4 two, `e4c5.words.objFight3h` ("They cling. Only the shockwave takes them: bind them.") and `e4c5.words.whyGold` ("Only the shockwave now"), R106's "the gold" named the shockwave; VOICE LINES `voice.q5o2` re-said "[uneasy] The doors opened, then a pungent smell hit me." (3.45 s, R105), and R106's lines: `ph5f9`, `ph5f10`, `ph5fe`, `ph5fi`, `ph5fh`, `ph5nh1`, `ph5nv2` say the shockwave where they said the gold, `ph5fd`, `ph5nb1`, `ph5nb2`, `ph5ng1`, `ph5nl1`, `ph5nr1`, `ph5nr2`, `ph5nt1`, `ph5nt2`, `ph5g2` re-said until "bind" was heard with its d (three reworded to end on it), and the lengths of `ph5f4`, `ph5f5`, `ph5f8`, `ph5fc`, `ph5nl2` measured again. Published whole through the Drive connector's file reference, id `1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY` (<https://docs.google.com/spreadsheets/d/1i6neXd0JJa0sNssB7Ge3R4vkePOzTzJhU3iCCV-GOPY/edit>); v155 checked first (created 01:18:03.3, modified 01:18:04.4: the conversion itself); read back tab by tab and compared by `tools/sheetcmp.py`: 11,929 cells, mismatched 0.
 
 **v155, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v155.xlsx`, sha256 435b63ed...3020f4d4b): v154 with
