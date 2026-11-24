@@ -8872,7 +8872,7 @@
         fsFx('u5cinders', 0.5, w.x, w.z); }
       fxStreaks(w.x, y0, w.z, Math.round(22 * k), { sp: 6.5, up: 0.05, life: 0.4, w: 0.02, len: 0.045, col: o ? o.col : FS_FIRE.yel, col2: o ? o.col2 : FS_FIRE.core, mix: 0.4, grav: -7, drag: 1.4 });
       /* (R100: the hit on the picture, a radial blur toward it with its colours split) */
-      fxbImpact(w.x, y0, w.z, 0.5 * Math.min(1, k));
+      fxbImpact(w.x, y0, w.z, 0.32 * Math.min(1, k));
       if (p) { const V = fsVis[p.id - 1], pw = cast.pho ? cast.pho.group.position : null;
         if (V && pw) { const dx = w.x - pw.x, dz = w.z - pw.z, d = Math.hypot(dx, dz) || 1; V.kx = dx / d; V.kz = dz / d; V.kA = 0.3 * Math.min(1.2, k); V.kt = 0; } }
     }
@@ -9031,7 +9031,7 @@
     function fsPillar(x, z, o) { const C = fsPillars.find(q => q.t < 0) || fsPillars[0]; C.t = 0; C.T = o.T; C.r0 = o.r0; C.r1 = o.r1; C.h = o.h; C.k = o.k; C.me.position.set(x, 0, z); C.me.material.color.setHex(o.col || FS_COL.gold); }
     function fsHitPillar(x, z) { fsPillar(x, z, { T: 0.55, r0: 0.25, r1: 0.6, h: 3.0, k: 0.8 }); }
     function fsWaveCast(pw) {
-      fsPillar(pw.x, pw.z, { T: 0.75, r0: 0.35, r1: 1.4, h: 5.0, k: 1 });
+      fsPillar(pw.x, pw.z, { T: 0.75, r0: 0.35, r1: 1.4, h: 5.0, k: 0.55 });
       fsWaveFlash.t = 0; fsWaveFlash.x = pw.x; fsWaveFlash.z = pw.z;
       fsRayState.t = 0; fsRayState.x = pw.x; fsRayState.z = pw.z; const r = FS5.srand || Math.random;
       fsRays.forEach((R, i) => { R.a = (i + 0.35 * (r() - 0.5)) / fsRays.length * Math.PI * 2; R.L = 4.5 + 2.5 * r(); });
@@ -9039,7 +9039,7 @@
       fsBurst(pw.x, 0.6, pw.z, 30, { sp: 3.2, up: 0.75, life: 1.0, s0: 0.1, col: 0xfff0c8, col2: FS_COL.gold, mix: 0.5, grav: -1.2, drag: 1.2 });
       fsShake(0.13, 0.75, 0.045);
       /* (R100: the gold loosed knocks the picture) */
-      fxbImpact(pw.x, 1.0, pw.z, 0.7);
+      fxbImpact(pw.x, 1.0, pw.z, 0.5);
     }
     /* THE SCREEN SHAKEN (R34), by the shockwave (and a small knock for the bind and the lend): the lens knocked off its line
        and back, fast and dying away; a low rumble growing under it while the gold gathers. Laid on AFTER the engine has set
@@ -9148,7 +9148,7 @@
        Each pass draws only while the fight does; a browser that cannot copy its drawing buffer loses the bloom and the
        hit's blur for the session (a warning), never the fight. */
     const FX_PERM = new Set();                                              // (R100's own: never "an effect left on")
-    const FXB = { ok: true, err: 0, w: 0, h: 0, frame: null, rt: [], k: 1.25, impT: -1, impK: 0, imp: 0, impP: new THREE.Vector3(), ring: null, ringO: { x: 0, z: 0, r: 0, k: 0 } };
+    const FXB = { ok: true, err: 0, w: 0, h: 0, frame: null, rt: [], k: 1.0, impT: -1, impK: 0, imp: 0, impP: new THREE.Vector3(), ring: null, ringO: { x: 0, z: 0, r: 0, k: 0 } };
     const FXB_TH = { neutral: 0.93, sat: 0.80, knee: 0.06 };                // (the threshold: a grey's, a pure colour's, and its softness)
     const FXB_VS = 'precision highp float;\nattribute vec3 position;\nvarying vec2 vUv;\nvoid main(){ vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.0, 1.0); }';
     const fxbTri = (() => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)); owned.push(g); return g; })();
@@ -9242,8 +9242,8 @@
         let U = fxbBright.uniforms; U.uSrc.value = FXB.frame; U.uTx.value.set(1 / W, 1 / H); fxbPass(r, fxbBright, A);
         U = fxbDown.uniforms; U.uSrc.value = A.texture; U.uTx.value.set(1 / w4, 1 / h4); fxbPass(r, fxbDown, B);
         U.uSrc.value = B.texture; U.uTx.value.set(1 / w8, 1 / h8); fxbPass(r, fxbDown, C);
-        U = fxbUp.uniforms; U.uSrc.value = C.texture; U.uFine.value = B.texture; U.uTx.value.set(1.4 / w16, 1.4 / h16); fxbPass(r, fxbUp, D);
-        U.uSrc.value = D.texture; U.uFine.value = A.texture; U.uTx.value.set(1.4 / w8, 1.4 / h8); fxbPass(r, fxbUp, E);
+        U = fxbUp.uniforms; U.uMix.value = 0.4; U.uSrc.value = C.texture; U.uFine.value = B.texture; U.uTx.value.set(1.4 / w16, 1.4 / h16); fxbPass(r, fxbUp, D);
+        U.uMix.value = 0.45; U.uSrc.value = D.texture; U.uFine.value = A.texture; U.uTx.value.set(1.4 / w8, 1.4 / h8); fxbPass(r, fxbUp, E);
       } finally { r.setRenderTarget(rt0); r.info.autoReset = ar; r.shadowMap.autoUpdate = su; }
       UA.uBloom.value = UF.uBloom.value = E.texture; UA.uK.value = UF.uK.value = FXB.k; UF.uFrame.value = FXB.frame;
       /* (the hit's centre and the wheel's rim, where this lens sees them: the rim's eight points' box as its ellipse) */
@@ -9280,7 +9280,7 @@
       for (const B of fsBalls) if (B.on && B.core.visible) fxlAdd(B.core.position.x, B.core.position.y, B.core.position.z, 0xff8a2a, 2.8 * (B.ai ? 0.75 : 1), 4.5);
       for (const L of fsBlooms) if (L.on) { const u = c01(L.t / (L.fire ? 0.9 : 0.6)); fxlAdd(L.s.position.x, L.s.position.y, L.s.position.z, L.fire ? 0xff9a3a : L.col, (L.fire ? 5.5 : 3.5) * Math.min(1.3, L.k) * (1 - u) * (1 - u), L.fire ? 5.5 : 4.5); }
       for (const F of fsFlares) if (F.t >= 0) fxlAdd(F.s.position.x, F.s.position.y, F.s.position.z, 0xffc860, 3.0 * (1 - F.t / 0.22) * (F.k || 1), 3.5);
-      if (fsWaveFlash.t >= 0) { const u = c01(fsWaveFlash.t / 0.45); fxlAdd(fsWaveFlash.x, 0.7, fsWaveFlash.z, FS_COL.gold, 6.0 * Math.pow(1 - u, 1.4), 8); }
+      if (fsWaveFlash.t >= 0) { const u = c01(fsWaveFlash.t / 0.45); fxlAdd(fsWaveFlash.x, 0.7, fsWaveFlash.z, FS_COL.gold, 3.0 * Math.pow(1 - u, 1.4), 7); }
       for (const C of fsPillars) if (C.t >= 0) { const u = c01(C.t / C.T); fxlAdd(C.me.position.x, 1.3, C.me.position.z, C.me.material.color.getHex(), 3.5 * C.k * Math.pow(1 - u, 1.5), 5); }
       if (fsGoldHalo.visible) fxlAdd(fsGoldHalo.position.x, fsGoldHalo.position.y, fsGoldHalo.position.z, FS_COL.gold, 2.4 * fsGoldHalo.material.opacity, 4);
       for (const B of fsBeams) if (B.t >= 0 && B.core.visible) fxlAdd((B.a.x + B.b.x) / 2, (B.a.y + B.b.y) / 2, (B.a.z + B.b.z) / 2, FS_COL.violet, 2.6 * B.core.material.opacity, 3.5);
@@ -9740,7 +9740,7 @@
            picture is in, the simulated burst in the drawn ball's place, its emitter on the point struck, its frames over
            FX_BURST_SECS, thinned away only at its very end) */
         if (L.fire) { const ub = c01(L.t / 0.5), uf = c01(L.t / 0.16);
-          L.flash.visible = uf < 1; L.flash.scale.setScalar((0.7 + 1.5 * uf) * L.k); L.flash.material.opacity = 1 - uf;
+          L.flash.visible = uf < 1; L.flash.scale.setScalar((0.7 + 1.5 * uf) * L.k); L.flash.material.opacity = 0.75 * (1 - uf);
           if (fb) { L.ball.visible = false; L.fxb.visible = ue < 1; fxFace(L.fxb); const W = FX_FRAME.burst.m * FX_BURST_K * L.k;
             camera.getWorldQuaternion(_fxQ); _fbY.set(0, 1, 0).applyQuaternion(_fxQ);
             L.fxb.position.copy(L.s.position).addScaledVector(_fbY, (0.5 - FX_FRAME.burst.oy) * W); L.fxb.scale.set(W, W, 1);
@@ -9808,19 +9808,22 @@
             fsSpark(pw.x + Math.cos(a) * R, 0.15 + rr() * 1.7, pw.z + Math.sin(a) * R, { vx: -Math.sin(a) * 0.9, vy: 0, vz: Math.cos(a) * 0.9, life: 0.5 + 0.2 * rr(), s0: 0.1 * (0.7 + 0.6 * rr()), s1: 0.04, col: rr() < 0.25 ? 0xfff0c8 : FS_COL.gold, grav: 0, drag: 0.5, to }); } } }
       else { fsGatherRing.visible = false; fsGoldHalo.visible = false; FXR.gather.visible = false; }
       if (ph.ring) { const w = fsW(ph.ring.x, ph.ring.z), r = Math.max(0.2, ph.ring.r), out = c01(r / Math.max(0.1, FN5.ringMax || 7));
+        /* (R100, build 75's pictures: with the bloom, the rim passing under the lens whitened the foot of the screen; its walls
+           and its rings thin away within 2.6 m of passing under it) */
+        camera.getWorldPosition(_rbC); const nearK = smo(c01((Math.abs(Math.hypot(_rbC.x - w.x, _rbC.z - w.z) - r) - 0.6) / 2.0));
         /* (R100: the picture bent along its rim) */
         FXB.ring = FXB.ringO; FXB.ringO.x = w.x; FXB.ringO.z = w.z; FXB.ringO.r = r; FXB.ringO.k = (1 - out) * Math.min(1, r / 0.8);
-        fsWheel.visible = true; fsWheel.position.set(w.x, 0.02, w.z); fsWheel.scale.set(r * 2, 1, r * 2); fsWheel.rotation.y = -r * 0.25; fsWheel.material.opacity = 0.95 * (1 - out * out);
+        fsWheel.visible = true; fsWheel.position.set(w.x, 0.02, w.z); fsWheel.scale.set(r * 2, 1, r * 2); fsWheel.rotation.y = -r * 0.25; fsWheel.material.opacity = 0.95 * (1 - out * out) * nearK;
         /* (a second wheel just behind it, turning the other way; gold motes lifting off its rim as it goes) */
-        fsWall.visible = true; fsWall.position.set(w.x, 0, w.z); fsWall.scale.set(r, 2.0 * (1 - 0.6 * out), r); fsWall.material.opacity = 0.95 * (1 - out * out);
-        fsWallHot.visible = true; fsWallHot.position.set(w.x, 0, w.z); fsWallHot.scale.set(r + 0.12, 1.15 * (1 - 0.5 * out), r + 0.12); fsWallHot.material.opacity = 0.8 * (1 - out);
+        fsWall.visible = true; fsWall.position.set(w.x, 0, w.z); fsWall.scale.set(r, 2.0 * (1 - 0.6 * out), r); fsWall.material.opacity = 0.75 * (1 - out * out) * nearK;
+        fsWallHot.visible = true; fsWallHot.position.set(w.x, 0, w.z); fsWallHot.scale.set(r + 0.12, 1.15 * (1 - 0.5 * out), r + 0.12); fsWallHot.material.opacity = 0.5 * (1 - out) * nearK;
         /* (R94 E3: its rim a ring of golden FLAME, the fire's own simulated flames in gold standing round it as it goes out; the
            smooth wall of gold kept under it, fainter) */
         { const F = FXR.wheel; F.visible = fxOn('head'); if (F.visible) { const U = F.material.uniforms; F.position.set(w.x, 0, w.z); F.scale.set(r + 0.06, 1.8 * (1 - 0.5 * out), r + 0.06);
           U.uF.value = fxt * 30; U.uA.value = 0.95 * (1 - out * out) * Math.min(1, r / 0.8); fsWall.material.opacity *= 0.55; } }
         if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * 30) { const a = rr() * Math.PI * 2;
           fsSmoke(w.x + Math.cos(a) * r, 0.12, w.z + Math.sin(a) * r, { s0: 0.25, s1: 0.8, life: 0.7, a: 0.18 * (1 - out), vy: 0.35, col: 0x8a7a5a }); } }
-        const r2 = Math.max(0.15, r - 0.55); fsWheel2.visible = true; fsWheel2.position.set(w.x, 0.019, w.z); fsWheel2.scale.set(r2 * 2, 1, r2 * 2); fsWheel2.rotation.y = r * 0.4; fsWheel2.material.opacity = 0.5 * (1 - out);
+        const r2 = Math.max(0.15, r - 0.55); fsWheel2.visible = true; fsWheel2.position.set(w.x, 0.019, w.z); fsWheel2.scale.set(r2 * 2, 1, r2 * 2); fsWheel2.rotation.y = r * 0.4; fsWheel2.material.opacity = 0.5 * (1 - out) * nearK;
         if (wdt > 0) { const rr = FS5.srand || Math.random; for (let k = 0; k < 7; k++) { const a = rr() * Math.PI * 2;
           fsSpark(w.x + Math.cos(a) * r, 0.06, w.z + Math.sin(a) * r, { vx: Math.cos(a) * 0.5, vy: 0.7 + 0.8 * rr(), vz: Math.sin(a) * 0.5, life: 0.55 + 0.35 * rr(), s0: 0.11 * (0.7 + 0.6 * rr()), col: rr() < 0.3 ? 0xfff0c8 : FS_COL.gold, grav: 0.25, drag: 1.2, a: 0.9 * (1 - out) }); } }
         /* the lamps at the house flare as it passes them */
@@ -9832,7 +9835,7 @@
       for (const C of fsPillars) { if (C.t < 0) continue; C.t += wdt; const u = c01(C.t / C.T); if (u >= 1) { C.t = -1; C.me.visible = false; continue; }
         const r = C.r0 + (C.r1 - C.r0) * Math.sqrt(u); C.me.visible = true; C.me.scale.set(r, C.h * (0.35 + 0.65 * Math.sqrt(u)), r); C.me.material.opacity = C.k * Math.min(1, u / 0.08) * Math.pow(1 - u, 1.5); }
       if (fsWaveFlash.t >= 0) { fsWaveFlash.t += wdt; const u = c01(fsWaveFlash.t / 0.45), m = fsWaveFlash.m;
-        if (u >= 1) { fsWaveFlash.t = -1; m.visible = false; } else { const r = 0.8 + 7.5 * Math.sqrt(u); m.visible = true; m.position.set(fsWaveFlash.x, 0.022, fsWaveFlash.z); m.scale.set(r * 2, 1, r * 2); m.material.opacity = 0.95 * Math.pow(1 - u, 1.6); } }
+        if (u >= 1) { fsWaveFlash.t = -1; m.visible = false; } else { const r = 0.8 + 7.5 * Math.sqrt(u); m.visible = true; m.position.set(fsWaveFlash.x, 0.022, fsWaveFlash.z); m.scale.set(r * 2, 1, r * 2); m.material.opacity = 0.6 * Math.pow(1 - u, 1.6); } }
       if (fsRayState.t >= 0) { fsRayState.t += wdt; const u = c01(fsRayState.t / 0.55);
         fsRays.forEach((R) => { if (u >= 1) { R.m.visible = false; return; } const L = R.L * Math.sqrt(u), cx = Math.sin(R.a), cz = Math.cos(R.a);
           R.m.visible = true; R.m.position.set(fsRayState.x + cx * L * 0.5, 0.023, fsRayState.z + cz * L * 0.5); R.m.rotation.y = R.a + Math.PI; R.m.scale.set(0.32 * (1 - 0.5 * u), 1, Math.max(0.05, L)); R.m.material.opacity = 0.9 * (1 - u); });
@@ -10335,7 +10338,7 @@
             FXR.togT = 0; fsFx('u5togboom', 0.95, null); if (kit && kit.buzz) kit.buzz([40, 30, 70]);
             /* (R100: the picture knocked between the two of them) */
             { const pw = cast.pho ? cast.pho.group.position : null, zw = cast.zav ? cast.zav.group.position : null;
-              if (pw && zw) fxbImpact((pw.x + zw.x) / 2, 1.1, (pw.z + zw.z) / 2, 1.0); else if (pw) fxbImpact(pw.x, 1.1, pw.z, 1.0); }
+              if (pw && zw) fxbImpact((pw.x + zw.x) / 2, 1.1, (pw.z + zw.z) / 2, 0.85); else if (pw) fxbImpact(pw.x, 1.1, pw.z, 0.85); }
             { const pw = cast.pho ? cast.pho.group.position : null, zw = cast.zav ? cast.zav.group.position : null;
               if (pw) fsBloom(pw.x, pw.z, FS_COL.gold, 1.0, false, 0.15, { ramp: 'gold', k: 0.5, heat: 1.2 });       // (at their feet: never over them)
               if (zw) fsBloom(zw.x, zw.z, FS_COL.violet, 1.0, false, 0.15, { ramp: 'violet', k: 0.5, heat: 1.2 }); }
