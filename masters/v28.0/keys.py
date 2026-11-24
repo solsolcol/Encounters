@@ -35,7 +35,15 @@ group("e4c5: THE PARTY LIST'S PORTRAITS (R49, 23 Nov 2026: 'It should show the c
       "PORTRAITS.md, the jobs and the prompts), with their own alpha (R54: 'no black background'), cropped by the head's outline\n"
       "(masters/v28.0/props/portraits2.py --painted)",
       [('p5portpho', 'p5portpho.png', "Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)"),
-       ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)")])
+       ('p5portzav', 'p5portzav.png', "Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)"),
+       ('p5togart', 'p5togart.jpg', "R107: the two of them fighting together, painted, inside the TOGETHER button (512 x 512)")])
+group("e4c5: THE FIRE'S PICTURES (R94, 24 Nov 2026, his pick \"Full upgrade\": real fire, smoke and energy made in Blender as\n"
+      "moving pictures): three flipbooks SIMULATED in Blender (Mantaflow) and rendered in Cycles on the rented GPU box\n"
+      "(tools/fx/flipsim.py, tools/fx/flippack.py; masters/v28.0/fx/make.sh every number), each 8 x 8 frames whose channels\n"
+      "are data (R heat, G smoke shade, B glow, A smoke cover), read raw by the fight (c_fightstage.js FX5)",
+      [('fx5fire', 'fx5fire.png', "the fireball's head, a seamless loop of 64 frames (2048 x 2048)"),
+       ('fx5burst', 'fx5burst.png', 'the burst where a fireball lands, 64 frames once (2048 x 2048)'),
+       ('fx5smoke', 'fx5smoke.png', 'a puff of smoke, 64 frames once (1536 x 1536)')])
 group("e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the\n"
       "library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga\n"
       "stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)",
@@ -113,7 +121,7 @@ def main():
     for title, items in G:
         for k, f, n in items:
             assert k not in seen, 'the key %s is in the table twice' % k
-            assert k.startswith(('p5', 'w5')), 'the key %s is not this chapter\'s shape (p5 a person, w5 a thing)' % k
+            assert k.startswith(('p5', 'w5', 'fx5')), 'the key %s is not this chapter\'s shape (p5 a person, w5 a thing, fx5 an effect\'s pictures)' % k
             seen.add(k)
         there = [(k, f, n) for k, f, n in items if os.path.exists(os.path.join(ROOT, 'assets', f))]
         missing += [k for k, f, n in items if not os.path.exists(os.path.join(ROOT, 'assets', f))]

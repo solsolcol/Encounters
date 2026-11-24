@@ -82,7 +82,7 @@
      quotes (v21.1). */
   const SECS = {      // 183 of 183 MEASURED from their takes; the other 0 PROVISIONAL (words / 2.3 s)
     /* Master Zavier (the player) */
-    'q5o1': 9.05, 'q5o2': 2.41, 'q5w1': 1.43, 'q5w2': 2.49, 'q5w3': 2.25, 'q5w4': 1.05, 'q5h1': 5.05, 'q5h2': 3.13,
+    'q5o1': 9.05, 'q5o2': 3.45, 'q5w1': 1.43, 'q5w2': 2.49, 'q5w3': 2.25, 'q5w4': 1.05, 'q5h1': 5.05, 'q5h2': 3.13,
     'q5h3': 4.01, 'q5h4': 1.5, 'q5h5': 1.53, 'q5p1': 2.97, 'q5c0': 6.65, 'q5c1': 4.25, 'q5c2': 1.69, 'q5c3': 1.37,
     'q5c4': 5.45, 'q5c5': 4.49, 'q5b1': 1.37, 'q5b2': 4.65, 'q5t1': 7.13, 'q5A1': 0.91, 'q5A2': 5.21, 'q5B1': 2.01,
     'q5B2': 1.85, 'q5C1': 6.73, 'q5D1': 4.81, 'q5z1': 3.13, 'q5A': 6.01, 'q5B': 4.97, 'q5C': 4.97, 'q5D': 4.33,
@@ -90,15 +90,15 @@
     'ph5w1': 5.69, 'ph5w2': 5.53, 'ph5w3': 2.81, 'ph5w4': 1.69, 'ph5w5': 8.23, 'ph5w6': 1.2, 'ph5w7': 3.44,
     'ph5d1': 1.56, 'ph5d2': 7.53, 'ph5h1': 1.37, 'ph5h2': 2.17, 'ph5h3': 7.29, 'ph5h4': 4.89, 'ph5h5': 1.37,
     'ph5h6': 1.69, 'ph5h7': 1.27, 'ph5v1': 5.05, 'ph5v2': 3.56, 'ph5p1': 4.57, 'ph5p2': 6.09, 'ph5f0': 3.53,
-    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.72, 'ph5f5': 2.73, 'ph5f6': 1.53, 'ph5f8': 3.07, 'ph5f9': 4.16,
-    'ph5f10': 5.13, 'ph5fa': 4.65, 'ph5fc': 3.95, 'ph5fd': 4.75, 'ph5fe': 5.13, 'ph5fi': 7.44, 'ph5fj': 3.65,
-    'ph5fh': 6.13, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28, 'ph5nb2': 2.57, 'ph5nc2': 2.57,
-    'ph5nc3': 1.85, 'ph5nd2': 2.65, 'ph5nd3': 0.83, 'ph5ne1': 4.33, 'ph5ng1': 2.33, 'ph5ng2': 1.85, 'ph5nh1': 3.49,
+    'ph5f1': 0.78, 'ph5f2': 5.27, 'ph5f4': 0.73, 'ph5f5': 3.45, 'ph5f6': 1.53, 'ph5f8': 2.47, 'ph5f9': 4.12,
+    'ph5f10': 6.18, 'ph5fa': 4.65, 'ph5fc': 3.45, 'ph5fd': 5.84, 'ph5fe': 4.59, 'ph5fi': 7.13, 'ph5fj': 3.65,
+    'ph5fh': 7.05, 'ph5na1': 2.71, 'ph5na2': 2.51, 'ph5na3': 3.21, 'ph5nb1': 3.28, 'ph5nb2': 2.57, 'ph5nc2': 2.57,
+    'ph5nc3': 1.85, 'ph5nd2': 2.65, 'ph5nd3': 0.83, 'ph5ne1': 4.33, 'ph5ng1': 2.33, 'ph5ng2': 1.85, 'ph5nh1': 3.25,
     'ph5nh2': 0.97, 'ph5ni1': 2.25, 'ph5ni2': 1.53, 'ph5nj1': 2.28, 'ph5nj2': 1.93, 'ph5nk1': 3.05, 'ph5nk2': 3.04,
-    'ph5nl1': 2.97, 'ph5nl2': 1.85, 'ph5nl3': 2.73, 'ph5no1': 1.53, 'ph5no2': 1.79, 'ph5np1': 1.61, 'ph5nq1': 2.27,
-    'ph5nr1': 4.49, 'ph5nr2': 3.21, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 4.22, 'ph5nt2': 2.33, 'ph5nu1': 3.05,
-    'ph5nu2': 2.01, 'ph5nv1': 2.13, 'ph5nv2': 3.59, 'ph5nv3': 0.68, 'ph5nw1': 3.45, 'ph5nw2': 3.61, 'ph5nx1': 2.17,
-    'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.29, 'ph5g3': 3.29, 'ph5g4': 2.45, 'ph5ca': 2.2, 'ph5cb': 0.97,
+    'ph5nl1': 2.65, 'ph5nl2': 1.77, 'ph5nl3': 2.73, 'ph5no1': 1.53, 'ph5no2': 1.79, 'ph5np1': 1.61, 'ph5nq1': 2.27,
+    'ph5nr1': 3.37, 'ph5nr2': 3.05, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 3.84, 'ph5nt2': 2.09, 'ph5nu1': 3.05,
+    'ph5nu2': 2.01, 'ph5nv1': 2.13, 'ph5nv2': 3.1, 'ph5nv3': 0.68, 'ph5nw1': 3.45, 'ph5nw2': 3.61, 'ph5nx1': 2.17,
+    'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.93, 'ph5g3': 3.29, 'ph5g4': 2.45, 'ph5ca': 2.2, 'ph5cb': 0.97,
     'ph5c1': 2.65, 'ph5c2': 3.2, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93, 'ph5l2': 3.53, 'ph5b1': 1.51,
     'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13, 'ph5b6': 1, 'ph5t1': 0.84, 'ph5t2': 0.97,
     'ph5t3': 4.65, 'ph5t4': 8.27, 'ph5t5': 1.2, 'ph5t6': 3.05, 'ph5A1': 5.21, 'ph5A2': 6.89, 'ph5B1': 8.44,
@@ -122,7 +122,7 @@
     'q5o1': ['he', 'open', "Case two. A devotee's home. He had been quarrelling with people outside, and at home he could not rest."],
     'ju5o1': ['jun', 'open', "Mr Koh says the lights keep going off. Electrician came three times already."],
     'tn5o1': ['ton', 'open', "He also says he fights with everybody. His own words."],
-    'q5o2': ['he', 'open', "The doors opened, and it hit me."],
+    'q5o2': ['he', 'open', "The doors opened, then a pungent smell hit me."],
     'q5w1': ['he', 'walk', "Do you smell that?"],
     'tn5w1': ['ton', 'walk', "Smell what?"],
     'tn5w2': ['ton', 'walk', "Nothing, brother."],
@@ -171,19 +171,19 @@
     'ph5f5': ['pho', 'fight', "It is bound. Now switch to me."],
     'ph5f6': ['pho', 'fight', "FIRE. Then BAG it."],
     'ph5f8': ['pho', 'fight', "There. BIND it, before it sinks again."],
-    'ph5f9': ['pho', 'fight', "The golden shockwave is ready. Lend me your cage first."],
-    'ph5f10': ['pho', 'fight', "The gold gathers what is bound. The rest, it only drives back."],
+    'ph5f9': ['pho', 'fight', "The shockwave is ready. Lend me your cage first."],
+    'ph5f10': ['pho', 'fight', "The shockwave gathers what is bound. The rest, it only drives back."],
     'ph5fa': ['pho', 'fight', "A bound Prai cannot run. Now the fire tires it."],
     'ph5fc': ['pho', 'fight', "Now they all come. BIND them, and I will gather them."],
-    'ph5fd': ['pho', 'fight', "BIND one first. The gold gathers only what is bound."],
-    'ph5fe': ['pho', 'fight', "They broke the gold. Lend me your cage before I gather it."],
-    'ph5fi': ['pho', 'fight', "They draw together. The bag cannot take them now. Only the gold, and only what is bound."],
+    'ph5fd': ['pho', 'fight', "The shockwave gathers only what is bound. First, BIND."],
+    'ph5fe': ['pho', 'fight', "They broke the shockwave. Lend me your cage before I gather it."],
+    'ph5fi': ['pho', 'fight', "They draw together. The bag cannot take them now. Only the shockwave, and only what is bound."],
     'ph5fj': ['pho', 'fight', "Three is all you can hold. Let me take one."],
-    'ph5fh': ['pho', 'fight', "The last of them cling to the house. Only the gold can take them. BIND them, Zavier."],
+    'ph5fh': ['pho', 'fight', "The last of them cling to the house. Only the shockwave can take them. BIND them, Zavier."],
     'ph5na1': ['pho', 'fight', "His cage is breaking. FIRE."],
     'ph5na2': ['pho', 'fight', "Chase them off his cage. FIRE."],
     'ph5na3': ['pho', 'fight', "They press at his cage. Switch to Zavier."],
-    'ph5nb1': ['pho', 'fight', "Your cage is wearing thin. BIND them."],
+    'ph5nb1': ['pho', 'fight', "Your cage is wearing thin. BIND."],
     'ph5nb2': ['pho', 'fight', "Hold them still. BIND."],
     'ph5nc2': ['pho', 'fight', "Now. Switch to me, and FIRE."],
     'ph5nc3': ['pho', 'fight', "To me. FIRE."],
@@ -192,7 +192,7 @@
     'ph5ne1': ['pho', 'fight', "The Prai rise again. Bag them while they are tired."],
     'ph5ng1': ['pho', 'fight', "BIND it before it reaches you."],
     'ph5ng2': ['pho', 'fight', "BIND the Prai that comes."],
-    'ph5nh1': ['pho', 'fight', "The golden shockwave is ready. SHOCKWAVE."],
+    'ph5nh1': ['pho', 'fight', "The shockwave is ready. SHOCKWAVE."],
     'ph5nh2': ['pho', 'fight', "SHOCKWAVE."],
     'ph5ni1': ['pho', 'fight', "Switch to me. BAG it."],
     'ph5ni2': ['pho', 'fight', "To me. BAG it."],
@@ -207,7 +207,7 @@
     'ph5no2': ['pho', 'fight', "To me. Now."],
     'ph5np1': ['pho', 'fight', "Now. SHOCKWAVE."],
     'ph5nq1': ['pho', 'fight', "It is bound. FIRE."],
-    'ph5nr1': ['pho', 'fight', "It will rise again. BIND it, and it cannot."],
+    'ph5nr1': ['pho', 'fight', "It will rise again. BIND."],
     'ph5nr2': ['pho', 'fight', "BIND the tired Prai. Keep it for the bag."],
     'ph5ns2': ['pho', 'fight', "BIND the Prai you found."],
     'ph5ns3': ['pho', 'fight', "Switch to Zavier."],
@@ -216,7 +216,7 @@
     'ph5nu1': ['pho', 'fight', "Switch to Zavier, and lend me your cage."],
     'ph5nu2': ['pho', 'fight', "Lend me your cage first."],
     'ph5nv1': ['pho', 'fight', "Lend me your cage, Zavier."],
-    'ph5nv2': ['pho', 'fight', "The golden shockwave is ready. LEND."],
+    'ph5nv2': ['pho', 'fight', "The shockwave is ready. LEND."],
     'ph5nv3': ['pho', 'fight', "LEND."],
     'ph5nw1': ['pho', 'fight', "That Prai slips the fire. Switch to Zavier."],
     'ph5nw2': ['pho', 'fight', "Only Zavier can hold it. Switch to Zavier."],
@@ -462,13 +462,14 @@
          first of the four made (R10): the lighter body with his walk, and every triangle of him for within 2.2 m and the
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
-      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh',
-      'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost',
-      'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa',
-      'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
-      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
-      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
-      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'fx5fire', 'fx5burst',
+      'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
+      'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
+      'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp',
+      'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
+      'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
+      'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
+      'w5rakyom', 'w5hunphayon',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode) */
       'w4angsana', 'w4foxpalm',
@@ -543,7 +544,7 @@
       objFight2: 'Master Zavier: bind it.',
       objFight2b: 'Grandmaster Pho: fire at it, then bag it.',
       objFight3: 'Bag the Prai: {n} left',
-      objFight3h: 'They cling. Only the golden shockwave takes them: bind them.',
+      objFight3h: 'They cling. Only the shockwave takes them: bind them.',
       objFight4: 'Together.',
       objFight6: 'Bag the last three.',
       btnFire: 'FIRE',
@@ -555,7 +556,7 @@
       // why a button cannot act now, said on its face (FIGHT.why: the button and the press read the one answer)
       whyFull: 'Three bound',
       whyNone: 'Nothing in reach',
-      whyGold: 'Only the gold now',
+      whyGold: 'Only the shockwave now',
       whyLendFirst: 'Lend the cage first',
       whyBindFirst: 'Bind one first',
       // (the switch, said and never pressed, until the lesson's first chase shows it: the engine shows it from the first frame)
@@ -10176,9 +10177,9 @@
           if (slot === 'main') {
             const callOn = H.together.live || H.together.fill > 0;
             kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together });
+                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togart' });   // (R107: the two of them painted, inside it)
             if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
-          } else kit.tagAct(id, { hidden: true, pulse: false, call: false });
+          } else kit.tagAct(id, { hidden: true, pulse: false, call: false, art: null });
           continue;
         }
         const o = fsActState(H[slot]);
@@ -10187,7 +10188,7 @@
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id] });
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: null });
       }
       /* (R75's debug, GD: the other one's tile shows his main act's readiness as it is now: only the played one's acts were
          told, so his gauge stood where it was left when he was last played, and showed BIND ready before he had any) */

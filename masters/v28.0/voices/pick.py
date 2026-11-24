@@ -131,7 +131,7 @@ def main():
         if only and lid not in only: continue
         if not only and not RESCORE and lid in res and '--all' not in sys.argv: continue
         takes = {}
-        for k in 'abcdef':                                # (every letter that is here: takes made again after a refusal follow the first)
+        for k in 'abcdefghijkl':                                # (every letter that is here: takes made again after a refusal follow the first)
             p = os.path.join(RAW, '%s_%s.mp3' % (lid, k))
             if not os.path.exists(p): continue
             old = res.get(lid, {}).get('takes', {}).get(k)

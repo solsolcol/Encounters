@@ -18,6 +18,10 @@ const ALL = {
   walk1:      ['walk', 0.1, -4.5, 0, -0.06],
   drain:      ['walk', -0.3, -7.2, -0.35, -0.42],
   lookout:    ['walk', 0.0, -9.5, -Math.PI / 2 - 0.3, -0.12],
+  below1:     ['walk', 0.4, -3.0, -Math.PI / 2 + 0.35, -0.42],     // (R105: the ground below the walkway, over the balustrade)
+  below2:     ['walk', 0.4, -8.0, -Math.PI / 2, -0.55],
+  below3:     ['walk', 0.4, -12.5, -Math.PI / 2 - 0.45, -0.4],
+  belowwide:  ['walk', 0.4, -6.0, -Math.PI / 2 - 0.2, -0.22],
   turn:       ['walk', 0.0, -13.6, Math.PI / 4, -0.05],
   run2:       ['walk', -3.0, -14.95, Math.PI / 2, -0.04],
   gate:       ['walk', -8.5, -15.2, Math.PI, -0.12],

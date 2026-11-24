@@ -1725,9 +1725,9 @@
           if (slot === 'main') {
             const callOn = H.together.live || H.together.fill > 0;
             kit.tagAct(id, { hidden: !callOn, blocked: null, wait: 0, fill: H.together.fill, pulse: H.together.live && !(H.together.fill > 0), on: H.together.fill > 0,
-                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together });
+                             call: callOn, label: W5.btnTogether, icon: FS_ICON.together, art: 'p5togart' });   // (R107: the two of them painted, inside it)
             if (callOn && !FS5.callAt) { FS5.callAt = FS5.wall; fsFx('u5togrise', 0.9, null); }
-          } else kit.tagAct(id, { hidden: true, pulse: false, call: false });
+          } else kit.tagAct(id, { hidden: true, pulse: false, call: false, art: null });
           continue;
         }
         const o = fsActState(H[slot]);
@@ -1736,7 +1736,7 @@
         if (o.wait > 0 && H[slot].why === 'wait') { if (!Wt.on) { Wt.on = true; Wt.at = FS5.wall; } }
         else if (Wt.on) { Wt.on = false; if (!o.hidden && !o.blocked && FS5.wall - Wt.at >= 2.4 && id !== 'shock') fsFx('u5ready', 0.5, null); }
         const base = { flame: W5.btnFire, shock: W5.btnShockwave, bag: W5.btnBag, bind: W5.btnBind, lend: W5.btnLend }[id];
-        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id] });
+        kit.tagAct(id, { hidden: o.hidden, blocked: o.blocked, wait: o.wait, fill: 0, pulse: o.pulse, on: o.on, call: false, label: o.label || base, icon: FS_ICON[id], art: null });
       }
       /* (R75's debug, GD: the other one's tile shows his main act's readiness as it is now: only the played one's acts were
          told, so his gauge stood where it was left when he was last played, and showed BIND ready before he had any) */

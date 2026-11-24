@@ -47,5 +47,5 @@ if __name__ == '__main__':
     os.makedirs(RAW, exist_ok=True)
     for i in range(0, len(a) - 1, 2):
         k, l = a[i], a[i + 1]
-        if k not in P or len(l) != 1 or l not in 'abcdef': print('REFUSED', k, l); continue
+        if k not in P or len(l) != 1 or l not in 'abcdefghijkl': print('REFUSED', k, l); continue
         say(P[k]['voice_id'], P[k]['prompt'], os.path.join(RAW, f'{k}_{l}.mp3'))

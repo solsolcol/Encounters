@@ -821,13 +821,14 @@ ASSETS = {
     # (masters/v28.0/props/portraits2.py --painted)
     'p5portpho':    ('assets/p5portpho.png', True, False),     # Grandmaster Pho's portrait on the party list's tile, painted (256 x 256, alpha)
     'p5portzav':    ('assets/p5portzav.png', True, False),     # Master Zavier's portrait on the party list's tile, painted (256 x 256, alpha)
+    'p5togart':     ('assets/p5togart.jpg', True, False),     # R107: the two of them fighting together, painted, inside the TOGETHER button (512 x 512)
     # e4c5: THE FIRE'S PICTURES (R94, 24 Nov 2026, his pick "Full upgrade": real fire, smoke and energy made in Blender as
     # moving pictures): three flipbooks SIMULATED in Blender (Mantaflow) and rendered in Cycles on the rented GPU box
     # (tools/fx/flipsim.py, tools/fx/flippack.py; masters/v28.0/fx/make.sh every number), each 8 x 8 frames whose channels
     # are data (R heat, G smoke shade, B glow, A smoke cover), read raw by the fight (c_fightstage.js FX5)
     'fx5fire':      ('assets/fx5fire.png', True, False),     # the fireball's head, a seamless loop of 64 frames (2048 x 2048)
-    'fx5burst':     ('assets/fx5burst.png', True, False),    # the burst where a fireball lands, 64 frames once (2048 x 2048)
-    'fx5smoke':     ('assets/fx5smoke.png', True, False),    # a puff of smoke, 64 frames once (1536 x 1536)
+    'fx5burst':     ('assets/fx5burst.png', True, False),     # the burst where a fireball lands, 64 frames once (2048 x 2048)
+    'fx5smoke':     ('assets/fx5smoke.png', True, False),     # a puff of smoke, 64 frames once (1536 x 1536)
     # e4c5: GRANDMASTER PHO WITH FINGERS (R26, Chad's pick: 'Finger bones (Recommended)'): his own pho.glb with fifteen of the
     # library's finger bones (and their ends) grafted onto his right hand from its own geometry, so it closes round the Naga
     # stick; his file and chapters 3 and 4 untouched (tools/fingergraft.mjs, masters/v28.0/pho5)
@@ -1053,14 +1054,14 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
-           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh',
-           'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost',
-           'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa',
-           'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
-           'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap',
-           'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
-           'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom',
-           'w5hunphayon',
+           'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togart', 'fx5fire', 'fx5burst',
+           'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
+           'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
+           'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair',
+           'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
+           'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
+           'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
+           'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

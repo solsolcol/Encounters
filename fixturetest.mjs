@@ -3625,7 +3625,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagCallSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3784,6 +3784,24 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.back = !B().classList.contains('call') && Math.abs(r2.left - r0.left) < 2 && Math.abs(r2.top - r0.top) < 2 && Math.abs(r2.width - r0.width) < 2;
       R.othersBack = others().every(o => !o || o.classList.contains('hide') || getComputedStyle(o).opacity !== '0');
       R._r = [r0, r1, r2].map(r => [Math.round(r.left), Math.round(r.top), Math.round(r.width)]);
+      return R;`);
+    /* v28.0 · AN ACT'S PICTURE (the seventy-fourth seam; Chad's R107: the painted picture of the two inside the TOGETHER button):
+       absent, the button holds no picture span at all, its page as it always was; given a picture (a node here: the fixture has
+       no assets), it fills the button's round face, the icon stands aside and the word stands over it; null takes it away */
+    K.tagArtSeam = await pCheck('artSeam', `
+      const R = {}, B = () => document.getElementById('tagA0');
+      await frames(2);
+      R.absentNoSpan = !B().querySelector('.tgArt') && !B().classList.contains('art');
+      const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); x.fillStyle = '#c08030'; x.fillRect(0, 0, 64, 64);
+      kit.tagAct('zap', { art: c }); await frames(4);
+      const a = B().querySelector('.tgArt'), rb = B().getBoundingClientRect(), ra = a ? a.getBoundingClientRect() : null;
+      R.shown = !!a && B().classList.contains('art') && getComputedStyle(a).display === 'block' && !!a.querySelector('canvas');
+      R.fills = !!ra && Math.abs(ra.width - rb.width) < 4 && Math.abs(ra.height - rb.height) < 4;
+      R.iconAside = getComputedStyle(B().querySelector('.tgIco')).display === 'none';
+      R.wordOver = +getComputedStyle(B().querySelector('.tgLbl')).zIndex >= 1;
+      kit.tagAct('zap', { art: null }); await frames(4);
+      R.gone = !B().classList.contains('art') && getComputedStyle(B().querySelector('.tgArt')).display === 'none' && !B().querySelector('.tgArt canvas');
+      R._r = [rb, ra].map(r => r && [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]);
       return R;`);
     K.tagPartyFilm = await pCheck('partyFilm', `
       const R = {};

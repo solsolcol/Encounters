@@ -8642,6 +8642,7 @@ function kitTagAct(id, p) {
   if ('call' in p) st.call = !!p.call;          // v28.0 (seam 70): THE CALL, the act drawn in the screen's middle (shell.html .tagBtn.call)
   if ('label' in p) st.label = p.label == null ? undefined : String(p.label);
   if ('icon' in p) st.icon = p.icon == null ? undefined : p.icon;
+  if ('art' in p) st.art = p.art == null ? undefined : p.art;   // v28.0 (seam 74): AN ACT'S PICTURE filling its button's face (shell.html .tagBtn.art)
   if ('waitSay' in p) st.waitSay = p.waitSay ? String(p.waitSay) : null;
   /* an act taken away or locked while it is held is let go (said as an up, cut) */
   if (st.hidden || st.blocked) for (const [pid, d] of [...tag.down]) if (d.act === id) {
@@ -8705,7 +8706,7 @@ function tagEls() {
   if (tag.el) return tag.el;
   const mk = id => { const el = $(id); return el ? { el, ico: el.querySelector('.tgIco'), lbl: el.querySelector('.tgLbl'), kbd: el.querySelector('.wpnKey kbd'),
                       wait: el.querySelector('.tgWait'), fill: el.querySelector('.tgFill'), face: el.querySelector('.tgFace'),
-                      name: el.querySelector('.tgName'), sig: '', lblOf: null, icoOf: undefined, keyOf: null } : null; };
+                      name: el.querySelector('.tgName'), sig: '', lblOf: null, icoOf: undefined, keyOf: null, artOf: undefined, artEl: null } : null; };
   tag.el = { btn: ['tagA0', 'tagA1', 'tagA2'].map(mk), sw: mk('tagSw'), marks: $('tagMarks'), mate: $('tagMate'), count: $('tagCount'),
              pool: [], countOf: -1, countLeft: -1, mateSig: '',
              party: $('tagParty'), pfx: $('tagPartyFx'), tiles: [], partySig: '', partyPlayed: -1, partyOn: false, partyN: { took: 0, nope: 0, here: 0 } };
@@ -8721,6 +8722,18 @@ function tagPaintBtn(b, a, st) {
     b.icoOf = icon; b.sig = '';
     if (b.ico) { b.ico.textContent = ''; if (icon) b.ico.appendChild(evIconNode(icon, 'tgIcoIn')); }
     cl.toggle('hasIco', !!icon);
+  }
+  /* v28.0 · THE SEVENTY-FOURTH SEAM: AN ACT'S PICTURE (kit.tagAct(id, { art })). Chad, R107 (24 Nov 2026): "generate an
+     image of pho and zavier fighting together in a final fantasy artstyle illustration, and this image needs to be in the
+     button to make it look awesome". An asset key (or a node, as an icon is given) drawn over the button's whole round face,
+     its word low over it; the icon stands aside. Its span is made the first time a picture is given, so a chapter that never
+     gives one draws, and holds in its page, exactly what it always did; null takes the picture away */
+  const art = st.art !== undefined ? st.art : a.art;
+  if (b.artOf !== art) {
+    b.artOf = art; b.sig = '';
+    if (art && !b.artEl) { b.artEl = document.createElement('span'); b.artEl.className = 'tgArt'; b.el.insertBefore(b.artEl, b.el.firstChild); }
+    if (b.artEl) { b.artEl.textContent = ''; if (art) b.artEl.appendChild(evIconNode(art, 'tgArtIn')); }
+    cl.toggle('art', !!art);
   }
   const sig = a.id + '|' + label + '|' + (st.blocked ? 1 : 0) + (st.pulse ? 1 : 0) + (st.on ? 1 : 0) + (st.call ? 1 : 0) + '|' + wait.toFixed(3) + '|' + st.fill.toFixed(3);
   if (sig === b.sig) return;
@@ -9397,7 +9410,7 @@ const KIT = {
   tag: kitTag,
   tagState: tagStateRead,
   tagSwitch: kitTagSwitchVerb,
-  tagAct: kitTagAct,                       // an act's state on its button: { wait, fill, pulse, blocked, hidden, on, label, icon, waitSay }
+  tagAct: kitTagAct,                       // an act's state on its button: { wait, fill, pulse, blocked, hidden, on, label, icon, waitSay, call, art }
   tagBody: kitTagBody,                     // a body's: { speed, root, face, name, pic, share }
   tagPlace: kitTagPlace,                   // a body moved by the chapter: (id, x, z, { secs, ry })
   tagMarks: (list) => { if (!tag.on) return false; tag.targets = list === undefined ? null : list; return true; },

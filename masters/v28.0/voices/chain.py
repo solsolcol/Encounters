@@ -39,7 +39,10 @@ for lid, v in P.items():
     k = v['pick']; t = v['takes'][k]; src = os.path.join(HERE, 'raw', '%s_%s.mp3' % (lid, k)); opts = []; cut = []
     if t['len'] - t['e_last'] > 0.45: opts += ['--keep', '%.2f' % (t['e_last'] + 0.3)]; cut.append('its silent tail cut at the voice\'s end + 0.3 s')
     if t['e_first'] > 0.3: opts = ['--head', '%.2f' % (t['e_first'] - 0.15)] + ([opts[0], '%.2f' % (float(opts[1]) - (t['e_first'] - 0.15))] if opts else []); cut.append('its lead cut 0.15 s before the voice')
-    opts += ['--fade', '0.12']
+    # (R106, 24 Nov 2026: a take whose voice runs into its last 0.15 s ends on its last word's release, and the 0.12 s fade
+    #  took it: Grandmaster Pho's "Hold them still. BIND." was heard "Fine." from the game's file while every raw take said
+    #  "bind", measured by an unprompted transcriber. Such a take is faded over 0.03 s, enough to keep it from clicking)
+    opts += ['--fade', '0.03' if t['len'] - t['e_last'] < 0.15 and '--keep' not in opts else '0.12']
     p = os.path.join(TMP, 'p_%s.wav' % lid); run('python3', PREP, src, p, *opts)
     if v['who'] == 'he':
         h = os.path.join(TMP, 'h_%s.wav' % lid); run('ffmpeg', '-v', 'error', '-y', '-i', p, '-af', 'highpass=f=70:poles=2', '-ar', '48000', '-ac', '1', h)

@@ -25,7 +25,7 @@
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[uneasy] The doors opened, and it hit me."
+  "prompt": "[uneasy] The doors opened, then a pungent smell hit me."
  },
  {
   "key": "q5w1",
@@ -368,14 +368,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The golden shockwave is ready. Lend me your cage first."
+  "prompt": "[serious] The shockwave is ready. Lend me your cage first."
  },
  {
   "key": "ph5f10",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] The gold gathers what is bound. The rest, it only drives back."
+  "prompt": "[calm] The shockwave gathers what is bound. The rest, it only drives back."
  },
  {
   "key": "ph5fa",
@@ -396,14 +396,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] BIND one first. The gold gathers only what is bound."
+  "prompt": "[firm] The shockwave gathers only what is bound. First, bind."
  },
  {
   "key": "ph5fe",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] They broke the gold. Lend me your cage before I gather it."
+  "prompt": "[serious] They broke the shockwave. Lend me your cage before I gather it."
  },
  {
   "key": "ph5fg",
@@ -417,7 +417,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] They draw together. The bag cannot take them now. Only the gold, and only what is bound."
+  "prompt": "[serious] They draw together. The bag cannot take them now. Only the shockwave, and only what is bound."
  },
  {
   "key": "ph5fj",
@@ -431,7 +431,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The last of them cling to the house. Only the gold can take them. BIND them, Zavier."
+  "prompt": "[serious] The last of them cling to the house. Only the shockwave can take them. BIND them, Zavier."
  },
  {
   "key": "ph5na1",
@@ -459,14 +459,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[urgent] Your cage is wearing thin. BIND them."
+  "prompt": "[firm] Your cage is wearing thin. Bind."
  },
  {
   "key": "ph5nb2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Hold them still. BIND."
+  "prompt": "[firm] Hold them still. Bind."
  },
  {
   "key": "ph5nc2",
@@ -522,7 +522,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[urgent] BIND it before it reaches you."
+  "prompt": "[urgent] Bind it before it reaches you."
  },
  {
   "key": "ph5ng2",
@@ -536,7 +536,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The golden shockwave is ready. SHOCKWAVE."
+  "prompt": "[serious] The shockwave is ready. SHOCKWAVE."
  },
  {
   "key": "ph5nh2",
@@ -592,7 +592,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[urgent] It is at you. BIND."
+  "prompt": "[firm] It is at you. Bind."
  },
  {
   "key": "ph5nl2",
@@ -662,14 +662,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] It will rise again. BIND it, and it cannot."
+  "prompt": "[firm] It will rise again. Bind."
  },
  {
   "key": "ph5nr2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] BIND the tired Prai. Keep it for the bag."
+  "prompt": "[calm] Bind the tired Prai. Keep it for the bag."
  },
  {
   "key": "ph5ns2",
@@ -690,14 +690,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Zavier has found it. Switch to Zavier, and BIND it."
+  "prompt": "[calm] Zavier has found it. Switch to Zavier, and bind it."
  },
  {
   "key": "ph5nt2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Switch to Zavier. BIND."
+  "prompt": "[firm] Switch to Zavier. Bind."
  },
  {
   "key": "ph5nu1",
@@ -725,7 +725,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] The golden shockwave is ready. LEND."
+  "prompt": "[serious] The shockwave is ready. LEND."
  },
  {
   "key": "ph5nv3",
@@ -781,7 +781,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[warm] Bind, then fire. That is how it is done."
+  "prompt": "[warm] Bind... then fire. That is how it is done."
  },
  {
   "key": "ph5g3",

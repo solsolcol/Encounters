@@ -50,8 +50,8 @@
    "who": "jamesAdult",
    "ch": "e4c5",
    "where": "opening film: one step out of the lift, the picture sours",
-   "text": "[uneasy] The doors opened, and it hit me.",
-   "secs": 2.41
+   "text": "[uneasy] The doors opened, then a pungent smell hit me.",
+   "secs": 3.45
   },
   {
    "id": "q5w1",
@@ -411,7 +411,7 @@
    "ch": "e4c5",
    "where": "the fight: the short wording of every BIND need",
    "text": "[firm] Bind.",
-   "secs": 0.72
+   "secs": 0.73
   },
   {
    "id": "ph5f5",
@@ -419,7 +419,7 @@
    "ch": "e4c5",
    "where": "the fight: need bound, Master Zavier played: first wording (said in the lesson)",
    "text": "[calm] It is bound. Now switch to me.",
-   "secs": 2.73
+   "secs": 3.45
   },
   {
    "id": "ph5f6",
@@ -435,23 +435,23 @@
    "ch": "e4c5",
    "where": "the fight: need shown, Master Zavier played: first wording (said in the lesson)",
    "text": "[urgent] There. BIND it, before it sinks again.",
-   "secs": 3.07
+   "secs": 2.47
   },
   {
    "id": "ph5f9",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: the first golden shockwave, whoever is played: first wording",
-   "text": "[serious] The golden shockwave is ready. Lend me your cage first.",
-   "secs": 4.16
+   "text": "[serious] The shockwave is ready. Lend me your cage first.",
+   "secs": 4.12
   },
   {
    "id": "ph5f10",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: after the first golden shockwave (once)",
-   "text": "[calm] The gold gathers what is bound. The rest, it only drives back.",
-   "secs": 5.13
+   "text": "[calm] The shockwave gathers what is bound. The rest, it only drives back.",
+   "secs": 6.18
   },
   {
    "id": "ph5fa",
@@ -467,31 +467,31 @@
    "ch": "e4c5",
    "where": "the fight: the fight proper begins (once)",
    "text": "[serious] Now they all come. BIND them, and I will gather them.",
-   "secs": 3.95
+   "secs": 3.45
   },
   {
    "id": "ph5fd",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need waveB (the gold is ready and nothing is bound): first wording",
-   "text": "[firm] BIND one first. The gold gathers only what is bound.",
-   "secs": 4.75
+   "text": "[firm] The shockwave gathers only what is bound. First, bind.",
+   "secs": 5.84
   },
   {
    "id": "ph5fe",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: a golden shockwave broken in its gathering (each time)",
-   "text": "[serious] They broke the gold. Lend me your cage before I gather it.",
-   "secs": 5.13
+   "text": "[serious] They broke the shockwave. Lend me your cage before I gather it.",
+   "secs": 4.59
   },
   {
    "id": "ph5fi",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: the first hold begins (once)",
-   "text": "[serious] They draw together. The bag cannot take them now. Only the gold, and only what is bound.",
-   "secs": 7.44
+   "text": "[serious] They draw together. The bag cannot take them now. Only the shockwave, and only what is bound.",
+   "secs": 7.13
   },
   {
    "id": "ph5fj",
@@ -506,8 +506,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: the last hold begins, at four left (once)",
-   "text": "[serious] The last of them cling to the house. Only the gold can take them. BIND them, Zavier.",
-   "secs": 6.13
+   "text": "[serious] The last of them cling to the house. Only the shockwave can take them. BIND them, Zavier.",
+   "secs": 7.05
   },
   {
    "id": "ph5na1",
@@ -538,7 +538,7 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need press, Master Zavier played: first wording",
-   "text": "[urgent] Your cage is wearing thin. BIND them.",
+   "text": "[firm] Your cage is wearing thin. Bind.",
    "secs": 3.28
   },
   {
@@ -546,7 +546,7 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need press, Master Zavier played: second wording",
-   "text": "[firm] Hold them still. BIND.",
+   "text": "[firm] Hold them still. Bind.",
    "secs": 2.57
   },
   {
@@ -594,7 +594,7 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need come, Master Zavier played: first wording",
-   "text": "[urgent] BIND it before it reaches you.",
+   "text": "[urgent] Bind it before it reaches you.",
    "secs": 2.33
   },
   {
@@ -610,8 +610,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need waveSafe (ready, a Prai bound, nothing free near him): first wording",
-   "text": "[serious] The golden shockwave is ready. SHOCKWAVE.",
-   "secs": 3.49
+   "text": "[serious] The shockwave is ready. SHOCKWAVE.",
+   "secs": 3.25
   },
   {
    "id": "ph5nh2",
@@ -674,8 +674,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need athimB (Master Zavier played; a Prai at him): first wording",
-   "text": "[urgent] It is at you. BIND.",
-   "secs": 2.97
+   "text": "[firm] It is at you. Bind.",
+   "secs": 2.65
   },
   {
    "id": "ph5nl2",
@@ -683,7 +683,7 @@
    "ch": "e4c5",
    "where": "the fight: need athimB: second wording",
    "text": "[firm] BIND the Prai at you.",
-   "secs": 1.85
+   "secs": 1.77
   },
   {
    "id": "ph5nl3",
@@ -730,16 +730,16 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need keep (Master Zavier played; a tired Prai whose ring is half closed): first wording",
-   "text": "[serious] It will rise again. BIND it, and it cannot.",
-   "secs": 4.49
+   "text": "[firm] It will rise again. Bind.",
+   "secs": 3.37
   },
   {
    "id": "ph5nr2",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need keep: second wording",
-   "text": "[calm] BIND the tired Prai. Keep it for the bag.",
-   "secs": 3.21
+   "text": "[calm] Bind the tired Prai. Keep it for the bag.",
+   "secs": 3.05
   },
   {
    "id": "ph5ns2",
@@ -762,16 +762,16 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need shown, Grandmaster Pho played: first wording",
-   "text": "[calm] Zavier has found it. Switch to Zavier, and BIND it.",
-   "secs": 4.22
+   "text": "[calm] Zavier has found it. Switch to Zavier, and bind it.",
+   "secs": 3.84
   },
   {
    "id": "ph5nt2",
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: needs shown, come, press and waveB, Grandmaster Pho played: second wording",
-   "text": "[firm] Switch to Zavier. BIND.",
-   "secs": 2.33
+   "text": "[firm] Switch to Zavier. Bind.",
+   "secs": 2.09
   },
   {
    "id": "ph5nu1",
@@ -802,8 +802,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: need waveLend, Master Zavier played: second wording",
-   "text": "[serious] The golden shockwave is ready. LEND.",
-   "secs": 3.59
+   "text": "[serious] The shockwave is ready. LEND.",
+   "secs": 3.1
   },
   {
    "id": "ph5nv3",
@@ -858,8 +858,8 @@
    "who": "pho",
    "ch": "e4c5",
    "where": "the fight: praise: the first bound Prai tired in the fight proper (once)",
-   "text": "[warm] Bind, then fire. That is how it is done.",
-   "secs": 3.29
+   "text": "[warm] Bind... then fire. That is how it is done.",
+   "secs": 3.93
   },
   {
    "id": "ph5g3",
