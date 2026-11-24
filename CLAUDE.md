@@ -4,8 +4,8 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Nineteen chapters are live: three complete episodes of five and
-the first four chapters of the fourth. Episode 1, all at one block: The Hell Note
+teaching. Twenty chapters are live: four complete episodes of five.
+Episode 1, all at one block: The Hell Note
 (a void deck, a burner, a note, her), The Presence (a bedroom, a fan, the
 gap beside the bed), The Gathering (a seventh-month tentage in the car
 park at ten in the morning, and one chair facing the wrong way), Back
@@ -1512,9 +1512,14 @@ theme (four previews sent, C in the game until he says a letter), one word of To
 Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at v27.0 (18 Nov 2026, deploy
 `6afddc6efa7e6ea6a460d180`, build 21j): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
-log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Next: chapter 5
-(S1·14 and S1·15, cases two and three). Chapter 5 is being planned (20 Nov 2026, on Fable 5.2 at max effort only):
-**docs/V28.0-E4C5-PLAN.md**, his words R1 on and where it stands.
+log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
+and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 61 live now, deploy
+`6b04ec0bb401340d2e821917`): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
+asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
+docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
+by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five
+chapters of episode 4 are live.
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
