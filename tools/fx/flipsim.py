@@ -55,15 +55,21 @@ K = {
     'fire':  dict(r=0.20, dom=((0, 0, 0.55), (0.75, 0.75, 1.05)), cam=((0, 0, 0.28), 1.30),
                   vel=0.0, flow=(1, 10 ** 6), fuel=1.4, smoke=0.25, temp=2.2, vort=0.35, fvort=0.9, burn=0.85,
                   dissolve=18, alpha=0.1, beta=2.4),
-    'burst': dict(r=0.16, dom=((0, 0, 0.45), (1.2, 1.2, 1.35)), cam=((0, 0, 0.30), 2.30),
-                  vel=3.4, flow=(1, 3), fuel=2.2, smoke=0.9, temp=2.6, vort=0.45, fvort=1.0, burn=0.70,
-                  dissolve=30, alpha=0.4, beta=1.2),
+    # (the burst made again, 24 Nov: thrown out by its emitter's normals alone it hardly passed its own sphere and was gone
+    #  by a sixth of its frames; this one's emitter SWELLS fourfold over its five frames of flow (the mesh's own motion is
+    #  the gas's push: velocity_factor), so a ball of burning fuel fills a metre and more, burns slowly and rolls up into
+    #  smoke that thins over seventy frames)
+    'burst': dict(r=0.14, dom=((0, 0, 0.55), (1.3, 1.3, 1.6)), cam=((0, 0, 0.45), 2.60), grow=4.0, vfac=1.5,
+                  vel=2.0, flow=(1, 5), fuel=3.0, smoke=1.2, temp=3.0, vort=0.5, fvort=1.2, burn=0.60,
+                  dissolve=70, alpha=0.3, beta=1.0),
     # (the smoke made again, 24 Nov: the first, thrown at 1.3 m/s and dissolved over 34 frames, hardly grew past its
     #  emitter and was gone by its middle; this one is thrown harder, churns, rises a little and never dissolves: the
     #  game's sprite grows it, lifts it and fades it, and the frames carry its billowing)
-    'smoke': dict(r=0.12, dom=((0, 0, 0.35), (0.9, 0.9, 1.0)), cam=((0, 0, 0.22), 1.25),
-                  vel=2.6, flow=(1, 4), fuel=0.0, smoke=2.2, temp=1.0, vort=0.65, fvort=0.0, burn=0.0,
-                  dissolve=0, alpha=0.3, beta=0.6),
+    # (and once more: thrown at 2.6 m/s it rose straight out of its domain; this one swells from its emitter too and is
+    #  barely buoyant, so it churns where it was made and spreads)
+    'smoke': dict(r=0.10, dom=((0, 0, 0.35), (0.9, 0.9, 1.0)), cam=((0, 0, 0.30), 1.60), grow=3.5, vfac=1.0,
+                  vel=1.0, flow=(1, 5), fuel=0.0, smoke=2.2, temp=0.35, vort=0.6, fvort=0.0, burn=0.0,
+                  dissolve=0, alpha=0.05, beta=0.25),
 }[KIND]
 
 # --- the emitter, and the flow and the domain made by hand (quick_smoke run under a pinned context gave its domain's
@@ -117,10 +123,11 @@ fs.fuel_amount = K['fuel']
 fs.density = K['smoke']
 fs.temperature = K['temp']
 fs.smoke_color = (0.55, 0.53, 0.50)
-if K['vel'] > 0:
+if K['vel'] > 0 or K.get('vfac'):
     fs.use_initial_velocity = True
     fs.velocity_normal = K['vel']
     fs.velocity_random = 0.6
+    fs.velocity_factor = K.get('vfac', 1.0)
 # (a cloud texture on the emission, so the flames tear unevenly as real fire does)
 tex = bpy.data.textures.new('flowNoise', 'CLOUDS')
 tex.noise_scale = 0.18
@@ -136,6 +143,12 @@ if f2 < 10 ** 5:
     fs.keyframe_insert('use_inflow', frame=f2)
     fs.use_inflow = False
     fs.keyframe_insert('use_inflow', frame=f2 + 1)
+# (a swelling emitter: its scale keyed from 1 at the flow's first frame to `grow` at its last)
+if K.get('grow'):
+    em.scale = (1, 1, 1)
+    em.keyframe_insert('scale', frame=f1)
+    em.scale = (K['grow'],) * 3
+    em.keyframe_insert('scale', frame=f2)
 # (the texture drifts through the emitter so the fire never repeats its tearing)
 fs.texture_offset = 0.0
 fs.keyframe_insert('texture_offset', frame=1)
