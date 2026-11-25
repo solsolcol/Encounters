@@ -452,6 +452,8 @@
     const limHook = new THREE.Object3D(); limHook.name = 'the arms held to a real range';
     limHook.updateMatrixWorld = function (force) {
       try {
+        /* (R129: his near body, read after he is ready, jointed as his body was the frame it arrives, before it is drawn) */
+        { const Z = cast.zav; if (Z && Z.ready && ZG5.J && !ZG5.failed && Z.lv[0] && Z.lv[0].some(m => m.skeleton && !ZG5.sk.has(m.skeleton))) zgRun(Z); }
         for (const [P, skip] of [[cast.zav, typeof ZAVGRIP5 === 'object' && ZAVGRIP5.k() > 0 ? 'Left' : null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
           if (P && P.ready && P.group.visible) armLimit(P, skip);
       } catch (e) { if (!limHook.failed) { limHook.failed = true; console.warn('LIM5 threw: ' + (e && e.message)); } }
