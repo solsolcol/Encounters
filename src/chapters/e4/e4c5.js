@@ -16064,12 +16064,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const TOGPRE5 = 3.4, ZJ5 = [-0.54, 0.12], HAF5 = 0.45;
     /* R132-R140 (Chad, of the lab's pictures: the fingers in the stick, his arm bent across his chest, Pho's hand on his
        shoulder, Pho's arm not straight): THE PROLOGUE'S STAGING, one table the film reads every frame (and a probe may
-       change: FILMS5API.TOGP5). His student 0.54 to his right and 0.15 before him, turned 30 degrees to the stick, so the
-       stick stands at his left shoulder as it stands at his teacher's right (measured: 4 cm outside each shoulder, 30 to 35
-       before it); his full body while the two hands are close on the screen (the fight holds him to his light one); his
+       change: FILMS5API.TOGP5). His student 0.60 to his right and 0.10 before him, turned 30 degrees to the stick, so the
+       stick stands at his left shoulder as it stands at his teacher's right (measured at 0.54 and 0.15: 4 cm outside each
+       shoulder, 30 to 35 before it; moved 6 cm out and 5 back so the strike lands clear of his left shoe); his full body
+       while the two hands are close on the screen (the fight holds him to his light one); his
        teacher's elbow under his shoulder (R139); the cage kept out until the strike (its bars stood through the two men in
        every shot of the prologue); the lift 16 cm (at 24 his teacher's fist rose to his student's shoulder) */
-    const TOGP5 = { zj: [-0.54, 0.15], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.16 };
+    const TOGP5 = { zj: [-0.60, 0.10], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.16 };
     FILMS5.together = {
       three: null, spots: null,
       /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
@@ -16155,7 +16156,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const T = { plant: 1.6 + TOGPRE5, rise: RISE,
                     /* (R129's prologue: his hand to the stick and closed on it; the violet in his fist, the gold in his teacher's;
                        the two wound up the shaft to its head, lit; the two of them lift it and drive it down) */
-                    reach: 0.3, close: 0.85, zk: 1.0, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
+                    reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
                     swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
                     tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
         /* (R122 idea 6: the stick strikes the paving 1.65 s into his cast; the gold NAGA as it rides up with its head) */
@@ -16231,7 +16232,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            carved head, which takes their light; they are struck into the paving with it */
         if (tau < T.strike + 0.7) {
           const gone = 1 - smo(c01((tau - T.strike - 0.05) / 0.35)), flare = Math.max(0, 1 - Math.abs(tau - T.strike) / 0.25);
-          BRAID5.frame(tau, { zk: smo(c01((tau - T.zk) / 0.4)) * gone * (1 + 0.5 * flare), pk: smo(c01((tau - T.pk) / 0.4)) * gone * (1 + 0.5 * flare),
+          /* (R141, Chad: "What happened to the glow? Why is it missing?": at 1.2 s neither fist glowed yet. His teacher's gold
+             is in his fist from the film's first frame, soft, and swells at T.pk; his student's violet lights as his hand closes) */
+          BRAID5.frame(tau, { zk: smo(c01((tau - T.zk) / 0.3)) * gone * (1 + 0.5 * flare), pk: (0.45 + 0.55 * smo(c01((tau - T.pk) / 0.4))) * gone * (1 + 0.5 * flare),
                               rise: smo(c01((tau - T.braid) / (T.lit - T.braid))), k: smo(c01((tau - T.braid + 0.05) / 0.3)) * gone,
                               head: (smo(c01((tau - T.lit + 0.1) / 0.3)) * (0.75 + 0.25 * Math.sin(tau * 7)) + 0.9 * Math.max(0, 1 - Math.abs(tau - T.lit) / 0.35) + 0.8 * flare) * gone,
                               fz: 0.93, fp: 1.07 });
@@ -16387,7 +16390,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
         const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
         const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
-        const PAIR_BACK = rel(MID, -2.9, -0.05, 1.35), PAIR_BACK2 = rel(MID, -1.95, -0.05, 1.32), PAIR_AT = rel(MID, 1.6, 0.35, 1.38);
+        /* (R138: from behind at their shoulders' height his teacher's lifted fist sat on his student's shoulder in the picture; from
+           over their shoulders, 1.85 to 1.95 m up, the two fists stand on the stick between them, the burning figures beyond) */
+        const PAIR_BACK = rel(MID, -2.6, -0.05, 1.95), PAIR_BACK2 = rel(MID, -1.9, -0.05, 1.85), PAIR_AT = rel(MID, 1.6, 0.2, 1.15);
         const STICK_FRONT = [B.foot[0] + fw[0] * 1.0 + lf[0] * 0.25, 0.4, B.foot[2] + fw[1] * 1.0 + lf[1] * 0.25];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.6, 4.4, 2.6), THREE_AT = cw(0, 0.35, -1.35);
@@ -17318,7 +17323,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   const TOG5 = { plant: 5.0, rise: 6.8, kindle: 7.35, cry: 7.55, top: 9.0555, ph5c2: 9.1755, stoop: 12.6055, apart: 13.4368, swoop: 13.5454,
                  p1: 14.2425, p2: 14.8688, p3: 15.4223, climb: 15.8196, ring: 16.7176, low: 17.0223, ringOut: 18.8982, home: 20.0839,
                  tail: 22.0839, ko5c2: 24.6839, back: 29.2139, end: 30.8139, strike: 6.65, title: 7.55,
-                 reach: 0.3, close: 0.85, zk: 1.0, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45 };
+                 reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45 };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
