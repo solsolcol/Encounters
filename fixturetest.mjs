@@ -4025,6 +4025,10 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.absentHidden = !!C && !C.classList.contains('on') && getComputedStyle(C).display === 'none' && pics() === 0;
       const pic = (col) => { const c = document.createElement('canvas'); c.width = 96; c.height = 64; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 96, 64); return c; };
       R.refused = kit.cutIn({}) === false;
+      /* (build 93: an order is set first, so its box is there to step aside: build 91's proof read a box nobody had set,
+         threw on it, and the bars' proof after it failed for want of this one's film) */
+      kit.objective('The box steps aside under a cut-in', { complete: false });
+      await poll(() => !!document.querySelector('#objective .obox'), 10000); await new Promise(r => setTimeout(r, 400)); await frames(2);
       R.asked = kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 3 }) === true;
       await new Promise(r => setTimeout(r, 500)); await frames(2);
       const a = C.querySelector('.ciBand.a'), b = C.querySelector('.ciBand.b'), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
@@ -4038,7 +4042,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.hudAside = document.body.classList.contains('cutin') && !!obx && getComputedStyle(obx).visibility === 'hidden';
       await poll(() => !C.classList.contains('on'), 6000); await frames(2);
       R.gone = getComputedStyle(C).display === 'none' && pics() === 0 && C.querySelector('.ciWord').textContent === '';
-      R.hudBack = !document.body.classList.contains('cutin') && getComputedStyle(obx).visibility !== 'hidden';
+      R.hudBack = !document.body.classList.contains('cutin') && !!obx && getComputedStyle(obx).visibility !== 'hidden';
+      kit.objective(null, { complete: false });
       /* (a film from play takes the words and the cut-in away on its first frame) */
       kit.pop('Caught', { screen: { sx: 0.5, sy: 0.5 }, secs: 30 });
       kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 4 });
