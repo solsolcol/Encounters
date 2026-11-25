@@ -47,7 +47,12 @@ await p.evaluate(({ FROM }) => {
       const row = { now: +performance.now().toFixed(1), st, phase: S.phase, ct: ct == null ? null : +ct.toFixed(3), cur: P.cur, filmT: P.filmT == null ? null : +(+P.filmT).toFixed(3),
         wrote: !!(P.arms && P.arms.L && P.arms.L.wrote), vis: P.group.visible, duffel: !!(S.things && S.things.duffel && S.things.duffel.visible),
         up: q(up), fore: q(fo), hand: q(ha), line };
-      if (prev) { row.dUp = ang(prev.up, row.up); row.dFore = ang(prev.fore, row.fore); row.dHand = ang(prev.hand, row.hand); }
+      /* (and Ton's RIGHT arm, which carries the wrapped staff by the same draw-time lay) */
+      const TN = S.films.people().find(x => /ton/.test(x.key));
+      if (TN && TN.ready) { const tb = (re) => { for (const n in TN.bone) if (re.test(n)) return TN.bone[n]; return null; };
+        row.tUp = q(tb(/RightArm$/)); row.tFore = q(tb(/RightForeArm$/)); row.tHand = q(tb(/RightHand$/)); row.tCur = TN.cur; }
+      if (prev) { row.dUp = ang(prev.up, row.up); row.dFore = ang(prev.fore, row.fore); row.dHand = ang(prev.hand, row.hand);
+        if (row.tUp && prev.tUp) { row.tdUp = ang(prev.tUp, row.tUp); row.tdFore = ang(prev.tFore, row.tFore); row.tdHand = ang(prev.tHand, row.tHand); } }
       prev = row; rows.push(row);
     } catch (e) { if (!window.__junErr) window.__junErr = String(e && e.stack || e); }
   };

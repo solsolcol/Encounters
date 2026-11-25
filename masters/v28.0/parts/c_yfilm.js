@@ -2805,12 +2805,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        second through the spiral's last turns round the stick. A man watching a thing fly round him follows it as far as his
        neck turns, waits for it on the side it went, and turns to the other side over a moment to meet it as it comes round;
        a spiral closing on one place he watches at its middle. So his look here is the Naga as he saw it over the last 1.1 s
-       (a sight every tenth of a second, the newest counting most), each sight first held inside his neck's turn (34 degrees
-       either side of his body, his nod inside the look's own limits) so a sight from behind him never flips him; and through
-       the spiral home each sight is drawn to the spiral's own middle as it closes, wholly by seven tenths of the way down.
+       (a sight every tenth of a second, the newest counting most), each sight first turned into how far his neck would turn
+       for it: all of it to 23 degrees either side of his body, then easing toward 34 and never past, and from 100 degrees
+       round (where it goes out of his sight behind him) easing back to straight ahead, which it is when the Naga is right
+       behind him, so a sight from behind him never flips him from one shoulder to the other; his nod inside the look's own
+       limits. Every sight a smooth function of where the Naga is, the look is smooth: a sight held hard at the limit and
+       thrown to the other side as it passed behind (the first way, built 103's lab) stepped the average 10 degrees each tenth
+       of a second as each of the twelve crossed. Through the spiral home each sight is drawn to the spiral's own middle as it
+       closes, wholly by seven tenths of the way down.
        A pure function of the film's clock: every sight is read from the Naga's plan at its own moment (its eyes, NAGA5.eyeAt),
        his head's place from where he stands (never his laid head) */
-    const NSOFT5 = { W: 1.1, N: 12, YAW: 0.6, UP: 0.33, DOWN: 0.55, far: 3.0, mid: 0.7, H: 1.6,
+    const NSOFT5 = { W: 1.1, N: 12, KNEE: 0.4, YAW: 0.6, BACK: 100 * Math.PI / 180, UP: 0.33, DOWN: 0.55, far: 3.0, mid: 0.7, H: 1.6,
                      q: new THREE.Quaternion(), qi: new THREE.Quaternion(), v: new THREE.Vector3() };
     function nagaSoft5(P, tau, B, T) {
       if (!P || !P.ready || !P.group || !B || !B.pts || !B.NM || typeof NAGA5 !== 'object' || !NAGA5.eyeAt) return null;
@@ -2830,7 +2835,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (m > 0) { const k = smo(sp), cx = rc[0] + (B.S[0] - rc[0]) * k, cy = rc[1] + (B.S[1] + 0.6 - rc[1]) * sp, cz = rc[2] + (B.S[2] - rc[2]) * k;
           x += (cx - x) * m; y += (cy - y) * m; z += (cz - z) * m; }
         const v = S.v.set(x - hx, y - hy, z - hz).applyQuaternion(S.qi);
-        const yaw = Math.max(-S.YAW, Math.min(S.YAW, Math.atan2(v.x, v.z))), nod = Math.max(-S.DOWN, Math.min(S.UP, Math.atan2(v.y, Math.hypot(v.x, v.z))));
+        const ry = Math.atan2(v.x, v.z), ay = Math.abs(ry);
+        const turn = ay <= S.KNEE ? ay : S.KNEE + (S.YAW - S.KNEE) * Math.tanh((ay - S.KNEE) / (S.YAW - S.KNEE));
+        const yaw = Math.sign(ry) * turn * smo(c01((Math.PI - ay) / (Math.PI - S.BACK)));
+        const nod = Math.max(-S.DOWN, Math.min(S.UP, Math.atan2(v.y, Math.hypot(v.x, v.z))));
         sy += w * yaw; sn += w * nod; sw += w;
       }
       if (!(sw > 0)) return null;
