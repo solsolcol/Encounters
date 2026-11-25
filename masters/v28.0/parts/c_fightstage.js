@@ -3236,6 +3236,16 @@
       return {
         /* the stick's place in his right hand, in that hand's frame (null: his hand has no fingers, and the stick stands as before) */
         offset(P) { if (!GRIP_ON) return null; const g = solve(P); return g ? g.off : null; },
+        /* (build 101) where his fist holds the shaft, in the world: the shaft's line `y` up it from its foot (STICK_Y up it is
+           the middle of his fist), from his rest place and the film's lift (FLIFT), as this grip will stand it this frame. A film
+           reads it for its lens and its looks: the stick's own matrix, read in a film's frame, still stood where his hand's take
+           had it before this grip was laid, about 30 cm low (build 100: the braid's shots aimed at his student's fist, not at the
+           carved head). Null where he is not ready */
+        fistAt(y) { const P = cast.pho; if (!P || !P.ready) return null; const to = FLIFT.on ? FLIFT.to : 0;
+          const v = new THREE.Vector3(STAFF.fist[0] + (FLIFT.on ? to * PLANT_D[0] + (FLIFT.dx || 0) * (1 - to) : 0),
+                                      (y - STICK_Y) + STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + (FLIFT.on ? FLIFT.y : 0),
+                                      STAFF.fist[2] + (FLIFT.on ? to * PLANT_D[1] : 0));
+          P.group.updateWorldMatrix(true, false); P.group.localToWorld(v); return [v.x, v.y, v.z]; },
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },

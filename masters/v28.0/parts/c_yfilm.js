@@ -1732,6 +1732,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       return { frame, off };
     })();
     const STICK_HEAD5 = [-0.11, 1.36, 0];
+    /* (build 101) WHERE THE STICK STANDS FOR A LOOK OR A LENS while it is in his teacher's fist (the Naga film's prologue): his
+       grip's own place for it (PHOGRIP5.fistAt), not the stick's matrix, which in the film's frame still stood where his hand's
+       take had it before his grip was laid, about 30 cm low (build 100's braid shots aimed at his student's fist, and every look
+       at the hands or the head fell the same way). Its matrix where his grip has no answer */
+    const stickNow5 = (x, y, z) => { const p = typeof PHOGRIP5 === 'object' && PHOGRIP5.fistAt ? PHOGRIP5.fistAt(y) : null; if (p) return p;
+      const g = things.nagaStaff; if (!g) return null; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(x, y, z).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
     /* R129: THE PROLOGUE, 3.4 s before the rise as it was: every mark after it moves on by as much (the flight's clock
        begins at RISE). His student's place beside him, in his frame (to his right 0.54 m, 0.12 before him: his left hand
        on the stick 0.24 to his left and 0.20 before him, his shoulder 0.49 m over it), and the Naga's widening spiral
@@ -1884,8 +1890,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            shape over that place; the cage round the two of them while they stand together) */
         const zj = this.zj || zz, zNow = tau < T.ko5c2 ? zj : zz, shp = this.shape || zz, mid = { x: 0.5 * (pz.x + zj.x), z: 0.5 * (pz.z + zj.z) };
         const out = smo(c01((tau - T.plant - 3.6) / 0.9)), lifted = tau < T.strike;
-        const SH = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(STICK_HEAD5[0], STICK_HEAD5[1], STICK_HEAD5[2]).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
-        const HANDS = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, 1.0, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const SH = () => stickNow5(STICK_HEAD5[0], STICK_HEAD5[1], STICK_HEAD5[2]) || B.S;
+        const HANDS = () => stickNow5(0.09, 1.0, -0.006) || B.S;
         /* (R75's debug, V9: its lamps' curve laid after TRANCE5.set, below, which set them back to 0.15 every frame) */
         fmLook('TRANCE'); const lampK = 0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6);
         /* the court low under the trance; the smell of the tall shape until it comes apart */
@@ -2065,20 +2071,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            behind the two of them as they lift it and drive it down, the tall shape looming beyond. The paving's lens (erupt)
            stands before the stick now, low: from his teacher's right, where it stood, his student stands in the way */
         const ry5 = this.pho.ry, fw = [Math.sin(ry5), Math.cos(ry5)], lf = [Math.cos(ry5), -Math.sin(ry5)];
-        const stickAt = (y) => () => { const g = things.nagaStaff; if (!g) return [B.foot[0], y, B.foot[2]]; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, y, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const stickAt = (y) => () => stickNow5(0.09, y, -0.006) || [B.foot[0], y, B.foot[2]];
         const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
         const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
         const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
-        /* (build 101: what the opening shot must hold, each a place and its round: the top of each head and its chin, at the
-           place the film stands each man (never his living head), and the two fists on the shaft) */
-        const HOLD_PHO = [1.81, 1.56], HOLD_ZAV = [1.70, 1.45], FISTS = stickAt(1.13), FISTS0 = stickAt(0.92);
+        /* (build 101: what the opening shot must hold, each a place and its round: each head, high and low, where the film
+           stands each man with his head's measured place beside it (his teacher's 1 cm back and 5 in toward his student, his
+           student's 3 back and 7 out, as their rests hold them: never a living head), and the two fists on the shaft) */
+        const HOLD_PHO = [1.70, 1.58], HOLD_ZAV = [1.62, 1.48], FISTS = stickAt(1.13), FISTS0 = stickAt(0.92);
+        const headAt5 = (o, df, dl, y) => [o.x + fw[0] * df + lf[0] * dl, y, o.z + fw[1] * df + lf[1] * dl];
         const HANDS_HOLD = () => { const Z = this.zj || this.zav, out = [];
-          for (const y of HOLD_PHO) out.push(fmHead(cast.pho, [this.pho.x, y, this.pho.z]).concat(0.07));
-          for (const y of HOLD_ZAV) out.push(fmHead(cast.zav, [Z.x, y, Z.z]).concat(0.07));
+          for (const y of HOLD_PHO) out.push(headAt5(this.pho, -0.01, -0.05, y).concat(0.1));
+          for (const y of HOLD_ZAV) out.push(headAt5(Z, -0.03, -0.07, y).concat(0.1));
           out.push(FISTS().concat(0.06), FISTS0().concat(0.06)); return out; };
         /* (build 101: the braid's shots hold the carved head whole with the two fists under it: build 100's had the top of
            the lit head under the top bar as it took their light) */
-        const HEADTOP = stickAt(1.43), BRAID_HOLD = () => [HEADTOP().concat(0.05), FISTS0().concat(0.05)];
+        const HEADTOP = stickAt(1.38), HEADMID = stickAt(1.25), BRAID_HOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12), FISTS0().concat(0.05)];
         /* (R138: from behind at their shoulders' height his teacher's lifted fist sat on his student's shoulder in the picture; from
            over their shoulders, 1.85 to 1.95 m up, the two fists stand on the stick between them, the burning figures beyond) */
         const PAIR_BACK = rel(MID, -2.6, -0.05, 1.95), PAIR_BACK2 = rel(MID, -1.9, -0.05, 1.85), PAIR_AT = rel(MID, 1.6, 0.2, 1.15);
