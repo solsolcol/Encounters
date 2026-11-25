@@ -157,3 +157,16 @@
 #   -14 dBFS in its last tenth, peak -2.3 (mp3) and -1.8 (Opus), a phone plays 39 % of it. Encoded (encode.py u5rumble),
 #   installed (install.py: one STING_SAMPLE row). Cued by the Naga's film (z_tail.js) to end 0.03 s after the staff
 #   strikes the paving, at 0.6. The measured pick stands until Chad's ear (v10.6).
+# ---- R157 (25 Nov 2026, Chad: "Do 1, 2, 3, 5, 6 cleanly", of the eight ideas for the start of the Naga film): THE BOOM,
+#   THE WIND DRAWN IN, THE CARVED EYES' GLINT, sfxR157.py (its own table, family fx), three sounds, three takes each, none
+#   failed: 180 credits (20 a take; the account 222,378 used after, 75,804 left). Through measure.py (measures-sfxR157.json) none refused, every take wordless, a phone
+#   plays 91 to 100 % of each. The boom (u5strikeboom) by the house's rule, b (the fullest: its loudest 50 ms -13.4 dBFS),
+#   a hard thud and crack into a water burst and a rolling tail; the glint (u5eyeglint) c (-16.2). THE WIND FAILED THE
+#   MEASURE as the rumble did: each take up in a second and dying over its last 2 s (read in tenths: b -68 to -27 dB at
+#   1.1 s, then down to -78), the opposite of wind drawn in as the power grows; MADE from the pick (v24.3), in pick.py: b
+#   turned back to front, its long fall a swell out of silence, cut at its loudest (2.25 s) and its last 30 ms faded.
+#   Encoded (encode.py, each levelled to -14 dBFS loudest 50 ms; the boom's limiter took 1.2 dB), installed (install.py:
+#   three STING_SAMPLE rows). Cued by the Naga's film (z_tail.js): the wind from 2.25 s before the slow motion begins, so
+#   its loudest is where the near-silence takes it, at 0.7; the glint 0.02 s before the carved eyes light, at 0.8; the boom
+#   on the frame the stick hits the ground, at 0.85, the near-silence lifted 15 ms before it. The measured picks stand
+#   until Chad's ear (v10.6).
