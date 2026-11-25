@@ -9551,9 +9551,26 @@ What the baseline contains, by release:
   which it cannot copy, its last copy fixed on the screen). The frame now stops once the fight is left. Built from build 87's
   chapter with that one part changed (release-safe pins). Live: build 88, deploy `6b0663b96ca1741b0b8df1d7`; proved on it by
   the same path (PASS). R124 answered: the fight ends as the last Prai is bagged; its effects go off 2.8 s later as the mode is
-  left.
+  left. Then R122 (25 Nov 2026, Chad's pick of R121's nine ideas, "Do idea 1, 2, 4, 6"), build 89: TOGETHER as a full
+  special attack (a cut-in: a flash, a white slash, the two painted faces in slanted bands sweeping across the screen with
+  the word between them, then the Naga's film); each catch felt (the court slowed to three tenths of its speed for half a
+  second, the ninth for nine tenths, the lens pushed in a little, the caught one's fire turned to white light flowing into
+  the bag, a shockwave's catch too); BOUND and CAUGHT popping up over the Prai and the count of the nine in gold ("4 of 9");
+  and the Naga called up like a summon (1.4 s added at the film's start: a slow push in from behind the two of them as the
+  screen darkens and the bars draw in, the water rising in a ring round the stick at its strike as the dark lifts, the gold
+  NAGA title painted by GPT Image as it rides up, each pierce in slow motion eased down to 0.15 of its speed and back over
+  0.9 s, half as much steam again as each fire goes out). Four engine seams, 76 to 79 (kit.tagSlow, kit.pop, kit.cutIn,
+  kit.bars; docs/V28.0-SEAMS.md §14), each proved by fixturetest and absent from every other chapter. Six sounds (u5cutin,
+  u5slowin, u5release, u5summon, u5waterup, u5title). Sheet v158 (the four new words).
 
 ## The sheet, version by version
+
+**v158, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v158.xlsx`, sha256 05025e93...959f47ef; id
+`1DHJtVrKLijVa13J6lec-kq-GPPbGUOrVh8Q4xcmQpNk`): v157 with exactly these rows changed, made by `textsync export` from the
+tree build 89 was built from (commit 694af73): EPISODE 4 four added, R122's words, `e4c5.words.cutTogether` ("TOGETHER", the
+word between the two faces of the cut-in), `popBound` ("BOUND") and `popCaught` ("CAUGHT"), the words over a Prai as it is
+bound and caught, and `popCount` ("{n} of 9", the gold count). 11,974 cells read back tab by tab, mismatched 0. v157 was
+checked first: created 18:23:14.8, modified 18:23:15.8, the conversion itself (he had not edited it).
 
 **v157, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v157.xlsx`, sha256 26fc96d3...a354614702; id
 `1XO08mCH6U8AJtWoiwY_XxQD4ECeylQkBCWb-D2rUJhM`): v156 with exactly these rows changed, made by `textsync export` from

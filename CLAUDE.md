@@ -824,6 +824,11 @@ The declarations, all optional:
 | `tag` bodies' `wall` | v28.0: a body's own width kept off the walls in the tag mode (R76: "characters still walking into walls") — `bodies[].wall` in metres, slid along the blockers by its own reach; absent or 0, the body as before. Episode 4 chapter 5's two | — (a point) |
 | `kit.film(key, { layFirst })` | v28.0: A FILM LAID AT ITS FIRST INSTANT (R75's debug, V5) — a film from play begun inside the chapter's frame was drawn once with play's world before its tracks ran; with `layFirst` its tracks are applied at its time 0 the moment it is asked for (cineSeek(0)), so its own staging is what the first frame shows; absent, a film starts exactly as it always did (episode 1 never calls kit.film). Episode 4 chapter 5's films from play; the fixture's `lay` film proves both ways (fixturetest layFirstOn, layFirstOff) — the seventy-third seam | — (play's world for one frame) |
 | an act's `art` | v28.0: AN ACT'S PICTURE (Chad, R107: "generate an image of pho and zavier fighting together in a final fantasy artstyle illustration, and this image needs to be in the button") — `kit.tagAct(slot, { art: key })` fills that act's round button with a picture (an asset key, or a node), its icon stepped aside and its word laid low over a dark foot; `art: null` takes it off; absent, the button is exactly as it was (no element made). Episode 4 chapter 5's TOGETHER; the fixture proves it (fixturetest tagArtSeam: absent, shown, filling, icon aside, word over, gone) — the seventy-fourth seam | — (the act's icon) |
+| an act's `wide` | v28.0: THE WIDE CALL (Chad, R118: "can you make it more rectangular instead with the skewed angle edges?") — `kit.tagAct(slot, { call: true, wide: true, fill })` stands the call in the middle as a wide slanted shape, its ring hidden and its fill carried in `--tgFill`; let go, the button is round again. Episode 4 chapter 5's TOGETHER; fixturetest tagWideSeam — the seventy-fifth seam | — (the round call) |
+| `kit.tagSlow(k, { secs })` | v28.0: THE MODE'S CLOCK SLOWED (Chad, R122: "half a second of slow motion" as each Prai is caught) — the tag mode's clock and the bodies it moves at k (0.05..1) of the wall's rate, eased on wall time; `null` back to 1; the lens keeps the wall's step; `kit.tagState().slow`; refused with the mode off, let go when it is left. Episode 4 chapter 5's catches; fixturetest tagSlowSeam; docs/V28.0-SEAMS.md §14 — the seventy-sixth seam | — (exactly 1) |
+| `kit.pop(text, o)` | v28.0: A WORD OVER A PLACE (R122: "BOUND, CAUGHT, and a gold 4 of 9") — over a world point (followed) or a screen point, `tone` white/violet/gold, `big`, rising and fading over `secs`; play only, taken away by a film, a window or kitReset. Episode 4 chapter 5's fight; fixturetest popSeam — the seventy-seventh seam | — (no words) |
+| `kit.cutIn({ a, b, word, secs })` | v28.0: A CUT-IN (R122: "both portraits slash across the screen") — a flash, a slash, two slanted picture bands swept in from either side and out the other way, the word in gold between them; play only, taken away by a film's first frame, a window or kitReset. Episode 4 chapter 5's TOGETHER; fixturetest cutInSeam — the seventy-eighth seam | — (hidden, empty) |
+| `kit.bars(k)` | v28.0: THE FILM'S BARS DRAWN IN (R122: "black bars" for the Naga's summoning) — from a film's frame, each bar up to 7 % of the screen taller than its 11 % (`--barX`), a smooth function of the film's clock; the film's end and kitReset give them back, and the letterbox is measured again. Episode 4 chapter 5's Naga film; fixturetest barsSeam — the seventy-ninth seam | — (11 %, as always) |
 | `kit.choose(ids, opts)` | v17.6: CHOOSE ONE — a centred window, one card per item (drawing, name, rarity, `item.<id>.power`, words), Confirm after a pick; answers a Promise of the id and gives nothing itself. Its own screen state (`choose`); episode 3 chapter 1's Sak Yant — the twenty-third seam | — |
 | `kit.hands(k, { secs })` | v18.0: the hands lifted out of añjali into a Thai gesture by k, the body swaying with them, eased on wall time; episode 3 chapter 2 — the twenty-fourth seam | — (the hands as they were) |
 | event kind `resist` | v18.0 (a draining bar since v19.4): a RAPID-TAP fight — full when it appears, empty in `empty` seconds untapped, every tap refills it at the hold `rate`; lost on the frame it empties; episode 3 chapter 2 — the twenty-fifth seam | — |
@@ -1675,15 +1680,14 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v157, PUBLISHED 24 Nov 2026** (`masters/v28.0/masterz-text-v157.xlsx`: v156 with chapter 5's
-words made plain (R110 to R112), SHIELD for LEND in the words and Grandmaster Pho's lines, and four new lines (`q5fw1`,
-`q5fb1`, `ph5fb1`, `ph5fb2`), made from the live tree (deploy `6b05d597e0c519a1561c2495`)).
+**THE SHEET IS v158, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v158.xlsx`: v157 with R122's four words for
+chapter 5's fight, `cutTogether`, `popBound`, `popCaught` and `popCount`, made from the tree build 89 was built from).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1XO08mCH6U8AJtWoiwY_XxQD4ECeylQkBCWb-D2rUJhM/edit
+https://docs.google.com/spreadsheets/d/1DHJtVrKLijVa13J6lec-kq-GPPbGUOrVh8Q4xcmQpNk/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v157 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v158 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

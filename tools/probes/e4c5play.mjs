@@ -4,7 +4,11 @@
    (SMELL, the eye), CDP touch events with their own timestamps. Where he walks is set (the walk test walks the ground; this
    probe tests what is pressed and said). A picture at every beat; the story's state, the lines heard and the objective
    written beside it (OUT/log.txt). Every page error and console error is kept.
-     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] [OPT=A|B|C|D] [CHFILE=<chapter.js>] node tools/probes/e4c5play.mjs */
+     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [PART=walk,hunt,table] [OPT=A|B|C|D] [FIGHTFIRST=1] [CHFILE=<chapter.js>] node tools/probes/e4c5play.mjs
+   FIGHTFIRST=1 (R109/R123, 25 Nov 2026): the table reached the way a player reaches it, after the fight is WON (its lab's
+   surge, TOGETHER tapped, the Naga's film, the BAG tapped, the films after it), never by setPhase: what the fight leaves
+   behind is then on screen at the table and in the ending (Chad's R109: "in the cutscene where pho sprays the holy water on
+   to the amulets, this faint print shows too"); a frame copy the browser refuses is counted as an error */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -20,7 +24,7 @@ const p = await ctx.newPage(); const errs = [];
 if (process.env.CHFILE) { const CHSRC = fs.readFileSync(process.env.CHFILE, 'utf8');
   await p.route(new RegExp('/assets/e4c5\\.[0-9a-f]+\\.js$'), (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: CHSRC })); }
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
-p.on('console', m => { if (m.type() === 'error' || /threw|has no take|no line/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 240)); });
+p.on('console', m => { if (m.type() === 'error' || /threw|has no take|no line|glCopyTexSubImage2D|copy this drawing buffer/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 240)); });
 const T0 = Date.now(), logf = fs.createWriteStream(OUT + '/log.txt');
 const log = (...a) => { const s = ((Date.now() - T0) / 1000).toFixed(0) + 's ' + a.join(' '); console.log(s); logf.write(s + '\n'); };
 const frames = (n = 4) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
@@ -117,9 +121,36 @@ if (PART.includes('stains')) {
   await at(-8.75, -4.7, 0.95, -0.75); await frames(6); await pic('stains-shoecab');
   await tapEl('#visionBtn'); await new Promise(r => setTimeout(r, 2500));
 }
+/* the fight WON on the real path (as tools/probes/e4c5r123.mjs wins it), the story left to run on to the table by itself */
+async function fightFirst() {
+  const lab = (fn, ...a) => p.evaluate(([fn, a]) => { const L = window.__enc.stage.snap().story.fight.lab; return L[fn] ? L[fn](...a) : 'no ' + fn; }, [fn, a]);
+  await p.evaluate(() => window.__enc.stage.setPhase('fight'));
+  await wait(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, 300);
+  await lab('open');
+  await wait(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, 300);
+  await lab('start'); await lab('place', 'pho', 0.0, 1.6); await lab('place', 'zav', 1.7, -0.6); await lab('swapOn');
+  await new Promise(r => setTimeout(r, 3000));
+  log('fight: surge', JSON.stringify(await lab('toSurge')));
+  await wait(() => { const e = document.querySelector('.tagBtn.call'); return !!e && e.getBoundingClientRect().width > 10 && getComputedStyle(e).display !== 'none'; }, null, 600);
+  await tapEl('.tagBtn.call');
+  await wait(() => !!(window.__enc.kit.filmPlaying && window.__enc.kit.filmPlaying()), null, 600); log('fight: the Naga film');
+  await wait(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'last' && window.__enc.getState() === 'play' && !(window.__enc.kit.filmPlaying && window.__enc.kit.filmPlaying()); }, null, 1200);
+  let bagged = false;
+  for (let i = 0; i < 40 && !bagged; i++) {
+    const id = await p.evaluate(() => { const e = [...document.querySelectorAll('.tagBtn')].find(e => /BAG/.test(e.textContent || '') && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width > 4 && !e.classList.contains('locked') && !e.classList.contains('wait'));
+      return e ? (e.id ? '#' + e.id : null) : null; });
+    if (id) bagged = await tapEl(id); else await new Promise(r => setTimeout(r, 1500));
+  }
+  log('fight: bagged', bagged);
+  await wait(() => { const E = window.__enc; return E.stage.snap().story.phase === 'table' && E.getState() === 'play'; }, null, 2400);
+  const f = await p.evaluate(() => { const f = window.__enc.stage.snap().story.fight; return { on: f.on, fxOn: f.fxOn }; });
+  log('fight: won, at the table', JSON.stringify(f));
+  if (f.fxOn !== false) errs.push('THE FIGHT\'S EFFECTS STILL ON AT THE TABLE ' + JSON.stringify(f));
+}
 if (PART.includes('table')) {
   await noFilm();
-  await p.evaluate(() => window.__enc.stage.setPhase('table'));
+  if (process.env.FIGHTFIRST) await fightFirst();
+  else await p.evaluate(() => window.__enc.stage.setPhase('table'));
   await wait(() => window.__enc.getState() === 'play' && window.__enc.stage.snap().story.phase === 'table', null); await frames(6);
   await pic('table-start');
   await smellNow(); await pic('table-smell');
