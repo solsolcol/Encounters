@@ -1595,7 +1595,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (R122 idea 6: the stick strikes the paving 1.65 s into his cast; the gold NAGA as it rides up with its head) */
         T.strike = T.plant + 1.65; T.title = RISE + 0.75;
         T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 2.6; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
-        this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW,
+        this.B = { pts: P.map(cwp), keys, NM, T, S: cwp(S), Sc: S, M, RC, RR, GC, HA, spots: sp, spotsW: M.spotsW, foot: [sx, 0, sz],
                    dirAt: (i) => { const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)]; const d = [-(b[0] - a[0]), 0, -(b[2] - a[2])], l = Math.hypot(d[0], d[2]) || 1; return [d[0] / l, 0, d[2] / l]; } };
         return this.B;
       },
@@ -1757,7 +1757,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            pushes in on his teacher's back through the darkening as he raises the stick) */
         const PHO_WIDE = cw(Pc[0] + 1.15, 1.2, Pc[1] + 2.9);
         const UPTO = () => { const h = HEADAT(); return lp3(PHO_HEAD, h, 0.72); };
-        const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35), STICK_UP = [B.S[0], B.S[1] + 0.9, B.S[2]];
+        const STICK_LOW = cw(Sc[0] + 1.05, 0.38, Sc[2] + 0.35);
+        /* (build 91: THE STRIKE SEEN. R122's water rising round the stick was under every frame in build 90: at the strike the
+           lens was at his shoulder at his head's height, and the paving's lens came in after it looking up above the drops.
+           The paving's lens now comes in a tenth before the strike, on the stick's foot and the ring of water thrown up round
+           it, and tilts up the stick in one move into the Naga's eruption and on to its head) */
+        const STICK_FOOT = [B.foot[0], 0.42, B.foot[2]];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.6, 4.4, 2.6), THREE_AT = cw(0, 0.35, -1.35);
         /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
@@ -1786,8 +1791,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const HOME_EYE = cw(Pc[0] + 0.75, 1.25, Pc[1] - 2.3), HOME_UP = cw(Pc[0] + 0.2, 2.6, Pc[1] - 0.2), HOME_AT = cw(Pc[0] + 0.23, 1.45, Pc[1] - 0.2);
         fmTrack(tau, [
           { t: 0, name: 'plant', eye: PHO_WIDE, at: lp3(PHO_HEAD, SHAPE, 0.5), fp: 66, fd: 56 },
-          { t: T.rise - 0.06, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
-          { t: T.rise - 0.05, name: 'erupt', eye: STICK_LOW, at: STICK_UP, fp: 74, fd: 64, cut: true },
+          { t: T.strike - 0.11, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
+          { t: T.strike - 0.1, name: 'erupt', eye: STICK_LOW, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
+          { t: T.strike + 0.03, name: 'erupt', eye: STICK_LOW, at: STICK_FOOT, fp: 74, fd: 64 },
           { t: T.rise + 0.55, name: 'erupt', eye: STICK_LOW, at: HEADAT, fp: 76, fd: 66 },
           { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
           { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
