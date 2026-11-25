@@ -9587,9 +9587,21 @@ What the baseline contains, by release:
   screen are laid first and the others make way below them, none past a side, and a word steps aside off the arrow over the
   played one's head. The fixture proves the first three (popSeam apart, inside, keyed); its cut-in proof, mine from build
   91, had read an objective box nobody set and thrown on it (and the bars' proof failed after it): it sets one now, and the
-  whole fixture passes. The dark last-stage picture of the catch probe was its installed clock's, not the game's.
+  whole fixture passes. The dark last-stage picture of the catch probe was its installed clock's, not the game's. Then R127
+  (25 Nov 2026, Chad, of build 94: "There is no need to have the word caught, and the x of 9 is too big, reduce the size
+  please. Also reduce the size of the naga font by at least 50% and place it at the bottom instead."), build 95, deploy
+  `6b06ae905ddd60b6a48de9d2`: no CAUGHT word over a caught Prai (BOUND stays as each is bound; the sheet's `popCaught` row retired, sheet
+  v159), the gold "N of 9" count drawn at the plain word size instead of the big one, and the NAGA word at 0.25 of a
+  phone's width (from 0.55: under half) with its foot just above the film's bottom bar, following the bar as it is drawn
+  in; photographed full size at 4.6 and 5.0 s.
 
 ## The sheet, version by version
+
+**v159, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v159.xlsx`, sha256 a8f4e96b...e6670b91d77; id
+`1NJDM3deNefaROcr7lJAVsvmZaq2V7WusVIkSkYPFkAs`): v158 with exactly one row taken out, made by `textsync export` from the
+tree build 95 was built from (commit 889805c; a second export from it matches the workbook cell for cell): EPISODE 4
+`e4c5.words.popCaught` ("CAUGHT"), the word R127 took off the catch. 11,971 cells read back tab by tab, mismatched 0.
+v158 was checked first: created 05:10:17.4, modified 05:10:18.4, the conversion itself (he had not edited it).
 
 **v158, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v158.xlsx`, sha256 05025e93...959f47ef; id
 `1DHJtVrKLijVa13J6lec-kq-GPPbGUOrVh8Q4xcmQpNk`): v157 with exactly these rows changed, made by `textsync export` from the
