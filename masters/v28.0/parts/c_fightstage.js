@@ -2078,7 +2078,12 @@
       if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
       /* (the gold's hits on a crowd, each told a moment after the last: R75's GB) */
       if (FS5.hitQ.length) { const due = FS5.hitQ.filter(h => FS5.wall >= h.at); if (due.length) { FS5.hitQ = FS5.hitQ.filter(h => FS5.wall < h.at); fsEvents(due.map(h => Object.assign({}, h.e, { after: 0 }))); } }
-      if (FS5.wonAt >= 0) { fsWonTick(); }
+      /* (R123, 25 Nov 2026: the win's tick ends the fight in the middle of this frame (cleanse, fightLeave: the effects
+         hidden, the mode left); the rest of the frame then ran on and showed the effects again (FSG.visible below), so the
+         bloom (R100) went on drawing for the rest of the chapter: a glow over Grandmaster Pho at the table, and in Spirit
+         Vision, whose world pass is multisampled and cannot be copied, its last copy laid on every frame, fixed on the
+         screen. Once the fight is left, this frame stops here) */
+      if (FS5.wonAt >= 0) { fsWonTick(); if (!FS5.on) return; }
       FS5.live = ts.live;
       const dt = Math.max(0, Math.min(0.1, ts.t - FS5.lastT)); FS5.lastT = ts.t;
       const phoB = ts.bodies.find(b => b.id === 'pho'), zavB = ts.bodies.find(b => b.id === 'zavier');

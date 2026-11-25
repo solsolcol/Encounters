@@ -473,14 +473,14 @@
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
       'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togwide', 'p5icofire', 'p5icoshock',
-      'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
-      'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
-      'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab', 'w5curtain',
-      'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair',
-      'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth',
-      'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome',
-      'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
-      'w5shrub',
+      'p5icobag', 'p5icobind', 'p5icoshield', 'p5cutpho', 'p5cutzav', 'p5nagatitle', 'fx5fire', 'fx5burst',
+      'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
+      'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
+      'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp',
+      'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
+      'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
+      'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
+      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
@@ -10801,7 +10801,12 @@
       if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
       /* (the gold's hits on a crowd, each told a moment after the last: R75's GB) */
       if (FS5.hitQ.length) { const due = FS5.hitQ.filter(h => FS5.wall >= h.at); if (due.length) { FS5.hitQ = FS5.hitQ.filter(h => FS5.wall < h.at); fsEvents(due.map(h => Object.assign({}, h.e, { after: 0 }))); } }
-      if (FS5.wonAt >= 0) { fsWonTick(); }
+      /* (R123, 25 Nov 2026: the win's tick ends the fight in the middle of this frame (cleanse, fightLeave: the effects
+         hidden, the mode left); the rest of the frame then ran on and showed the effects again (FSG.visible below), so the
+         bloom (R100) went on drawing for the rest of the chapter: a glow over Grandmaster Pho at the table, and in Spirit
+         Vision, whose world pass is multisampled and cannot be copied, its last copy laid on every frame, fixed on the
+         screen. Once the fight is left, this frame stops here) */
+      if (FS5.wonAt >= 0) { fsWonTick(); if (!FS5.on) return; }
       FS5.live = ts.live;
       const dt = Math.max(0, Math.min(0.1, ts.t - FS5.lastT)); FS5.lastT = ts.t;
       const phoB = ts.bodies.find(b => b.id === 'pho'), zavB = ts.bodies.find(b => b.id === 'zavier');
