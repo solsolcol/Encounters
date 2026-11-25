@@ -17179,6 +17179,8 @@ const STING_SAMPLE = {
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5cutin: ['u5cutin', 1], u5slowin: ['u5slowin', 1], u5release: ['u5release', 1], u5summon: ['u5summon', 1],
   u5waterup: ['u5waterup', 1], u5title: ['u5title', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5rumble: ['u5rumble', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

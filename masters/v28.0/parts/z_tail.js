@@ -209,12 +209,22 @@
     sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
     sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
     sfx(T.drive - 0.02, 'u5swing1', 0.6);                                      // and drive it down
+    /* (R149, Chad, 25 Nov 2026: "make the camera rumble and charge up before the naga gets summoned out of the stick": the
+       ground's rumble under the charge, rising out of silence as their two powers are wound up the shaft and swelling to its
+       loudest as they drive it down, ending under the strike (3.95 s, made from its take turned round: sound/pick.py); the
+       camera's own rumble, its jolt at the strike and the push gathering speed are c_yfilm.js's (RUMBLE5); and the phone
+       trembles with it, lightly as they lift it, more as they hold it high and drive it, once at the strike) */
+    sfx(T.strike - 3.92, 'u5rumble', 0.6);                                     // the ground's rumble under the charge
+    step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
+    step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
+    step(T.drive, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });
+    step(T.strike, () => { if (api.kit && api.kit.buzz) api.kit.buzz([80]); });
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
     sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
     sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
     sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
     sfx(T.rise + 0.6, 'u5mist', 0.3);
-    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
+    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga protects us. It always has." (R151)
     /* (R75's debug, V6: his one line stood only 4 dB over the water's surge (full, 5 s from the rise), M9 and the cry's tail,
        where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
     sfxFade(T.ph5c2 - 0.3, T.ph5c2 + 0.35, 'u5nagawater');

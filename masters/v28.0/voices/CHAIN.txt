@@ -168,7 +168,7 @@ ph5g4   pho  take a  the unhurried read             voice 0.12-2.42 s of 2.48, 3
 ph5ca   pho  take c  the unhurried read             voice 0.10-2.22 s of 2.24, 1.42 words a second  (a 1.82 s, b 2.04 s)  -> 2.20 s  [cast, RMS -16]
 ph5cb   pho  take a  the unhurried read             voice 0.02-0.88 s of 0.96, 1.16 words a second  (b 0.78 s, c 0.74 s)  -> 0.97 s  [cast, RMS -16]
 ph5c1   pho  take b  the unhurried read             voice 0.00-2.62 s of 2.64, 1.91 words a second  (a 2.66 s, c 2.14 s)  -> 2.65 s  [cast, RMS -16]
-ph5c2   pho  take a  the unhurried read             voice 0.14-3.24 s of 3.28, 1.94 words a second  (b 2.92 s, c 3.06 s)  -> 3.20 s  [cast, RMS -16]
+ph5c2   pho  take c  b's last word runs 0.09 s under the Naga's dive (the stoop, 3.33 s into the line); c, the cleanest end of the three, is done before it voice 0.12-3.24 s of 3.28, 2.24 words a second  (a 3.14 s, b 3.36 s)  -> 3.29 s  [cast, RMS -16]
 ph5c3   pho  take b  the unhurried read             voice 0.10-2.30 s of 2.32, 1.36 words a second  (a 2.04 s, c 1.86 s)  -> 2.33 s  [cast, RMS -16]
 ph5c4   pho  take b  the only clean and whole take  voice 0.00-2.62 s of 2.64, 2.67 words a second  (a 2.34 s (cut on a word), c 2.30 s (cut on a word))  -> 2.65 s  [cast, RMS -16]
 ph5l1   pho  take b  every take drags (1.03-1.29 w/s: three sentences, each let land); the least voice 0.02-3.90 s of 3.92, 1.29 words a second  (a 4.52 s, c 4.46 s, d 4.84 s (cut on a word), e 4.86 s)  -> 3.93 s  [cast, RMS -16]

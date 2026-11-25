@@ -17,6 +17,8 @@ SFX = json.load(open(os.path.join(R, 'sfx.json'))); MS = json.load(open(os.path.
 SFX += json.load(open(os.path.join(R, 'sfxR94.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR94.json'))))
 # (R122, 25 Nov 2026: the special attack's new sounds, sfxR122.json, picked by the same rules; their names are new too)
 SFX += json.load(open(os.path.join(R, 'sfxR122.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR122.json'))))
+# (R149, 25 Nov 2026: the rumble under the Naga's charge, sfxR149.json; a new name, so no pick before moves)
+SFX += json.load(open(os.path.join(R, 'sfxR149.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR149.json'))))
 MUS = json.load(open(os.path.join(R, 'music.json'))); MM = json.load(open(os.path.join(R, 'measures-music.json')))
 MM.update(json.load(open(os.path.join(R, 'measures-music4.json'))))
 AGAIN = {'u5m6prep': 'u5m6prep2'}      # made again (music4.json): the game's name keeps the cue's, the takes are the new ones
@@ -60,6 +62,21 @@ for o in SFX:
     if kind == 'fx' and m['first'] > 0.12:
         e['af'] = 'atrim=start=%.2f,asetpts=PTS-STARTPTS,afade=t=in:d=0.02' % max(0, m['first'] - 0.03); e['why'] += '; its %.2f s silent head cut' % m['first']
     P[n] = e
+# (R149: every take of the rumble came back the wrong way round for a charge: up in half a second, level, then dying over
+#  its last 1.5 s (measures-sfxR149.json, read in tenths), and 83 to 98 % of it under 120 Hz, where a phone plays nothing.
+#  When every take fails the measure the sound is MADE (v24.3): the pick turned back to front, so its fall is a rise from
+#  silence and its grain is drawn in, its last 0.45 s (the take's own onset, turned round into a fade) cut, so it ends at
+#  its loudest under the staff's strike; a climb of 12 dB laid over the whole; and the house's harmonics (HARM) laid in
+#  under it inside the same filter (encode.py's pre() reads `af` OR the harmonics, never both). Measured once made: from
+#  -83 to -20 dB, its loudest 50 ms in its last tenth, a phone plays 39 % of it (2 % alone, as asked))
+if 'u5rumble' in P and P['u5rumble'].get('take'):
+    P['u5rumble'].pop('harm', None)
+    P['u5rumble']['af'] = ("areverse,atrim=end=3.95,asetpts=PTS-STARTPTS,volume='pow(10,(-12+12*t/3.95)/20)':eval=frame,"
+                           "afade=t=out:st=3.91:d=0.04,asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,"
+                           "lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0")
+    P['u5rumble']['why'] = P['u5rumble']['why'].split('; HARMONISED')[0] + (
+        '; MADE from it (R149): turned back to front to rise from silence, cut to end at its loudest (3.95 s: its own silent '
+        'head is at the end now, and cut with its onset), a 12 dB climb over it, and HARMONISED in the same filter')
 P['u5bowl']['kind'] = 'source'; P['u5bowl']['why'] += "; the SOURCE of the count's nine notes (notes.py): not a file of the game"
 # Spirit Vision: chapter 4's own five, byte for byte under this chapter's names (v7.1)
 for n, f in (('u5vison', 'u4vison'), ('u5visoff', 'u4visoff'), ('u5heart', 'u4heart'), ('u5visbed', 'u4visbed'), ('u5vismus', 'u4vismus')):

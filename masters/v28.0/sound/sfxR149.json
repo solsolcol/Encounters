@@ -1,0 +1,12 @@
+[
+ {
+  "name": "u5rumble",
+  "secs": 4.4,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "The ground trembling as a great sacred power gathers: a low rolling rumble of shaking earth and grinding stone, with a faint crackle of building energy, swelling steadily louder and tenser until it peaks at the very end, cinematic, no voices. Its rumble gritty and textured in the low-middle range, so a small phone speaker carries it; no deep sub bass.",
+  "family": "fx",
+  "where": "R149: under the charge, from the two powers wound up the staff to its strike on the paving"
+ }
+]

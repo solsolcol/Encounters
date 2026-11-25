@@ -103,7 +103,11 @@ CHOSEN = {'ph5f7': ('c', 'every take drags (0.97-1.16 w/s: the pause before SMEL
           #  back: the voice's "shield" came out "show", "shoo", "chill", "shoot" in most takes, and "BIND" "buy")
           'ph5nv1': ('b', 'the one take whose "Shield" an unprompted transcriber hears ("Shield me, Savior."); a "Xiumi Xavier", c "Shoot me"'),
           'ph5fb2': ('a', 'the one take whose "Bind" and "shield" an unprompted transcriber hears; b and c "buy them", c "shoe me"'),
-          'ph5nu2': ('a', 'no take\'s "Shield" is heard unprompted (a "Chill me", b "Xiumi", c "Shoot me"): a, never "shoot"')}
+          'ph5nu2': ('a', 'no take\'s "Shield" is heard unprompted (a "Chill me", b "Xiumi", c "Shoot me"): a, never "shoot"'),
+          # (R151, 25 Nov 2026: "The Naga protects us. It always has.", every take heard whole unprompted. The film's own
+          #  measure picks: the Naga's dive (u5nagadive, at its stoop 3.33 s into the line) is -16 dB from its 50th ms, and
+          #  b's "has" runs 0.09 s under it; c, the cleanest end of the three (its last 60 ms -41 dB), is done 0.09 s before)
+          'ph5c2': ('c', 'b\'s last word runs 0.09 s under the Naga\'s dive (the stoop, 3.33 s into the line); c, the cleanest end of the three, is done before it')}
 
 def score(t, who, nwords, med=None):
     ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8 and not t.get('refused')

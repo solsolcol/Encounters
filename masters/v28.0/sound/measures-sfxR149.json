@@ -1,0 +1,53 @@
+{
+ "u5rumble_a": {
+  "len": 4.4,
+  "asked": 4.4,
+  "peak": -11.3,
+  "level": -23.6,
+  "loud": -18.9,
+  "silent": 0.06,
+  "first": 0.15,
+  "last": 4.0,
+  "phone": 0.07,
+  "voice": 0.02,
+  "sub120": 0.92,
+  "median": -23.8,
+  "swing": 9.3,
+  "holes": [],
+  "words": ""
+ },
+ "u5rumble_b": {
+  "len": 4.4,
+  "asked": 4.4,
+  "peak": -10.1,
+  "level": -24.1,
+  "loud": -18.3,
+  "silent": 0.08,
+  "first": 0.15,
+  "last": 3.7,
+  "phone": 0.14,
+  "voice": 0.1,
+  "sub120": 0.83,
+  "median": -24.0,
+  "swing": 11.5,
+  "holes": [],
+  "words": ""
+ },
+ "u5rumble_c": {
+  "len": 4.4,
+  "asked": 4.4,
+  "peak": -5.4,
+  "level": -18.3,
+  "loud": -12.3,
+  "silent": 0.06,
+  "first": 0.1,
+  "last": 3.95,
+  "phone": 0.01,
+  "voice": 0.0,
+  "sub120": 0.98,
+  "median": -18.2,
+  "swing": 12.9,
+  "holes": [],
+  "words": ""
+ }
+}

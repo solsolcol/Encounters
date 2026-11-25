@@ -1739,6 +1739,14 @@
    "why": "a: 32 % where a phone plays, loudest 50 ms -7.5 dBFS (others, phone/loudest: b 0.13/-6.7, c 0.20/-6.5); HARMONISED (a phone plays 32 %)"
   },
   {
+   "name": "u5rumble",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R149: under the charge, from the two powers wound up the staff to its strike on the paving",
+   "why": "b: 14 % where a phone plays, loudest 50 ms -18.3 dBFS (others, phone/loudest: a 0.07/-18.9, c 0.01/-12.3); MADE from it (R149): turned back to front to rise from silence, cut to end at its loudest (3.95 s: its own silent head is at the end now, and cut with its onset), a 12 dB climb over it, and HARMONISED in the same filter"
+  },
+  {
    "name": "u5vison",
    "family": "vision",
    "kind": "one-shot",

@@ -2560,7 +2560,7 @@
     { id: "ph5c1", who: "pho", ch: "e4c5", where: "the fight: the last three, as stage 6 opens (moved from the surge)",
       text: "[calm] Three Prai. Do not hurry.", secs: 2.65 },
     { id: "ph5c2", who: "pho", ch: "e4c5", where: "the fight: the Naga's film (the film's line, not the rules')",
-      text: "[serious] The Naga guards. It always has.", secs: 3.20 },
+      text: "[serious] The Naga protects us. It always has.", secs: 3.29 },
     { id: "ph5c3", who: "pho", ch: "e4c5", where: "the fight: the last three (once)",
       text: "[gentle] Bag them. Gently.", secs: 2.33 },
     { id: "ph5c4", who: "pho", ch: "e4c5", where: "the fight: the last bag",

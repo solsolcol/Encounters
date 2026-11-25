@@ -100,7 +100,7 @@
     'ph5np1': 1.61, 'ph5nq1': 2.27, 'ph5nr1': 3.37, 'ph5nr2': 3.05, 'ph5ns2': 1.93, 'ph5ns3': 1.61, 'ph5nt1': 3.84,
     'ph5nt2': 2.09, 'ph5nu1': 2.49, 'ph5nu2': 1.34, 'ph5nv1': 1.69, 'ph5nv2': 2.89, 'ph5nv3': 0.75, 'ph5nw1': 3.45,
     'ph5nw2': 3.61, 'ph5nx1': 2.17, 'ph5nx2': 3.13, 'ph5g1': 0.77, 'ph5g2': 3.93, 'ph5g3': 3.29, 'ph5g4': 2.45,
-    'ph5ca': 2.2, 'ph5cb': 0.97, 'ph5c1': 2.65, 'ph5c2': 3.2, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93,
+    'ph5ca': 2.2, 'ph5cb': 0.97, 'ph5c1': 2.65, 'ph5c2': 3.29, 'ph5c3': 2.33, 'ph5c4': 2.65, 'ph5l1': 3.93,
     'ph5l2': 3.53, 'ph5b1': 1.51, 'ph5b2': 6.89, 'ph5b3': 7.45, 'ph5b4': 8.81, 'ph5b5': 7.13, 'ph5b6': 1,
     'ph5t1': 0.84, 'ph5t2': 0.97, 'ph5t3': 4.65, 'ph5t4': 8.27, 'ph5t5': 1.2, 'ph5t6': 3.05, 'ph5A1': 5.21,
     'ph5A2': 6.89, 'ph5B1': 8.44, 'ph5C1': 2.14, 'ph5C2': 4.17, 'ph5D1': 4.09, 'ph5D2': 6.17,
@@ -234,7 +234,7 @@
     'ph5ca': ['pho', 'fight', "Together, Zavier. Now."],
     'ph5cb': ['pho', 'fight', "Together."],
     'ph5c1': ['pho', 'fight', "Three Prai. Do not hurry."],
-    'ph5c2': ['pho', 'fight', "The Naga guards. It always has."],
+    'ph5c2': ['pho', 'fight', "The Naga protects us. It always has."],
     'ph5c3': ['pho', 'fight', "Bag them. Gently."],
     'ph5c4': ['pho', 'fight', "Come. It is over for you too."],
     'ph5l1': ['pho', 'fight', "Enough. Breathe. We begin again."],
@@ -14444,7 +14444,9 @@
         fmHold(A, null, 1);
         FM5.shot = A.name || ''; fmLevels(); return;
       }
-      const u = smo(c01((t - A.t) / Math.max(1e-3, B.t - A.t)));
+      /* (R149: a key may ask to be reached with an EASE-IN (`ease: 'in'`): the move creeps away from the key before it and
+         gathers speed all the way to this one, a charge into a cut; absent, the smooth ease both ways, exactly as before) */
+      const x0 = c01((t - A.t) / Math.max(1e-3, B.t - A.t)), u = B.ease === 'in' ? x0 * x0 : smo(x0);
       fmLens(lp(nar ? A.fp : A.fd, nar ? B.fp : B.fd, u));
       const pe = lp3(v3_5(A.eye), v3_5(B.eye), u);
       if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = fmKeyYP(A), [yb, pb] = fmKeyYP(B);
@@ -16313,7 +16315,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              is in his fist from the film's first frame, soft, and swells at T.pk; his student's violet lights as his hand closes) */
           BRAID5.frame(tau, { zk: smo(c01((tau - T.zk) / 0.3)) * gone * (1 + 0.5 * flare), pk: (0.45 + 0.55 * smo(c01((tau - T.pk) / 0.4))) * gone * (1 + 0.5 * flare),
                               rise: smo(c01((tau - T.braid) / (T.lit - T.braid))), k: smo(c01((tau - T.braid + 0.05) / 0.3)) * gone,
-                              head: (smo(c01((tau - T.lit + 0.1) / 0.3)) * (0.75 + 0.25 * Math.sin(tau * 7)) + 0.9 * Math.max(0, 1 - Math.abs(tau - T.lit) / 0.35) + 0.8 * flare) * gone,
+                              head: (smo(c01((tau - T.lit + 0.1) / 0.3)) * (0.75 + (0.25 + 0.1 * chargeK5(tau, T)) * Math.sin(chargePh5(tau, T))) * (1 + 0.2 * chargeK5(tau, T)) + 0.9 * Math.max(0, 1 - Math.abs(tau - T.lit) / 0.35) + 0.8 * flare) * gone,
                               fz: 0.93, fp: 1.07 });
           if (typeof fxSwirlAsk === 'function') { const sw = (t0) => smo(c01((tau - t0) / 0.5)) * (1 - smo(c01((tau - T.braid - 0.6) / 0.8)));
             const kz = sw(T.zk), kp = sw(T.pk);
@@ -16407,9 +16409,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         this.lens(tau, T, B, HEADAT);
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
            shakes): a few sines of their own, falling away over half a second */
-        const hitsR = [[this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
+        /* (R149: the staff's strike on the paving is a jolt too, a small one (R152: subtle): 0.006, under the shape's burst) */
+        const hitsR = [[this.real(T.strike), RUMBLE5.jolt], [this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
         let sh = 0; for (const [h, a] of hitsR) { const u = t - h; if (u >= 0 && u < 0.6) sh += a * Math.pow(1 - u / 0.6, 2); }
         if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
+        /* THE RUMBLE (R149, Chad, 25 Nov 2026: "can you make the camera rumble and charge up before the naga gets summoned out
+           of the stick? To make it more cinematic and dramatic."; R152: "Rumble has to be more subtle so it doesn't affect
+           visibility of whats going on"). From the two powers wound up the staff it trembles, a little more as the carved
+           head takes their light, more as the two of them lift it, most as they drive it down; the strike is its jolt, above,
+           and it settles as the water rises. Slow (1.8 to 4.6 a second) and faint: at its most RUMBLE5.amp, 0.2 degrees, two
+           or three pixels of a phone's picture, so all of it stays as readable as before; a pure function of the clock (v6.4) */
+        const rum = rumbleK5(tau, T);
+        if (rum > 1e-4) { const A = RUMBLE5.amp * rum;
+          pitch.rotation.x += A * (0.6 * Math.sin(t * 17.3) + 0.4 * Math.sin(t * 29.1 + 1.1));
+          yaw.rotation.y += A * 0.8 * (0.6 * Math.sin(t * 13.7 + 0.4) + 0.4 * Math.sin(t * 23.9 + 2.3));
+          camera.rotation.z += A * 0.6 * (0.7 * Math.sin(t * 11.3 + 0.9) + 0.3 * Math.sin(t * 28.7 + 0.2)); }
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
         /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
@@ -16540,7 +16554,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
           { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
           { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
-          { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50 },
+          /* (R149: the push in on the two of them from behind reached by an EASE-IN: it creeps as the head takes their light and
+             gathers speed through the lift and the drive, into the cut to the strike; the same two keys, so the picture is never
+             tighter than before at any moment, only wider on the way) */
+          { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50, ease: 'in' },
           { t: T.strike - 0.1, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
           { t: T.strike + 0.03, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64 },
           { t: T.rise + 0.55, name: 'erupt', eye: STICK_FRONT, at: HEADAT, fp: 76, fd: 66 },
@@ -17133,7 +17150,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              { t: E.q5D1 + 0.3, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ] }
     };
 
-    /* what a scene reaches of the films (stage.films): each film's three hands */
+    /* R149: THE CHARGE (Chad, 25 Nov 2026: "make the camera rumble and charge up before the naga gets summoned out of the
+       stick"; R152: the rumble subtle). chargeK5: 0 as the carved head takes their light (T.lit), 1 as they drive it down
+       (T.drive), a smooth rise. chargePh5: the head's beat, its rate rising with the charge from 7 to 18 radians a second, the
+       integral of that rate (so the beat never jumps as it quickens): 7 tau + 11 times the smooth rise's own integral, L (u^3 -
+       u^4 / 2) up to T.drive and L / 2 + (tau - T.drive) after. rumbleK5: the rumble's strength, a quarter from the braid to
+       the light, three tenths more to the lift, the rest to the drive, settling over 0.9 s once the staff has struck.
+       RUMBLE5: its size in radians at full strength, and the strike's jolt (the lab may turn them) */
+    const RUMBLE5 = { amp: 0.0035, jolt: 0.006 };
+    function chargeK5(tau, T) { return smo(c01((tau - T.lit) / (T.drive - T.lit))); }
+    function chargePh5(tau, T) { const L = T.drive - T.lit, u = c01((tau - T.lit) / L);
+      return 7 * tau + 11 * (L * (u * u * u - 0.5 * u * u * u * u) + Math.max(0, tau - T.drive)); }
+    function rumbleK5(tau, T) {
+      const k = 0.25 * smo(c01((tau - T.braid - 0.2) / (T.lit - T.braid))) + 0.3 * smo(c01((tau - T.lit) / (T.lift - T.lit)))
+              + 0.45 * smo(c01((tau - T.lift) / (T.drive - T.lift)));
+      return k * (1 - smo(c01((tau - T.strike - 0.05) / 0.9)));
+    }
     /* (R143) THE NAGA WATCHED AS A MAN WATCHES A THING FLYING ROUND HIM (Chad, 25 Nov 2026: "For the naga sequence, when the
        naga returns back to the naga staff, zavier and pho's head seems to spin at very fast speed while looking at the naga,
        make it more natural please"). MEASURED on build 102b (every thirtieth of a second of the film from its climb to its
@@ -17185,6 +17217,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       return [hx + v.x * S.far, hy + v.y * S.far, hz + v.z * S.far];
     }
 
+    /* what a scene reaches of the films (stage.films): each film's three hands */
     const FILMS5API = {
       open: FILMS5.open, devotee: FILMS5.devotee, prepare: FILMS5.prepare, together: FILMS5.together,
       bagtied: FILMS5.bagtied, collector: FILMS5.collector,
@@ -17526,12 +17559,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
     sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
     sfx(T.drive - 0.02, 'u5swing1', 0.6);                                      // and drive it down
+    /* (R149, Chad, 25 Nov 2026: "make the camera rumble and charge up before the naga gets summoned out of the stick": the
+       ground's rumble under the charge, rising out of silence as their two powers are wound up the shaft and swelling to its
+       loudest as they drive it down, ending under the strike (3.95 s, made from its take turned round: sound/pick.py); the
+       camera's own rumble, its jolt at the strike and the push gathering speed are c_yfilm.js's (RUMBLE5); and the phone
+       trembles with it, lightly as they lift it, more as they hold it high and drive it, once at the strike) */
+    sfx(T.strike - 3.92, 'u5rumble', 0.6);                                     // the ground's rumble under the charge
+    step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
+    step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
+    step(T.drive, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });
+    step(T.strike, () => { if (api.kit && api.kit.buzz) api.kit.buzz([80]); });
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
     sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
     sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
     sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
     sfx(T.rise + 0.6, 'u5mist', 0.3);
-    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
+    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga protects us. It always has." (R151)
     /* (R75's debug, V6: his one line stood only 4 dB over the water's surge (full, 5 s from the rise), M9 and the cry's tail,
        where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
     sfxFade(T.ph5c2 - 0.3, T.ph5c2 + 0.35, 'u5nagawater');
