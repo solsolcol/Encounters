@@ -190,13 +190,12 @@
     /* (R122 idea 6: the screen darkens as he raises the stick (the bars drawn in with it: c_yfilm.js); the dark lifts as the
        water rises round the stick at its strike; the gold NAGA as it rides up) */
     /* (R146, Chad, 25 Nov 2026: "For the start of the naga cutscene, why does the scene suddenly turn dim and dark? It is
-       quite hard to see.": the darkening was timed for the film's old opening, which began on the stick being raised;
-       since R129 the film opens on the two of them taking it together, and half the picture's light went from 0.55 s, over
-       the whole prologue. It comes now as the two of them lift the stick (as R122 asked, as it is raised), to 35 % (was
-       50), and lifts at the strike as it did; its sound comes with it) */
-    fade(T.lift - 0.2, T.lifted, 0, 0.35);
-    sfx(T.lift - 0.25, 'u5summon', 0.85);                                      // the court darkening for the summoning
-    fade(T.strike - 0.1, T.strike + 0.3, 0.35, 0);
+       quite hard to see."; R147: "Whats the dim effect for? I dont understand". The darkening, R122's summon (the screen
+       dimmed to half from 0.55 s and given back at the strike), was timed for the film's old opening and since R129 lay
+       over the whole prologue; a darkening he cannot read the purpose of serves nothing (his v9.5 rule), so it is gone:
+       the summon is the bars drawn in, the strike, the water rising and their sounds. Its sound stays, as the two of them
+       lift the stick) */
+    sfx(T.lift - 0.25, 'u5summon', 0.85);                                      // the summoning, as the stick is lifted
     sfx(T.strike + 0.05, 'u5waterup', 0.9);                                    // the water rising round the planted stick
     sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
