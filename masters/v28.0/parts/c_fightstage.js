@@ -463,7 +463,8 @@
       for (const P of PRAI5.list) if (P && P.ready) P.rate = sk;
     }
     /* (a word over a Prai where its body stands, just over its head; the count once a frame, whatever number of them one press
-       of the bag took) */
+       of the bag took, each count taking the place of the one before it (build 93: 9 OF 9 was drawn on 8 OF 9), the words
+       over the Prai making way for it (the engine's)) */
     function fsPop(word, p, tone) {
       if (!kit || !kit.pop || !p || !word) return;
       const w = fsW(p.x, p.z), V = fsVis[p.id - 1], sc = V ? V.s : 1;
@@ -471,7 +472,7 @@
     }
     function fsPopCount(n) {
       const W5 = fsWords(); if (!kit || !kit.pop || !W5.popCount) return;
-      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22 });
+      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22, key: 'count' });
     }
     function fxHit(w, p, k, y0, o = null) {
       FS5.stopUntil = FS5.wall + 0.07 * Math.min(1, k);

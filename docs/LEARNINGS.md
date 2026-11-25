@@ -9112,3 +9112,13 @@ through its gap. Both were found only in held pictures. A word placed over the w
 off the party list (main.js popHud), and what a full-screen moment's bands would cross steps aside while it stands
 (body.cutin); the fixture proves each (popSeam clearOfHud, cutInSeam hudAside). A layer drawn at a world point lands wherever
 the world puts it, so it is placed against the HUD every frame, not once.
+
+**Words laid against the HUD must also be laid against each other** (v28.0, chapter 5's build 91 to 93). Build 91 kept each word
+over the Prai below the HUD's top stack and off the party list, one word at a time. So every word whose point lay above that
+line was brought down to the SAME line, and the catch's CAUGHT and its gold count landed on each other ("CAUG7HT OF 9"), the
+next count was drawn on the last ("9 OF 9" on "8 OF 9"), and CAUGHT, moved left off the party list, ran past the screen's
+edge. The catch-only run said PASS (its words were counted up, the slow was read): only its held pictures showed it. A check
+that counts what is shown cannot see two of them on one place; a layer that can hold several things is placed against
+itself as well as the HUD (main.js popFrame: the words on a place of the screen first, the others making way below, none past a
+side, and a counted word given a slot so the next takes its place: kit.pop's `key`), and the fixture asks two words at one
+place, one at the very edge and two in one slot (popSeam apart, inside, keyed).

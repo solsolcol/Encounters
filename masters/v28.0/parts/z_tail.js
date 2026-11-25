@@ -192,7 +192,7 @@
     sfx(0.5, 'u5summon', 0.85);                                                // the court darkening for the summoning
     fade(T.strike - 0.1, T.strike + 0.3, 0.5, 0);
     sfx(T.strike + 0.05, 'u5waterup', 0.9);                                    // the water rising round the planted stick
-    sfx(T.title, 'u5title', 0.85);                                             // the gold NAGA
+    sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick

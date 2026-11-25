@@ -8249,7 +8249,9 @@ function kitTagSlow(k, opts = {}) {
 /* v28.0 · THE SEVENTY-SEVENTH SEAM: A WORD THAT POPS UP OVER A PLACE (kit.pop). Chad, R122 (idea 4: "short words popping up
    over the Prai: BOUND, CAUGHT, and a gold 4 of 9"). `kit.pop(text, { at: {x, y, z} | screen: {sx, sy}, tone, big, secs, rise })`
    puts a short word over a point of the world (followed as the lens moves) or of the screen (0..1 each way), in a tone
-   ('white', 'violet', 'gold'), popping in, rising `rise` CSS pixels (40) over `secs` (1.1) and fading; `big` for a count.
+   ('white', 'violet', 'gold'), popping in, rising `rise` CSS pixels (40) over `secs` (1.1) and fading; `big` for a count;
+   `key` names a slot, so a word asked with a key takes the place of the one before it at once (a count: build 91's 9 OF 9
+   was drawn on 8 OF 9).
    The words are the chapter's (its sheet). Play only: a panel, a film or the title takes every word away at once (a
    transient effect ends on the frame anything opens over play, v11.4); kitReset clears them. Answers its id, or false */
 const pops = { list: [], n: 0, layer: null };
@@ -8260,13 +8262,15 @@ function kitPop(text, o = {}) {
   const at = o.at && Number.isFinite(+o.at.x) && Number.isFinite(+o.at.z) ? new THREE.Vector3(+o.at.x, Number.isFinite(+o.at.y) ? +o.at.y : 1.5, +o.at.z) : null;
   const sc = !at && o.screen ? { x: Math.max(0, Math.min(1, +o.screen.sx || 0.5)), y: Math.max(0, Math.min(1, +o.screen.sy || 0.5)) } : null;
   if (!at && !sc) return false;
+  const key = typeof o.key === 'string' && o.key ? o.key : null;
+  if (key) for (const q of pops.list.slice()) if (q.key === key) popGone(q);
   const el = document.createElement('div');
   el.className = 'popW ' + (o.tone === 'violet' || o.tone === 'gold' ? o.tone : 'white') + (o.big ? ' big' : '');
   el.textContent = text.trim();
   el.style.opacity = '0';
   L.appendChild(el);
   const id = ++pops.n;
-  pops.list.push({ id, el, at, sc, t0: performance.now(), secs: Number.isFinite(+o.secs) ? Math.max(0.3, +o.secs) : 1.1,
+  pops.list.push({ id, el, at, sc, key, dy: 0, t0: performance.now(), secs: Number.isFinite(+o.secs) ? Math.max(0.3, +o.secs) : 1.1,
                    rise: Number.isFinite(+o.rise) ? +o.rise : 40 });
   if (pops.list.length > 12) popGone(pops.list[0]);
   return id;
@@ -8290,8 +8294,12 @@ function popHud() {
 function popFrame() {
   if (!pops.list.length) return;
   if (state !== 'play') { popClear(); return; }
-  const now = performance.now(), W = innerWidth, H = innerHeight, hud = popHud();
-  for (const p of pops.list.slice()) {
+  const now = performance.now(), W = innerWidth, H = innerHeight, hud = popHud(), laid = [];
+  /* (build 93: NO WORD OVER ANOTHER, NONE OFF THE SCREEN. Build 91's CAUGHT lay on its gold count and ran off the screen's
+     left edge, both brought down to the same line under the HUD. So the words on a place of the SCREEN are laid first and keep
+     it, the words over the world make way for them and each for those laid before it, and none is ever past a side) */
+  const order = pops.list.slice().sort((a, b) => (a.sc ? 0 : 1) - (b.sc ? 0 : 1) || a.id - b.id);
+  for (const p of order) {
     const s = (now - p.t0) / 1000, u = s / p.secs;
     if (u >= 1) { popGone(p); continue; }
     let x, y;
@@ -8303,8 +8311,18 @@ function popFrame() {
     const hw = p.wh[0] * 0.6, hh = p.wh[1] * 0.6;   // (half its size at the pop's largest, 1.2)
     if (hud.top) y = Math.max(y, hud.top + hh + p.rise);
     if (hud.party) { const P = hud.party; if (x + hw > P.left - 6 && y + hh > P.top && y - hh - p.rise < P.bottom) x = Math.min(x, P.left - 6 - hw); }
+    x = Math.min(Math.max(x, hw + 6), W - hw - 6);
     const e = 1 - (1 - u) * (1 - u);
     y -= p.rise * e;
+    /* (a word that would lie on one laid before it goes down to just below it, and keeps that (its move only ever grows), so
+       it never jumps back up as the other fades) */
+    let dy = p.dy;
+    for (let pass = 0, moved = true; moved && pass < 4; pass++) {
+      moved = false;
+      for (const q of laid) if (Math.abs(x - q.x) < hw + q.hw && Math.abs(y + dy - q.y) < hh + q.hh) { dy = q.y + q.hh + hh + 2 - y; moved = true; }
+    }
+    p.dy = dy; y += dy;
+    laid.push({ x, y, hw, hh });
     /* (in over its first 0.16 s, a little past its size and back; out over its last third) */
     const k = Math.min(1, s / 0.16), pop = k < 1 ? 0.55 + 0.65 * k : 1.2 - 0.2 * Math.min(1, (s - 0.16) / 0.12);
     const a = Math.min(1, s / 0.08) * (u > 0.67 ? (1 - u) / 0.33 : 1);

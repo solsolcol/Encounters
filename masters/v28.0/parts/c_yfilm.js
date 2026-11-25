@@ -1502,9 +1502,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const ws = word.map(ch => x.measureText(ch).width), wordW = across(F);
         const cap = x.measureText(word.join('')).actualBoundingBoxAscent || 0.63 * F, gap = 0.26 * F;
         const base = 128 - (cap + gap) / 2 + cap;
-        let px = (1024 - wordW) / 2;
-        x.textBaseline = 'alphabetic'; x.shadowColor = 'rgba(255,226,170,0.42)'; x.shadowBlur = 14; x.fillStyle = ivory;
-        word.forEach((ch, i) => { x.fillText(ch, px, base); px += ws[i] + TRACK * F; });
+        const px = (1024 - wordW) / 2;
+        /* (two passes of the same letters: a soft dark shadow, so the ivory still reads where it lies over the Naga's pale crest
+           (build 92's pictures at 4.6 and 5.0 s), then the faint warm glow) */
+        x.textBaseline = 'alphabetic'; x.fillStyle = ivory;
+        for (const [shCol, shBlur] of [['rgba(2,6,18,0.62)', 18], ['rgba(255,226,170,0.32)', 12]]) {
+          x.shadowColor = shCol; x.shadowBlur = shBlur; let qx = px;
+          word.forEach((ch, i) => { x.fillText(ch, qx, base); qx += ws[i] + TRACK * F; });
+        }
         x.shadowBlur = 0;
         const rw = wordW * 0.62, r0 = (1024 - rw) / 2, g = x.createLinearGradient(r0, 0, r0 + rw, 0);
         g.addColorStop(0, 'rgba(234,220,182,0)'); g.addColorStop(0.5, 'rgba(234,220,182,0.6)'); g.addColorStop(1, 'rgba(234,220,182,0)');

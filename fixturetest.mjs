@@ -3999,7 +3999,24 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.clearOfHud = !!r3 && !!rb3 && rb3.height > 0 && +w3.style.opacity > 0.5 && r3.top >= rb3.bottom - 1;
       kit.objective(null, { complete: false });
       await poll(() => L.children.length === 0, 40000);
-      R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round), w3: r3 && [r3.top, r3.bottom].map(Math.round), box: rb3 && [rb3.top, rb3.bottom].map(Math.round) };
+      /* (build 93: two words asked at one place never lie over each other (build 91's CAUGHT on its gold count), a word asked
+         at the screen's very edge is drawn whole inside it (CAUGHT ran off the left), and a word with a key takes the place
+         of the one before it (9 OF 9 was drawn on 8 OF 9)) */
+      kit.pop('Over', { screen: { sx: 0.5, sy: 0.5 }, tone: 'white', secs: 20 });
+      kit.pop('Under', { screen: { sx: 0.5, sy: 0.5 }, tone: 'white', secs: 20 });
+      kit.pop('Edge', { screen: { sx: 0, sy: 0.62 }, tone: 'white', secs: 20 });
+      const k4 = kit.pop('1 of 9', { screen: { sx: 0.5, sy: 0.8 }, tone: 'gold', big: true, secs: 20, key: 'count' });
+      const k5 = kit.pop('2 of 9', { screen: { sx: 0.5, sy: 0.8 }, tone: 'gold', big: true, secs: 20, key: 'count' });
+      await new Promise(r => setTimeout(r, 350)); await frames(2);
+      const by = (t) => [...L.querySelectorAll('.popW')].find(w => w.textContent === t);
+      const ro = by('Over') && by('Over').getBoundingClientRect(), ru = by('Under') && by('Under').getBoundingClientRect();
+      R.apart = !!ro && !!ru && ro.height > 0 && (ru.top >= ro.bottom - 1 || ro.top >= ru.bottom - 1);
+      const re = by('Edge') && by('Edge').getBoundingClientRect();
+      R.inside = !!re && re.width > 0 && re.left >= 0 && re.right <= innerWidth;
+      R.keyed = typeof k4 === 'number' && typeof k5 === 'number' && !by('1 of 9') && !!by('2 of 9');
+      await poll(() => L.children.length === 0, 40000);
+      R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round), w3: r3 && [r3.top, r3.bottom].map(Math.round), box: rb3 && [rb3.top, rb3.bottom].map(Math.round),
+               over: ro && [ro.top, ro.bottom].map(Math.round), under: ru && [ru.top, ru.bottom].map(Math.round), edge: re && [re.left, re.right].map(Math.round) };
       return R;`);
     K.cutInSeam = await pCheck('cutInSeam', `
       const R = {}, C = document.getElementById('cutIn');

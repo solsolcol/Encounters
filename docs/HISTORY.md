@@ -9572,7 +9572,15 @@ What the baseline contains, by release:
   and sat on the count's dots (a word now keeps clear of the HUD's top stack and of the party list: the engine's popHud);
   and the objective's box lay over the cut-in's upper band, the party list and the call button showing through its gap (they
   step aside while it stands: body.cutin). The fixture proves both (popSeam clearOfHud, cutInSeam hudAside and hudBack); its
-  pop proof's words given 20 s of the wall, after build 90's run lost them between two slow frames.
+  pop proof's words given 20 s of the wall, after build 90's run lost them between two slow frames. Then R125 and R126 (25 Nov
+  2026, Chad, of the gold title: "The naga word looks very lame." and "Tone down the font design and look of the naga word"),
+  build 92: the painted gold NAGA retired (p5nagatitle out of the build and the repo; masters/v28.0/props/RECORD.md keeps its
+  recipe) and the word drawn by the film itself in the game's own title face, Cormorant Garamond 600 as the chapter cards
+  set it, in a pale ivory, widely spaced, with a faint warm glow and a thin rule under it, its size from the word's own
+  measure (0.55 of a phone's width, at most half the picture's height on a desktop), fading in over 0.4 s as it settles from
+  a little larger. Live: build 92, deploy `6b068c2a3662d3fa25a5efad`, 675 served files identical; its phone pictures read
+  full size (4.3, 4.6, 5.0, 5.4 s): the word clean and level over the Naga's rise, a little low in contrast where it lies on
+  the pale crest (a soft dark shadow under the letters is in the next batch).
 
 ## The sheet, version by version
 

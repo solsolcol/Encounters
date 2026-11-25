@@ -9192,7 +9192,8 @@
       for (const P of PRAI5.list) if (P && P.ready) P.rate = sk;
     }
     /* (a word over a Prai where its body stands, just over its head; the count once a frame, whatever number of them one press
-       of the bag took) */
+       of the bag took, each count taking the place of the one before it (build 93: 9 OF 9 was drawn on 8 OF 9), the words
+       over the Prai making way for it (the engine's)) */
     function fsPop(word, p, tone) {
       if (!kit || !kit.pop || !p || !word) return;
       const w = fsW(p.x, p.z), V = fsVis[p.id - 1], sc = V ? V.s : 1;
@@ -9200,7 +9201,7 @@
     }
     function fsPopCount(n) {
       const W5 = fsWords(); if (!kit || !kit.pop || !W5.popCount) return;
-      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22 });
+      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22, key: 'count' });
     }
     function fxHit(w, p, k, y0, o = null) {
       FS5.stopUntil = FS5.wall + 0.07 * Math.min(1, k);
@@ -15632,9 +15633,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const ws = word.map(ch => x.measureText(ch).width), wordW = across(F);
         const cap = x.measureText(word.join('')).actualBoundingBoxAscent || 0.63 * F, gap = 0.26 * F;
         const base = 128 - (cap + gap) / 2 + cap;
-        let px = (1024 - wordW) / 2;
-        x.textBaseline = 'alphabetic'; x.shadowColor = 'rgba(255,226,170,0.42)'; x.shadowBlur = 14; x.fillStyle = ivory;
-        word.forEach((ch, i) => { x.fillText(ch, px, base); px += ws[i] + TRACK * F; });
+        const px = (1024 - wordW) / 2;
+        /* (two passes of the same letters: a soft dark shadow, so the ivory still reads where it lies over the Naga's pale crest
+           (build 92's pictures at 4.6 and 5.0 s), then the faint warm glow) */
+        x.textBaseline = 'alphabetic'; x.fillStyle = ivory;
+        for (const [shCol, shBlur] of [['rgba(2,6,18,0.62)', 18], ['rgba(255,226,170,0.32)', 12]]) {
+          x.shadowColor = shCol; x.shadowBlur = shBlur; let qx = px;
+          word.forEach((ch, i) => { x.fillText(ch, qx, base); qx += ws[i] + TRACK * F; });
+        }
         x.shadowBlur = 0;
         const rw = wordW * 0.62, r0 = (1024 - rw) / 2, g = x.createLinearGradient(r0, 0, r0 + rw, 0);
         g.addColorStop(0, 'rgba(234,220,182,0)'); g.addColorStop(0.5, 'rgba(234,220,182,0.6)'); g.addColorStop(1, 'rgba(234,220,182,0)');
@@ -16847,7 +16853,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(0.5, 'u5summon', 0.85);                                                // the court darkening for the summoning
     fade(T.strike - 0.1, T.strike + 0.3, 0.5, 0);
     sfx(T.strike + 0.05, 'u5waterup', 0.9);                                    // the water rising round the planted stick
-    sfx(T.title, 'u5title', 0.85);                                             // the gold NAGA
+    sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
