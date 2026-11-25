@@ -312,6 +312,10 @@ that fits it, with the version it came from.
   a person would say to a friend beside him: a thing by the name the player was told (the shockwave, never "the gold"), a
   verb he can act on, a whole short sentence; no coined, poetic or clipped words, no name he was never told, no riddle.
   Each is read cold, as a player who never saw the plan reads it, before it ships. (v28.0, R112)
+  And every message to him is held to the same ("What is the 'strike'? Stop inventing shortcut words that no one
+  understands", of the eight ideas for the Naga film): a moment, a part or a step is said as what happens ("when they
+  bring the stick down onto the ground"), never by a name from the code or the plan (the strike, the braid, the surge,
+  the lift). (v28.0, R156)
 
 ### How the work is done and checked
 
