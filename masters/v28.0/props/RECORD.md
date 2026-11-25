@@ -259,3 +259,7 @@ Chad: "Do idea 1, 2, 4, 6" (his pick of R121's nine). Idea 1's cut-in and idea 6
   text, no letters other than N A G A, no frame, no border, no background objects, transparent background." Looked at
   full size: the four letters spelled right, engraved with scales, a small naga's head over painted water beneath them.
   Cropped to its own alpha's box (1296 x 559), PNG with alpha, no EXIF.
+  RETIRED at R126 (25 Nov 2026; Chad, R125: "The naga word looks very lame."; R126: "Tone down the font design and look of
+  the naga word"): the file left the build and the repo (git keeps it, this entry keeps its recipe). The word is drawn by
+  the film itself now (c_yfilm.js TITLE5): NAGA in the game's own title face (Cormorant Garamond 600, the chapter cards'),
+  ivory, widely spaced, a faint warm glow and a thin rule under it, no gold, no engraving, no serpent.

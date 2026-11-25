@@ -473,14 +473,14 @@
          films (v26.5); the Naga stick, from his photograph */
       /* >>> this chapter's own keys: written by masters/v28.0/keys.py (edit its table, not this list) >>> */
       'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togwide', 'p5icofire', 'p5icoshock',
-      'p5icobag', 'p5icobind', 'p5icoshield', 'p5cutpho', 'p5cutzav', 'p5nagatitle', 'fx5fire', 'fx5burst',
-      'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
-      'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
-      'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp',
-      'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
-      'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
-      'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu',
-      'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
+      'p5icobag', 'p5icobind', 'p5icoshield', 'p5cutpho', 'p5cutzav', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho',
+      'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel',
+      'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab',
+      'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock', 'w5dintable',
+      'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap',
+      'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan',
+      'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon',
+      'w5playground', 'w5gardenlamp', 'w5shrub',
       /* <<< this chapter's own keys <<< */
       /* the estate's trees on the lawn below the walkway (chapter 4's: declared, reuseInEpisode); and since R105 its road's
          street lamps (chapter 4's) and the cars in its car park (chapter 1's lighter sedan and SUV), each declared */
@@ -15616,21 +15616,34 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const NAGA_HIT5 = { H: 0.9, r: 0.15 };
     const nagaS5 = (d) => { const { H, r } = NAGA_HIT5; return d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)); };
     const nagaSInv5 = (s) => { let a = 0, b = NAGA_HIT5.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (nagaS5(m) < s) a = m; else b = m; } return 0.5 * (a + b); };
-    /* R122 idea 6 (25 Nov 2026, Chad: "Naga entrance like a summon"): THE GOLD NAGA, painted by GPT Image with its own alpha
-       (masters/v28.0/props/RECORD.md), a card drawn over the picture as the Naga rides up: made with the world, hidden, so the
-       curtain waits for its picture and the warm uploads it before the film ever shows it (v14.15) */
+    /* R122 idea 6 (25 Nov 2026, Chad: "Naga entrance like a summon"): THE NAGA'S NAME over the picture as it rides up.
+       R126 (Chad: "Tone down the font design and look of the naga word", after R125: "The naga word looks very lame."): the
+       painted gold lettering of builds 89 to 91 (engraved scales, a serpent flourish over painted water) is gone. The word is
+       the game's own title face, Cormorant Garamond 600 as the chapter cards set it, in a pale ivory, widely spaced, with a
+       faint warm glow and a hairline under it, drawn here on a canvas once the face has loaded (Georgia if it never does),
+       its size fitted to the card from the word's own measure; made with the world, hidden, so the curtain waits for it and
+       the warm uploads it before the film ever shows it (v14.15) */
     const TITLE5 = { sp: null };
-    if (have('p5nagatitle')) { parsePend++;
-      assetBytes('p5nagatitle', true).then(b => createImageBitmap(new Blob([b], { type: 'image/png' }), { premultiplyAlpha: 'none' }))
-        .then(bmp => { if (!alive) { try { bmp.close(); } catch (e) { /* gone */ } return; }
-          const t = tex(new THREE.Texture(bmp)); t.colorSpace = THREE.SRGBColorSpace; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
-          t.magFilter = THREE.LinearFilter; t.anisotropy = 4; t.needsUpdate = true;
-          /* (a decoded picture goes up top row first whatever flipY says, so a card stood it on its head: build 89 drew the
-             word upside down. The row order is fixed as the picture's own, flipY off, and the card reads it back from the top) */
-          t.flipY = false; t.repeat.set(1, -1); t.offset.set(0, 1);
-          const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false }); mats.push(m);
-          const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = bmp.width / Math.max(1, bmp.height); world.add(sp); TITLE5.sp = sp; })
-        .catch(err => console.warn('R122: the NAGA title did not arrive (the film runs without it)', err))
+    { const make = () => { if (!alive || TITLE5.sp) return;
+        const [c, x] = canvas(1024, 256), word = [...'NAGA'], TRACK = 0.26, ivory = '#EADCB6';
+        const face = (f) => { x.font = '600 ' + f.toFixed(1) + 'px "Cormorant Garamond", Georgia, serif'; };
+        const across = (f) => word.reduce((q, ch) => q + x.measureText(ch).width, 0) + TRACK * f * (word.length - 1);
+        face(100); const F = Math.min(150, 100 * 860 / Math.max(1, across(100))); face(F);
+        const ws = word.map(ch => x.measureText(ch).width), wordW = across(F);
+        const cap = x.measureText(word.join('')).actualBoundingBoxAscent || 0.63 * F, gap = 0.26 * F;
+        const base = 128 - (cap + gap) / 2 + cap;
+        let px = (1024 - wordW) / 2;
+        x.textBaseline = 'alphabetic'; x.shadowColor = 'rgba(255,226,170,0.42)'; x.shadowBlur = 14; x.fillStyle = ivory;
+        word.forEach((ch, i) => { x.fillText(ch, px, base); px += ws[i] + TRACK * F; });
+        x.shadowBlur = 0;
+        const rw = wordW * 0.62, r0 = (1024 - rw) / 2, g = x.createLinearGradient(r0, 0, r0 + rw, 0);
+        g.addColorStop(0, 'rgba(234,220,182,0)'); g.addColorStop(0.5, 'rgba(234,220,182,0.6)'); g.addColorStop(1, 'rgba(234,220,182,0)');
+        x.fillStyle = g; x.fillRect(r0, Math.round(base + gap) - 1, rw, 2);
+        const m = new THREE.SpriteMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = 1024 / 256; sp.userData.wf = wordW / 1024; world.add(sp); TITLE5.sp = sp; };
+      parsePend++;
+      const loaded = document.fonts && document.fonts.load ? document.fonts.load('600 132px "Cormorant Garamond"', 'NAGA').catch(() => null) : Promise.resolve(null);
+      Promise.race([loaded, new Promise(r => setTimeout(r, 4000))]).then(make).catch(err => console.warn('R126: the NAGA title was not drawn (the film runs without it)', err))
         .finally(() => { setTimeout(() => { parsePend--; }, 0); });
     }
     const _ttP = new THREE.Vector3(), _ttF = new THREE.Vector3(), _ttU = new THREE.Vector3(), _ttQ5 = new THREE.Quaternion();
@@ -15853,18 +15866,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (kit && kit.bars) kit.bars(smo(c01((tau - 0.8) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6))));
         this.title(tau, T);
       },
-      /* THE GOLD NAGA (R122 idea 6): stamped in over 0.22 s from a little larger, held, and gone by 1.5 s; in front of the lens
-         at two metres, a fifth of the picture's height above its middle (the night behind the climbing head), as wide as 0.8
-         of a phone's picture and never taller than 0.24 of a desktop's; level on the screen whatever the lens's roll */
+      /* THE NAGA'S NAME (R122 idea 6; R126: toned down): faded in over 0.4 s as it settles from a little larger, held, and
+         gone by 1.5 s; in front of the lens at two metres, a fifth of the picture's height above its middle (the night behind
+         the climbing head), the WORD itself (its card's share, wf) 0.55 of a phone's picture wide and never wider than half
+         the picture's height (a desktop's: about 0.28 of its width); level on the screen whatever the lens's roll */
       title(tau, T) {
         const S = TITLE5.sp; if (!S) return;
         const u = tau - T.title;
         if (!(u >= 0 && u < 1.5)) { if (S.visible) S.visible = false; return; }
-        const kin = smo(c01(u / 0.22)), kout = 1 - smo(c01((u - 1.1) / 0.4)), d = 2.0;
+        const kin = smo(c01(u / 0.4)), kout = 1 - smo(c01((u - 1.1) / 0.4)), d = 2.0;
         camera.updateMatrixWorld(true);
         camera.getWorldPosition(_ttP); camera.getWorldDirection(_ttF); _ttU.set(0, 1, 0).applyQuaternion(camera.getWorldQuaternion(_ttQ5));
         const vh = 2 * d * Math.tan(camera.fov * Math.PI / 360), vw = vh * camera.aspect, ar = S.userData.ar || 2.3;
-        const w = Math.min(vw * 0.8, vh * 0.24 * ar) * (1.22 - 0.22 * kin + 0.04 * c01(u / 1.5));
+        const w = Math.min(vw * 0.55, vh * 0.5) / (S.userData.wf || 0.84) * (1.06 - 0.06 * kin + 0.02 * c01(u / 1.5));
         S.position.copy(_ttP).addScaledVector(_ttF, d).addScaledVector(_ttU, vh * 0.2);
         S.scale.set(w, w / ar, 1); S.material.opacity = kin * kout; S.material.rotation = 0; S.visible = true;
       },
