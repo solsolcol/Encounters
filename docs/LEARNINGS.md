@@ -9122,3 +9122,44 @@ that counts what is shown cannot see two of them on one place; a layer that can 
 itself as well as the HUD (main.js popFrame: the words on a place of the screen first, the others making way below, none past a
 side, and a counted word given a slot so the next takes its place: kit.pop's `key`), and the fixture asks two words at one
 place, one at the very edge and two in one slot (popSeam apart, inside, keyed).
+
+## v28.0 — two men on one staff, a hand that is a mitten, and a glow that came late (R129, R132 to R141)
+
+**Pictures I called fine were not** (R132: "Seriously? You think those shots are fine? Wow"; R133: "I can spot so many
+issues im amazed it passed you"). I sent the lab's first pictures of the Naga film's new opening (Zavier and Grandmaster
+Pho holding the stick together) and called them right. He then ringed seven faults in them: Zavier's thumb a sliver in the
+wood, his forearm folded across his chest, his fingers into the stick twice, Pho's lifted fist on Zavier's shoulder, Pho's
+upper arm bent out, Zavier's fingers "mangled", and the two glows missing. I had looked at the poses, not at where skin met
+wood or skin met skin. Each one could have been measured before any picture went out: the hand's points inside the shaft
+(within its radius of the shaft's line), one body's points within 1 to 2 cm of the other's, the elbow against the line
+under the shoulder. Measure contact first, then look at each picture full size, one at a time.
+
+**Master Zavier's four fingers are joined** (R140: "Look at how mangled zaviers fingers are"). His model's hand is a mitten:
+the four fingers are one piece of skin, with each finger's bones inside it. Bent one by one to fit the stick, the fingers
+pulled against each other and twisted the skin. Bend them as one: one hinge line (the middle finger's), the same angle for
+all four (c_yfilm.js ZAVGRIP5 `mitten`). Before a hand is posed, check whether its fingers are really separate.
+
+**Two men holding one staff side by side** (R135: "Why is it bent like that"). With the staff in front of his chest, Zavier's
+left arm had to fold across his body to reach it. A real person holding a staff upright at their side holds it at their
+outer shoulder, arm hanging down to it, thumb up. So each man stands with the staff at his own outer shoulder: Zavier to his
+teacher's right, turned 30 degrees toward it (TOGP5 `zj`, `zry`). A thumb-up fist on a pole at one's side has the palm on the
+far side of the pole, and the two forearms cross behind the staff, which is natural.
+
+**The fight keeps Zavier on his light body, and a film inside the fight takes that over** (R136, R137). fightStart pins
+`zav.force = 1` (his 41k-triangle body), so the film's close-ups of his hand drew the light body, whose fingers sat even
+deeper in the wood. A film that comes close to him lifts the pin while the hands are close (`P.force = 0`, his 312k body)
+and gives the fight's value back at its end (TOGP5 `zavFull`, `zf0`).
+
+**A lab that replaces a film's lens skips the film's level choice too.** The lab's own lens (`F.lens = function ...`)
+replaces fmTrack, which is what calls fmLevels and so peopleLevels: the bodies kept whatever level they had. A lab picture
+with its own lens sets the bodies' levels itself, or it shows bodies the game would not draw from there.
+
+**An arm raised with a hand should get its own elbow direction** (R139: "Make pho arm straighter"). The fight's grip turns
+Pho's elbow out (`swing5`) so his arm clears his robe as he raises the fist. Used for a lift of 16 cm, it bent his upper arm
+out to the side. The film gives his arm its own direction straight down and no swing (`phoPole`, `phoNoSwing`): his elbow is
+then about 4 mm off the line under his shoulder.
+
+**What is already there in the story is there from the first frame** (R141: "What happened to the glow? Why is it
+missing?"). Pho's gold was set to start at 1.25 s, rising over 0.4 s, and Zavier's violet at 1.0 s. So at 1.2 s, the
+picture he saw, neither fist glowed. Pho is already holding his power when the film opens, so his gold is in his fist from
+the first frame, soft, and swells at 1.25 s; Zavier's violet lights as his hand closes (0.85 s, rising over 0.3 s).
