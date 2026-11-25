@@ -9082,3 +9082,21 @@ surge, TOGETHER tapped, the film played out, BAG tapped, the films after it), an
 looked for on that path here before it is blamed on the phone: R109's cure, the vision's depth on a phone's render-to-texture
 path, was real but was not what he saw.
 
+
+**A lesson written here does not stop a repeat; a check does** (v28.0, chapter 5's build 89, 25 Nov 2026). "A picture laid
+on a plane from an ImageBitmap is upside down" was written above, and build 89 drew the gold NAGA title on a card from an
+ImageBitmap upside down all the same (the word on its head, its scroll above it). chaptertest now fails any chapter texture
+made from createImageBitmap that does not say `flipY = false` within eight lines (`rowOrderFaults`, proved by breaking: it
+names build 89's line and passes build 90's; chapter 3's cloud pictures are its one known exception, left as they shipped),
+so the row order is stated where the texture is made, and the card or plane that draws it reads it so (repeat (1, -1),
+offset (0, 1)).
+
+**On a slow box, a thing that lives a second of the wall is photographed on the page's own clock, held** (the same build).
+A frame here takes a second or more; a word over a caught Prai lives 1.15 s and the cut-in 1.4, so in a natural run they
+were gone between two frames, and a cut-in asked of the kit for a held picture was ended by its own timer before the picture
+was taken (build 89's three "held" pictures came out empty). Playwright's clock does it (tools/probes/e4c5r122.mjs):
+`page.clock.install()` before the page loads (time then runs as the wall's), `pauseAt(now + 40 ms)` just before the press,
+the press, then `runFor(33)` a frame at a time until the thing is up, the picture, `resume()`. It fakes requestAnimationFrame,
+the timers and performance.now (what the game's own clocks read), so the game steps 33 ms a frame whatever the box takes;
+a CSS animation is the compositor's, not the page's clock, and is paused and set by the Web Animations API
+(getAnimations, pause, currentTime) for its pictures. Never call a helper that waits on a frame while the clock is held.

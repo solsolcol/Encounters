@@ -213,6 +213,28 @@ if (!Object.keys(STING_TO_SAMPLE).length) {
     for (const id of declared) if (ITEM_IDS.size && !ITEM_IDS.has(id)) bad(key, `items names '${id}', which is not in ITEM_DEFS`);
   }
 }
+/* v28.0 (E4C5, build 90): A DECODED PICTURE STATES ITS ROW ORDER. A texture made from createImageBitmap goes up top row
+   first whatever flipY says (WebGL leaves an ImageBitmap as it is: docs/LEARNINGS.md has said so since a plane came out
+   upside down), and build 89 drew chapter 5's gold NAGA upside down all the same. So a `new THREE.Texture(` within eight
+   lines of a `createImageBitmap(` must say `flipY = false` there: its rows are then the picture's own on every browser,
+   and the drawing that uses it says it reads them so (a card or a plane: repeat (1, -1), offset (0, 1)). Chapter 3's cloud
+   pictures (e4c3 skyLoad) shipped before this check and are left as they shipped (an old chapter is not changed unasked). */
+const ROW_ORDER_KNOWN = new Set(['e4c3:skyLoad']);
+function rowOrderFaults(key, src) {
+  const out = [], lines = src.split('\n');
+  lines.forEach((ln, i) => {
+    if (!ln.includes('createImageBitmap(')) return;
+    const win = lines.slice(i, i + 8).join('\n');
+    if (!/new THREE\.Texture\(/.test(win) || /flipY\s*=\s*false/.test(win)) return;
+    let fn = ''; for (let j = i; j >= Math.max(0, i - 12); j--) { const m = lines[j].match(/function\s+(\w+)\s*\(/); if (m) { fn = m[1]; break; } }
+    if (!ROW_ORDER_KNOWN.has(key + ':' + fn)) out.push(`line ${i + 1}: a texture made from createImageBitmap does not say flipY = false (an ImageBitmap goes up top row first whatever flipY says: say the row order there and read it so, docs/LEARNINGS.md)`);
+  });
+  return out;
+}
+for (const f of files) {
+  const key = f.split('/').pop().replace(/\.js$/, '');
+  for (const m of rowOrderFaults(key, readFileSync(join(chapDir, f), 'utf8'))) bad(key, m);
+}
 // 'step' is the one kind with no STING_SAMPLE row: it is routed to the
 // four-sample footstep rotation before the table is ever consulted.
 const SPECIAL_KINDS = new Set(['step']);
