@@ -1546,8 +1546,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        (armsBack: a.wrote, a.curled) */
     const ZAVGRIP5 = (() => {
       const D2R = Math.PI / 180, NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
-      const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.005, thumbR: 0.022, palm: 0.045, back: 0.03, tilt: -22,
-                   lim: { f: [35, 45, 28], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07 };
+      /* (R140's values, from the lab's search over his own skin, 25 Nov: palm 5 cm, fingers counted 2.4 cm through, thumb turned
+         25 degrees out: no point of his hand inside the wood, its nearest 3.2 to 3.5 cm from the shaft's middle line, whose
+         surface stands 3.4 to 3.6 cm out there) */
+      const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.024, thumbR: 0.022, palm: 0.05, back: 0.02, tilt: 0,
+                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07,
+                   mitten: true, thumbRest: true, thumbOut: 25 };
       const st = { k: 0, kf: 0, kin: 1 };
       let G = null, failed = false, wroteQ = null, wroteArm = null;
       const V = () => new THREE.Vector3();
@@ -1599,12 +1603,21 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             qs.push(new THREE.Quaternion().setFromAxisAngle(ax, bends[i]).multiply(Li)); acc.multiply(Li); }
           out.q[nm] = qs; out.report[nm] = rep; void L;
         };
-        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = wrapFinger(F);
-          const sg = Math.sign(F.y3.dot(V().crossVectors(F.w, F.x3))) || -1;
-          hingeQ(nm, [F.w, F.w, F.w], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
+        /* R140 (Chad, of the lab's close picture: "Look at how mangled zaviers fingers are"): HIS FOUR FINGERS ARE ONE PIECE.
+           His hand at rest, photographed close in the lab, is a mitten (the generator joined them), so each finger bent by its
+           own solve twisted the skin joining it to the next. By T5.mitten the four bend AS ONE: his middle finger's wrap,
+           solved round the shaft, laid on all four about one hinge line (his middle finger's), his palm on the wood */
+        const Fm = D.mitten ? finger('Middle') : null, Wm = Fm ? wrapFinger(Fm) : null;
+        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = Wm || wrapFinger(F), hx = Fm ? Fm.w : F.w;
+          const sg = Math.sign(F.y3.dot(V().crossVectors(hx, F.x3))) || -1;
+          hingeQ(nm, [hx, hx, hx], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
           out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2); }
-        /* the thumb: its root turned onto its line by the least turn within its range, its two hinges about the shaft's line */
-        { const L = chains.Thumb, P0 = J.Thumb[0], seg = [0, 1, 2].map(i => J.Thumb[i + 1].clone().sub(J.Thumb[i])), l = seg.map(v => v.length());
+        /* the thumb: its root turned onto its line by the least turn within its range, its two hinges about the shaft's line.
+           (R134/R140: by T5.thumbRest it keeps its own shape as modelled, its root turned only T5.thumbOut degrees about his
+           hand's long line: wrapped by the solve it went 2 cm into the wood, the sliver Chad ringed) */
+        if (D.thumbRest) { const q0 = new THREE.Quaternion().setFromAxisAngle(fL.clone().normalize(), (D.thumbOut || 0) * D2R).multiply(Lq.Thumb[0]);
+          out.q.Thumb = [q0, Lq.Thumb[1].clone(), Lq.Thumb[2].clone()]; out.report.Thumb = 'rest ' + (D.thumbOut || 0); }
+        else { const L = chains.Thumb, P0 = J.Thumb[0], seg = [0, 1, 2].map(i => J.Thumb[i + 1].clone().sub(J.Thumb[i])), l = seg.map(v => v.length());
           const st0 = J.Thumb[1].clone().sub(C).dot(A), cs = C.clone().addScaledVector(A, st0);
           const x3 = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(), y3 = A.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
           const rho = M(D.R + D.thumbR), Q2 = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
@@ -1721,6 +1734,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        on the stick 0.24 to his left and 0.20 before him, his shoulder 0.49 m over it), and the Naga's widening spiral
        stood 0.45 m before the two of them (its first turn passed within 0.35 m of his student's head where it stood) */
     const TOGPRE5 = 3.4, ZJ5 = [-0.54, 0.12], HAF5 = 0.45;
+    /* R132-R140 (Chad, of the lab's pictures: the fingers in the stick, his arm bent across his chest, Pho's hand on his
+       shoulder, Pho's arm not straight): THE PROLOGUE'S STAGING, one table the film reads every frame (and a probe may
+       change: FILMS5API.TOGP5). His student 0.54 to his right and 0.15 before him, turned 30 degrees to the stick, so the
+       stick stands at his left shoulder as it stands at his teacher's right (measured: 4 cm outside each shoulder, 30 to 35
+       before it); his full body while the two hands are close on the screen (the fight holds him to his light one); his
+       teacher's elbow under his shoulder (R139); the cage kept out until the strike (its bars stood through the two men in
+       every shot of the prologue); the lift 16 cm (at 24 his teacher's fist rose to his student's shoulder) */
+    const TOGP5 = { zj: [-0.54, 0.15], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.16 };
     FILMS5.together = {
       three: null, spots: null,
       /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
@@ -1831,7 +1852,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         this.L = L.length === 3 ? L : [6, 7, 8];
         const B = this.build(); this.pho = B.M.pho; this.zav = B.M.zav; this.W = B.spotsW;
         /* (R129: his student beside him for the prologue and the flight; the tall shape where it stood, over his student's own place) */
-        { const ry = this.pho.ry, c = Math.cos(ry), sn = Math.sin(ry); this.zj = { x: this.pho.x + ZJ5[0] * c + ZJ5[1] * sn, z: this.pho.z - ZJ5[0] * sn + ZJ5[1] * c }; }
+        { const ry = this.pho.ry, c = Math.cos(ry), sn = Math.sin(ry), Z = TOGP5.zj || ZJ5; this.zj = { x: this.pho.x + Z[0] * c + Z[1] * sn, z: this.pho.z - Z[0] * sn + Z[1] * c }; }
+        this.zf0 = cast.zav ? cast.zav.force : null;
         this.shape = { x: this.zav.x, z: this.zav.z };
         this.planned = false; this.eyes = null;
         PRAI5.look('trance');
@@ -1903,8 +1925,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           fmRest(P, 'pho', tau);
           if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) {
             const up = smo(c01((tau - T.lift) / (T.lifted - T.lift))), dn = c01((tau - T.drive) / (T.strike - T.drive));
-            if (tau >= T.ko5c2) PHOGRIP5.film({ y: 0, to: 0, hold: false, k: 1 });
-            else PHOGRIP5.film({ y: 0.24 * up * (1 - dn * dn), to: up, hold: !lifted, k: lifted ? 1 : 1 - out }); }
+            if (tau >= T.ko5c2) PHOGRIP5.film({ y: 0, to: 0, hold: false, k: 1, dx: 0, pole: null, noSwing: false });
+            else PHOGRIP5.film({ y: TOGP5.lift * up * (1 - dn * dn), to: up, hold: !lifted, k: lifted ? 1 : 1 - out, dx: TOGP5.phoDx, pole: TOGP5.phoPole, noSwing: TOGP5.phoNoSwing }); }
           /* (R75's debug, V3: and back in his hand under the cut to the door (Mr Koh's line), so the film's last shot, the
              fight's own lens, and the last stage after it find it where his walk and his bag need it: it stood planted on
              the court through the whole last stage, and jumped into his hand on the bag-tied film's first frame) */
@@ -1914,7 +1936,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
              its head as it takes light; then as before) */
           fmGaze(P, tau, [[0, HANDS], [1.5, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [2.15, SH], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
-        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5);
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry + (tau < T.ko5c2 ? TOGP5.zry : 0));
+          /* (his full body while the hands are close, given back at the cut to the paving: R132) */
+          if (TOGP5.zavFull) P.force = tau < T.strike - 0.1 ? 0 : (this.zf0 != null ? this.zf0 : 1);
+          const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5);
           /* (R129: his left hand to the stick (0.3 to 1.0 s), the last 7 cm in and closed on it (0.75 to 1.15 s), holding it
              through the lift and the strike, and off it with his teacher's; his eyes on his hand, his teacher, the stick's head,
              then the Naga) */
@@ -1923,7 +1948,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [1.7, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [2.3, SH], [T.rise + 0.25, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
-        { const cc = tau < T.ko5c2 ? mid : zz; CAGE5.set({ k: kc, x: cc.x, z: cc.z, t: tau, crack: tau < T.apart + 0.4 }); }
+        { const cc = tau < T.ko5c2 ? mid : zz, cin = tau < T.strike - 0.1 ? 0 : smo(c01((tau - T.strike + 0.1) / TOGP5.cageIn));
+          CAGE5.set({ k: kc * cin, x: cc.x, z: cc.z, t: tau, crack: tau < T.apart + 0.4 }); }
         TRANCE5.set(1, tau); TRANCE5.pools(zNow, pz, 1, 1); TRANCE5.gold(1); courtLamps(lampK);
         /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
            place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
@@ -2065,8 +2091,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (the lab's pictures of 25 Nov: from 0.6 m under the hands the two hands filled the picture and the gold burned it
              white; from 1.25 m before the two of them both hands read on the shaft, and from his student's side the braid
              reads up to the head with both of them in the picture) */
-          { t: 0, name: 'hands', eye: rel(MID, 1.25, -0.05, 1.05), at: HANDS_AT, fp: 40, fd: 34 },
-          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.08, -0.05, 1.04), at: HANDS_AT, fp: 38, fd: 32 },
+          /* (R132/R133: the two of them first, faces and hands, the lens coming in on them slowly as his student's hand closes on
+             the stick; from 1.25 m the hands filled a phone's picture and nothing told whose they were) */
+          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.22, 1.38), at: rel(MID, 0, -0.05, 1.18), fp: 46, fd: 40 },
+          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.85, -0.18, 1.3), at: rel(MID, 0.1, -0.05, 1.1), fp: 44, fd: 38 },
           { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true },
           { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38 },
           { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38 },
@@ -2109,6 +2137,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       end() { fmLens(PLAYFOV5); SPLASH5.off(); NAGA5.hide(); if (this.bs) this.bs.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
         /* (R129: his grip given back to his own, his student's hand to his take, the two powers out) */
         if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) PHOGRIP5.film(null); if (typeof ZAVGRIP5 === 'object') ZAVGRIP5.set(null); BRAID5.off();
+        /* (R132: his body level given back to the fight's) */
+        if (cast.zav && this.zf0 !== undefined && TOGP5.zavFull) cast.zav.force = this.zf0;
         /* what the last stage finds: the three laid at their places, small, dim and cool; the Naga home in the stick */
         const W = this.W || fightStart().laid;
         this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !W[j]) return; put(P, W[j].x, W[j].z, P.group.rotation.y); P.group.position.y = 0; PRAI5.burn(P, 0); PRAI5.cool(P, 1); });
@@ -2670,7 +2700,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
       fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
       /* (R129: his student's grip and its jointing, the two powers, for a probe) */
-      ZAVGRIP5, ZG5, BRAID5,
+      ZAVGRIP5, ZG5, BRAID5, TOGP5,
       /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
       people: () => people, crowd: () => crowd, shot: () => FM5.shot
     };

@@ -2902,7 +2902,7 @@
          the planting cast's own last key) and lifted `y`; `hold` keeps his hand on it planted; `k` his grip's share, the
          film's (a pure function of its clock, where his own eases on the wall). Off (FLIFT.on false) every number is as it
          was: the fist's offsets add nought */
-      const PLANT_D = [0, 0], FLIFT = { on: false, y: 0, to: 0, hold: false, k: null };
+      const PLANT_D = [0, 0], FLIFT = { on: false, y: 0, to: 0, hold: false, k: null, dx: 0, pole: null, noSwing: false };
       function plantKeys() {
         const ph = Math.PI / 2 - STAFF.out, cx = STICK_C[0] * Math.cos(ph) + STICK_C[1] * Math.sin(ph), cz = -STICK_C[0] * Math.sin(ph) + STICK_C[1] * Math.cos(ph);
         const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2]; PLANT_D[0] = dx; PLANT_D[1] = dz;
@@ -3158,7 +3158,7 @@
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
         clavLay(P, Math.min(1, m.clav) * share); clavLayL(P, CLAV_L * Math.min(1, m.clav) * share);
-        const Ct = _sa.set(STAFF.fist[0] + m.x + (FLIFT.on ? FLIFT.to * PLANT_D[0] : 0), STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y + (FLIFT.on ? FLIFT.y : 0),
+        const Ct = _sa.set(STAFF.fist[0] + m.x + (FLIFT.on ? FLIFT.to * PLANT_D[0] + (FLIFT.dx || 0) * (1 - FLIFT.to) : 0), STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y + (FLIFT.on ? FLIFT.y : 0),
                            STAFF.fist[2] + m.z + (FLIFT.on ? FLIFT.to * PLANT_D[1] : 0)); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
@@ -3188,8 +3188,12 @@
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
         /* the wrist, where the fist's middle comes onto its place */
         const Wr = _sf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_sq2).negate().add(Ct);
-        const pole = _sd.set(STAFF.pole[0], STAFF.pole[1], STAFF.pole[2]).normalize().applyQuaternion(_sq);
-        swing5(P, a, Wr, pole, _sq2);                                        // (R41: the elbow where his wrist can hold it)
+        /* (R139, Chad: "Make pho arm straighter": in the Naga's film his elbow hangs under his shoulder, by the film's own pole
+           and without the swing that keeps the fight's wrist in range; FLIFT.dx his fist that much in toward him, the lift
+           carrying it back out to where the stick is planted) */
+        const PL = FLIFT.on && FLIFT.pole ? FLIFT.pole : STAFF.pole;
+        const pole = _sd.set(PL[0], PL[1], PL[2]).normalize().applyQuaternion(_sq);
+        if (!(FLIFT.on && FLIFT.noSwing)) swing5(P, a, Wr, pole, _sq2);                                        // (R41: the elbow where his wrist can hold it)
         armHinge(a, Wr, pole);
         /* the forearm turned along its own line by the hand's turn about it (swing and twist: the twist to the forearm) */
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
@@ -3259,7 +3263,7 @@
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
         plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },
         /* (R129: the Naga's film's own lift, strike and hold of the stick in his hand (FLIFT); null gives it back) */
-        film(o) { if (!o) { FLIFT.on = false; FLIFT.y = 0; FLIFT.to = 0; FLIFT.hold = false; FLIFT.k = null; return null; }
+        film(o) { if (!o) { FLIFT.on = false; FLIFT.y = 0; FLIFT.to = 0; FLIFT.hold = false; FLIFT.k = null; FLIFT.dx = 0; FLIFT.pole = null; FLIFT.noSwing = false; return null; }
           Object.assign(FLIFT, o); FLIFT.on = true; return FLIFT; },
         plantD() { return PLANT_D.slice(); },
         /* where the stick's foot stands, in the world, while his hand holds it (the gold's wheel goes out from it: the rules'
