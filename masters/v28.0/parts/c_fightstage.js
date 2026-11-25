@@ -1991,7 +1991,10 @@
             /* (R122 idea 1, a full special attack: both faces slash across the screen with the word between them, a white slash
                and a flash, before the Naga's film shows the attack itself (kit.cutIn, the seventy-eighth seam; the act's 1.5 s
                holds the film back until it has played)) */
-            if (kit && kit.cutIn && kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: fsWords().cutTogether, secs: 1.4 })) fsFx('u5cutin', 0.9, null);
+            /* (R128, Chad: "that part can stay on the screen for a slightly longer duration, as on a slow phone with low frame
+               rate, one can barely see it before it disappear": 2.0 s, was 1.4, on the cut-in's own clock, a tenth of a second
+               a drawn frame at most (main.js cutInStep); the Naga's film waits for it to end: FS5.cutLive, fsNaga) */
+            if (kit && kit.cutIn && kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: fsWords().cutTogether, secs: 2.0, onDone: () => { FS5.cutLive = false; } })) { FS5.cutLive = true; fsFx('u5cutin', 0.9, null); }
             /* (R68: pressed, the call BURSTS: its own sound, a flash of gold over the whole screen, the screen knocked) */
             fsFx('u5togpress', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFE6A8', secs: 0.28 }); fsShake(0.07, 0.45, 0.025);
             /* (R94 E3: gold flame round him and violet round his student, a burst of each, one great boom, the phone's buzz) */
@@ -2048,7 +2051,9 @@
        held as it is) */
     function fsNaga() {
       const wait = Math.max(0, (FS5.lineEnd || 0) - FS5.wall);
-      if (wait > 0.05) { FS5.nagaAt = FS5.wall + wait + 0.15; return; }
+      /* (R128: and for the TOGETHER cut-in to finish on its own clock, which a slow phone plays slower: the film's first frame
+         would take it away) */
+      if (wait > 0.05 || FS5.cutLive) { FS5.nagaAt = FS5.wall + (wait > 0.05 ? wait + 0.15 : 0); return; }
       fsNagaGo();
     }
     function fsNagaGo() {
@@ -2098,7 +2103,7 @@
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
-      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
+      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.cutLive = false; FS5.lineEnd = 0;
       FS5.cageAt = null; FS5.hitQ = [];
       fsCatchEnd();
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
@@ -2145,7 +2150,7 @@
       /* (R75's debug, GJ: and for the loss's own line, "Enough. Breathe. We begin again." (3.9 s): a BEGIN AGAIN pressed under
          it began the fight over it, and a new prompt took its caption) */
       if (FS5.card && FS5.wall >= Math.max(FS5.cardAt, (FS5.lineEnd || 0) + 0.25)) { const c = FS5.card; FS5.card = null; c(); }
-      if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
+      if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && !FS5.cutLive && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
       /* (the gold's hits on a crowd, each told a moment after the last: R75's GB) */
       if (FS5.hitQ.length) { const due = FS5.hitQ.filter(h => FS5.wall >= h.at); if (due.length) { FS5.hitQ = FS5.hitQ.filter(h => FS5.wall < h.at); fsEvents(due.map(h => Object.assign({}, h.e, { after: 0 }))); } }
       /* (R123, 25 Nov 2026: the win's tick ends the fight in the middle of this frame (cleanse, fightLeave: the effects
@@ -2498,7 +2503,7 @@
          struggle cry's (every bound one's cry silent until the new clock passed the old fight's last), the end of the last
          line (the Naga's film waiting for it, minutes after a replay), his act's span (rooted until it passed), the shake,
          the Naga's wait, the bag's run, the call's rise, the bag's snap. Each back to what a fresh build has) */
-      FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
+      FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.cutLive = false; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
       FS5.nagaDim = false; FS5.windT = 0; FS5.hitQ = [];
       FS5.slowEnd = null; FS5.pushed = false; FS5.countN = 0;                  // (R122: a catch's slow, push and count)
       fsTake.pho.stepU = fsTake.zav.stepU = null;

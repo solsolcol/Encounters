@@ -4029,7 +4029,19 @@ K.tagGoneWithChapter = await p.evaluate(() => {
          threw on it, and the bars' proof after it failed for want of this one's film) */
       kit.objective('The box steps aside under a cut-in', { complete: false });
       await poll(() => !!document.querySelector('#objective .obox'), 10000); await new Promise(r => setTimeout(r, 400)); await frames(2);
-      R.asked = kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 3 }) === true;
+      const told = [], told2 = [];
+      R.asked = kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 3, onDone: (o) => told.push(o) }) === true;
+      /* (R128: it plays on a clock of its own, a tenth of a second a drawn frame at most: its animations held, and a page
+         stalled for 1.2 s with no frame drawn moves it no more than the two frames after the stall, 0.2 s: on the wall it
+         would have run 1.2 s on, most of a short cut-in, which is what a slow phone showed) */
+      const an = C.getAnimations({ subtree: true });
+      R.heldAnims = an.length >= 5 && an.every(a => a.playState === 'paused');
+      const ct0 = an[0] ? +an[0].currentTime : NaN;
+      { const s0 = performance.now(); while (performance.now() - s0 < 1200) { /* the page stalled: no frame drawn */ } }
+      await frames(2);
+      const ct1 = an[0] ? +an[0].currentTime : NaN;
+      R.frameFloor = Number.isFinite(ct0) && Number.isFinite(ct1) && ct1 - ct0 <= 201 && ct1 > ct0;
+      R._ci = { anims: an.length, ct0, ct1 };
       await new Promise(r => setTimeout(r, 500)); await frames(2);
       const a = C.querySelector('.ciBand.a'), b = C.querySelector('.ciBand.b'), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
       R.shown = C.classList.contains('on') && getComputedStyle(C).display === 'block' && pics() === 2
@@ -4040,18 +4052,20 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       /* (build 91: the objective's box steps aside while it stands, and is back after) */
       const obx = document.querySelector('#objective .obox');
       R.hudAside = document.body.classList.contains('cutin') && !!obx && getComputedStyle(obx).visibility === 'hidden';
-      await poll(() => !C.classList.contains('on'), 6000); await frames(2);
+      await poll(() => !C.classList.contains('on'), 180000); await frames(2);
       R.gone = getComputedStyle(C).display === 'none' && pics() === 0 && C.querySelector('.ciWord').textContent === '';
+      R.toldEnd = told.length === 1 && !!told[0] && told[0].cut === false;
       R.hudBack = !document.body.classList.contains('cutin') && !!obx && getComputedStyle(obx).visibility !== 'hidden';
       kit.objective(null, { complete: false });
       /* (a film from play takes the words and the cut-in away on its first frame) */
       kit.pop('Caught', { screen: { sx: 0.5, sy: 0.5 }, secs: 30 });
-      kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 4 });
+      kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 4, onDone: (o) => told2.push(o) });
       await frames(2);
       R.bothUp = document.getElementById('popLayer').children.length === 1 && C.classList.contains('on');
       R.filmStarted = kit.film('flash') === true;
       R.cine = await poll(() => E.getState() === 'cine', 30000);
       R.filmTookThem = document.getElementById('popLayer').children.length === 0 && !C.classList.contains('on') && pics() === 0;
+      R.toldCut = told2.length === 1 && !!told2[0] && told2[0].cut === true;
       R.refusedInFilm = kit.cutIn({ a: pic('#c08030') }) === false && kit.pop('X', { screen: { sx: 0.5, sy: 0.5 } }) === false;
       window.__ciFilm = true;
       return R;`);

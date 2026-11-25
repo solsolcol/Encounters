@@ -7777,6 +7777,7 @@ function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
   popFrame();                                    // v28.0 (seam 77): the words over places, followed as the lens moves
   if (cutIn.on && state !== 'play') cutInOff();  // v28.0 (seam 78): a cut-in never outlives play
+  if (cutIn.on && cutIn.anims) cutInStep();      // R128: and plays on its own clock, a tenth of a second a drawn frame at most
   /* v11.6: the bag button asks while a given item waits unequipped (a class
      toggle is a no-op when nothing changed, so this costs the frame nothing) */
   (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
@@ -8346,8 +8347,13 @@ function popFrame() {
    bands sweeping in from either side, each a picture (`a` the upper, `b` the lower: an asset key, or a node), the chapter's
    `word` stamped between them in gold, a shine passing over each, and all of it swept out the other way and gone after
    `secs` (1.4). Play only; a film, a panel or the title begun under it takes it away at once, and so does kitReset. Absent,
-   its layer stays empty and hidden. Answers true, or false when refused */
-const cutIn = { on: false, timer: 0, el: null };
+   its layer stays empty and hidden. Answers true, or false when refused.
+   R128 (Chad, 25 Nov 2026: "on a slow phone with low frame rate, one can barely see it before it disappear"): it runs on
+   a clock of its own that moves at most a tenth of a second a drawn frame (v13.1: a thing that must be seen lasts wall
+   time AND a number of drawn frames), so a slow or stalled phone plays it slower and never skips it; its CSS animations
+   are paused and set to that clock each frame (the Web Animations API; without it they run on the wall as before).
+   `onDone({ cut })` is told once as it ends: cut false at its own end, true when something took it away */
+const cutIn = { on: false, timer: 0, el: null, anims: null, t: 0, secs: 0, last: 0, onDone: null };
 function cutInEls() {
   if (cutIn.el) return cutIn.el;
   const root = $('cutIn');
@@ -8359,15 +8365,27 @@ function cutInPic(band, pic) {
   const w = evIconNode(pic, 'ciPic');
   band.insertBefore(w, band.firstChild);
 }
-function cutInOff() {
+function cutInOff(ended) {
   clearTimeout(cutIn.timer); cutIn.timer = 0;
   if (!cutIn.on) return;
-  cutIn.on = false;
+  cutIn.on = false; cutIn.anims = null;
+  const done = cutIn.onDone; cutIn.onDone = null;
   document.body.classList.remove('cutin');
-  const E = cutInEls(); if (!E) return;
-  E.root.classList.remove('on');
-  for (const band of [E.a, E.b]) { const p = band.querySelector('.ciPic'); if (p) p.remove(); }
-  E.word.textContent = '';
+  const E = cutInEls();
+  if (E) {
+    E.root.classList.remove('on');
+    for (const band of [E.a, E.b]) { const p = band.querySelector('.ciPic'); if (p) p.remove(); }
+    E.word.textContent = '';
+  }
+  if (done) { try { done({ cut: ended !== true }); } catch (err) { console.error('[cutIn] onDone', err); } }
+}
+/* R128: the cut-in's own clock, from the kit's frame (play only): the wall's step, never more than a tenth of a second */
+function cutInStep() {
+  const now = performance.now(), dt = Math.min(0.1, Math.max(0, (now - cutIn.last) / 1000)); cutIn.last = now;
+  cutIn.t += dt;
+  const ms = Math.min(cutIn.t, cutIn.secs + 0.08) * 1000;
+  for (const a of cutIn.anims) { try { a.currentTime = ms; } catch (err) { /* (an animation the style has already ended) */ } }
+  if (cutIn.t >= cutIn.secs + 0.08) cutInOff(true);
 }
 function kitCutIn(o = {}) {
   if (state !== 'play' || !o || (!o.a && !o.b)) return false;
@@ -8385,8 +8403,13 @@ function kitCutIn(o = {}) {
   E.root.classList.add('on');
   /* (build 91: the HUD its bands would cross steps aside while it stands: shell.html, body.cutin) */
   document.body.classList.add('cutin');
-  cutIn.on = true;
-  cutIn.timer = setTimeout(cutInOff, secs * 1000 + 80);
+  cutIn.on = true; cutIn.t = 0; cutIn.secs = secs; cutIn.last = performance.now();
+  cutIn.onDone = typeof o.onDone === 'function' ? o.onDone : null;
+  /* (R128: its animations held to its own clock, every one of them, the shines on the pictures included) */
+  let anims = null;
+  try { anims = typeof E.root.getAnimations === 'function' ? E.root.getAnimations({ subtree: true }) : null; } catch (err) { anims = null; }
+  if (anims && anims.length) { for (const a of anims) { try { a.pause(); a.currentTime = 0; } catch (err) { /* (kept on the wall) */ } } cutIn.anims = anims; }
+  else cutIn.timer = setTimeout(() => cutInOff(true), secs * 1000 + 80);
   return true;
 }
 /* v28.0 · THE SEVENTY-NINTH SEAM: THE FILM'S BARS SQUEEZED IN (kit.bars). Chad, R122 (idea 6, the Naga's summoning: "black bars

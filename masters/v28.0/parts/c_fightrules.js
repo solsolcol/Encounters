@@ -198,7 +198,7 @@
         // careful player as sure within two tries as he was (97.3), still 6 s quicker than 40: Chad's "slightly easier")
         holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.62, goldGrace: 8,   // (R73: holdPace 0.62, was 0.45)
         // STAGES 4 TO 6
-        togetherAfter: 1.5, togetherSecs: 1.5, filmGuard: 40,   // (R122: 1.5 s, was 1.2: the cut-in's 1.4 s plays out before the Naga's film)
+        togetherAfter: 1.5, togetherSecs: 2.1, filmGuard: 40,   // (R128: 2.1 s, was 1.5 (R122), 1.2 before: the cut-in's 2.0 s plays out before the Naga's film)
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
         needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0, holdLate: 30.0,
         // THE FRAME: no step moves the fight more than this (a slow phone gets a slower fight, never a jump)
