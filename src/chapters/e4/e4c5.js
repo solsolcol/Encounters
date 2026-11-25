@@ -12140,6 +12140,16 @@
       return {
         /* the stick's place in his right hand, in that hand's frame (null: his hand has no fingers, and the stick stands as before) */
         offset(P) { if (!GRIP_ON) return null; const g = solve(P); return g ? g.off : null; },
+        /* (build 101) where his fist holds the shaft, in the world: the shaft's line `y` up it from its foot (STICK_Y up it is
+           the middle of his fist), from his rest place and the film's lift (FLIFT), as this grip will stand it this frame. A film
+           reads it for its lens and its looks: the stick's own matrix, read in a film's frame, still stood where his hand's take
+           had it before this grip was laid, about 30 cm low (build 100: the braid's shots aimed at his student's fist, not at the
+           carved head). Null where he is not ready */
+        fistAt(y) { const P = cast.pho; if (!P || !P.ready) return null; const to = FLIFT.on ? FLIFT.to : 0;
+          const v = new THREE.Vector3(STAFF.fist[0] + (FLIFT.on ? to * PLANT_D[0] + (FLIFT.dx || 0) * (1 - to) : 0),
+                                      (y - STICK_Y) + STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + (FLIFT.on ? FLIFT.y : 0),
+                                      STAFF.fist[2] + (FLIFT.on ? to * PLANT_D[1] : 0));
+          P.group.updateWorldMatrix(true, false); P.group.localToWorld(v); return [v.x, v.y, v.z]; },
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; },
@@ -14377,7 +14387,10 @@
        already holds them is not moved at all, and a key with no `hold` is exactly as before. The pull is eased between two
        keys as everything else is (each key's own pull, mixed by the same ease), so it is a smooth function of the clock.
        It never goes back through a solid (the place's own, `solids`): it stops 0.3 m short, and the lens widens for the
-       rest, to the key's `fmax` (78 degrees unless said) */
+       rest, to the key's `fmax` (78 degrees unless said). A key may also say how much of the half-height its places may use
+       (`band`, 0.88 unless said): a film whose bars are drawn in (kit.bars, up to 18 % of the screen each) shows only 0.64 of
+       it, so a key under drawn-in bars says so (build 101: the Naga film's first shot, where the bars came in while the lens
+       pushed in, and on a phone Grandmaster Pho's face went out of the top of the picture) */
     const _fhE = new THREE.Vector3(), _fhR = new THREE.Ray(), _fhH = new THREE.Vector3();
     let solidBoxes5 = null;
     function fmPullOf(K) {
@@ -14388,7 +14401,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * 0.88) - z); }
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * (K.band || 0.88)) - z); }
       return Math.min(K.back != null ? K.back : 1.2, Math.max(0, d));
     }
     function fmHold(A, B, u) {
@@ -14414,7 +14427,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * 0.88)); }
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (K.band || 0.88))); }
       return th;
     }
     function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
@@ -15877,8 +15890,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* (R140's values, from the lab's search over his own skin, 25 Nov: palm 5 cm, fingers counted 2.4 cm through, thumb turned
          25 degrees out: no point of his hand inside the wood, its nearest 3.2 to 3.5 cm from the shaft's middle line, whose
          surface stands 3.4 to 3.6 cm out there) */
+      /* (R142, Chad, 25 Nov, of the shot from behind them with a red line drawn straight down beside his upper arm: "From the
+         back shot, zaviers arms are bent unnaturally, straighten it". Measured in the film (build 101's lab): with the elbow
+         drawn down, IN and back (-0.30, -0.90, -0.30), his upper arm leaned 14 degrees in toward his own middle as the two of
+         them lift the stick (5.6 to 6.3 s; the forearm level, the elbow at 100 degrees), the bend seen from behind. Now his
+         elbow is drawn straight down and a little back (0, -1, -0.15), as his teacher's arm was for R139, and by `flat` put
+         where his upper arm leans neither way across the two of them (elbowFlat): an upper arm that hangs, seen from behind
+         or before them, the forearm forward to the stick) */
       const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.024, thumbR: 0.022, palm: 0.05, back: 0.02, tilt: 0,
-                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07,
+                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [0, -1, -0.15], flat: true, out: 15, near: 0.07,
                    mitten: true, thumbRest: true, thumbOut: 25 };
       const st = { k: 0, kf: 0, kin: 1 };
       let G = null, failed = false, wroteQ = null, wroteArm = null;
@@ -15967,6 +15987,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       }
       const _zq = new THREE.Quaternion(), _zq2 = new THREE.Quaternion(), _zq3 = new THREE.Quaternion(), _zqh = new THREE.Quaternion(), _zk = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       const _za = V(), _zb = V(), _zc = V(), _zd = V(), _ze = V(), _zf = V(), _zn = V(), _zp = V(), _zm = new THREE.Matrix4(), _zm2 = new THREE.Matrix4();
+      const _zS = V(), _zE = V(), _zW = V(), _zt = V(), _zl = V(), _z1 = V(), _z2 = V(), _zU = V(), _zY = new THREE.Vector3(0, 1, 0);
+      /* (R142: WHERE HIS ELBOW GOES, so that his upper arm leans neither way across the two of them: on the cone his upper
+         arm can stand on (its lengths and the reach to his hand fix its angle to the line from his shoulder to his hand),
+         the one line with no part along `lat` (his teacher's own side: the way across them), the lower of its two. Seen
+         from behind them or before them, the upper arm then hangs straight; any lean it keeps is toward or away from the
+         lens. Where no line on the cone is square to `lat`, the nearest one. Its length and its turn are armHinge's own) */
+      function elbowFlat(a, Wr, lat, out) {
+        a.up.updateWorldMatrix(true, true); a.up.getWorldPosition(_zS); a.fore.getWorldPosition(_zE); a.hand.getWorldPosition(_zW);
+        const la = _zS.distanceTo(_zE), lb = _zE.distanceTo(_zW); _zt.copy(Wr).sub(_zS); const d0 = _zt.length(); if (d0 < 1e-5 || la < 1e-5 || lb < 1e-5) return null;
+        _zt.divideScalar(d0); const d = Math.min(Math.max(d0, Math.abs(la - lb) + 1e-3), la + lb - 1e-3);
+        const ca = Math.min(1, Math.max(-1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
+        _z1.copy(lat).addScaledVector(_zt, -lat.dot(_zt)); if (_z1.lengthSq() < 1e-10) return null; _z1.normalize(); _z2.crossVectors(_zt, _z1);
+        const e1l = _z1.dot(lat); let cp = Math.abs(e1l) < 1e-6 ? 0 : -ca * _zt.dot(lat) / (sa * e1l); cp = Math.max(-1, Math.min(1, cp));
+        const sp = -Math.sign(_z2.dot(_zY) || 1) * Math.sqrt(1 - cp * cp);
+        return out.copy(_zt).multiplyScalar(ca).addScaledVector(_z1, sa * cp).addScaledVector(_z2, sa * sp);
+      }
       function layFingers(P, a, kk) {
         if (!a.fing || !a.fingAll) { a.fing = []; for (const nm of NAMES) G.chains[nm].slice(0, 3).forEach((b, i) => a.fing.push({ b, q: new THREE.Quaternion(), i: i + 1, nm, j: i })); a.fingAll = true; }
         const fresh = !a.curled || !wroteQ || a.fing.some((F, n) => !F.b.quaternion.equals(wroteQ[n]));
@@ -15989,7 +16025,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         _zm.makeBasis(front, up, _ze); _zm2.makeBasis(G.F, G.A, _zd).transpose(); _zm.multiply(_zm2); _zqh.setFromRotationMatrix(_zm);
         const Wr = _zf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_zqh).negate().add(Ct);
         if (st.kin < 1) { _zn.copy(G.nL).applyQuaternion(_zqh).normalize(); Wr.addScaledVector(_zn, -T5.near * (1 - st.kin)); }
-        const pole = _zp.set(T5.pole[0], T5.pole[1], T5.pole[2]).normalize().applyQuaternion(_zq2);
+        let pole = _zp.set(T5.pole[0], T5.pole[1], T5.pole[2]).normalize().applyQuaternion(_zq2);
+        if (T5.flat && cast.pho && cast.pho.group) { cast.pho.group.getWorldQuaternion(_zq); _zl.set(1, 0, 0).applyQuaternion(_zq); _zl.y = 0;
+          if (_zl.lengthSq() > 1e-8 && elbowFlat(a, Wr, _zl.normalize(), _zU)) pole = _zU; }
         armHinge(a, Wr, pole);
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_zq3);
         const rel = _zq3.clone().invert().multiply(_zqh), ax = a.hand.position.clone().normalize(), dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
@@ -16057,6 +16095,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       return { frame, off };
     })();
     const STICK_HEAD5 = [-0.11, 1.36, 0];
+    /* (build 101) WHERE THE STICK STANDS FOR A LOOK OR A LENS while it is in his teacher's fist (the Naga film's prologue): his
+       grip's own place for it (PHOGRIP5.fistAt), not the stick's matrix, which in the film's frame still stood where his hand's
+       take had it before his grip was laid, about 30 cm low (build 100's braid shots aimed at his student's fist, and every look
+       at the hands or the head fell the same way). Its matrix where his grip has no answer */
+    const stickNow5 = (x, y, z) => { const p = typeof PHOGRIP5 === 'object' && PHOGRIP5.fistAt ? PHOGRIP5.fistAt(y) : null; if (p) return p;
+      const g = things.nagaStaff; if (!g) return null; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(x, y, z).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
     /* R129: THE PROLOGUE, 3.4 s before the rise as it was: every mark after it moves on by as much (the flight's clock
        begins at RISE). His student's place beside him, in his frame (to his right 0.54 m, 0.12 before him: his left hand
        on the stick 0.24 to his left and 0.20 before him, his shoulder 0.49 m over it), and the Naga's widening spiral
@@ -16069,8 +16113,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        shoulder, 30 to 35 before it; moved 6 cm out and 5 back so the strike lands clear of his left shoe); his full body
        while the two hands are close on the screen (the fight holds him to his light one); his
        teacher's elbow under his shoulder (R139); the cage kept out until the strike (its bars stood through the two men in
-       every shot of the prologue); the lift 16 cm (at 24 his teacher's fist rose to his student's shoulder) */
-    const TOGP5 = { zj: [-0.60, 0.10], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.16 };
+       every shot of the prologue); the lift 11 cm (at 24 his teacher's fist rose to his student's shoulder; at 16, build 100,
+       his teacher's wrist bent 41 degrees toward his little finger at the top of the lift, measured by the joint check in the
+       film, past a real wrist's 35: it grows about 2 degrees a centimetre of lift, 9 at rest) */
+    const TOGP5 = { zj: [-0.60, 0.10], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.11 };
     FILMS5.together = {
       three: null, spots: null,
       /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
@@ -16207,8 +16253,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            shape over that place; the cage round the two of them while they stand together) */
         const zj = this.zj || zz, zNow = tau < T.ko5c2 ? zj : zz, shp = this.shape || zz, mid = { x: 0.5 * (pz.x + zj.x), z: 0.5 * (pz.z + zj.z) };
         const out = smo(c01((tau - T.plant - 3.6) / 0.9)), lifted = tau < T.strike;
-        const SH = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(STICK_HEAD5[0], STICK_HEAD5[1], STICK_HEAD5[2]).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
-        const HANDS = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, 1.0, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const SH = () => stickNow5(STICK_HEAD5[0], STICK_HEAD5[1], STICK_HEAD5[2]) || B.S;
+        const HANDS = () => stickNow5(0.09, 1.0, -0.006) || B.S;
         /* (R75's debug, V9: its lamps' curve laid after TRANCE5.set, below, which set them back to 0.15 every frame) */
         fmLook('TRANCE'); const lampK = 0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6);
         /* the court low under the trance; the smell of the tall shape until it comes apart */
@@ -16250,7 +16296,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
           /* (R129: no cast now. He stands in his rest, the stick in his hand and his student's under it; the two of them
-             lift it 24 cm, carried toward where it is planted, hold it there, and drive it down onto the paving (the film's
+             lift it (TOGP5.lift), carried toward where it is planted, hold it there, and drive it down onto the paving (the film's
              own lift, laid on his grip: PHOGRIP5.film); his hand stays on it planted while the Naga rises out of it, and
              comes off it with his student's over 0.9 s, as it came off it before) */
           fmRest(P, 'pho', tau);
@@ -16332,7 +16378,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
-        const barK = smo(c01((tau - 0.8) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
+        /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
+           side by side, and bars drawn in over it took his teacher's face out of the picture) */
+        /* (build 102: as the two powers reach the carved head (T.lit), not as they start up the shaft: build 101's braid shot
+           looks up from his student's fist, and bars drawn in over it took both foreheads, a desk's to the eyes at 2.6 s; from
+           T.lit the lens is up the shaft, the faces low in the picture, and the bars are whole by the cut to the lift) */
+        const barK = smo(c01((tau - (T.lit - 0.3)) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
         if (kit && kit.bars) kit.bars(barK);
         this.title(tau, T, kit && kit.bars ? barK : 0);
       },
@@ -16386,10 +16437,25 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            behind the two of them as they lift it and drive it down, the tall shape looming beyond. The paving's lens (erupt)
            stands before the stick now, low: from his teacher's right, where it stood, his student stands in the way */
         const ry5 = this.pho.ry, fw = [Math.sin(ry5), Math.cos(ry5)], lf = [Math.cos(ry5), -Math.sin(ry5)];
-        const stickAt = (y) => () => { const g = things.nagaStaff; if (!g) return [B.foot[0], y, B.foot[2]]; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, y, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const stickAt = (y) => () => stickNow5(0.09, y, -0.006) || [B.foot[0], y, B.foot[2]];
         const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
         const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
-        const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
+        /* (build 102: the braid's shots aimed 10 cm toward his teacher from the shaft: on a phone, aimed at the shaft, the edge
+           of his student's face stood at the picture's left edge as the shot began and as it ended, half a face at the edge
+           (2.1 s and 3.85 s of build 101); 10 cm takes it out on a phone and moves a desk's picture a tenth of its half-width) */
+        const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => { const at = stickAt(1.0 + 0.32 * u); return () => { const p = at(); return [p[0] + lf[0] * 0.1, p[1], p[2] + lf[1] * 0.1]; }; };
+        /* (build 101: what the opening shot must hold, each a place and its round: each head, high and low, where the film
+           stands each man with his head's measured place beside it (his teacher's 1 cm back and 5 in toward his student, his
+           student's 3 back and 7 out, as their rests hold them: never a living head), and the two fists on the shaft) */
+        const HOLD_PHO = [1.70, 1.58], HOLD_ZAV = [1.62, 1.48], FISTS = stickAt(1.13), FISTS0 = stickAt(0.92);
+        const headAt5 = (o, df, dl, y) => [o.x + fw[0] * df + lf[0] * dl, y, o.z + fw[1] * df + lf[1] * dl];
+        const HANDS_HOLD = () => { const Z = this.zj || this.zav, out = [];
+          for (const y of HOLD_PHO) out.push(headAt5(this.pho, -0.01, -0.05, y).concat(0.1));
+          for (const y of HOLD_ZAV) out.push(headAt5(Z, -0.03, -0.07, y).concat(0.1));
+          out.push(FISTS().concat(0.06), FISTS0().concat(0.06)); return out; };
+        /* (build 101: the braid's shots hold the carved head whole with the two fists under it: build 100's had the top of
+           the lit head under the top bar as it took their light) */
+        const HEADTOP = stickAt(1.38), HEADMID = stickAt(1.25), BRAID_HOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12), FISTS0().concat(0.05)];
         /* (R138: from behind at their shoulders' height his teacher's lifted fist sat on his student's shoulder in the picture; from
            over their shoulders, 1.85 to 1.95 m up, the two fists stand on the stick between them, the burning figures beyond) */
         const PAIR_BACK = rel(MID, -2.6, -0.05, 1.95), PAIR_BACK2 = rel(MID, -1.9, -0.05, 1.85), PAIR_AT = rel(MID, 1.6, 0.2, 1.15);
@@ -16426,11 +16492,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              reads up to the head with both of them in the picture) */
           /* (R132/R133: the two of them first, faces and hands, the lens coming in on them slowly as his student's hand closes on
              the stick; from 1.25 m the hands filled a phone's picture and nothing told whose they were) */
-          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.22, 1.38), at: rel(MID, 0, -0.05, 1.18), fp: 46, fd: 40 },
-          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.85, -0.18, 1.3), at: rel(MID, 0.1, -0.05, 1.1), fp: 44, fd: 38 },
-          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true },
-          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38 },
-          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38 },
+          /* (build 101: build 100's pictures had his teacher's face out of the top of the picture by 1.6 s on a phone and by
+             1.2 s on a desk, the lens pushing in on the hands while the bars came in. The shot HOLDS both faces and both fists
+             (fmHold: the eye drawn back along its line until they fit this screen) and is aimed between the faces and the
+             hands; a desk comes in on them, a phone, which must hold two men side by side, stays back) */
+          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.2, 1.46), at: rel(MID, 0, 0, 1.36), fp: 46, fd: 40, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
+          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.9, -0.16, 1.43), at: rel(MID, 0.08, 0, 1.33), fp: 46, fd: 38, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
+          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
+          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
+          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
           { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
           { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50 },
           { t: T.strike - 0.1, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },

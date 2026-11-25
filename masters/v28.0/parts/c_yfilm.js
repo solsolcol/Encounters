@@ -1552,8 +1552,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       /* (R140's values, from the lab's search over his own skin, 25 Nov: palm 5 cm, fingers counted 2.4 cm through, thumb turned
          25 degrees out: no point of his hand inside the wood, its nearest 3.2 to 3.5 cm from the shaft's middle line, whose
          surface stands 3.4 to 3.6 cm out there) */
+      /* (R142, Chad, 25 Nov, of the shot from behind them with a red line drawn straight down beside his upper arm: "From the
+         back shot, zaviers arms are bent unnaturally, straighten it". Measured in the film (build 101's lab): with the elbow
+         drawn down, IN and back (-0.30, -0.90, -0.30), his upper arm leaned 14 degrees in toward his own middle as the two of
+         them lift the stick (5.6 to 6.3 s; the forearm level, the elbow at 100 degrees), the bend seen from behind. Now his
+         elbow is drawn straight down and a little back (0, -1, -0.15), as his teacher's arm was for R139, and by `flat` put
+         where his upper arm leans neither way across the two of them (elbowFlat): an upper arm that hangs, seen from behind
+         or before them, the forearm forward to the stick) */
       const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.024, thumbR: 0.022, palm: 0.05, back: 0.02, tilt: 0,
-                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07,
+                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [0, -1, -0.15], flat: true, out: 15, near: 0.07,
                    mitten: true, thumbRest: true, thumbOut: 25 };
       const st = { k: 0, kf: 0, kin: 1 };
       let G = null, failed = false, wroteQ = null, wroteArm = null;
@@ -1642,6 +1649,22 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       }
       const _zq = new THREE.Quaternion(), _zq2 = new THREE.Quaternion(), _zq3 = new THREE.Quaternion(), _zqh = new THREE.Quaternion(), _zk = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       const _za = V(), _zb = V(), _zc = V(), _zd = V(), _ze = V(), _zf = V(), _zn = V(), _zp = V(), _zm = new THREE.Matrix4(), _zm2 = new THREE.Matrix4();
+      const _zS = V(), _zE = V(), _zW = V(), _zt = V(), _zl = V(), _z1 = V(), _z2 = V(), _zU = V(), _zY = new THREE.Vector3(0, 1, 0);
+      /* (R142: WHERE HIS ELBOW GOES, so that his upper arm leans neither way across the two of them: on the cone his upper
+         arm can stand on (its lengths and the reach to his hand fix its angle to the line from his shoulder to his hand),
+         the one line with no part along `lat` (his teacher's own side: the way across them), the lower of its two. Seen
+         from behind them or before them, the upper arm then hangs straight; any lean it keeps is toward or away from the
+         lens. Where no line on the cone is square to `lat`, the nearest one. Its length and its turn are armHinge's own) */
+      function elbowFlat(a, Wr, lat, out) {
+        a.up.updateWorldMatrix(true, true); a.up.getWorldPosition(_zS); a.fore.getWorldPosition(_zE); a.hand.getWorldPosition(_zW);
+        const la = _zS.distanceTo(_zE), lb = _zE.distanceTo(_zW); _zt.copy(Wr).sub(_zS); const d0 = _zt.length(); if (d0 < 1e-5 || la < 1e-5 || lb < 1e-5) return null;
+        _zt.divideScalar(d0); const d = Math.min(Math.max(d0, Math.abs(la - lb) + 1e-3), la + lb - 1e-3);
+        const ca = Math.min(1, Math.max(-1, (la * la + d * d - lb * lb) / (2 * la * d))), sa = Math.sqrt(1 - ca * ca);
+        _z1.copy(lat).addScaledVector(_zt, -lat.dot(_zt)); if (_z1.lengthSq() < 1e-10) return null; _z1.normalize(); _z2.crossVectors(_zt, _z1);
+        const e1l = _z1.dot(lat); let cp = Math.abs(e1l) < 1e-6 ? 0 : -ca * _zt.dot(lat) / (sa * e1l); cp = Math.max(-1, Math.min(1, cp));
+        const sp = -Math.sign(_z2.dot(_zY) || 1) * Math.sqrt(1 - cp * cp);
+        return out.copy(_zt).multiplyScalar(ca).addScaledVector(_z1, sa * cp).addScaledVector(_z2, sa * sp);
+      }
       function layFingers(P, a, kk) {
         if (!a.fing || !a.fingAll) { a.fing = []; for (const nm of NAMES) G.chains[nm].slice(0, 3).forEach((b, i) => a.fing.push({ b, q: new THREE.Quaternion(), i: i + 1, nm, j: i })); a.fingAll = true; }
         const fresh = !a.curled || !wroteQ || a.fing.some((F, n) => !F.b.quaternion.equals(wroteQ[n]));
@@ -1664,7 +1687,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         _zm.makeBasis(front, up, _ze); _zm2.makeBasis(G.F, G.A, _zd).transpose(); _zm.multiply(_zm2); _zqh.setFromRotationMatrix(_zm);
         const Wr = _zf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_zqh).negate().add(Ct);
         if (st.kin < 1) { _zn.copy(G.nL).applyQuaternion(_zqh).normalize(); Wr.addScaledVector(_zn, -T5.near * (1 - st.kin)); }
-        const pole = _zp.set(T5.pole[0], T5.pole[1], T5.pole[2]).normalize().applyQuaternion(_zq2);
+        let pole = _zp.set(T5.pole[0], T5.pole[1], T5.pole[2]).normalize().applyQuaternion(_zq2);
+        if (T5.flat && cast.pho && cast.pho.group) { cast.pho.group.getWorldQuaternion(_zq); _zl.set(1, 0, 0).applyQuaternion(_zq); _zl.y = 0;
+          if (_zl.lengthSq() > 1e-8 && elbowFlat(a, Wr, _zl.normalize(), _zU)) pole = _zU; }
         armHinge(a, Wr, pole);
         a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_zq3);
         const rel = _zq3.clone().invert().multiply(_zqh), ax = a.hand.position.clone().normalize(), dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
