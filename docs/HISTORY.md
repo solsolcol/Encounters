@@ -9636,6 +9636,12 @@ What the baseline contains, by release:
   2.5 s, the bars given back after it; and Jun's bag-carry turn, laid by a hook on every drawn frame, no longer laid on top
   of itself while nothing poses him between the opening film's end and play (10 degrees a frame, his arm out from 15 to 75
   degrees in four frames, then a 59.6-degree snap back; now 0.5 and 1.5), Ton's staff-carry lay given the same guard.
+  Builds 104 and 104b (25 Nov): R146 ("For the start of the naga cutscene, why does the scene suddenly turn dim and dark?
+  It is quite hard to see.") and R147 ("Whats the dim effect for? I dont understand"). The darkening was R122's summon (the
+  screen half black from 0.55 s until the stick strikes), timed for the film's old opening and lying, since R129's
+  prologue, over its first 6.5 s. Build 104 moved it to the lift at 35 % (not deployed); build 104b, deploy
+  `6b0728128d78449a0eb71116`, takes it out: a darkening he cannot read the purpose of serves nothing; the summon is the
+  bars, the strike, the water and their sounds.
 
 ## The sheet, version by version
 
