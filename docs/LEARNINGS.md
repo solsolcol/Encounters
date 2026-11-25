@@ -9100,3 +9100,12 @@ the press, then `runFor(33)` a frame at a time until the thing is up, the pictur
 the timers and performance.now (what the game's own clocks read), so the game steps 33 ms a frame whatever the box takes;
 a CSS animation is the compositor's, not the page's clock, and is paused and set by the Web Animations API
 (getAnimations, pause, currentTime) for its pictures. Never call a helper that waits on a frame while the clock is held.
+
+**A new layer over play is a HUD element, and is measured against the HUD** (v28.0, chapter 5's builds 90 to 91). The rule
+"adding a HUD element means re-measuring every overlap" (v11.5) was read as being about buttons and bars, and R122's words over
+the Prai and its cut-in were added without it: BOUND, over a Prai at the court's far end, stood under the objective's box and
+on the count's dots, and the objective's box lay over the cut-in's upper band with the party list and the call button showing
+through its gap. Both were found only in held pictures. A word placed over the world now keeps below the HUD's top stack and
+off the party list (main.js popHud), and what a full-screen moment's bands would cross steps aside while it stands
+(body.cutin); the fixture proves each (popSeam clearOfHud, cutInSeam hudAside). A layer drawn at a world point lands wherever
+the world puts it, so it is placed against the HUD every frame, not once.
