@@ -336,11 +336,11 @@
       btnPhoTitle: 'GRANDMASTER',
       btnZavierTitle: 'MASTER',
       btnTogether: 'TOGETHER',
-      // (R122: the word between the two faces as TOGETHER is pressed; the short words over a Prai as it is bound and as it is
-      //  caught; the gold count of the nine caught so far, {n} the number)
+      // (R122: the word between the two faces as TOGETHER is pressed; the short word over a Prai as it is bound; the gold
+      //  count of the nine caught so far, {n} the number. R127 took the word over a caught one away: "There is no need to
+      //  have the word caught")
       cutTogether: 'TOGETHER',
       popBound: 'BOUND',
-      popCaught: 'CAUGHT',
       popCount: '{n} of 9',
       // the card when the fight is lost (the fight begins again, never the chapter: R14)
       lostSay: 'You lost the fight.',

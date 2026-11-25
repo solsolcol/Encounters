@@ -472,7 +472,8 @@
     }
     function fsPopCount(n) {
       const W5 = fsWords(); if (!kit || !kit.pop || !W5.popCount) return;
-      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22, key: 'count' });
+      /* (R127, Chad: "the x of 9 is too big, reduce the size please": the plain word's size, BOUND's, not the big one) */
+      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', secs: 1.5, rise: 22, key: 'count' });
     }
     function fxHit(w, p, k, y0, o = null) {
       FS5.stopUntil = FS5.wall + 0.07 * Math.min(1, k);
@@ -1949,12 +1950,12 @@
             break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave', true);
             /* (R122 idea 2: its fire turned to white light flowing into the bag, the court slowed and the lens pushed in a
-               little; idea 4: CAUGHT over it, and the count in gold once this frame's catches are told) */
+               little; idea 4: the count in gold once this frame's catches are told. R127, Chad: "There is no need to have the
+               word caught": no word over the caught one) */
             if (p) { const w = fsW(p.x, p.z), V = fsVis[p.id - 1], sc = V ? V.s : 1, bx = RITE.bag.x - w.x, bz = RITE.bag.z - w.z, bL = Math.hypot(bx, bz) || 1;
               fsBloom(w.x, w.z, 0xf6fbff, 1.15, false, 1.0 * sc, { ramp: 'pale', k: 0.75, heat: 1.5 });
               fsBurst(w.x, 1.0 * sc, w.z, 22, { sp: 2.6, up: 0.1, life: 0.75, s0: 0.09, col: 0xffffff, col2: 0xdfe8ff, mix: 0.45, grav: 0, drag: 1.1, dir: [bx / bL, 0, bz / bL], spread: 0.35 });
-              fsFx('u5release', 0.85, w.x, w.z);
-              fsPop(fsWords().popCaught, p, 'white'); }
+              fsFx('u5release', 0.85, w.x, w.z); }
             FS5.countN = Math.max(FS5.countN || 0, Math.max(1, Math.min(9, 9 - e.left)));
             fsCatchSlow(e.left === 0);
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's

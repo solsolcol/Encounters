@@ -1,7 +1,7 @@
 /* v28.0 (E4C5, R122) · THE SPECIAL ATTACK AND A CATCH, PHOTOGRAPHED THE WAY A PLAYER GETS THERE (Chad, 25 Nov 2026, "Do idea
    1, 2, 4, 6"): the fight's lab sets its surge, the TOGETHER call is TAPPED and its CUT-IN photographed held at four moments
    of its own timeline, the Naga's film plays out, the BAG is TAPPED in the last stage and the CATCH photographed with its words
-   up (the court slowed, the lens pushed in, the white light into the bag, CAUGHT over each and the gold count), the mode's
+   up (the court slowed, the lens pushed in, the white light into the bag and the gold count; since R127 no CAUGHT), the mode's
    clock read; then the story runs on to the table, where R123's check is made again (the fight's effects off, no failed
    frame copy). A phone: 390 x 844 CSS at 2 px a point, a touch context. Exits 1 if the cut-in, the words, the slow or the
    R123 check is missing.
@@ -112,7 +112,7 @@ say('film', JSON.stringify(await fstate()));
 await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'last' && window.__enc.getState() === 'play' && !(window.__enc.kit.filmPlaying && window.__enc.kit.filmPlaying()); }, null, { timeout: 1200000, polling: 1000 });
 say('last', JSON.stringify(await fstate()));
 await p.waitForTimeout(2500); await pic('last');
-/* THE CATCH (ideas 2 and 4), held: the clock paused, the BAG tapped, stepped until CAUGHT is up, then a picture with the
+/* THE CATCH (ideas 2 and 4), held: the clock paused, the BAG tapped, stepped until the count is up, then a picture with the
    words risen (four frames on) and one a quarter second on (the slow and the push at their depth) */
 let bagged = false, popOk = false; const reads = [];
 for (let i = 0; i < 40 && !bagged; i++) {
@@ -123,13 +123,14 @@ for (let i = 0; i < 40 && !bagged; i++) {
 }
 say('bagged', bagged, JSON.stringify(await fstate()));
 if (bagged) {
-  for (let i = 0; i < 600 && !popOk; i++) { await step(1); popOk = (await words()).some(w => /CAUGHT/.test(w)); }
+  for (let i = 0; i < 600 && !popOk; i++) { await step(1); popOk = (await words()).some(w => /of 9/i.test(w)); }
   await step(4); reads.push(await catchRead()); say('catch', popOk, JSON.stringify(reads[0])); await heldPic('catch-a');
   await step(8); reads.push(await catchRead()); say('catch', JSON.stringify(reads[1])); await heldPic('catch-b');
   await step(30); reads.push(await catchRead()); say('catch', JSON.stringify(reads[2])); await heldPic('catch-c');
   await p.clock.resume();
 }
-const slowSeen = reads.some(c => c.slow < 0.99), wordsSeen = reads.some(c => c.words.some(w => /CAUGHT/i.test(w))) && reads.some(c => c.words.some(w => /of 9/.test(w)));
+/* (R127: the count shows and no CAUGHT ever does: "There is no need to have the word caught") */
+const slowSeen = reads.some(c => c.slow < 0.99), wordsSeen = reads.some(c => c.words.some(w => /of 9/i.test(w))) && !reads.some(c => c.words.some(w => /CAUGHT/i.test(w)));
 if (CATCHONLY) { const ok = popOk && slowSeen && wordsSeen && !!boundSeen;
   say('errors', errs.length ? errs.slice(0, 6).join(' / ') : 'none');
   say('R122 catch', ok ? 'PASS' : 'FAIL', JSON.stringify({ bound: !!boundSeen, popOk, slowSeen, wordsSeen }));

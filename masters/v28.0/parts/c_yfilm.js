@@ -1515,7 +1515,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         g.addColorStop(0, 'rgba(234,220,182,0)'); g.addColorStop(0.5, 'rgba(234,220,182,0.6)'); g.addColorStop(1, 'rgba(234,220,182,0)');
         x.fillStyle = g; x.fillRect(r0, Math.round(base + gap) - 1, rw, 2);
         const m = new THREE.SpriteMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false }); mats.push(m);
-        const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = 1024 / 256; sp.userData.wf = wordW / 1024; world.add(sp); TITLE5.sp = sp; };
+        const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = 1024 / 256; sp.userData.wf = wordW / 1024;
+        sp.userData.gh = (cap + gap + 2) / 256; world.add(sp); TITLE5.sp = sp; };
       parsePend++;
       const loaded = document.fonts && document.fonts.load ? document.fonts.load('600 132px "Cormorant Garamond"', 'NAGA').catch(() => null) : Promise.resolve(null);
       Promise.race([loaded, new Promise(r => setTimeout(r, 4000))]).then(make).catch(err => console.warn('R126: the NAGA title was not drawn (the film runs without it)', err))
@@ -1738,14 +1739,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
-        if (kit && kit.bars) kit.bars(smo(c01((tau - 0.8) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6))));
-        this.title(tau, T);
+        const barK = smo(c01((tau - 0.8) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
+        if (kit && kit.bars) kit.bars(barK);
+        this.title(tau, T, kit && kit.bars ? barK : 0);
       },
-      /* THE NAGA'S NAME (R122 idea 6; R126: toned down): faded in over 0.4 s as it settles from a little larger, held, and
-         gone by 1.5 s; in front of the lens at two metres, a fifth of the picture's height above its middle (the night behind
-         the climbing head), the WORD itself (its card's share, wf) 0.55 of a phone's picture wide and never wider than half
-         the picture's height (a desktop's: about 0.28 of its width); level on the screen whatever the lens's roll */
-      title(tau, T) {
+      /* THE NAGA'S NAME (R122 idea 6; R126: toned down; R127, Chad: "reduce the size of the naga font by at least 50% and
+         place it at the bottom instead"): faded in over 0.4 s as it settles from a little larger, held, and gone by 1.5 s; in
+         front of the lens at two metres, the WORD itself (its card's share, wf) 0.25 of a phone's picture wide and never
+         wider than 0.23 of the picture's height (R126's were 0.55 and 0.5: under half on both), its letters and the rule
+         under them (gh of the card's height) standing 3.5 % of the screen above the bottom bar, whose height is 11 % of the
+         screen and kit.bars' 7 % more by the same barK the frame hands the bars; level on the screen whatever the roll */
+      title(tau, T, barK = 0) {
         const S = TITLE5.sp; if (!S) return;
         const u = tau - T.title;
         if (!(u >= 0 && u < 1.5)) { if (S.visible) S.visible = false; return; }
@@ -1753,8 +1757,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         camera.updateMatrixWorld(true);
         camera.getWorldPosition(_ttP); camera.getWorldDirection(_ttF); _ttU.set(0, 1, 0).applyQuaternion(camera.getWorldQuaternion(_ttQ5));
         const vh = 2 * d * Math.tan(camera.fov * Math.PI / 360), vw = vh * camera.aspect, ar = S.userData.ar || 2.3;
-        const w = Math.min(vw * 0.55, vh * 0.5) / (S.userData.wf || 0.84) * (1.06 - 0.06 * kin + 0.02 * c01(u / 1.5));
-        S.position.copy(_ttP).addScaledVector(_ttF, d).addScaledVector(_ttU, vh * 0.2);
+        const w = Math.min(vw * 0.25, vh * 0.23) / (S.userData.wf || 0.84) * (1.06 - 0.06 * kin + 0.02 * c01(u / 1.5));
+        const lift = -vh / 2 + vh * (0.11 + 0.07 * barK) + vh * 0.035 + (S.userData.gh || 0.5) * (w / ar) / 2;
+        S.position.copy(_ttP).addScaledVector(_ttF, d).addScaledVector(_ttU, lift);
         S.scale.set(w, w / ar, 1); S.material.opacity = kin * kout; S.material.rotation = 0; S.visible = true;
       },
       /* THE LENS, shot by shot (R63, R64, R70). Every place a lens stands is in the court (0.35 m in from its walls and the
