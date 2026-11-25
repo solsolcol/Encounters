@@ -9580,7 +9580,14 @@ What the baseline contains, by release:
   measure (0.55 of a phone's width, at most half the picture's height on a desktop), fading in over 0.4 s as it settles from
   a little larger. Live: build 92, deploy `6b068c2a3662d3fa25a5efad`, 675 served files identical; its phone pictures read
   full size (4.3, 4.6, 5.0, 5.4 s): the word clean and level over the Naga's rise, a little low in contrast where it lies on
-  the pale crest (a soft dark shadow under the letters is in the next batch).
+  the pale crest (a soft dark shadow under the letters is in the next batch). Then build 94, deploy
+  `6b069c2c171db9912f1e3f46` (by way of build 93, local only), my own batch: the NAGA letters' soft dark shadow, and the
+  catch's words laid against each other as well as the HUD (build 91's pictures had CAUGHT on its gold count, "9 OF 9" on
+  "8 OF 9", and CAUGHT off the screen's left edge): kit.pop's `key` gives a count one slot, the words on a place of the
+  screen are laid first and the others make way below them, none past a side, and a word steps aside off the arrow over the
+  played one's head. The fixture proves the first three (popSeam apart, inside, keyed); its cut-in proof, mine from build
+  91, had read an objective box nobody set and thrown on it (and the bars' proof failed after it): it sets one now, and the
+  whole fixture passes. The dark last-stage picture of the catch probe was its installed clock's, not the game's.
 
 ## The sheet, version by version
 
