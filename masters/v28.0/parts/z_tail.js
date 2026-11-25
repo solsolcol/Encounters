@@ -162,9 +162,10 @@
      and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
      the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
   /* (build 90: each slow centred on its hit, slowest as the head goes through her, its first coming in 0.45 s before it) */
-  const TOG5 = { plant: 1.6, rise: 3.4, kindle: 3.95, cry: 4.15, top: 5.6333, ph5c2: 5.7533, stoop: 9.1833, apart: 9.9259, swoop: 10.0344,
-                 p1: 10.7315, p2: 11.3579, p3: 11.9114, climb: 12.3086, ring: 13.2067, low: 13.5114, ringOut: 15.3873, home: 16.5729,
-                 tail: 18.5729, ko5c2: 21.1729, back: 25.7029, end: 27.3029, strike: 3.25, title: 4.15 };
+  const TOG5 = { plant: 5.0, rise: 6.8, kindle: 7.35, cry: 7.55, top: 9.0333, ph5c2: 9.1533, stoop: 12.5833, apart: 13.3259, swoop: 13.4344,
+                 p1: 14.1315, p2: 14.7579, p3: 15.3114, climb: 15.7086, ring: 16.6067, low: 16.9114, ringOut: 18.7873, home: 19.9729,
+                 tail: 21.9729, ko5c2: 24.5729, back: 29.1029, end: 30.7029, strike: 6.65, title: 7.55,
+                 reach: 0.3, close: 0.85, zk: 1.0, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45 };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
@@ -195,7 +196,15 @@
     sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
-    sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
+    /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
+       his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
+    sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
+    sfx(T.zk, 'u5auraup', 0.6);                                                // the violet in his student's fist
+    sfx(T.pk, 'u5windup', 0.5);                                                // the gold gathering in his
+    sfx(T.braid, 'u5togfill', 0.85);                                           // the two powers wound up the shaft together
+    sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
+    sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
+    sfx(T.drive - 0.02, 'u5swing1', 0.6);                                      // and drive it down
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
     sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
     sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed

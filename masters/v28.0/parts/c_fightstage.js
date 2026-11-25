@@ -2897,9 +2897,15 @@
          sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
          there; his fist brings its shaft down onto that place, the stick turned as his hand holds it (plantYaw) */
       const PLANT_AT = [-0.40, 0.38];
+      /* R129 (25 Nov 2026): THE NAGA'S FILM LIFTS AND STRIKES THE STICK ITSELF, the two of them holding it (c_yfilm.js
+         TOGETHER): his fist taken from where it stands at his rest by `to` of the way to the place it plants it (PLANT_D,
+         the planting cast's own last key) and lifted `y`; `hold` keeps his hand on it planted; `k` his grip's share, the
+         film's (a pure function of its clock, where his own eases on the wall). Off (FLIFT.on false) every number is as it
+         was: the fist's offsets add nought */
+      const PLANT_D = [0, 0], FLIFT = { on: false, y: 0, to: 0, hold: false, k: null };
       function plantKeys() {
         const ph = Math.PI / 2 - STAFF.out, cx = STICK_C[0] * Math.cos(ph) + STICK_C[1] * Math.sin(ph), cz = -STICK_C[0] * Math.sin(ph) + STICK_C[1] * Math.cos(ph);
-        const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2];
+        const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2]; PLANT_D[0] = dx; PLANT_D[1] = dz;
         MOVES.Charged_Spell_Cast_1.keys = [[0, 0, 0, 0, 0, 0], [0.55, 0, 0, 0, 0, 0], [1.25, dx * 0.6 - 0.04, 0.20, dz * 0.6, 0, 6], [1.50, dx - 0.02, 0.22, dz, 0, 3], [1.70, dx, 0, dz, 0, 0, 'drive']];
       }
       plantKeys();
@@ -3152,7 +3158,8 @@
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
         clavLay(P, Math.min(1, m.clav) * share); clavLayL(P, CLAV_L * Math.min(1, m.clav) * share);
-        const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
+        const Ct = _sa.set(STAFF.fist[0] + m.x + (FLIFT.on ? FLIFT.to * PLANT_D[0] : 0), STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y + (FLIFT.on ? FLIFT.y : 0),
+                           STAFF.fist[2] + m.z + (FLIFT.on ? FLIFT.to * PLANT_D[1] : 0)); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
            rises from its head under his hand) */
@@ -3213,8 +3220,9 @@
           const now = performance.now(), dt = lastNow ? Math.min(0.1, (now - lastNow) / 1000) : 0;
           if (now - lastNow > 1) { lastNow = now;
             const holding = !!(P && P.ready && typeof STICK5 === 'object' && things.nagaStaff && things.nagaStaff.visible && P.group.visible &&
-                                 (STICK5.who === 'pho' || (STICK5.who === 'planted' && heldPlanted(P))));
-            k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
+                                 (STICK5.who === 'pho' || (STICK5.who === 'planted' && ((FLIFT.on && FLIFT.hold) || heldPlanted(P)))));
+            k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3);
+            if (FLIFT.on && FLIFT.k != null) k = Math.max(0, Math.min(1, FLIFT.k)); }
           if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
           else if ((clWrote || clLWrote) && P && P.ready) { clavLay(P, 0); clavLayL(P, 0); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
@@ -3250,6 +3258,10 @@
         /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
         plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },
+        /* (R129: the Naga's film's own lift, strike and hold of the stick in his hand (FLIFT); null gives it back) */
+        film(o) { if (!o) { FLIFT.on = false; FLIFT.y = 0; FLIFT.to = 0; FLIFT.hold = false; FLIFT.k = null; return null; }
+          Object.assign(FLIFT, o); FLIFT.on = true; return FLIFT; },
+        plantD() { return PLANT_D.slice(); },
         /* where the stick's foot stands, in the world, while his hand holds it (the gold's wheel goes out from it: the rules'
            ph.strike); null with the grip off or the stick not in his hand */
         footAt(out) { const g = things.nagaStaff, P = cast.pho;

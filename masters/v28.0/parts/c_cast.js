@@ -160,6 +160,179 @@
       for (const b in P.bone) if (/(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d$/.test(b)) { const q = bindLocal(P, P.bone[b]); if (q) P.bone[b].quaternion.copy(q); }
       if (n) console.log('HANDS5: ' + P.key + "'s fingers held as modelled (" + n + ' finger tracks out of his takes)');
     });
+    /* R129 (25 Nov 2026, Chad: "shouldn't there be an additional sequence that show zavier holding the naga stick together
+       with pho"): HIS LEFT HAND JOINTED WHERE A HAND BENDS, so it can close round the stick. Measured on his file first (25
+       Nov): his rig's finger joints stand bunched in the last third of each finger (the middle finger's at 17.2, 19.0 and
+       20.8 cm from his wrist, its tip at 24.3), the skin from each knuckle to there is his hand bone's, and the rest is its
+       finger's last bone's; so a bend at his own joints folds a finger in its middle and never at its knuckle (R35 held them
+       as modelled for it). So once, as he loads, his left hand is jointed again the way tools/fingergraft.mjs jointed
+       Grandmaster Pho's (R26), on his own bones and in his own skins:
+         each finger's tip is the furthest of the points its own bones lead; its band across the hand is theirs; its middle
+           line, slice by slice along the hand from before its knuckle to its tip, the middle of its band of skin (so a finger
+           that curls is followed as it curls);
+         its knuckle where a hand's stand from the wrist, as Grandmaster Pho's scanned hand has them: 0.461, 0.472, 0.481 and
+           0.439 of the hand's length (wrist to the middle fingertip) for the first, middle, ring and little fingers; its
+           middle and end joints 0.46 and 0.73 of the way from there to its tip along that line;
+         the thumb's line the long axis of the points its bones lead, its root 0.56 of the hand's length back from its tip,
+           its joints at 0.43 and 0.73 of that;
+         his finger bones MOVED onto those joints (each one's turn as it was), each skin's inverse binds made again from them;
+         every point his hand and his left fingers carry weighed along them again: the hand to a finger's first bone over
+           1.2 cm round its knuckle, each bone to the next over 0.6 cm round its joint; skin between two fingers shared by how
+           near each finger's middle is (his fingers are modelled together: a point given wholly to one would tear from its
+           neighbour as they bend); the thumb's by its nearness to the thumb's line; every other bone's share kept, four at most.
+       While a finger is not turned, each finger bone's skinning matrix equals the hand's (it stands at its bind against the
+       hand), so in every take he is drawn exactly as before; his near body (p5zavierh) is jointed the same way, by the same
+       joints, before it is first drawn. The report (ZG5.rep) gives every joint in centimetres along, across and through the
+       hand, and the points weighed */
+    const ZG5 = { J: null, rep: null, failed: false, geo: new WeakSet(), sk: new WeakSet(), bones: null };
+    const ZG5_FING = ['Index', 'Middle', 'Ring', 'Pinky'], ZG5_MCP = { Index: 0.461, Middle: 0.472, Ring: 0.481, Pinky: 0.439 };
+    function zgBones(P) {
+      const H = boneOf(P, 'LeftHand'); if (!H) return null; const F = {};
+      for (const nm of ['Thumb'].concat(ZG5_FING)) { const L = [1, 2, 3, 4].map(k => boneOf(P, 'LeftHand' + nm + k)); if (!L[3] && nm === 'Middle') L[3] = boneOf(P, 'LeftHand_End');
+        if (L.some(b => !b)) return null; F[nm] = L; }
+      return { H, F };
+    }
+    function zgMeasure(P, Bo) {
+      const meshes = (P.lv[1] || []).filter(m => m.isSkinnedMesh && m.skeleton);
+      const sk0 = (meshes.find(m => m.skeleton.bones.indexOf(Bo.H) >= 0) || {}).skeleton; if (!sk0) return null;
+      const pOf = (b) => { const i = sk0.bones.indexOf(b); return i < 0 ? null : new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(sk0.boneInverses[i]).invert()); };
+      const wp = pOf(Bo.H); if (!wp) return null;
+      const chainOf = new Map(); for (const nm in Bo.F) for (const b of Bo.F[nm]) chainOf.set(b, nm);
+      /* (his points with a share on his left hand or a left finger, in the bind's space; `lead` the chain of its largest such share) */
+      const pts = [];
+      for (const m of meshes) { const sk = m.skeleton, g = m.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight; if (!pos || !si || !sw) continue;
+        const idx = new Map(); idx.set(sk.bones.indexOf(Bo.H), 'H'); for (const [b, nm] of chainOf) { const i = sk.bones.indexOf(b); if (i >= 0) idx.set(i, nm); }
+        for (let i = 0; i < pos.count; i++) { let hs = 0, lead = null, lw = 0;
+          for (let q = 0; q < 4; q++) { const t = idx.get(si.getComponent(i, q)), w = sw.getComponent(i, q); if (t && w > 0) { hs += w; if (w > lw) { lw = w; lead = t; } } }
+          if (hs > 0.05) pts.push({ p: new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(m.bindMatrix), lead }); } }
+      /* the tips, the hand's line (wrist to the middle fingertip), across it toward the thumb's side (little finger to first) */
+      const tipOf = (nm) => { let best = null, bd = -1; for (const q of pts) if (q.lead === nm) { const d = q.p.distanceTo(wp); if (d > bd) { bd = d; best = q.p; } } return best; };
+      const tips = {}; for (const nm of ['Thumb'].concat(ZG5_FING)) { tips[nm] = tipOf(nm); if (!tips[nm]) return null; }
+      const f = tips.Middle.clone().sub(wp).normalize(), ax = tips.Index.clone().sub(tips.Pinky); ax.addScaledVector(f, -ax.dot(f)).normalize();
+      const nx = new THREE.Vector3().crossVectors(f, ax).normalize();
+      const H3 = (p) => { const d = p.clone().sub(wp); return [d.dot(f), d.dot(ax), d.dot(nx)]; };
+      const toB = (h) => wp.clone().addScaledVector(f, h[0]).addScaledVector(ax, h[1]).addScaledVector(nx, h[2]);
+      for (const q of pts) q.h = H3(q.p);
+      const HL = H3(tips.Middle)[0];
+      /* each finger's band across the hand: the middle of the points its own bones lead */
+      const band = {}; for (const nm of ZG5_FING) { let s = 0, n = 0; for (const q of pts) if (q.lead === nm) { s += q.h[1]; n++; } band[nm] = s / Math.max(1, n); }
+      const sp = Math.min(...[0, 1, 2].map(i => Math.abs(band[ZG5_FING[i]] - band[ZG5_FING[i + 1]])));
+      /* each finger's middle line: slices 4 mm thick along the hand, from 6 mm before its knuckle to its tip */
+      const FIN = {};
+      for (const nm of ZG5_FING) {
+        const T = H3(tips[nm]), s0 = ZG5_MCP[nm] * HL - 0.006, line = [];
+        /* (the middle of the slice's thickness, its deepest and highest points' middle, never their mean, which leans to
+           whichever side has more points; across, the mean, within the inner 0.4 of the band, clear of the thumb's web) */
+        for (let s = s0; s < T[0] - 0.002; s += 0.004) { let n = 0, sa = 0, lo = Infinity, hi = -Infinity;
+          for (const q of pts) if (Math.abs(q.h[0] - s) < 0.002 && Math.abs(q.h[1] - band[nm]) < 0.4 * sp && (q.lead === 'H' || q.lead === nm)) { n++; sa += q.h[1]; lo = Math.min(lo, q.h[2]); hi = Math.max(hi, q.h[2]); }
+          if (n >= 3) line.push([s, sa / n, 0.5 * (lo + hi)]); }
+        line.push(T);
+        if (line.length < 4) return null;
+        const cum = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1], line[i][2] - line[i - 1][2]));
+        /* (the knuckle on the line where the hand's proportion puts it; the joints along the line from there) */
+        const atS = (s) => { let i = 0; while (i < line.length - 2 && line[i + 1][0] < s) i++; const a = line[i], b = line[i + 1], u = Math.max(0, Math.min(1, (s - a[0]) / Math.max(1e-6, b[0] - a[0]))); return { h: [0, 1, 2].map(k => a[k] + (b[k] - a[k]) * u), c: cum[i] + (cum[i + 1] - cum[i]) * u }; };
+        const atC = (c) => { let i = 0; while (i < cum.length - 2 && cum[i + 1] < c) i++; const u = Math.max(0, Math.min(1, (c - cum[i]) / Math.max(1e-6, cum[i + 1] - cum[i]))); return [0, 1, 2].map(k => line[i][k] + (line[i + 1][k] - line[i][k]) * u); };
+        const K = atS(ZG5_MCP[nm] * HL), L = cum[cum.length - 1] - K.c;
+        FIN[nm] = { line, cum, c0: K.c, L, joints: [K.h, atC(K.c + 0.46 * L), atC(K.c + 0.73 * L), T] };
+      }
+      /* the thumb: the long axis of the points its bones lead, from its root toward its tip */
+      { const tp = pts.filter(q => q.lead === 'Thumb'), c = [0, 0, 0]; for (const q of tp) for (let k = 0; k < 3; k++) c[k] += q.h[k] / tp.length;
+        const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; for (const q of tp) for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) C[a][b] += (q.h[a] - c[a]) * (q.h[b] - c[b]);
+        let v = [1, 0, 0]; for (let it = 0; it < 60; it++) { const w = [0, 1, 2].map(a => C[a][0] * v[0] + C[a][1] * v[1] + C[a][2] * v[2]); const l = Math.hypot(...w) || 1; v = w.map(x => x / l); }
+        const T = H3(tips.Thumb); if ((T[0] - c[0]) * v[0] + (T[1] - c[1]) * v[1] + (T[2] - c[2]) * v[2] < 0) v = v.map(x => -x);
+        const TL = 0.56 * HL, at = (k) => [0, 1, 2].map(j => T[j] - v[j] * TL * (1 - k));
+        const rad = tp.map(q => { const d = [0, 1, 2].map(k => q.h[k] - c[k]), t = d[0] * v[0] + d[1] * v[1] + d[2] * v[2]; return Math.hypot(d[0] - v[0] * t, d[1] - v[1] * t, d[2] - v[2] * t); }).sort((a, b) => a - b);
+        FIN.Thumb = { d: v, L: TL, joints: [at(0), at(0.43), at(0.73), T], radius: rad[Math.floor(rad.length * 0.9)] || 0.012 }; }
+      const cm = (h) => h.map(x => +(x * 100).toFixed(1));
+      return { wp, f, ax, nx, HL, band, sp, FIN, toB, H3, n: pts.length,
+               rep: { HL: +(HL * 100).toFixed(1), points: pts.length, joints: Object.fromEntries(Object.entries(FIN).map(([k, F]) => [k, F.joints.map(cm)])) } };
+    }
+    const _zgM = new THREE.Matrix4(), _zgN = new THREE.Matrix4(), _zgV = new THREE.Vector3();
+    /* (a skin's inverse binds made again: each finger bone's bind with its place moved onto its joint, its turn and size kept) */
+    function zgBinds(sk, Bo, J) {
+      for (const nm in Bo.F) Bo.F[nm].forEach((b, k) => { const i = sk.bones.indexOf(b); if (i < 0) return;
+        _zgM.copy(sk.boneInverses[i]).invert(); const p = J.toB(J.FIN[nm].joints[k]); _zgM.setPosition(p); sk.boneInverses[i].copy(_zgM).invert(); });
+    }
+    /* (one skin's points weighed again along the joints) */
+    function zgWeigh(m, Bo, J) {
+      const sk = m.skeleton, g = m.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight; if (!pos || !si || !sw) return 0;
+      const hi = sk.bones.indexOf(Bo.H); if (hi < 0) return 0;
+      const mine = new Set([hi]), bi = {}, chOf = new Map([[hi, 'H']]); for (const nm in Bo.F) { bi[nm] = Bo.F[nm].map(b => sk.bones.indexOf(b)); for (const i of bi[nm]) if (i >= 0) { mine.add(i); chOf.set(i, nm); } }
+      /* (a finger's middle line across and through the hand at a place along it) */
+      const lineAt = (F, s) => { const L0 = F.line; let k = 0; while (k < L0.length - 2 && L0[k + 1][0] < s) k++; const a = L0[k], b = L0[k + 1], u = Math.max(0, Math.min(1, (s - a[0]) / Math.max(1e-6, b[0] - a[0]))); return [a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u]; };
+      const B0 = 0.012, B = 0.006, sm = (x, a, b) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+      const sharesAlong = (t, l1, l2, isThumb) => { const w1 = isThumb ? sm(t, -B0 * 0.25, B0 * 2.2) : sm(t, -B0, B0), a12 = sm(t, l1 - B, l1 + B), a23 = sm(t, l1 + l2 - B, l1 + l2 + B);
+        return [1 - w1, w1 * (1 - a12), w1 * a12 * (1 - a23), w1 * a12 * a23]; };
+      const seg = {}; for (const nm in J.FIN) { const jj = J.FIN[nm].joints, d = (a, b) => Math.hypot(jj[b][0] - jj[a][0], jj[b][1] - jj[a][1], jj[b][2] - jj[a][2]); seg[nm] = [d(0, 1), d(1, 2), d(2, 3)]; }
+      const TH = J.FIN.Thumb, reachT = Math.max(TH.radius * 1.35, 0.016), s0F = Math.min(...ZG5_FING.map(nm => J.FIN[nm].joints[0][0])) - B0, sig = 0.5 * J.sp;
+      const v = new THREE.Vector3(); let n = 0;
+      for (let i = 0; i < pos.count; i++) {
+        let hs = 0, lead = null, lw = 0; for (let q = 0; q < 4; q++) { const j = si.getComponent(i, q), w = sw.getComponent(i, q); if (mine.has(j)) { hs += w; if (w > lw) { lw = w; lead = chOf.get(j); } } }
+        if (!(hs > 0)) continue;
+        v.fromBufferAttribute(pos, i).applyMatrix4(m.bindMatrix); const h = J.H3(v);
+        const others = new Map(), out = new Map(); for (let q = 0; q < 4; q++) { const j = si.getComponent(i, q), w = sw.getComponent(i, q); if (w > 0 && !mine.has(j)) others.set(j, (others.get(j) || 0) + w); }
+        const add = (j, w) => { if (j >= 0 && w > 1e-6) out.set(j, (out.get(j) || 0) + w); };
+        /* the thumb: by its nearness to its line */
+        const r0 = [0, 1, 2].map(k => h[k] - TH.joints[0][k]), tT = r0[0] * TH.d[0] + r0[1] * TH.d[1] + r0[2] * TH.d[2], rT = Math.hypot(r0[0] - TH.d[0] * tT, r0[1] - TH.d[1] * tT, r0[2] - TH.d[2] * tT);
+        /* (what the thumb's own bones led stays the thumb's; what a finger's led, the finger's; the hand's by nearness, never
+           where the first finger's middle line is nearer, nor the palm's middle) */
+        let mT;
+        if (lead === 'Thumb') mT = tT > -B0 ? 1 : 0;
+        else if (lead !== 'H') mT = 0;
+        else { mT = (tT > -B0 && tT < TH.L + 0.015) ? 1 - sm(rT, 0.75 * reachT, reachT) : 0;
+          if (mT > 0 && h[0] > J.FIN.Index.joints[0][0] - B0) { const I = lineAt(J.FIN.Index, h[0]); if (Math.hypot(h[1] - I[0], h[2] - I[1]) < rT) mT = 0; }
+          if (h[1] < J.band.Index - 0.25 * J.sp) mT = 0; }
+        /* the fingers: by how near each finger's middle is across the hand, beyond the knuckles */
+        let gs = 0; const gF = {}; const inF = h[0] > s0F ? 1 : 0;
+        if (inF) for (const nm of ZG5_FING) { const e = (h[1] - J.band[nm]) / sig; gF[nm] = Math.exp(-e * e); gs += gF[nm]; }
+        const mF = inF && gs > 1e-6 ? (1 - mT) : 0;
+        let handW = hs * (1 - mT - mF);
+        if (mT > 0) { const w = sharesAlong(tT, seg.Thumb[0], seg.Thumb[1], true); handW += hs * mT * w[0]; for (let k = 0; k < 3; k++) add(bi.Thumb[k], hs * mT * w[k + 1]); }
+        if (mF > 0) for (const nm of ZG5_FING) { const F = J.FIN[nm], m1 = mF * gF[nm] / gs; if (!(m1 > 1e-4)) continue;
+          /* (how far along the finger's own line: the point's place along the hand, read on the line's slices) */
+          const L0 = F.line; let c = F.cum[0] + (h[0] - L0[0][0]); for (let k = 0; k < L0.length - 1; k++) { if (h[0] <= L0[k + 1][0]) { const u = Math.max(0, Math.min(1, (h[0] - L0[k][0]) / Math.max(1e-6, L0[k + 1][0] - L0[k][0]))); c = F.cum[k] + (F.cum[k + 1] - F.cum[k]) * u; break; } c = F.cum[k + 1] + (h[0] - L0[k + 1][0]); }
+          const w = sharesAlong(c - F.c0, seg[nm][0], seg[nm][1], false); handW += hs * m1 * w[0]; for (let k = 0; k < 3; k++) add(bi[nm][k], hs * m1 * w[k + 1]); }
+        add(hi, handW);
+        /* (four at most: every other bone's share is kept whole (a point had four at most, one of them the hand's or a
+           finger's, so they leave a slot at least); what will not fit of the hand's and fingers' goes to the hand, whose
+           skinning is theirs at rest, so nothing moves) */
+        const oth = [...others.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3), slots = 4 - oth.length;
+        let mineL = [...out.entries()].sort((a, b) => b[1] - a[1]);
+        if (mineL.length > slots) { const keep = mineL.slice(0, slots), drop = mineL.slice(slots).reduce((s2, x) => s2 + x[1], 0); (keep.find(x => x[0] === hi) || keep[0])[1] += drop; mineL = keep; }
+        const L = oth.concat(mineL);
+        /* (written back in the attribute's own steps with the sum it had: a quantized weight rounded on its own leaves the
+           sum a step or two off, and the shader does not divide by it) */
+        const NI = sw.normalized && !(sw.array instanceof Float32Array);
+        if (NI) { let S0 = 0; for (let q = 0; q < 4; q++) S0 += sw.array[i * 4 + q];
+          const tot = L.reduce((s2, x) => s2 + x[1], 0) || 1, raw = L.map(x => x[1] / tot * S0), flo = raw.map(x => Math.floor(x + 1e-9)); let rest = Math.round(S0 - flo.reduce((s2, x) => s2 + x, 0));
+          raw.map((x, k) => [x - flo[k], k]).sort((a, b) => b[0] - a[0]).forEach(([, k]) => { if (rest > 0) { flo[k]++; rest--; } });
+          for (let q = 0; q < 4; q++) { si.setComponent(i, q, q < L.length ? L[q][0] : 0); sw.array[i * 4 + q] = q < L.length ? flo[q] : 0; } }
+        else { let sum0 = 0; for (let q = 0; q < 4; q++) sum0 += sw.getComponent(i, q); const tot = L.reduce((s2, x) => s2 + x[1], 0) || 1;
+          for (let q = 0; q < 4; q++) { si.setComponent(i, q, q < L.length ? L[q][0] : 0); sw.setComponent(i, q, q < L.length ? L[q][1] / tot * sum0 : 0); } }
+        n++;
+      }
+      si.needsUpdate = true; sw.needsUpdate = true; return n;
+    }
+    /* (joint this body's skins that are not yet jointed: the first time, his bones are moved too) */
+    function zgRun(P) {
+      if (ZG5.failed || !P || !P.ready) return;
+      try {
+        if (!ZG5.J) { const Bo = zgBones(P); const J = Bo && zgMeasure(P, Bo); if (!J) { ZG5.failed = true; console.warn('ZG5: his left hand could not be read'); return; }
+          ZG5.J = J; ZG5.bones = Bo; ZG5.rep = J.rep;
+          /* his bones moved onto the joints, from the bind of the first skin (each bone's place against its parent's, both new) */
+          const sk0 = P.lv[1].find(m => m.skeleton && m.skeleton.bones.indexOf(Bo.H) >= 0).skeleton;
+          const bindNew = (b, nm, k) => { const i = sk0.bones.indexOf(b); const M = new THREE.Matrix4().copy(sk0.boneInverses[i]).invert(); M.setPosition(J.toB(J.FIN[nm].joints[k])); return M; };
+          for (const nm in Bo.F) { let par = new THREE.Matrix4().copy(sk0.boneInverses[sk0.bones.indexOf(Bo.H)]).invert();
+            Bo.F[nm].forEach((b, k) => { const M = bindNew(b, nm, k); _zgN.copy(par).invert().multiply(M); b.position.setFromMatrixPosition(_zgN); b.updateMatrix(); par = M; }); }
+          /* (what was read off his old joints is read again from these: his arms' measures, and the mend of his fingers'
+             hinges, handsTrue's, which holds a finger's middle and end joints to their own hinge each frame) */
+          P.arms = undefined; P.ht = undefined; }
+        for (const L of [P.lv[1], P.lv[0]]) if (L) for (const m of L) { if (!m.isSkinnedMesh || !m.skeleton) continue;
+          if (!ZG5.sk.has(m.skeleton)) { zgBinds(m.skeleton, ZG5.bones, ZG5.J); ZG5.sk.add(m.skeleton); }
+          if (!ZG5.geo.has(m.geometry)) { const n = zgWeigh(m, ZG5.bones, ZG5.J); ZG5.geo.add(m.geometry); ZG5.rep['weighed_' + (L === P.lv[0] ? 'near' : 'body')] = (ZG5.rep['weighed_' + (L === P.lv[0] ? 'near' : 'body')] || 0) + n; } }
+      } catch (e) { ZG5.failed = true; console.warn('ZG5 threw: ' + (e && e.message)); }
+    }
+    whenReady(cast.zav, (P) => { zgRun(P); if (ZG5.rep) console.log('ZG5: his left hand jointed again: ' + JSON.stringify(ZG5.rep)); });
     /* (R39, 23 Nov: Chad, "Why does the middle finger keep sticking out like that". MEASURED on his file, never guessed
        (tools/probes/fingerskin.mjs, each finger's skin against its own bones): the end of Grandmaster Pho's right MIDDLE
        finger, 86 points of its skin from its last joint to its tip and past it, is carried by RightHandEnd, his rig's old end
@@ -279,7 +452,7 @@
     const limHook = new THREE.Object3D(); limHook.name = 'the arms held to a real range';
     limHook.updateMatrixWorld = function (force) {
       try {
-        for (const [P, skip] of [[cast.zav, null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
+        for (const [P, skip] of [[cast.zav, typeof ZAVGRIP5 === 'object' && ZAVGRIP5.k() > 0 ? 'Left' : null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
           if (P && P.ready && P.group.visible) armLimit(P, skip);
       } catch (e) { if (!limHook.failed) { limHook.failed = true; console.warn('LIM5 threw: ' + (e && e.message)); } }
       THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
