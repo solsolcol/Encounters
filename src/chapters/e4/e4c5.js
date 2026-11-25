@@ -15625,6 +15625,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         .then(bmp => { if (!alive) { try { bmp.close(); } catch (e) { /* gone */ } return; }
           const t = tex(new THREE.Texture(bmp)); t.colorSpace = THREE.SRGBColorSpace; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
           t.magFilter = THREE.LinearFilter; t.anisotropy = 4; t.needsUpdate = true;
+          /* (a decoded picture goes up top row first whatever flipY says, so a card stood it on its head: build 89 drew the
+             word upside down. The row order is fixed as the picture's own, flipY off, and the card reads it back from the top) */
+          t.flipY = false; t.repeat.set(1, -1); t.offset.set(0, 1);
           const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false }); mats.push(m);
           const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = bmp.width / Math.max(1, bmp.height); world.add(sp); TITLE5.sp = sp; })
         .catch(err => console.warn('R122: the NAGA title did not arrive (the film runs without it)', err))
@@ -15727,11 +15730,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         return this.B;
       },
       /* the story clock against the real one: marks and the flight are in story seconds; a cue is laid at real ones */
+      /* (build 90: each slow is CENTRED on its hit, slowest as the head goes through her. Build 89 began it at the hit, so its
+         slowest came a quarter second of the story after, at or past the cut, on the next one's approach) */
       tl() { return this.build().T; },
       real(tau) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let add = 0;
-        for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < SH) return p + add + nagaSInv5(d); add += H - SH; } return tau + add; },
+        for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + nagaSInv5(d); add += H - SH; } return tau + add; },
       story(t) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let sub = 0;
-        for (const p of [T.p1, T.p2, T.p3]) { const h = p + sub; if (t <= h) break; const d = t - h; if (d < H) return p + nagaS5(d); sub += H - SH; } return t - sub; },
+        for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2, h = s0 + sub; if (t <= h) break; const d = t - h; if (d < H) return s0 + nagaS5(d); sub += H - SH; } return t - sub; },
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
         if (api && api.handsRoot) api.handsRoot.visible = false;
@@ -16791,13 +16796,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   /* (R122 idea 6, the Naga called up like a summon: every mark 1.4 s later, the summon's darkening first; the stick's strike
      and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
      the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
+  /* (build 90: each slow centred on its hit, slowest as the head goes through her, its first coming in 0.45 s before it) */
   const TOG5 = { plant: 1.6, rise: 3.4, kindle: 3.95, cry: 4.15, top: 5.6333, ph5c2: 5.7533, stoop: 9.1833, apart: 9.9259, swoop: 10.0344,
                  p1: 10.7315, p2: 11.3579, p3: 11.9114, climb: 12.3086, ring: 13.2067, low: 13.5114, ringOut: 15.3873, home: 16.5729,
                  tail: 18.5729, ko5c2: 21.1729, back: 25.7029, end: 27.3029, strike: 3.25, title: 4.15 };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
-    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < SH) return p + add + inv(d); add += H - SH; }
+    for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together;
@@ -16842,7 +16848,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
     sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
     /* each pierce: the blow, its own water through it, its fire hissing out */
-    sfx(P1 - 0.12, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
+    sfx(P1 - 0.45, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
     sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
     sfx(P2 - 0.04, 'u5nagahit2', 1.0); sfx(P2, 'u5pierce2', 0.85); sfx(P2 + 0.14, 'u5douse', 0.75);
     sfx(P3 - 0.04, 'u5nagahit3', 1.0); sfx(P3, 'u5pierce3', 0.85); sfx(P3 + 0.14, 'u5douse', 0.75);

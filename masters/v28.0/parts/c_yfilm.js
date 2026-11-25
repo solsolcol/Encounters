@@ -1495,6 +1495,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         .then(bmp => { if (!alive) { try { bmp.close(); } catch (e) { /* gone */ } return; }
           const t = tex(new THREE.Texture(bmp)); t.colorSpace = THREE.SRGBColorSpace; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
           t.magFilter = THREE.LinearFilter; t.anisotropy = 4; t.needsUpdate = true;
+          /* (a decoded picture goes up top row first whatever flipY says, so a card stood it on its head: build 89 drew the
+             word upside down. The row order is fixed as the picture's own, flipY off, and the card reads it back from the top) */
+          t.flipY = false; t.repeat.set(1, -1); t.offset.set(0, 1);
           const m = new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false }); mats.push(m);
           const sp = new THREE.Sprite(m); sp.renderOrder = 9; sp.visible = false; sp.frustumCulled = false; sp.userData.ar = bmp.width / Math.max(1, bmp.height); world.add(sp); TITLE5.sp = sp; })
         .catch(err => console.warn('R122: the NAGA title did not arrive (the film runs without it)', err))
@@ -1597,11 +1600,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         return this.B;
       },
       /* the story clock against the real one: marks and the flight are in story seconds; a cue is laid at real ones */
+      /* (build 90: each slow is CENTRED on its hit, slowest as the head goes through her. Build 89 began it at the hit, so its
+         slowest came a quarter second of the story after, at or past the cut, on the next one's approach) */
       tl() { return this.build().T; },
       real(tau) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let add = 0;
-        for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < SH) return p + add + nagaSInv5(d); add += H - SH; } return tau + add; },
+        for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + nagaSInv5(d); add += H - SH; } return tau + add; },
       story(t) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let sub = 0;
-        for (const p of [T.p1, T.p2, T.p3]) { const h = p + sub; if (t <= h) break; const d = t - h; if (d < H) return p + nagaS5(d); sub += H - SH; } return t - sub; },
+        for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2, h = s0 + sub; if (t <= h) break; const d = t - h; if (d < H) return s0 + nagaS5(d); sub += H - SH; } return t - sub; },
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s;
         if (api && api.handsRoot) api.handsRoot.visible = false;

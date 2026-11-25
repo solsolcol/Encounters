@@ -161,13 +161,14 @@
   /* (R122 idea 6, the Naga called up like a summon: every mark 1.4 s later, the summon's darkening first; the stick's strike
      and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
      the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
+  /* (build 90: each slow centred on its hit, slowest as the head goes through her, its first coming in 0.45 s before it) */
   const TOG5 = { plant: 1.6, rise: 3.4, kindle: 3.95, cry: 4.15, top: 5.6333, ph5c2: 5.7533, stoop: 9.1833, apart: 9.9259, swoop: 10.0344,
                  p1: 10.7315, p2: 11.3579, p3: 11.9114, climb: 12.3086, ring: 13.2067, low: 13.5114, ringOut: 15.3873, home: 16.5729,
                  tail: 18.5729, ko5c2: 21.1729, back: 25.7029, end: 27.3029, strike: 3.25, title: 4.15 };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
-    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < SH) return p + add + inv(d); add += H - SH; }
+    for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together;
@@ -212,7 +213,7 @@
     sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
     sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
     /* each pierce: the blow, its own water through it, its fire hissing out */
-    sfx(P1 - 0.12, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
+    sfx(P1 - 0.45, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
     sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
     sfx(P2 - 0.04, 'u5nagahit2', 1.0); sfx(P2, 'u5pierce2', 0.85); sfx(P2 + 0.14, 'u5douse', 0.75);
     sfx(P3 - 0.04, 'u5nagahit3', 1.0); sfx(P3, 'u5pierce3', 0.85); sfx(P3 + 0.14, 'u5douse', 0.75);
