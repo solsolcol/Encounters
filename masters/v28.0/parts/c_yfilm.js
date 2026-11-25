@@ -2210,10 +2210,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             const kz = sw(T.zk), kp = sw(T.pk);
             if (kz > 0.01) fxSwirlAsk('Z', { x: zj.x, z: zj.z }, 'violet', 0.9 * kz, { r: 0.5, h0: 0.05, h1: 1.9, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.zk) / 1.2) });
             if (kp > 0.01) fxSwirlAsk('P', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.55, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) });
-            /* (R157 idea 3: THE WIND SEEN. Pale streaks of air swirling in round the stick's foot and up it, drawn in tighter and
-               faster as the wind grows (the fight's own ribbons, its third set, in the pale ramp); gone as the stick hits) */
+            /* (R157 idea 3: THE WIND SEEN. Pale streaks of air swirling in round the stick's foot and up past the two men's shoulders
+               (2.1 m: from behind them, where the wind builds, the low streaks are hidden by their legs and under the frame), drawn
+               in tighter and faster as the wind grows (the fight's own ribbons, its third set, in the pale ramp); gone as the stick hits) */
             const kw = STRIKEFX5.windK(Math.min(tau, T.strike), T) * (1 - smo(c01((tau - T.strike + 0.02) / 0.06)));
-            if (kw > 0.01) fxSwirlAsk('W', { x: sx, z: sz }, 'pale', 0.75 * kw, { r: 1.5 - 0.95 * kw, h0: 0.04, h1: 1.25, len: 1.4, turns: 1.4, spin: 1.5 + 4.5 * kw, cycle: 0.35 + 0.9 * kw }); }
+            if (kw > 0.01) fxSwirlAsk('W', { x: sx, z: sz }, 'pale', 0.9 * kw, { r: 1.7 - 1.0 * kw, h0: 0.04, h1: 2.1, len: 1.7, turns: 1.2, spin: 1.5 + 4.5 * kw, cycle: 0.35 + 0.9 * kw }); }
           if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau);
         } else if (!this.braidOff) { BRAID5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau); this.braidOff = true; }
         if (tau < T.strike + 0.7) this.braidOff = false;
