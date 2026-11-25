@@ -9060,3 +9060,25 @@ frame by an empty mesh drawn first (renderOrder -1e9), where the lens is final (
 
 **The project's Playwright and this box's browser** (24 Nov 2026). The project's Playwright asks for headless shell 1234;
 the box has 1243: `CHROMIUM_PATH=/opt/pw-browsers/chromium` for every probe run here.
+
+## v28.0 — a mode left in the middle of its own frame, and a fault that only the real path reaches (R123)
+
+**A frame that ends what it runs stops there** (25 Nov 2026). Chapter 5's fight frame (fightTick) called the win's tick
+part way down; the win's tick left the fight (cleanse, fightLeave: the effects hidden, the mode left), and the rest of the
+frame went on and showed the effects again (`FSG.visible = true`). The frame's own guard sat at its top, so from the next
+frame it never ran again to hide them: the fight's bloom drew for the rest of the chapter. Whatever a frame can end
+(a mode, a phase, a film begun), the frame returns the moment it has ended it; the effects' own `fxOn` is read at the next
+place by tools/probes/e4c5r123.mjs, which fails if they are still on.
+
+**A frame copy inside another pass's target** fails without a word after the first check: copyFramebufferToTexture from a
+MULTISAMPLED target is an invalid operation ("glCopyTexSubImage2D: Invalid operation on multisampled framebuffer"), and an
+effect that checks only its first copy keeps its last good copy for ever, laid at the same place on the screen whatever the
+lens does. A copy effect (a bloom, a shimmer, a smear) draws only in the pass it was made for.
+
+**"After the fight" is reproduced through the fight's own end** (R109 then R123). R109's probe set the table by setPhase after
+a few seconds of the fight and saw nothing; the fault lived in the win's tick, which only a won fight runs. When Chad names
+the path ("after going through the fight sequence"), the probe walks that path to its end (tools/probes/e4c5r123.mjs: the
+surge, TOGETHER tapped, the film played out, BAG tapped, the films after it), and a fault seen only on his phone is first
+looked for on that path here before it is blamed on the phone: R109's cure, the vision's depth on a phone's render-to-texture
+path, was real but was not what he saw.
+

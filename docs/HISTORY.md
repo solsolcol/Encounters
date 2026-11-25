@@ -9544,7 +9544,14 @@ What the baseline contains, by release:
   slop", R117 named the manner). Live: build 85, deploy `6b05d597e0c519a1561c2495`. Then R118, TOGETHER a wide rectangle
   slanted at both ends with its painting made wide (the engine's seventy-fifth seam), and R120, every act's word large on
   its own dark plate (build 86 was photographed and held back: SHOCKWAVE still shrank to 9.6 px). Live: build 87, deploy
-  `6b05dae7c8b764eb20593e37`. Sheet v157.
+  `6b05dae7c8b764eb20593e37`. Sheet v157. Then R123 (25 Nov 2026, Chad: "The pho issue still persists. I believe this happens
+  after going through the fight sequence"): reproduced on the real path at last (tools/probes/e4c5r123.mjs, the fight won and
+  every film after it): the win's tick left the fight in the middle of the fight's frame and the rest of that frame showed its
+  effects again, so R100's bloom ran for the rest of the chapter (a glow over Grandmaster Pho at the table; in Spirit Vision,
+  which it cannot copy, its last copy fixed on the screen). The frame now stops once the fight is left. Built from build 87's
+  chapter with that one part changed (release-safe pins). Live: build 88, deploy `6b0663b96ca1741b0b8df1d7`; proved on it by
+  the same path (PASS). R124 answered: the fight ends as the last Prai is bagged; its effects go off 2.8 s later as the mode is
+  left.
 
 ## The sheet, version by version
 
