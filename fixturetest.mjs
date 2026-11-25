@@ -3969,8 +3969,9 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.absentEmpty = !!L && L.children.length === 0;
       const V = E.camera.position.constructor; E.camera.updateMatrixWorld(true);
       const ahead = new V(0, 0, -4).applyMatrix4(E.camera.matrixWorld);
-      const id1 = kit.pop('Bound', { at: { x: ahead.x, y: ahead.y, z: ahead.z }, tone: 'violet', secs: 3 });
-      const id2 = kit.pop('4 of 9', { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 3 });
+      /* (each word lives 20 s of the wall: on a loaded box two frames can take longer than 3, and build 90's run lost them so) */
+      const id1 = kit.pop('Bound', { at: { x: ahead.x, y: ahead.y, z: ahead.z }, tone: 'violet', secs: 20 });
+      const id2 = kit.pop('4 of 9', { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 20 });
       R.ids = typeof id1 === 'number' && typeof id2 === 'number' && id2 === id1 + 1;
       await new Promise(r => setTimeout(r, 350)); await frames(2);
       const w1 = L.querySelector('.popW.violet'), w2 = L.querySelector('.popW.gold.big');
@@ -3986,18 +3987,18 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.onScreen = !!c2 && Math.abs(c2[0] - innerWidth / 2) < 6 && ((c2[1] < innerHeight * 0.3 + 2 && c2[1] > innerHeight * 0.3 - 60) || (ht > 0 && w2.getBoundingClientRect().top >= ht - 1));
       R.big = !!w1 && !!w2 && parseFloat(getComputedStyle(w2).fontSize) > parseFloat(getComputedStyle(w1).fontSize);
       R.refused = kit.pop('', { screen: { sx: 0.5, sy: 0.5 } }) === false && kit.pop('Caught', {}) === false;
-      await poll(() => L.children.length === 0, 8000);
+      await poll(() => L.children.length === 0, 40000);
       R.gone = L.children.length === 0;
       /* (build 91: a word asked over the objective's box comes down to just under it, its rise and all) */
       kit.objective('A word keeps clear of this order', { complete: false });
       await new Promise(r => setTimeout(r, 600)); await frames(2);
-      kit.pop('Clear', { screen: { sx: 0.5, sy: 0.04 }, tone: 'white', secs: 3 });
+      kit.pop('Clear', { screen: { sx: 0.5, sy: 0.04 }, tone: 'white', secs: 20 });
       await new Promise(r => setTimeout(r, 350)); await frames(2);
       const w3 = [...L.querySelectorAll('.popW')].find(w => w.textContent === 'Clear'), bx3 = document.querySelector('#objective .obox');
       const r3 = w3 && w3.getBoundingClientRect(), rb3 = bx3 && bx3.getBoundingClientRect();
       R.clearOfHud = !!r3 && !!rb3 && rb3.height > 0 && +w3.style.opacity > 0.5 && r3.top >= rb3.bottom - 1;
       kit.objective(null, { complete: false });
-      await poll(() => L.children.length === 0, 8000);
+      await poll(() => L.children.length === 0, 40000);
       R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round), w3: r3 && [r3.top, r3.bottom].map(Math.round), box: rb3 && [rb3.top, rb3.bottom].map(Math.round) };
       return R;`);
     K.cutInSeam = await pCheck('cutInSeam', `
