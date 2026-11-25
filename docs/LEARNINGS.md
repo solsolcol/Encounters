@@ -9100,6 +9100,9 @@ the press, then `runFor(33)` a frame at a time until the thing is up, the pictur
 the timers and performance.now (what the game's own clocks read), so the game steps 33 ms a frame whatever the box takes;
 a CSS animation is the compositor's, not the page's clock, and is paused and set by the Web Animations API
 (getAnimations, pause, currentTime) for its pictures. Never call a helper that waits on a frame while the clock is held.
+And a run with the clock installed held chapter 5's Naga film from ever ending (twenty minutes, where the same film from the
+same tap ends in four without it): photograph a held moment, then reach what comes after it by another way (the lab's own
+toLast for the catch: CATCHONLY=1), or in a run without the clock (e4c5play.mjs FIGHTFIRST).
 
 **A new layer over play is a HUD element, and is measured against the HUD** (v28.0, chapter 5's builds 90 to 91). The rule
 "adding a HUD element means re-measuring every overlap" (v11.5) was read as being about buttons and bars, and R122's words over

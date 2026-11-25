@@ -18,6 +18,10 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c5r122'; fs.mkdirSync(OUT, { recursive: true });
+/* (CATCHONLY=1, build 91: BOUND, then the lab's own way to the last stage (toSurge, toLast) and the catch held, no film and no
+   table: under Playwright's clock the Naga's film never reached its end in twenty minutes, where the same film from the same
+   tap ends in four without it (e4c5play.mjs FIGHTFIRST); the cut-in and the table are proved by the full run) */
+const CATCHONLY = process.env.CATCHONLY === '1';
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
@@ -75,17 +79,18 @@ if (near) {
   await p.clock.resume();
 } else say('bind: no Prai read');
 say('toSurge', JSON.stringify(await lab('toSurge')));
+let cutOk = false, cutReal = { pics: 0, word: '' }; const cutAt = [];
+if (CATCHONLY) { say('toLast', JSON.stringify(await lab('toLast'))); }
+else {
 await p.waitForFunction(() => { const e = document.querySelector('.tagBtn.call'); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 10 && getComputedStyle(e).display !== 'none'; }, null, { timeout: 600000, polling: 500 });
 await pic('surge-call');
 /* THE CUT-IN (idea 1), held on the real tap: the clock paused, TOGETHER tapped, stepped until it is up, then its animations
    paused and set at 18, 32, 55 and 80 % of their length for a picture each; let go, the game runs on */
 await hold();
 await tapSel('.tagBtn.call', 'TOGETHER');
-let cutOk = false;
 for (let i = 0; i < 40 && !cutOk; i++) { await step(1, 16); cutOk = await p.evaluate(() => document.getElementById('cutIn').classList.contains('on')); }
-const cutReal = await p.evaluate(() => { const C = document.getElementById('cutIn'); return { on: C.classList.contains('on'), pics: C.querySelectorAll('.ciPic img').length, word: C.querySelector('.ciWord').textContent }; });
+cutReal = await p.evaluate(() => { const C = document.getElementById('cutIn'); return { on: C.classList.contains('on'), pics: C.querySelectorAll('.ciPic img').length, word: C.querySelector('.ciWord').textContent }; });
 say('cut-in (the tap\'s own)', cutOk, JSON.stringify(cutReal));
-const cutAt = [];
 if (cutOk) for (const f of [0.18, 0.32, 0.55, 0.8]) {
   const r = await p.evaluate((f) => { const C = document.getElementById('cutIn'), A = C.getAnimations({ subtree: true }); let T = 0;
     for (const a of A) { const d = a.effect.getComputedTiming().duration; T = Math.max(T, +d || 0); }
@@ -100,6 +105,7 @@ await p.evaluate(() => { for (const a of document.getElementById('cutIn').getAni
 await p.clock.resume();
 await p.waitForFunction(() => !!(window.__enc.kit.filmPlaying && window.__enc.kit.filmPlaying()), null, { timeout: 600000, polling: 500 });
 say('film', JSON.stringify(await fstate()));
+}
 await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'last' && window.__enc.getState() === 'play' && !(window.__enc.kit.filmPlaying && window.__enc.kit.filmPlaying()); }, null, { timeout: 1200000, polling: 1000 });
 say('last', JSON.stringify(await fstate()));
 await p.waitForTimeout(2500); await pic('last');
@@ -121,6 +127,10 @@ if (bagged) {
   await p.clock.resume();
 }
 const slowSeen = reads.some(c => c.slow < 0.99), wordsSeen = reads.some(c => c.words.some(w => /CAUGHT/i.test(w))) && reads.some(c => c.words.some(w => /of 9/.test(w)));
+if (CATCHONLY) { const ok = popOk && slowSeen && wordsSeen && !!boundSeen;
+  say('errors', errs.length ? errs.slice(0, 6).join(' / ') : 'none');
+  say('R122 catch', ok ? 'PASS' : 'FAIL', JSON.stringify({ bound: !!boundSeen, popOk, slowSeen, wordsSeen }));
+  await b.close(); process.exit(ok ? 0 : 1); }
 /* the story on by itself: won, cleanse, the bag-tied film and the collector's, to the table */
 await p.waitForFunction(() => { const E = window.__enc, sn = E.stage.snap().story; return sn.phase === 'table' && E.getState() === 'play'; }, null, { timeout: 2400000, polling: 1000 });
 say('table', JSON.stringify(await fstate()));
