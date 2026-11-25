@@ -2036,7 +2036,9 @@
     function fsStage(to) {
       const st = FS5.st;
       if (to === 'surge') { if (kit && kit.tagSwitch && st.who !== 'pho') kit.tagSwitch('pho', { force: true });
-        else if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true }); }
+        else if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
+        /* (R153: the surge reached is the fight's one bookmark: a Continue from here on lands at the TOGETHER button) */
+        if (typeof fightMark5 === 'function') fightMark5('tg'); }
       if (to === 'naga') fsNaga();
       if (to === 'lost') fsLost();
       if (to === 'fight' && FS5.retrying) { FS5.retrying = false; fsRestart(); }
@@ -2434,6 +2436,12 @@
       toLast() { const st = FS5.st; if (!st) return false; const n = st.n; let i = 0;
         for (const p of st.prai) { if (p.id === 1) continue; if (i < 5) p.st = 'gathered'; else { const at = n.laidAt[i - 5]; p.x = at[0]; p.z = at[1]; p.st = 'laid'; } i++; }
         st.left = 3; st.stage = 'last'; st.stageT = 0; return true; },
+      /* (R153, a probe's: the fight brought to the edge of its surge the rules' own way: in the fight stage with six in the bag
+         and three left, so the next step draws the last three together (the rules' surge) and the chapter takes its bookmark
+         there (fsStage, fightMark5), as a fight played to that point does) */
+      toEdge() { const st = FS5.st; if (!st) return false; if (st.stage === 'brief') fightStart5(); if (st.stage !== 'learn' && st.stage !== 'fight') return false;
+        st.stage = 'fight'; st.stageT = 0; st.prai.forEach((p, i) => { if (i < 6) { p.st = 'gathered'; const B = PRAI5.list[i]; if (B && B.group) B.group.visible = false; } });
+        st.left = 3; return true; },
       /* (his closed hand on the stick: the grip's solve, each joint's turn in degrees, and how far it is closed) */
       grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
       gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
@@ -2598,6 +2606,23 @@
         if (!r || r.aborted) { if (FS5.lab) return; if (FS5.st.stage === 'brief' && getState() === 'play') fightBrief(); return; }
         fightStart5();
       });
+    }
+    /* R153 (25 Nov 2026, Chad: "If i refresh the browser right after the naga cutscene has completed and proceeded to the bag
+       the remaining prais, and i press 'continue' game from the title screen, i want it to continue from the part where the
+       'together' button shows up on the screen."): A CONTINUE AT THE SURGE. The save says the surge was reached ('fight:tg',
+       c_story.js fightMark5); the court is set out as for the brief (fightOpen), and the fight is taken up there with no brief
+       (he read it, and fought the fight, before he ever reached this): the rules at the surge (c_fightrules.js resume), the
+       six in the bag gone from the court at once (sunk, unseen, as a catch leaves them), the surge's own sound, music and lines,
+       and the TOGETHER button as it showed. Answers whether it was taken up (the brief is offered if not) */
+    function fightResume5() {
+      const st = FS5.st; if (!st || st.stage !== 'brief') return false;
+      FS5.brief = false;
+      fsStep({ act: 'RESUME' }, 0);
+      if (st.stage !== 'surge') return false;
+      st.prai.forEach((p, i) => { if (p.st !== 'gathered') return; const V = fsVis[i], P = PRAI5.list[i];
+        if (V) { V.y = FS_SUNK; V.a = 0; } if (P) { PRAI5.alpha(P, 0); if (P.group) P.group.visible = false; } });
+      fsHud();
+      return true;
     }
     /* START: the lesson's Prai rises in the middle of the court; the other eight sink back into the paving to wait their turn */
     function fightStart5() {

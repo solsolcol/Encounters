@@ -22,7 +22,7 @@
          walk   t Ton asked, j Jun asked, d the drain smelled, e the eye's line said, w his teacher's two lines heard (SMELL his)
          hunt   s1 s2 s3 the three stains (the shoe cabinet, the planter's foot, the threshold), a the armchair, n the nine seen
          table  m he has smelled the pieces, k1 k2 k3 the three presences looked at (angry, hungry, looking for energy) */
-    const RECEIPTS = { walk: ['t', 'j', 'd', 'e', 'w'], hunt: ['s1', 's2', 's3', 'a', 'n'], fight: [], table: ['m', 'k1', 'k2', 'k3'], ask: [] };
+    const RECEIPTS = { walk: ['t', 'j', 'd', 'e', 'w'], hunt: ['s1', 's2', 's3', 'a', 'n'], fight: ['tg'], table: ['m', 'k1', 'k2', 'k3'], ask: [] };   // (R153: fight's tg, the surge reached)
     const STAINS = ['s1', 's2', 's3'];
     const play = { run: 0, busy: false, found: new Set() };
     let phase = null, booted = false, decOpen = false, lookName = 'DUSK';
@@ -363,13 +363,28 @@
        inside it, the loss that begins the FIGHT again (never the chapter: Chad's R14), and at the last bag the bag tied,
        the card of the next afternoon and the collector's film in. If the mode cannot open (no kit, no bodies), the
        skeleton's stand-in is offered instead (one thing to press in the court), so nothing soft-locks (v7.4) */
-    function fightBegin() {
+    function fightBegin(resume) {
       lookName = 'TRANCE';
       /* (the play's placing for the phase, as every other phase's begin makes it: from the hunt's film it was never made, so
          the nine's sheen ran twice a frame in a played fight, the play's tick and the fight's, and once after a Continue) */
       castPhase('fight');
       if (!fightOpen()) { lookAt0(LOOK_OF.fight); objectiveFor({ complete: false }); return; }
+      /* (R153: a Continue after the surge was reached is taken up there, at the TOGETHER button: c_fightstage.js fightResume5) */
+      if (resume && fightResume5()) return;
       fightBrief();
+    }
+    /* R153 (25 Nov 2026, Chad: "If i refresh the browser right after the naga cutscene has completed and proceeded to the bag
+       the remaining prais, and i press 'continue' game from the title screen, i want it to continue from the part where the
+       'together' button shows up on the screen."): THE FIGHT'S ONE BOOKMARK. The surge reached (the last three drawn together,
+       the TOGETHER button about to show): its receipt in the phase string ('fight:tg'), and the tag mode's hold taken again
+       from here (kit.tagHold: while the mode is on, every save writes the run it holds). From then on every save lands a
+       Continue at the surge: the Naga's film saves first as it begins (kitFilm), the bagging after it saves every 8 s, and a
+       refresh anywhere from the surge to the last bag comes back to the TOGETHER button. The fight cannot be lost after the
+       surge (its losses are the fight stage's: c_fightrules.js), so the hold is never asked to begin a lost fight again */
+    function fightMark5(c) {
+      if (phase !== 'fight' || play.found.has(c) || !RECEIPTS.fight.includes(c)) return;
+      got(c);
+      if (kit && kit.tagHold) kit.tagHold();
     }
     function cleanse() {
       if (phase !== 'fight' || play.busy) return false;
@@ -540,7 +555,7 @@
       smellButton(false); smell.t = -1;
       if (R.p === 'walk') walkBegin();
       else if (R.p === 'hunt') huntBegin(R.found);
-      else if (R.p === 'fight') { castPhase('fight'); fightBegin(); }
+      else if (R.p === 'fight') { castPhase('fight'); fightBegin(R.found.includes('tg')); }
       else if (R.p === 'table') tableBegin(R.found);
       else askBegin();
     }

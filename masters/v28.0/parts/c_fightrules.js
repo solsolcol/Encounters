@@ -462,6 +462,7 @@
       function why(st, act) {
         const n = st.n, P = isP(st), ph = st.pho, z = st.zav;
         if (act === 'START') return st.stage === 'brief' ? '' : 'stage';
+        if (act === 'RESUME') return st.stage === 'brief' ? '' : 'stage';      // (R153: a Continue taken up at the surge)
         if (act === 'RETRY') return st.stage === 'lost' ? '' : 'stage';
         if (act === 'LEAD') return st.stage === 'lost' && st.losses >= 3 ? '' : 'stage';
         if (act === 'FILMDONE') return st.stage === 'naga' ? '' : 'stage';
@@ -595,6 +596,7 @@
         const n = st.n, ph = st.pho, z = st.zav;
         switch (act) {
           case 'START': begin(st); return;
+          case 'RESUME': resume(st); return;
           case 'RETRY': case 'LEAD': beginFight(st, act === 'LEAD'); return;
           case 'FILMDONE': layThree(st); return;
           case 'TOGETHER': st.together = n.togetherSecs; st.ev.push({ e: 'together' }); return;
@@ -733,6 +735,24 @@
         st.voice.q.length = 0;
         sayOnce(st, 'q5c2'); sayOnce(st, 'ju5c2', 6.0);
         st.ev.push({ e: 'surge' });
+      }
+      /* R153 (25 Nov 2026, Chad: "If i refresh the browser right after the naga cutscene has completed and proceeded to the bag
+         the remaining prais, and i press 'continue' game from the title screen, i want it to continue from the part where the
+         'together' button shows up on the screen."): A FIGHT TAKEN UP AT THE SURGE. The chapter's save says the surge was
+         reached (its phase 'fight:tg': c_story.js fightMark5), and a Continue lands with the fight as it stood there:
+         everything taught and seen, six in the bag (the lesson's one and five of the eight: the lab's toSurge, the same six),
+         both holds of the fight behind him, and the surge itself (its lines, its sound, its music; the TOGETHER button after
+         its togetherAfter), from where the court is set out for the fight. Only from the brief: nothing else is ever asked */
+      function resume(st) {
+        const n = st.n;
+        st.open = st.sanity;
+        st.firsts.boundFire = st.firsts.wave = st.firsts.waveOut = true; st.lesson.wave = 'done';
+        st.seen.swap = st.seen.bind = st.seen.smell = st.seen.shock = true;
+        st.hold = 0; st.holdsDone = n.holdAt.length;
+        for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
+        for (let i = 0; i < 6; i++) st.prai[i].st = 'gathered';
+        st.left = 3; st.stats.resumed = (st.stats.resumed || 0) + 1;
+        surge(st);
       }
       /* (R47, 23 Nov: Chad, "The naga should pierce through all the prai's bodies ... As it pierces through each prai, the fire
          of each prai is extinguished and it cools them down": the Naga's film flings the three apart and its head goes through
