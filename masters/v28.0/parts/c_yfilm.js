@@ -1546,7 +1546,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        (armsBack: a.wrote, a.curled) */
     const ZAVGRIP5 = (() => {
       const D2R = Math.PI / 180, NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
-      const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.005, thumbR: 0.022, palm: 0.018, back: 0, tilt: -22,
+      const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.005, thumbR: 0.022, palm: 0.045, back: 0.03, tilt: -22,
                    lim: { f: [35, 45, 28], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07 };
       const st = { k: 0, kf: 0, kin: 1 };
       let G = null, failed = false, wroteQ = null, wroteArm = null;
