@@ -19,6 +19,8 @@ SFX += json.load(open(os.path.join(R, 'sfxR94.json'))); MS.update(json.load(open
 SFX += json.load(open(os.path.join(R, 'sfxR122.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR122.json'))))
 # (R149, 25 Nov 2026: the rumble under the Naga's charge, sfxR149.json; a new name, so no pick before moves)
 SFX += json.load(open(os.path.join(R, 'sfxR149.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR149.json'))))
+# (R157, 25 Nov 2026: the boom, the wind drawn in and the carved eyes' glint, sfxR157.json; new names, so no pick before moves)
+SFX += json.load(open(os.path.join(R, 'sfxR157.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR157.json'))))
 MUS = json.load(open(os.path.join(R, 'music.json'))); MM = json.load(open(os.path.join(R, 'measures-music.json')))
 MM.update(json.load(open(os.path.join(R, 'measures-music4.json'))))
 AGAIN = {'u5m6prep': 'u5m6prep2'}      # made again (music4.json): the game's name keeps the cue's, the takes are the new ones
@@ -77,6 +79,16 @@ if 'u5rumble' in P and P['u5rumble'].get('take'):
     P['u5rumble']['why'] = P['u5rumble']['why'].split('; HARMONISED')[0] + (
         '; MADE from it (R149): turned back to front to rise from silence, cut to end at its loudest (3.95 s: its own silent '
         'head is at the end now, and cut with its onset), a 12 dB climb over it, and HARMONISED in the same filter')
+# (R157 idea 3: every take of the wind came back the wrong way round for wind drawn in toward the stick as the power grows:
+#  up in a second, then dying over its last 2 s (read in tenths: take b -68 to -27 dB at 1.1 s, then down to -78). MADE from
+#  the pick as the rumble was (v24.3): turned back to front, so its long fall is a swell out of silence, the whoosh drawn IN,
+#  and cut at its loudest (2.25 s: the take's own onset, turned round, cut), its last 30 ms faded; the near-silence takes
+#  it there in the film (z_tail.js). No harmonics: a phone plays 95 % of it)
+if 'u5windpull' in P and P['u5windpull'].get('take'):
+    P['u5windpull'].pop('harm', None)
+    P['u5windpull']['af'] = "areverse,atrim=end=2.25,asetpts=PTS-STARTPTS,afade=t=out:st=2.22:d=0.03"
+    P['u5windpull']['why'] += ('; MADE from it (R157): turned back to front to swell out of silence, the wind drawn in, and cut '
+                              'to end at its loudest (2.25 s)')
 P['u5bowl']['kind'] = 'source'; P['u5bowl']['why'] += "; the SOURCE of the count's nine notes (notes.py): not a file of the game"
 # Spirit Vision: chapter 4's own five, byte for byte under this chapter's names (v7.1)
 for n, f in (('u5vison', 'u4vison'), ('u5visoff', 'u4visoff'), ('u5heart', 'u4heart'), ('u5visbed', 'u4visbed'), ('u5vismus', 'u4vismus')):

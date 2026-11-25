@@ -572,9 +572,19 @@ K.hushSeam = await p.evaluate(async () => {
   const m = E.hush();
   E.kit.hush(0, { secs: 0 }); await frames(3);
   const c = E.hush();
+  /* (v28.0, R157: the bus's level held down with it, `floor` at k 1: a call that asks for one lays a gain after the filter
+     at 1 - (1 - floor) k; a call that asks for none has no gain in the path; at 0 neither is) */
+  E.kit.hush(0.5, { secs: 0, floor: 0.2 }); await frames(2);
+  const f = E.hush();
+  E.kit.hush(0.5, { secs: 0 }); await frames(2);
+  const g = E.hush();
+  E.kit.hush(0, { secs: 0 }); await frames(2);
+  const h = E.hush();
   /* (with no sound yet the bus does not exist and nothing can be wired: then only the level is checked) */
   const wired = !b.bus || (b.wired === true && b.hz <= 430 && m.wired === true && m.hz > 430 && m.hz < 18000 && c.wired === false);
-  return a.k === 0 && a.wired === false && a.node === false && b.k === 1 && m.k === 0.5 && c.k === 0 && wired;
+  const floored = !f.bus || (f.wired === true && f.gained === true && f.level === 0.6 && g.wired === true && g.gained === false && g.level === 1 && h.wired === false && h.gained === false);
+  return a.k === 0 && a.wired === false && a.node === false && a.gainNode === false && b.k === 1 && m.k === 0.5 && c.k === 0 && wired
+      && b.gained === false && f.floor === 0.2 && g.floor === 1 && h.k === 0 && floored;
 }).catch(() => false);
 /* THE DRAWING BUDGET (the forty-ninth seam, v26.1) — a chapter's `render.phoneRatio` lets a phone draw it at that many
    pixels a point (never more than its screen has); a chapter that declares nothing has a phone's own (2 since v26.1,

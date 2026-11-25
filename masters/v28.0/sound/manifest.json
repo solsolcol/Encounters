@@ -1747,6 +1747,30 @@
    "why": "b: 14 % where a phone plays, loudest 50 ms -18.3 dBFS (others, phone/loudest: a 0.07/-18.9, c 0.01/-12.3); MADE from it (R149): turned back to front to rise from silence, cut to end at its loudest (3.95 s: its own silent head is at the end now, and cut with its onset), a 12 dB climb over it, and HARMONISED in the same filter"
   },
   {
+   "name": "u5strikeboom",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R157 idea 1: the boom as the stick hits the ground, straight after the near-silence",
+   "why": "b: 100 % where a phone plays, loudest 50 ms -13.4 dBFS (others, phone/loudest: a 1.00/-17.7, c 1.00/-13.9)"
+  },
+  {
+   "name": "u5windpull",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R157 idea 3: the wind drawn in toward the stick as the power grows, cut by the near-silence",
+   "why": "b: 95 % where a phone plays, loudest 50 ms -27.0 dBFS (others, phone/loudest: a 0.91/-31.1, c 0.96/-31.1); MADE from it (R157): turned back to front to swell out of silence, the wind drawn in, and cut to end at its loudest (2.25 s)"
+  },
+  {
+   "name": "u5eyeglint",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R157 idea 5: the eyes of the stick's carved Naga head lighting up in the close-up",
+   "why": "c: 100 % where a phone plays, loudest 50 ms -16.2 dBFS (others, phone/loudest: a 1.00/-18.6, b 1.00/-27.0)"
+  },
+  {
    "name": "u5vison",
    "family": "vision",
    "kind": "one-shot",

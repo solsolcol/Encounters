@@ -2110,7 +2110,7 @@
       fsCatchEnd();
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
-      NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
+      NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off(); if (typeof STRIKEFX5 === 'object') STRIKEFX5.off();
       if (kit && kit.chill) { kit.chill(0, { secs: 0.8 }); FS5.chillK = -1; }
       kit.tagBody('pho', { face: null, root: false }); kit.tagBody('zavier', { face: null, root: false });
       fsStand(cast.pho, 'pho'); fsStand(cast.zav, 'zav');

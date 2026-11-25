@@ -1,0 +1,32 @@
+[
+ {
+  "name": "u5strikeboom",
+  "secs": 2.8,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "A huge cinematic impact boom as a sacred wooden staff is struck down onto stone paving and releases a wave of power and water: a hard punchy thud with a bright crack on its front, a rushing burst of water spraying outward across the ground, and a short rolling tail fading away, no voices. Its weight punchy and textured in the low-middle range, so a small phone speaker carries it; no deep sub bass alone.",
+  "family": "fx",
+  "where": "R157 idea 1: the boom as the stick hits the ground, straight after the near-silence"
+ },
+ {
+  "name": "u5windpull",
+  "secs": 3.4,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "Wind rushing inward from all around toward one point, building fast: a swirling airy whoosh gathering speed and rising in pitch, dust and grit hissing along the ground as it is pulled in, starting soft and growing steadily louder until it is strongest at the very end, cinematic, no voices.",
+  "family": "fx",
+  "where": "R157 idea 3: the wind drawn in toward the stick as the power grows, cut by the near-silence"
+ },
+ {
+  "name": "u5eyeglint",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "Two eyes of a carved sacred serpent head lighting up with power: a soft bright magical shimmer, a clear crystalline chime and a short glowing hum that swells and then fades, cinematic, no voices.",
+  "family": "fx",
+  "where": "R157 idea 5: the eyes of the stick's carved Naga head lighting up in the close-up"
+ }
+]

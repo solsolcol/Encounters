@@ -1377,6 +1377,28 @@
   "why": "b: 14 % where a phone plays, loudest 50 ms -18.3 dBFS (others, phone/loudest: a 0.07/-18.9, c 0.01/-12.3); MADE from it (R149): turned back to front to rise from silence, cut to end at its loudest (3.95 s: its own silent head is at the end now, and cut with its onset), a 12 dB climb over it, and HARMONISED in the same filter",
   "af": "areverse,atrim=end=3.95,asetpts=PTS-STARTPTS,volume='pow(10,(-12+12*t/3.95)/20)':eval=frame,afade=t=out:st=3.91:d=0.04,asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0"
  },
+ "u5strikeboom": {
+  "kind": "fx",
+  "take": "u5strikeboom_b",
+  "family": "fx",
+  "where": "R157 idea 1: the boom as the stick hits the ground, straight after the near-silence",
+  "why": "b: 100 % where a phone plays, loudest 50 ms -13.4 dBFS (others, phone/loudest: a 1.00/-17.7, c 1.00/-13.9)"
+ },
+ "u5windpull": {
+  "kind": "fx",
+  "take": "u5windpull_b",
+  "family": "fx",
+  "where": "R157 idea 3: the wind drawn in toward the stick as the power grows, cut by the near-silence",
+  "why": "b: 95 % where a phone plays, loudest 50 ms -27.0 dBFS (others, phone/loudest: a 0.91/-31.1, c 0.96/-31.1); MADE from it (R157): turned back to front to swell out of silence, the wind drawn in, and cut to end at its loudest (2.25 s)",
+  "af": "areverse,atrim=end=2.25,asetpts=PTS-STARTPTS,afade=t=out:st=2.22:d=0.03"
+ },
+ "u5eyeglint": {
+  "kind": "fx",
+  "take": "u5eyeglint_c",
+  "family": "fx",
+  "where": "R157 idea 5: the eyes of the stick's carved Naga head lighting up in the close-up",
+  "why": "c: 100 % where a phone plays, loudest 50 ms -16.2 dBFS (others, phone/loudest: a 1.00/-18.6, b 1.00/-27.0)"
+ },
  "u5vison": {
   "kind": "copy",
   "from": "u4vison",

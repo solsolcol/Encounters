@@ -7929,24 +7929,37 @@ function kitLensOff() { if (klens.took && state !== 'cine' && !adsLens) camLens(
    the day goes under water round it. AT 0 THE FILTER IS OUT OF THE PATH (the bus is wired to the master exactly as
    it always was, not through a filter opened wide), so a chapter that never asks sounds bit for bit as before.
    A film drives it from its own clock with `secs: 0` (a seek lands on the same sound); kitReset clears it. */
-const hush = { k: 0, from: 0, to: 0, t0: 0, secs: 0, node: null, wired: false, hz0: 18000, hz1: 420 };
+const hush = { k: 0, from: 0, to: 0, t0: 0, secs: 0, node: null, wired: false, hz0: 18000, hz1: 420, floor: 1, gain: null, gained: false };
+/* v28.0 (R157, Chad: "a moment of near-silence just before they bring the stick down onto the ground, then the boom"): the
+   bus's own LEVEL may be held down with it, `floor` the level at k 1 (1 - (1 - floor) k between), by a gain laid after the
+   filter. Each call says its floor; one that says none has 1, and at 1 no gain is in the path at all (the bus, the filter
+   and the master wired exactly as before), so every chapter that asks as it always did sounds bit for bit as before */
 function kitHush(k, opts = {}) {
   hush.from = hush.k; hush.to = Math.max(0, Math.min(1, +k || 0));
   hush.secs = Math.max(0, +opts.secs || 0); hush.t0 = performance.now() / 1000;
   if (opts.hz) hush.hz1 = Math.max(60, Math.min(8000, +opts.hz));
+  hush.floor = opts.floor != null && isFinite(+opts.floor) ? Math.max(0, Math.min(1, +opts.floor)) : 1;
   if (!hush.secs) { hush.k = hush.to; hushApply(); }
 }
 function hushApply() {
   if (!actx || !bgGain) return;                     // nothing has sounded yet: it is laid when the bus exists (hushTick)
-  const want = hush.k > 0.001;
+  const want = hush.k > 0.001, wantG = want && hush.floor < 1;
+  const level = () => 1 - (1 - hush.floor) * hush.k;
   try {
-    if (want && !hush.wired) {
+    if (want && (!hush.wired || hush.gained !== wantG)) {
       if (!hush.node) { hush.node = actx.createBiquadFilter(); hush.node.type = 'lowpass'; hush.node.Q.value = 0.7; hush.node.frequency.value = hush.hz0; }
-      bgGain.disconnect(); bgGain.connect(hush.node); hush.node.connect(masterOut()); hush.wired = true;
+      if (wantG && !hush.gain) hush.gain = actx.createGain();
+      if (hush.wired) { hush.node.disconnect(); if (hush.gain) hush.gain.disconnect(); }
+      bgGain.disconnect(); bgGain.connect(hush.node);
+      if (wantG) { hush.gain.gain.cancelScheduledValues(actx.currentTime); hush.gain.gain.setValueAtTime(level(), actx.currentTime);
+        hush.node.connect(hush.gain); hush.gain.connect(masterOut()); }
+      else hush.node.connect(masterOut());
+      hush.wired = true; hush.gained = wantG;
     } else if (!want && hush.wired) {
-      bgGain.disconnect(); hush.node.disconnect(); bgGain.connect(masterOut()); hush.wired = false;
+      bgGain.disconnect(); hush.node.disconnect(); if (hush.gain) hush.gain.disconnect(); bgGain.connect(masterOut()); hush.wired = false; hush.gained = false;
     }
     if (hush.wired) hush.node.frequency.setTargetAtTime(hush.hz0 * Math.pow(hush.hz1 / hush.hz0, hush.k), actx.currentTime, 0.03);
+    if (hush.gained) hush.gain.gain.setTargetAtTime(level(), actx.currentTime, 0.02);
   } catch (err) { console.warn('hush failed', err); }
 }
 function hushTick() {
@@ -7955,7 +7968,7 @@ function hushTick() {
   hush.k = u >= 1 ? hush.to : hush.from + (hush.to - hush.from) * u;
   hushApply();
 }
-function hushOff() { hush.k = hush.from = hush.to = 0; hush.secs = 0; hushApply(); }
+function hushOff() { hush.k = hush.from = hush.to = 0; hush.secs = 0; hush.floor = 1; hushApply(); }
 function kitReset() {
   if (ev) evResolve({ ok: false, aborted: true });
   galCurs.clear();                  // v21.27: a gallery's reading is kept for the run, not past it — a chapter replayed
@@ -17181,6 +17194,8 @@ const STING_SAMPLE = {
   u5waterup: ['u5waterup', 1], u5title: ['u5title', 1],
   /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
   u5rumble: ['u5rumble', 1],
+  /* v28.0 · its effects, beds and music (masters/v28.0/sound/make.sh: every pick and why; manifest.json: what each is for) */
+  u5strikeboom: ['u5strikeboom', 1], u5windpull: ['u5windpull', 1], u5eyeglint: ['u5eyeglint', 1],
   /* E4C5 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
@@ -20405,7 +20420,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  /* v26.0: the play lens a chapter borrowed, and the world's sound closed down, for the fixture */
                  lens: () => ({ fov: camera.fov, to: klens.to, took: klens.took, now: +klens.now.toFixed(3) }),
                  hush: () => ({ k: +hush.k.toFixed(3), to: hush.to, wired: hush.wired, node: !!hush.node, bus: !!bgGain,
-                                hz: hush.node ? Math.round(hush.hz0 * Math.pow(hush.hz1 / hush.hz0, hush.k)) : null }),
+                                hz: hush.node ? Math.round(hush.hz0 * Math.pow(hush.hz1 / hush.hz0, hush.k)) : null,
+                                floor: hush.floor, gained: hush.gained, gainNode: !!hush.gain,          // v28.0 (R157): the level held down with it
+                                level: hush.gained ? +(1 - (1 - hush.floor) * hush.k).toFixed(3) : 1 }),
                  /* v22.0: the cold, for the fixture and the probes — the chill's layer and filter as painted, the heart's
                     beats as heard, the smear's draws and copies */
                  cold: () => {

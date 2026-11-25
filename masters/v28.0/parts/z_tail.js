@@ -165,10 +165,23 @@
   const TOG5 = { plant: 5.0, rise: 6.8, kindle: 7.35, cry: 7.55, top: 9.0555, ph5c2: 9.1755, stoop: 12.6055, apart: 13.4368, swoop: 13.5454,
                  p1: 14.2425, p2: 14.8688, p3: 15.4223, climb: 15.8196, ring: 16.7176, low: 17.0223, ringOut: 18.8982, home: 20.0839,
                  tail: 22.0839, ko5c2: 24.6839, back: 29.2139, end: 30.8139, strike: 6.65, title: 7.55,
-                 reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45 };
+                 reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45,
+                 slow0: 6.3658, eyecut: 5.8, eyelit: 5.95 };
+  /* (R157 idea 6: the strike's slow, c_yfilm.js STRIKE_SLOW5 and strikeS5 written out again: the story's last 0.2842 s
+     before the stick hits the paving played over 0.85 s of the real clock, eased down to 0.18 over 0.2 s and back up over
+     the last 0.12, before the three pierces' slows) */
+  const TOG5_SLOW = { H: 0.85, r: 0.18, a: 0.2, b: 0.12 };
+  const tog5S = (d) => { const { H, r, a, b } = TOG5_SLOW, m = H - b, Sa = a * (1 + r) / 2, Sm = Sa + r * (m - a);
+    if (d <= 0) return 0;
+    if (d < a) return r * d + (1 - r) / 2 * (d + a / Math.PI * Math.sin(Math.PI * d / a));
+    if (d < m) return Sa + r * (d - a);
+    const e = Math.min(b, d - m); return Sm + r * e + (1 - r) / 2 * (e - b / Math.PI * Math.sin(Math.PI * e / b)) + Math.max(0, d - H); };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
+    { const SS = tog5S(TOG5_SLOW.H), s0 = T.strike - SS;
+      if (tau > s0) { const d = tau - s0; if (d < SS) { let a = 0, b = TOG5_SLOW.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (tog5S(m) < d) a = m; else b = m; } return s0 + 0.5 * (a + b); }
+                      add += TOG5_SLOW.H - SS; } }
     for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
@@ -182,6 +195,10 @@
        waters, the three laid, the ring, the burst and Mr Koh's line were cold the first time the film played) */
     const P1 = R(T.p1), P2 = R(T.p2), P3 = R(T.p3), LOW = R(T.low), CLIMB = R(T.climb), RING = R(T.ring), RINGOUT = R(T.ringOut),
           HOME = R(T.home), TAIL = R(T.tail), KO = R(T.ko5c2), BACK = R(T.back);
+    /* (R157 idea 6: every mark from the strike's slow on is on the real clock too, the slow before it; the marks before it
+       are the same on both clocks) */
+    const DRIVE = R(T.drive), STRIKE = R(T.strike), RISEN = R(T.rise), TITLE = R(T.title), CRY = R(T.cry), PH = R(T.ph5c2),
+          STOOP = R(T.stoop), APART = R(T.apart), SWOOP = R(T.swoop);
     const FLASH = '#DFF5FF';
     step(0, () => F.begin(api, s));
     tr(0, END, (k, t) => F.frame(t), rawK);
@@ -196,8 +213,8 @@
        the summon is the bars drawn in, the strike, the water rising and their sounds. Its sound stays, as the two of them
        lift the stick) */
     sfx(T.lift - 0.25, 'u5summon', 0.85);                                      // the summoning, as the stick is lifted
-    sfx(T.strike + 0.05, 'u5waterup', 0.9);                                    // the water rising round the planted stick
-    sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
+    sfx(STRIKE + 0.05, 'u5waterup', 0.9);                                      // the water rising round the planted stick
+    sfx(TITLE, 'u5title', 0.85);                                               // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
@@ -208,33 +225,41 @@
     sfx(T.braid, 'u5togfill', 0.85);                                           // the two powers wound up the shaft together
     sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
     sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
-    sfx(T.drive - 0.02, 'u5swing1', 0.6);                                      // and drive it down
+    sfx(DRIVE - 0.02, 'u5swing1', 0.6);                                        // and drive it down (R157: in the slow, under the near-silence)
     /* (R149, Chad, 25 Nov 2026: "make the camera rumble and charge up before the naga gets summoned out of the stick": the
        ground's rumble under the charge, rising out of silence as their two powers are wound up the shaft and swelling to its
        loudest as they drive it down, ending under the strike (3.95 s, made from its take turned round: sound/pick.py); the
        camera's own rumble, its jolt at the strike and the push gathering speed are c_yfilm.js's (RUMBLE5); and the phone
        trembles with it, lightly as they lift it, more as they hold it high and drive it, once at the strike) */
     sfx(T.strike - 3.92, 'u5rumble', 0.6);                                     // the ground's rumble under the charge
+    /* (R157, Chad, 25 Nov 2026: "Do 1, 2, 3, 5, 6 cleanly". 3: the wind drawn in toward the stick as the power grows, from
+       when the lens comes round behind them, at its strongest as the slow motion begins, where the near-silence takes it
+       (c_yfilm.js: kit.hush's floor through the slow, off 15 ms before the stick hits the ground); 5: the carved eyes'
+       glint as they light in the close; 1: the boom, at full, on the frame the stick hits the ground (the ring of water and
+       light racing out with it: c_yfilm.js STRIKEFX5)) */
+    sfx(T.slow0 - 2.25, 'u5windpull', 0.7);                                    // the wind drawn in (it ends at its loudest on the slow)
+    sfx(T.eyelit - 0.02, 'u5eyeglint', 0.8);                                   // the carved head's eyes lighting
+    sfx(STRIKE, 'u5strikeboom', 0.85);                                         // the boom
     step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
     step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
-    step(T.drive, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });
-    step(T.strike, () => { if (api.kit && api.kit.buzz) api.kit.buzz([80]); });
-    sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
-    sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
-    sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
-    sfx(T.cry, 'u5nagacry', 1.0);                                              // R70: its cry, its eyes kindling
-    sfx(T.rise + 0.6, 'u5mist', 0.3);
-    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga protects us. It always has." (R151)
+    step(DRIVE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });
+    step(STRIKE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([100]); });
+    sfx(STRIKE, 'u5plant', 0.9);                                               // and plants it
+    sfx(RISEN - 0.05, 'u5nagawater', 1.0);                                     // the Naga of water surging up out of its head
+    sfx(RISEN + 0.35, 'u5nagaclimb', 0.9);                                     // R70: its climb at speed
+    sfx(CRY, 'u5nagacry', 1.0);                                                // R70: its cry, its eyes kindling
+    sfx(RISEN + 0.6, 'u5mist', 0.3);
+    sfx(PH, 'ph5c2', 1);                                                       // "The Naga protects us. It always has." (R151)
     /* (R75's debug, V6: his one line stood only 4 dB over the water's surge (full, 5 s from the rise), M9 and the cry's tail,
        where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
-    sfxFade(T.ph5c2 - 0.3, T.ph5c2 + 0.35, 'u5nagawater');
-    sfx(T.stoop - 0.1, 'u5nagadive', 0.9);                                     // over, and down onto the shape
-    sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
-    sfx(T.apart - 0.04, 'u5shockhit', 0.75);                                   // the shape struck by its passing
-    sfx(T.apart, 'u5shapebreak', 0.9);                                         // and bursting into its three
-    fade(T.apart, T.apart + 0.05, 0, 0.35, FLASH); fade(T.apart + 0.05, T.apart + 0.35, 0.35, 0, FLASH);
-    sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
-    sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
+    sfxFade(PH - 0.3, PH + 0.35, 'u5nagawater');
+    sfx(STOOP - 0.1, 'u5nagadive', 0.9);                                       // over, and down onto the shape
+    sfxFade(APART - 0.2, APART + 0.6, 'u5shapeloop');
+    sfx(APART - 0.04, 'u5shockhit', 0.75);                                     // the shape struck by its passing
+    sfx(APART, 'u5shapebreak', 0.9);                                           // and bursting into its three
+    fade(APART, APART + 0.05, 0, 0.35, FLASH); fade(APART + 0.05, APART + 0.35, 0.35, 0, FLASH);
+    sfx(APART + 1.2, 'u5cagewhole', 0.6);                                      // his cage whole again
+    sfx(SWOOP + 0.1, 'u5nagapass', 0.8);                                       // round the west of the court and down onto the arc
     /* each pierce: the blow, its own water through it, its fire hissing out */
     sfx(P1 - 0.45, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
     sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
