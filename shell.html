@@ -815,6 +815,71 @@ body.finePtr .tpTile .wpnKey{left:13px;right:auto;top:auto;bottom:3px;transform:
 @media (prefers-reduced-motion:reduce){
   .tpRow,.tpTile,.tpTile .tpGlow,.tpTile .tpSheen,.tpFace canvas,.tpFace img,.tpAsk i{animation:none !important}
 }
+/* v28.0 · THE WORDS OVER A PLACE (kit.pop, the seventy-seventh seam): a short word popping up over a point of the world or
+   the screen and rising as it fades; main.js places each one every frame (its transform and its opacity) and takes it away.
+   Its tones are the chapter's: white, violet, gold; `big` for a count. Under the tag mode's buttons, over its marks */
+#popLayer{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.popW{position:absolute;left:0;top:0;white-space:nowrap;pointer-events:none;will-change:transform,opacity;
+  font-family:var(--ui);font-weight:800;font-size:22px;line-height:1;letter-spacing:.14em;text-transform:uppercase;
+  color:#FFFFFF;text-shadow:0 0 6px rgba(255,255,255,.95),0 0 16px rgba(190,220,255,.85),0 2px 0 rgba(0,0,0,.7),0 0 3px rgba(0,0,0,.8)}
+.popW.violet{color:#F4E8FF;text-shadow:0 0 7px rgba(190,130,255,1),0 0 18px rgba(150,80,255,.9),0 2px 0 rgba(26,0,52,.85),0 0 3px rgba(20,0,40,.9)}
+.popW.gold{color:#FFEDB4;text-shadow:0 0 7px rgba(255,206,96,1),0 0 20px rgba(255,170,40,.88),0 2px 0 rgba(64,32,0,.88),0 0 3px rgba(40,20,0,.9)}
+.popW.big{font-size:34px;letter-spacing:.1em}
+/* v28.0 · THE CUT-IN (kit.cutIn, the seventy-eighth seam): a flash, a white slash across the screen, two slanted bands
+   sweeping in from either side (each a picture, its edge lit by a glow), a shine passing over each, the chapter's word
+   stamped in gold between them, and all of it swept out the other way. Its length (--ciT), the bands' height (--ciH) and
+   their slant (--ciE) are written by main.js from the screen's own size, so the angle is the same on a phone and a desktop.
+   Over the tag mode's buttons (the call's 11, after it), under every window */
+#cutIn{position:fixed;inset:0;z-index:11;pointer-events:none;display:none;overflow:hidden;--ciT:1.4s;--ciH:200px;--ciE:24px}
+#cutIn.on{display:block}
+body.cine #cutIn,body.invopen #cutIn,body.menuopen #cutIn,body.cardup #cutIn,body.evopen #cutIn,body.unlockopen #cutIn,
+body.chooseopen #cutIn,body.galleryopen #cutIn,body.pictureopen #cutIn,
+body.cine #popLayer,body.invopen #popLayer,body.menuopen #popLayer,body.cardup #popLayer,body.evopen #popLayer,
+body.unlockopen #popLayer,body.chooseopen #popLayer,body.galleryopen #popLayer,body.pictureopen #popLayer{display:none}
+#cutIn .ciFlash{position:absolute;inset:0;opacity:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,248,226,.62),rgba(255,226,160,.22) 45%,rgba(255,220,150,0) 75%)}
+#cutIn .ciSlash{position:absolute;left:-10%;width:120%;top:50%;height:4px;margin-top:-2px;opacity:0;transform-origin:0 50%;
+  background:linear-gradient(90deg,rgba(255,255,255,0),#FFFFFF 18%,#FFF6DA 82%,rgba(255,255,255,0));
+  box-shadow:0 0 12px 3px rgba(255,236,190,.9),0 0 30px 8px rgba(255,200,110,.55)}
+#cutIn .ciBand{position:absolute;left:-10%;width:120%;height:var(--ciH);opacity:0}
+#cutIn .ciBand.a{top:calc(50% - var(--ciH) - 7px);filter:drop-shadow(0 0 2px #FFF4D2) drop-shadow(0 0 9px rgba(255,196,84,.95))}
+#cutIn .ciBand.b{top:calc(50% + 7px);filter:drop-shadow(0 0 2px #F1E6FF) drop-shadow(0 0 9px rgba(168,112,255,.95))}
+#cutIn .ciPic{position:absolute;inset:0;display:block;overflow:hidden;background:#0A0710;
+  clip-path:polygon(0 calc(var(--ciE) * 2),100% 0,100% calc(100% - var(--ciE) * 2),0 100%)}
+#cutIn .ciPic img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 41%}
+#cutIn .ciPic::after{content:'';position:absolute;inset:0;transform:translateX(-120%);
+  background:linear-gradient(104deg,rgba(255,255,255,0) 36%,rgba(255,255,255,.5) 48%,rgba(255,250,230,.18) 54%,rgba(255,255,255,0) 62%)}
+#cutIn .ciWord{position:absolute;left:0;right:0;top:50%;text-align:center;opacity:0;white-space:nowrap;
+  font-family:var(--ui);font-weight:900;font-size:clamp(30px,9.4vw,66px);line-height:1;letter-spacing:.2em;padding-left:.2em;
+  margin-top:-.5em;color:#FFE9A6;
+  background:linear-gradient(180deg,#FFFBE8 0%,#FFE39A 38%,#F0B53E 62%,#B97A1A 100%);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 2px rgba(255,246,214,.95)) drop-shadow(0 0 12px rgba(255,186,70,.95)) drop-shadow(0 3px 0 rgba(48,22,0,.9))}
+#cutIn.on .ciFlash{animation:ciFlash var(--ciT) linear both}
+#cutIn.on .ciSlash{animation:ciSlash var(--ciT) linear both}
+#cutIn.on .ciBand.a{animation:ciBandA var(--ciT) linear both}
+#cutIn.on .ciBand.b{animation:ciBandB var(--ciT) linear both}
+#cutIn.on .ciBand.a .ciPic::after{animation:ciShine var(--ciT) linear both}
+#cutIn.on .ciBand.b .ciPic::after{animation:ciShine var(--ciT) linear .06s both}
+#cutIn.on .ciWord{animation:ciWord var(--ciT) linear both}
+@keyframes ciFlash{0%{opacity:0}4%{opacity:1}16%{opacity:.18}80%{opacity:.12}100%{opacity:0}}
+@keyframes ciSlash{0%{opacity:1;transform:scaleX(0);animation-timing-function:cubic-bezier(.2,.8,.3,1)}10%{opacity:1;transform:scaleX(1)}
+  20%{opacity:0;transform:scaleX(1) scaleY(.2)}100%{opacity:0;transform:scaleX(1) scaleY(.2)}}
+@keyframes ciBandA{0%{opacity:1;transform:translateX(-108%);animation-timing-function:cubic-bezier(.12,.9,.25,1)}
+  17%{opacity:1;transform:translateX(0)}78%{opacity:1;transform:translateX(2.2%);animation-timing-function:cubic-bezier(.6,0,.9,.4)}
+  96%{opacity:1;transform:translateX(108%)}100%{opacity:0;transform:translateX(108%)}}
+@keyframes ciBandB{0%{opacity:1;transform:translateX(108%)}6%{transform:translateX(108%);animation-timing-function:cubic-bezier(.12,.9,.25,1)}
+  22%{opacity:1;transform:translateX(0)}80%{opacity:1;transform:translateX(-2.2%);animation-timing-function:cubic-bezier(.6,0,.9,.4)}
+  98%{opacity:1;transform:translateX(-108%)}100%{opacity:0;transform:translateX(-108%)}}
+@keyframes ciShine{0%,22%{transform:translateX(-120%)}48%{transform:translateX(120%)}100%{transform:translateX(120%)}}
+@keyframes ciWord{0%{opacity:0;transform:scale(2.3)}18%{opacity:0;transform:scale(2.3);animation-timing-function:cubic-bezier(.2,1.4,.4,1)}
+  28%{opacity:1;transform:scale(1)}80%{opacity:1;transform:scale(1.04)}92%{opacity:0;transform:scale(1.12)}100%{opacity:0;transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){
+  @keyframes ciBandA{0%{opacity:0;transform:none}17%{opacity:1}82%{opacity:1}100%{opacity:0;transform:none}}
+  @keyframes ciBandB{0%{opacity:0;transform:none}22%{opacity:1}84%{opacity:1}100%{opacity:0;transform:none}}
+  @keyframes ciSlash{0%,100%{opacity:0}}
+  #cutIn.on .ciPic::after{animation:none}
+}
 /* v28.0 · A BUTTON OF THE CHAPTER'S OWN (kit.button, the sixty-first seam): a round button in the right-hand column, under
    the torch's and the eye's (its place is written by main.js), for a sense the chapter gives him in play (episode 4 chapter
    5's SMELL, N); its wait a ring, its ask the eye's, its lock said when pressed. Hidden under every panel, film and card,
@@ -2326,7 +2391,7 @@ body.invopen .soundBtn{display:none}
   transition:opacity .45s var(--ease);pointer-events:auto}
 #swapCover.on{opacity:1}
 #swapLoad{position:absolute;left:0;right:0;bottom:max(12vh,calc(env(safe-area-inset-bottom) + 64px));text-align:center;opacity:.6}
-.cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
+.cineBar{position:fixed;left:0;right:0;height:calc(11vh + var(--barX, 0px));background:#000;z-index:4;
   transition:transform .55s var(--ease);pointer-events:none}
 #barTop{top:0;transform:translateY(-101%)}
 #barBot{bottom:0;transform:translateY(101%)}
@@ -3760,6 +3825,10 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 <div id="tagMarks" aria-hidden="true"></div>
 <div id="tagMate" aria-hidden="true"><svg class="tmRing" viewBox="0 0 20 20"><circle class="tmTrack" cx="10" cy="10" r="8"/><circle class="tmArc" cx="10" cy="10" r="8"/></svg><span class="tmName"></span><span class="tmArrow"></span></div>
 <div id="tagCount" aria-hidden="true"></div>
+<!-- v28.0 (seams 77, 78): the words that pop up over a place (kit.pop), and the cut-in a chapter's special attack opens with
+     (kit.cutIn: its two bands, the slash, the flash and the word; main.js fills the bands with their pictures) -->
+<div id="popLayer" aria-hidden="true"></div>
+<div id="cutIn" aria-hidden="true"><div class="ciFlash"></div><div class="ciBand a"></div><div class="ciBand b"></div><div class="ciSlash"></div><div class="ciWord"></div></div>
 <!-- v14.11: THE AMULET BROKE. A worn ward item's charge has just run out:
      the glass shatters (wardbreak) and this says so, over whatever is on
      screen, for four seconds. wardBroke() in main.js raises it. -->

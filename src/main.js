@@ -3101,7 +3101,8 @@ const tag = { decl: null, cfg: null, on: false, live: false, bodies: [], played:
               t: 0, last: 0, lockTo: 0, glideFrom: -1, glideT0: 0, boomK: 1, pitchNow: 0, snap: null, save0: null, wrote: false,
               queue: [], down: new Map(), dead: new Set(), stale: new Set(), tgtTouch: new Map(), drawn: [],
               count: null, log: [], acted: 0, dropped: 0, refused: 0, classOn: false, el: null, wired: false,
-              boomOver: null };                 // v28.0 (seam 69): { from, to, t0, secs, keep } a boom eased over the declaration's (kit.tagBoom)
+              boomOver: null,                   // v28.0 (seam 69): { from, to, t0, secs, keep } a boom eased over the declaration's (kit.tagBoom)
+              slow: 1, slowAim: null };         // v28.0 (seam 76): the mode's clock rate (1 exactly unless asked) and its ease { from, to, t0, secs } (kit.tagSlow)
 const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
 
 /* ---- hotspots ---------------------------------------------------------- */
@@ -7774,6 +7775,8 @@ function edgeTick() {
 let sprayCol = null, sprayScale = 1;   // v27.0: a chapter may turn the water's colour and size (kit.sprayColor): Chad's golden water
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
+  popFrame();                                    // v28.0 (seam 77): the words over places, followed as the lens moves
+  if (cutIn.on && state !== 'play') cutInOff();  // v28.0 (seam 78): a cut-in never outlives play
   /* v11.6: the bag button asks while a given item waits unequipped (a class
      toggle is a no-op when nothing changed, so this costs the frame nothing) */
   (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
@@ -7971,6 +7974,7 @@ function kitReset() {
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
+  popClear(); cutInOff(); barsReset();   // v28.0 (seams 77 to 79): no word, cut-in or drawn-in bar left from the run before
   wxReset();                        // v24.0: no rain and no lightning left over from the run before (S45)
   if (led.open) ledgerFinish('force'); else if (led.root) { led.k = led.to = 0; led.root.visible = false; }   // v24.0 (S43)
   kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
@@ -8219,6 +8223,146 @@ function kitTagBoom(o, opts = {}) {
   tag.boomOver = { from, to, t0: tag.t, secs };
   return true;
 }
+/* v28.0 · THE SEVENTY-SIXTH SEAM: THE MODE'S CLOCK SLOWED (kit.tagSlow). Chad, R122 (his pick of R121's ideas: "each Prai caught
+   feels big: half a second of slow motion"). `kit.tagSlow(k, { secs })` eases the mode's clock (tag.t, which the chapter's
+   rules step on, and the bodies the mode moves) to k of the wall's rate (0.05 to 1) over `secs` of WALL time (0.12 unless it
+   says; 0 at once); `kit.tagSlow(null, { secs })` eases back to 1 and lets go. The lens keeps the wall's step. Read as
+   kit.tagState().slow. Refused with the mode off; let go when it is left. Never asked, the rate is 1 and the mode's step is
+   the wall's bit for bit (fixturetest K.tagSlowSeam) */
+function tagSlowNow(now) {
+  const S = tag.slowAim;
+  if (!S) return tag.slow;
+  const u = S.secs > 0 ? Math.min(1, Math.max(0, (now - S.t0) / (S.secs * 1000))) : 1, w = u * u * (3 - 2 * u);
+  tag.slow = S.from + (S.to - S.from) * w;
+  if (u >= 1) { tag.slow = S.to; if (S.to === 1) tag.slowAim = null; }
+  return tag.slow;
+}
+function kitTagSlow(k, opts = {}) {
+  if (!tag.on) return false;
+  if (k != null && !Number.isFinite(+k)) return false;
+  const secs = Number.isFinite(+opts.secs) ? Math.max(0, +opts.secs) : 0.12;
+  const to = k == null ? 1 : Math.max(0.05, Math.min(1, +k));
+  tag.slowAim = { from: tag.slow, to, t0: performance.now(), secs };
+  if (!(secs > 0)) { tag.slow = to; if (to === 1) tag.slowAim = null; }
+  return true;
+}
+/* v28.0 · THE SEVENTY-SEVENTH SEAM: A WORD THAT POPS UP OVER A PLACE (kit.pop). Chad, R122 (idea 4: "short words popping up
+   over the Prai: BOUND, CAUGHT, and a gold 4 of 9"). `kit.pop(text, { at: {x, y, z} | screen: {sx, sy}, tone, big, secs, rise })`
+   puts a short word over a point of the world (followed as the lens moves) or of the screen (0..1 each way), in a tone
+   ('white', 'violet', 'gold'), popping in, rising `rise` CSS pixels (40) over `secs` (1.1) and fading; `big` for a count.
+   The words are the chapter's (its sheet). Play only: a panel, a film or the title takes every word away at once (a
+   transient effect ends on the frame anything opens over play, v11.4); kitReset clears them. Answers its id, or false */
+const pops = { list: [], n: 0, layer: null };
+function kitPop(text, o = {}) {
+  if (state !== 'play' || typeof text !== 'string' || !text.trim()) return false;
+  const L = pops.layer || (pops.layer = $('popLayer'));
+  if (!L) return false;
+  const at = o.at && Number.isFinite(+o.at.x) && Number.isFinite(+o.at.z) ? new THREE.Vector3(+o.at.x, Number.isFinite(+o.at.y) ? +o.at.y : 1.5, +o.at.z) : null;
+  const sc = !at && o.screen ? { x: Math.max(0, Math.min(1, +o.screen.sx || 0.5)), y: Math.max(0, Math.min(1, +o.screen.sy || 0.5)) } : null;
+  if (!at && !sc) return false;
+  const el = document.createElement('div');
+  el.className = 'popW ' + (o.tone === 'violet' || o.tone === 'gold' ? o.tone : 'white') + (o.big ? ' big' : '');
+  el.textContent = text.trim();
+  el.style.opacity = '0';
+  L.appendChild(el);
+  const id = ++pops.n;
+  pops.list.push({ id, el, at, sc, t0: performance.now(), secs: Number.isFinite(+o.secs) ? Math.max(0.3, +o.secs) : 1.1,
+                   rise: Number.isFinite(+o.rise) ? +o.rise : 40 });
+  if (pops.list.length > 12) popGone(pops.list[0]);
+  return id;
+}
+function popGone(p) { const i = pops.list.indexOf(p); if (i >= 0) pops.list.splice(i, 1); if (p.el && p.el.parentNode) p.el.parentNode.removeChild(p.el); }
+function popClear() { while (pops.list.length) popGone(pops.list[0]); }
+function popFrame() {
+  if (!pops.list.length) return;
+  if (state !== 'play') { popClear(); return; }
+  const now = performance.now(), W = innerWidth, H = innerHeight;
+  for (const p of pops.list.slice()) {
+    const s = (now - p.t0) / 1000, u = s / p.secs;
+    if (u >= 1) { popGone(p); continue; }
+    let x, y;
+    if (p.at) { const n = projectTo(p.at.x, p.at.y, p.at.z);
+      if (!(n.z < 1) || Math.abs(n.x) > 1.15 || Math.abs(n.y) > 1.15) { p.el.style.opacity = '0'; continue; }
+      x = (n.x * 0.5 + 0.5) * W; y = (-n.y * 0.5 + 0.5) * H; }
+    else { x = p.sc.x * W; y = p.sc.y * H; }
+    const e = 1 - (1 - u) * (1 - u);
+    y -= p.rise * e;
+    /* (in over its first 0.16 s, a little past its size and back; out over its last third) */
+    const k = Math.min(1, s / 0.16), pop = k < 1 ? 0.55 + 0.65 * k : 1.2 - 0.2 * Math.min(1, (s - 0.16) / 0.12);
+    const a = Math.min(1, s / 0.08) * (u > 0.67 ? (1 - u) / 0.33 : 1);
+    p.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-50%) scale(' + pop.toFixed(3) + ')';
+    p.el.style.opacity = a.toFixed(3);
+  }
+}
+/* v28.0 · THE SEVENTY-EIGHTH SEAM: A CUT-IN (kit.cutIn). Chad, R122 (idea 1: "TOGETHER as a full special attack: both
+   portraits slash across the screen"). `kit.cutIn({ a, b, word, secs })`: a white slash across the screen, then two slanted
+   bands sweeping in from either side, each a picture (`a` the upper, `b` the lower: an asset key, or a node), the chapter's
+   `word` stamped between them in gold, a shine passing over each, and all of it swept out the other way and gone after
+   `secs` (1.4). Play only; a film, a panel or the title begun under it takes it away at once, and so does kitReset. Absent,
+   its layer stays empty and hidden. Answers true, or false when refused */
+const cutIn = { on: false, timer: 0, el: null };
+function cutInEls() {
+  if (cutIn.el) return cutIn.el;
+  const root = $('cutIn');
+  if (!root) return null;
+  return (cutIn.el = { root, a: root.querySelector('.ciBand.a'), b: root.querySelector('.ciBand.b'), word: root.querySelector('.ciWord') });
+}
+function cutInPic(band, pic) {
+  const old = band.querySelector('.ciPic'); if (old) old.remove();
+  const w = evIconNode(pic, 'ciPic');
+  band.insertBefore(w, band.firstChild);
+}
+function cutInOff() {
+  clearTimeout(cutIn.timer); cutIn.timer = 0;
+  if (!cutIn.on) return;
+  cutIn.on = false;
+  const E = cutInEls(); if (!E) return;
+  E.root.classList.remove('on');
+  for (const band of [E.a, E.b]) { const p = band.querySelector('.ciPic'); if (p) p.remove(); }
+  E.word.textContent = '';
+}
+function kitCutIn(o = {}) {
+  if (state !== 'play' || !o || (!o.a && !o.b)) return false;
+  const E = cutInEls(); if (!E) return false;
+  cutInOff();
+  const secs = Number.isFinite(+o.secs) ? Math.max(0.6, Math.min(4, +o.secs)) : 1.4;
+  /* (the bands' slant in pixels from the screen's own width: the same angle on a phone and a desktop, 7 degrees) */
+  const H = Math.round(Math.max(120, Math.min(340, innerHeight * 0.24))), e = Math.round(innerWidth * Math.tan(7 * Math.PI / 180) / 2);
+  E.root.style.setProperty('--ciT', secs + 's');
+  E.root.style.setProperty('--ciH', H + 'px');
+  E.root.style.setProperty('--ciE', e + 'px');
+  cutInPic(E.a, o.a || o.b); cutInPic(E.b, o.b || o.a);
+  E.word.textContent = typeof o.word === 'string' ? o.word : '';
+  void E.root.offsetWidth;                              // (the animations begin again from their start every time)
+  E.root.classList.add('on');
+  cutIn.on = true;
+  cutIn.timer = setTimeout(cutInOff, secs * 1000 + 80);
+  return true;
+}
+/* v28.0 · THE SEVENTY-NINTH SEAM: THE FILM'S BARS SQUEEZED IN (kit.bars). Chad, R122 (idea 6, the Naga's summoning: "black bars
+   top and bottom"). Every film already has its two bars (11 % of the screen each); `kit.bars(k)` from a film's frame (k 0..1,
+   a smooth function of its clock, so a seek lands on the same bars) draws them in by up to 7 % more each, never thinner than
+   they always are; 0 gives them back. A film's end and kitReset give them back; outside a film it is refused. When they come back
+   the band of the picture under them is measured again (the letterbox's scissor, v15) */
+let barsK = 0;
+function barsSet(k) {
+  barsK = k;
+  for (const id of ['barTop', 'barBot']) { const el = $(id); if (!el) continue;
+    if (k > 0) el.style.setProperty('--barX', (k * 7).toFixed(2) + 'vh'); else el.style.removeProperty('--barX'); }
+}
+function kitBars(k) {
+  if (state !== 'cine') return false;
+  const v = k == null ? 0 : Math.max(0, Math.min(1, +k || 0));
+  if (Math.abs(v - barsK) < 0.004 && (v > 0) === (barsK > 0)) return true;
+  const was = barsK;
+  barsSet(v);
+  /* (the band measured under bars drawn in would leave rows unshaded as they give back: the whole frame is shaded while they
+     do, and the band measured again once they are back) */
+  if (v < was && letterbox) letterboxOff();
+  if (was > 0 && v === 0 && document.body.classList.contains('cine')) letterboxArm();
+  return true;
+}
+function barsReset() { if (barsK !== 0) barsSet(0); }
 /* where the lens stands for this body (into `out`): behind and above his feet, inside the chapter's box and bounds; answers
    the share of that boom the walls between it and his head leave it (1: the whole of it) */
 function tagBoomFor(A, out) {
@@ -8386,11 +8530,14 @@ function tagFrame() {
   const wdt = tag.last ? Math.min(0.1, Math.max(0, (now - tag.last) / 1000)) : 0;
   tag.last = now;
   if (!tag.live) { tag.live = true; tagStale(); }   // a finger already down belongs to what came before: never a stick, never a tap
-  tag.t += wdt;
+  /* (v28.0, seam 76: the mode's clock and its bodies at the rate the chapter asked, kit.tagSlow; never asked, the rate is 1
+     and sdt is wdt bit for bit. The lens keeps the wall's own step: it follows the bodies wherever they are) */
+  const sdt = wdt * tagSlowNow(now);
+  tag.t += sdt;
   tagFlush();
   if (!tagLive()) return 0;                    // (an act's answer may have left the mode, or begun a film)
   const P = tag.bodies[tag.played];
-  for (const A of tag.bodies) tagBodyStep(A, wdt, A === P);
+  for (const A of tag.bodies) tagBodyStep(A, sdt, A === P);
   tagRig(wdt);
   return P ? P.cov : 0;
 }
@@ -8612,6 +8759,7 @@ function tagOff(how) {
            ry: Number.isFinite(+how.ry) ? +how.ry : yaw.rotation.y, px: 0, roll: 0 };
   }
   tag.on = false; tag.live = false; tag.save0 = null; tag.boomOver = null;
+  tag.slow = 1; tag.slowAim = null;
   tag.queue.length = 0; tag.down.clear(); tag.dead.clear(); tag.stale.clear(); tag.tgtTouch.clear(); tag.drawn.length = 0;
   tag.bodies = []; tag.onAct = null; tag.targets = null; tag.acts = {}; tag.count = null; tag.glideFrom = -1;
   tagCamZero(true);
@@ -8698,7 +8846,7 @@ function kitTagCount(left, of) {
 }
 function tagStateRead() {
   const P = tag.on ? tag.bodies[tag.played] : null;
-  return { on: tag.on, live: tagLive(), played: P ? P.id : null, t: +tag.t.toFixed(3),
+  return { on: tag.on, live: tagLive(), played: P ? P.id : null, t: +tag.t.toFixed(3), slow: tag.slow,
            /* (the lock to the millisecond, rounded UP: it reads 0 only when a switch is free) */
            lock: tag.on ? Math.ceil(tagLockLeft() * 1000) / 1000 : 0, gliding: tag.glideFrom >= 0, held: !!tag.save0,
            bodies: tag.bodies.map(b => ({ id: b.id, x: +b.obj.position.x.toFixed(3), z: +b.obj.position.z.toFixed(3),
@@ -9447,6 +9595,10 @@ const KIT = {
   tagMarks: (list) => { if (!tag.on) return false; tag.targets = list === undefined ? null : list; return true; },
   tagCount: kitTagCount,                   // the count under the objective: (left, of), or null
   tagBoom: kitTagBoom,                     // v28.0: the sixty-ninth seam — the boom changed while the mode is on, eased ({ back, up, pitch, fov } | null, { secs })
+  tagSlow: kitTagSlow,                     // v28.0: the seventy-sixth seam — the mode's clock slowed, eased on the wall (k 0.05..1 | null, { secs })
+  pop: kitPop,                             // v28.0: the seventy-seventh seam — a word popping up over a place (text, { at | screen, tone, big, secs, rise })
+  cutIn: kitCutIn,                         // v28.0: the seventy-eighth seam — two picture bands slashing across the screen ({ a, b, word, secs })
+  bars: kitBars,                           // v28.0: the seventy-ninth seam — a film's bars drawn in (k 0..1)
   tagHold: kitTagHold,                     // the run held again as it stands now
   button: kitButton,                       // v28.0: the sixty-first seam — a button of the chapter's own in the right-hand column
   retry: kitRetry,                         // v28.0: the sixty-fifth seam — a loss that begins again where the chapter says
@@ -17341,6 +17493,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   void ui.panic.offsetWidth;
   ui.panic.style.transition = '';
   letterboxArm();                            // v15: once the bars are in, only the band between them is shaded
+  cutInOff(); popClear();                    // v28.0 (seams 77, 78): play's cut-in and words end on the film's first frame (v11.4)
   cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
   cineFadeTint('');                          // (v25.5) and it opens on the black's own colour
   cineFadeEl.style.opacity = String(startFade);
@@ -17453,6 +17606,7 @@ function cineEnd() {
      left at 1, a later kit.fade(0) would first snap the screen back to black */
   if (!c.keepFade) { clearCineFade(); kitFade = null; kitFadeNow = 0; }
   filmPhoneHide();                         // v24.0: a film's phone goes with the film (S48)
+  barsReset();                             // v28.0 (seam 79): bars a film drew in are given back with it
   letterboxOff();                          // v15: the whole frame again, before the bars start to move
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');

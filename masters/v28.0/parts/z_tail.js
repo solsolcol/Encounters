@@ -158,11 +158,16 @@
      there is no world, and says so on the console the moment the two part by more than a fiftieth of a second. Each pierce
      is held a moment (c_yfilm.js NAGA_HIT5: a twelfth of its pace for 0.16 s), which TOG5_REAL carries the same way */
   /* (R75's debug, V7: Mr Koh's line 1.1 s later, the three laid held for it: ko5c2, back and end each 1.1 later) */
-  const TOG5 = { plant: 0.2, rise: 2, kindle: 2.55, cry: 2.75, top: 4.2333, ph5c2: 4.3533, stoop: 7.7833, apart: 8.5259, swoop: 8.6344,
-                 p1: 9.3315, p2: 9.9579, p3: 10.5114, climb: 10.9086, ring: 11.8067, low: 12.1114, ringOut: 13.9873, home: 15.1729,
-                 tail: 17.1729, ko5c2: 19.7729, back: 24.3029, end: 25.9029 };
-  const TOG5_REAL = (T, tau) => { const H = 0.16, r = 1 / 12; let add = 0;
-    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < r * H) return tau + add + d / r - d; add += (1 - r) * H; }
+  /* (R122 idea 6, the Naga called up like a summon: every mark 1.4 s later, the summon's darkening first; the stick's strike
+     and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
+     the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
+  const TOG5 = { plant: 1.6, rise: 3.4, kindle: 3.95, cry: 4.15, top: 5.6333, ph5c2: 5.7533, stoop: 9.1833, apart: 9.9259, swoop: 10.0344,
+                 p1: 10.7315, p2: 11.3579, p3: 11.9114, climb: 12.3086, ring: 13.2067, low: 13.5114, ringOut: 15.3873, home: 16.5729,
+                 tail: 18.5729, ko5c2: 21.1729, back: 25.7029, end: 27.3029, strike: 3.25, title: 4.15 };
+  const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
+    const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
+    let add = 0;
+    for (const p of [T.p1, T.p2, T.p3]) { if (tau <= p) break; const d = tau - p; if (d < SH) return p + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.together;
@@ -180,6 +185,13 @@
     tr(0, END, (k, t) => F.frame(t), rawK);
     /* (R64: it opens on the white of the press, everyone set at their marks under it) */
     fade(0, 0.5, 0.85, 0, FLASH);
+    /* (R122 idea 6: the screen darkens as he raises the stick (the bars drawn in with it: c_yfilm.js); the dark lifts as the
+       water rises round the stick at its strike; the gold NAGA as it rides up) */
+    fade(0.55, 1.45, 0, 0.5);
+    sfx(0.5, 'u5summon', 0.85);                                                // the court darkening for the summoning
+    fade(T.strike - 0.1, T.strike + 0.3, 0.5, 0);
+    sfx(T.strike + 0.05, 'u5waterup', 0.9);                                    // the water rising round the planted stick
+    sfx(T.title, 'u5title', 0.85);                                             // the gold NAGA
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
@@ -200,6 +212,7 @@
     sfx(T.apart + 1.2, 'u5cagewhole', 0.6);                                    // his cage whole again
     sfx(T.swoop + 0.1, 'u5nagapass', 0.8);                                     // round the west of the court and down onto the arc
     /* each pierce: the blow, its own water through it, its fire hissing out */
+    sfx(P1 - 0.12, 'u5slowin', 0.75);                                          // (R122 idea 6: the slow motion coming in at the first)
     sfx(P1 - 0.04, 'u5nagahit1', 1.0); sfx(P1, 'u5pierce1', 0.85); sfx(P1 + 0.14, 'u5douse', 0.75);
     sfx(P2 - 0.04, 'u5nagahit2', 1.0); sfx(P2, 'u5pierce2', 0.85); sfx(P2 + 0.14, 'u5douse', 0.75);
     sfx(P3 - 0.04, 'u5nagahit3', 1.0); sfx(P3, 'u5pierce3', 0.85); sfx(P3 + 0.14, 'u5douse', 0.75);

@@ -424,6 +424,55 @@
     const FX_SND = { boom: ['u5boom1', 'u5boom2'], n: 0 };
     /* (R94 E3: `o` an energy's hit: its flash's colour (none: no flash), its own sounds and its sparks' colours; the fire's hit
        without it, exactly as before) */
+    /* R122 (25 Nov 2026, Chad: "Do idea 1, 2, 4, 6", his pick of R121's nine; idea 2: "each Prai caught feels big: half a
+       second of slow motion, camera push-in, flame turns to white light"): A CATCH FELT. As one is caught (by the bag or the
+       shockwave) the court goes to three tenths of its speed for half a second of the wall's (the last of the nine, nine
+       tenths), the lens pushes in a little through it (its angle 0.86 of the boom's, a tenth nearer), and the caught one's
+       fire turns to white light flowing into the bag; all of it eases back after. The mode's clock is the engine's
+       (kit.tagSlow, the seventy-sixth seam): the rules step on it, so the court itself slows; the bodies' takes, the nine and
+       the effects are drawn at its rate here (fightTick), and the sound, the screen and the lens's own ease at the wall's.
+       Idea 4: short words over each Prai as it is bound and caught, and the count of the nine in gold (kit.pop, the
+       seventy-seventh) */
+    const FS_CATCH = { k: 0.3, hold: 0.5, last: 0.9, fov: 0.86, back: 0.9 };
+    function fsBoomBase() { const d = DATA.tag || {}, b = FS5.pulled ? Object.assign({}, d.boom || {}, PULL5) : (d.boom || {});
+      return { back: +b.back || 4, up: +b.up || 4, pitch: +b.pitch || 35, fov: +b.fov || +d.fov || 72 }; }
+    function fsCatchSlow(last) {
+      if (!kit || !kit.tagSlow || !kit.tagState || !kit.tagState().on) return;
+      if (!(FS5.slowEnd > FS5.wall)) { if (kit.tagSlow(FS_CATCH.k, { secs: 0.08 })) fsFx('u5slowin', 0.8, null); }
+      FS5.slowEnd = Math.max(FS5.slowEnd || 0, FS5.wall + (last ? FS_CATCH.last : FS_CATCH.hold));
+      if (!FS5.pushed && kit.tagBoom) { const b = fsBoomBase();
+        if (kit.tagBoom({ back: b.back * FS_CATCH.back, up: b.up, pitch: b.pitch, fov: b.fov * FS_CATCH.fov }, { secs: 0.12 })) FS5.pushed = true; }
+    }
+    /* (and let go at once: the fight begun again, left or set out afresh) */
+    function fsCatchEnd() {
+      FS5.slowEnd = null; FS5.countN = 0;
+      if (kit && kit.tagSlow) kit.tagSlow(null, { secs: 0 });
+      if (FS5.pushed) { FS5.pushed = false; if (kit && kit.tagBoom) kit.tagBoom(FS5.pulled ? PULL5 : null, { secs: 0 }); }
+      fsSlowRates(1);
+    }
+    function fsCatchTick() {
+      if (FS5.slowEnd == null || FS5.wall < FS5.slowEnd) return;
+      FS5.slowEnd = null;
+      if (kit && kit.tagSlow) kit.tagSlow(null, { secs: 0.3 });
+      if (FS5.pushed) { FS5.pushed = false; if (kit && kit.tagBoom) kit.tagBoom(FS5.pulled ? PULL5 : null, { secs: 0.35 }); }
+    }
+    /* (the bodies' takes and the nine at the court's rate: every take of each runs on its P.rate, which the walk's own rates
+       set to 1 each frame before this; 1 again the moment the slow is over) */
+    function fsSlowRates(sk) {
+      for (const P of [cast.pho, cast.zav]) if (P && P.ready) P.rate = sk;
+      for (const P of PRAI5.list) if (P && P.ready) P.rate = sk;
+    }
+    /* (a word over a Prai where its body stands, just over its head; the count once a frame, whatever number of them one press
+       of the bag took) */
+    function fsPop(word, p, tone) {
+      if (!kit || !kit.pop || !p || !word) return;
+      const w = fsW(p.x, p.z), V = fsVis[p.id - 1], sc = V ? V.s : 1;
+      kit.pop(word, { at: { x: w.x, y: 1.95 * sc, z: w.z }, tone, secs: 1.15, rise: 36 });
+    }
+    function fsPopCount(n) {
+      const W5 = fsWords(); if (!kit || !kit.pop || !W5.popCount) return;
+      kit.pop(W5.popCount.replace('{n}', String(n)), { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 1.5, rise: 22 });
+    }
     function fxHit(w, p, k, y0, o = null) {
       FS5.stopUntil = FS5.wall + 0.07 * Math.min(1, k);
       fsShake(0.045 * k, 0.32, 0.016 * k);
@@ -848,7 +897,7 @@
       if (fsGoldHalo.visible) fxlAdd(fsGoldHalo.position.x, fsGoldHalo.position.y, fsGoldHalo.position.z, FS_COL.gold, 2.4 * fsGoldHalo.material.opacity, 4);
       for (const B of fsBeams) if (B.t >= 0 && B.core.visible) fxlAdd((B.a.x + B.b.x) / 2, (B.a.y + B.b.y) / 2, (B.a.z + B.b.z) / 2, FS_COL.violet, 2.6 * B.core.material.opacity, 3.5);
       for (const [F, hex] of [[FXR.lend, FS_COL.violet], [FXR.togP, FS_COL.gold], [FXR.togZ, FS_COL.violet]]) if (F.visible) fxlAdd(F.position.x, 1.1, F.position.z, hex, 3.0 * F.material.uniforms.uA.value, 3.5);
-      for (const S of fsStreaks) if (S.on && S.fx.visible) fxlAdd(S.dots[0].position.x, S.dots[0].position.y, S.dots[0].position.z, S.gold ? FS_COL.gold : FS_COL.pale, 1.2, 3);
+      for (const S of fsStreaks) if (S.on && S.fx.visible) fxlAdd(S.dots[0].position.x, S.dots[0].position.y, S.dots[0].position.z, fsPale(S) ? FS_COL.pale : FS_COL.gold, 1.2, 3);
       if (CAGE5.group.visible) { const g = CAGE5.group.position; fxlAdd(g.x, 1.0, g.z, FS_COL.violet, 0.9, 2.8); }
       fxlCand.sort((a, b) => b.I - a.I);
       const n = Math.min(4, fxlCand.length);
@@ -1462,20 +1511,20 @@
         const at = (q, out) => { if (q < 0.6) { const v = q / 0.6; return out.lerpVectors(S.a, S.m, v).setY(lp(S.a.y, S.m.y, v) + 0.35 * Math.sin(v * Math.PI)); }
           const v = (q - 0.6) / 0.4; return out.lerpVectors(S.m, S.c, v).setY(lp(S.m.y, S.c.y, v) + 0.25 * Math.sin(v * Math.PI)); };
         S.dots.forEach((d, j) => { const q = u * 1.25 - j * 0.03; d.visible = q > 0 && q < 1; if (!d.visible) return; at(q, d.position);
-          d.scale.setScalar(0.26 * (1 - 0.6 * q) + 0.05); d.material.opacity = 0.85 * (1 - q * 0.5); d.material.color.setHex(S.gold ? 0x7a5a18 : 0x232830); });
+          d.scale.setScalar(0.26 * (1 - 0.6 * q) + 0.05); d.material.opacity = 0.85 * (1 - q * 0.5); d.material.color.setHex(fsPale(S) ? 0x232830 : 0x7a5a18); });
         S.glints.forEach((d, j) => { const q = u * 1.25 - j * 0.04 - 0.02; d.visible = q > 0 && q < 1; if (!d.visible) return; at(q, d.position);
-          d.scale.setScalar(0.3 * (1 - 0.4 * q)); d.material.opacity = 0.85; d.material.color.setHex(S.gold ? FS_COL.gold : FS_COL.pale); });
+          d.scale.setScalar(0.3 * (1 - 0.4 * q)); d.material.opacity = 0.85; d.material.color.setHex(fsPale(S) ? FS_COL.pale : FS_COL.gold); });
         /* (R94 E3: its head a small comet of the fire's own flames, pale (gold when the gold takes it), led along its way; where
            it goes into the bag, a pale burst and the bag's rush) */
         { const q = u * 1.25; S.fx.visible = fxOn('head') && q < 1;
           if (S.fx.visible) { at(q, _fsA); at(Math.max(0, q - 0.04), _fsB); _fsC.subVectors(_fsA, _fsB); const dl = _fsC.length(); if (dl > 1e-5) _fsC.multiplyScalar(1 / dl); else _fsC.set(0, 1, 0);
             fsFlameLay(S.fx, _fsA, _fsC, 0.26, 0.6); const U = S.fx.material.uniforms; U.uF.value = fxt * 34 + S.id * 7; U.uA.value = 0.95 * (1 - 0.3 * q); }
-          if (!S.gold && !S.hit && q >= 1) { S.hit = true; fsBloom(S.c.x, S.c.z, FS_COL.pale, 0.5, false, S.c.y + 0.1, { ramp: 'pale', k: 0.32, heat: 1.6 }); } }
+          if (fsPale(S) && !S.hit && q >= 1) { S.hit = true; fsBloom(S.c.x, S.c.z, FS_COL.pale, 0.5, false, S.c.y + 0.1, { ramp: 'pale', k: 0.32, heat: 1.6 }); } }
         /* (R100: its ribbon behind the head, back along its own way) */
         { const q = Math.min(1, u * 1.25), Rb = S.rb; let n = 0;
           if (fxOn('head') && u * 1.25 < 1.15) for (let i = 0; i < FXRB_N; i++) { const qi = q - i * 0.014; if (qi < 0) break; at(qi, Rb.pts[i]); n++; }
           fxRibbonLay(Rb, n);
-          if (n > 1) { fxRampSet(Rb.me.material, S.gold ? 'gold' : 'pale'); const U = Rb.me.material.uniforms; U.uT.value = fxt + S.id; U.uA.value = 0.9 * (1 - c01((u * 1.25 - 1) / 0.15)); } }
+          if (n > 1) { fxRampSet(Rb.me.material, fsPale(S) ? 'pale' : 'gold'); const U = Rb.me.material.uniforms; U.uT.value = fxt + S.id; U.uA.value = 0.9 * (1 - c01((u * 1.25 - 1) / 0.15)); } }
         if (u >= 1) S.on = false;
       }
       /* the bubbles of light where a Prai presses the bars, flickering */
@@ -1846,7 +1895,8 @@
                 fsBloom(w.x, w.z, FS_COL.violet, 0.9, false, 0.95 * sc, { ramp: 'violet', k: 0.55, heat: 1.5 });   // (R94 E3: the violet's own burst as it closes)
                 fsFx('u5bindsnap', 0.85, w.x, w.z); fxHit(w, null, 0.5, 0.95 * sc, { flash: '#B89AFF', snd: [], col: FS_COL.violet, col2: 0xeadcff });
                 fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 });
-                fsBindCast(p, w); } }
+                fsBindCast(p, w);
+                fsPop(fsWords().popBound, p, 'violet'); } }                      // (R122 idea 4: BOUND over it)
             break; }
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null, V = p ? fsVis[p.id - 1] : null, sc = V ? V.s : 1;
             if (w) fsShatter(w.x, 0.92 * sc, w.z, sc);                                 // (R74: its bubble breaks like glass, with its own sound)
@@ -1896,7 +1946,16 @@
             if (!e.gathers) fsPraiHit(p, 'setback', w);
             fsShake(0.085, 0.34, 0.022);
             break; }
-          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
+          case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave', true);
+            /* (R122 idea 2: its fire turned to white light flowing into the bag, the court slowed and the lens pushed in a
+               little; idea 4: CAUGHT over it, and the count in gold once this frame's catches are told) */
+            if (p) { const w = fsW(p.x, p.z), V = fsVis[p.id - 1], sc = V ? V.s : 1, bx = RITE.bag.x - w.x, bz = RITE.bag.z - w.z, bL = Math.hypot(bx, bz) || 1;
+              fsBloom(w.x, w.z, 0xf6fbff, 1.15, false, 1.0 * sc, { ramp: 'pale', k: 0.75, heat: 1.5 });
+              fsBurst(w.x, 1.0 * sc, w.z, 22, { sp: 2.6, up: 0.1, life: 0.75, s0: 0.09, col: 0xffffff, col2: 0xdfe8ff, mix: 0.45, grav: 0, drag: 1.1, dir: [bx / bL, 0, bz / bL], spread: 0.35 });
+              fsFx('u5release', 0.85, w.x, w.z);
+              fsPop(fsWords().popCaught, p, 'white'); }
+            FS5.countN = Math.max(FS5.countN || 0, Math.max(1, Math.min(9, 9 - e.left)));
+            fsCatchSlow(e.left === 0);
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
             if (e.by === 'bag') { if (FS5.snapAt !== FS5.wall) { FS5.snapAt = FS5.wall; fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); }   // (R71: once a press)
@@ -1927,6 +1986,10 @@
           case 'surge': fsFx('u5shape', 0.8, null); { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); }
             FS5.m8 = fsFx('u5m8surge', 0.7, null); for (const V of fsVis) V.from = null; break;
           case 'together': fsFx('u5togfill', 0.8, null);
+            /* (R122 idea 1, a full special attack: both faces slash across the screen with the word between them, a white slash
+               and a flash, before the Naga's film shows the attack itself (kit.cutIn, the seventy-eighth seam; the act's 1.5 s
+               holds the film back until it has played)) */
+            if (kit && kit.cutIn && kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: fsWords().cutTogether, secs: 1.4 })) fsFx('u5cutin', 0.9, null);
             /* (R68: pressed, the call BURSTS: its own sound, a flash of gold over the whole screen, the screen knocked) */
             fsFx('u5togpress', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFE6A8', secs: 0.28 }); fsShake(0.07, 0.45, 0.025);
             /* (R94 E3: gold flame round him and violet round his student, a burst of each, one great boom, the phone's buzz) */
@@ -1942,6 +2005,7 @@
           case 'lost': fsFx('u5broken', 0.8, null); FS5.lostAt = FS5.wall; break;
         }
       }
+      if (FS5.countN) { fsPopCount(FS5.countN); FS5.countN = 0; }              // (R122 idea 4: "4 of 9" in gold, once a frame)
     }
     function fsState(e) {
       const st = FS5.st, p = st.prai[e.id - 1]; if (!p) return;
@@ -1954,12 +2018,14 @@
       /* (R74: a tired one's bubble running out shatters too: held to tired, 'the bubble ends') */
       if (e.from === 'held' && e.to === 'tired' && e.why === 'the bubble ends') { const V = fsVis[e.id - 1], sc = V ? V.s : 1; fsShatter(w.x, 0.92 * sc, w.z, sc); }
     }
-    function fsStreak(p, gold) {
+    /* (R122 idea 2: a Prai caught by the shockwave goes into the bag as white light too, along the gold's own path: `white`) */
+    function fsPale(S) { return !S.gold || !!S.white; }
+    function fsStreak(p, gold, white) {
       if (!p) return;
       const S = fsStreaks.find(q => q.on && q.id === p.id) || fsStreaks.find(q => !q.on) || fsStreaks[0];
       if (S.on && S.id === p.id && S.gold === gold) return;
       const w = fsW(p.x, p.z), V = fsVis[p.id - 1];
-      S.on = true; S.id = p.id; S.t = 0; S.T = gold ? 0.9 : Math.max(0.6, FN5.bagSecs || 1); S.gold = gold; S.hit = false; fxRampSet(S.fx.material, gold ? 'gold' : 'pale');
+      S.on = true; S.id = p.id; S.t = 0; S.T = gold ? 0.9 : Math.max(0.6, FN5.bagSecs || 1); S.gold = gold; S.white = !!white; S.hit = false; fxRampSet(S.fx.material, fsPale(S) ? 'pale' : 'gold');
       S.a.set(w.x, 0.9 * (V ? V.s : 1), w.z); fsHead(cast.pho, S.m, 1.55); S.c.set(RITE.bag.x, 0.35, RITE.bag.z);
     }
     function fsStage(to) {
@@ -2032,6 +2098,7 @@
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
       FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
       FS5.cageAt = null; FS5.hitQ = [];
+      fsCatchEnd();
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
       PRAI5.list.forEach(P => { PRAI5.burn(P, 1); PRAI5.cool(P, 0); });   // (R47: the fire back on the nine, and the Naga of the last try gone)
       NAGA5.hide(); if (typeof SPLASH5 === 'object') SPLASH5.off();
@@ -2071,6 +2138,7 @@
       if (FS5.labPose && cast.pho && cast.pho.ready) pose(cast.pho, FS5.labPose.name, FS5.labPose.t);   // (a probe's: lab.pose)
       if (FS5.labZPose && cast.zav && cast.zav.ready) pose(cast.zav, FS5.labZPose.name, FS5.labZPose.t);   // (a probe's: lab.zpose)
       if (!ts.on) return;
+      fsCatchTick();                                                          // (R122: a catch's slow and push let go on time)
       /* the card after a loss waits a moment of the court going dark */
       /* (R75's debug, GJ: and for the loss's own line, "Enough. Breathe. We begin again." (3.9 s): a BEGIN AGAIN pressed under
          it began the fight over it, and a new prompt took its caption) */
@@ -2158,10 +2226,14 @@
       /* (R75's debug, GH: the smell's crouch, which comes by itself, roots no one: a walk begun under it ends it) */
       kit.tagBody('zavier', { root: still || (fsZavActing() && FS5.zact.kind !== 'smell') });
       fsZavActTick();
-      fsFaces(wdt, playedNow);
+      /* (R122: the court drawn at the mode's rate, a catch's slow motion: the turns, the takes, the nine and the effects; the
+         screen, the sound and the shake at the wall's. Never slowed, sk is 1 and every value is what it always was) */
+      const sk = ts.slow > 0 && ts.slow < 1 ? ts.slow : 1;
+      fsFaces(wdt * sk, playedNow);
       /* 5. the screen and the court */
       fsHud();
-      fsLookFrame(wdt, playedNow, phoB, zavB);
+      fsLookFrame(wdt * sk, playedNow, phoB, zavB);
+      fsSlowRates(sk);
       fsSoundFrame(wdt, playedNow);
       fsShakeFrame(ts);
     }
@@ -2293,6 +2365,7 @@
     }
     /* the mode left for good, the court as the bag tied film finds it */
     function fightLeave() {
+      fsCatchEnd();                                                           // (R122: no slow, no push, every rate 1)
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       if (kit && kit.tag && kit.tag().on) kit.tag(null, 'restore');
       if (kit && kit.chill) kit.chill(0, { secs: 0.4 });
@@ -2425,6 +2498,7 @@
          the Naga's wait, the bag's run, the call's rise, the bag's snap. Each back to what a fresh build has) */
       FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
       FS5.nagaDim = false; FS5.windT = 0; FS5.hitQ = [];
+      FS5.slowEnd = null; FS5.pushed = false; FS5.countN = 0;                  // (R122: a catch's slow, push and count)
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);

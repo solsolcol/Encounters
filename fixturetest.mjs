@@ -3625,7 +3625,8 @@ K.tagGoneWithChapter = await p.evaluate(() => {
     return ok;
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
-                   'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagWideSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy']) K[k] = false;
+                   'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagWideSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy',
+                   'tagSlowSeam', 'popSeam', 'cutInSeam', 'barsSeam']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -3927,6 +3928,111 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.notAtY = Math.abs(ar.bottom - atY) > 5;
       R._m = { who: b0.id, bottom: Math.round(ar.bottom), want: Math.round(want), y: Math.round(atY) };
       st.fightEnd('restore'); await frames(2);
+      return R;`);
+    /* v28.0 · THE MODE'S CLOCK SLOWED (the seventy-sixth seam; Chad's R122: "half a second of slow motion" as each Prai is
+       caught). Never asked, the rate is exactly 1 and nothing eases; asked for a quarter at once, the mode's clock steps a
+       quarter of what it stepped a frame before (frame for frame, over the same kind of frames); eased toward a half, it is
+       a half once its time has passed; asked back with null, it is 1 and lets go; closing the mode puts it back; refused
+       with the mode off and for a value that is not a number */
+    K.tagSlowSeam = await pCheck('slowSeam', `
+      const R = {};
+      R.opened = st.fightOpen() === true;
+      await poll(() => kit.tagState().live, 20000); await frames(4);
+      R.absentOne = kit.tagState().slow === 1 && E.tag().slow === 1;
+      const rate = async (ms) => { const t0 = kit.tagState().t, w0 = performance.now(); let n = 0;
+        while (performance.now() - w0 < ms) { await frames(1); n++; } return { dt: kit.tagState().t - t0, n }; };
+      const r1 = await rate(2500);
+      R.atOnce = kit.tagSlow(0.25, { secs: 0 }) === true && kit.tagState().slow === 0.25;
+      const r2 = await rate(2500);
+      const q = (r2.dt / r2.n) / (r1.dt / r1.n);
+      R.quarter = q > 0.17 && q < 0.33;
+      R.eases = kit.tagSlow(0.5, { secs: 0.4 }) === true;
+      await new Promise(r => setTimeout(r, 900)); await frames(2);
+      R.eased = kit.tagState().slow === 0.5;
+      R.back = kit.tagSlow(null, { secs: 0 }) === true && kit.tagState().slow === 1;
+      R.badRefused = kit.tagSlow('x') === false && kit.tagState().slow === 1;
+      kit.tagSlow(0.4, { secs: 0 });
+      st.fightEnd('restore'); await frames(2);
+      R.offPutBack = kit.tagState().slow === 1 && kit.tagSlow(0.5) === false;
+      R._m = { r1, r2, q: +q.toFixed(3) };
+      return R;`);
+    /* v28.0 · THE WORDS OVER A PLACE (the seventy-seventh seam; Chad's R122: "BOUND, CAUGHT, and a gold 4 of 9"). Absent, its
+       layer is empty; a word over a point of the world stands where that point is drawn and rises; a word over the screen
+       stands where it was put, in its tone and size; both are gone once their time has passed; nothing is asked of a word
+       with no text or no place. THE CUT-IN (the seventy-eighth): absent, its layer is hidden and holds no picture; asked, it
+       shows its two bands (each holding its picture, the upper over the screen's middle, the lower under it, both slanted),
+       the word, and is gone after its time with nothing left in it; refused with nothing to show. And a film begun from play
+       takes every word and the cut-in away on its first frame (v11.4) */
+    K.popSeam = await pCheck('popSeam', `
+      const R = {}, L = document.getElementById('popLayer');
+      await frames(2);
+      R.absentEmpty = !!L && L.children.length === 0;
+      const V = E.camera.position.constructor; E.camera.updateMatrixWorld(true);
+      const ahead = new V(0, 0, -4).applyMatrix4(E.camera.matrixWorld);
+      const id1 = kit.pop('Bound', { at: { x: ahead.x, y: ahead.y, z: ahead.z }, tone: 'violet', secs: 3 });
+      const id2 = kit.pop('4 of 9', { screen: { sx: 0.5, sy: 0.3 }, tone: 'gold', big: true, secs: 3 });
+      R.ids = typeof id1 === 'number' && typeof id2 === 'number' && id2 === id1 + 1;
+      await new Promise(r => setTimeout(r, 350)); await frames(2);
+      const w1 = L.querySelector('.popW.violet'), w2 = L.querySelector('.popW.gold.big');
+      const p = ahead.clone().project(E.camera), sx = (p.x * 0.5 + 0.5) * innerWidth, sy = (-p.y * 0.5 + 0.5) * innerHeight;
+      const c = (w) => { const r = w.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+      R.shown = !!w1 && !!w2 && w1.textContent === 'Bound' && w2.textContent === '4 of 9' && +w1.style.opacity > 0.5 && +w2.style.opacity > 0.5;
+      const c1 = w1 && c(w1), c2 = w2 && c(w2);
+      R.overPoint = !!c1 && Math.abs(c1[0] - sx) < 6 && c1[1] < sy + 2 && c1[1] > sy - 60;
+      R.onScreen = !!c2 && Math.abs(c2[0] - innerWidth / 2) < 6 && c2[1] < innerHeight * 0.3 + 2 && c2[1] > innerHeight * 0.3 - 60;
+      R.big = !!w1 && !!w2 && parseFloat(getComputedStyle(w2).fontSize) > parseFloat(getComputedStyle(w1).fontSize);
+      R.refused = kit.pop('', { screen: { sx: 0.5, sy: 0.5 } }) === false && kit.pop('Caught', {}) === false;
+      await poll(() => L.children.length === 0, 8000);
+      R.gone = L.children.length === 0;
+      R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round) };
+      return R;`);
+    K.cutInSeam = await pCheck('cutInSeam', `
+      const R = {}, C = document.getElementById('cutIn');
+      await frames(2);
+      const pics = () => C.querySelectorAll('.ciPic').length;
+      R.absentHidden = !!C && !C.classList.contains('on') && getComputedStyle(C).display === 'none' && pics() === 0;
+      const pic = (col) => { const c = document.createElement('canvas'); c.width = 96; c.height = 64; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 96, 64); return c; };
+      R.refused = kit.cutIn({}) === false;
+      R.asked = kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 3 }) === true;
+      await new Promise(r => setTimeout(r, 500)); await frames(2);
+      const a = C.querySelector('.ciBand.a'), b = C.querySelector('.ciBand.b'), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      R.shown = C.classList.contains('on') && getComputedStyle(C).display === 'block' && pics() === 2
+        && !!a.querySelector('.ciPic canvas') && !!b.querySelector('.ciPic canvas');
+      R.placed = ra.bottom <= innerHeight / 2 && rb.top >= innerHeight / 2 && ra.height > 100 && rb.height > 100;
+      R.slanted = /polygon/.test(getComputedStyle(a.querySelector('.ciPic')).clipPath);
+      R.word = C.querySelector('.ciWord').textContent === 'Together';
+      await poll(() => !C.classList.contains('on'), 6000); await frames(2);
+      R.gone = getComputedStyle(C).display === 'none' && pics() === 0 && C.querySelector('.ciWord').textContent === '';
+      /* (a film from play takes the words and the cut-in away on its first frame) */
+      kit.pop('Caught', { screen: { sx: 0.5, sy: 0.5 }, secs: 30 });
+      kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 4 });
+      await frames(2);
+      R.bothUp = document.getElementById('popLayer').children.length === 1 && C.classList.contains('on');
+      R.filmStarted = kit.film('flash') === true;
+      R.cine = await poll(() => E.getState() === 'cine', 30000);
+      R.filmTookThem = document.getElementById('popLayer').children.length === 0 && !C.classList.contains('on') && pics() === 0;
+      R.refusedInFilm = kit.cutIn({ a: pic('#c08030') }) === false && kit.pop('X', { screen: { sx: 0.5, sy: 0.5 } }) === false;
+      window.__ciFilm = true;
+      return R;`);
+    /* v28.0 · THE FILM'S BARS DRAWN IN (the seventy-ninth seam; Chad's R122, the Naga's summoning: "black bars top and
+       bottom"). In the film the cut-in proof began: drawn in by a half, each bar is 3.5 % of the screen taller than it always
+       is; given back, exactly as it always is; left drawn in when the film ends, the film's end gives them back; in play it is
+       refused. Absent, a bar's height is 11 % of the screen as it always was */
+    K.barsSeam = await pCheck('barsSeam', `
+      const R = {}, T = document.getElementById('barTop'), B = document.getElementById('barBot');
+      const vh = (el) => el.getBoundingClientRect().height / innerHeight * 100;
+      /* (in the film the cut-in proof began, or in one begun here if that one has already ended on a fast box) */
+      R.inFilm = window.__ciFilm === true && (E.getState() === 'cine' || (kit.film('flash') === true && await poll(() => E.getState() === 'cine', 30000)));
+      R.absent11 = Math.abs(vh(T) - 11) < 0.2 && Math.abs(vh(B) - 11) < 0.2 && !T.style.getPropertyValue('--barX');
+      R.drawn = kit.bars(0.5) === true; await frames(2);
+      R.taller = Math.abs(vh(T) - 14.5) < 0.3 && Math.abs(vh(B) - 14.5) < 0.3;
+      R.given = kit.bars(0) === true; await frames(2);
+      R.back11 = Math.abs(vh(T) - 11) < 0.2 && !T.style.getPropertyValue('--barX');
+      kit.bars(0.8); await frames(2);
+      R.play = await poll(() => E.getState() === 'play', 180000);
+      await frames(3);
+      R.endGaveBack = !T.style.getPropertyValue('--barX') && !B.style.getPropertyValue('--barX');
+      R.refusedInPlay = kit.bars(0.5) === false && !T.style.getPropertyValue('--barX');
       return R;`);
   } catch (e) {
     console.log('tag phone threw', e && e.message);
