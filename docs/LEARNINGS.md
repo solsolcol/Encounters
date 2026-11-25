@@ -9202,3 +9202,22 @@ the lens, reads back with only the camera's own roll: the first measure of R149'
 the tremble absent while the render (which refreshes the whole scene) drew it. Read a camera after
 `camera.updateWorldMatrix(true, false)` (parents first), the same law as a child's box (v9.2), and measure a shake as the
 difference between the same film sought with it and without it (a throwaway copy of the chapter with its size set to 0).
+
+## v28.0 — a film slowed in the middle, and a group a film hides (R157)
+
+**A stretch of slow motion moves every cue after it (build 107, R157).** The Naga film runs on a story clock (where the
+bodies and the effects are) and a real clock (when a sound plays, when a line is said, when the phone buzzes). Slowing the
+story's last 0.28 s before the stick hits the ground over 0.85 s of real time (c_yfilm.js strikeS5, real()/story())
+pushed every moment after it 0.57 s later on the real clock, while every cue in z_tail had been written as a story time
+read straight as a real one: the boom, the title, the Naga's water, the pierces and their voices would all have come
+early. Every cue after a slowed stretch is placed on the REAL clock through the film's own map (z_tail's DRIVE, STRIKE,
+RISEN and the rest, each `R(T.x)`), every written-out copy of the clock (TOG5, TOG5_REAL, used where no world exists) is
+changed with it, and a console error says so if the live clock ever parts from the copy. The engine's warm scan reads a
+cue by its literal call, so a cue's time may hold a constant but never a call.
+
+**A film never draws what hangs from a group play hides (build 107, R157).** The fight's effects hang from one group
+(c_fightstage.js FSG, 'the cleansing'), shown only in play and hidden while any film runs. The wind's ribbons for the
+Naga film were first made in that set like the others and never appeared: a lab listing of every ribbon showed them
+visible, laid and lit, each under a hidden parent. They hang from the world now. What a film draws is checked by its
+WHOLE chain of parents (a probe that reads `visible` on the mesh alone says yes), and the same listing found that R129's
+gold and violet swirls, asked for at the film's opening since build 100, never drew either: put to Chad, left as it is.

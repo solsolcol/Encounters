@@ -9658,6 +9658,27 @@ What the baseline contains, by release:
   `updateMatrixWorld` on the camera alone shows only its own roll, never its parents' turn (refresh from the top:
   `updateWorldMatrix(true, false)`).
 
+- **v28.0 build 106 (25 Nov 2026; LIVE, deploy `6b073c06a550163ae09a8b8c`).** Chad's R153: "If i refresh the browser right
+  after the naga cutscene has completed and proceeded to the bag the remaining prais, and i press 'continue' game from the
+  title screen, i want it to continue from the part where the 'together' button shows up on the screen." The fight's surge
+  (six in the bag, three left, TOGETHER on the screen) is now a bookmark of its own, 'fight:tg', saved as the rules reach
+  it, and a Continue that finds it lands there with no brief. Tested on the live build by the real entry path (a save of
+  the game's own, the page reloaded in the bagging, Continue tapped on a phone: tools/probes/e4c5tgresume.mjs): all
+  passed. His R154 to R156 on the eight ideas of R150, which had been written between tool calls and never reached him,
+  and on "the strike", a word of mine: the ideas sent again as the turn's last message in plain words, and two rules into
+  CLAUDE.md (what he must read goes in the turn's final message; no names from the code or the plan in a message to him).
+
+- **v28.0 build 107 (25 Nov 2026; LIVE, deploy `6b074ee083343653cd0f10a5`).** Chad's R157, "Do 1, 2, 3, 5, 6 cleanly", of
+  the eight ideas for the moment Master Zavier and Grandmaster Pho bring the stick down and the Naga bursts out: (1) the
+  world's sound almost gone through the slow motion, then a boom as the stick hits the ground (the engine's sound closing
+  down, kit.hush, may now hold the level down with it: `floor`, absent everywhere else); (2) a ring of water and light
+  racing out across the court from the stick's foot; (3) wind swirling in toward the stick as the power grows, pulling dust
+  and Grandmaster Pho's robe after it; (5) a close-up of the carved Naga head's eyes lighting up just before the hit; (6) a
+  split second of slow motion as the stick comes down. Three new sounds (the boom, the wind, the eyes' glint). Two traps,
+  both in LEARNINGS: a stretch of slow motion moves every cue after it onto a later real time, and a film never draws what
+  hangs from the fight's own effects group, which play shows and films hide (so the swirls of gold and violet built for
+  R129's opening had never drawn: put to Chad).
+
 ## The sheet, version by version
 
 **v160, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v160.xlsx`, sha256 08d37f8a...9c449ad1; id
