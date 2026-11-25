@@ -15381,6 +15381,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       _cyM.copy(sk.boneInverses[ip]); _cyM2.copy(sk.boneInverses[ic]).invert(); _cyM.multiply(_cyM2);
       const q = new THREE.Quaternion(); _cyM.decompose(_cyA, q, _cyB); return q;
     }
+    const STAFFLAY5 = { w: [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()], b: [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()], kk: -1, on: false };
     function carryStaffLay(P, kk) {
       const As = armsOf(P), a = As && As.R; if (!a) return;
       if (!a.hinge) hingeOf(a, -1);                                           // (read off his own pose, before anything is laid)
@@ -15390,6 +15391,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         else { const f = m1.position.clone().normalize(), r = i1.position.clone().sub(k1.position); r.addScaledVector(f, -r.dot(f)).normalize();
           a.c5 = { bt, f, r, n: new THREE.Vector3().crossVectors(f, r).negate().normalize() }; } }
       if (a.c5.none) return;
+      /* (R145: as Jun's bag below. His arm is solved to its place, but his forearm's turn is solved from the turn it already
+         has, so laid again with nothing posing him between it crept on, half the rest each frame, and went back at play's
+         first tick: while his arm stands exactly as this lay left it, it is not laid again) */
+      const SL = STAFFLAY5;
+      if (SL.on && a.wrote && a.up.quaternion.equals(SL.w[0]) && a.fore.quaternion.equals(SL.w[1]) && a.hand.quaternion.equals(SL.w[2])) {
+        if (SL.kk === kk) return; a.up.quaternion.copy(SL.b[0]); a.fore.quaternion.copy(SL.b[1]); a.hand.quaternion.copy(SL.b[2]); a.up.updateWorldMatrix(false, true); }
+      else { SL.b[0].copy(a.up.quaternion); SL.b[1].copy(a.fore.quaternion); SL.b[2].copy(a.hand.quaternion); }
       if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
       _cyQ3.copy(a.up.quaternion); const kF = a.fore.quaternion.clone(), kH = a.hand.quaternion.clone();
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
@@ -15411,14 +15419,28 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       if (kk < 0.999) { a.up.quaternion.slerpQuaternions(_cyQ3, a.up.quaternion.clone(), kk); a.fore.quaternion.slerpQuaternions(kF, a.fore.quaternion.clone(), kk);
         a.hand.quaternion.slerpQuaternions(kH, a.hand.quaternion.clone(), kk); }
       a.up.updateWorldMatrix(false, true);
+      SL.w[0].copy(a.up.quaternion); SL.w[1].copy(a.fore.quaternion); SL.w[2].copy(a.hand.quaternion); SL.kk = kk; SL.on = true;
     }
+    /* (R145, Chad, 25 Nov 2026: "right after the chapter title text ends and the game goes into the playable section, jun's arm
+       is spinning for a split second". MEASURED on build 102b (tools/probes/e4c5junarm.mjs, every drawn frame from the opening
+       film's last seconds into play): from the film's end to the first frame of play nothing poses him (the film is over,
+       its hold on him is kept, and the people's tick leaves a body a film holds), yet each frame drawn laid his arm's turn
+       out on top of the last one: 10 degrees more a frame, his upper arm from 15 degrees off his side to 75 in four frames
+       on that box, a spin at a phone's sixty, until play's first tick gave his arm back. A turn laid on a turn is the v11.5
+       trap, and this lay runs on every draw, not on the people's tick: so the turn it wrote is kept, and while his arm still
+       stands exactly as it was left (nothing has posed him since) the turn is not laid again; at a new share it is laid
+       again from the pose it was laid on) */
+    const BAGLAY5 = { wrote: new THREE.Quaternion(), base: new THREE.Quaternion(), kk: -1, on: false };
     function carryBagLay(P, kk) {
       const As = armsOf(P), a = As && As.L; if (!a) return;
+      if (BAGLAY5.on && a.wrote && a.up.quaternion.equals(BAGLAY5.wrote)) { if (BAGLAY5.kk === kk) return; a.up.quaternion.copy(BAGLAY5.base); }
+      else BAGLAY5.base.copy(a.up.quaternion);
       if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_cyQ);
       const fwd = _cyA.set(0, 0, 1).applyQuaternion(_cyQ);                     // (his forward: a turn about it by a positive angle takes his LEFT arm out)
       a.up.parent.updateWorldMatrix(true, false); a.up.parent.getWorldQuaternion(_cyQ2); fwd.applyQuaternion(_cyQ2.invert()).normalize();
       a.up.quaternion.premultiply(_cyQ3.setFromAxisAngle(fwd, CARRY5.junOut * kk)); a.up.updateWorldMatrix(false, true);
+      BAGLAY5.wrote.copy(a.up.quaternion); BAGLAY5.kk = kk; BAGLAY5.on = true;
     }
     const carryHook = new THREE.Object3D(); carryHook.name = 'what Ton and Jun carry, held as a hand holds it';
     carryHook.updateMatrixWorld = function (force) {
@@ -16301,6 +16323,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         } else if (!this.braidOff) { BRAID5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau); this.braidOff = true; }
         if (tau < T.strike + 0.7) this.braidOff = false;
         const HEADAT = () => NAGA5.headAt() || [B.S[0], B.S[1], B.S[2]];
+        /* (R143: from its climb into the ring to its home, each man watches the Naga as nagaSoft5 says, never its head at this
+           very instant) */
+        const SOFTAT = (P) => () => nagaSoft5(P, tau, B, T) || HEADAT();
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
@@ -16321,7 +16346,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              the stick he looked at the lens, the lab's picture of the new home shot) */
           /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
              its head as it takes light; then as before) */
-          fmGaze(P, tau, [[0, HANDS], [1.5, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [2.15, SH], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
+          fmGaze(P, tau, [[0, HANDS], [1.5, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [2.15, SH], [T.rise + 0.2, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry + (tau < T.ko5c2 ? TOGP5.zry : 0));
           /* (his full body while the hands are close, given back at the cut to the paving: R132) */
           if (TOGP5.zavFull) P.force = tau < T.strike - 0.1 ? 0 : (this.zf0 != null ? this.zf0 : 1);
@@ -16331,7 +16356,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              then the Naga) */
           if (typeof ZAVGRIP5 === 'object') { const g = tau >= T.ko5c2 ? 0 : 1 - out;
             ZAVGRIP5.set({ k: smo(c01((tau - T.reach) / 0.7)) * g, kin: smo(c01((tau - 0.75) / 0.35)), kf: smo(c01((tau - T.close) / 0.3)) * g }); }
-          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [1.7, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [2.3, SH], [T.rise + 0.25, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
+          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [1.7, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [2.3, SH], [T.rise + 0.25, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
         { const cc = tau < T.ko5c2 ? mid : zz, cin = tau < T.strike - 0.1 ? 0 : smo(c01((tau - T.strike + 0.1) / TOGP5.cageIn));
@@ -16392,7 +16417,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (build 102: as the two powers reach the carved head (T.lit), not as they start up the shaft: build 101's braid shot
            looks up from his student's fist, and bars drawn in over it took both foreheads, a desk's to the eyes at 2.6 s; from
            T.lit the lens is up the shaft, the faces low in the picture, and the bars are whole by the cut to the lift) */
-        const barK = smo(c01((tau - (T.lit - 0.3)) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
+        /* (R144, Chad: "make it last one second longer on screen": the word now stands 2.5 s, and the bars are given back once
+           it has gone, a second later than build 102b gave them back, so it never rides down with them) */
+        const barK = smo(c01((tau - (T.lit - 0.3)) / 0.8)) * (1 - smo(c01((tau - T.title - 2.55) / 0.6)));
         if (kit && kit.bars) kit.bars(barK);
         this.title(tau, T, kit && kit.bars ? barK : 0);
       },
@@ -16405,12 +16432,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       title(tau, T, barK = 0) {
         const S = TITLE5.sp; if (!S) return;
         const u = tau - T.title;
-        if (!(u >= 0 && u < 1.5)) { if (S.visible) S.visible = false; return; }
-        const kin = smo(c01(u / 0.4)), kout = 1 - smo(c01((u - 1.1) / 0.4)), d = 2.0;
+        /* (R144, Chad, 25 Nov 2026: "Also the naga text that appears, make it last one second longer on screen": held a second
+           longer, gone by 2.5 s (was 1.5), its fade in and its fade out as they were) */
+        if (!(u >= 0 && u < 2.5)) { if (S.visible) S.visible = false; return; }
+        const kin = smo(c01(u / 0.4)), kout = 1 - smo(c01((u - 2.1) / 0.4)), d = 2.0;
         camera.updateMatrixWorld(true);
         camera.getWorldPosition(_ttP); camera.getWorldDirection(_ttF); _ttU.set(0, 1, 0).applyQuaternion(camera.getWorldQuaternion(_ttQ5));
         const vh = 2 * d * Math.tan(camera.fov * Math.PI / 360), vw = vh * camera.aspect, ar = S.userData.ar || 2.3;
-        const w = Math.min(vw * 0.25, vh * 0.23) / (S.userData.wf || 0.84) * (1.06 - 0.06 * kin + 0.02 * c01(u / 1.5));
+        const w = Math.min(vw * 0.25, vh * 0.23) / (S.userData.wf || 0.84) * (1.06 - 0.06 * kin + 0.02 * c01(u / 2.5));
         const lift = -vh / 2 + vh * (0.11 + 0.07 * barK) + vh * 0.035 + (S.userData.gh || 0.5) * (w / ar) / 2;
         S.position.copy(_ttP).addScaledVector(_ttF, d).addScaledVector(_ttU, lift);
         S.scale.set(w, w / ar, 1); S.material.opacity = kin * kout; S.material.rotation = 0; S.visible = true;
@@ -17105,6 +17134,49 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     };
 
     /* what a scene reaches of the films (stage.films): each film's three hands */
+    /* (R143) THE NAGA WATCHED AS A MAN WATCHES A THING FLYING ROUND HIM (Chad, 25 Nov 2026: "For the naga sequence, when the
+       naga returns back to the naga staff, zavier and pho's head seems to spin at very fast speed while looking at the naga,
+       make it more natural please"). MEASURED on build 102b (every thirtieth of a second of the film from its climb to its
+       tail, lab143): each head was laid on the Naga's head as it stood that instant, held at the side of his neck while it
+       was behind him, and the frame it crossed behind him thrown to the other side (1,535 to 1,553 degrees a second, three
+       times each man: as it climbs into its ring, as the ring ends, and in the spiral down), and swept 350 to 526 degrees a
+       second through the spiral's last turns round the stick. A man watching a thing fly round him follows it as far as his
+       neck turns, waits for it on the side it went, and turns to the other side over a moment to meet it as it comes round;
+       a spiral closing on one place he watches at its middle. So his look here is the Naga as he saw it over the last 1.1 s
+       (a sight every tenth of a second, the newest counting most), each sight first held inside his neck's turn (34 degrees
+       either side of his body, his nod inside the look's own limits) so a sight from behind him never flips him; and through
+       the spiral home each sight is drawn to the spiral's own middle as it closes, wholly by seven tenths of the way down.
+       A pure function of the film's clock: every sight is read from the Naga's plan at its own moment (its eyes, NAGA5.eyeAt),
+       his head's place from where he stands (never his laid head) */
+    const NSOFT5 = { W: 1.1, N: 12, YAW: 0.6, UP: 0.33, DOWN: 0.55, far: 3.0, mid: 0.7, H: 1.6,
+                     q: new THREE.Quaternion(), qi: new THREE.Quaternion(), v: new THREE.Vector3() };
+    function nagaSoft5(P, tau, B, T) {
+      if (!P || !P.ready || !P.group || !B || !B.pts || !B.NM || typeof NAGA5 !== 'object' || !NAGA5.eyeAt) return null;
+      const S = NSOFT5, g = P.group; g.updateWorldMatrix(true, false);
+      const hx = g.position.x, hy = g.position.y + S.H, hz = g.position.z;
+      g.getWorldQuaternion(S.q); S.qi.copy(S.q).invert();
+      /* (the ring's middle, from its own points: the ring is laid at even steps round one circle) */
+      if (!B.ringC5) { let x = 0, y = 0, z = 0, n = 0; for (let i = B.NM.ringIn; i < B.NM.ringOut; i++) { const p = B.pts[i]; if (!p) continue; x += p[0]; y += p[1]; z += p[2]; n++; }
+        B.ringC5 = n ? [x / n, y / n, z / n] : [B.S[0], B.S[1] + 3, B.S[2]]; }
+      const rc = B.ringC5, spin = Math.max(0.1, T.home - T.ringOut);
+      let sy = 0, sn = 0, sw = 0;
+      for (let j = 0; j < S.N; j++) {
+        const s = tau - S.W * j / (S.N - 1), w = 0.5 + 0.5 * Math.cos(Math.PI * j / (S.N - 1));
+        const a = NAGA5.eyeAt(s, 0), b = NAGA5.eyeAt(s, 1); if (!a || !b) continue;
+        let x = (a[0] + b[0]) / 2, y = (a[1] + b[1]) / 2, z = (a[2] + b[2]) / 2;
+        const sp = c01((s - T.ringOut) / spin), m = smo(c01((s - T.ringOut) / (spin * S.mid)));
+        if (m > 0) { const k = smo(sp), cx = rc[0] + (B.S[0] - rc[0]) * k, cy = rc[1] + (B.S[1] + 0.6 - rc[1]) * sp, cz = rc[2] + (B.S[2] - rc[2]) * k;
+          x += (cx - x) * m; y += (cy - y) * m; z += (cz - z) * m; }
+        const v = S.v.set(x - hx, y - hy, z - hz).applyQuaternion(S.qi);
+        const yaw = Math.max(-S.YAW, Math.min(S.YAW, Math.atan2(v.x, v.z))), nod = Math.max(-S.DOWN, Math.min(S.UP, Math.atan2(v.y, Math.hypot(v.x, v.z))));
+        sy += w * yaw; sn += w * nod; sw += w;
+      }
+      if (!(sw > 0)) return null;
+      const yaw = sy / sw, nod = sn / sw;
+      const v = S.v.set(Math.sin(yaw) * Math.cos(nod), Math.sin(nod), Math.cos(yaw) * Math.cos(nod)).applyQuaternion(S.q);
+      return [hx + v.x * S.far, hy + v.y * S.far, hz + v.z * S.far];
+    }
+
     const FILMS5API = {
       open: FILMS5.open, devotee: FILMS5.devotee, prepare: FILMS5.prepare, together: FILMS5.together,
       bagtied: FILMS5.bagtied, collector: FILMS5.collector,
