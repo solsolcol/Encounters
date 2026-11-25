@@ -9566,7 +9566,13 @@ What the baseline contains, by release:
   in its phone pictures: the gold NAGA drawn upside down (a decoded picture goes up top row first whatever flipY says; the
   lesson was already in LEARNINGS, so chaptertest now holds it: `rowOrderFaults`), and each pierce's slow begun AT its hit,
   so its slowest came after the cut, on the next one's approach (now centred on the hit, slowest as the head goes through
-  her; the slow-in sound at its start).
+  her; the slow-in sound at its start). Then build 91, deploy `6b06796d86e7bb5c4a0da1c8`, three more of mine found in its
+  pictures: the water ring at the stick's strike was under every frame (the paving's lens now comes in on the stick's foot
+  as it strikes and tilts up it into the eruption); BOUND, over a Prai at the court's far end, was cut by the objective's box
+  and sat on the count's dots (a word now keeps clear of the HUD's top stack and of the party list: the engine's popHud);
+  and the objective's box lay over the cut-in's upper band, the party list and the call button showing through its gap (they
+  step aside while it stands: body.cutin). The fixture proves both (popSeam clearOfHud, cutInSeam hudAside and hudBack); its
+  pop proof's words given 20 s of the wall, after build 90's run lost them between two slow frames.
 
 ## The sheet, version by version
 
