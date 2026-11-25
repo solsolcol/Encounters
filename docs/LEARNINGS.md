@@ -9194,3 +9194,11 @@ passed behind him, so the average jumped by one sample's share each time one of 
 tenth of a second, a stutter that a measure at thirty frames a second read as 230 degrees a second. Each sample must be a
 smooth function of what it reads (all of the turn to a knee, easing toward the limit, and back to straight ahead from
 behind him: c_yfilm.js nagaSoft5), and then the average is smooth: at most 73 degrees a second, read at sixty.
+
+**A camera read in a probe must refresh its rig from the top (v28.0, build 105, R149).** `camera.updateMatrixWorld(true)`
+recomputes the camera and its children from its parents' world matrices AS THEY STAND; it never refreshes the parents.
+A film that turns `yaw` and `pitch` (the camera's parents) after the last full refresh of the frame, a shake laid on after
+the lens, reads back with only the camera's own roll: the first measure of R149's rumble saw 0.00 px of shift and called
+the tremble absent while the render (which refreshes the whole scene) drew it. Read a camera after
+`camera.updateWorldMatrix(true, false)` (parents first), the same law as a child's box (v9.2), and measure a shake as the
+difference between the same film sought with it and without it (a throwaway copy of the chapter with its size set to 0).

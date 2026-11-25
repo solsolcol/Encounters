@@ -9643,7 +9643,29 @@ What the baseline contains, by release:
   `6b0728128d78449a0eb71116`, takes it out: a darkening he cannot read the purpose of serves nothing; the summon is the
   bars, the strike, the water and their sounds.
 
+- **v28.0 build 105 (25 Nov 2026; LIVE, deploy `6b07351427b4ed8ee94b6cf0`).** Chad's R148 to R152 on the Naga film's
+  opening. R148 ("always has what? Was that cut off or what?"): not cut off, the take was whole; the line was too short to
+  sound whole. R151, his words: Grandmaster Pho now says "The Naga protects us. It always has." (three takes, all heard whole
+  by an unprompted transcriber; take c, because the house's pick ran its last word under the Naga's dive). R149 ("make the
+  camera rumble and charge up before the naga gets summoned out of the stick"), with R152 ("Rumble has to be more subtle so
+  it doesn't affect visibility of whats going on") built in before anything went live: a slow faint tremble from the
+  braid to the drive, a small jolt at the strike, the push from behind reached by an ease-in (fmTrack's new opt-in `ease:
+  'in'`: never tighter than before, only wider on the way), the carved head's light beating faster and a fifth brighter, a
+  new rumble sound made from its take turned round (every take faded the wrong way and lay under 120 Hz), and the phone
+  trembling with the charge. MEASURED on the live build with the rumble and without it: at most 2.6 px of a phone's
+  picture before the strike, 4.0 at the jolt; eight photographs of the charge, all readable. R150 answered with eight
+  numbered ideas for him to pick; none built. Sheet v160. The trap met again on the way: a camera read after
+  `updateMatrixWorld` on the camera alone shows only its own roll, never its parents' turn (refresh from the top:
+  `updateWorldMatrix(true, false)`).
+
 ## The sheet, version by version
+
+**v160, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v160.xlsx`, sha256 08d37f8a...9c449ad1; id
+`1U0JNqfSo6liE5JyDeUNZONln14T_dy4TJmc7YtBv9dA`): v159 with exactly two cells changed, made by `textsync export` from the
+tree build 105 was built from (commit bb9eee6): VOICE LINES `voice.ph5c2`, Grandmaster Pho's line in the Naga film, its
+words ("[serious] The Naga guards. It always has." to "[serious] The Naga protects us. It always has.", R151) and its
+length (3.2 to 3.29). 11,971 cells read back tab by tab, mismatched 0. v159 was checked first: created 09:43:26.9,
+modified 09:43:27.9, the conversion itself (he had not edited it).
 
 **v159, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v159.xlsx`, sha256 a8f4e96b...e6670b91d77; id
 `1NJDM3deNefaROcr7lJAVsvmZaq2V7WusVIkSkYPFkAs`): v158 with exactly one row taken out, made by `textsync export` from the

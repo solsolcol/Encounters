@@ -142,3 +142,18 @@
 #   screen (the TOGETHER press), u5slowin and u5release as a Prai is caught (the slow moment; its flame turned to white
 #   light and drawn into the bag), u5summon as the court darkens for the summoning, u5waterup as the water rises round
 #   the planted staff, u5title under the gold NAGA. The measured picks stand until Chad's ear (v10.6).
+#
+# ---- R149 (25 Nov 2026, Chad: "Also can you make the camera rumble and charge up before the naga gets summoned out of the
+#   stick?"; R152: "Rumble has to be more subtle so it doesn't affect visibility of whats going on"): THE RUMBLE UNDER THE
+#   CHARGE, sfxR149.py (its own table, family fx), one sound, three takes, none failed: 144 credits (48 a take; the
+#   account's balance 221,970 -> 222,114 used). Through measure.py (measures-sfxR149.json) none refused, every take
+#   wordless; but EVERY TAKE FAILED THE MEASURE the same two ways: each came up in half a second, held, and died over its
+#   last 1.5 s (read in tenths: the opposite of a charge), and 83 to 98 % of each lay under 120 Hz, where a phone plays
+#   nothing (a phone's share 1 to 14 %). So the sound is MADE from the pick (v24.3), in pick.py: u5rumble b (the house's
+#   fx rule: the most a phone plays, 14 %) turned back to front (its fall a rise out of silence, its grain drawn in), its
+#   last 0.45 s cut (the take's own onset, turned round into a fade) so it ends at its loudest, a 12 dB climb laid over the
+#   whole, a 40 ms fade at its end, and the house's harmonics (HARM) laid under it inside the same filter (encode.py's pre()
+#   reads `af` or the harmonics, never both). Measured as made: 3.95 s, from -77 to -14 dB in tenths, its loudest 50 ms at
+#   -14 dBFS in its last tenth, peak -2.3 (mp3) and -1.8 (Opus), a phone plays 39 % of it. Encoded (encode.py u5rumble),
+#   installed (install.py: one STING_SAMPLE row). Cued by the Naga's film (z_tail.js) to end 0.03 s after the staff
+#   strikes the paving, at 0.6. The measured pick stands until Chad's ear (v10.6).

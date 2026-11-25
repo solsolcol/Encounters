@@ -219,3 +219,28 @@ added by hand from its output (chain.py writes CHAIN.txt only when run whole); r
 prompted transcript), assemble.py, install.py (its own blocks only), `node chaptertest.mjs`: errors none.
 
 **The cost** (the account's own balance): 220,513 used (77,669 left) before; 221,559 (76,623 left) after: 1,046.
+
+## 7 · R151 (25 Nov 2026): "The Naga protects us. It always has."
+
+Chad, R148: "The pho voiceline of 'naga always has' , always has what? Was that cut off or what?" It was not: the take was
+heard whole ("The Naga guards. It always has.", its end clean); the line itself read short. Then R151: "Change the
+voiceline to 'the naga protects us. It always has'". His words; the capitals and the full stop mine, said to him. lines.json
+carries the words (its note the story), prompts.json its one row by hand (`[serious]`, the tag it had: prompts.json is not
+rewritten whole from prompts.py, section 6). The old three takes are in retired/ as `ph5c2_<letter>-r151old.mp3`.
+
+**Takes**: three (Songkran, eleven_v3), none failed. Heard by the prompted transcriber AND an unprompted one (faster-whisper
+small.en, no initial prompt): every take, every word ("The Naga protects us. It always has."). **The pick**: c, by the
+film's own measure (pick.py `CHOSEN`): the line starts 0.12 s after the Naga tops its climb, and the Naga's dive
+(u5nagadive at the stoop, 3.33 s into the line) is at -16 dB from its 50th millisecond; b, the house's unhurried pick
+(2.08 words a second), ran its last word "has" 0.09 s under it, where the voice's rule is 10 to 15 dB over the mix; c (2.24
+words a second, the cleanest end of the three, its last 60 ms at -41 dB) is done 0.09 s before it. a: 2.23 w/s, end -30 dB.
+
+| key | take | secs | heard unprompted | |
+|---|---|---|---|---|
+| ph5c2 | c | 3.29 | "The Naga protects us. It always has." | CHOSEN: done before the Naga's dive (b's "has" ran 0.09 s under it) |
+
+**The chain** (chain.py ph5c2 only), CHAIN.txt's row by hand; registry.py (187 lines), install.py (voicelines.js's row),
+assemble.py (SECS 3.29, LINES the new words). Nothing after the line moved: it is 0.09 s longer than the old take and ends
+before the dive.
+
+**The cost** (the account's own balance): 221,910 used (76,272 left) before; 221,970 (76,212 left) after: 60.
