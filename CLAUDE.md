@@ -1532,13 +1532,15 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
 and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
-Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 88 live now, deploy
-`6b0663b96ca1741b0b8df1d7`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 90 live now, deploy
+`6b0672a7fb64f270be83fd65`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
 the bodies and the court, ribbons, swirls, a hit's blur and the gold's ripple; R102's camera a little higher; R105's estate at
 dusk below the walkway and the opening's crane over it; R107's painting in the TOGETHER button, wide and slanted at both ends
 since R118; R108: nothing painted behind any window; R109's faint print in Spirit Vision cured in src/vision.js (a phone's
-multisampled render-to-texture path never resolved its depth); R110 to R112's higher camera, painted act icons and plain words;
-R120's act words on their own plates): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
+multisampled render-to-texture path never resolved its depth) and, the print he saw, at R123 (build 88: the fight's effects
+left drawing after the win); R110 to R112's higher camera, painted act icons and plain words; R120's act words on their own
+plates; R122's special attack: the TOGETHER cut-in, each catch slowed with BOUND, CAUGHT and the gold count, the Naga called
+up like a summon): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
 asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
 by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five

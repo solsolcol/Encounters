@@ -9561,7 +9561,12 @@ What the baseline contains, by release:
   NAGA title painted by GPT Image as it rides up, each pierce in slow motion eased down to 0.15 of its speed and back over
   0.9 s, half as much steam again as each fire goes out). Four engine seams, 76 to 79 (kit.tagSlow, kit.pop, kit.cutIn,
   kit.bars; docs/V28.0-SEAMS.md §14), each proved by fixturetest and absent from every other chapter. Six sounds (u5cutin,
-  u5slowin, u5release, u5summon, u5waterup, u5title). Sheet v158 (the four new words).
+  u5slowin, u5release, u5summon, u5waterup, u5title). Sheet v158 (the four new words). Live: build 89, deploy
+  `6b066e7077243f5ae57bcfb6`; then build 90, deploy `6b0672a7fb64f270be83fd65`, with two faults of build 89's, mine, found
+  in its phone pictures: the gold NAGA drawn upside down (a decoded picture goes up top row first whatever flipY says; the
+  lesson was already in LEARNINGS, so chaptertest now holds it: `rowOrderFaults`), and each pierce's slow begun AT its hit,
+  so its slowest came after the cut, on the next one's approach (now centred on the hit, slowest as the head goes through
+  her; the slow-in sound at its start).
 
 ## The sheet, version by version
 
