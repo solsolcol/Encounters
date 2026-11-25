@@ -53,6 +53,9 @@ from his **phone**. Consequences:
   him means the Netlify Deploys page (open an older deploy, Publish
   deploy) or the `.bundle` backups he keeps. The claude.ai preview
   artifact was a third route; retired 30 Aug 2026 (below).
+- **Anything he must read goes in the turn's FINAL message.** Text written between tool calls may never reach him: R150's
+  eight ideas, sent that way twice on 25 Nov 2026, never did ("Also i never received the 8 ideas from you"; "Where are the
+  ideas"). An answer given "at once" mid-turn is repeated whole at the end of the turn.
 - He values care over speed: **"be extremely careful, don't break anything,
   don't lose anything"** is a standing instruction. Two past incidents of
   accidentally deleted code made this a hard rule (see LEARNINGS).
