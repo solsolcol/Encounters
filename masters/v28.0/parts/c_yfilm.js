@@ -2017,7 +2017,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
         /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
            side by side, and bars drawn in over it took his teacher's face out of the picture) */
-        const barK = smo(c01((tau - T.braid) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
+        /* (build 102: as the two powers reach the carved head (T.lit), not as they start up the shaft: build 101's braid shot
+           looks up from his student's fist, and bars drawn in over it took both foreheads, a desk's to the eyes at 2.6 s; from
+           T.lit the lens is up the shaft, the faces low in the picture, and the bars are whole by the cut to the lift) */
+        const barK = smo(c01((tau - (T.lit - 0.3)) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
         if (kit && kit.bars) kit.bars(barK);
         this.title(tau, T, kit && kit.bars ? barK : 0);
       },
@@ -2074,7 +2077,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const stickAt = (y) => () => stickNow5(0.09, y, -0.006) || [B.foot[0], y, B.foot[2]];
         const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
         const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
-        const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
+        /* (build 102: the braid's shots aimed 10 cm toward his teacher from the shaft: on a phone, aimed at the shaft, the edge
+           of his student's face stood at the picture's left edge as the shot began and as it ended, half a face at the edge
+           (2.1 s and 3.85 s of build 101); 10 cm takes it out on a phone and moves a desk's picture a tenth of its half-width) */
+        const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => { const at = stickAt(1.0 + 0.32 * u); return () => { const p = at(); return [p[0] + lf[0] * 0.1, p[1], p[2] + lf[1] * 0.1]; }; };
         /* (build 101: what the opening shot must hold, each a place and its round: each head, high and low, where the film
            stands each man with his head's measured place beside it (his teacher's 1 cm back and 5 in toward his student, his
            student's 3 back and 7 out, as their rests hold them: never a living head), and the two fists on the shaft) */
