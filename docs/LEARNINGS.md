@@ -9163,3 +9163,17 @@ then about 4 mm off the line under his shoulder.
 missing?"). Pho's gold was set to start at 1.25 s, rising over 0.4 s, and Zavier's violet at 1.0 s. So at 1.2 s, the
 picture he saw, neither fist glowed. Pho is already holding his power when the film opens, so his gold is in his fist from
 the first frame, soft, and swells at 1.25 s; Zavier's violet lights as his hand closes (0.85 s, rising over 0.3 s).
+
+**A thing in a hand stands where the hand's take had it until the grip is laid** (build 100's pictures). In the Naga
+film's frame, the stick's own matrix still stood where Pho's hand's take put it, about 30 cm below where his grip lays it
+later in that frame. The film's looks and its lens read that matrix, so the braid's close shots aimed at Zavier's fist and
+cut the lit carved head at the top of the picture, while every measure taken after the frame (the lab's, the contacts')
+read the stick in its right place. A film that looks at a held thing reads where the grip WILL put it (c_fightstage.js
+PHOGRIP5.fistAt, c_yfilm.js stickNow5), never the thing's matrix in its own frame.
+
+**Bars drawn in take the picture a shot was fitted to** (build 100's pictures). kit.bars at full draw covers 18 % of the
+screen top and bottom, so a shot fitted to the whole screen loses its top and foot to them: Pho's face went out of the top
+of the two-shot on a phone at 1.6 s, as the bars came in over the shot made for the new opening (they had been timed for
+the old film's opening). A shot under drawn-in bars is fitted to the picture between them (c_yfilm.js fmHold `band`, the
+share of the screen's height it may use), and the bars come in where the film's moment asks for them, not where an older
+version of the film had its moment.
