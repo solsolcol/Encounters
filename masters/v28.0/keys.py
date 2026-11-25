@@ -46,6 +46,13 @@ group("e4c5: THE FIGHT'S ABILITY ICONS (R110, 24 Nov 2026: 'improve how the icon
        ('p5icobag', 'p5icobag.jpg', "Grandmaster Pho's BAG: a tied sack glowing gold, drawing pale spirit-smoke in (512 x 512)"),
        ('p5icobind', 'p5icobind.jpg', "Master Zavier's BIND: a violet bubble round a red-flame spirit (512 x 512)"),
        ('p5icoshield', 'p5icoshield.jpg', "Master Zavier's SHIELD: a violet dome of light over his grey-haired teacher (512 x 512)")])
+group("e4c5: THE SPECIAL ATTACK'S PICTURES (R122, 25 Nov 2026, his pick of R121's ideas 1 and 6: 'Do idea 1, 2, 4, 6'): the two\n"
+      "bands that slash across the screen when TOGETHER is pressed (the seventy-eighth seam's cut-in), cut from the party list's\n"
+      "own paintings with their painted halos; and the gold NAGA title of the summon, painted by GPT Image (masters/v28.0/props/\n"
+      "RECORD.md, R122)",
+      [('p5cutpho', 'p5cutpho.jpg', "Grandmaster Pho's face in his gold halo, a band for the cut-in (1024 x 670)"),
+       ('p5cutzav', 'p5cutzav.jpg', "Master Zavier's face in his violet glow, a band for the cut-in (1024 x 670)"),
+       ('p5nagatitle', 'p5nagatitle.png', 'the word NAGA in ornate gold over painted water, its own alpha (1296 x 559)')])
 group("e4c5: THE FIRE'S PICTURES (R94, 24 Nov 2026, his pick \"Full upgrade\": real fire, smoke and energy made in Blender as\n"
       "moving pictures): three flipbooks SIMULATED in Blender (Mantaflow) and rendered in Cycles on the rented GPU box\n"
       "(tools/fx/flipsim.py, tools/fx/flippack.py; masters/v28.0/fx/make.sh every number), each 8 x 8 frames whose channels\n"

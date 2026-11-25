@@ -831,6 +831,13 @@ ASSETS = {
     'p5icobag':     ('assets/p5icobag.jpg', True, False),     # Grandmaster Pho's BAG: a tied sack glowing gold, drawing pale spirit-smoke in (512 x 512)
     'p5icobind':    ('assets/p5icobind.jpg', True, False),     # Master Zavier's BIND: a violet bubble round a red-flame spirit (512 x 512)
     'p5icoshield':  ('assets/p5icoshield.jpg', True, False),     # Master Zavier's SHIELD: a violet dome of light over his grey-haired teacher (512 x 512)
+    # e4c5: THE SPECIAL ATTACK'S PICTURES (R122, 25 Nov 2026, his pick of R121's ideas 1 and 6: 'Do idea 1, 2, 4, 6'): the two
+    # bands that slash across the screen when TOGETHER is pressed (the seventy-eighth seam's cut-in), cut from the party list's
+    # own paintings with their painted halos; and the gold NAGA title of the summon, painted by GPT Image (masters/v28.0/props/
+    # RECORD.md, R122)
+    'p5cutpho':     ('assets/p5cutpho.jpg', True, False),     # Grandmaster Pho's face in his gold halo, a band for the cut-in (1024 x 670)
+    'p5cutzav':     ('assets/p5cutzav.jpg', True, False),     # Master Zavier's face in his violet glow, a band for the cut-in (1024 x 670)
+    'p5nagatitle':  ('assets/p5nagatitle.png', True, False),     # the word NAGA in ornate gold over painted water, its own alpha (1296 x 559)
     # e4c5: THE FIRE'S PICTURES (R94, 24 Nov 2026, his pick "Full upgrade": real fire, smoke and energy made in Blender as
     # moving pictures): three flipbooks SIMULATED in Blender (Mantaflow) and rendered in Cycles on the rented GPU box
     # (tools/fx/flipsim.py, tools/fx/flippack.py; masters/v28.0/fx/make.sh every number), each 8 x 8 frames whose channels
@@ -1070,14 +1077,15 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            # <<< e4c4 keys <<<
            # >>> e4c5 keys (masters/v28.0/keys.py) >>>
            'p5zavier', 'p5zavierh', 'w5nagastaff', 'p5portpho', 'p5portzav', 'p5togwide', 'p5icofire', 'p5icoshock',
-           'p5icobag', 'p5icobind', 'p5icoshield', 'fx5fire', 'fx5burst', 'fx5smoke', 'p5pho', 'p5koh', 'p5kohm',
-           'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight', 'w5grating', 'w5liftpanel', 'w5gate',
-           'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers', 'w5frontdoor', 'w5shoecab',
-           'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair', 'w5tablelamp', 'w5wallclock',
-           'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame', 'w5bagopen', 'w5bagtied',
-           'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable', 'w5padcase', 'w5cushion',
-           'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide', 'p5praiheavy', 'p5naga',
-           'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp', 'w5shrub',
+           'p5icobag', 'p5icobind', 'p5icoshield', 'p5cutpho', 'p5cutzav', 'p5nagatitle', 'fx5fire', 'fx5burst',
+           'fx5smoke', 'p5pho', 'p5koh', 'p5kohm', 'p5kohh', 'p5jun', 'p5junm', 'p5junh', 'w5rail', 'w5walklight',
+           'w5grating', 'w5liftpanel', 'w5gate', 'w5gatepost', 'w5planter', 'w5planter2', 'w5walllamp', 'w5slippers',
+           'w5frontdoor', 'w5shoecab', 'w5curtain', 'w5sofa', 'w5lowtable', 'w5tvconsole', 'w5oldchair',
+           'w5tablelamp', 'w5wallclock', 'w5dintable', 'w5dinchair', 'w5pendant', 'w5sideboard', 'w5frame',
+           'w5bagopen', 'w5bagtied', 'w5threadreel', 'w5staffwrap', 'w5staffcloth', 'w5duffel', 'w5clothtable',
+           'w5padcase', 'w5cushion', 'w5altarshelf', 'w5ceilfan', 'p5collector', 'p5praicome', 'p5praihide',
+           'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
+           'w5shrub',
            # <<< e4c5 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

@@ -241,3 +241,21 @@ in the middle band of the picture and well inside its left and right ends. The p
 and violet energy fills the whole frame edge to edge. No circle, no round frame, no black border, no vignette, no text, no
 letters." Every hand counted (five fingers each). Scaled to 768 x 330 (Lanczos), JPEG 88, as `p5togwide`; `p5togart`
 (the round one) retired from the build and the repository (git history keeps it).
+
+## R122: the special attack's pictures (25 Nov 2026)
+
+Chad: "Do idea 1, 2, 4, 6" (his pick of R121's nine). Idea 1's cut-in and idea 6's summon title.
+
+- `p5cutpho`, `p5cutzav` (the cut-in's two bands): cut from the party list's own paintings (portraits-src/pho-painted.png,
+  zav-painted.png, R59) with their painted halos (each painting's colour as painted, its alpha left behind, so Grandmaster
+  Pho's gold halo and Master Zavier's violet glow stay round them), 1024 x 670 bands centred a little under the eyes
+  (Pho's rows 60 to 730, Master Zavier's 230 to 900), JPEG 90, no EXIF or colour profile. No credits.
+- `p5nagatitle` (the summon's gold NAGA): Higgsfield `gpt_image_2_6`, 21:9, quality `max`, 1k (1344 x 576), background
+  transparent, one picture: 35849b56-4f30-4b43-8ec7-4b24f80a78eb, 4.5 credits (the balance read before and after, 32.66 and
+  28.16). Prompt: "A fantasy battle title card: the single word NAGA in large ornate capital letters of polished, engraved
+  gold, each letter bevelled with bright specular highlights and fine scale-like filigree engraving, a slim flowing
+  water-serpent flourish curling beneath the word in gold and pale aqua blue, a soft warm golden glow around the letters.
+  Centred, the whole word fully inside the frame with generous empty margins on every side, crisp sharp edges, no other
+  text, no letters other than N A G A, no frame, no border, no background objects, transparent background." Looked at
+  full size: the four letters spelled right, engraved with scales, a small naga's head over painted water beneath them.
+  Cropped to its own alpha's box (1296 x 559), PNG with alpha, no EXIF.

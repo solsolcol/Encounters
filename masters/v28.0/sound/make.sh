@@ -131,3 +131,14 @@
 #   (c_fightstage.js): a cry as fire strikes one (pvhit, dealt in turn), as a bubble closes on it (pvbind), and now and
 #   then while it struggles in a bubble (pvstrug: one at a time, never over a line). The measured picks stand until
 #   Chad's ear (v10.6).
+#
+# ---- R122 (25 Nov 2026, Chad: "Do idea 1, 2, 4, 6" of R121's nine): THE SPECIAL ATTACK'S SIX SOUNDS, sfxR122.py (its own
+#   table, family fx), three takes each, 18 in all, none failed: 351 credits (the scratch spend.log 03:32:33-03:32:51; 15,
+#   11, 18, 29, 22 and 22 a take). Through measure.py (measures-sfxR122.json) none refused: every take whole and wordless.
+#   The picks (pick.py, picks.json, each with its line): u5cutin b (54 % where a phone plays), u5slowin a (32 %:
+#   HARMONISED at its encode), u5release c (100 %), u5summon c (62 %; its 0.20 s silent head cut), u5waterup a (96 %),
+#   u5title a (32 %: HARMONISED). Each levelled to its loudest 50 ms at -14 dBFS and encoded (encode.py), installed
+#   (install.py: six STING_SAMPLE rows). Cued by the fight and the Naga's film: u5cutin as the two faces slash across the
+#   screen (the TOGETHER press), u5slowin and u5release as a Prai is caught (the slow moment; its flame turned to white
+#   light and drawn into the bag), u5summon as the court darkens for the summoning, u5waterup as the water rises round
+#   the planted staff, u5title under the gold NAGA. The measured picks stand until Chad's ear (v10.6).

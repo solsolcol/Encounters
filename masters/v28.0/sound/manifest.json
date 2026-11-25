@@ -1691,6 +1691,54 @@
    "why": "b: 86 % where a phone plays, loudest 50 ms -11.5 dBFS (others, phone/loudest: a 0.25/-18.9)"
   },
   {
+   "name": "u5cutin",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 1: the TOGETHER cut-in, the two portraits slashing across the screen",
+   "why": "b: 54 % where a phone plays, loudest 50 ms -14.2 dBFS (others, phone/loudest: a 0.45/-7.5, c 0.44/-14.9)"
+  },
+  {
+   "name": "u5slowin",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 2: the half second of slow motion as a Prai is caught",
+   "why": "a: 32 % where a phone plays, loudest 50 ms -8.2 dBFS (others, phone/loudest: b 0.08/-7.4, c 0.03/-10.6); HARMONISED (a phone plays 32 %)"
+  },
+  {
+   "name": "u5release",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 2: the red flame turned to calm white light, drawn into the bag",
+   "why": "c: 100 % where a phone plays, loudest 50 ms -34.5 dBFS (others, phone/loudest: a 1.00/-35.0, b 0.98/-37.1)"
+  },
+  {
+   "name": "u5summon",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 6: the court darkening as the staff is raised for the Naga",
+   "why": "c: 62 % where a phone plays, loudest 50 ms -19.9 dBFS (others, phone/loudest: a 0.42/-9.1, b 0.02/-9.2); its 0.20 s silent head cut"
+  },
+  {
+   "name": "u5waterup",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 6: the water rising in a ring round the planted staff",
+   "why": "a: 96 % where a phone plays, loudest 50 ms -12.1 dBFS (others, phone/loudest: b 0.91/-16.5, c 0.93/-14.2)"
+  },
+  {
+   "name": "u5title",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R122 idea 6: the gold NAGA title",
+   "why": "a: 32 % where a phone plays, loudest 50 ms -7.5 dBFS (others, phone/loudest: b 0.13/-6.7, c 0.20/-6.5); HARMONISED (a phone plays 32 %)"
+  },
+  {
    "name": "u5vison",
    "family": "vision",
    "kind": "one-shot",

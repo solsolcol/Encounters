@@ -1,0 +1,62 @@
+[
+ {
+  "name": "u5cutin",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A dramatic battle cut-in: two fast sharp slicing whooshes sweeping across from opposite sides, then a bright metallic ring with a short sparkle of light. Crisp, cinematic, magical, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 1: the TOGETHER cut-in, the two portraits slashing across the screen"
+ },
+ {
+  "name": "u5slowin",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "Time slowing down at a dramatic moment: a whoosh that bends downward in pitch and turns muffled and hollow, ending in one soft padded thud. Cinematic, close, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 2: the half second of slow motion as a Prai is caught"
+ },
+ {
+  "name": "u5release",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A restless spirit calmed and at peace: a soft bright chime with airy shimmering bells rising gently upward and fading away, warm, gentle and magical, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 2: the red flame turned to calm white light, drawn into the bag"
+ },
+ {
+  "name": "u5summon",
+  "secs": 2.6,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A great sacred power being called: a swell of rushing wind and a resonant humming drone that builds and darkens, with a clear ringing tone rising out of it, cinematic and solemn, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 6: the court darkening as the staff is raised for the Naga"
+ },
+ {
+  "name": "u5waterup",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A column of water bursting up from the ground and spiralling upward: a powerful rushing gush of water with swirling splashes and fine spray, rising fast, magical and close, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 6: the water rising in a ring round the planted staff"
+ },
+ {
+  "name": "u5title",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.5,
+  "prompt": "A golden title appearing in a fantasy battle: a warm cinematic impact followed by a bright shimmering golden chime and a sparkle that rings out and fades, majestic, no voices. Clear in the middle and high frequencies, no deep sub bass.",
+  "family": "fx",
+  "where": "R122 idea 6: the gold NAGA title"
+ }
+]

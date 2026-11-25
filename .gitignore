@@ -14,6 +14,8 @@ wrapped.html
 !assets/p5port*.png
 # (and the fight's flipbooks, data in four channels: R94, 24 Nov 2026; a JPEG would smear them)
 !assets/fx5*.png
+# (and the summon's gold NAGA title, painted with its own alpha: R122, 25 Nov 2026)
+!assets/p5nagatitle.png
 view/
 
 # original asset archives (the .glb files that matter are committed)
