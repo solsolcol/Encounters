@@ -832,6 +832,10 @@ body.finePtr .tpTile .wpnKey{left:13px;right:auto;top:auto;bottom:3px;transform:
    Over the tag mode's buttons (the call's 11, after it), under every window */
 #cutIn{position:fixed;inset:0;z-index:11;pointer-events:none;display:none;overflow:hidden;--ciT:1.4s;--ciH:200px;--ciE:24px}
 #cutIn.on{display:block}
+/* (build 91: the cut-in takes the screen, so what its bands would cross steps aside while it stands: the objective's box,
+   the party list, the count, the arrow and the act buttons (build 90 showed the objective's box over the upper band, and the
+   party list and the call button through the gap between the two)) */
+body.cutin #objective .obox,body.cutin #tagParty,body.cutin #tagPartyFx,body.cutin #tagCount,body.cutin #tagArrow,body.cutin .tagBtn{visibility:hidden!important}
 body.cine #cutIn,body.invopen #cutIn,body.menuopen #cutIn,body.cardup #cutIn,body.evopen #cutIn,body.unlockopen #cutIn,
 body.chooseopen #cutIn,body.galleryopen #cutIn,body.pictureopen #cutIn,
 body.cine #popLayer,body.invopen #popLayer,body.menuopen #popLayer,body.cardup #popLayer,body.evopen #popLayer,

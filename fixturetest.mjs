@@ -4015,8 +4015,12 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.placed = ra.bottom <= innerHeight / 2 && rb.top >= innerHeight / 2 && ra.height > 100 && rb.height > 100;
       R.slanted = /polygon/.test(getComputedStyle(a.querySelector('.ciPic')).clipPath);
       R.word = C.querySelector('.ciWord').textContent === 'Together';
+      /* (build 91: the objective's box steps aside while it stands, and is back after) */
+      const obx = document.querySelector('#objective .obox');
+      R.hudAside = document.body.classList.contains('cutin') && !!obx && getComputedStyle(obx).visibility === 'hidden';
       await poll(() => !C.classList.contains('on'), 6000); await frames(2);
       R.gone = getComputedStyle(C).display === 'none' && pics() === 0 && C.querySelector('.ciWord').textContent === '';
+      R.hudBack = !document.body.classList.contains('cutin') && getComputedStyle(obx).visibility !== 'hidden';
       /* (a film from play takes the words and the cut-in away on its first frame) */
       kit.pop('Caught', { screen: { sx: 0.5, sy: 0.5 }, secs: 30 });
       kit.cutIn({ a: pic('#c08030'), b: pic('#7040c0'), word: 'Together', secs: 4 });

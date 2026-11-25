@@ -8334,6 +8334,7 @@ function cutInOff() {
   clearTimeout(cutIn.timer); cutIn.timer = 0;
   if (!cutIn.on) return;
   cutIn.on = false;
+  document.body.classList.remove('cutin');
   const E = cutInEls(); if (!E) return;
   E.root.classList.remove('on');
   for (const band of [E.a, E.b]) { const p = band.querySelector('.ciPic'); if (p) p.remove(); }
@@ -8353,6 +8354,8 @@ function kitCutIn(o = {}) {
   E.word.textContent = typeof o.word === 'string' ? o.word : '';
   void E.root.offsetWidth;                              // (the animations begin again from their start every time)
   E.root.classList.add('on');
+  /* (build 91: the HUD its bands would cross steps aside while it stands: shell.html, body.cutin) */
+  document.body.classList.add('cutin');
   cutIn.on = true;
   cutIn.timer = setTimeout(cutInOff, secs * 1000 + 80);
   return true;
