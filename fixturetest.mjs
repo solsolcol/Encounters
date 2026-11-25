@@ -3979,12 +3979,26 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R.shown = !!w1 && !!w2 && w1.textContent === 'Bound' && w2.textContent === '4 of 9' && +w1.style.opacity > 0.5 && +w2.style.opacity > 0.5;
       const c1 = w1 && c(w1), c2 = w2 && c(w2);
       R.overPoint = !!c1 && Math.abs(c1[0] - sx) < 6 && c1[1] < sy + 2 && c1[1] > sy - 60;
-      R.onScreen = !!c2 && Math.abs(c2[0] - innerWidth / 2) < 6 && c2[1] < innerHeight * 0.3 + 2 && c2[1] > innerHeight * 0.3 - 60;
+      /* (build 91: a word at its point, or brought down to just under the HUD's top stack when its point is on it) */
+      const hudTop = () => { let t = 0; const ob = document.getElementById('objective'), bx = ob && !ob.classList.contains('hide') ? ob.querySelector('.obox') : null;
+        for (const el of [bx, document.getElementById('tagCount')]) { if (!el || getComputedStyle(el).display === 'none') continue; const q = el.getBoundingClientRect(); if (q.width > 0 && q.height > 0) t = Math.max(t, q.bottom); } return t; };
+      const ht = hudTop();
+      R.onScreen = !!c2 && Math.abs(c2[0] - innerWidth / 2) < 6 && ((c2[1] < innerHeight * 0.3 + 2 && c2[1] > innerHeight * 0.3 - 60) || (ht > 0 && w2.getBoundingClientRect().top >= ht - 1));
       R.big = !!w1 && !!w2 && parseFloat(getComputedStyle(w2).fontSize) > parseFloat(getComputedStyle(w1).fontSize);
       R.refused = kit.pop('', { screen: { sx: 0.5, sy: 0.5 } }) === false && kit.pop('Caught', {}) === false;
       await poll(() => L.children.length === 0, 8000);
       R.gone = L.children.length === 0;
-      R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round) };
+      /* (build 91: a word asked over the objective's box comes down to just under it, its rise and all) */
+      kit.objective('A word keeps clear of this order', { complete: false });
+      await new Promise(r => setTimeout(r, 600)); await frames(2);
+      kit.pop('Clear', { screen: { sx: 0.5, sy: 0.04 }, tone: 'white', secs: 3 });
+      await new Promise(r => setTimeout(r, 350)); await frames(2);
+      const w3 = [...L.querySelectorAll('.popW')].find(w => w.textContent === 'Clear'), bx3 = document.querySelector('#objective .obox');
+      const r3 = w3 && w3.getBoundingClientRect(), rb3 = bx3 && bx3.getBoundingClientRect();
+      R.clearOfHud = !!r3 && !!rb3 && rb3.height > 0 && +w3.style.opacity > 0.5 && r3.top >= rb3.bottom - 1;
+      kit.objective(null, { complete: false });
+      await poll(() => L.children.length === 0, 8000);
+      R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round), w3: r3 && [r3.top, r3.bottom].map(Math.round), box: rb3 && [rb3.top, rb3.bottom].map(Math.round) };
       return R;`);
     K.cutInSeam = await pCheck('cutInSeam', `
       const R = {}, C = document.getElementById('cutIn');

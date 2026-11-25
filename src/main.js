@@ -8273,10 +8273,24 @@ function kitPop(text, o = {}) {
 }
 function popGone(p) { const i = pops.list.indexOf(p); if (i >= 0) pops.list.splice(i, 1); if (p.el && p.el.parentNode) p.el.parentNode.removeChild(p.el); }
 function popClear() { while (pops.list.length) popGone(pops.list[0]); }
+/* (v28.0, build 91: A WORD KEEPS CLEAR OF THE HUD. A Prai at the court's far end stands just under the objective's box and
+   the count's dots, and build 90's BOUND, drawn there, was cut by the box and sat on the dots. So a word is never higher than
+   just under the HUD's top stack (the objective's box and the count's dots, where they are shown), its rise included, and
+   never under the party list at the right edge: read once a frame, only while words are up) */
+function popHud() {
+  const r = { top: 0, party: null }, ob = $('objective');
+  for (const el of [ob && !ob.classList.contains('hide') ? ob.querySelector('.obox') : null, $('tagCount')]) {
+    if (!el || getComputedStyle(el).display === 'none') continue;
+    const q = el.getBoundingClientRect(); if (q.width > 0 && q.height > 0) r.top = Math.max(r.top, q.bottom + 8);
+  }
+  const pt = $('tagParty');
+  if (pt && getComputedStyle(pt).display !== 'none') { const q = pt.getBoundingClientRect(); if (q.width > 0 && q.height > 0) r.party = q; }
+  return r;
+}
 function popFrame() {
   if (!pops.list.length) return;
   if (state !== 'play') { popClear(); return; }
-  const now = performance.now(), W = innerWidth, H = innerHeight;
+  const now = performance.now(), W = innerWidth, H = innerHeight, hud = popHud();
   for (const p of pops.list.slice()) {
     const s = (now - p.t0) / 1000, u = s / p.secs;
     if (u >= 1) { popGone(p); continue; }
@@ -8285,6 +8299,10 @@ function popFrame() {
       if (!(n.z < 1) || Math.abs(n.x) > 1.15 || Math.abs(n.y) > 1.15) { p.el.style.opacity = '0'; continue; }
       x = (n.x * 0.5 + 0.5) * W; y = (-n.y * 0.5 + 0.5) * H; }
     else { x = p.sc.x * W; y = p.sc.y * H; }
+    if (!p.wh) p.wh = [p.el.offsetWidth, p.el.offsetHeight];
+    const hw = p.wh[0] * 0.6, hh = p.wh[1] * 0.6;   // (half its size at the pop's largest, 1.2)
+    if (hud.top) y = Math.max(y, hud.top + hh + p.rise);
+    if (hud.party) { const P = hud.party; if (x + hw > P.left - 6 && y + hh > P.top && y - hh - p.rise < P.bottom) x = Math.min(x, P.left - 6 - hw); }
     const e = 1 - (1 - u) * (1 - u);
     y -= p.rise * e;
     /* (in over its first 0.16 s, a little past its size and back; out over its last third) */
