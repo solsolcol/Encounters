@@ -9594,6 +9594,25 @@ What the baseline contains, by release:
   v159), the gold "N of 9" count drawn at the plain word size instead of the big one, and the NAGA word at 0.25 of a
   phone's width (from 0.55: under half) with its foot just above the film's bottom bar, following the bar as it is drawn
   in; photographed full size at 4.6 and 5.0 s.
+  Then R128 to R131 (25 Nov 2026, Chad, with build 95 live: the TOGETHER cut-in "can stay on the screen for a slightly
+  longer duration, as on a slow phone with low frame rate, one can barely see it before it disappear"; "for the naga
+  cutscene, since we say 'together', shouldn't there be an additional sequence that show zavier holding the naga stick
+  together with pho, and with both their powers, begin the summoning of the naga? This should be added with the same level
+  of cinematic polish as it currently has"; "Ship together"; and "will it be faster ro run on gpu", answered no), and R132
+  to R141 on the lab's first pictures of the new opening, which I had sent as fine ("Seriously? You think those shots are
+  fine? Wow"; "I can spot so many issues im amazed it passed you"; seven pictures ringed: Zavier's thumb a sliver in the
+  wood, his forearm folded across his chest, his fingers into the stick twice, Pho's lifted fist on his shoulder, Pho's arm
+  to be straighter, "how mangled zaviers fingers are", and "What happened to the glow?"). Build 100, deploy `6b06ee07284926bbb6f71911`
+  (builds 96 to 99 local only): the cut-in 2.0 s on a clock of its own, at most a tenth of a second a drawn frame (main.js
+  cutInStep), the Naga's film waiting for it; and a 3.4 s opening to that film: the two at the stick, Zavier's left hand
+  closing on it beside his teacher's right, the gold in Pho's fist from the first frame and the violet in Zavier's as his
+  hand closes, both wound up the shaft to its carved head and lit, the two lifting it 16 cm and driving it down together.
+  What R132 to R141 found, each measured and closed: Zavier's model's four fingers are joined (a mitten), so they bend as
+  one round the stick; no point of his hand inside the wood (324 points had been, 900 and more on his full body); his thumb
+  as modelled, turned out; his full body drawn while the hands are close (the fight pins him to his light one); he stands
+  to his teacher's right turned to the stick, so it stands at his shoulder and his arm hangs to it; Pho's elbow under his
+  shoulder; the shots from behind raised over their shoulders; the cage kept out until the strike; the strike clear of
+  Zavier's shoe.
 
 ## The sheet, version by version
 
