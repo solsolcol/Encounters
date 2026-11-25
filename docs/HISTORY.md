@@ -9625,6 +9625,17 @@ What the baseline contains, by release:
   never leans in across his body (0 degrees across them as they lift, 3 to 10 before, his wrist inside its range: held square
   all the way, the wrist went to 29 degrees). Found and left for the next build: his teacher's thumb stands off the shaft in
   the close shots and his fingers lie a little apart on it (the fight's own grip, seen this close only here).
+  Builds 103 and 103b (25 Nov): Chad's R143 ("when the naga returns back to the naga staff, zavier and pho's head seems to
+  spin at very fast speed while looking at the naga, make it more natural please"), R144 ("make it last one second longer on
+  screen", of the NAGA word) and R145 ("right after the chapter title text ends and the game goes into the playable section,
+  jun's arm is spinning for a split second"). Build 103b, deploy `6b0721378065f5b803737250` (103 built, not deployed): each
+  man's look, from the Naga's climb to its home, is the Naga as he saw it over the last 1.1 s, every sight turned smoothly
+  into his neck's turn and through the spiral drawn to its middle (measured: build 102b threw each head from one shoulder to
+  the other in one frame, 1,535 to 1,553 degrees a second, three times each; 103b at most 73 and 66; 103's first way, each
+  sight held hard at the limit, stepped 10 degrees a tenth of a second and was replaced before it shipped); the NAGA word
+  2.5 s, the bars given back after it; and Jun's bag-carry turn, laid by a hook on every drawn frame, no longer laid on top
+  of itself while nothing poses him between the opening film's end and play (10 degrees a frame, his arm out from 15 to 75
+  degrees in four frames, then a 59.6-degree snap back; now 0.5 and 1.5), Ton's staff-carry lay given the same guard.
 
 ## The sheet, version by version
 

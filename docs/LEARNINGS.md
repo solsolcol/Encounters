@@ -9177,3 +9177,20 @@ of the two-shot on a phone at 1.6 s, as the bars came in over the shot made for 
 the old film's opening). A shot under drawn-in bars is fitted to the picture between them (c_yfilm.js fmHold `band`, the
 share of the screen's height it may use), and the bars come in where the film's moment asks for them, not where an older
 version of the film had its moment.
+
+**A turn laid on every draw stacks wherever nothing poses the body between draws** (R145, build 103b). Chapter 5 lays Jun's
+bag-carry turn (his arm out 10 degrees) from a hook that runs on every frame drawn, and relies on the people's tick taking
+it off (armsBack) before the mixer writes again (v11.5). Between the opening film's end and play the engine is still in its
+film state with no film running: the people's tick leaves a body a film holds, the film no longer poses him, yet frames
+are drawn, so each one laid the turn on top of the last: 10 degrees a frame, a spin at a phone's sixty, and a snap back on
+play's first tick. A pose laid on a draw (not on the tick that undoes it) keeps what it wrote and is not laid again while
+the bone still stands exactly so (c_yfilm.js BAGLAY5, STAFFLAY5; LIM5 and the grips already did). And a body is measured
+across a hand-over by every DRAWN frame, not by a film's clock (tools/probes/e4c5junarm.mjs): no seek shows a gap no clock
+counts.
+
+**A sum of clamped samples steps** (R143, build 103). A look softened by averaging the Naga's place over the last second
+removed the one-frame flips, but each sample was first held hard at the neck's limit and thrown to the other side as it
+passed behind him, so the average jumped by one sample's share each time one of the twelve crossed: 10 degrees every
+tenth of a second, a stutter that a measure at thirty frames a second read as 230 degrees a second. Each sample must be a
+smooth function of what it reads (all of the turn to a knee, easing toward the limit, and back to straight ahead from
+behind him: c_yfilm.js nagaSoft5), and then the average is smooth: at most 73 degrees a second, read at sixty.

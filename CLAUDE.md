@@ -1532,8 +1532,8 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
 and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
-Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 102b live now, deploy
-`6b0708373db9078a3e4d29fd`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 103b live now, deploy
+`6b0721378065f5b803737250`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
 the bodies and the court, ribbons, swirls, a hit's blur and the gold's ripple; R102's camera a little higher; R105's estate at
 dusk below the walkway and the opening's crane over it; R107's painting in the TOGETHER button, wide and slanted at both ends
 since R118; R108: nothing painted behind any window; R109's faint print in Spirit Vision cured in src/vision.js (a phone's
@@ -1543,7 +1543,9 @@ plates; R122's special attack: the TOGETHER cut-in, each catch slowed with BOUND
 up like a summon, its NAGA word toned down at R126 to the game's own title face and at R127 under half its size, at the foot of the picture;
 R128's cut-in 2.0 s on a drawn-frames clock; R129's opening to the Naga film, Zavier and Pho holding the stick together, their two powers
 wound up it, lifting and striking it, its faults of R132 to R141 measured out before it went live; R142's student's upper arm hanging
-straight in the shot from behind): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
+straight in the shot from behind; R143's two heads watching the Naga home with no turn faster than 73 degrees a second
+(they had been thrown from one shoulder to the other in a frame); R144's NAGA word 2.5 s; R145's Jun's arm still from the
+opening film into play (a draw-time turn laid on itself every frame, now laid once)): **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
 asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
 by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five
