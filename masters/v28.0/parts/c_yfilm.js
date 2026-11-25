@@ -49,7 +49,10 @@
        already holds them is not moved at all, and a key with no `hold` is exactly as before. The pull is eased between two
        keys as everything else is (each key's own pull, mixed by the same ease), so it is a smooth function of the clock.
        It never goes back through a solid (the place's own, `solids`): it stops 0.3 m short, and the lens widens for the
-       rest, to the key's `fmax` (78 degrees unless said) */
+       rest, to the key's `fmax` (78 degrees unless said). A key may also say how much of the half-height its places may use
+       (`band`, 0.88 unless said): a film whose bars are drawn in (kit.bars, up to 18 % of the screen each) shows only 0.64 of
+       it, so a key under drawn-in bars says so (build 101: the Naga film's first shot, where the bars came in while the lens
+       pushed in, and on a phone Grandmaster Pho's face went out of the top of the picture) */
     const _fhE = new THREE.Vector3(), _fhR = new THREE.Ray(), _fhH = new THREE.Vector3();
     let solidBoxes5 = null;
     function fmPullOf(K) {
@@ -60,7 +63,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * 0.88) - z); }
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * (K.band || 0.88)) - z); }
       return Math.min(K.back != null ? K.back : 1.2, Math.max(0, d));
     }
     function fmHold(A, B, u) {
@@ -86,7 +89,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * 0.88)); }
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (K.band || 0.88))); }
       return th;
     }
     function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
@@ -2004,7 +2007,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
-        const barK = smo(c01((tau - 0.8) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
+        /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
+           side by side, and bars drawn in over it took his teacher's face out of the picture) */
+        const barK = smo(c01((tau - T.braid) / 0.8)) * (1 - smo(c01((tau - T.title - 1.55) / 0.6)));
         if (kit && kit.bars) kit.bars(barK);
         this.title(tau, T, kit && kit.bars ? barK : 0);
       },
@@ -2062,6 +2067,16 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
         const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
         const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
+        /* (build 101: what the opening shot must hold, each a place and its round: the top of each head and its chin, at the
+           place the film stands each man (never his living head), and the two fists on the shaft) */
+        const HOLD_PHO = [1.81, 1.56], HOLD_ZAV = [1.70, 1.45], FISTS = stickAt(1.13), FISTS0 = stickAt(0.92);
+        const HANDS_HOLD = () => { const Z = this.zj || this.zav, out = [];
+          for (const y of HOLD_PHO) out.push(fmHead(cast.pho, [this.pho.x, y, this.pho.z]).concat(0.07));
+          for (const y of HOLD_ZAV) out.push(fmHead(cast.zav, [Z.x, y, Z.z]).concat(0.07));
+          out.push(FISTS().concat(0.06), FISTS0().concat(0.06)); return out; };
+        /* (build 101: the braid's shots hold the carved head whole with the two fists under it: build 100's had the top of
+           the lit head under the top bar as it took their light) */
+        const HEADTOP = stickAt(1.43), BRAID_HOLD = () => [HEADTOP().concat(0.05), FISTS0().concat(0.05)];
         /* (R138: from behind at their shoulders' height his teacher's lifted fist sat on his student's shoulder in the picture; from
            over their shoulders, 1.85 to 1.95 m up, the two fists stand on the stick between them, the burning figures beyond) */
         const PAIR_BACK = rel(MID, -2.6, -0.05, 1.95), PAIR_BACK2 = rel(MID, -1.9, -0.05, 1.85), PAIR_AT = rel(MID, 1.6, 0.2, 1.15);
@@ -2098,11 +2113,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              reads up to the head with both of them in the picture) */
           /* (R132/R133: the two of them first, faces and hands, the lens coming in on them slowly as his student's hand closes on
              the stick; from 1.25 m the hands filled a phone's picture and nothing told whose they were) */
-          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.22, 1.38), at: rel(MID, 0, -0.05, 1.18), fp: 46, fd: 40 },
-          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.85, -0.18, 1.3), at: rel(MID, 0.1, -0.05, 1.1), fp: 44, fd: 38 },
-          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true },
-          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38 },
-          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38 },
+          /* (build 101: build 100's pictures had his teacher's face out of the top of the picture by 1.6 s on a phone and by
+             1.2 s on a desk, the lens pushing in on the hands while the bars came in. The shot HOLDS both faces and both fists
+             (fmHold: the eye drawn back along its line until they fit this screen) and is aimed between the faces and the
+             hands; a desk comes in on them, a phone, which must hold two men side by side, stays back) */
+          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.2, 1.46), at: rel(MID, 0, 0, 1.36), fp: 46, fd: 40, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
+          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.9, -0.16, 1.43), at: rel(MID, 0.08, 0, 1.33), fp: 46, fd: 38, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
+          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
+          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
+          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
           { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
           { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50 },
           { t: T.strike - 0.1, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
