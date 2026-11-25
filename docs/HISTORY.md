@@ -9613,6 +9613,18 @@ What the baseline contains, by release:
   to his teacher's right turned to the stick, so it stands at his shoulder and his arm hangs to it; Pho's elbow under his
   shoulder; the shots from behind raised over their shoulders; the cage kept out until the strike; the strike clear of
   Zavier's shoe.
+  Builds 101 to 102b (25 Nov), from build 100's own full-size pictures and R142 ("From the back shot, zaviers arms are bent
+  unnaturally, straighten it", with a red line straight down beside Zavier's upper arm). Build 102b, deploy
+  `6b0708373db9078a3e4d29fd` (101 and 102 lab only): the film's bars drawn in as the two powers reach the carved head, not
+  over the two-shot (his teacher's face had gone out of the top of the picture); the two-shot and the stick's close shots
+  fitted to what they must hold inside the bars; the film's looks and lenses reading the stick where his teacher's grip will
+  lay it (in the film's own frame its matrix stood about 30 cm low, so the close shots had aimed at his student's fist); the
+  lift 11 cm (at 16 his teacher's wrist read 41 degrees toward his little finger); the stick's close shot aimed 10 cm toward
+  his teacher, so half of his student's face no longer stands at a phone's edge; and R142: measured, his student's upper arm
+  had leaned 14 degrees in toward his own middle as the two lift the stick; now it hangs as straight as his reach lets it and
+  never leans in across his body (0 degrees across them as they lift, 3 to 10 before, his wrist inside its range: held square
+  all the way, the wrist went to 29 degrees). Found and left for the next build: his teacher's thumb stands off the shaft in
+  the close shots and his fingers lie a little apart on it (the fight's own grip, seen this close only here).
 
 ## The sheet, version by version
 
