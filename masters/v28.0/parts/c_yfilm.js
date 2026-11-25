@@ -2062,11 +2062,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const P2CRANE = cw(sp[1][0] - 1.3, 3.4, sp[1][1] + 1.9), P3LOW = cw(sp[2][0] - 0.15, 0.35, sp[2][1] - 1.34);
         const HOME_EYE = cw(Pc[0] + 0.75, 1.25, Pc[1] - 2.3), HOME_UP = cw(Pc[0] + 0.2, 2.6, Pc[1] - 0.2), HOME_AT = cw(Pc[0] + 0.23, 1.45, Pc[1] - 0.2);
         fmTrack(tau, [
-          { t: 0, name: 'hands', eye: rel(HANDS_AT, 1.18, 0.1, 1.04), at: HANDS_AT, fp: 34, fd: 30 },
-          { t: T.braid - 0.06, name: 'hands', eye: rel(HANDS_AT, 0.92, 0.08, 1.02), at: HANDS_AT, fp: 32, fd: 28 },
-          { t: T.braid - 0.05, name: 'braid', eye: rel(HANDS_AT, 0.62, 0.22, 0.52), at: BRAID_AT(0), fp: 54, fd: 46, cut: true },
-          { t: T.lit + 0.1, name: 'braid', eye: rel(HANDS_AT, 0.55, 0.2, 0.55), at: BRAID_AT(1), fp: 50, fd: 44 },
-          { t: T.lit + 0.6, name: 'braid', eye: rel(HANDS_AT, 0.55, 0.2, 0.55), at: BRAID_AT(1), fp: 50, fd: 44 },
+          /* (the lab's pictures of 25 Nov: from 0.6 m under the hands the two hands filled the picture and the gold burned it
+             white; from 1.25 m before the two of them both hands read on the shaft, and from his student's side the braid
+             reads up to the head with both of them in the picture) */
+          { t: 0, name: 'hands', eye: rel(MID, 1.25, -0.05, 1.05), at: HANDS_AT, fp: 40, fd: 34 },
+          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.08, -0.05, 1.04), at: HANDS_AT, fp: 38, fd: 32 },
+          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true },
+          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38 },
+          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38 },
           { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
           { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50 },
           { t: T.strike - 0.1, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },

@@ -6273,6 +6273,179 @@
       for (const b in P.bone) if (/(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)\d$/.test(b)) { const q = bindLocal(P, P.bone[b]); if (q) P.bone[b].quaternion.copy(q); }
       if (n) console.log('HANDS5: ' + P.key + "'s fingers held as modelled (" + n + ' finger tracks out of his takes)');
     });
+    /* R129 (25 Nov 2026, Chad: "shouldn't there be an additional sequence that show zavier holding the naga stick together
+       with pho"): HIS LEFT HAND JOINTED WHERE A HAND BENDS, so it can close round the stick. Measured on his file first (25
+       Nov): his rig's finger joints stand bunched in the last third of each finger (the middle finger's at 17.2, 19.0 and
+       20.8 cm from his wrist, its tip at 24.3), the skin from each knuckle to there is his hand bone's, and the rest is its
+       finger's last bone's; so a bend at his own joints folds a finger in its middle and never at its knuckle (R35 held them
+       as modelled for it). So once, as he loads, his left hand is jointed again the way tools/fingergraft.mjs jointed
+       Grandmaster Pho's (R26), on his own bones and in his own skins:
+         each finger's tip is the furthest of the points its own bones lead; its band across the hand is theirs; its middle
+           line, slice by slice along the hand from before its knuckle to its tip, the middle of its band of skin (so a finger
+           that curls is followed as it curls);
+         its knuckle where a hand's stand from the wrist, as Grandmaster Pho's scanned hand has them: 0.461, 0.472, 0.481 and
+           0.439 of the hand's length (wrist to the middle fingertip) for the first, middle, ring and little fingers; its
+           middle and end joints 0.46 and 0.73 of the way from there to its tip along that line;
+         the thumb's line the long axis of the points its bones lead, its root 0.56 of the hand's length back from its tip,
+           its joints at 0.43 and 0.73 of that;
+         his finger bones MOVED onto those joints (each one's turn as it was), each skin's inverse binds made again from them;
+         every point his hand and his left fingers carry weighed along them again: the hand to a finger's first bone over
+           1.2 cm round its knuckle, each bone to the next over 0.6 cm round its joint; skin between two fingers shared by how
+           near each finger's middle is (his fingers are modelled together: a point given wholly to one would tear from its
+           neighbour as they bend); the thumb's by its nearness to the thumb's line; every other bone's share kept, four at most.
+       While a finger is not turned, each finger bone's skinning matrix equals the hand's (it stands at its bind against the
+       hand), so in every take he is drawn exactly as before; his near body (p5zavierh) is jointed the same way, by the same
+       joints, before it is first drawn. The report (ZG5.rep) gives every joint in centimetres along, across and through the
+       hand, and the points weighed */
+    const ZG5 = { J: null, rep: null, failed: false, geo: new WeakSet(), sk: new WeakSet(), bones: null };
+    const ZG5_FING = ['Index', 'Middle', 'Ring', 'Pinky'], ZG5_MCP = { Index: 0.461, Middle: 0.472, Ring: 0.481, Pinky: 0.439 };
+    function zgBones(P) {
+      const H = boneOf(P, 'LeftHand'); if (!H) return null; const F = {};
+      for (const nm of ['Thumb'].concat(ZG5_FING)) { const L = [1, 2, 3, 4].map(k => boneOf(P, 'LeftHand' + nm + k)); if (!L[3] && nm === 'Middle') L[3] = boneOf(P, 'LeftHand_End');
+        if (L.some(b => !b)) return null; F[nm] = L; }
+      return { H, F };
+    }
+    function zgMeasure(P, Bo) {
+      const meshes = (P.lv[1] || []).filter(m => m.isSkinnedMesh && m.skeleton);
+      const sk0 = (meshes.find(m => m.skeleton.bones.indexOf(Bo.H) >= 0) || {}).skeleton; if (!sk0) return null;
+      const pOf = (b) => { const i = sk0.bones.indexOf(b); return i < 0 ? null : new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(sk0.boneInverses[i]).invert()); };
+      const wp = pOf(Bo.H); if (!wp) return null;
+      const chainOf = new Map(); for (const nm in Bo.F) for (const b of Bo.F[nm]) chainOf.set(b, nm);
+      /* (his points with a share on his left hand or a left finger, in the bind's space; `lead` the chain of its largest such share) */
+      const pts = [];
+      for (const m of meshes) { const sk = m.skeleton, g = m.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight; if (!pos || !si || !sw) continue;
+        const idx = new Map(); idx.set(sk.bones.indexOf(Bo.H), 'H'); for (const [b, nm] of chainOf) { const i = sk.bones.indexOf(b); if (i >= 0) idx.set(i, nm); }
+        for (let i = 0; i < pos.count; i++) { let hs = 0, lead = null, lw = 0;
+          for (let q = 0; q < 4; q++) { const t = idx.get(si.getComponent(i, q)), w = sw.getComponent(i, q); if (t && w > 0) { hs += w; if (w > lw) { lw = w; lead = t; } } }
+          if (hs > 0.05) pts.push({ p: new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(m.bindMatrix), lead }); } }
+      /* the tips, the hand's line (wrist to the middle fingertip), across it toward the thumb's side (little finger to first) */
+      const tipOf = (nm) => { let best = null, bd = -1; for (const q of pts) if (q.lead === nm) { const d = q.p.distanceTo(wp); if (d > bd) { bd = d; best = q.p; } } return best; };
+      const tips = {}; for (const nm of ['Thumb'].concat(ZG5_FING)) { tips[nm] = tipOf(nm); if (!tips[nm]) return null; }
+      const f = tips.Middle.clone().sub(wp).normalize(), ax = tips.Index.clone().sub(tips.Pinky); ax.addScaledVector(f, -ax.dot(f)).normalize();
+      const nx = new THREE.Vector3().crossVectors(f, ax).normalize();
+      const H3 = (p) => { const d = p.clone().sub(wp); return [d.dot(f), d.dot(ax), d.dot(nx)]; };
+      const toB = (h) => wp.clone().addScaledVector(f, h[0]).addScaledVector(ax, h[1]).addScaledVector(nx, h[2]);
+      for (const q of pts) q.h = H3(q.p);
+      const HL = H3(tips.Middle)[0];
+      /* each finger's band across the hand: the middle of the points its own bones lead */
+      const band = {}; for (const nm of ZG5_FING) { let s = 0, n = 0; for (const q of pts) if (q.lead === nm) { s += q.h[1]; n++; } band[nm] = s / Math.max(1, n); }
+      const sp = Math.min(...[0, 1, 2].map(i => Math.abs(band[ZG5_FING[i]] - band[ZG5_FING[i + 1]])));
+      /* each finger's middle line: slices 4 mm thick along the hand, from 6 mm before its knuckle to its tip */
+      const FIN = {};
+      for (const nm of ZG5_FING) {
+        const T = H3(tips[nm]), s0 = ZG5_MCP[nm] * HL - 0.006, line = [];
+        /* (the middle of the slice's thickness, its deepest and highest points' middle, never their mean, which leans to
+           whichever side has more points; across, the mean, within the inner 0.4 of the band, clear of the thumb's web) */
+        for (let s = s0; s < T[0] - 0.002; s += 0.004) { let n = 0, sa = 0, lo = Infinity, hi = -Infinity;
+          for (const q of pts) if (Math.abs(q.h[0] - s) < 0.002 && Math.abs(q.h[1] - band[nm]) < 0.4 * sp && (q.lead === 'H' || q.lead === nm)) { n++; sa += q.h[1]; lo = Math.min(lo, q.h[2]); hi = Math.max(hi, q.h[2]); }
+          if (n >= 3) line.push([s, sa / n, 0.5 * (lo + hi)]); }
+        line.push(T);
+        if (line.length < 4) return null;
+        const cum = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1], line[i][2] - line[i - 1][2]));
+        /* (the knuckle on the line where the hand's proportion puts it; the joints along the line from there) */
+        const atS = (s) => { let i = 0; while (i < line.length - 2 && line[i + 1][0] < s) i++; const a = line[i], b = line[i + 1], u = Math.max(0, Math.min(1, (s - a[0]) / Math.max(1e-6, b[0] - a[0]))); return { h: [0, 1, 2].map(k => a[k] + (b[k] - a[k]) * u), c: cum[i] + (cum[i + 1] - cum[i]) * u }; };
+        const atC = (c) => { let i = 0; while (i < cum.length - 2 && cum[i + 1] < c) i++; const u = Math.max(0, Math.min(1, (c - cum[i]) / Math.max(1e-6, cum[i + 1] - cum[i]))); return [0, 1, 2].map(k => line[i][k] + (line[i + 1][k] - line[i][k]) * u); };
+        const K = atS(ZG5_MCP[nm] * HL), L = cum[cum.length - 1] - K.c;
+        FIN[nm] = { line, cum, c0: K.c, L, joints: [K.h, atC(K.c + 0.46 * L), atC(K.c + 0.73 * L), T] };
+      }
+      /* the thumb: the long axis of the points its bones lead, from its root toward its tip */
+      { const tp = pts.filter(q => q.lead === 'Thumb'), c = [0, 0, 0]; for (const q of tp) for (let k = 0; k < 3; k++) c[k] += q.h[k] / tp.length;
+        const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; for (const q of tp) for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) C[a][b] += (q.h[a] - c[a]) * (q.h[b] - c[b]);
+        let v = [1, 0, 0]; for (let it = 0; it < 60; it++) { const w = [0, 1, 2].map(a => C[a][0] * v[0] + C[a][1] * v[1] + C[a][2] * v[2]); const l = Math.hypot(...w) || 1; v = w.map(x => x / l); }
+        const T = H3(tips.Thumb); if ((T[0] - c[0]) * v[0] + (T[1] - c[1]) * v[1] + (T[2] - c[2]) * v[2] < 0) v = v.map(x => -x);
+        const TL = 0.56 * HL, at = (k) => [0, 1, 2].map(j => T[j] - v[j] * TL * (1 - k));
+        const rad = tp.map(q => { const d = [0, 1, 2].map(k => q.h[k] - c[k]), t = d[0] * v[0] + d[1] * v[1] + d[2] * v[2]; return Math.hypot(d[0] - v[0] * t, d[1] - v[1] * t, d[2] - v[2] * t); }).sort((a, b) => a - b);
+        FIN.Thumb = { d: v, L: TL, joints: [at(0), at(0.43), at(0.73), T], radius: rad[Math.floor(rad.length * 0.9)] || 0.012 }; }
+      const cm = (h) => h.map(x => +(x * 100).toFixed(1));
+      return { wp, f, ax, nx, HL, band, sp, FIN, toB, H3, n: pts.length,
+               rep: { HL: +(HL * 100).toFixed(1), points: pts.length, joints: Object.fromEntries(Object.entries(FIN).map(([k, F]) => [k, F.joints.map(cm)])) } };
+    }
+    const _zgM = new THREE.Matrix4(), _zgN = new THREE.Matrix4(), _zgV = new THREE.Vector3();
+    /* (a skin's inverse binds made again: each finger bone's bind with its place moved onto its joint, its turn and size kept) */
+    function zgBinds(sk, Bo, J) {
+      for (const nm in Bo.F) Bo.F[nm].forEach((b, k) => { const i = sk.bones.indexOf(b); if (i < 0) return;
+        _zgM.copy(sk.boneInverses[i]).invert(); const p = J.toB(J.FIN[nm].joints[k]); _zgM.setPosition(p); sk.boneInverses[i].copy(_zgM).invert(); });
+    }
+    /* (one skin's points weighed again along the joints) */
+    function zgWeigh(m, Bo, J) {
+      const sk = m.skeleton, g = m.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight; if (!pos || !si || !sw) return 0;
+      const hi = sk.bones.indexOf(Bo.H); if (hi < 0) return 0;
+      const mine = new Set([hi]), bi = {}, chOf = new Map([[hi, 'H']]); for (const nm in Bo.F) { bi[nm] = Bo.F[nm].map(b => sk.bones.indexOf(b)); for (const i of bi[nm]) if (i >= 0) { mine.add(i); chOf.set(i, nm); } }
+      /* (a finger's middle line across and through the hand at a place along it) */
+      const lineAt = (F, s) => { const L0 = F.line; let k = 0; while (k < L0.length - 2 && L0[k + 1][0] < s) k++; const a = L0[k], b = L0[k + 1], u = Math.max(0, Math.min(1, (s - a[0]) / Math.max(1e-6, b[0] - a[0]))); return [a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u]; };
+      const B0 = 0.012, B = 0.006, sm = (x, a, b) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+      const sharesAlong = (t, l1, l2, isThumb) => { const w1 = isThumb ? sm(t, -B0 * 0.25, B0 * 2.2) : sm(t, -B0, B0), a12 = sm(t, l1 - B, l1 + B), a23 = sm(t, l1 + l2 - B, l1 + l2 + B);
+        return [1 - w1, w1 * (1 - a12), w1 * a12 * (1 - a23), w1 * a12 * a23]; };
+      const seg = {}; for (const nm in J.FIN) { const jj = J.FIN[nm].joints, d = (a, b) => Math.hypot(jj[b][0] - jj[a][0], jj[b][1] - jj[a][1], jj[b][2] - jj[a][2]); seg[nm] = [d(0, 1), d(1, 2), d(2, 3)]; }
+      const TH = J.FIN.Thumb, reachT = Math.max(TH.radius * 1.35, 0.016), s0F = Math.min(...ZG5_FING.map(nm => J.FIN[nm].joints[0][0])) - B0, sig = 0.5 * J.sp;
+      const v = new THREE.Vector3(); let n = 0;
+      for (let i = 0; i < pos.count; i++) {
+        let hs = 0, lead = null, lw = 0; for (let q = 0; q < 4; q++) { const j = si.getComponent(i, q), w = sw.getComponent(i, q); if (mine.has(j)) { hs += w; if (w > lw) { lw = w; lead = chOf.get(j); } } }
+        if (!(hs > 0)) continue;
+        v.fromBufferAttribute(pos, i).applyMatrix4(m.bindMatrix); const h = J.H3(v);
+        const others = new Map(), out = new Map(); for (let q = 0; q < 4; q++) { const j = si.getComponent(i, q), w = sw.getComponent(i, q); if (w > 0 && !mine.has(j)) others.set(j, (others.get(j) || 0) + w); }
+        const add = (j, w) => { if (j >= 0 && w > 1e-6) out.set(j, (out.get(j) || 0) + w); };
+        /* the thumb: by its nearness to its line */
+        const r0 = [0, 1, 2].map(k => h[k] - TH.joints[0][k]), tT = r0[0] * TH.d[0] + r0[1] * TH.d[1] + r0[2] * TH.d[2], rT = Math.hypot(r0[0] - TH.d[0] * tT, r0[1] - TH.d[1] * tT, r0[2] - TH.d[2] * tT);
+        /* (what the thumb's own bones led stays the thumb's; what a finger's led, the finger's; the hand's by nearness, never
+           where the first finger's middle line is nearer, nor the palm's middle) */
+        let mT;
+        if (lead === 'Thumb') mT = tT > -B0 ? 1 : 0;
+        else if (lead !== 'H') mT = 0;
+        else { mT = (tT > -B0 && tT < TH.L + 0.015) ? 1 - sm(rT, 0.75 * reachT, reachT) : 0;
+          if (mT > 0 && h[0] > J.FIN.Index.joints[0][0] - B0) { const I = lineAt(J.FIN.Index, h[0]); if (Math.hypot(h[1] - I[0], h[2] - I[1]) < rT) mT = 0; }
+          if (h[1] < J.band.Index - 0.25 * J.sp) mT = 0; }
+        /* the fingers: by how near each finger's middle is across the hand, beyond the knuckles */
+        let gs = 0; const gF = {}; const inF = h[0] > s0F ? 1 : 0;
+        if (inF) for (const nm of ZG5_FING) { const e = (h[1] - J.band[nm]) / sig; gF[nm] = Math.exp(-e * e); gs += gF[nm]; }
+        const mF = inF && gs > 1e-6 ? (1 - mT) : 0;
+        let handW = hs * (1 - mT - mF);
+        if (mT > 0) { const w = sharesAlong(tT, seg.Thumb[0], seg.Thumb[1], true); handW += hs * mT * w[0]; for (let k = 0; k < 3; k++) add(bi.Thumb[k], hs * mT * w[k + 1]); }
+        if (mF > 0) for (const nm of ZG5_FING) { const F = J.FIN[nm], m1 = mF * gF[nm] / gs; if (!(m1 > 1e-4)) continue;
+          /* (how far along the finger's own line: the point's place along the hand, read on the line's slices) */
+          const L0 = F.line; let c = F.cum[0] + (h[0] - L0[0][0]); for (let k = 0; k < L0.length - 1; k++) { if (h[0] <= L0[k + 1][0]) { const u = Math.max(0, Math.min(1, (h[0] - L0[k][0]) / Math.max(1e-6, L0[k + 1][0] - L0[k][0]))); c = F.cum[k] + (F.cum[k + 1] - F.cum[k]) * u; break; } c = F.cum[k + 1] + (h[0] - L0[k + 1][0]); }
+          const w = sharesAlong(c - F.c0, seg[nm][0], seg[nm][1], false); handW += hs * m1 * w[0]; for (let k = 0; k < 3; k++) add(bi[nm][k], hs * m1 * w[k + 1]); }
+        add(hi, handW);
+        /* (four at most: every other bone's share is kept whole (a point had four at most, one of them the hand's or a
+           finger's, so they leave a slot at least); what will not fit of the hand's and fingers' goes to the hand, whose
+           skinning is theirs at rest, so nothing moves) */
+        const oth = [...others.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3), slots = 4 - oth.length;
+        let mineL = [...out.entries()].sort((a, b) => b[1] - a[1]);
+        if (mineL.length > slots) { const keep = mineL.slice(0, slots), drop = mineL.slice(slots).reduce((s2, x) => s2 + x[1], 0); (keep.find(x => x[0] === hi) || keep[0])[1] += drop; mineL = keep; }
+        const L = oth.concat(mineL);
+        /* (written back in the attribute's own steps with the sum it had: a quantized weight rounded on its own leaves the
+           sum a step or two off, and the shader does not divide by it) */
+        const NI = sw.normalized && !(sw.array instanceof Float32Array);
+        if (NI) { let S0 = 0; for (let q = 0; q < 4; q++) S0 += sw.array[i * 4 + q];
+          const tot = L.reduce((s2, x) => s2 + x[1], 0) || 1, raw = L.map(x => x[1] / tot * S0), flo = raw.map(x => Math.floor(x + 1e-9)); let rest = Math.round(S0 - flo.reduce((s2, x) => s2 + x, 0));
+          raw.map((x, k) => [x - flo[k], k]).sort((a, b) => b[0] - a[0]).forEach(([, k]) => { if (rest > 0) { flo[k]++; rest--; } });
+          for (let q = 0; q < 4; q++) { si.setComponent(i, q, q < L.length ? L[q][0] : 0); sw.array[i * 4 + q] = q < L.length ? flo[q] : 0; } }
+        else { let sum0 = 0; for (let q = 0; q < 4; q++) sum0 += sw.getComponent(i, q); const tot = L.reduce((s2, x) => s2 + x[1], 0) || 1;
+          for (let q = 0; q < 4; q++) { si.setComponent(i, q, q < L.length ? L[q][0] : 0); sw.setComponent(i, q, q < L.length ? L[q][1] / tot * sum0 : 0); } }
+        n++;
+      }
+      si.needsUpdate = true; sw.needsUpdate = true; return n;
+    }
+    /* (joint this body's skins that are not yet jointed: the first time, his bones are moved too) */
+    function zgRun(P) {
+      if (ZG5.failed || !P || !P.ready) return;
+      try {
+        if (!ZG5.J) { const Bo = zgBones(P); const J = Bo && zgMeasure(P, Bo); if (!J) { ZG5.failed = true; console.warn('ZG5: his left hand could not be read'); return; }
+          ZG5.J = J; ZG5.bones = Bo; ZG5.rep = J.rep;
+          /* his bones moved onto the joints, from the bind of the first skin (each bone's place against its parent's, both new) */
+          const sk0 = P.lv[1].find(m => m.skeleton && m.skeleton.bones.indexOf(Bo.H) >= 0).skeleton;
+          const bindNew = (b, nm, k) => { const i = sk0.bones.indexOf(b); const M = new THREE.Matrix4().copy(sk0.boneInverses[i]).invert(); M.setPosition(J.toB(J.FIN[nm].joints[k])); return M; };
+          for (const nm in Bo.F) { let par = new THREE.Matrix4().copy(sk0.boneInverses[sk0.bones.indexOf(Bo.H)]).invert();
+            Bo.F[nm].forEach((b, k) => { const M = bindNew(b, nm, k); _zgN.copy(par).invert().multiply(M); b.position.setFromMatrixPosition(_zgN); b.updateMatrix(); par = M; }); }
+          /* (what was read off his old joints is read again from these: his arms' measures, and the mend of his fingers'
+             hinges, handsTrue's, which holds a finger's middle and end joints to their own hinge each frame) */
+          P.arms = undefined; P.ht = undefined; }
+        for (const L of [P.lv[1], P.lv[0]]) if (L) for (const m of L) { if (!m.isSkinnedMesh || !m.skeleton) continue;
+          if (!ZG5.sk.has(m.skeleton)) { zgBinds(m.skeleton, ZG5.bones, ZG5.J); ZG5.sk.add(m.skeleton); }
+          if (!ZG5.geo.has(m.geometry)) { const n = zgWeigh(m, ZG5.bones, ZG5.J); ZG5.geo.add(m.geometry); ZG5.rep['weighed_' + (L === P.lv[0] ? 'near' : 'body')] = (ZG5.rep['weighed_' + (L === P.lv[0] ? 'near' : 'body')] || 0) + n; } }
+      } catch (e) { ZG5.failed = true; console.warn('ZG5 threw: ' + (e && e.message)); }
+    }
+    whenReady(cast.zav, (P) => { zgRun(P); if (ZG5.rep) console.log('ZG5: his left hand jointed again: ' + JSON.stringify(ZG5.rep)); });
     /* (R39, 23 Nov: Chad, "Why does the middle finger keep sticking out like that". MEASURED on his file, never guessed
        (tools/probes/fingerskin.mjs, each finger's skin against its own bones): the end of Grandmaster Pho's right MIDDLE
        finger, 86 points of its skin from its last joint to its tip and past it, is carried by RightHandEnd, his rig's old end
@@ -6392,7 +6565,9 @@
     const limHook = new THREE.Object3D(); limHook.name = 'the arms held to a real range';
     limHook.updateMatrixWorld = function (force) {
       try {
-        for (const [P, skip] of [[cast.zav, null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
+        /* (R129: his near body, read after he is ready, jointed as his body was the frame it arrives, before it is drawn) */
+        { const Z = cast.zav; if (Z && Z.ready && ZG5.J && !ZG5.failed && Z.lv[0] && Z.lv[0].some(m => m.skeleton && !ZG5.sk.has(m.skeleton))) zgRun(Z); }
+        for (const [P, skip] of [[cast.zav, typeof ZAVGRIP5 === 'object' && ZAVGRIP5.k() > 0 ? 'Left' : null], [cast.pho, typeof PHOGRIP5 === 'object' && PHOGRIP5.k() > 0 ? 'Right' : null]])
           if (P && P.ready && P.group.visible) armLimit(P, skip);
       } catch (e) { if (!limHook.failed) { limHook.failed = true; console.warn('LIM5 threw: ' + (e && e.message)); } }
       THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
@@ -7297,7 +7472,7 @@
         // careful player as sure within two tries as he was (97.3), still 6 s quicker than 40: Chad's "slightly easier")
         holdAt: [6, 4], holdSecs: 34, holdRetry: 10, holdPace: 0.62, goldGrace: 8,   // (R73: holdPace 0.62, was 0.45)
         // STAGES 4 TO 6
-        togetherAfter: 1.5, togetherSecs: 1.5, filmGuard: 40,   // (R122: 1.5 s, was 1.2: the cut-in's 1.4 s plays out before the Naga's film)
+        togetherAfter: 1.5, togetherSecs: 2.1, filmGuard: 40,   // (R128: 2.1 s, was 1.5 (R122), 1.2 before: the cut-in's 2.0 s plays out before the Naga's film)
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
         needAfter: 1.0, urgentAfter: 0.5, needEvery: 12, lineGap: 0.25, needCap: 4.0, colourLate: 4.0, lessonLate: 10.0, holdLate: 30.0,
         // THE FRAME: no step moves the fight more than this (a slow phone gets a slower fight, never a jump)
@@ -10720,7 +10895,10 @@
             /* (R122 idea 1, a full special attack: both faces slash across the screen with the word between them, a white slash
                and a flash, before the Naga's film shows the attack itself (kit.cutIn, the seventy-eighth seam; the act's 1.5 s
                holds the film back until it has played)) */
-            if (kit && kit.cutIn && kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: fsWords().cutTogether, secs: 1.4 })) fsFx('u5cutin', 0.9, null);
+            /* (R128, Chad: "that part can stay on the screen for a slightly longer duration, as on a slow phone with low frame
+               rate, one can barely see it before it disappear": 2.0 s, was 1.4, on the cut-in's own clock, a tenth of a second
+               a drawn frame at most (main.js cutInStep); the Naga's film waits for it to end: FS5.cutLive, fsNaga) */
+            if (kit && kit.cutIn && kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: fsWords().cutTogether, secs: 2.0, onDone: () => { FS5.cutLive = false; } })) { FS5.cutLive = true; fsFx('u5cutin', 0.9, null); }
             /* (R68: pressed, the call BURSTS: its own sound, a flash of gold over the whole screen, the screen knocked) */
             fsFx('u5togpress', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFE6A8', secs: 0.28 }); fsShake(0.07, 0.45, 0.025);
             /* (R94 E3: gold flame round him and violet round his student, a burst of each, one great boom, the phone's buzz) */
@@ -10777,7 +10955,9 @@
        held as it is) */
     function fsNaga() {
       const wait = Math.max(0, (FS5.lineEnd || 0) - FS5.wall);
-      if (wait > 0.05) { FS5.nagaAt = FS5.wall + wait + 0.15; return; }
+      /* (R128: and for the TOGETHER cut-in to finish on its own clock, which a slow phone plays slower: the film's first frame
+         would take it away) */
+      if (wait > 0.05 || FS5.cutLive) { FS5.nagaAt = FS5.wall + (wait > 0.05 ? wait + 0.15 : 0); return; }
       fsNagaGo();
     }
     function fsNagaGo() {
@@ -10827,7 +11007,7 @@
       const F = fightStart();
       if (kit && kit.tagState && kit.tagState().played !== 'pho') kit.tagSwitch('pho', { force: true });
       kit.tagPlace('pho', F.pho.x, F.pho.z, { ry: COURT5.heading + Math.PI }); kit.tagPlace('zavier', F.zav.x, F.zav.z, { ry: COURT5.heading + Math.PI });
-      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.lineEnd = 0;
+      FS5.last.pho = null; FS5.last.zav = null; FS5.pick = null; FS5.act = null; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.cutLive = false; FS5.lineEnd = 0;
       FS5.cageAt = null; FS5.hitQ = [];
       fsCatchEnd();
       fsFxClear(); for (let i = 1; i < 9; i++) { const V = fsVis[i]; V.y = FS_SUNK; V.a = 0; V.s = 1; V.lean = 0; V.from = null; }
@@ -10874,7 +11054,7 @@
       /* (R75's debug, GJ: and for the loss's own line, "Enough. Breathe. We begin again." (3.9 s): a BEGIN AGAIN pressed under
          it began the fight over it, and a new prompt took its caption) */
       if (FS5.card && FS5.wall >= Math.max(FS5.cardAt, (FS5.lineEnd || 0) + 0.25)) { const c = FS5.card; FS5.card = null; c(); }
-      if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
+      if (FS5.nagaAt != null && FS5.wall >= FS5.nagaAt && !FS5.cutLive && FS5.st && FS5.st.stage === 'naga') fsNagaGo();
       /* (the gold's hits on a crowd, each told a moment after the last: R75's GB) */
       if (FS5.hitQ.length) { const due = FS5.hitQ.filter(h => FS5.wall >= h.at); if (due.length) { FS5.hitQ = FS5.hitQ.filter(h => FS5.wall < h.at); fsEvents(due.map(h => Object.assign({}, h.e, { after: 0 }))); } }
       /* (R123, 25 Nov 2026: the win's tick ends the fight in the middle of this frame (cleanse, fightLeave: the effects
@@ -11227,7 +11407,7 @@
          struggle cry's (every bound one's cry silent until the new clock passed the old fight's last), the end of the last
          line (the Naga's film waiting for it, minutes after a replay), his act's span (rooted until it passed), the shake,
          the Naga's wait, the bag's run, the call's rise, the bag's snap. Each back to what a fresh build has) */
-      FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
+      FS5.strugAt = -9; FS5.lineEnd = 0; FS5.zact = null; FS5.shake = null; FS5.nagaAt = null; FS5.cutLive = false; FS5.bagRun = 0; FS5.callAt = 0; FS5.snapAt = null;
       FS5.nagaDim = false; FS5.windT = 0; FS5.hitQ = [];
       FS5.slowEnd = null; FS5.pushed = false; FS5.countN = 0;                  // (R122: a catch's slow, push and count)
       fsTake.pho.stepU = fsTake.zav.stepU = null;
@@ -11621,9 +11801,15 @@
          sent to FILMS-2 on 21 Nov: its old place, 0.42 and 0.18, was inside his waist at the strike), the stick's own origin
          there; his fist brings its shaft down onto that place, the stick turned as his hand holds it (plantYaw) */
       const PLANT_AT = [-0.40, 0.38];
+      /* R129 (25 Nov 2026): THE NAGA'S FILM LIFTS AND STRIKES THE STICK ITSELF, the two of them holding it (c_yfilm.js
+         TOGETHER): his fist taken from where it stands at his rest by `to` of the way to the place it plants it (PLANT_D,
+         the planting cast's own last key) and lifted `y`; `hold` keeps his hand on it planted; `k` his grip's share, the
+         film's (a pure function of its clock, where his own eases on the wall). Off (FLIFT.on false) every number is as it
+         was: the fist's offsets add nought */
+      const PLANT_D = [0, 0], FLIFT = { on: false, y: 0, to: 0, hold: false, k: null };
       function plantKeys() {
         const ph = Math.PI / 2 - STAFF.out, cx = STICK_C[0] * Math.cos(ph) + STICK_C[1] * Math.sin(ph), cz = -STICK_C[0] * Math.sin(ph) + STICK_C[1] * Math.cos(ph);
-        const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2];
+        const dx = PLANT_AT[0] + cx - STAFF.fist[0], dz = PLANT_AT[1] + cz - STAFF.fist[2]; PLANT_D[0] = dx; PLANT_D[1] = dz;
         MOVES.Charged_Spell_Cast_1.keys = [[0, 0, 0, 0, 0, 0], [0.55, 0, 0, 0, 0, 0], [1.25, dx * 0.6 - 0.04, 0.20, dz * 0.6, 0, 6], [1.50, dx - 0.02, 0.22, dz, 0, 3], [1.70, dx, 0, dz, 0, 0, 'drive']];
       }
       plantKeys();
@@ -11876,7 +12062,8 @@
            in an act, its move from there) */
         const m = moveOf(P), planted = typeof STICK5 === 'object' && STICK5.who === 'planted';
         clavLay(P, Math.min(1, m.clav) * share); clavLayL(P, CLAV_L * Math.min(1, m.clav) * share);
-        const Ct = _sa.set(STAFF.fist[0] + m.x, STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y, STAFF.fist[2] + m.z); P.group.localToWorld(Ct);
+        const Ct = _sa.set(STAFF.fist[0] + m.x + (FLIFT.on ? FLIFT.to * PLANT_D[0] : 0), STICK_Y * Math.cos(STAFF.lean || 0) + 0.004 + STAFF.lift * walk + m.y + (FLIFT.on ? FLIFT.y : 0),
+                           STAFF.fist[2] + m.z + (FLIFT.on ? FLIFT.to * PLANT_D[1] : 0)); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out));
         /* (PLANTED: his hand stays on it where it stands, his fist round its neck as it held it, while his cast plays on: the Naga
            rises from its head under his hand) */
@@ -11937,8 +12124,9 @@
           const now = performance.now(), dt = lastNow ? Math.min(0.1, (now - lastNow) / 1000) : 0;
           if (now - lastNow > 1) { lastNow = now;
             const holding = !!(P && P.ready && typeof STICK5 === 'object' && things.nagaStaff && things.nagaStaff.visible && P.group.visible &&
-                                 (STICK5.who === 'pho' || (STICK5.who === 'planted' && heldPlanted(P))));
-            k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
+                                 (STICK5.who === 'pho' || (STICK5.who === 'planted' && ((FLIFT.on && FLIFT.hold) || heldPlanted(P)))));
+            k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3);
+            if (FLIFT.on && FLIFT.k != null) k = Math.max(0, Math.min(1, FLIFT.k)); }
           if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
           else if ((clWrote || clLWrote) && P && P.ready) { clavLay(P, 0); clavLayL(P, 0); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
@@ -11974,6 +12162,10 @@
         /* the turn the stick stands at when the Naga's film plants it: as his hand held it (the Naga's head where his knuckles
            face, STAFF.out from his front), so nothing turns as it leaves his hand; his heading as before with the grip off */
         plantYaw(ry) { return GRIP_ON ? ry + Math.PI / 2 - STAFF.out : ry; },
+        /* (R129: the Naga's film's own lift, strike and hold of the stick in his hand (FLIFT); null gives it back) */
+        film(o) { if (!o) { FLIFT.on = false; FLIFT.y = 0; FLIFT.to = 0; FLIFT.hold = false; FLIFT.k = null; return null; }
+          Object.assign(FLIFT, o); FLIFT.on = true; return FLIFT; },
+        plantD() { return PLANT_D.slice(); },
         /* where the stick's foot stands, in the world, while his hand holds it (the gold's wheel goes out from it: the rules'
            ph.strike); null with the grip off or the stick not in his hand */
         footAt(out) { const g = things.nagaStaff, P = cast.pho;
@@ -15657,7 +15849,202 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const _ttP = new THREE.Vector3(), _ttF = new THREE.Vector3(), _ttU = new THREE.Vector3(), _ttQ5 = new THREE.Quaternion();
     /* (where the stick, planted, carries the Naga's way out: the top of its carved head, in its own frame, read from its file:
        the head's slices at 1.30 to 1.35 m up it stand 0.09 to 0.15 m to its -x) */
+    /* ================================================================ R129 (25 Nov 2026, Chad: "since we say 'together',
+       shouldn't there be an additional sequence that show zavier holding the naga stick together with pho, and with both
+       their powers, begin the summoning of the naga? This should be added with the same level of cinematic polish as it
+       currently has"): HIS LEFT HAND ON THE NAGA STICK, under his teacher's right (ZAVGRIP5), solved as his teacher's is
+       (PHOGRIP5: its finger planes, its wrap, its hinges), on his left hand as c_cast.js ZG5 jointed it again:
+         where: 0.93 m up the stick, 14 cm under his teacher's hand (1.07): the shaft's middle there (0.100, -0.0066) in the
+           stick's own frame, its line leaning toward its -x as it rises (the file's slices, 25 Nov: 0.103 at 0.92 m, 0.088
+           at 0.96), 3.5 cm round (its ninetieth part 3.6);
+         his fingers' bends held to a hand's GENTLER range (35, 45 and 28 degrees, the thumb's 20, 18, 18): his hand is
+           modelled with its fingers together, and closed further his skin folded over itself (the lab's pictures of 25 Nov,
+           45/60/35: torn between two fingers; 25/35/20: a closed hand from behind and from the front). So he holds it as a
+           man holds a staff he is about to lift with another, the shaft across his palm and his fingers round its front;
+         his elbow about his own hinge, read off his six takes (25 Nov: the same line in all, (0.891, 0, -0.454) in his upper
+           arm's frame); down, in and a little back (his teacher's pole, mirrored); his knuckles 15 degrees out to his left;
+         `k` the arm's share, `kf` the fingers', `kin` the last 7 cm in to the wood along his palm's facing (his hand comes
+           to the stick open and closes on it): all the film's (pure functions of its clock).
+       Laid after the arms' range (LIM5, which leaves his left arm to it while it holds) and after his teacher's grip, so
+       it reads the stick where his teacher's hand has put it; taken off before his mixer runs, as every laid pose is
+       (armsBack: a.wrote, a.curled) */
+    const ZAVGRIP5 = (() => {
+      const D2R = Math.PI / 180, NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
+      const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.005, thumbR: 0.022, palm: 0.018, back: 0, tilt: -22,
+                   lim: { f: [35, 45, 28], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [-0.30, -0.90, -0.30], out: 15, near: 0.07 };
+      const st = { k: 0, kf: 0, kin: 1 };
+      let G = null, failed = false, wroteQ = null, wroteArm = null;
+      const V = () => new THREE.Vector3();
+      function solve(P) {
+        if (G || failed) return G;
+        const As = armsOf(P), a = As && As.L; if (!a || !a.fingers) { failed = true; console.warn('ZAVGRIP5: his left hand has no fingers'); return null; }
+        const hand = a.hand, chains = {}, Lq = {};
+        for (const nm of NAMES) { const L = [1, 2, 3, 4].map(k => boneOf(P, 'LeftHand' + nm + k)); if (!L[3] && nm === 'Middle') L[3] = boneOf(P, 'LeftHand_End');
+          if (L.some(b => !b)) { failed = true; console.warn('ZAVGRIP5: no ' + nm + ' bones on ' + P.key); return null; }
+          chains[nm] = L; Lq[nm] = L.slice(0, 3).map(b => bindLocal(P, b) || b.quaternion.clone()); }
+        hand.updateWorldMatrix(true, true);
+        const s = V().setFromMatrixColumn(hand.matrixWorld, 0).length() / Math.max(1e-9, V().setFromMatrixColumn(P.group.matrixWorld, 0).length());
+        const M = (m) => m / s, D = T5, TILT = D.tilt * D2R;
+        const fL = a.fL.clone(), nL = a.nL.clone();
+        /* (each joint's place in the hand's frame, through each bone's own turn at bind: his bones are turned, his teacher's
+           grafted ones are not) */
+        const J = {}; for (const nm of NAMES) { const L = chains[nm], p = [L[0].position.clone()], acc = Lq[nm][0].clone();
+          for (let i = 1; i < 4; i++) { p.push(p[i - 1].clone().add(L[i].position.clone().applyQuaternion(acc))); if (i < 3) acc.multiply(Lq[nm][i]); } J[nm] = p; }
+        const acL = J.Index[0].clone().sub(J.Pinky[0]); acL.addScaledVector(fL, -acL.dot(fL)).normalize();
+        const up = nL.clone().negate();
+        const A = acL.clone().multiplyScalar(Math.cos(TILT)).addScaledVector(fL, Math.sin(TILT)).normalize();
+        const C = fL.clone().multiplyScalar(J.Middle[0].dot(fL) - M(D.back)).addScaledVector(nL, M(D.palm + D.R));
+        const out = { s, chains, q: {}, report: {} };
+        const arc = (l, r) => 2 * Math.asin(Math.min(1, l / (2 * r)));
+        const finger = (nm) => {
+          const P0 = J[nm][0], seg = [0, 1, 2].map(i => J[nm][i + 1].clone().sub(J[nm][i])), l = seg.map(v => v.length());
+          const d = seg[0].clone().normalize(), w = d.clone().cross(nL).normalize();
+          const cs = C.clone().addScaledVector(A, P0.clone().sub(C).dot(w) / A.dot(w));
+          const x3 = d.clone().addScaledVector(w, -d.dot(w)).normalize(), y3 = w.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
+          const to2 = (p) => [p.clone().sub(P0).dot(x3), p.clone().sub(P0).dot(y3)], c = to2(cs), rho = M(D.R + D.fingR);
+          return { P0, x3, y3, w, l, c, rho, rest: seg.map(v => v.clone().normalize()), lim: D.lim.f };
+        };
+        const wrapFinger = (F) => {
+          const th0 = F.rest.map(r => Math.atan2(r.dot(F.y3), r.dot(F.x3))), hi = F.lim.map(x => x * D2R), c = F.c, rho = F.rho, l = F.l;
+          const segD = (ax, ay, bx, by) => { const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let t = L2 > 0 ? ((c[0] - ax) * dx + (c[1] - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(ax + dx * t - c[0], ay + dy * t - c[1]); };
+          const bendsOf = (T, r = 0.40) => [r, (1 - r) * 2 / 3, (1 - r) / 3].map((k, i) => Math.min(hi[i], k * T));
+          const lay = (fs) => { let x = 0, y = 0, cum = 0, Jc = 0, clear = Infinity; for (let i = 0; i < 3; i++) { cum += fs[i]; const th = th0[i] - cum, nx = x + l[i] * Math.cos(th), ny = y + l[i] * Math.sin(th);
+              clear = Math.min(clear, segD(x, y, nx, ny) - rho); const e = Math.hypot(nx - c[0], ny - c[1]) - rho; Jc += e * e * (i === 0 ? 0.35 : 1); x = nx; y = ny; }
+            return { J: Jc, clear, tip: Math.hypot(x - c[0], y - c[1]) - rho }; };
+          let best = null;
+          for (let rr = 0.30; rr <= 0.48 + 1e-9; rr += 0.02) for (let T = 0; T <= 2.8 + 1e-9; T += 0.01) { const fs = bendsOf(T, rr), r = lay(fs); if (r.clear < -0.01 * rho) continue;
+            const Jc = r.J + 0.5 * rho * rho * (rr - 0.40) * (rr - 0.40); if (!best || Jc < best.J) best = { f: fs, J: Jc, clear: r.clear, tip: r.tip, T, r: rr }; }
+          if (!best) { const fs = bendsOf(0), r = lay(fs); best = { f: fs, J: r.J, clear: r.clear, tip: r.tip, T: 0 }; }
+          return best;
+        };
+        const hingeQ = (nm, ax3, bends, rep) => {
+          const L = chains[nm], qs = [], acc = new THREE.Quaternion();
+          for (let i = 0; i < 3; i++) { const Li = Lq[nm][i], ax = ax3[i].clone().applyQuaternion(acc.clone().invert()).normalize();
+            qs.push(new THREE.Quaternion().setFromAxisAngle(ax, bends[i]).multiply(Li)); acc.multiply(Li); }
+          out.q[nm] = qs; out.report[nm] = rep; void L;
+        };
+        for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm), W = wrapFinger(F);
+          const sg = Math.sign(F.y3.dot(V().crossVectors(F.w, F.x3))) || -1;
+          hingeQ(nm, [F.w, F.w, F.w], W.f.map(f => -sg * f), W.f.map(f => +(f / D2R).toFixed(1)));
+          out.report['clear' + nm] = +(W.clear * s * 100).toFixed(2); out.report['tip' + nm] = +(W.tip * s * 100).toFixed(2); }
+        /* the thumb: its root turned onto its line by the least turn within its range, its two hinges about the shaft's line */
+        { const L = chains.Thumb, P0 = J.Thumb[0], seg = [0, 1, 2].map(i => J.Thumb[i + 1].clone().sub(J.Thumb[i])), l = seg.map(v => v.length());
+          const st0 = J.Thumb[1].clone().sub(C).dot(A), cs = C.clone().addScaledVector(A, st0);
+          const x3 = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(), y3 = A.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
+          const rho = M(D.R + D.thumbR), Q2 = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
+          let best = null; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q2(b).distanceTo(P0) - l[0]); if (!best || e < best.e) best = { b, e }; }
+          let be = best.b; const tg = [P0.clone(), Q2(be)]; for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q2(be)); }
+          const lim = D.lim.t.map(x => x * D2R), rest0 = seg[0].clone().normalize(), want0 = tg[1].clone().sub(tg[0]).normalize();
+          let qw = new THREE.Quaternion().setFromUnitVectors(rest0, want0), ang = 2 * Math.acos(Math.min(1, Math.abs(qw.w)));
+          if (ang > lim[0]) { qw = new THREE.Quaternion().slerp(qw, lim[0] / ang); ang = lim[0]; }
+          const q0n = qw.clone().multiply(Lq.Thumb[0]), qs = [q0n], rep = [+(ang / D2R).toFixed(1)], acc = q0n.clone();
+          for (let i = 1; i < 3; i++) { const Li = Lq.Thumb[i];
+            const restDir = L[i + 1].position.clone().normalize().applyQuaternion(Li).applyQuaternion(acc), want = tg[i + 1].clone().sub(tg[i]).normalize();
+            const p1 = restDir.clone().addScaledVector(A, -restDir.dot(A)).normalize(), p2 = want.clone().addScaledVector(A, -want.dot(A)).normalize();
+            const an = Math.atan2(V().crossVectors(p1, p2).dot(A), p1.dot(p2)), close = Math.sign(V().crossVectors(A, restDir).dot(nL)) || 1;
+            const bend = Math.max(0, Math.min(lim[i], an * close)), ax = A.clone().applyQuaternion(acc.clone().invert()).normalize();
+            const q = new THREE.Quaternion().setFromAxisAngle(ax, close * bend).multiply(Li); qs.push(q); acc.multiply(q); rep.push(+(bend / D2R).toFixed(1)); }
+          out.q.Thumb = qs; out.report.Thumb = rep; out.report.thumbMiss = +(best.e * s * 100).toFixed(2); }
+        out.C = C; out.A = A; out.F = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(); out.nL = nL;
+        G = out; console.log('ZAVGRIP5: his grip solved: ' + JSON.stringify(out.report)); return G;
+      }
+      const _zq = new THREE.Quaternion(), _zq2 = new THREE.Quaternion(), _zq3 = new THREE.Quaternion(), _zqh = new THREE.Quaternion(), _zk = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
+      const _za = V(), _zb = V(), _zc = V(), _zd = V(), _ze = V(), _zf = V(), _zn = V(), _zp = V(), _zm = new THREE.Matrix4(), _zm2 = new THREE.Matrix4();
+      function layFingers(P, a, kk) {
+        if (!a.fing || !a.fingAll) { a.fing = []; for (const nm of NAMES) G.chains[nm].slice(0, 3).forEach((b, i) => a.fing.push({ b, q: new THREE.Quaternion(), i: i + 1, nm, j: i })); a.fingAll = true; }
+        const fresh = !a.curled || !wroteQ || a.fing.some((F, n) => !F.b.quaternion.equals(wroteQ[n]));
+        if (fresh && !a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.curled = true; }
+        a.fing.forEach((F) => { _zq.copy(G.q[F.nm][F.j]); F.b.quaternion.copy(F.q).slerp(_zq, kk); });
+        wroteQ = a.fing.map(F => F.b.quaternion.clone());
+        for (const nm of NAMES) G.chains[nm][0].updateMatrixWorld(true);
+      }
+      function layArm(P, a, kk) {
+        if (a.wrote && wroteArm && a.up.quaternion.equals(wroteArm[0]) && a.fore.quaternion.equals(wroteArm[1]) && a.hand.quaternion.equals(wroteArm[2])) return;
+        if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+        _zk[0].copy(a.up.quaternion); _zk[1].copy(a.fore.quaternion); _zk[2].copy(a.hand.quaternion);
+        hingeOf(a, 1, T5.hm);
+        const g = things.nagaStaff; g.updateWorldMatrix(true, false);
+        const Ct = _za.set(T5.c[0], T5.y, T5.c[1]).applyMatrix4(g.matrixWorld);
+        const up = _zb.set(T5.dir[0], T5.dir[1], T5.dir[2]).normalize().transformDirection(g.matrixWorld);
+        P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_zq2);
+        const front = _zc.set(Math.sin(T5.out * D2R), 0, Math.cos(T5.out * D2R)).applyQuaternion(_zq2); front.addScaledVector(up, -front.dot(up)).normalize();
+        _zd.crossVectors(G.F, G.A).normalize(); _ze.crossVectors(front, up).normalize();
+        _zm.makeBasis(front, up, _ze); _zm2.makeBasis(G.F, G.A, _zd).transpose(); _zm.multiply(_zm2); _zqh.setFromRotationMatrix(_zm);
+        const Wr = _zf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_zqh).negate().add(Ct);
+        if (st.kin < 1) { _zn.copy(G.nL).applyQuaternion(_zqh).normalize(); Wr.addScaledVector(_zn, -T5.near * (1 - st.kin)); }
+        const pole = _zp.set(T5.pole[0], T5.pole[1], T5.pole[2]).normalize().applyQuaternion(_zq2);
+        armHinge(a, Wr, pole);
+        a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_zq3);
+        const rel = _zq3.clone().invert().multiply(_zqh), ax = a.hand.position.clone().normalize(), dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
+        const tw = new THREE.Quaternion(ax.x * dd, ax.y * dd, ax.z * dd, rel.w); if (tw.lengthSq() > 1e-12) { tw.normalize(); a.fore.quaternion.multiply(tw); a.fore.updateWorldMatrix(false, true); }
+        a.fore.getWorldQuaternion(_zq3); a.hand.quaternion.copy(_zq3.invert().multiply(_zqh)); a.hand.updateWorldMatrix(false, true);
+        if (kk < 0.999) { _zq.copy(a.up.quaternion); a.up.quaternion.copy(_zk[0]).slerp(_zq, kk); _zq.copy(a.fore.quaternion); a.fore.quaternion.copy(_zk[1]).slerp(_zq, kk);
+          _zq.copy(a.hand.quaternion); a.hand.quaternion.copy(_zk[2]).slerp(_zq, kk); a.up.updateWorldMatrix(false, true); }
+        wroteArm = [a.up.quaternion.clone(), a.fore.quaternion.clone(), a.hand.quaternion.clone()];
+      }
+      const hook = new THREE.Object3D(); hook.name = 'his left hand on the Naga stick';
+      hook.updateMatrixWorld = function (force) {
+        try { const P = cast.zav;
+          if (st.k > 0.001 && P && P.ready && P.group.visible && things.nagaStaff && things.nagaStaff.visible && solve(P)) { const a = armsOf(P).L; layArm(P, a, st.k); if (st.kf > 0.001) layFingers(P, a, st.kf); }
+        } catch (e) { if (!failed) { failed = true; console.warn('ZAVGRIP5 threw: ' + (e && e.message)); } }
+        THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
+      };
+      { const i = world.children.findIndex(o => o.name === 'the arms held to a real range'); if (i >= 0) world.children.splice(i + 1, 0, hook); else world.children.unshift(hook); hook.parent = world; }
+      return {
+        set(o) { if (!o) { st.k = 0; st.kf = 0; st.kin = 1; return st; } Object.assign(st, o); return st; },
+        k() { return st.k; },
+        report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
+        /* (a probe's: another place on the stick, range of bends, slope across his palm or turn of his knuckles tried; the solve made again) */
+        tune(o = {}) { for (const k in o) if (k in T5) T5[k] = JSON.parse(JSON.stringify(o[k])); G = null; failed = false; wroteQ = null; wroteArm = null; return JSON.parse(JSON.stringify(T5)); }
+      };
+    })();
+    /* THE TWO POWERS UP THE STICK (R129): his student's violet kindled in his fist, his teacher's gold in his, then three
+       strands of each wound up round the shaft together, braided, from their two hands to its carved head, which takes
+       light; the fight's own ribbons (fxRibbon: the same flame running back along each, in its own ramp), thinner here,
+       drawn by the film (out of the fight's group: the film lays them every frame and hides them at its end), and three
+       glows (painted light, cards drawn over all at their depth, as the burst at its end is) */
+    const BRAID5 = (() => {
+      const R = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.034, w1: 0.008, heat: 1.6, seed: 0.7 + 1.3 * i, ro: 7 })),
+                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.034, w1: 0.008, heat: 1.6, seed: 2.1 + 1.1 * i, ro: 7 })) };
+      for (const k of ['P', 'Z']) for (const Rb of R[k]) world.add(Rb.me);
+      const glow = (stops) => { const [c, x] = canvas(128, 128), gd = x.createRadialGradient(64, 64, 2, 64, 64, 63);
+        stops.forEach(([o, col]) => gd.addColorStop(o, col)); x.fillStyle = gd; x.fillRect(0, 0, 128, 128);
+        const m = new THREE.SpriteMaterial({ map: tex(done(THREE, c, false)), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.renderOrder = 7.5; sp.visible = false; sp.frustumCulled = false; world.add(sp); return sp; };
+      const GL = { P: glow([[0, 'rgba(255,250,235,1)'], [0.22, 'rgba(255,214,130,0.85)'], [0.55, 'rgba(255,170,50,0.25)'], [1, 'rgba(255,140,20,0)']]),
+                   Z: glow([[0, 'rgba(248,242,255,1)'], [0.22, 'rgba(206,180,255,0.85)'], [0.55, 'rgba(138,92,255,0.25)'], [1, 'rgba(110,60,255,0)']]),
+                   H: glow([[0, 'rgba(255,255,255,1)'], [0.2, 'rgba(255,236,200,0.9)'], [0.45, 'rgba(200,170,255,0.4)'], [1, 'rgba(160,120,255,0)']]) };
+      /* the shaft's middle up the stick, in its own frame (the file's slices, 25 Nov), to its head's top (STICK_HEAD5) */
+      const AX = [[0.90, 0.1110, -0.0065], [0.94, 0.0960, -0.0065], [0.98, 0.0834, -0.0060], [1.02, 0.0802, -0.0061], [1.06, 0.0842, -0.0056], [1.10, 0.0858, -0.0047], [1.14, 0.0698, -0.0041], [1.24, 0.0, 0], [1.36, -0.11, 0]];
+      const axAt = (y, out) => { let i = 0; while (i < AX.length - 2 && AX[i + 1][0] < y) i++; const a = AX[i], b = AX[i + 1], u = Math.max(0, Math.min(1, (y - a[0]) / (b[0] - a[0]))); return out.set(a[1] + (b[1] - a[1]) * u, y, a[2] + (b[2] - a[2]) * u); };
+      const _bp = new THREE.Vector3(), _bm = new THREE.Matrix4();
+      /* o: { zk, pk (each hand's glow, 0..1), rise (0..1: the strands' heads from the hands to the head), k (the strands'
+         strength), head (the head's light, 0..1), fz, fp (the two fists' heights up the stick) } */
+      function frame(t, o) {
+        const g = things.nagaStaff; if (!g || !g.visible) { off(); return; }
+        g.updateWorldMatrix(true, false); _bm.copy(g.matrixWorld);
+        const at = (y, r, a, out) => { axAt(y, out); out.x += r * Math.cos(a); out.z += r * Math.sin(a); return out.applyMatrix4(_bm); };
+        for (const [w, kk, y0] of [['Z', o.zk, o.fz], ['P', o.pk, o.fp]]) { const sp = GL[w], k = Math.max(0, Math.min(1.4, kk || 0));
+          if (k < 0.01) { sp.visible = false; continue; } at(y0, 0, 0, _bp); sp.position.copy(_bp); sp.scale.setScalar(0.16 + 0.12 * k + 0.02 * Math.sin(t * 9 + (w === 'P' ? 1 : 0)));
+          sp.material.opacity = Math.min(1, 0.85 * k); sp.visible = true; }
+        { const sp = GL.H, k = Math.max(0, o.head || 0); if (k < 0.01) sp.visible = false; else { at(1.30, 0, 0, _bp); sp.position.copy(_bp); sp.scale.setScalar(0.25 + 0.35 * k + 0.03 * Math.sin(t * 13)); sp.material.opacity = Math.min(1, k); sp.visible = true; } }
+        const top = 1.30, n = 22, k = o.k || 0;
+        for (const [w, y0, ph] of [['Z', o.fz, 0], ['P', o.fp, Math.PI / 3]]) for (let j = 0; j < 3; j++) { const Rb = R[w][j];
+          if (!(k > 0.01) || !(o.rise > 0.01)) { Rb.me.visible = false; continue; }
+          const yH = y0 + (top - y0) * Math.min(1, o.rise), len = Math.max(0.05, Math.min(0.55, yH - y0 + 0.08)), a0 = ph + j * 2.0944 + t * 5.2;
+          for (let i = 0; i < n; i++) { const u = i / (n - 1), y = Math.max(y0 - 0.02, yH - u * len), near = Math.max(0, Math.min(1, (y - 1.12) / 0.18)), r = (0.062 + 0.012 * Math.sin(t * 3 + j)) * (1 - 0.85 * near);
+            at(y, r, a0 - u * 3.4 - (y - y0) * 9.0, Rb.pts[i]); }
+          fxRibbonLay(Rb, n); const U = Rb.me.material.uniforms; U.uT.value = t * 1.5 + j * 1.7; U.uA.value = k; }
+      }
+      function off() { for (const k of ['P', 'Z']) for (const Rb of R[k]) Rb.me.visible = false; for (const k in GL) GL[k].visible = false; }
+      return { frame, off };
+    })();
     const STICK_HEAD5 = [-0.11, 1.36, 0];
+    /* R129: THE PROLOGUE, 3.4 s before the rise as it was: every mark after it moves on by as much (the flight's clock
+       begins at RISE). His student's place beside him, in his frame (to his right 0.54 m, 0.12 before him: his left hand
+       on the stick 0.24 to his left and 0.20 before him, his shoulder 0.49 m over it), and the Naga's widening spiral
+       stood 0.45 m before the two of them (its first turn passed within 0.35 m of his student's head where it stood) */
+    const TOGPRE5 = 3.4, ZJ5 = [-0.54, 0.12], HAF5 = 0.45;
     FILMS5.together = {
       three: null, spots: null,
       /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
@@ -15681,7 +16068,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* 1. OUT OF THE STICK'S HEAD, straight up 0.55 m, then A WIDENING SPIRAL round a line over his teacher (between him and the
            stick), a turn and a half, 0.45 m out at the start to 1.6 at the top, rising from 1.9 to 9.5 m (over the court's walls,
            8.85), level at its top; its turning begins from nothing, so it leaves the straight rise without a corner */
-        const HA = { x: 1.35, z: 1.95 }, r0 = Math.hypot(S[0] - HA.x, S[2] - HA.z), a0 = Math.atan2(S[0] - HA.x, S[2] - HA.z), y0 = S[1] + 0.55, TURN = 3 * Math.PI;
+        const HA = { x: 1.35 - HAF5 * Math.sin(pz.ry), z: 1.95 - HAF5 * Math.cos(pz.ry) }, r0 = Math.hypot(S[0] - HA.x, S[2] - HA.z), a0 = Math.atan2(S[0] - HA.x, S[2] - HA.z), y0 = S[1] + 0.55, TURN = 3 * Math.PI;
         add(S, 's0'); add([S[0], S[1] + 0.55, S[2]], 'out');
         const helix = (u) => { const a = a0 - TURN * Math.pow(u, 1.5), r = r0 + (1.6 - r0) * u * u, y = y0 + (9.5 - y0) * (1 - (1 - u) * (1 - u)); return circ(HA, r, a, y); };
         run(helix, 16, null, 'top0'); NM.helixMid = NM.out + ((NM.top0 - NM.out) >> 1);
@@ -15733,14 +16120,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                     ['arcEnd', 6], ['ringIn', 8.5], ['ringOut', 8.5], ['down', 10.5], ['home', 11], ['end', 11]].map(([k, v]) => [cum[NM[k]], v]);
         const vAt = (s) => { let j = 0; while (j < KN.length - 2 && s > KN[j + 1][0]) j++; const [s0, v0] = KN[j], [s1, v1] = KN[j + 1]; return v0 + (v1 - v0) * Math.max(0, Math.min(1, (s - s0) / Math.max(1e-6, s1 - s0))); };
         /* (R122 idea 6: the rise 1.4 s later, was 2.0: the summon's darkening first, the stick raised and planted in it) */
-        const RISE = 3.4, tm = [RISE];
+        const RISE = 3.4 + TOGPRE5, tm = [RISE];
         for (let i = 1; i < P.length; i++) { const v = 0.5 * (vAt(cum[i - 1]) + vAt(cum[i])); tm.push(tm[i - 1] + (cum[i] - cum[i - 1]) / Math.max(0.2, v)); }
         /* the timing keys: every third point, and every named one */
         const keys = []; for (let i = 0; i < P.length; i++) if (i % 3 === 0 || Object.values(NM).includes(i) || i === P.length - 1) keys.push([tm[i], i]);
         /* the tall shape bursts as its face (0.95 m ahead of the leading point, its head riding over its line) passes over the
            shape's head, where the stoop pulls out over him */
         let iA = NM.V; { let bd = 1e9; for (let i = NM.V; i <= NM.W; i++) { let j = i; while (j < P.length - 1 && cum[j] - cum[i] < 0.95) j++; const d = Math.hypot(P[j][0] - Z.x, P[j][2] - Z.z); if (d < bd) { bd = d; iA = i; } } }
-        const T = { plant: 1.6, rise: RISE, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
+        const T = { plant: 1.6 + TOGPRE5, rise: RISE,
+                    /* (R129's prologue: his hand to the stick and closed on it; the violet in his fist, the gold in his teacher's;
+                       the two wound up the shaft to its head, lit; the two of them lift it and drive it down) */
+                    reach: 0.3, close: 0.85, zk: 1.0, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
                     swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
                     tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
         /* (R122 idea 6: the stick strikes the paving 1.65 s into his cast; the gold NAGA as it rides up with its head) */
@@ -15764,6 +16154,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const L = this.three && this.three.length === 3 ? this.three : PRAI5.list.map((P, i) => i).filter(i => PRAI5.list[i].group.visible).slice(-3);
         this.L = L.length === 3 ? L : [6, 7, 8];
         const B = this.build(); this.pho = B.M.pho; this.zav = B.M.zav; this.W = B.spotsW;
+        /* (R129: his student beside him for the prologue and the flight; the tall shape where it stood, over his student's own place) */
+        { const ry = this.pho.ry, c = Math.cos(ry), sn = Math.sin(ry); this.zj = { x: this.pho.x + ZJ5[0] * c + ZJ5[1] * sn, z: this.pho.z - ZJ5[0] * sn + ZJ5[1] * c }; }
+        this.shape = { x: this.zav.x, z: this.zav.z };
         this.planned = false; this.eyes = null;
         PRAI5.look('trance');
       },
@@ -15783,6 +16176,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       },
       frame(t) {
         const T = this.tl(), B = this.build(), tau = this.story(t), pz = this.pho, zz = this.zav, F = fightStart();
+        /* (R129: his student beside him until the cut to the door, where he is given back his own place, the fight's; the tall
+           shape over that place; the cage round the two of them while they stand together) */
+        const zj = this.zj || zz, zNow = tau < T.ko5c2 ? zj : zz, shp = this.shape || zz, mid = { x: 0.5 * (pz.x + zj.x), z: 0.5 * (pz.z + zj.z) };
+        const out = smo(c01((tau - T.plant - 3.6) / 0.9)), lifted = tau < T.strike;
+        const SH = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(STICK_HEAD5[0], STICK_HEAD5[1], STICK_HEAD5[2]).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const HANDS = () => { const g = things.nagaStaff; if (!g) return B.S; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, 1.0, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
         /* (R75's debug, V9: its lamps' curve laid after TRANCE5.set, below, which set them back to 0.15 every frame) */
         fmLook('TRANCE'); const lampK = 0.15 + 0.25 * smo(c01((tau - T.rise) / 2)) + 0.6 * Math.max(0, 1 - Math.abs(tau - T.tail - 0.1) / 0.6);
         /* the court low under the trance; the smell of the tall shape until it comes apart */
@@ -15801,26 +16200,55 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         NAGA5.eyeFrame(tau, eyeK);
         SPLASH5.frame(tau);
         this.burst(tau, T, B.S);
+        /* R129: THE TWO POWERS. The violet kindles in his student's fist, the gold in his; each rises round its man as it
+           gathers (the fight's own swirls, as TOGETHER draws them), then the two are wound up the shaft together to its
+           carved head, which takes their light; they are struck into the paving with it */
+        if (tau < T.strike + 0.7) {
+          const gone = 1 - smo(c01((tau - T.strike - 0.05) / 0.35)), flare = Math.max(0, 1 - Math.abs(tau - T.strike) / 0.25);
+          BRAID5.frame(tau, { zk: smo(c01((tau - T.zk) / 0.4)) * gone * (1 + 0.5 * flare), pk: smo(c01((tau - T.pk) / 0.4)) * gone * (1 + 0.5 * flare),
+                              rise: smo(c01((tau - T.braid) / (T.lit - T.braid))), k: smo(c01((tau - T.braid + 0.05) / 0.3)) * gone,
+                              head: (smo(c01((tau - T.lit + 0.1) / 0.3)) * (0.75 + 0.25 * Math.sin(tau * 7)) + 0.9 * Math.max(0, 1 - Math.abs(tau - T.lit) / 0.35) + 0.8 * flare) * gone,
+                              fz: 0.93, fp: 1.07 });
+          if (typeof fxSwirlAsk === 'function') { const sw = (t0) => smo(c01((tau - t0) / 0.5)) * (1 - smo(c01((tau - T.braid - 0.6) / 0.8)));
+            const kz = sw(T.zk), kp = sw(T.pk);
+            if (kz > 0.01) fxSwirlAsk('Z', { x: zj.x, z: zj.z }, 'violet', 0.9 * kz, { r: 0.5, h0: 0.05, h1: 1.9, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.zk) / 1.2) });
+            if (kp > 0.01) fxSwirlAsk('P', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.55, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) }); }
+          if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau);
+        } else if (!this.braidOff) { BRAID5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau); this.braidOff = true; }
+        if (tau < T.strike + 0.7) this.braidOff = false;
         const HEADAT = () => NAGA5.headAt() || [B.S[0], B.S[1], B.S[2]];
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
-          const r = restOf5('pho', tau), out = smo(c01((tau - T.plant - 3.6) / 0.9)), ct = Math.max(0, tau - T.plant), cth = ct < 1.7 ? ct : 1.7 + (ct - 1.7) * 0.05;
-          /* (R122: under the summon's darkening he stands at his rest, and goes into his cast over its last half second) */
-          const pre = tau < T.plant ? 1 - smo(c01((tau - T.plant + 0.5) / 0.5)) : 0, wr = Math.max(out, pre);
-          if (wr < 1) pose(P, 'Charged_Spell_Cast_1', cth, false, r[0], wr, r[1]); else fmRest(P, 'pho', tau);
+          /* (R129: no cast now. He stands in his rest, the stick in his hand and his student's under it; the two of them
+             lift it 24 cm, carried toward where it is planted, hold it there, and drive it down onto the paving (the film's
+             own lift, laid on his grip: PHOGRIP5.film); his hand stays on it planted while the Naga rises out of it, and
+             comes off it with his student's over 0.9 s, as it came off it before) */
+          fmRest(P, 'pho', tau);
+          if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) {
+            const up = smo(c01((tau - T.lift) / (T.lifted - T.lift))), dn = c01((tau - T.drive) / (T.strike - T.drive));
+            if (tau >= T.ko5c2) PHOGRIP5.film({ y: 0, to: 0, hold: false, k: 1 });
+            else PHOGRIP5.film({ y: 0.24 * up * (1 - dn * dn), to: up, hold: !lifted, k: lifted ? 1 : 1 - out }); }
           /* (R75's debug, V3: and back in his hand under the cut to the door (Mr Koh's line), so the film's last shot, the
              fight's own lens, and the last stage after it find it where his walk and his bag need it: it stood planted on
              the court through the whole last stage, and jumped into his hand on the bag-tied film's first frame) */
-          if (tau < T.plant + 1.7 || tau >= T.ko5c2) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          if (lifted || tau >= T.ko5c2) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
           /* (home: his eyes on the stick's head as the head goes in and its body pours after it; following the head on into
              the stick he looked at the lens, the lab's picture of the new home shot) */
-          fmGaze(P, tau, [[0, B.S], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
-        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
+          /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
+             its head as it takes light; then as before) */
+          fmGaze(P, tau, [[0, HANDS], [1.5, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [2.15, SH], [T.rise + 0.2, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
+        whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry); const rt = zavRest(); if (rt) pose(P, rt, 2 + tau * 0.35, true); else pose(P, 'Walking', ZAV_STAND5);
+          /* (R129: his left hand to the stick (0.3 to 1.0 s), the last 7 cm in and closed on it (0.75 to 1.15 s), holding it
+             through the lift and the strike, and off it with his teacher's; his eyes on his hand, his teacher, the stick's head,
+             then the Naga) */
+          if (typeof ZAVGRIP5 === 'object') { const g = tau >= T.ko5c2 ? 0 : 1 - out;
+            ZAVGRIP5.set({ k: smo(c01((tau - T.reach) / 0.7)) * g, kin: smo(c01((tau - 0.75) / 0.35)), kf: smo(c01((tau - T.close) / 0.3)) * g }); }
+          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [1.7, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [2.3, SH], [T.rise + 0.25, HEADAT], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
-        CAGE5.set({ k: kc, x: zz.x, z: zz.z, t: tau, crack: tau < T.apart + 0.4 });
-        TRANCE5.set(1, tau); TRANCE5.pools(zz, pz, 1, 1); TRANCE5.gold(1); courtLamps(lampK);
+        { const cc = tau < T.ko5c2 ? mid : zz; CAGE5.set({ k: kc, x: cc.x, z: cc.z, t: tau, crack: tau < T.apart + 0.4 }); }
+        TRANCE5.set(1, tau); TRANCE5.pools(zNow, pz, 1, 1); TRANCE5.gold(1); courtLamps(lampK);
         /* THE THREE: the tall shape over him, leaning in; as the Naga stoops through it, it bursts and each is flung onto its
            place on the arc, landing burning; each struggles there until the Naga's head goes through it (struck, its fire out
            in steam, cool and dark and wet), then sinks low where the fight's last stage finds it */
@@ -15828,12 +16256,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P) return; whenReady(P, () => { fmShow(P, true);
           const kA = smo(c01((tau - T.apart - 0.05 - j * 0.1) / 0.85)), hop = Math.sin(Math.PI * kA) * 1.3 * (1 - kA * 0.2);
           const ox = [-0.18, 0.2, 0.0][j], oz = [0.25, 0.22, 0.45][j], to = Wsp[j] || { x: zz.x, z: zz.z };
-          const x = lp(zz.x + ox, to.x, kA), z = lp(zz.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
+          const x = lp(shp.x + ox, to.x, kA), z = lp(shp.z + oz, to.z, kA), sc = lp(1.55, 1.0, kA);
           const hit = tau - tp[j], kL = smo(c01((tau - T.low - j * 0.15) / 1.4));
           const d = B.dirAt(B.NM['p' + (j + 1)]);
           /* (R75's debug, B5: turned from the shape's middle to its laid heading over the last fifth of its flight, where it
              had turned 63 to 82 degrees in one frame as it landed, under the pierce's own shot) */
-          { const hA = faceTo(x, z, zz.x, zz.z), hB = faceTo(to.x, to.z, to.x - d[0], to.z - d[2]), kh = smo(c01((kA - 0.8) / 0.2));
+          { const hA = faceTo(x, z, mid.x, mid.z), hB = faceTo(to.x, to.z, to.x - d[0], to.z - d[2]), kh = smo(c01((kA - 0.8) / 0.2));
             put(P, x, z, hA + angTo(hA, hB) * kh); }
           P.group.position.y = hop * (kA < 1 ? 1 : 0);
           P.group.scale.setScalar(sc * (1 - 0.45 * kL)); P.group.rotation.x = lp(-0.35, 0, kA) + 0.55 * kL;
@@ -15919,6 +16347,18 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            The paving's lens now comes in a tenth before the strike, on the stick's foot and the ring of water thrown up round
            it, and tilts up the stick in one move into the Naga's eruption and on to its head) */
         const STICK_FOOT = [B.foot[0], 0.42, B.foot[2]];
+        /* R129: THE PROLOGUE'S PICTURES, each a place in the two men's own frame (before them +f, to their left +l) about the
+           stick where it stands in his hand: the two hands on it, close, from before them, pushing in slowly as the student's
+           closes on it; low under the two hands looking up the shaft as the two powers wind up it to the head; then wide
+           behind the two of them as they lift it and drive it down, the tall shape looming beyond. The paving's lens (erupt)
+           stands before the stick now, low: from his teacher's right, where it stood, his student stands in the way */
+        const ry5 = this.pho.ry, fw = [Math.sin(ry5), Math.cos(ry5)], lf = [Math.cos(ry5), -Math.sin(ry5)];
+        const stickAt = (y) => () => { const g = things.nagaStaff; if (!g) return [B.foot[0], y, B.foot[2]]; g.updateWorldMatrix(true, false); const v = new THREE.Vector3(0.09, y, -0.006).applyMatrix4(g.matrixWorld); return [v.x, v.y, v.z]; };
+        const rel = (o, f, l, y) => () => { const c = typeof o === 'function' ? o() : o; return [c[0] + fw[0] * f + lf[0] * l, y, c[2] + fw[1] * f + lf[1] * l]; };
+        const MID = [0.5 * (this.pho.x + (this.zj || this.zav).x), 0, 0.5 * (this.pho.z + (this.zj || this.zav).z)];
+        const HANDS_AT = stickAt(1.0), BRAID_AT = (u) => stickAt(1.0 + 0.32 * u);
+        const PAIR_BACK = rel(MID, -2.9, -0.05, 1.35), PAIR_BACK2 = rel(MID, -1.95, -0.05, 1.32), PAIR_AT = rel(MID, 1.6, 0.35, 1.38);
+        const STICK_FRONT = [B.foot[0] + fw[0] * 1.0 + lf[0] * 0.25, 0.4, B.foot[2] + fw[1] * 1.0 + lf[1] * 0.25];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.6, 4.4, 2.6), THREE_AT = cw(0, 0.35, -1.35);
         /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
@@ -15946,11 +16386,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const P2CRANE = cw(sp[1][0] - 1.3, 3.4, sp[1][1] + 1.9), P3LOW = cw(sp[2][0] - 0.15, 0.35, sp[2][1] - 1.34);
         const HOME_EYE = cw(Pc[0] + 0.75, 1.25, Pc[1] - 2.3), HOME_UP = cw(Pc[0] + 0.2, 2.6, Pc[1] - 0.2), HOME_AT = cw(Pc[0] + 0.23, 1.45, Pc[1] - 0.2);
         fmTrack(tau, [
-          { t: 0, name: 'plant', eye: PHO_WIDE, at: lp3(PHO_HEAD, SHAPE, 0.5), fp: 66, fd: 56 },
-          { t: T.strike - 0.11, name: 'plant', eye: lp3(PHO_BACK, PHO_HEAD, 0.12), at: lp3(PHO_HEAD, SHAPE, 0.4), fp: 60, fd: 50 },
-          { t: T.strike - 0.1, name: 'erupt', eye: STICK_LOW, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
-          { t: T.strike + 0.03, name: 'erupt', eye: STICK_LOW, at: STICK_FOOT, fp: 74, fd: 64 },
-          { t: T.rise + 0.55, name: 'erupt', eye: STICK_LOW, at: HEADAT, fp: 76, fd: 66 },
+          /* (the lab's pictures of 25 Nov: from 0.6 m under the hands the two hands filled the picture and the gold burned it
+             white; from 1.25 m before the two of them both hands read on the shaft, and from his student's side the braid
+             reads up to the head with both of them in the picture) */
+          { t: 0, name: 'hands', eye: rel(MID, 1.25, -0.05, 1.05), at: HANDS_AT, fp: 40, fd: 34 },
+          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.08, -0.05, 1.04), at: HANDS_AT, fp: 38, fd: 32 },
+          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true },
+          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38 },
+          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38 },
+          { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
+          { t: T.strike - 0.11, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50 },
+          { t: T.strike - 0.1, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
+          { t: T.strike + 0.03, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64 },
+          { t: T.rise + 0.55, name: 'erupt', eye: STICK_FRONT, at: HEADAT, fp: 76, fd: 66 },
           { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
           { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
           { t: T.top + 0.2, name: 'top', eye: PHO_BACK, at: UPTO, fp: 78, fd: 66, cut: true },
@@ -15983,6 +16431,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
       },
       end() { fmLens(PLAYFOV5); SPLASH5.off(); NAGA5.hide(); if (this.bs) this.bs.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
+        /* (R129: his grip given back to his own, his student's hand to his take, the two powers out) */
+        if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) PHOGRIP5.film(null); if (typeof ZAVGRIP5 === 'object') ZAVGRIP5.set(null); BRAID5.off();
         /* what the last stage finds: the three laid at their places, small, dim and cool; the Naga home in the stick */
         const W = this.W || fightStart().laid;
         this.L && this.L.forEach((idx, j) => { const P = PRAI5.list[idx]; if (!P || !W[j]) return; put(P, W[j].x, W[j].z, P.group.rotation.y); P.group.position.y = 0; PRAI5.burn(P, 0); PRAI5.cool(P, 1); });
@@ -16543,6 +16993,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       ending: { begin: (k, api, s) => FILMS5.ending.begin(k, api, s), frame: (k, t, api) => FILMS5.ending.frame(k, t, api), end: () => FILMS5.ending.end() },
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
       fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
+      /* (R129: his student's grip and its jointing, the two powers, for a probe) */
+      ZAVGRIP5, ZG5, BRAID5,
       /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
       people: () => people, crowd: () => crowd, shot: () => FM5.shot
     };
@@ -16829,9 +17281,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
      the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
   /* (build 90: each slow centred on its hit, slowest as the head goes through her, its first coming in 0.45 s before it) */
-  const TOG5 = { plant: 1.6, rise: 3.4, kindle: 3.95, cry: 4.15, top: 5.6333, ph5c2: 5.7533, stoop: 9.1833, apart: 9.9259, swoop: 10.0344,
-                 p1: 10.7315, p2: 11.3579, p3: 11.9114, climb: 12.3086, ring: 13.2067, low: 13.5114, ringOut: 15.3873, home: 16.5729,
-                 tail: 18.5729, ko5c2: 21.1729, back: 25.7029, end: 27.3029, strike: 3.25, title: 4.15 };
+  const TOG5 = { plant: 5.0, rise: 6.8, kindle: 7.35, cry: 7.55, top: 9.0555, ph5c2: 9.1755, stoop: 12.6055, apart: 13.4368, swoop: 13.5454,
+                 p1: 14.2425, p2: 14.8688, p3: 15.4223, climb: 15.8196, ring: 16.7176, low: 17.0223, ringOut: 18.8982, home: 20.0839,
+                 tail: 22.0839, ko5c2: 24.6839, back: 29.2139, end: 30.8139, strike: 6.65, title: 7.55,
+                 reach: 0.3, close: 0.85, zk: 1.0, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45 };
   const TOG5_REAL = (T, tau) => { const H = 0.9, r = 0.15, sOf = (d) => d - (1 - r) * (d / 2 - H * Math.sin(2 * Math.PI * d / H) / (4 * Math.PI)), SH = sOf(H);
     const inv = (v) => { let a = 0, b = H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (sOf(m) < v) a = m; else b = m; } return 0.5 * (a + b); };
     let add = 0;
@@ -16862,7 +17315,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(T.title, 'u5title', 0.85);                                             // the NAGA word (R126: toned down)
     sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
-    sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
+    /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
+       his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
+    sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
+    sfx(T.zk, 'u5auraup', 0.6);                                                // the violet in his student's fist
+    sfx(T.pk, 'u5windup', 0.5);                                                // the gold gathering in his
+    sfx(T.braid, 'u5togfill', 0.85);                                           // the two powers wound up the shaft together
+    sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
+    sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
+    sfx(T.drive - 0.02, 'u5swing1', 0.6);                                      // and drive it down
     sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
     sfx(T.rise - 0.05, 'u5nagawater', 1.0);                                    // the Naga of water surging up out of its head
     sfx(T.rise + 0.35, 'u5nagaclimb', 0.9);                                    // R70: its climb at speed
