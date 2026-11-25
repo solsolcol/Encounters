@@ -8289,6 +8289,9 @@ function popHud() {
   }
   const pt = $('tagParty');
   if (pt && getComputedStyle(pt).display !== 'none') { const q = pt.getBoundingClientRect(); if (q.width > 0 && q.height > 0) r.party = q; }
+  /* (build 93: and the arrow over the played one's head, its bob's reach above its box included) */
+  const ar = $('tagArrow');
+  if (ar && ar.classList.contains('on')) { const q = ar.getBoundingClientRect(); if (q.width > 0 && q.height > 0) r.arrow = { left: q.left, right: q.right, top: q.top - 8, bottom: q.bottom }; }
   return r;
 }
 function popFrame() {
@@ -8311,6 +8314,14 @@ function popFrame() {
     const hw = p.wh[0] * 0.6, hh = p.wh[1] * 0.6;   // (half its size at the pop's largest, 1.2)
     if (hud.top) y = Math.max(y, hud.top + hh + p.rise);
     if (hud.party) { const P = hud.party; if (x + hw > P.left - 6 && y + hh > P.top && y - hh - p.rise < P.bottom) x = Math.min(x, P.left - 6 - hw); }
+    /* (build 93: and off the arrow over the played one's head: a word that would lie across it steps aside to the nearer side
+       that has room, and keeps that step, so it never jumps back. Under the objective's box build 93's own count lay across
+       the arrow) */
+    if (p.ax === undefined && hud.arrow) { const A = hud.arrow;
+      if (x + hw > A.left - 4 && x - hw < A.right + 4 && y + hh > A.top && y - hh - p.rise < A.bottom) {
+        const lim = hud.party ? hud.party.left - 6 : W - 6, left = A.left - 4 - hw, right = A.right + 4 + hw;
+        p.ax = ((left - hw >= 6 && (x - left <= right - x || right + hw > lim)) ? left : right) - x; } }
+    if (p.ax) x += p.ax;
     x = Math.min(Math.max(x, hw + 6), W - hw - 6);
     const e = 1 - (1 - u) * (1 - u);
     y -= p.rise * e;

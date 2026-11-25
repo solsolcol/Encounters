@@ -38,7 +38,10 @@ let shot = 0;
 const name = (n) => `${OUT}/${String(++shot).padStart(2, '0')}-${n}.png`;
 const pic = async (n) => { await frames(4); const f = name(n); await p.screenshot({ path: f, timeout: 300000 }); say('pic', f); };
 /* (held: the clock paused, the game stepped by hand; never frames() while held, which waits on a frame that never comes) */
-const hold = async () => { await p.clock.pauseAt(await p.evaluate(() => Date.now() + 40)); };
+/* (build 93: the moment asked a few hundred ms ahead, and further each time it has passed before the call lands: on a busy box
+   (the fixture beside it) 40 ms had gone between the page's reading and the pause, "Cannot fast-forward to the past") */
+const hold = async () => { for (let m = 300; ; m *= 2) { try { await p.clock.pauseAt(await p.evaluate((m) => Date.now() + m, m)); return; }
+  catch (e) { if (!/past/.test(String(e && e.message || e)) || m > 20000) throw e; } } };
 const step = async (n = 1, ms = 33) => { for (let i = 0; i < n; i++) await p.clock.runFor(ms); };
 const heldPic = async (n) => { const f = name(n); await p.screenshot({ path: f, timeout: 300000 }); say('held pic', f); };
 const fstate = () => p.evaluate(() => { const E = window.__enc, S = E.stage, sn = S.snap().story, f = sn.fight || {};
