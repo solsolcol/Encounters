@@ -1744,8 +1744,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        shoulder, 30 to 35 before it; moved 6 cm out and 5 back so the strike lands clear of his left shoe); his full body
        while the two hands are close on the screen (the fight holds him to his light one); his
        teacher's elbow under his shoulder (R139); the cage kept out until the strike (its bars stood through the two men in
-       every shot of the prologue); the lift 16 cm (at 24 his teacher's fist rose to his student's shoulder) */
-    const TOGP5 = { zj: [-0.60, 0.10], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.16 };
+       every shot of the prologue); the lift 11 cm (at 24 his teacher's fist rose to his student's shoulder; at 16, build 100,
+       his teacher's wrist bent 41 degrees toward his little finger at the top of the lift, measured by the joint check in the
+       film, past a real wrist's 35: it grows about 2 degrees a centimetre of lift, 9 at rest) */
+    const TOGP5 = { zj: [-0.60, 0.10], zry: 0.52, zavFull: true, phoDx: 0, phoPole: [0, -1, -0.15], phoNoSwing: true, cageIn: 0.6, lift: 0.11 };
     FILMS5.together = {
       three: null, spots: null,
       /* ---- THE FLIGHT AND ITS CLOCK, made once a run (the staging is fixed, so it is the same in every run) */
@@ -1925,7 +1927,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
           /* (R129: no cast now. He stands in his rest, the stick in his hand and his student's under it; the two of them
-             lift it 24 cm, carried toward where it is planted, hold it there, and drive it down onto the paving (the film's
+             lift it (TOGP5.lift), carried toward where it is planted, hold it there, and drive it down onto the paving (the film's
              own lift, laid on his grip: PHOGRIP5.film); his hand stays on it planted while the Naga rises out of it, and
              comes off it with his student's over 0.9 s, as it came off it before) */
           fmRest(P, 'pho', tau);
