@@ -9910,10 +9910,15 @@
        in violet (TOGETHER). The strongest asked for each body this frame is the one drawn (fxSwirlAsk, then fxSwirlFrame
        at the frame's end); a gathering's strands rise again and again (`cycle`), a gift's once (`rise`) */
     const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 1.7 * i + 0.3, ro: 6 })),
-                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })), req: { P: null, Z: null } };
+                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })),
+                  /* (R157: the wind drawn in round the stick before the Naga, in the pale ramp: c_yfilm.js asks it) */
+                  W: [0, 1, 2].map(i => fxRibbon('pale', { w0: 0.06, w1: 0.018, heat: 1.2, seed: 3.1 * i + 0.7, ro: 6 })), req: { P: null, Z: null, W: null } };
+    /* (the wind's ribbons are the Naga film's alone, and the fight's group is hidden while a film plays (c_fightstage.js: FSG),
+       so they hang from the world; hidden by fxSwirlFrame whenever no frame asks for them) */
+    for (const Rb of FXS.W) world.add(Rb.me);
     function fxSwirlAsk(w, g, ramp, k, o) { const q = FXS.req[w]; if (!g || !(k > 0.01) || (q && q.k >= k)) return; FXS.req[w] = { g, ramp, k: Math.min(1, k), o }; }
     function fxSwirlFrame(fxt) {
-      for (const w of ['P', 'Z']) {
+      for (const w of ['P', 'Z', 'W']) {
         const q = FXS.req[w], S3 = FXS[w]; FXS.req[w] = null;
         if (!q || !fxOn('head')) { for (const Rb of S3) if (Rb.me.visible) Rb.me.visible = false; continue; }
         const o = q.o;
@@ -15238,7 +15243,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       D.pts.renderOrder = 3.8; G.pts.renderOrder = 3.81;
       const mote = (grit) => { const R0 = 1.3 + (grit ? 3.4 : 4.6) * Math.sqrt(r()), hi = r() < (grit ? 0.04 : 0.14);
         return { a: r() * Math.PI * 2, R: R0, h: grit ? 0.01 + 0.06 * r() : 0.02 + 0.22 * r() * r() + (hi ? 0.35 + 0.45 * r() : 0), s: (grit ? 1.15 : 0.75) + 0.6 * r(), ph: r(),
-                 sz: grit ? 0.014 + 0.014 * r() : 0.07 + 0.09 * r(), al: grit ? 0.55 + 0.3 * r() : 0.16 + 0.16 * r(), sw: 0.55 + 0.5 * r(), vo: 3.2 + 2.8 * r(), up: 0.3 + 0.7 * r() }; };
+                 sz: grit ? 0.016 + 0.016 * r() : 0.06 + 0.08 * r(), al: grit ? 0.6 + 0.3 * r() : 0.3 + 0.2 * r(), sw: 0.55 + 0.5 * r(), vo: 3.2 + 2.8 * r(), up: 0.3 + 0.7 * r() }; };
       const DQ = Array.from({ length: ND }, () => mote(false)), GQ = Array.from({ length: NG }, () => mote(true));
       const W5 = (T) => ({ lo: T.lit + 0.3, hi: T.lifted + 0.3 });
       const windK = (tau, T) => { const w = W5(T); return smo(c01((tau - w.lo) / (w.hi - w.lo))); };
@@ -15254,17 +15259,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
             x += nx * out; z += nz * out; y = Math.max(0.01, y + 0.55 * u - 0.9 * u * u); A *= Math.pow(Math.max(0, 1 - u / 1.1), 2); }
           S.pos[i * 3] = x; S.pos[i * 3 + 1] = y; S.pos[i * 3 + 2] = z; S.alp[i] = A; S.siz[i] = q.sz * (grit ? 1 : 0.8 + 0.4 * near);
           if (grit) { S.col[i * 3] = 0.27; S.col[i * 3 + 1] = 0.25; S.col[i * 3 + 2] = 0.23; }
-          else { S.col[i * 3] = 0.6 + 0.1 * near; S.col[i * 3 + 1] = 0.57 + 0.06 * near; S.col[i * 3 + 2] = 0.53 + 0.14 * near; } }
+          else { S.col[i * 3] = 0.84 + 0.1 * near; S.col[i * 3 + 1] = 0.8 + 0.06 * near; S.col[i * 3 + 2] = 0.74 + 0.2 * near; } }
       };
       /* ---- 2: THE RING. One flat square over the court, its fragments the ring's: a rim (a narrow bright band at the front's
          radius), a wet sheen behind it with fine ripples, white at the rim and the water's blue behind; the front races out
          from the foot fast and slowing (1 - (1 - u/0.95)^2.4 of the way to its reach) and the whole fades from half a second;
          kept to the court's floor (12 cm in from each wall's face) and hidden under whatever stands on it (its depth tested) */
-      const RMAX = 9.0, RTIME = 0.95;
+      const RMAX = 9.0, RTIME = 1.1;
       const ringM = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false,
         uniforms: { uF: { value: 0 }, uA: { value: 0 }, uC: { value: new THREE.Vector2() }, uBox: { value: new THREE.Vector4(COURT.x0 + 0.12, COURT.z0 + 0.12, COURT.x1 - 0.12, COURT.z1 - 0.12) } },
         vertexShader: 'varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
-        fragmentShader: 'uniform float uF; uniform float uA; uniform vec2 uC; uniform vec4 uBox; varying vec3 vW; void main(){ if (vW.x < uBox.x || vW.z < uBox.y || vW.x > uBox.z || vW.z > uBox.w) discard; float d = distance(vW.xz, uC); float rim = exp(-pow((d - uF) / 0.11, 2.0)); float back = smoothstep(uF - 2.2, uF - 0.05, d) * step(d, uF); float rip = 0.55 + 0.45 * sin((uF - d) * 17.0); float k = rim * 1.15 + back * 0.3 * rip; if (k < 0.004) discard; vec3 c = mix(vec3(0.42, 0.76, 1.0), vec3(1.0), clamp(rim, 0.0, 1.0)); gl_FragColor = vec4(c * k * uA, 1.0); }' });
+        fragmentShader: 'uniform float uF; uniform float uA; uniform vec2 uC; uniform vec4 uBox; varying vec3 vW; void main(){ if (vW.x < uBox.x || vW.z < uBox.y || vW.x > uBox.z || vW.z > uBox.w) discard; float d = distance(vW.xz, uC); float rim = exp(-pow((d - uF) / 0.16, 2.0)); float back = smoothstep(uF - 2.6, uF - 0.05, d) * step(d, uF); float rip = 0.55 + 0.45 * sin((uF - d) * 15.0); float k = rim * 1.4 + back * 0.42 * rip; if (k < 0.004) discard; vec3 c = mix(vec3(0.42, 0.76, 1.0), vec3(1.0), clamp(rim, 0.0, 1.0)); gl_FragColor = vec4(c * k * uA, 1.0); }' });
       mats.push(ringM);
       const ringG = new THREE.PlaneGeometry(1, 1); ringG.rotateX(-Math.PI / 2); owned.push(ringG);
       const ring = new THREE.Mesh(ringG, ringM); ring.frustumCulled = false; ring.visible = false; ring.renderOrder = 3.7; world.add(ring);
@@ -15273,7 +15278,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       const NS = 220, SP = mkPts(NS, THREE.AdditiveBlending, 1.5); SP.pts.renderOrder = 4;
       const fOf = (u) => RMAX * (1 - Math.pow(1 - c01(u / RTIME), 2.4));
       const fInv = (x) => RTIME * (1 - Math.pow(Math.max(0, 1 - x / RMAX), 1 / 2.4));
-      const SQ = Array.from({ length: NS }, () => { const rho = 0.35 + 7.6 * Math.pow(r(), 0.8); return { a: r() * Math.PI * 2, rho, t0: fInv(rho), vy: 1.0 + 1.6 * r(), vh: 0.6 + 1.2 * r(), life: 0.32 + 0.3 * r(), sz: 0.03 + 0.045 * r() }; });
+      const SQ = Array.from({ length: NS }, () => { const rho = 0.35 + 7.6 * Math.pow(r(), 0.8); return { a: r() * Math.PI * 2, rho, t0: fInv(rho), vy: 1.3 + 1.7 * r(), vh: 0.6 + 1.2 * r(), life: 0.4 + 0.35 * r(), sz: 0.045 + 0.055 * r() }; });
       /* ---- 5: THE EYES. Two pairs of cards (the white heart, the blue halo) on the carved head's eyes, in the stick's own
          frame (its file: measured from pictures of the head on its own, R157), their depth tested so the head hides an eye
          turned from the lens; each faces out of its eye: an eye seen from behind its own face is not lit */
@@ -15286,7 +15291,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         x.fillStyle = gd; x.fillRect(0, 0, 64, 64); return tex(done(THREE, cv, false)); })();
       const eyeCards = [];
       for (let e = 0; e < 2; e++) for (let j = 0; j < 2; j++) {
-        const m = new THREE.SpriteMaterial({ map: eyeTex, color: j ? new THREE.Color(0.3, 0.82, 1.0) : new THREE.Color(1, 1, 1), transparent: true, depthWrite: false, depthTest: true,
+        const m = new THREE.SpriteMaterial({ map: eyeTex, color: j ? new THREE.Color(0.3, 0.82, 1.0) : new THREE.Color(1, 1, 1), transparent: true, depthWrite: false, depthTest: false,
                                              blending: THREE.AdditiveBlending, fog: false, toneMapped: false });
         mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 4.6; sp.userData.eye = e; sp.userData.halo = j; eyeCards.push(sp); }
       let eyesOn = null;
@@ -15295,13 +15300,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const g = things.nagaStaff;
         if (!g || !(k > 0.002)) { for (const sp of eyeCards) sp.visible = false; return; }
         if (eyesOn !== g) { for (let i = 0; i < eyeCards.length; i++) { const sp = eyeCards[i], p = EYES[sp.userData.eye], n = EYEN[sp.userData.eye], nl = Math.hypot(n[0], n[1], n[2]);
-            sp.position.set(p[0] + n[0] / nl * 0.006, p[1] + n[1] / nl * 0.006, p[2] + n[2] / nl * 0.006); g.add(sp); } eyesOn = g; }
+            sp.position.set(p[0] + n[0] / nl * 0.002, p[1] + n[1] / nl * 0.002, p[2] + n[2] / nl * 0.002); g.add(sp); } eyesOn = g; }
         g.updateWorldMatrix(true, false); camera.getWorldPosition(_ev);
         for (const sp of eyeCards) { const e = sp.userData.eye, n = EYEN[e];
           _ep.set(EYES[e][0], EYES[e][1], EYES[e][2]).applyMatrix4(g.matrixWorld); _en.set(n[0], n[1], n[2]).transformDirection(g.matrixWorld);
           const v = _ev.clone().sub(_ep).normalize(), face = smo(c01((v.dot(_en) + 0.15) / 0.4));
           sp.visible = face > 0.01; sp.material.opacity = Math.min(1, (sp.userData.halo ? 0.65 : 1) * Math.min(1.3, k)) * face;
-          sp.scale.setScalar(sp.userData.halo ? 0.05 * (0.8 + 0.35 * k) : 0.016 * (0.8 + 0.25 * k)); }
+          sp.scale.setScalar(sp.userData.halo ? 0.075 * (0.75 + 0.35 * k) : 0.024 * (0.8 + 0.25 * k)); }
       }
       return {
         /* each frame of the Naga film: tau its story clock, T its marks, c the stick's foot [x, z], eyeK the eyes' light */
@@ -15317,7 +15322,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (ringOn) {
             ring.position.set(c[0], 0.02, c[1]); ring.scale.set(2 * RMAX + 1, 1, 2 * RMAX + 1);
             ringM.uniforms.uC.value.set(c[0], c[1]); ringM.uniforms.uF.value = fOf(u);
-            ringM.uniforms.uA.value = smo(c01(u / 0.04)) * (1 - smo(c01((u - 0.45) / 0.95)));
+            ringM.uniforms.uA.value = smo(c01(u / 0.04)) * (1 - smo(c01((u - 0.6) / 0.95)));
             for (let i = 0; i < NS; i++) { const q = SQ[i], w = u - q.t0;
               if (w < 0 || w > q.life) { SP.alp[i] = 0; continue; }
               const rad = q.rho + q.vh * w, y = Math.max(0.02, 0.03 + q.vy * w - 4.9 * w * w), f = 1 - w / q.life;
@@ -16607,7 +16612,11 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           if (typeof fxSwirlAsk === 'function') { const sw = (t0) => smo(c01((tau - t0) / 0.5)) * (1 - smo(c01((tau - T.braid - 0.6) / 0.8)));
             const kz = sw(T.zk), kp = sw(T.pk);
             if (kz > 0.01) fxSwirlAsk('Z', { x: zj.x, z: zj.z }, 'violet', 0.9 * kz, { r: 0.5, h0: 0.05, h1: 1.9, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.zk) / 1.2) });
-            if (kp > 0.01) fxSwirlAsk('P', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.55, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) }); }
+            if (kp > 0.01) fxSwirlAsk('P', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.55, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) });
+            /* (R157 idea 3: THE WIND SEEN. Pale streaks of air swirling in round the stick's foot and up it, drawn in tighter and
+               faster as the wind grows (the fight's own ribbons, its third set, in the pale ramp); gone as the stick hits) */
+            const kw = STRIKEFX5.windK(Math.min(tau, T.strike), T) * (1 - smo(c01((tau - T.strike + 0.02) / 0.06)));
+            if (kw > 0.01) fxSwirlAsk('W', { x: sx, z: sz }, 'pale', 0.75 * kw, { r: 1.5 - 0.95 * kw, h0: 0.04, h1: 1.25, len: 1.4, turns: 1.4, spin: 1.5 + 4.5 * kw, cycle: 0.35 + 0.9 * kw }); }
           if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau);
         } else if (!this.braidOff) { BRAID5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(tau); this.braidOff = true; }
         if (tau < T.strike + 0.7) this.braidOff = false;
@@ -16816,10 +16825,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* R157 idea 5: THE CARVED HEAD'S EYES, CLOSE. From before its face (the snout's way, turned 15 degrees and a little
            under it, so the head reads round and looks down on the lens), a long lens on its two eyes, the two men's faces
            behind it, coming in on it slowly. Its points laid as his grip lays the stick (nagaPt5) */
-        const EYES_AT = () => nagaPt5(this.pho, [-0.06, 1.272, 0]);
+        const EYES_AT = () => { const p = nagaPt5(this.pho, [-0.06, 1.272, 0]); return p ? [p[0], p[1] + 0.05, p[2]] : null; };
+        /* (the lab's pictures of 25 Nov: from 0.62 to 0.5 m a phone's narrow width held a third of the head and one eye; now a
+           phone's lens 42 degrees at 1.05 m coming in to 40 at 0.92 holds the whole head, both eyes and his student's face
+           behind it; a desk's 34 at 0.95 coming in to 32 at 0.9, aimed 5 cm over the eyes, the whole head and both men's faces
+           (at 28 degrees it cut the head's top and his teacher's face at the mouth)) */
         const EYES_EYE = (k) => () => { const at = nagaPt5(this.pho, [-0.06, 1.272, 0]), fd = nagaFace5(this.pho, 15); if (!at) return null;
-          const d = k ? 0.5 : 0.62; return [at[0] + fd[0] * d, at[1] - (k ? 0.06 : 0.08), at[2] + fd[1] * d]; };
+          const nar = isNarrow(), d = nar ? (k ? 0.92 : 1.05) : (k ? 0.9 : 0.95); return [at[0] + fd[0] * d, at[1] - (k ? 0.08 : 0.1), at[2] + fd[1] * d]; };
         const STICK_FRONT = [B.foot[0] + fw[0] * 1.0 + lf[0] * 0.25, 0.4, B.foot[2] + fw[1] * 1.0 + lf[1] * 0.25];
+        /* (R157 idea 6: where the slow's shot starts, 0.3 m further out along the same line and a little higher, so the lens
+           creeps in on the foot through the slow motion and stands exactly where it always stood at the strike) */
+        const STICK_FRONT0 = [B.foot[0] + fw[0] * 1.3 + lf[0] * 0.33, 0.46, B.foot[2] + fw[1] * 1.3 + lf[1] * 0.33];
         const GOD = cw(B.GC.x, 16.0, B.GC.z - 0.2), GODAT = cw(B.GC.x, 0, B.GC.z - 0.4);
         const THREE_EYE = cw(-1.6, 4.4, 2.6), THREE_AT = cw(0, 0.35, -1.35);
         /* (R75's debug, V7: the three laid held 1.55 s, was 0.25, Mr Koh's line 1.1 s later for it; a phone's frame holds two of
@@ -16867,10 +16883,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              tighter than before at any moment, only wider on the way) */
           /* (R157: reached as the lens cuts to the carved head's eyes, where it was going) */
           { t: T.eyecut - 0.01, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50, ease: 'in' },
-          { t: T.eyecut, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 32, fd: 28, cut: true },
-          { t: T.slow0 - 0.01, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 30, fd: 26 },
+          { t: T.eyecut, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 42, fd: 34, cut: true },
+          { t: T.slow0 - 0.01, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32 },
           /* (R157 idea 6: the stick's foot from the paving as the slow motion takes it down, the dust drawn in round it) */
-          { t: T.slow0, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
+          { t: T.slow0, name: 'erupt', eye: STICK_FRONT0, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
           { t: T.strike + 0.03, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64 },
           { t: T.rise + 0.55, name: 'erupt', eye: STICK_FRONT, at: HEADAT, fp: 76, fd: 66 },
           { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
@@ -16904,7 +16920,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
-      end() { fmLens(PLAYFOV5); SPLASH5.off(); STRIKEFX5.off(); if (this.dipOn && kit && kit.hush) { kit.hush(0, { secs: 0 }); this.dipOn = false; } NAGA5.hide(); if (this.bs) this.bs.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
+      end() { fmLens(PLAYFOV5); SPLASH5.off(); STRIKEFX5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(0); if (this.dipOn && kit && kit.hush) { kit.hush(0, { secs: 0 }); this.dipOn = false; } NAGA5.hide(); if (this.bs) this.bs.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
         /* (R129: his grip given back to his own, his student's hand to his take, the two powers out) */
         if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) PHOGRIP5.film(null); if (typeof ZAVGRIP5 === 'object') ZAVGRIP5.set(null); BRAID5.off();
         /* (R132: his body level given back to the fight's) */
@@ -17538,7 +17554,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
       /* (R157, a probe's: the carved eyes where the lens is told they are (nagaPt5) and where the stick is drawn, the effects and
          the robe as laid) */
-      strikeLab() { const g = things.nagaStaff, out = { pt: [nagaPt5(this.pho, [-0.042, 1.272, -0.039]), nagaPt5(this.pho, [-0.042, 1.272, 0.039])], fx: STRIKEFX5.lab(), robe: ROBEPULL5.lab(), dipOn: !!this.dipOn };
+      strikeLab() { const F = FILMS5.together, g = things.nagaStaff, out = { pt: [nagaPt5(F.pho, [-0.042, 1.272, -0.039]), nagaPt5(F.pho, [-0.042, 1.272, 0.039])], fx: STRIKEFX5.lab(), robe: ROBEPULL5.lab(), dipOn: !!F.dipOn };
         if (g) { g.updateWorldMatrix(true, false); out.drawn = [[-0.042, 1.272, -0.039], [-0.042, 1.272, 0.039]].map(p => { const v = new THREE.Vector3(p[0], p[1], p[2]).applyMatrix4(g.matrixWorld); return [+v.x.toFixed(4), +v.y.toFixed(4), +v.z.toFixed(4)]; }); }
         return out; },
       /* (R129: his student's grip and its jointing, the two powers, for a probe) */

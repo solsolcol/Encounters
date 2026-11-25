@@ -986,10 +986,15 @@
        in violet (TOGETHER). The strongest asked for each body this frame is the one drawn (fxSwirlAsk, then fxSwirlFrame
        at the frame's end); a gathering's strands rise again and again (`cycle`), a gift's once (`rise`) */
     const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 1.7 * i + 0.3, ro: 6 })),
-                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })), req: { P: null, Z: null } };
+                  Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })),
+                  /* (R157: the wind drawn in round the stick before the Naga, in the pale ramp: c_yfilm.js asks it) */
+                  W: [0, 1, 2].map(i => fxRibbon('pale', { w0: 0.06, w1: 0.018, heat: 1.2, seed: 3.1 * i + 0.7, ro: 6 })), req: { P: null, Z: null, W: null } };
+    /* (the wind's ribbons are the Naga film's alone, and the fight's group is hidden while a film plays (c_fightstage.js: FSG),
+       so they hang from the world; hidden by fxSwirlFrame whenever no frame asks for them) */
+    for (const Rb of FXS.W) world.add(Rb.me);
     function fxSwirlAsk(w, g, ramp, k, o) { const q = FXS.req[w]; if (!g || !(k > 0.01) || (q && q.k >= k)) return; FXS.req[w] = { g, ramp, k: Math.min(1, k), o }; }
     function fxSwirlFrame(fxt) {
-      for (const w of ['P', 'Z']) {
+      for (const w of ['P', 'Z', 'W']) {
         const q = FXS.req[w], S3 = FXS[w]; FXS.req[w] = null;
         if (!q || !fxOn('head')) { for (const Rb of S3) if (Rb.me.visible) Rb.me.visible = false; continue; }
         const o = q.o;
