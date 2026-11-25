@@ -1560,7 +1560,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
          where his upper arm leans neither way across the two of them (elbowFlat): an upper arm that hangs, seen from behind
          or before them, the forearm forward to the stick) */
       const T5 = { y: 0.93, c: [0.100, -0.0066], dir: [-0.37, 1, 0], R: 0.035, fingR: 0.024, thumbR: 0.022, palm: 0.05, back: 0.02, tilt: 0,
-                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [0, -1, -0.15], flat: true, out: 15, near: 0.07,
+                   lim: { f: [70, 95, 60], t: [20, 18, 18] }, hm: [0.891, 0, -0.454], pole: [0, -1, -0.15], flat: true, flatK: 0.5, out: 15, near: 0.07,
                    mitten: true, thumbRest: true, thumbOut: 25 };
       const st = { k: 0, kf: 0, kin: 1 };
       let G = null, failed = false, wroteQ = null, wroteArm = null;
@@ -1649,7 +1649,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       }
       const _zq = new THREE.Quaternion(), _zq2 = new THREE.Quaternion(), _zq3 = new THREE.Quaternion(), _zqh = new THREE.Quaternion(), _zk = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
       const _za = V(), _zb = V(), _zc = V(), _zd = V(), _ze = V(), _zf = V(), _zn = V(), _zp = V(), _zm = new THREE.Matrix4(), _zm2 = new THREE.Matrix4();
-      const _zS = V(), _zE = V(), _zW = V(), _zt = V(), _zl = V(), _z1 = V(), _z2 = V(), _zU = V(), _zY = new THREE.Vector3(0, 1, 0);
+      const _zS = V(), _zE = V(), _zW = V(), _zt = V(), _zl = V(), _z1 = V(), _z2 = V(), _zU = V(), _zl2 = V(), _zv = V(), _zY = new THREE.Vector3(0, 1, 0);
       /* (R142: WHERE HIS ELBOW GOES, so that his upper arm leans neither way across the two of them: on the cone his upper
          arm can stand on (its lengths and the reach to his hand fix its angle to the line from his shoulder to his hand),
          the one line with no part along `lat` (his teacher's own side: the way across them), the lower of its two. Seen
@@ -1663,7 +1663,16 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         _z1.copy(lat).addScaledVector(_zt, -lat.dot(_zt)); if (_z1.lengthSq() < 1e-10) return null; _z1.normalize(); _z2.crossVectors(_zt, _z1);
         const e1l = _z1.dot(lat); let cp = Math.abs(e1l) < 1e-6 ? 0 : -ca * _zt.dot(lat) / (sa * e1l); cp = Math.max(-1, Math.min(1, cp));
         const sp = -Math.sign(_z2.dot(_zY) || 1) * Math.sqrt(1 - cp * cp);
-        return out.copy(_zt).multiplyScalar(ca).addScaledVector(_z1, sa * cp).addScaledVector(_z2, sa * sp);
+        out.copy(_zt).multiplyScalar(ca).addScaledVector(_z1, sa * cp).addScaledVector(_z2, sa * sp);
+        /* (build 102's lab: held square across them all the way, his upper arm leaned 27 degrees forward before the lift (the
+           stick 26 cm before his shoulder at his hip asks a reach), and his wrist went 27 to 29 degrees toward his thumb, past a
+           real wrist's 25. So: his upper arm as straight down as his reach lets it (the cone's lowest line), unless that
+           leans it IN across his own body, toward his middle and away from his teacher, which is the bend R142 saw as they
+           lift; then square across them. Between the two by T5.flatK where the straightest leans out toward the stick) */
+        _zl2.copy(_zY).negate().addScaledVector(_zt, _zY.dot(_zt)); if (_zl2.lengthSq() < 1e-10) return out; _zl2.normalize();
+        _zv.copy(_zt).multiplyScalar(ca).addScaledVector(_zl2, sa);
+        const w = _zv.dot(lat) < 0 ? 1 : (T5.flatK != null ? T5.flatK : 0.5);
+        return out.multiplyScalar(w).addScaledVector(_zv, 1 - w).normalize();
       }
       function layFingers(P, a, kk) {
         if (!a.fing || !a.fingAll) { a.fing = []; for (const nm of NAMES) G.chains[nm].slice(0, 3).forEach((b, i) => a.fing.push({ b, q: new THREE.Quaternion(), i: i + 1, nm, j: i })); a.fingAll = true; }
