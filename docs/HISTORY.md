@@ -9725,6 +9725,26 @@ What the baseline contains, by release:
   be louder still"): the Naga film's music 5.5 dB louder at its first frame, easing to 2.5 dB louder just before the
   stick hits the ground, its peaks there held under the rest of the piece by a limiter, so nothing from the strike on
   changed. Built and deployed at once, as he asked.
+- **v28.0 build 114 (26 Nov 2026; LIVE, deploy `6b087f92ec67b44e251506ac`).** Chad's R183 and R184 ("I think the naga staff can tremble just
+  a little bit more. During its charging phase." and "Yes improve the other purple fade after the fight ends."): the stick's
+  shiver half as much again at every stage of its charge; the flat violet card as the bag is tied after the fight replaced by
+  R161's moving violet light (a flash, the living field, gathered into a second flash as the lens goes back into his eyes,
+  cleared from the middle out), standing 1.5 s where the card stood 0.9, the rest of the film 0.6 s later with it.
+- **v28.0 build 115 (26 Nov 2026; LIVE, deploy `6b0885ea59229a376d072eac`).** Chad's R185 (the TOGETHER cut-in broken on a desktop) and R186
+  (the table's look marks too hard to hit on a desktop): on a screen wide for its height the cut-in's two portraits are laid
+  as a phone's are, each a thick slanted stripe with the face whole (a phone untouched); each look mark is aimed at the mark
+  itself and more than twice as wide, and a small dot marks the middle of the screen on a desktop while they are on offer
+  (the eightieth seam, `aimDot`). With them, the violet after the fight turned round Master Zavier.
+- **v28.0 build 116 (26 Nov 2026; LIVE, deploy `6b088a10951ffdeafa526a16`).** Chad's R187, chapter 4's R146 (on a desktop the altar drawn in a
+  purple box in Spirit Vision): Spirit Vision's glow copy of a mesh that is not skinned now hangs on that mesh, so the
+  altar's three pictures, 1 m squares until their pictures land, glow at their own size. Reproduced by holding the pictures
+  back, proved gone the same way. Build 117 (the violet's middle on Master Zavier's head as drawn) made and kept for the
+  next deploy.
+- **v28.0 build 118 (26 Nov 2026; LIVE, deploy `6b088ff4a047a8cbb1a1e75a`).** Chad's R188 and R189 (the Naga film's black bars "only start
+  increasing in size when the naga shoots out from the naga staff", their shrinking kept "as it is"): the bars now start
+  growing at the moment the Naga bursts out of the stick (they had started about five seconds earlier, as the two powers
+  reached its carved head) and shrink back exactly as before, shortly after the NAGA word fades. With it build 117: the
+  violet light after the fight gathers on the middle of Master Zavier's head.
 
 ## The sheet, version by version
 

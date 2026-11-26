@@ -9305,3 +9305,20 @@ R165).
 **Deploy the moment it boots, check on the live build (R176).** Build 110 was held for its pictures; Chad asked why. The
 pictures then found a real fault (the strike's frame), which build 111 fixed with his next asks: the same outcome, an
 hour sooner for him.
+
+**A copy that must follow a thing hangs on it; it never copies it once (R187).** Spirit Vision's glow copy of a mesh took
+the mesh's place and size when it was made and was drawn whether the mesh was or not. Chapter 4's altar pictures are
+1 x 1 m planes sized when their pictures land, so where the altar landed first (his desktop) the copies stayed 1 m
+squares: a purple box. A copy that must stay with its source is the source's own child (three.js draws no child of a
+hidden object); only a skinned copy, which must share its skeleton's frame, stands beside it. And a fault one machine
+shows and another does not is first asked about ORDER (what lands before what): this one was reproduced only by holding
+the pictures back.
+
+**A layout sized by one axis and slanted by the other breaks on the other shape of screen (R185).** The cut-in's slant
+came from the screen's width and its band from the screen's height: right on a phone, a sliver showing one eye on a
+desktop. Lay a wide screen in the phone's proportions, and photograph every new screen layout on a desktop as well as a
+phone before it ships.
+
+**A look-spot's aim stands on its mark (R186).** Aimed at the thing while its mark is drawn above it, a spot is found
+only in a slot under the mark, and with nothing drawn at the middle of the screen the player cannot see where he aims.
+Put the aim where the mark is drawn, size it to the room between neighbours (the nearest wins), and show the aim point.
