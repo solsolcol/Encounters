@@ -9912,13 +9912,20 @@
     const FXS = { P: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 1.7 * i + 0.3, ro: 6 })),
                   Z: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })),
                   /* (R157: the wind drawn in round the stick before the Naga, in the pale ramp: c_yfilm.js asks it) */
-                  W: [0, 1, 2].map(i => fxRibbon('pale', { w0: 0.06, w1: 0.018, heat: 1.2, seed: 3.1 * i + 0.7, ro: 6 })), req: { P: null, Z: null, W: null } };
-    /* (the wind's ribbons are the Naga film's alone, and the fight's group is hidden while a film plays (c_fightstage.js: FSG),
-       so they hang from the world; hidden by fxSwirlFrame whenever no frame asks for them) */
-    for (const Rb of FXS.W) world.add(Rb.me);
+                  W: [0, 1, 2].map(i => fxRibbon('pale', { w0: 0.06, w1: 0.018, heat: 1.2, seed: 3.1 * i + 0.7, ro: 6 })),
+                  /* (R158: the Naga film's own gold and violet, made as P and Z are, for the two powers rising round Grandmaster Pho and
+                     his student at its opening; the film asked P and Z, which hang from the fight's group and never drew in it) */
+                  FP: [0, 1, 2].map(i => fxRibbon('gold', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 1.7 * i + 0.3, ro: 6 })),
+                  FZ: [0, 1, 2].map(i => fxRibbon('violet', { w0: 0.08, w1: 0.025, heat: 1.5, seed: 2.3 * i + 1.1, ro: 6 })),
+                  req: { P: null, Z: null, W: null, FP: null, FZ: null } };
+    /* (the wind's ribbons and the film's gold and violet are the Naga film's alone, and the fight's group is hidden while a film
+       plays (c_fightstage.js: FSG), so they hang from the world; hidden by fxSwirlFrame whenever no frame asks for them, and by
+       fsFxClear) */
+    const FXS_FILM = FXS.W.concat(FXS.FP, FXS.FZ);
+    for (const Rb of FXS_FILM) world.add(Rb.me);
     function fxSwirlAsk(w, g, ramp, k, o) { const q = FXS.req[w]; if (!g || !(k > 0.01) || (q && q.k >= k)) return; FXS.req[w] = { g, ramp, k: Math.min(1, k), o }; }
     function fxSwirlFrame(fxt) {
-      for (const w of ['P', 'Z', 'W']) {
+      for (const w of ['P', 'Z', 'W', 'FP', 'FZ']) {
         const q = FXS.req[w], S3 = FXS[w]; FXS.req[w] = null;
         if (!q || !fxOn('head')) { for (const Rb of S3) if (Rb.me.visible) Rb.me.visible = false; continue; }
         const o = q.o;
@@ -11052,6 +11059,7 @@
       for (const C of fsPillars) C.t = -1; fsWaveFlash.t = -1; fsRayState.t = -1; for (const B of fsBeams) B.t = -1; for (const L of fsLockRings) L.t = -1; fsBreath.t = -1;
       for (const k in fsBindAt) delete fsBindAt[k]; FS5.shake = null; fsShardsClear(); FXR.lendT = FXR.togT = -1;
       for (const o of FSG.children) o.visible = false;
+      for (const Rb of FXS_FILM) Rb.me.visible = false;
       fxbMesh.visible = fxlHook.visible = true; fxbClear(); FXL5.U.uFxlN.value = 0; for (const B of fsBalls) B.rbEnd = -1; FXS.req.P = FXS.req.Z = null;
     }
 
@@ -16609,10 +16617,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
                               rise: smo(c01((tau - T.braid) / (T.lit - T.braid))), k: smo(c01((tau - T.braid + 0.05) / 0.3)) * gone,
                               head: (smo(c01((tau - T.lit + 0.1) / 0.3)) * (0.75 + (0.25 + 0.1 * chargeK5(tau, T)) * Math.sin(chargePh5(tau, T))) * (1 + 0.2 * chargeK5(tau, T)) * (1 - 0.7 * smo(c01((tau - T.eyecut) / 0.3))) + 0.9 * Math.max(0, 1 - Math.abs(tau - T.lit) / 0.35) + 0.8 * flare) * gone,
                               fz: 0.93, fp: 1.07 });
-          if (typeof fxSwirlAsk === 'function') { const sw = (t0) => smo(c01((tau - t0) / 0.5)) * (1 - smo(c01((tau - T.braid - 0.6) / 0.8)));
+          /* (R158: each swirl rises round its own man in the shot of their hands and gives way as the two powers are wound up the
+             shaft: gone 0.5 s into the close shot of the braid, where a swirl as wide as his reach passed the lens as a white blur,
+             and drawn close to each body (0.32 and 0.36 m, the two of them 0.61 m apart), so neither crosses the other man) */
+          if (typeof fxSwirlAsk === 'function') { const sw = (t0) => smo(c01((tau - t0) / 0.5)) * (1 - smo(c01((tau - T.braid + 0.05) / 0.55)));
             const kz = sw(T.zk), kp = sw(T.pk);
-            if (kz > 0.01) fxSwirlAsk('Z', { x: zj.x, z: zj.z }, 'violet', 0.9 * kz, { r: 0.5, h0: 0.05, h1: 1.9, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.zk) / 1.2) });
-            if (kp > 0.01) fxSwirlAsk('P', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.55, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) });
+            /* (R158: asked in the film's own gold and violet, FP and FZ, which hang where a film draws them: as P and Z they never drew) */
+            if (kz > 0.01) fxSwirlAsk('FZ', { x: zj.x, z: zj.z }, 'violet', 0.9 * kz, { r: 0.32, h0: 0.05, h1: 1.9, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.zk) / 1.2) });
+            if (kp > 0.01) fxSwirlAsk('FP', { x: pz.x, z: pz.z }, 'gold', 0.9 * kp, { r: 0.36, h0: 0.05, h1: 2.0, len: 1.1, turns: 1.2, spin: 4.0, rise: c01((tau - T.pk) / 1.2) });
             /* (R157 idea 3: THE WIND SEEN. Pale streaks of air swirling in round the stick's foot and up past the two men's shoulders
                (2.1 m: from behind them, where the wind builds, the low streaks are hidden by their legs and under the frame), drawn
                in tighter and faster as the wind grows (the fight's own ribbons, its third set, in the pale ramp); gone as the stick hits) */
