@@ -109,7 +109,9 @@ const INSTALL = () => {
     for (const b of BB) bs = (Math.imul(bs, 31) + (b.isEmpty() ? 7 : Math.round(b.min.x * 97 + b.max.z * 89 + b.max.x * 13 + b.min.z * 7))) | 0;
     let BL = null;
     if (bs !== window.__bsig) { window.__bsig = bs; BL = BB.map(b => b.isEmpty() ? null : [b.min.x, b.max.x, b.min.z, b.max.z].map(q => +q.toFixed(3))); }
-    return BL ? { L, P, T, B: BL } : { L, P, T };
+    /* (build 118, R188: each row's film bars, the top one's height in CSS px: kit.bars' --barX over the letterbox's own) */
+    const bt = document.getElementById('barTop'), bar = bt ? +bt.getBoundingClientRect().height.toFixed(1) : -1;
+    return BL ? { L, P, T, B: BL, bar } : { L, P, T, bar };
   };
 };
 

@@ -681,22 +681,28 @@ await lbl('vision-hands');
     return (await sharp(b).raw().toBuffer({ resolveWithObject: true })).data; };
   const diff = (a, b) => { let t = 0; for (let i = 0; i < a.length; i++) t += Math.abs(a[i] - b[i]); return t / a.length; };
   const fr = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
-  await p.evaluate(() => window.__enc.kit.vision({ r: 60, moving: false })); await fr(4);
-  const shown = await corner(); await fr(4);
+  /* (26 Nov, build 116: on a box building two versions and deploying a third the first picture was taken before the vision
+     had drawn the hold: two shown pictures differed by 19.38, the hands' change 23.98, and the check failed on a picture of
+     the world without the vision; run alone it read 1.37 and 6.25. Each picture now also waits for the vision's own pass to
+     have drawn twice since the change before it (its `drawn` count), whatever the frames cost) */
+  const drawn = async (n) => { const d0 = await p.evaluate(() => window.__enc.vision().drawn);
+    await p.waitForFunction(([d0, n]) => window.__enc.vision().drawn >= d0 + n, [d0, n], { timeout: 120000, polling: 50 }); };
+  await p.evaluate(() => window.__enc.kit.vision({ r: 60, moving: false })); await fr(4); await drawn(2);
+  const shown = await corner(); await fr(4); await drawn(2);
   /* (18 Nov: the picture is never still (the hands breathe, a spirit flickers), and two shown pictures with nothing changed
      between them differed by 1.5 to 1.7 (tools/probes/visionhands.mjs), more than a quarter of the hidden hands' 6: the
      check failed on its own noise. That noise is measured in the run, and the two answers are judged against it) */
   const shown2 = await corner();
-  await p.evaluate(() => { window.__enc.handsRoot.visible = false; }); await fr(4);
+  await p.evaluate(() => { window.__enc.handsRoot.visible = false; }); await fr(4); await drawn(2);
   const hidden = await corner();
-  const gated = await p.evaluate(() => window.__enc.visionGate(false)); await fr(4);
+  const gated = await p.evaluate(() => window.__enc.visionGate(false)); await fr(4); await drawn(2);
   const stale = await corner();
   /* (24 Nov, build 64: the old way's picture is taken three pictures after the shown one, the noise one picture after it,
      and in a quiet run (0.68) the noise's limit fell under the old way's own drift (1.61, where it had read 1.43 to 2.67
      in five runs that passed): the check failed on how far apart its pictures were. The drift is now also measured over the
      old way's own span, the hands shown again with the gate on after it (shownLate), and the old way is judged against the
      larger; never past half the hidden hands' change, so an old way that hid them too is still caught) */
-  await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; }); await fr(4);
+  await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; }); await fr(4); await drawn(2);
   const shownLate = await corner();
   await p.evaluate(() => { const E = window.__enc; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
   /* (and on build 65 the drift over that span was 3.97, the hidden hands' change 6.29: the scene moves nearly as much in
