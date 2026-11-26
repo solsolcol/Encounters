@@ -17333,6 +17333,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        armchair: behind the dining and terrace eyes, and in the living room's shot only on a desktop, 27 degrees out, beyond
        his teacher and clear of him) */
     const BT5KOH = [-6.3, -2.2];
+    /* (R184's core on his head AS DRAWN: his head bone and 0.1 m up, its middle. Laid on his mark at 1.6 m it stood at the
+       upper left of his head on a phone, about 47 points aside and 50 above its middle (build 116, seek at 2.45, 2.8 and
+       3.15 s: his head bone 1.45 m up and 6 cm aside of his mark, 0.93 m from the lens). His mark at 1.6 m while his body
+       is not drawn) */
+    const BTHEAD5 = new THREE.Vector3();
+    const btHead5 = (zz) => { const P = cast.zav, hb = P && P.ready && P.group.visible ? boneOf(P, 'Head') : null;
+      if (!hb) return [zz.x, 1.6, zz.z];
+      hb.getWorldPosition(BTHEAD5); return [BTHEAD5.x, BTHEAD5.y + 0.1, BTHEAD5.z]; };
     FILMS5.bagtied = {
       begin(api, s) {
         FM5.once = new Set(); FM5.lit = ''; FM5.s = s; FM5.api = api;
@@ -17503,7 +17511,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.eyes - 1.0) / 0.4)));
           const pre = t < T.eyes ? 1 : 0, gather = pre * smo(c01((t - T.eyes + 0.9) / 0.9));
           VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)),
-                                      on: pre ? [zz.x, 1.6, zz.z] : null } : null); }
+                                      on: pre ? btHead5(zz) : null } : null); }
       },
       end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1); VIOLETFX5.off();
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
