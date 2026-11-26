@@ -170,9 +170,18 @@ for o in MUS:
 #  burst still steps up out of it)
 if P.get('u5m9naga', {}).get('take', '').startswith('u5m9naga2'):
     P['u5m9naga']['take'] = 'u5m9naga2_b'
+    # (R177, Chad, 26 Nov 2026: "I think the music can be louder, especially at the start of the cutscene": the build under the
+    #  charge lifted 12 dB at its start easing to 6 by 10.5 s, was 7 to 5, and the cue 0.95, was 0.75 (z_tail.js).
+    #  R181 ("that moment can last a little longer before it commences its strike"): the film holds its close-up of the Naga's
+    #  head 0.8585 s longer (c_yfilm.js HOLD5), so the music plays two of its beats twice at that moment: the two beats from
+    #  its onset at 12.3555 s of the film to the next pair's at 13.2140 (140 a minute, measured from the take's onsets,
+    #  scratch r181): one join, 15 ms before the later onset, crossfaded over 30 ms into the same place before the earlier one,
+    #  after which the piece runs on unbroken (encode.py splice). In the file's own time (the film's less the cue's 0.05 s):
+    #  the beats 12.2905 to 13.1490 played again from 13.1490)
     P['u5m9naga']['af'] = ("atrim=start=2.294,asetpts=PTS-STARTPTS,"
-                           "volume='pow(10,(if(lt(t,10.5),7-2*t/10.5,if(lt(t,10.59),5*(10.59-t)/0.09,0)))/20)':eval=frame,"
+                           "volume='pow(10,(if(lt(t,10.5),12-6*t/10.5,if(lt(t,10.59),6*(10.59-t)/0.09,0)))/20)':eval=frame,"
                            "afade=t=in:d=0.5")
+    P['u5m9naga']['splice'] = [[12.2905, 13.1490, 0.03]]
     P['u5m9naga']['why'] = ('b, by its SHAPE (R163 to R168): a burst 8 dB up in 40 ms at 12.89 s of the take, where a has '
                             'none, and 45 %% where a phone plays against a\'s 31 %%; its head cut at 2.294 s so the burst '
                             'lands on the strike, faded in 0.5 s, the build lifted 7 to 5 dB under the charge. MADE AGAIN as '

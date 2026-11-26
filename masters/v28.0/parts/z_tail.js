@@ -194,6 +194,14 @@
     { const SS = tog5S(TOG5_SLOW.H), s0 = T.strike - SS;
       if (tau > s0) { const d = tau - s0; if (d < SS) { let a = 0, b = TOG5_SLOW.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (tog5S(m) < d) a = m; else b = m; } return s0 + 0.5 * (a + b); }
                       add += TOG5_SLOW.H - SS; } }
+    /* (R181: the close-up of the Naga's head held, c_yfilm.js HOLD5 written out again: the story from T.rise + 0.6 to T.top +
+       0.15 played over 0.8585 s more of the real clock, eased down over 0.4 s and back over 0.4 s) */
+    { const X = 0.8585, a = 0.4, b = 0.4, s0 = T.rise + 0.6, S = T.top + 0.15 - s0, Hh = S + X, ab = (a + b) / 2, r2 = (S - ab) / (Hh - ab);
+      const hS = (d) => { const m = Hh - b, Sa = a * (1 + r2) / 2, Sm = Sa + r2 * (m - a); if (d <= 0) return 0;
+        if (d < a) return r2 * d + (1 - r2) / 2 * (d + a / Math.PI * Math.sin(Math.PI * d / a)); if (d < m) return Sa + r2 * (d - a);
+        const e = Math.min(b, d - m); return Sm + r2 * e + (1 - r2) / 2 * (e - b / Math.PI * Math.sin(Math.PI * e / b)) + Math.max(0, d - Hh); };
+      if (tau > s0) { const d = tau - s0; if (d < S) { let lo = 0, hi = Hh; for (let i = 0; i < 40; i++) { const m = 0.5 * (lo + hi); if (hS(m) < d) lo = m; else hi = m; } return s0 + add + 0.5 * (lo + hi); }
+                      add += Hh - S; } }
     for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
@@ -238,7 +246,9 @@
        be cut off , mute or fade at all". M9 from the press's white to the film's end, never held down: its first struck beat
        with the press (build 109 had moved it to the strike). The tall shape's loop of voices is no longer laid under the
        charge (R167)) */
-    sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
+    /* (R177, Chad, 26 Nov 2026: "I think the music can be louder, especially at the start of the cutscene": 0.95, was 0.75, and
+       its build under the charge lifted 12 dB easing to 6, was 7 to 5 (sound/pick.py M9)) */
+    sfx(0.05, 'u5m9naga', 0.95);                                               // M9: both themes at once, the only time in the chapter
     /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
        his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
     sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
@@ -265,8 +275,12 @@
        light racing out with it: c_yfilm.js STRIKEFX5)) */
     sfx(STRIKE - 2.33, 'u5windpull', 0.6);                                     // the wind drawn in, at its loudest 80 ms before the strike
     sfx(T.eyelit - 0.02, 'u5pweyes', 0.85);                                    // the carved head's eyes igniting
-    sfx(STRIKE, 'u5strikeboom', 0.85);                                         // the boom
-    sfx(STRIKE, 'u5nagaburst', 0.9);                                           // R165: the Naga bursting out, the film's heaviest hit
+    /* (R179/R180: 0.75, was 0.85: its tail runs under the Naga's burst 0.15 s on, and the two with the music summed over full
+       scale, measured in the film's own mixdown (scratch r163/mix): the burst keeps the top of the mix) */
+    sfx(STRIKE, 'u5strikeboom', 0.75);                                         // the boom
+    /* (R179/R180: the Naga's burst on the moment it comes out of the stick's head (T.rise), with its flash, its shockwave and
+       the slight shake (c_yfilm.js emerge, hitsR), 0.15 s after the boom of the stick on the ground: a one-two) */
+    sfx(RISEN - 0.02, 'u5nagaburst', 0.9);                                     // R165: the Naga bursting out, the film's heaviest hit
     step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
     step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
     step(DRIVE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });

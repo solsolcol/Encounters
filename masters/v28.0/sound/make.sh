@@ -202,3 +202,15 @@
 #   where they had clipped at +1.1 over a riser only 2 dB under them. The music runs on under the hit and never stops.
 #   Retired (install.py RETIRED): u5summon and u5eyeglint, nothing cues them now. Encoded (encode.py), installed
 #   (install.py: five STING_SAMPLE rows). The measured picks stand until Chad's ear (v10.6).
+# ---- R177 and R181 (26 Nov 2026, Chad: "I think the music can be louder, especially at the start of the cutscene"; "At the
+#   moment where the camera shows the close up view of the naga head in the sky, along with the naga word, that moment can
+#   last a little longer before it commences its strike"): M9 (u5m9naga2_b, no new takes, no credits). Its build under the
+#   charge lifted 12 dB at its start easing to 6 by 10.5 s (was 7 to 5), and its cue 0.95 (was 0.75). The film holds its
+#   close-up of the Naga's head 0.8585 s longer (c_yfilm.js HOLD5), so the music plays two of its beats twice at that moment:
+#   the piece is 140 a minute from the strike on (its onsets read from the take, scratch r181), and the two beats from its
+#   onset at 12.3555 s of the film to the next pair's at 13.2140 are heard again from 13.2140; one join, an equal-power
+#   crossfade over 30 ms centred 15 ms before each of the two onsets, after which the piece runs on unbroken (encode.py
+#   splice). Measured as made: 35.34 s (was 34.48), the onsets after the join on the same 140 a minute grid to within a few
+#   ms (14.0720 where 14.0711 was due), no step at the join; peak -2.9 dBFS (mp3), -3.2 (Opus). The film's own mixdown
+#   (scratch r163/mix) with the Naga's burst moved to the moment it comes out (z_tail.js, R179/R180) summed a hair over full
+#   scale at 10.84 s (the boom's tail under the burst): the boom's cue 0.75 (was 0.85), the burst kept at the top of the mix.

@@ -14545,7 +14545,11 @@
            second: 14 m/s per second measured). Used only where the move both starts and ends at rest, its speeds then 0) */
         const sx = B.warp ? c01((B.warp(t) - B.warp(A.t)) / Math.max(1e-3, B.warp(B.t) - B.warp(A.t))) : c01((t - A.t) / dt);
         const s2 = sx * sx, s3 = s2 * sx, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + sx, h01 = 3 * s2 - 2 * s3, h11 = s3 - s2;
-        const v = vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
+        /* (a warped move, at rest at both ends, eased by the fifth power (its speed AND its change of speed nothing at both
+           ends): the cubic's ease starts a move with its full acceleration at once, measured at 9 m/s per second on the
+           fall into the strike's first twentieth of a second) */
+        const q5 = s3 * (sx * (6 * sx - 15) + 10);
+        const v = B.warp ? vA.map((a, j) => a + (vB[j] - a) * q5) : vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
         fmLens(v[6]); fmAim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
         FM5.shot = (A.name || '') + '>' + (B.name || ''); fmLevels(); return;
       }
@@ -15419,6 +15423,28 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       };
     })();
 
+    /* R178 (Chad, 26 Nov 2026: "Have the naga staff tremble subtly as it charges, but very subtly"): THE STICK TREMBLES. From
+       the two powers wound up it to the moment it is driven down, a fine shiver about the place their two hands hold it (1.0
+       m up its length, its own origin at its foot), growing as the charge grows: 0.16 degrees as the powers wind up it, 0.29
+       as its head lights, 0.43 as they lift it and drive it (a few millimetres at its head, seen in the close-ups and not in
+       the wide ones); three sines a side at 6 to 15 a second, a pure function of the film's clock (v6.4); laid after it is
+       placed in his hand each frame, which lays its place afresh every frame, so nothing builds up (v11.5) */
+    const STICKTREM5 = (() => {
+      const q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), w = new THREE.Vector3();
+      return (tau, T) => {
+        const g = things.nagaStaff; if (!g || !g.visible || !(tau < T.strike)) return;
+        const k = 0.0028 * smo(c01((tau - T.braid) / 1.2)) + 0.0022 * smo(c01((tau - T.lit) / 1.5)) + 0.0025 * smo(c01((tau - T.lift) / Math.max(0.1, T.drive - T.lift)));
+        if (!(k > 1e-5)) return;
+        const ax = k * (0.55 * Math.sin(tau * 61.3) + 0.3 * Math.sin(tau * 89.1 + 1.7) + 0.15 * Math.sin(tau * 37.9 + 0.4));
+        const az = k * (0.55 * Math.sin(tau * 57.7 + 2.2) + 0.3 * Math.sin(tau * 97.3 + 0.9) + 0.15 * Math.sin(tau * 43.1 + 3.1));
+        const py = 1.0 * g.scale.y;
+        v.set(0, py, 0).applyQuaternion(g.quaternion);
+        g.quaternion.multiply(q.setFromEuler(e.set(ax, 0, az)));
+        w.set(0, py, 0).applyQuaternion(g.quaternion);
+        g.position.add(v).sub(w);
+      };
+    })();
+
     /* R157 idea 3, THE ROBE PULLED: Grandmaster Pho's robe below the waist is a grid of points (his file's Cloth_cc_rr, 16
        round his waist by 10 from his belt to the hem, each a child of SkirtWaist: the cloth his takes carry). While the wind
        draws in toward the stick, the side of the robe that faces the stick is drawn out toward it, the more the lower, with
@@ -16281,6 +16307,23 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       if (d < m) return Sa + r * (d - a);
       const e = Math.min(b, d - m); return Sm + r * e + (1 - r) / 2 * (e - b / Math.PI * Math.sin(Math.PI * e / b)) + Math.max(0, d - H); };
     const strikeSInv5 = (s) => { let a = 0, b = STRIKE_SLOW5.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (strikeS5(m) < s) a = m; else b = m; } return 0.5 * (a + b); };
+    /* R181 (Chad, 26 Nov 2026: "At the moment where the camera shows the close up view of the naga head in the sky, along with
+       the naga word, that moment can last a little longer before it commences its strike"): THE CLOSE-UP HELD. The story's
+       close-up of the Naga's head with its name (from the cut to it, T.rise + 0.6, to the cut to his teacher's back, T.top +
+       0.15) is played over HOLD5.X more seconds of the real clock: its pace eased down over 0.4 s to what fills the time (0.62
+       of it), held, and eased back over 0.4 s, so the head rises slower and its name stays longer. X is two beats of the
+       film's music, 140 a minute, measured from its onsets (12.3555 and 13.2140 s of the film): the music plays those same two
+       beats twice at the same moment (sound/pick.py, M9), so all after it stays in step and the cut to his teacher's back
+       comes on the music's strong beat. real() and story() carry it between the strike's slow and the pierces'; z_tail.js
+       TOG5_REAL the same sum */
+    const HOLD5 = { X: 0.8585, a: 0.4, b: 0.4 };
+    const holdW5 = (T) => { const s0 = T.rise + 0.6, S = T.top + 0.15 - s0, H = S + HOLD5.X, ab = (HOLD5.a + HOLD5.b) / 2; return { s0, S, H, r: (S - ab) / (H - ab) }; };
+    const holdS5 = (d, w) => { const { a, b } = HOLD5, { H, r } = w, m = H - b, Sa = a * (1 + r) / 2, Sm = Sa + r * (m - a);
+      if (d <= 0) return 0;
+      if (d < a) return r * d + (1 - r) / 2 * (d + a / Math.PI * Math.sin(Math.PI * d / a));
+      if (d < m) return Sa + r * (d - a);
+      const e = Math.min(b, d - m); return Sm + r * e + (1 - r) / 2 * (e - b / Math.PI * Math.sin(Math.PI * e / b)) + Math.max(0, d - H); };
+    const holdSInv5 = (s, w) => { let a = 0, b = w.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (holdS5(m, w) < s) a = m; else b = m; } return 0.5 * (a + b); };
     /* R122 idea 6 (25 Nov 2026, Chad: "Naga entrance like a summon"): THE NAGA'S NAME over the picture as it rides up.
        R126 (Chad: "Tone down the font design and look of the naga word", after R125: "The naga word looks very lame."): the
        painted gold lettering of builds 89 to 91 (engraved scales, a serpent flourish over painted water) is gone. The word is
@@ -16704,9 +16747,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       real(tau) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let add = 0;
         /* (R157 idea 6: the strike's slow first, ending on the strike) */
         { const SS = strikeS5(STRIKE_SLOW5.H), s0 = T.strike - SS; if (tau > s0) { const d = tau - s0; if (d < SS) return s0 + strikeSInv5(d); add += STRIKE_SLOW5.H - SS; } }
+        /* (R181: the close-up held) */
+        { const w = holdW5(T); if (tau > w.s0) { const d = tau - w.s0; if (d < w.S) return w.s0 + add + holdSInv5(d, w); add += w.H - w.S; } }
         for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + nagaSInv5(d); add += H - SH; } return tau + add; },
       story(t) { const T = this.tl(), H = NAGA_HIT5.H, SH = nagaS5(H); let sub = 0;
         { const SS = strikeS5(STRIKE_SLOW5.H), s0 = T.strike - SS; if (t > s0) { const d = t - s0; if (d < STRIKE_SLOW5.H) return s0 + strikeS5(d); sub += STRIKE_SLOW5.H - SS; } }
+        { const w = holdW5(T), h = w.s0 + sub; if (t > h) { const d = t - h; if (d < w.H) return w.s0 + holdS5(d, w); sub += w.H - w.S; } }
         for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2, h = s0 + sub; if (t <= h) break; const d = t - h; if (d < H) return s0 + nagaS5(d); sub += H - SH; } return t - sub; },
       /* (R157: where the strike's slow begins, story seconds) */
       slow0() { return this.tl().strike - strikeS5(STRIKE_SLOW5.H); },
@@ -16722,6 +16768,54 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         this.shape = { x: this.zav.x, z: this.zav.z };
         this.planned = false; this.eyes = null;
         PRAI5.look('trance');
+      },
+      /* R179 (Chad, 26 Nov 2026: "At the very moment that the naga comes out from the staff, shouldn't there be some glow or
+         effects or shockwave that comes out from the top of the staff to make it more impactful?"): THE NAGA COMES OUT. As its
+         head leaves the stick's head (T.rise): a white flash there with a blue glow round it, a ring of light thrown out from it
+         as a shockwave, a level ring racing out from it, and sparks of light flung outward; painted light only (additive cards
+         and points, no light added: v9.4), drawn over what stands at their depth (v25.5), a pure function of the film's clock
+         (v6.4), and gone within a second; with the slight shake (R180) and the burst's sound (z_tail.js) on the same moment */
+      emerge(t, T, at) {
+        if (!this.em) {
+          const card = (stops) => { const [c, x] = canvas(128, 128), gd = x.createRadialGradient(64, 64, 1, 64, 64, 63); for (const [o, col] of stops) gd.addColorStop(o, col);
+            x.fillStyle = gd; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); };
+          const sm = (map) => { const m = new THREE.SpriteMaterial({ map, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m); return m; };
+          const coreT = card([[0, 'rgba(255,255,255,1)'], [0.2, 'rgba(235,250,255,0.95)'], [0.5, 'rgba(140,215,255,0.4)'], [1, 'rgba(60,150,255,0)']]);
+          const haloT = card([[0, 'rgba(150,220,255,0.7)'], [0.45, 'rgba(70,170,255,0.25)'], [1, 'rgba(40,120,255,0)']]);
+          const ringT = (() => { const [c, x] = canvas(256, 256), gd = x.createRadialGradient(128, 128, 60, 128, 128, 127);
+            gd.addColorStop(0, 'rgba(120,200,255,0)'); gd.addColorStop(0.7, 'rgba(150,215,255,0.18)'); gd.addColorStop(0.88, 'rgba(255,255,255,1)'); gd.addColorStop(0.94, 'rgba(160,220,255,0.55)'); gd.addColorStop(1, 'rgba(80,160,255,0)');
+            x.fillStyle = gd; x.fillRect(0, 0, 256, 256); return tex(done(THREE, c, false)); })();
+          const g = new THREE.Group(); g.visible = false; world.add(g);
+          const core = new THREE.Sprite(sm(coreT)), halo = new THREE.Sprite(sm(haloT)), ring = new THREE.Sprite(sm(ringT));
+          core.renderOrder = 4.62; halo.renderOrder = 4.6; ring.renderOrder = 4.61; g.add(halo, ring, core);
+          const flatM = new THREE.MeshBasicMaterial({ map: ringT, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(flatM);
+          const flatG = new THREE.PlaneGeometry(1, 1); flatG.rotateX(-Math.PI / 2); owned.push(flatG);
+          const flat = new THREE.Mesh(flatG, flatM); flat.renderOrder = 4.59; flat.frustumCulled = false; g.add(flat);
+          /* the sparks: flung out on their own lines (upward-leaning), slowing as they go, falling a little */
+          const N = 90, rr = rng(31179), dirs = [], pos = new Float32Array(N * 3);
+          for (let i = 0; i < N; i++) { const a = rr() * Math.PI * 2, y = -0.25 + 1.25 * rr(), h = Math.sqrt(Math.max(0, 1 - Math.min(1, y * y))), v = 2.6 + 4.2 * rr();
+            dirs.push([Math.cos(a) * h * v, y * v, Math.sin(a) * h * v]); }
+          const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage)); owned.push(sg);
+          const spm = new THREE.PointsMaterial({ map: coreT, size: 0.09, sizeAttenuation: true, color: 0xcfeeff, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(spm);
+          const sparks = new THREE.Points(sg, spm); sparks.frustumCulled = false; sparks.renderOrder = 4.63; g.add(sparks);
+          this.em = { g, core, halo, ring, flat, sparks, dirs, pos, sg };
+        }
+        const E = this.em, u = t - T.rise;
+        if (!at || u < 0 || u > 1.0) { if (E.g.visible) E.g.visible = false; return; }
+        E.g.visible = true; E.g.position.set(at[0], at[1] + 0.04, at[2]);
+        /* the flash: up in 35 ms, gone over 0.4 s, growing; the glow round it slower and wider */
+        const kc = u < 0.035 ? u / 0.035 : Math.pow(Math.max(0, 1 - (u - 0.035) / 0.4), 2);
+        E.core.material.opacity = Math.min(1, kc); E.core.scale.setScalar(0.5 + 1.7 * Math.sqrt(Math.min(1, u / 0.435)));
+        const kh = u < 0.05 ? u / 0.05 : Math.pow(Math.max(0, 1 - (u - 0.05) / 0.8), 2);
+        E.halo.material.opacity = 0.8 * kh; E.halo.scale.setScalar(1.4 + 3.4 * Math.sqrt(u));
+        /* the shockwave: thrown out fast and slowing over 0.6 s, fading as it goes; the level ring the same, a little wider */
+        const p = c01(u / 0.6), reach = 1 - Math.pow(1 - p, 3), ka = smo(c01(u / 0.03)) * Math.pow(1 - p, 1.6);
+        E.ring.material.opacity = 0.95 * ka; E.ring.scale.setScalar(0.5 + 9.0 * reach);
+        E.flat.material.opacity = 0.75 * ka; E.flat.scale.set(0.6 + 12.0 * reach, 1, 0.6 + 12.0 * reach);
+        /* the sparks */
+        const fly = (1 - Math.exp(-3.2 * u)) / 3.2;
+        for (let i = 0; i < E.dirs.length; i++) { const d = E.dirs[i]; E.pos[i * 3] = d[0] * fly; E.pos[i * 3 + 1] = d[1] * fly - 0.7 * u * u; E.pos[i * 3 + 2] = d[2] * fly; }
+        E.sg.attributes.position.needsUpdate = true; E.sparks.material.opacity = smo(c01(u / 0.03)) * Math.pow(Math.max(0, 1 - u / 0.95), 2);
       },
       /* ITS LIGHT AT THE END: a burst of white and blue out of the stick's head as the last of it goes in (painted light, one
          card, drawn over all at its depth) */
@@ -16769,6 +16863,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const eyeK5 = eyeIn * ((1 + 0.6 * Math.max(0, 1 - Math.abs(tau - T.eyelit - 0.3) / 0.25)) * (1 - smo(c01((tau - T.strike - 0.15) / 0.9))) + 1.2 * Math.max(0, 1 - Math.abs(tau - T.strike) / 0.2));
         STRIKEFX5.frame(tau, T, [sx, sz], eyeK5);
         this.burst(tau, T, B.S);
+        this.emerge(tau, T, B.S);
         /* R129: THE TWO POWERS. The violet kindles in his student's fist, the gold in his; each rises round its man as it
            gathers (the fight's own swirls, as TOGETHER draws them), then the two are wound up the shaft together to its
            carved head, which takes their light; they are struck into the paving with it */
@@ -16828,6 +16923,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              fight's own lens, and the last stage after it find it where his walk and his bag need it: it stood planted on
              the court through the whole last stage, and jumped into his hand on the bag-tied film's first frame) */
           if (lifted || tau >= T.ko5c2) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          /* (R178: its tremble as it charges, laid on the place just laid) */
+          if (lifted) STICKTREM5(tau, T);
           /* (home: his eyes on the stick's head as the head goes in and its body pours after it; following the head on into
              the stick he looked at the lens, the lab's picture of the new home shot) */
           /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
@@ -16901,7 +16998,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* THE SHAKE: each pierce, the shape's burst and the last burst at the stick, on the real clock (a held moment still
            shakes): a few sines of their own, falling away over half a second */
         /* (R149: the staff's strike on the paving is a jolt too, a small one (R152: subtle): 0.006, under the shape's burst) */
-        const hitsR = [[this.real(T.strike), RUMBLE5.jolt], [this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
+        /* (R180, Chad, 26 Nov 2026: "At that very moment, also have some slight screen shake": as the Naga comes out of the stick's
+           head (T.rise), 0.02, between the strike's small jolt and a pierce's) */
+        const hitsR = [[this.real(T.strike), RUMBLE5.jolt], [this.real(T.rise), 0.02], [this.real(T.apart), 0.016], [this.real(T.p1), 0.03], [this.real(T.p2), 0.034], [this.real(T.p3), 0.042], [this.real(T.tail), 0.03]];
         let sh = 0; for (const [h, a] of hitsR) { const u = t - h; if (u >= 0 && u < 0.6) sh += a * Math.pow(1 - u / 0.6, 2); }
         if (sh > 1e-5) { pitch.rotation.x += sh * Math.sin(t * 71.0); yaw.rotation.y += sh * 0.8 * Math.sin(t * 53.0 + 1.3); camera.rotation.z += sh * 0.6 * Math.sin(t * 61.0 + 2.1); }
         /* THE RUMBLE (R149, Chad, 25 Nov 2026: "can you make the camera rumble and charge up before the naga gets summoned out
@@ -17048,8 +17147,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            before the stick, half a metre up, on the widest lens of the film: the stick whole from its foot to its head, both
            men and the night above, the ring racing out over the paving at the picture's foot; then a tilt of 38 degrees as the
            Naga comes out of the head, eased, never past 90 degrees a second) */
-        const STRIKE_EYE = [B.foot[0] + fw[0] * 1.55 + lf[0] * 0.2, 0.5, B.foot[2] + fw[1] * 1.55 + lf[1] * 0.2];
-        const STRIKE_AT = [B.foot[0], 1.0, B.foot[2]], ERUPT_AT = [B.foot[0], 2.8, B.foot[2]];
+        /* (R173, build 110's phone pictures read on the live build: from 1.55 m and 0.5 m up, aimed at 1.0 m, the summoning's
+           bars hid the stick's foot meeting the ground on a phone (the picture between them shows 28 degrees either side of its
+           middle at 80), and the lens tilted up to the Naga from the strike itself, so the ring of water racing out across the
+           court was never in the picture. From 2.0 m and 0.45 m up, aimed at 0.85 m, the foot stands 7 degrees above the bar
+           and both heads 8 below the top; the lens holds there a quarter of a second while the ring goes out, then follows the
+           Naga up) */
+        const STRIKE_EYE = [B.foot[0] + fw[0] * 2.0 + lf[0] * 0.2, 0.45, B.foot[2] + fw[1] * 2.0 + lf[1] * 0.2];
+        const STRIKE_AT = [B.foot[0], 0.85, B.foot[2]], STRIKE_AT2 = [B.foot[0], 0.95, B.foot[2]], ERUPT_AT = [B.foot[0], 2.8, B.foot[2]];
         /* (R157 idea 6: where the slow's shot starts, 0.3 m further out along the same line and a little higher, so the lens
            creeps in on the foot through the slow motion and stands exactly where it always stood at the strike) */
         const STICK_FRONT0 = [B.foot[0] + fw[0] * 1.3 + lf[0] * 0.33, 0.46, B.foot[2] + fw[1] * 1.3 + lf[1] * 0.33];
@@ -17116,9 +17221,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.lift - 0.55, name: 'head', eye: rel(MID, 0.95, -0.75, 1.0), at: LITAT, fp: 46, fd: 40, hold: LITHOLD, band: 0.6, back: 0.7, flow: true },
           { t: T.lifted - 0.45, name: 'hero', eye: rel(MID, 2.2, -0.12, 0.62), at: rel(MID, 0, 0, 1.55), fp: 62, fd: 54, roll: -0.04, hold: HERO_HOLD, band: 0.64, back: 1.0, flow: true },
           { t: T.eyelit + 0.1, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 42, fd: 34, flow: true },
-          { t: T.slow0 + 0.02, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32, flow: true, stop: true },
-          { t: T.strike - 0.04, name: 'erupt', eye: STRIKE_EYE, at: STRIKE_AT, fp: 80, fd: 70, flow: true, warp: (x) => this.real(x) },
-          { t: T.rise + 0.55, name: 'erupt', eye: STRIKE_EYE, at: ERUPT_AT, fp: 82, fd: 72 },
+          { t: T.slow0 - 0.25, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32, flow: true, stop: true },
+          { t: T.strike - 0.04, name: 'erupt', eye: STRIKE_EYE, at: STRIKE_AT, fp: 84, fd: 72, flow: true, warp: (x) => this.real(x) },
+          { t: T.strike + 0.25, name: 'erupt', eye: STRIKE_EYE, at: STRIKE_AT2, fp: 84.5, fd: 72.5 },
+          { t: T.rise + 0.55, name: 'erupt', eye: STRIKE_EYE, at: ERUPT_AT, fp: 86, fd: 74 },
           { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
           { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
           { t: T.top + 0.2, name: 'top', eye: PHO_BACK, at: UPTO, fp: 78, fd: 66, cut: true },
@@ -17150,7 +17256,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.end, name: 'fightcam', eye: B0.eye, yaw: B0.heading, pitch: B0.pitch, fp: B0.fov, fd: B0.fov }
         ]);
       },
-      end() { fmLens(PLAYFOV5); SPLASH5.off(); STRIKEFX5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(0); if (this.dipOn && kit && kit.hush) { kit.hush(0, { secs: 0 }); this.dipOn = false; } NAGA5.hide(); if (this.bs) this.bs.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
+      end() { fmLens(PLAYFOV5); SPLASH5.off(); STRIKEFX5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(0); if (this.dipOn && kit && kit.hush) { kit.hush(0, { secs: 0 }); this.dipOn = false; } NAGA5.hide(); if (this.bs) this.bs.visible = false; if (this.em) this.em.g.visible = false; if (TITLE5.sp) TITLE5.sp.visible = false;
         /* (R129: his grip given back to his own, his student's hand to his take, the two powers out) */
         if (typeof PHOGRIP5 === 'object' && PHOGRIP5.film) PHOGRIP5.film(null); if (typeof ZAVGRIP5 === 'object') ZAVGRIP5.set(null); BRAID5.off();
         /* (R132: his body level given back to the fight's) */
@@ -18122,6 +18228,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     { const SS = tog5S(TOG5_SLOW.H), s0 = T.strike - SS;
       if (tau > s0) { const d = tau - s0; if (d < SS) { let a = 0, b = TOG5_SLOW.H; for (let i = 0; i < 40; i++) { const m = 0.5 * (a + b); if (tog5S(m) < d) a = m; else b = m; } return s0 + 0.5 * (a + b); }
                       add += TOG5_SLOW.H - SS; } }
+    /* (R181: the close-up of the Naga's head held, c_yfilm.js HOLD5 written out again: the story from T.rise + 0.6 to T.top +
+       0.15 played over 0.8585 s more of the real clock, eased down over 0.4 s and back over 0.4 s) */
+    { const X = 0.8585, a = 0.4, b = 0.4, s0 = T.rise + 0.6, S = T.top + 0.15 - s0, Hh = S + X, ab = (a + b) / 2, r2 = (S - ab) / (Hh - ab);
+      const hS = (d) => { const m = Hh - b, Sa = a * (1 + r2) / 2, Sm = Sa + r2 * (m - a); if (d <= 0) return 0;
+        if (d < a) return r2 * d + (1 - r2) / 2 * (d + a / Math.PI * Math.sin(Math.PI * d / a)); if (d < m) return Sa + r2 * (d - a);
+        const e = Math.min(b, d - m); return Sm + r2 * e + (1 - r2) / 2 * (e - b / Math.PI * Math.sin(Math.PI * e / b)) + Math.max(0, d - Hh); };
+      if (tau > s0) { const d = tau - s0; if (d < S) { let lo = 0, hi = Hh; for (let i = 0; i < 40; i++) { const m = 0.5 * (lo + hi); if (hS(m) < d) lo = m; else hi = m; } return s0 + add + 0.5 * (lo + hi); }
+                      add += Hh - S; } }
     for (const p of [T.p1, T.p2, T.p3]) { const s0 = p - SH / 2; if (tau <= s0) break; const d = tau - s0; if (d < SH) return s0 + add + inv(d); add += H - SH; }
     return tau + add; };
   function filmTogether(c, s, api) {
@@ -18166,7 +18280,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        be cut off , mute or fade at all". M9 from the press's white to the film's end, never held down: its first struck beat
        with the press (build 109 had moved it to the strike). The tall shape's loop of voices is no longer laid under the
        charge (R167)) */
-    sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
+    /* (R177, Chad, 26 Nov 2026: "I think the music can be louder, especially at the start of the cutscene": 0.95, was 0.75, and
+       its build under the charge lifted 12 dB easing to 6, was 7 to 5 (sound/pick.py M9)) */
+    sfx(0.05, 'u5m9naga', 0.95);                                               // M9: both themes at once, the only time in the chapter
     /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
        his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
     sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
@@ -18193,8 +18309,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        light racing out with it: c_yfilm.js STRIKEFX5)) */
     sfx(STRIKE - 2.33, 'u5windpull', 0.6);                                     // the wind drawn in, at its loudest 80 ms before the strike
     sfx(T.eyelit - 0.02, 'u5pweyes', 0.85);                                    // the carved head's eyes igniting
-    sfx(STRIKE, 'u5strikeboom', 0.85);                                         // the boom
-    sfx(STRIKE, 'u5nagaburst', 0.9);                                           // R165: the Naga bursting out, the film's heaviest hit
+    /* (R179/R180: 0.75, was 0.85: its tail runs under the Naga's burst 0.15 s on, and the two with the music summed over full
+       scale, measured in the film's own mixdown (scratch r163/mix): the burst keeps the top of the mix) */
+    sfx(STRIKE, 'u5strikeboom', 0.75);                                         // the boom
+    /* (R179/R180: the Naga's burst on the moment it comes out of the stick's head (T.rise), with its flash, its shockwave and
+       the slight shake (c_yfilm.js emerge, hitsR), 0.15 s after the boom of the stick on the ground: a one-two) */
+    sfx(RISEN - 0.02, 'u5nagaburst', 0.9);                                     // R165: the Naga bursting out, the film's heaviest hit
     step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
     step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
     step(DRIVE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });

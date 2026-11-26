@@ -53,8 +53,23 @@ def bed(n, src, t=-30, c=-12, fc=None):
     run('python3', '-I', os.path.join(M, 'v21.12/level_rms.py'), w, l, str(t), str(c))
     run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), l, p)
     return flat(n, p, 2, '96k')
-def mus(n, src, af):
-    w = pre(src, n, af); x = os.path.join(TMP, n + '_x.wav')
+def splice(w, cuts):
+    # (R181) each cut [a, b, d], in the file's own seconds: at b the piece goes back to a and runs on from there, so the
+    # passage from a to b is heard twice and the piece is b - a longer; the one join an equal-power crossfade over d,
+    # centred on b and on a (the second time through reaches b and runs on into what followed it, unbroken)
+    import numpy as np
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float32) / (32768.0 if x.dtype == np.int16 else 1.0)
+    for a, b, d in cuts:
+        ia, ib, k = int(round(a * sr)), int(round(b * sr)), int(round(d * sr)) // 2 * 2
+        f = np.linspace(0.0, 1.0, k, dtype=np.float32); f = f[:, None] if x.ndim > 1 else f
+        j = x[ib - k // 2: ib + k // 2] * np.cos(f * np.pi / 2) + x[ia - k // 2: ia + k // 2] * np.sin(f * np.pi / 2)
+        x = np.concatenate([x[:ib - k // 2], j, x[ia + k // 2:]])
+    wavfile.write(w, sr, x.astype(np.float32))
+
+def mus(n, src, af, fc=None, cuts=None):
+    w = pre(src, n, af, fc); x = os.path.join(TMP, n + '_x.wav')
+    if cuts: splice(w, cuts)
     p = peak(w); run('ffmpeg', '-v', 'error', '-y', '-i', w, '-af', f'volume={-3 - p:.2f}dB', '-c:a', 'pcm_f32le', x)
     # the encoders move the peak a little each way (v9.6): one more pass on each from its own measure
     flat(n, x, 2, '128k')
@@ -81,7 +96,8 @@ for n, o in PICKS.items():
     elif k == 'fx': fx(n, src, o.get('level', -14), af, fc)
     elif k == 'loop': fx(n, src, o.get('level', -14), af, fc, loop=True)
     elif k == 'bed': bed(n, src, fc=fc)
-    elif k == 'music': mus(n, src, af or 'anull')
+    # (R181: a piece cut and joined: its `splice`, or a graph of its own, its `fc`)
+    elif k == 'music': mus(n, src, af or 'anull', o.get('fc'), o.get('splice'))
     elif k == 'mbed': mbed(n, src, o['secs'], o['start'], af or 'anull')
     elif k in ('stem', 'note'): flat(n, os.path.join(os.environ.get('MADE', ''), o['wav']), 2 if k == 'stem' else 1, '128k' if k == 'stem' else '96k')
 shutil.rmtree(TMP, ignore_errors=True)
