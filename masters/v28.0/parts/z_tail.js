@@ -12,7 +12,12 @@
 
   /* THE OPENING (the plan's 4.0): the case over black; the car, the number, Jun's line, Ton's; the chime and the doors;
      his teacher out first, then Ton, then Jun; his step out; the sour; his thought; black, the title over it */
-  const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [0.6],
+  /* (R159, Chad, 26 Nov 2026: "when exiting the lift, the player's camera momentarily clips into jun's head. Have the player exit
+     the lift after a slight delay": his step out 0.6 s later (the gap after Jun sets off 1.2 s, was 0.6). Jun walks out at
+     1 m a second and his eyes at up to 1.3: 0.6 s behind Jun the lens came to 0.24 m of his head as Jun turned to look back
+     at him (open, build 108, measured); 1.2 s behind, never nearer than 0.83 m on the walk out. Every mark after it is 0.6 s
+     later with it, the sounds tied to them too) */
+  const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [1.2],
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
   OP5.num2 = 7.6; OP5.num3 = OP5.chime - 0.5;                                   // the number over the doors: 2 while the shot is on it, then 3 as the car arrives
   /* (R105, 24 Nov 2026: Chad, "Intro cutscene can be improved further". It opens now on the estate at dusk (c_yfilm.js FILMS5.open:
@@ -101,6 +106,7 @@
                      ['ph5p2', 0.6], ['@plant'], [1.0], ['@sink'], [1.1], ['@open'], [2.4], ['@heads'], [1.6], ['@turn'], [1.6], ['@come'], [2.6], ['@hands'], [1.0],
                      ['@violet'], [0.4], ['q5p1', 0.4], ['@leave'], [5.8], ['@rest'], [2.0], ['@end']]);
   const VIOLET5 = '#6b3fe2';                                                   // his protection's colour (the plan's 11: neither gold nor white)
+  const VIOLET_FLASH5 = '#c3a9ff';                                             // (R161: its light, as a flash: the same violet, pale)
   function filmPrepare(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.prepare, T = PR5;
     step(0, () => F.begin(api, s));
@@ -132,8 +138,13 @@
     /* (R33 took both down over the film's last 1.9 s, when nothing sounded under the brief. Since then the brief has his
        murmur and the cage's hum of its own (c_fightstage.js fsSoundFrame), which came straight back: a dip. R75's debug,
        V4: so they play to the hand-off, where the engine takes the film's down in 0.3 s as the brief's come up) */
-    fade(T.violet, T.violet + 0.6, 0, 1, VIOLET5);
-    fade(T.leave, T.leave + 2.2, 1, 0, VIOLET5);
+    /* (R161: no longer the flat card (fade(T.violet, +0.6, 0, 1) held to T.leave, then out over 2.2 s): a flash of pale
+       violet as it comes, the field (c_yfilm.js VIOLETFX5) seen as it goes down; and as his line ends a second, whole,
+       under which the lens leaves his eyes, the field clearing from the middle as it goes down; the violet gathering
+       heard as it is seen) */
+    fade(T.violet - 0.12, T.violet + 0.05, 0, 0.92, VIOLET_FLASH5); fade(T.violet + 0.05, T.violet + 0.75, 0.92, 0, VIOLET_FLASH5);
+    sfx(T.leave - 0.9, 'u5auraup', 0.7);                                       // the violet gathering into him
+    fade(T.leave - 0.32, T.leave, 0, 1, VIOLET_FLASH5); fade(T.leave, T.leave + 0.9, 1, 0, VIOLET_FLASH5);
     sfxFade(T.end - 1.6, T.end - 0.1, 'u5m6prep');
     step(T.end, () => F.end());
     /* (it ends on its own picture, the fight's boom, so the mode opens on exactly it: v19.2's keep.view) */
@@ -162,11 +173,12 @@
      and the gold title written out too; and each pierce in slow motion, its speed eased down to 0.15 and back over 0.9 s of
      the real clock (c_yfilm.js NAGA_HIT5, nagaS5): TOG5_REAL the same sum) */
   /* (build 90: each slow centred on its hit, slowest as the head goes through her, its first coming in 0.45 s before it) */
-  const TOG5 = { plant: 5.0, rise: 6.8, kindle: 7.35, cry: 7.55, top: 9.0555, ph5c2: 9.1755, stoop: 12.6055, apart: 13.4368, swoop: 13.5454,
-                 p1: 14.2425, p2: 14.8688, p3: 15.4223, climb: 15.8196, ring: 16.7176, low: 17.0223, ringOut: 18.8982, home: 20.0839,
-                 tail: 22.0839, ko5c2: 24.6839, back: 29.2139, end: 30.8139, strike: 6.65, title: 7.55,
-                 reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45,
-                 slow0: 6.3658, eyecut: 5.8, eyelit: 5.95 };
+  /* (R162: the prologue given its own time, every mark from the strike on 3.43 s later: c_yfilm.js TOGPRE5) */
+  const TOG5 = { plant: 8.43, rise: 10.23, kindle: 10.78, cry: 10.98, top: 12.4855, ph5c2: 12.6055, stoop: 16.0355, apart: 16.8668, swoop: 16.9754,
+                 p1: 17.6725, p2: 18.2988, p3: 18.8523, climb: 19.2496, ring: 20.1476, low: 20.4523, ringOut: 22.3282, home: 23.5139,
+                 tail: 25.5139, ko5c2: 28.1139, back: 32.6439, end: 34.2439, strike: 10.08, title: 10.98,
+                 reach: 0.45, close: 1.4, zk: 1.4, pk: 2.0, braid: 3.1, lit: 5.1, lift: 7.0, lifted: 8.3, drive: 9.88,
+                 slow0: 9.7958, eyecut: 8.5, eyelit: 8.65 };
   /* (R157 idea 6: the strike's slow, c_yfilm.js STRIKE_SLOW5 and strikeS5 written out again: the story's last 0.2842 s
      before the stick hits the paving played over 0.85 s of the real clock, eased down to 0.18 over 0.2 s and back up over
      the last 0.12, before the three pierces' slows) */
@@ -215,14 +227,19 @@
     sfx(T.lift - 0.25, 'u5summon', 0.85);                                      // the summoning, as the stick is lifted
     sfx(STRIKE + 0.05, 'u5waterup', 0.9);                                      // the water rising round the planted stick
     sfx(TITLE, 'u5title', 0.85);                                               // the NAGA word (R126: toned down)
-    sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
+    /* (R162, Chad: "the music and sound dont seem to sync well": M9 began on the film's first frame, under the press's white,
+       so nothing in the picture met anything in the music, and the near-silence cut it off mid-phrase. Its first beat is a
+       struck hit (its loudest peak 0.1 s into the file), so it now comes in ON the strike, that beat with the boom, and the
+       Naga rises, flies and pierces under its body; the prologue before it is the powers' own sounds, the summoning, the
+       ground's rumble and the wind, rising to the strike) */
+    sfx(STRIKE - 0.08, 'u5m9naga', 0.75);                                      // M9: both themes at once, the only time in the chapter
     sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
     /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
        his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
     sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
     sfx(T.zk, 'u5auraup', 0.6);                                                // the violet in his student's fist
     sfx(T.pk, 'u5windup', 0.5);                                                // the gold gathering in his
-    sfx(T.braid, 'u5togfill', 0.85);                                           // the two powers wound up the shaft together
+    sfx(T.braid + 0.35, 'u5togfill', 0.85);                                    // the two powers wound up the shaft together (R162: its 1.41 s ends as they reach the head)
     sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
     sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
     sfx(DRIVE - 0.02, 'u5swing1', 0.6);                                        // and drive it down (R157: in the slow, under the near-silence)
@@ -231,7 +248,7 @@
        loudest as they drive it down, ending under the strike (3.95 s, made from its take turned round: sound/pick.py); the
        camera's own rumble, its jolt at the strike and the push gathering speed are c_yfilm.js's (RUMBLE5); and the phone
        trembles with it, lightly as they lift it, more as they hold it high and drive it, once at the strike) */
-    sfx(T.strike - 3.92, 'u5rumble', 0.6);                                     // the ground's rumble under the charge
+    sfx(T.slow0 - 3.95, 'u5rumble', 0.6);                                      // the ground's rumble under the charge (R162: at its loudest as the slow begins, with the wind)
     /* (R157, Chad, 25 Nov 2026: "Do 1, 2, 3, 5, 6 cleanly". 3: the wind drawn in toward the stick as the power grows, from
        when the lens comes round behind them, at its strongest as the slow motion begins, where the near-silence takes it
        (c_yfilm.js: kit.hush's floor through the slow, off 15 ms before the stick hits the ground); 5: the carved eyes'

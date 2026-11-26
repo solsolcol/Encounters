@@ -262,7 +262,17 @@
        the phone's frame edge as a face looking up past the lens: open-phone film-00011, 21 Nov) */
     /* (R76, limbread on build 44: in the car Ton's talking left hand went 14.7 cm into his teacher's body and Jun's right hand
        6 cm into his teacher's forearm: the two a step further back and out, Ton's line said with his hands down) */
-    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.54, 1.97], jun: [0.54, 1.99] };
+    /* (R159, Chad, 26 Nov 2026: "in the lift, ton's naga stick clips into pho's body as he turns around and turns back": the
+       wrapped stick upright in Ton's right fist stood at his teacher's left sleeve, and as Ton half-turned back to speak, his
+       fist and the stick swept through his teacher's left side and the back of his robe (clipscan, build 108: up to 6,231
+       crossings as he turned back). His teacher cannot come nearer the doors (the walkable map holds him 1.75 m in, his robe's
+       reach off the doors, whatever his mark: moved 10 cm, he stood where he stood), and Ton cannot go left (3 cm from the
+       car's wall), so Ton stands 25 cm further back (was 1.97): his fist's whole sweep then passes behind his teacher's
+       reach. And his teacher was being pushed 5 cm to his left by Jun's reach (the map settles him clear of Jun), back into
+       the stick once Ton had turned to the doors again: Jun 13 cm further back and 5 cm in from the car's wall (was 0.54,
+       1.99: his shoulder stood 4 cm into it), so his teacher stays where he is put and Jun's arm clears his teacher as he
+       turns back. Ton 0.68 m from the lens and Jun 0.62 (0.82 and 0.68 before)) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.54, 2.22], jun: [0.49, 2.12] };
 
     /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
        draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
@@ -1496,6 +1506,69 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     const PR5HANDS = (() => { const dx = PR5AT.phoU[0] - PR5AT.tonU[0], dz = PR5AT.phoU[1] - PR5AT.tonU[1], l = Math.hypot(dx, dz);
       return [PR5AT.tonU[0] + dx / l * 0.4, 1.05, PR5AT.tonU[1] + dz / l * 0.4]; })();
     const NINE5 = () => NINE_AT;                                               // (the play's one table of where the nine stand: c_play.js, from PRAI_STAND)
+    /* R161 (Chad, 26 Nov 2026: "The part where the screen turns into purple before the fight starts, i think you can improve
+       the look of that instead of a simple fading into flat purple"): HIS PROTECTION'S COLOUR, ARRIVING. Where the picture
+       went to one flat violet card for four seconds (the forty-third seam's fade), his violet now floods in as light: a flash
+       of it as it comes (the fade, pale violet, at 92 % for a moment, his sight's negative and the smell's grey-green let go
+       under it), then a living field over the court: violet light drawn round in a slow spiral from the middle of the
+       picture, brightest between his raised hands, fine strands and rays turning in it and sparks thrown out from it, the
+       court still faintly seen through it (60 % at the middle, 92 % at the edges); as his line ends it gathers in toward the
+       middle and brightens to a white-violet flash, under which the lens leaves his eyes (the cut, as before); and out of his
+       eyes it clears from the middle outward over two seconds, his violet rising round him in the fight's own ribbons as
+       his cage of light comes up. One full-screen triangle drawn last in the world's pass (its own shader: no light, no
+       texture, a picture of the film's clock), premultiplied so it covers and glows in one pass; his hands' pass stands
+       over it. Drawn only from the flash to two seconds after the cut; hidden otherwise, and by the film's end */
+    const VIOLETFX5 = (() => {
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)); owned.push(g);
+      const m = new THREE.RawShaderMaterial({
+        vertexShader: 'precision highp float;\nattribute vec3 position;\nvarying vec2 vUv;\nvoid main(){ vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+        fragmentShader:
+        'precision highp float;\n' +
+        'varying vec2 vUv;\n' +
+        'uniform float uT, uK, uCore, uIn, uOut, uAsp, uRm;\n' +
+        'float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }\n' +
+        'float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);\n' +
+        '  return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y); }\n' +
+        'float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return s; }\n' +
+        'void main(){\n' +
+        '  vec2 p = (vUv - 0.5) * vec2(uAsp, 1.0) * 2.0;\n' +
+        '  float r = length(p), a = atan(p.y, p.x);\n' +
+        '  float rin = r * (1.0 + 1.6 * uIn);\n' +
+        '  float tw = a + 1.5 * log(rin + 0.12) - uT * (0.55 + 1.8 * uIn);\n' +
+        '  vec2 q = vec2(cos(tw), sin(tw)) * (0.7 + 1.5 * rin);\n' +
+        '  float n1 = fbm(q * 1.3 + vec2(0.0, -0.3 * uT));\n' +
+        '  float n2 = fbm(q * 2.4 + 1.7 * vec2(n1, -n1) + vec2(0.2 * uT, 0.0));\n' +
+        '  float strands = smoothstep(0.50, 0.80, n2) * (0.5 + 0.5 * n1);\n' +
+        '  float rays = pow(max(0.0, sin(a * 9.0 + 4.0 * n1 - 0.5 * uT)), 10.0) * exp(-1.2 * rin);\n' +
+        '  float core = exp(-rin * rin / (0.07 + 0.10 * uIn)) * uCore;\n' +
+        '  vec2 sp = vec2(a * 5.0, rin * 6.0 - 1.9 * uT); vec2 ci = floor(sp), cf = fract(sp) - 0.5;\n' +
+        '  float sh = h21(ci + 0.37);\n' +
+        '  vec2 jo = (vec2(h21(ci + 3.1), h21(ci + 7.7)) - 0.5) * 0.5;\n' +
+        '  float spark = step(0.88, sh) * smoothstep(0.16, 0.0, length(cf - jo)) * (0.55 + 0.45 * sin(9.0 * uT + 30.0 * sh)) * smoothstep(0.05, 0.3, rin);\n' +
+        '  float edge = smoothstep(0.2, 1.3, r);\n' +
+        '  vec3 deep = vec3(0.09, 0.03, 0.24), mid = vec3(0.40, 0.24, 0.86), pale = vec3(0.88, 0.82, 1.0);\n' +
+        '  vec3 wash = mix(mid, deep, edge) * (0.85 + 0.3 * n1);\n' +
+        '  float hole = smoothstep(uOut * (uRm + 0.45) - 0.45, uOut * (uRm + 0.45), r);\n' +
+        '  float cover = (0.60 + 0.32 * edge) * uK * hole;\n' +
+        '  vec3 glow = (mid * 0.6 * strands + pale * (core + 0.4 * rays + 0.9 * spark)) * uK * hole;\n' +
+        '  float d = (h21(gl_FragCoord.xy + fract(uT)) - 0.5) / 255.0;\n' +
+        '  gl_FragColor = vec4(wash * cover + glow + d, cover);\n' +
+        '}\n',
+        uniforms: { uT: { value: 0 }, uK: { value: 0 }, uCore: { value: 0 }, uIn: { value: 0 }, uOut: { value: 0 }, uAsp: { value: 0.5 }, uRm: { value: 1.1 } },
+        transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,
+        blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
+        blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
+      mats.push(m);
+      const me = new THREE.Mesh(g, m); me.frustumCulled = false; me.renderOrder = 1e9 - 5; me.visible = false; world.add(me);
+      return {
+        set(o) { const U = m.uniforms; if (!o || !(o.k > 0.002)) { me.visible = false; return; }
+          const asp = (camera && camera.aspect) || 1;
+          U.uT.value = o.t; U.uK.value = Math.min(1, o.k); U.uCore.value = o.core; U.uIn.value = o.gather || 0; U.uOut.value = o.clear || 0;
+          U.uAsp.value = asp; U.uRm.value = Math.hypot(asp, 1); me.visible = true; },
+        off() { me.visible = false; },
+        lab() { return { on: me.visible, k: m.uniforms.uK.value, out: m.uniforms.uOut.value }; }
+      };
+    })();
     FILMS5.prepare = {
       begin(api, s) {
         if (api && api.handsRoot) api.handsRoot.visible = false;
@@ -1522,7 +1595,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         THREAD5.set(t >= T.thread - 0.1, [DOOR_FRONT.x0 + 0.05, 0.52, HOUSE.face - 0.12], [STATION.fight.jun.x - 0.18, 0.86, STATION.fight.jun.z - 0.25]);
         /* the household behind the thread, in the doorway: Mr Koh's question; Ton and Jun either side */
         whenReady(cast.koh, (P) => { const s0 = STATION.fight.koh; put(P, s0.x, s0.z, s0.ry);
-          fmTalk(P, 'koh', t, T.ko5p1, SECS.ko5p1, 'Stand_and_Chat'); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+          fmRest(P, 'koh', t); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.8, 0.75); });
+        /* (R160, Chad, 26 Nov 2026: "The 'what would i hear' part, the red man model hands clips into ton's body. Don't make him
+           lift his hand.": his question asked in his standing rest, his hands by his sides, his head turned to his guest;
+           his chatting take (R79's, below) still lifted a hand into Ton's back) */
         /* (R79, Chad: "his hand movement causes collision to ton, and because of that, ton jerks repeatedly to clear the
            collision but ends up vibrating": his question was asked with his hands thrown open, a step behind Ton, and each
            sweep of a hand into Ton moved Ton off it in that picture and back in the next. Asked with his chatting take, as
@@ -1589,21 +1665,32 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* his sight, opened without his asking (the wave out from him), held until the violet; under the violet his OWN sight
            is shut (kit.vision(false)), or a sight he had open in the hunt came back the moment the hold let go, and the
            third person of the turn was drawn in the vision's negative (prepare-00047, 21 Nov) */
-        fmVision(t, T.open, 2.2, turned ? T.violet + 0.4 : Infinity, 0.01);
+        /* (R161: shut under the violet's first flash, at its peak, so the violet that follows is drawn on the court as it is:
+           the vision draws the world's light as its negative, which turned the violet grey. Held at nothing for a frame first
+           and only then let go: let go while it stood wide, the engine ran its own closing wave back to him over a second and
+           more of the wall clock (the hold's last radius, visResume), his hands and the court white under the violet) */
+        if (t < T.violet + 0.03) fmVision(t, T.open, 2.2, Infinity, 0.01);
+        else if (kit && kit.vision) { const v = kit.vision(); if (v && v.r > 0.001) { kit.vision({ r: 0, moving: false }); FM5.vis = true; } else fmVisionOff(); }
         if (turned) fmVisionOff();
         if (t >= T.violet + 0.6 && !FM5.once.has('sightShut')) { FM5.once.add('sightShut'); if (kit && kit.vision) kit.vision(false); }
         /* THE SOUR, hard, as they come */
-        if (kit && kit.chill) { const k = turned ? 0 : smo(c01((t - T.come) / 2.4)) * 0.95;
+        if (kit && kit.chill) { const k = turned ? 0 : smo(c01((t - T.come) / 2.4)) * 0.95 * (1 - smo(c01((t - T.violet + 0.05) / 0.15)));
           if (k > 0.002 || FM5.sour) { kit.chill(k, { tint: 'sour', cine: true }); FM5.sour = k > 0.002; } }
         /* his hands up before his face (the library's palms before the eyes, the fingers apart: he looks through them) */
-        if (api && api.handPose) { const kh = turned ? 0 : smo(c01((t - T.hands) / 1.0)) * 0.85;
+        /* (R161: and let down as his violet comes, the fear gone out of him, so the light is seen and not his palms: up before
+           his eyes they filled three quarters of a phone's picture, and the violet showed only between his fingers) */
+        if (api && api.handPose) { const kh = turned ? 0 : smo(c01((t - T.hands) / 1.0)) * 0.85 * (1 - smo(c01((t - T.violet - 0.35) / 1.1)));
           if (api.handsRoot) api.handsRoot.visible = kh > 0.01; api.handPose('peek', kh); }
         /* MASTER ZAVIER, SEEN: standing where the fight puts him, eyes half shut, lips moving (his trance's take is CAST's
            to make: until it lands he stands in his rest), in his cage; his teacher's gold; the trance's look */
         if (turned) { whenReady(cast.zav, (P) => { fmShow(P, true); put(P, F.zav.x, F.zav.z, COURT5.heading + Math.PI);
             const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); lookNow(P, [F.lesson.x, 1.4, F.lesson.z], 0.5, 0.7); });
           CAGE5.set({ k: smo(c01((t - T.leave) / 1.2)), x: F.zav.x, z: F.zav.z, t });
-          TRANCE5.set(1, t); TRANCE5.pools(F.zav, F.pho, 1, 1); TRANCE5.gold(smo(c01((t - T.leave - 0.5) / 1.5))); }
+          TRANCE5.set(1, t); TRANCE5.pools(F.zav, F.pho, 1, 1); TRANCE5.gold(smo(c01((t - T.leave - 0.5) / 1.5)));
+          /* (R161: his violet rising round him as the field clears, the fight's own ribbons, from when the lens has drawn back
+             clear of them (0.8 s after the cut: the lens 0.7 m behind his head, the ribbons 0.38 round him)) */
+          if (typeof fxSwirlAsk === 'function') { const kr = smo(c01((t - T.leave - 0.8) / 0.4)) * (1 - smo(c01((t - T.leave - 2.4) / 1.0)));
+            if (kr > 0.01) fxSwirlAsk('FZ', { x: F.zav.x, z: F.zav.z }, 'violet', 0.85 * kr, { r: 0.38, h0: 0.05, h1: 2.1, len: 1.2, turns: 1.3, spin: 3.6, rise: c01((t - T.leave - 0.8) / 1.4) }); } }
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
         /* THE LENS. Through his eyes: the night court from its west side; the unwrapping, close; the stick in his teacher's
            hand; the doorway, the thread, the household; his teacher to him; the court as the lamps sink and his sight opens,
@@ -1636,8 +1723,15 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.rest, name: 'fightcam', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov },
           { t: T.end, name: 'fightcam', eye: B.eye, yaw: B.heading, pitch: B.pitch, fp: B.fov, fd: B.fov }
         ]);
+        /* (R161) THE VIOLET'S PICTURE: in under the first flash, held while he is taken, gathered and brightened into the second
+           flash as his line ends, and cleared from the middle out once the lens has left his eyes */
+        { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.leave - 1.7) / 0.5)));
+          const pre = t < T.leave ? 1 : 0, gather = pre * smo(c01((t - T.leave + 0.9) / 0.9));
+          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 2.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.leave) / 2.0)) } : null); }
+        if (typeof fxSwirlFrame === 'function') fxSwirlFrame(t);
       },
       end() { fmLens(PLAYFOV5); if (FM5.sour && kit && kit.chill) kit.chill(0, { tint: 'sour' }); FM5.sour = false; fmVisionOff();
+        VIOLETFX5.off(); if (typeof fxSwirlFrame === 'function') fxSwirlFrame(0);
         if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0);
         /* the court as the fight finds it: the two of them at their places, the cage, the trance, the nine at theirs */
         const F = fightStart();
@@ -2014,7 +2108,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        begins at RISE). His student's place beside him, in his frame (to his right 0.54 m, 0.12 before him: his left hand
        on the stick 0.24 to his left and 0.20 before him, his shoulder 0.49 m over it), and the Naga's widening spiral
        stood 0.45 m before the two of them (its first turn passed within 0.35 m of his student's head where it stood) */
-    const TOGPRE5 = 3.4, ZJ5 = [-0.54, 0.12], HAF5 = 0.45;
+    /* (R162, Chad, 26 Nov 2026: "The naga cutscene now feels very rushed at the start, did you not readjust the timing of it?
+       It feels like all the additional scenes got crammed within the same timing ... All the scenes are played too fast".
+       He was right: R157 put the carved head's eyes and the slow strike into the marks R129's prologue already had, so its
+       shots stood 1.9, 2.0, 1.9 and 0.6 s. The prologue now has its own time, each beat about half as long again: his hand
+       to the stick and the two powers in their fists (3.1 s), the powers wound up the shaft (2.0 s, was 1.3) and the head
+       lit, the two of them from behind as it charges and they lift it (2.75 s), the eyes lighting (1.3 s, was 0.57), the
+       slow strike. 3.43 s longer in all; everything after the strike moves with it (TOGPRE5 was 3.4)) */
+    const TOGPRE5 = 6.83, ZJ5 = [-0.54, 0.12], HAF5 = 0.45;
     /* R132-R140 (Chad, of the lab's pictures: the fingers in the stick, his arm bent across his chest, Pho's hand on his
        shoulder, Pho's arm not straight): THE PROLOGUE'S STAGING, one table the film reads every frame (and a probe may
        change: FILMS5API.TOGP5). His student 0.60 to his right and 0.10 before him, turned 30 degrees to the stick, so the
@@ -2111,11 +2212,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const T = { plant: 1.6 + TOGPRE5, rise: RISE,
                     /* (R129's prologue: his hand to the stick and closed on it; the violet in his fist, the gold in his teacher's;
                        the two wound up the shaft to its head, lit; the two of them lift it and drive it down) */
-                    reach: 0.3, close: 0.85, zk: 0.85, pk: 1.25, braid: 2.0, lit: 3.3, lift: 4.7, lifted: 5.6, drive: 6.45, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
+                    reach: 0.45, close: 1.4, zk: 1.4, pk: 2.0, braid: 3.1, lit: 5.1, lift: 7.0, lifted: 8.3, kindle: RISE + 0.55, cry: RISE + 0.75, top: tm[NM.top0], ph5c2: tm[NM.top0] + 0.12, stoop: tm[NM.top1], apart: tm[iA],
                     swoop: tm[NM.A], p1: tm[NM.p1], p2: tm[NM.p2], p3: tm[NM.p3], climb: tm[NM.arcEnd], ring: tm[NM.ringIn], ringOut: tm[NM.ringOut], home: tm[NM.home],
                     tail: tm[NM.home] + (NAGA5.bodyLen || 22) / 11 };
         /* (R122 idea 6: the stick strikes the paving 1.65 s into his cast; the gold NAGA as it rides up with its head) */
         T.strike = T.plant + 1.65; T.title = RISE + 0.75;
+        T.drive = T.strike - 0.2;
         /* (R157: where the strike's slow begins (its 6), the cut to the carved head's eyes and their lighting (its 5)) */
         T.slow0 = T.strike - strikeS5(STRIKE_SLOW5.H); T.eyecut = T.lifted + 0.2; T.eyelit = T.lifted + 0.35;
         T.low = T.p3 + 1.6; T.ko5c2 = T.tail + 2.6; T.back = T.ko5c2 + ((typeof SECS === 'object' && SECS.ko5c2) || 2.6) + 0.45; T.end = T.back + 1.6;
@@ -2250,7 +2352,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              the stick he looked at the lens, the lab's picture of the new home shot) */
           /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
              its head as it takes light; then as before) */
-          fmGaze(P, tau, [[0, HANDS], [1.5, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [2.15, SH], [T.rise + 0.2, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
+          fmGaze(P, tau, [[0, HANDS], [T.pk + 0.25, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [T.braid + 0.15, SH], [T.rise + 0.2, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry + (tau < T.ko5c2 ? TOGP5.zry : 0));
           /* (his full body while the hands are close, given back at the cut to the paving: R132) */
           if (TOGP5.zavFull) P.force = tau < T.strike - 0.1 ? 0 : (this.zf0 != null ? this.zf0 : 1);
@@ -2259,8 +2361,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              through the lift and the strike, and off it with his teacher's; his eyes on his hand, his teacher, the stick's head,
              then the Naga) */
           if (typeof ZAVGRIP5 === 'object') { const g = tau >= T.ko5c2 ? 0 : 1 - out;
-            ZAVGRIP5.set({ k: smo(c01((tau - T.reach) / 0.7)) * g, kin: smo(c01((tau - 0.75) / 0.35)), kf: smo(c01((tau - T.close) / 0.3)) * g }); }
-          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [1.7, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [2.3, SH], [T.rise + 0.25, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
+            ZAVGRIP5.set({ k: smo(c01((tau - T.reach) / (T.close - T.reach + 0.15))) * g, kin: smo(c01((tau - T.close + 0.1) / 0.35)), kf: smo(c01((tau - T.close) / 0.3)) * g }); }
+          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [T.pk + 0.45, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [T.braid + 0.3, SH], [T.rise + 0.25, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
         { const cc = tau < T.ko5c2 ? mid : zz, cin = tau < T.strike - 0.1 ? 0 : smo(c01((tau - T.strike + 0.1) / TOGP5.cageIn));
@@ -2335,8 +2437,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            (kit.hush's floor, the forty-eighth seam's level: R157), coming down over 0.12 s as the slow begins and taken off
            15 ms before the stick hits the ground, so the boom comes in at full; on the real clock (a seek lands on the same
            sound), and given back by the film's end whatever happens (end()) */
-        { const r0 = this.real(T.slow0), r1 = this.real(T.strike) - 0.015, dk = t > r0 && t < r1 ? smo(c01((t - r0) / 0.12)) : 0;
-          if (kit && kit.hush && (dk > 0.001 || this.dipOn)) { kit.hush(dk, { secs: 0, hz: 600, floor: 0.07 }); this.dipOn = dk > 0.001; } }
+        /* (R162, Chad: "suddenly it mutes and unmutes again": the near-silence came down in 0.12 s over the score, which played
+           from the film's first frame, and let it straight back: the music cut and came back mid-phrase. The score comes in on
+           the strike now (z_tail.js), so what draws down is the charge's own sound, the ground's rumble and the wind, at
+           their loudest as the slow begins; drawn down over 0.45 s from 0.15 s before it, to 12 % and a softer close (900 Hz),
+           and let go 15 ms before the stick meets the ground, where the boom and the score's first beat come in together) */
+        { const r0 = this.real(T.slow0) - 0.15, r1 = this.real(T.strike) - 0.015, dk = t > r0 && t < r1 ? smo(c01((t - r0) / 0.45)) : 0;
+          if (kit && kit.hush && (dk > 0.001 || this.dipOn)) { kit.hush(dk, { secs: 0, hz: 900, floor: 0.12 }); this.dipOn = dk > 0.001; } }
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
         /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
