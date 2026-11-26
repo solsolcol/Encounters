@@ -9686,6 +9686,18 @@ What the baseline contains, by release:
   close shot of the stick one swept past the camera as a white blur. Each is now kept close round its own man and fades as
   the two powers wind up the stick.
 
+- **v28.0 build 109 (26 Nov 2026; LIVE, deploy `6b081bb3e629eba1c27ada5b`).** Chad's R159 to R162, all four in one build. R159: in the
+  opening film the camera stepped out of the lift so soon behind Jun that it passed through his head as he turned to look
+  back: it now follows 0.6 s later; and the wrapped Naga stick in Ton's hand went into Grandmaster Pho as Ton turned round
+  and back: Ton and Jun stand further back in the lift (moving Grandmaster Pho himself did nothing, because the walkable
+  map holds him against the doors). R160: Mr Koh asks "What will I hear?" without lifting his hand into Ton's back. R161:
+  the turn to violet before the fight is no longer a flat purple fade: a pale flash, a living storm of violet light
+  spiralling from the middle with veins of light and a bright core, his raised hands lowered so it is seen, a second flash
+  as the camera leaves his eyes, and the violet clearing from the middle round him. R162: the Naga film's opening, which had
+  been given more and more shots inside the same 6.65 s, has 10.08 s now, every later moment moved on with it; its music
+  comes in on the stick's strike instead of under the opening white, and the near-silence before the strike is drawn in
+  gently instead of cutting the sound out and back in.
+
 ## The sheet, version by version
 
 **v160, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v160.xlsx`, sha256 08d37f8a...9c449ad1; id

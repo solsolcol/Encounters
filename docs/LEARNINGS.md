@@ -9224,3 +9224,25 @@ gold and violet swirls, asked for at the film's opening since build 100, never d
 word from build 108 (R158), from sets of the film's own. Turned on, they showed what four builds had hidden: sized for one
 man in the open, each crossed the other man standing 0.61 m away, and one passed the lens in a close shot as a white blur.
 An effect that has never drawn has never been seen, so it is photographed as new when it first draws.
+
+## v28.0 — a mark the map overrides, a sight let go while wide, music before its moment (R159 to R162)
+
+**In a film where the walkable map settles bodies, a mark is a wish (build 109, R159).** Chapter 5's films settle every
+standing body each frame to the nearest clear point by its own ellipse (c_nav.js, NAV5), so a mark only says where a body
+would like to be. Ton's wrapped stick went into Grandmaster Pho in the lift: moving Grandmaster Pho's mark changed nothing
+(the doors' blocker held him at z 1.75 whatever it said), moving Ton back alone put Ton's reach against him, and then Jun's
+reach, swaying with Jun's hips, pushed him sideways into the stick's path. Read where a body WAS settled (the film probe's
+P rows, its hips) before and after a move, and move the bodies that push, not the one pushed.
+
+**A held sight let go while open runs its own closing over the next picture (build 109, R161).** `kit.vision(null)` hands
+the sight back to the engine, which closes it from the last held radius as a wave over the wall clock; let go wide, it
+drew the violet that followed as its negative (grey violet, white hands) for a second. Hold it at nothing for a frame, then
+let go, and do it under something that covers the screen (a flash). A screen-wide effect is photographed at several
+moments through its whole turn, never only at its peak.
+
+**A score cued on the first frame meets nothing, and a near-silence that cuts it is heard as a fault (build 109, R162).**
+The Naga film's music began under its opening white; R157's near-silence before the strike then dropped the whole
+background to 7 % in 0.12 s mid-phrase and gave it back at the hit, which Chad heard as the game muting and unmuting. Music
+comes in on the moment it belongs to (here its first struck beat with the stick's boom), and a silence before a hit is
+drawn in over a breath (0.45 s) and not to nothing. And when shots are added to a film, its clock is given the time they
+need: three asks laid into one 6.65 s prologue made every shot in it feel rushed.
