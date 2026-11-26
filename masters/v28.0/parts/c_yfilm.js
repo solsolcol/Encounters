@@ -1020,11 +1020,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        as its head lights, 0.43 as they lift it and drive it (a few millimetres at its head, seen in the close-ups and not in
        the wide ones); three sines a side at 6 to 15 a second, a pure function of the film's clock (v6.4); laid after it is
        placed in his hand each frame, which lays its place afresh every frame, so nothing builds up (v11.5) */
+    /* (R183, Chad, 26 Nov 2026: "I think the naga staff can tremble just a little bit more. During its charging phase.":
+       half as much again at every stage, 0.24 degrees as the powers wind up it, 0.43 as its head lights, 0.64 as they lift
+       it and drive it; the same shiver, the same moments) */
     const STICKTREM5 = (() => {
       const q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), w = new THREE.Vector3();
       return (tau, T) => {
         const g = things.nagaStaff; if (!g || !g.visible || !(tau < T.strike)) return;
-        const k = 0.0028 * smo(c01((tau - T.braid) / 1.2)) + 0.0022 * smo(c01((tau - T.lit) / 1.5)) + 0.0025 * smo(c01((tau - T.lift) / Math.max(0.1, T.drive - T.lift)));
+        const k = 0.0042 * smo(c01((tau - T.braid) / 1.2)) + 0.0033 * smo(c01((tau - T.lit) / 1.5)) + 0.00375 * smo(c01((tau - T.lift) / Math.max(0.1, T.drive - T.lift)));
         if (!(k > 1e-5)) return;
         const ax = k * (0.55 * Math.sin(tau * 61.3) + 0.3 * Math.sin(tau * 89.1 + 1.7) + 0.15 * Math.sin(tau * 37.9 + 0.4));
         const az = k * (0.55 * Math.sin(tau * 57.7 + 2.2) + 0.3 * Math.sin(tau * 97.3 + 0.9) + 0.15 * Math.sin(tau * 43.1 + 3.1));
@@ -3065,8 +3068,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.in + 3.35, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
           { t: T.end, name: 'in', eye: [A.inEye[0], EYE, A.inEye[2] + 0.05], at: [A.inEye[0], 1.33, -1.6], fp: 66, fd: 58 }
         ]);
+        /* (R184) THE VIOLET'S PICTURE, AS BEFORE THE FIGHT (R161's field): in under the first flash, alive while the lens is
+           drawn in behind him, gathered in and brightened into the second flash, under which the lens goes back into his
+           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands */
+        { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.eyes - 1.0) / 0.4)));
+          const pre = t < T.eyes ? 1 : 0, gather = pre * smo(c01((t - T.eyes + 0.9) / 0.9));
+          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)) } : null); }
       },
-      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1);
+      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1); VIOLETFX5.off();
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
         if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (FM5.api && FM5.api.handsRoot) FM5.api.handsRoot.position.set(0, 0, 0);
         endPhase5('table'); }

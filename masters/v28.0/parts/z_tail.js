@@ -106,6 +106,8 @@
   const PR5 = tl(0, [[0.3], ['@lit'], [3.2], ['@unwrap'], [4.6], ['@take'], [3.4], ['@thread'], [0.5], ['ph5p1', 0.35], ['ko5p1', 0.2], ['@noans'], [1.6], ['@teacher'], [1.0],
                      ['ph5p2', 0.6], ['@plant'], [1.0], ['@sink'], [1.1], ['@open'], [2.4], ['@heads'], [1.6], ['@turn'], [1.6], ['@come'], [2.6], ['@hands'], [1.0],
                      ['@violet'], [0.4], ['q5p1', 0.4], ['@leave'], [5.8], ['@rest'], [2.0], ['@end']]);
+  /* (VIOLET5 is drawn by no fade since R184, the field's own deep violet carrying it in both films: kept as the record of
+     his protection's colour, which the field's matches) */
   const VIOLET5 = '#6b3fe2';                                                   // his protection's colour (the plan's 11: neither gold nor white)
   const VIOLET_FLASH5 = '#c3a9ff';                                             // (R161: its light, as a flash: the same violet, pale)
   function filmPrepare(c, s, api) {
@@ -328,7 +330,10 @@
   /* THE BAG TIED (the plan's 4.6): back into his eyes; the rooms; the knot; Ton's line, his; Mr Koh's window and his two
      words from his teacher; at the lift, "Was it real?"; the next case seeded; the doors close on black (the collector's
      film begins on it, with the card) */
-  const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [0.9], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
+  /* (R184, Chad, 26 Nov 2026: "Yes improve the other purple fade after the fight ends.": his violet's own light carries him
+     back into his eyes, the field of R161 (c_yfilm.js VIOLETFX5) where one flat violet card stood: so it is seen moving, the
+     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is half a second later with it) */
+  const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [1.5], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
                      ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
@@ -338,8 +343,14 @@
     sfx(0.0, 'u5murmur1', 0.45);                                               // his murmur, still: it stops in the middle of a breath
     sfxFade(T.thin + 0.5, T.thin + 0.62, 'u5murmur1');
     sfx(0.05, 'u5cagethin', 0.4); sfxFade(T.thin + 0.3, T.thin + 1.5, 'u5cagethin');   // the cage, thinning
-    fade(T.violet, T.violet + 0.45, 0, 1, VIOLET5); fade(T.eyes - 0.15, T.eyes + 0.7, 1, 0, VIOLET5);
+    /* (R184: no longer the flat card (fade(T.violet, +0.45, 0, 1) held to T.eyes - 0.15, then out over 0.85 s): a flash of
+       pale violet as it comes, the field seen as it goes down, the field gathering in and a second flash, whole, under which
+       the lens goes back into his eyes, and the field clearing from the middle as it goes down, his own hands before him;
+       the gathering heard as it is seen, as before the fight) */
+    fade(T.violet - 0.12, T.violet + 0.05, 0, 0.85, VIOLET_FLASH5); fade(T.violet + 0.05, T.violet + 0.75, 0.85, 0, VIOLET_FLASH5);
     sfx(T.violet - 0.1, 'u5turn', 0.7);                                        // back through the violet, into his eyes
+    sfx(T.eyes - 0.6, 'u5auraup', 0.6);                                        // the violet gathering, to carry him in
+    fade(T.eyes - 0.32, T.eyes, 0, 1, VIOLET_FLASH5); fade(T.eyes, T.eyes + 0.9, 1, 0, VIOLET_FLASH5);
     sfx(T.eyes + 0.1, 'u5zbreath', 0.7);                                       // his own breath, in his own body
     sfx(T.eyes + 0.6, 'u5heart', 0.55); sfx(T.eyes + 1.3, 'u5heart', 0.5);
     sfx(T.eyes + 0.5, 'u5m11light', 0.7);                                      // M11: the house lighter, plain and warm

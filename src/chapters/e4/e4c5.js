@@ -15431,11 +15431,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        as its head lights, 0.43 as they lift it and drive it (a few millimetres at its head, seen in the close-ups and not in
        the wide ones); three sines a side at 6 to 15 a second, a pure function of the film's clock (v6.4); laid after it is
        placed in his hand each frame, which lays its place afresh every frame, so nothing builds up (v11.5) */
+    /* (R183, Chad, 26 Nov 2026: "I think the naga staff can tremble just a little bit more. During its charging phase.":
+       half as much again at every stage, 0.24 degrees as the powers wind up it, 0.43 as its head lights, 0.64 as they lift
+       it and drive it; the same shiver, the same moments) */
     const STICKTREM5 = (() => {
       const q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), w = new THREE.Vector3();
       return (tau, T) => {
         const g = things.nagaStaff; if (!g || !g.visible || !(tau < T.strike)) return;
-        const k = 0.0028 * smo(c01((tau - T.braid) / 1.2)) + 0.0022 * smo(c01((tau - T.lit) / 1.5)) + 0.0025 * smo(c01((tau - T.lift) / Math.max(0.1, T.drive - T.lift)));
+        const k = 0.0042 * smo(c01((tau - T.braid) / 1.2)) + 0.0033 * smo(c01((tau - T.lit) / 1.5)) + 0.00375 * smo(c01((tau - T.lift) / Math.max(0.1, T.drive - T.lift)));
         if (!(k > 1e-5)) return;
         const ax = k * (0.55 * Math.sin(tau * 61.3) + 0.3 * Math.sin(tau * 89.1 + 1.7) + 0.15 * Math.sin(tau * 37.9 + 0.4));
         const az = k * (0.55 * Math.sin(tau * 57.7 + 2.2) + 0.3 * Math.sin(tau * 97.3 + 0.9) + 0.15 * Math.sin(tau * 43.1 + 3.1));
@@ -17476,8 +17479,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
           { t: T.in + 3.35, name: 'in', eye: A.inEye, at: [A.inEye[0], 1.35, -1.6], fp: 66, fd: 58, cut: true },
           { t: T.end, name: 'in', eye: [A.inEye[0], EYE, A.inEye[2] + 0.05], at: [A.inEye[0], 1.33, -1.6], fp: 66, fd: 58 }
         ]);
+        /* (R184) THE VIOLET'S PICTURE, AS BEFORE THE FIGHT (R161's field): in under the first flash, alive while the lens is
+           drawn in behind him, gathered in and brightened into the second flash, under which the lens goes back into his
+           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands */
+        { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.eyes - 1.0) / 0.4)));
+          const pre = t < T.eyes ? 1 : 0, gather = pre * smo(c01((t - T.eyes + 0.9) / 0.9));
+          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)) } : null); }
       },
-      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1);
+      end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1); VIOLETFX5.off();
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
         if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (FM5.api && FM5.api.handsRoot) FM5.api.handsRoot.position.set(0, 0, 0);
         endPhase5('table'); }
@@ -18153,6 +18162,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   const PR5 = tl(0, [[0.3], ['@lit'], [3.2], ['@unwrap'], [4.6], ['@take'], [3.4], ['@thread'], [0.5], ['ph5p1', 0.35], ['ko5p1', 0.2], ['@noans'], [1.6], ['@teacher'], [1.0],
                      ['ph5p2', 0.6], ['@plant'], [1.0], ['@sink'], [1.1], ['@open'], [2.4], ['@heads'], [1.6], ['@turn'], [1.6], ['@come'], [2.6], ['@hands'], [1.0],
                      ['@violet'], [0.4], ['q5p1', 0.4], ['@leave'], [5.8], ['@rest'], [2.0], ['@end']]);
+  /* (VIOLET5 is drawn by no fade since R184, the field's own deep violet carrying it in both films: kept as the record of
+     his protection's colour, which the field's matches) */
   const VIOLET5 = '#6b3fe2';                                                   // his protection's colour (the plan's 11: neither gold nor white)
   const VIOLET_FLASH5 = '#c3a9ff';                                             // (R161: its light, as a flash: the same violet, pale)
   function filmPrepare(c, s, api) {
@@ -18375,7 +18386,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
   /* THE BAG TIED (the plan's 4.6): back into his eyes; the rooms; the knot; Ton's line, his; Mr Koh's window and his two
      words from his teacher; at the lift, "Was it real?"; the next case seeded; the doors close on black (the collector's
      film begins on it, with the card) */
-  const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [0.9], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
+  /* (R184, Chad, 26 Nov 2026: "Yes improve the other purple fade after the fight ends.": his violet's own light carries him
+     back into his eyes, the field of R161 (c_yfilm.js VIOLETFX5) where one flat violet card stood: so it is seen moving, the
+     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is half a second later with it) */
+  const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [1.5], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
                      ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
@@ -18385,8 +18399,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
     sfx(0.0, 'u5murmur1', 0.45);                                               // his murmur, still: it stops in the middle of a breath
     sfxFade(T.thin + 0.5, T.thin + 0.62, 'u5murmur1');
     sfx(0.05, 'u5cagethin', 0.4); sfxFade(T.thin + 0.3, T.thin + 1.5, 'u5cagethin');   // the cage, thinning
-    fade(T.violet, T.violet + 0.45, 0, 1, VIOLET5); fade(T.eyes - 0.15, T.eyes + 0.7, 1, 0, VIOLET5);
+    /* (R184: no longer the flat card (fade(T.violet, +0.45, 0, 1) held to T.eyes - 0.15, then out over 0.85 s): a flash of
+       pale violet as it comes, the field seen as it goes down, the field gathering in and a second flash, whole, under which
+       the lens goes back into his eyes, and the field clearing from the middle as it goes down, his own hands before him;
+       the gathering heard as it is seen, as before the fight) */
+    fade(T.violet - 0.12, T.violet + 0.05, 0, 0.85, VIOLET_FLASH5); fade(T.violet + 0.05, T.violet + 0.75, 0.85, 0, VIOLET_FLASH5);
     sfx(T.violet - 0.1, 'u5turn', 0.7);                                        // back through the violet, into his eyes
+    sfx(T.eyes - 0.6, 'u5auraup', 0.6);                                        // the violet gathering, to carry him in
+    fade(T.eyes - 0.32, T.eyes, 0, 1, VIOLET_FLASH5); fade(T.eyes, T.eyes + 0.9, 1, 0, VIOLET_FLASH5);
     sfx(T.eyes + 0.1, 'u5zbreath', 0.7);                                       // his own breath, in his own body
     sfx(T.eyes + 0.6, 'u5heart', 0.55); sfx(T.eyes + 1.3, 'u5heart', 0.5);
     sfx(T.eyes + 0.5, 'u5m11light', 0.7);                                      // M11: the house lighter, plain and warm
