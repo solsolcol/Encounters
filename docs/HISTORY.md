@@ -9679,6 +9679,13 @@ What the baseline contains, by release:
   hangs from the fight's own effects group, which play shows and films hide (so the swirls of gold and violet built for
   R129's opening had never drawn: put to Chad).
 
+- **v28.0 build 108 (26 Nov 2026; LIVE, deploy `6b07bf9321cff902eb0d5c25`).** Chad's R158, "Yes add the swirls": the gold
+  and violet swirls made at R129 to rise round Grandmaster Pho and Master Zavier as they first grip the Naga stick, which
+  had never shown (they hung from the fight's own effects group, which every film hides), are drawn now from sets of the
+  film's own. Seen first in pictures, they were too wide for two men standing close: each crossed the other man, and in the
+  close shot of the stick one swept past the camera as a white blur. Each is now kept close round its own man and fades as
+  the two powers wind up the stick.
+
 ## The sheet, version by version
 
 **v160, PUBLISHED 25 Nov 2026** (`masters/v28.0/masterz-text-v160.xlsx`, sha256 08d37f8a...9c449ad1; id

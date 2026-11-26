@@ -9220,4 +9220,7 @@ cue by its literal call, so a cue's time may hold a constant but never a call.
 Naga film were first made in that set like the others and never appeared: a lab listing of every ribbon showed them
 visible, laid and lit, each under a hidden parent. They hang from the world now. What a film draws is checked by its
 WHOLE chain of parents (a probe that reads `visible` on the mesh alone says yes), and the same listing found that R129's
-gold and violet swirls, asked for at the film's opening since build 100, never drew either: put to Chad, left as it is.
+gold and violet swirls, asked for at the film's opening since build 100, never drew either: put to Chad, and drawn at his
+word from build 108 (R158), from sets of the film's own. Turned on, they showed what four builds had hidden: sized for one
+man in the open, each crossed the other man standing 0.61 m away, and one passed the lens in a close shot as a white blur.
+An effect that has never drawn has never been seen, so it is photographed as new when it first draws.
