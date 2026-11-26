@@ -9721,6 +9721,10 @@ What the baseline contains, by release:
   centimetres higher and may come a little further back: his eyes inside the picture at every tenth of a second from 2.5 to
   8.0 s, the camera's speed unchanged, and a phone's camera identical at all 111 measured moments. On build 111 the Continue
   check passed whole (a refresh after the Naga film lands back at the TOGETHER button). The tracker's log has the numbers.
+- **v28.0 build 113 (26 Nov 2026; LIVE, deploy `6b087906c2cd607bcc2708f6`).** Chad's R182 ("The music at the start can
+  be louder still"): the Naga film's music 5.5 dB louder at its first frame, easing to 2.5 dB louder just before the
+  stick hits the ground, its peaks there held under the rest of the piece by a limiter, so nothing from the strike on
+  changed. Built and deployed at once, as he asked.
 
 ## The sheet, version by version
 
