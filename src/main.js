@@ -4094,8 +4094,15 @@ function ctxSpiritAura(obj, opts = {}) {
     else t = new THREE.Mesh(o.geometry, m);
     t.userData.__svTwin = true;
     t.layers.set(VIS_LAYER); t.frustumCulled = false; t.castShadow = false;
-    t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale);
-    o.parent.add(t); twins.push(t);
+    /* v28.0 (R187, Chad, 26 Nov 2026, of episode 4 chapter 4: "on desktop, the altar is coloured by a purple box"): a mesh
+       that is not skinned carries its twin as its own child, so the twin is wherever, however large and as visible as the
+       mesh is on every frame. A twin made beside it with its transform copied kept the transform of the moment it was made:
+       her altar's three pictures are 1 x 1 m planes, hidden, until each one's texture lands and lays it out at its true size,
+       and where the altar's model was in before them (the order a fast desktop lands them in) each picture's glow stood as
+       a square metre of her blue over the whole altar for good. A skinned twin stays beside its body, bound as before */
+    if (o.isSkinnedMesh) { t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale); o.parent.add(t); }
+    else o.add(t);
+    twins.push(t);
   }
   return { twins, mats, remove() { for (const t of twins) { t.parent && t.parent.remove(t); } for (const m of mats) fx.forget(m); },
            set(k, v) { for (const m of mats) if (m.uniforms[k]) { if (m.uniforms[k].value && m.uniforms[k].value.set && typeof v !== 'number') m.uniforms[k].value.set(v); else m.uniforms[k].value = v; } } };
