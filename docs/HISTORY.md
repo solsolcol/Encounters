@@ -9697,6 +9697,23 @@ What the baseline contains, by release:
   been given more and more shots inside the same 6.65 s, has 10.08 s now, every later moment moved on with it; its music
   comes in on the stick's strike instead of under the opening white, and the near-silence before the strike is drawn in
   gently instead of cutting the sound out and back in.
+- **v28.0 builds 110 and 111 (26 Nov 2026; LIVE, deploys `6b085c8805f6bd7ca722bfd9` and `6b08650fcdc2a3e9b38959ee`).**
+  Chad's R163 to R175 on the start of the Naga film ("The sound effect of charging the naga stick is very annoying";
+  "it still cuts very abruptly from shot to shot"; "the music should start from the very beginning"; "The entire start
+  just does not feel like a cohesive whole"; "I don't think the music should be cut off, mute or fade at all"; "why
+  use such gregorian chant?"; "Where are the cinematic angles, framing, creative direction?"; "Are you directing as a
+  cohesive whole, or are you just randomly combining different ideas"; "The way their heads track the naga or the stick
+  is very jerky and abrupt"), R176 ("Why dont u deploy simultaneously": build 110 went live the moment it booted and
+  its pictures were read on the live build), and R177 to R181 sent while build 110 was checked (the music louder at the
+  start; the stick trembling very subtly as it charges; a glow, shockwave and slight shake as the Naga comes out; the
+  close-up of its head with its name held longer). Build 110 remade the start as one idea, a breath drawn in and the
+  Naga that breath let out: one camera move with no cut from the four hands to the strike, the charge made again as
+  power with no voice (the old layers carried a choir, caught by a transcriber's sound tags), one new piece of music
+  from the first frame (a composition plan timed to the film), the near-silence gone, the heads' look eased with no
+  corners (the fastest turn 1,149 degrees a second before, 89 after). Build 111 fixed what build 110's own phone
+  pictures showed (the strike's frame hid the stick's foot and the ring of light behind the bars) and built R177 to
+  R181: the hold is a third slow on the film's clock, exactly two of the music's beats long, and the music plays those
+  two beats twice at the same moment, so everything after stays in step. The tracker's log has the measures.
 
 ## The sheet, version by version
 

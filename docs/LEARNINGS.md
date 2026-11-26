@@ -9246,3 +9246,54 @@ background to 7 % in 0.12 s mid-phrase and gave it back at the hit, which Chad h
 comes in on the moment it belongs to (here its first struck beat with the stick's boom), and a silence before a hit is
 drawn in over a breath (0.45 s) and not to nothing. And when shots are added to a film, its clock is given the time they
 need: three asks laid into one 6.65 s prologue made every shot in it feel rushed.
+
+## v28.0 — one idea for a sequence, a look with no corners, a riser turned round, time a film and its music share (R163 to R181)
+
+**A sequence is directed as one idea, never as one shot added per ask (builds 110 and 111, R163, R164, R169, R173).** Five
+asks laid five shots and five cuts into the Naga film's first ten seconds, each fine alone; together they did not read as
+one thing. Name the one idea first (here: a breath drawn in, the Naga that breath let out), then make the camera, the sound
+and the music each carry it (one unbroken move, one charge rising to the hit, one piece of music from the first frame),
+and check every later ask against it before it is built.
+
+**A run of camera keys meant as one move takes each key's framing at that key (R173).** The pull that keeps faces in frame
+(fmHold) blended straight from key to key stepped the lens's speed at every key (18 m/s per second measured). Work out
+each key's eye with its own pull, then run one curve through those eyes (`flow`: Catmull-Rom tangents). A move through a
+slow motion is timed on the clock that is SEEN (`warp`: the real clock), and a move that starts and ends at rest is eased
+by the fifth power, whose acceleration is nothing at both ends (a cubic starts a move with its full acceleration at once).
+
+**A riser a generator makes is often the wrong way round (R163, R173; R149 and R157 before).** Every take of the charge came
+back loud first and dying. Ask for a long discharge and turn it back to front: its fall becomes one rise and its attack its
+peak, landing on the hit. Read every riser's level in tenths of a second before cueing it.
+
+**Mix the moment before you cue it (R165, R179).** A mixdown of a film's first seconds from its own cue list (times, gains,
+the engine's own sfx gain) shows what a listener gets: the charge peaking three times with a hole before the strike, the
+impact 2 dB over the riser, the sum over full scale. End every riser together a breath before the hit (80 ms), give the
+hit the top of the mix, and when a layer moves (the Naga's burst moved 0.15 s later), mix again: the boom's tail then
+summed with it over full scale.
+
+**A transcriber with sound tags is a choir detector (R166, R167).** ElevenLabs' Scribe tagged the old charge layer a
+religious chant; a listener had heard "someone saying ahhhh". Run every sound that plays under a scene through it, not
+only the voice lines, and refuse a take it hears a voice in.
+
+**A look must have no corners (R175).** Every hard limit in a look is a corner where the head stops dead or starts at full
+speed in one frame: the look's own clamps (reach, turn, nod), a `max()` inside an average (the turn eased toward ahead
+when the Naga is overhead: divided by the larger of a share and 0.35 started the head at 79 degrees a second in one
+twentieth), and a window of sights whose newest counts most (the look takes a sixth of the target's speed the frame it
+starts to move). Replace each with a smooth curve (soft limits exact to 0.6 of the limit then tanh; smoothstep for a share;
+a window weighing its newest and oldest sights at nothing) and measure the look's speed AND its change of speed (accel.py:
+under 500 degrees a second per second is a natural neck).
+
+**Time added to a film is added to its music in the same place (R181).** Holding a shot longer moves every later moment, so
+a score timed to the film falls out of step from there on. Find the music's beat from its own onsets (140 a minute here),
+make the hold exactly a whole number of beats, and play those beats twice at the same moment with one crossfaded join a
+few ms before an onset (the second pass runs on into what followed, so it needs no join). Measure the onsets after the
+join: they stay on the grid. An ffmpeg acrossfade chain silently dropped the short middle segment: measure the length of
+what an edit makes, never trust the graph.
+
+**The lesson of R162 ("music comes in on its moment") holds for a climax piece under a build-up.** A piece written for the
+whole film (a plan timed to its clock) starts at the first frame and is never cut or faded under the film (Chad, R163 and
+R165).
+
+**Deploy the moment it boots, check on the live build (R176).** Build 110 was held for its pictures; Chad asked why. The
+pictures then found a real fault (the strike's frame), which build 111 fixed with his next asks: the same outcome, an
+hour sooner for him.

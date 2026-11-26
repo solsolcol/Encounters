@@ -1539,8 +1539,8 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Chapter 5 (S1·14
 and S1·15, cases two and three: the smell nobody else could smell, the Prai, the tag-team fight in third person, Master
-Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 109 live now, deploy
-`6b081bb3e629eba1c27ada5b`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
+Zavier made from his photograph) is LIVE at v28.0 (first live 21 Nov 2026; build 111 live now, deploy
+`6b08650fcdc2a3e9b38959ee`; R94's effects simulated in Blender on a rented GPU box, R100's own light: a bloom, the effects lighting
 the bodies and the court, ribbons, swirls, a hit's blur and the gold's ripple; R102's camera a little higher; R105's estate at
 dusk below the walkway and the opening's crane over it; R107's painting in the TOGETHER button, wide and slanted at both ends
 since R118; R108: nothing painted behind any window; R109's faint print in Spirit Vision cured in src/vision.js (a phone's
@@ -1563,7 +1563,12 @@ wind swirling in toward the stick with dust and Grandmaster Pho's robe drawn aft
 lighting up, and slow motion as the stick comes down; R158's gold and violet swirls round each man as they first grip the
 stick, shown at last; R159's step out of the lift a moment later and the wrapped stick clear of Grandmaster Pho;
 R160's Mr Koh still as he asks; R161's violet before the fight a living storm of light, not a flat fade; R162's Naga film
-opening given its own time, its music in on the strike, the near-silence drawn in gently):
+opening given its own time; R163 to R175's start of the Naga film remade as one idea, a breath drawn in and let out: one
+unbroken camera move from the four hands to the strike, one charge of power with no voice in it (every sound under it run
+through a transcriber with sound tags), one new piece of music from the first frame and never cut, the Naga's burst the
+loudest hit, the two men's heads eased with no sudden starts or stops; R177 to R181's louder music, the stick trembling
+as it charges, a flash, shockwave, sparks and slight shake as the Naga comes out, and the close-up of its head held two
+beats longer with the music repeating the same two beats):
 **docs/V28.0-E4C5-BUILD.md** is its tracker (read it first: the log build by build, the
 asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 his words, R1 to R77), and
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
