@@ -170,3 +170,35 @@
 #   its loudest is where the near-silence takes it, at 0.7; the glint 0.02 s before the carved eyes light, at 0.8; the boom
 #   on the frame the stick hits the ground, at 0.85, the near-silence lifted 15 ms before it. The measured picks stand
 #   until Chad's ear (v10.6).
+# ---- R163 to R168 (26 Nov 2026, Chad: "The sound effect of charging the naga stick is very annoying, change it to something
+#   else"; "i think the music should start from the very beginning"; "I don't think the music should be cut off, mute or
+#   fade at all ... focus on the sound effect that will play the moment the naga comes out, and increase the impact of
+#   that"; "sounds like someone saying ahhhh"; "2 repetitive gregorian style chants, one female and one male"; "it should
+#   sound like actual power gathering sound, why use temple sounds?"), and R173 ("Are you directing as a cohesive whole"):
+#   THE START OF THE NAGA FILM AS ONE BREATH DRAWN IN AND LET OUT. Every sound under the charge was put through ElevenLabs'
+#   transcriber with its sound tags (a choir detector): the old u5shapeloop came back tagged as a religious chant, and the
+#   old u5windup, u5togrise and u5togpress carried voices. Made again with NO voice of any kind, sfxR163.py (its own table,
+#   family fx; every prompt ends in the no-voice clause): u5windupv, u5togrisev, u5togpressv, u5shapeloopv (the same four
+#   names in the game), and five new: u5pwgather (power drawn together as the four hands close on the stick), u5pwcharge
+#   (the charge, one rise to the strike), u5pwsurge (the surge as the carved head lights), u5pweyes (its eyes), u5nagaburst
+#   (the Naga bursting out). Three takes each (u5shapeloopv two), none failed: 989 credits (the scratch spend.log 14:36:48
+#   to 14:37:18). Through measure.py (measures-sfxR163.json) and the transcriber again: none carries a voice.
+#   THE CHARGE FAILED THE MEASURE, every take the wrong way round (loud first and dying, its brightness falling), as the
+#   rumble and the wind did; asked again as one long discharge, sfxR173.py (u5pwcharge2, 9.5 s, three takes, 312 credits,
+#   15:01:43 to 15:01:44; measures-sfxR173.json), and MADE from take a (v24.3), in pick.py: turned back to front, so its
+#   fall is one rise out of silence growing brighter as it climbs, a 23 dB lift easing to none at 8 s, ending on its own
+#   attack turned round. The picks (pick.py, picks.json, each with its line): u5pwgather c (HARMONISED), u5pwcharge made
+#   from u5pwcharge2 a, u5pwsurge a, u5pweyes c, u5nagaburst c (HARMONISED; levelled at -11, the film's loudest hit),
+#   u5windup v b, u5togrise v c, u5togpress v a, u5shapeloop v b.
+#   THE MUSIC, M9, made again as ONE PIECE from the film's first frame, music5.py (a composition plan on music_v2_5: four
+#   chunks timed to the film's real clock, the gathering 10.6 s, the eruption 5.95, the dive 8.6, home 11.5; negative
+#   styles every voice, choir, chant, bell, gong, singing bowl, organ and hymn), two takes (the service reports no cost
+#   for music). Take b by its SHAPE: a burst 8 dB up in 40 ms at 12.89 s of the take where a has none, 45 % where a phone
+#   plays against a's 31 %; its head cut at 2.294 s so the burst lands on the strike, faded in over 0.5 s, the build under
+#   the charge lifted 7 dB falling to 5 and let go over the 90 ms before the strike.
+#   THE MIX, checked as a mixdown of the film's first 16 s from its own cues (scratch r163/mix, the engine's sfx gain 0.9):
+#   the risers (the charge, the surge, the rumble, the wind) all end together 80 ms before the strike, so the hit lands in
+#   a breath of space; the strike's layers (the boom, the burst, the plant, the water) peak at -0.6 dBFS before the gain,
+#   where they had clipped at +1.1 over a riser only 2 dB under them. The music runs on under the hit and never stops.
+#   Retired (install.py RETIRED): u5summon and u5eyeglint, nothing cues them now. Encoded (encode.py), installed
+#   (install.py: five STING_SAMPLE rows). The measured picks stand until Chad's ear (v10.6).

@@ -1,0 +1,62 @@
+{
+ "u5pwcharge2_a": {
+  "len": 9.48,
+  "asked": 9.5,
+  "peak": 2.4,
+  "level": -17.8,
+  "loud": -11.1,
+  "silent": 0.29,
+  "first": 0.1,
+  "last": 4.3,
+  "phone": 0.89,
+  "voice": 0.55,
+  "sub120": 0.08,
+  "median": -42.1,
+  "swing": 62.0,
+  "holes": [
+   6,
+   7,
+   8
+  ],
+  "words": ""
+ },
+ "u5pwcharge2_b": {
+  "len": 9.48,
+  "asked": 9.5,
+  "peak": -1.4,
+  "level": -20.4,
+  "loud": -12.6,
+  "silent": 0.19,
+  "first": 0.0,
+  "last": 3.6,
+  "phone": 0.91,
+  "voice": 0.64,
+  "sub120": 0.06,
+  "median": -45.5,
+  "swing": 51.0,
+  "holes": [
+   8
+  ],
+  "words": ""
+ },
+ "u5pwcharge2_c": {
+  "len": 9.48,
+  "asked": 9.5,
+  "peak": 2.1,
+  "level": -17.7,
+  "loud": -10.7,
+  "silent": 0.32,
+  "first": 0.15,
+  "last": 3.9,
+  "phone": 0.92,
+  "voice": 0.59,
+  "sub120": 0.05,
+  "median": -45.5,
+  "swing": 57.9,
+  "holes": [
+   7,
+   8
+  ],
+  "words": ""
+ }
+}

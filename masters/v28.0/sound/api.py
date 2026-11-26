@@ -50,6 +50,9 @@ def sfx_take(o, l):
 
 def music_take(o, l):
     out = os.path.join(RAW, f"{o['name']}_{l}.mp3")
+    if o.get('plan'):         # (R163: a composition plan, its chunks timed to a film; a plan cannot take force_instrumental)
+        body = {'composition_plan': {'chunks': o['plan']}, 'model_id': o.get('model', 'music_v2_5')}
+        return post('https://api.elevenlabs.io/v1/music?output_format=mp3_44100_192', body, out, f"{o['name']}_{l}", o['secs'], 600)
     body = {'prompt': o['prompt'], 'music_length_ms': int(o['secs'] * 1000), 'model_id': o.get('model', 'music_v2'),
             'force_instrumental': True}
     return post('https://api.elevenlabs.io/v1/music?output_format=mp3_44100_192', body, out, f"{o['name']}_{l}", o['secs'], 600)

@@ -224,45 +224,55 @@
        over the whole prologue; a darkening he cannot read the purpose of serves nothing (his v9.5 rule), so it is gone:
        the summon is the bars drawn in, the strike, the water rising and their sounds. Its sound stays, as the two of them
        lift the stick) */
-    sfx(T.lift - 0.25, 'u5summon', 0.85);                                      // the summoning, as the stick is lifted
-    sfx(STRIKE + 0.05, 'u5waterup', 0.9);                                      // the water rising round the planted stick
+    /* (R163 to R168: the summoning's drone and ringing tone, the gathering's choir hums, the shape's loop of voices, the
+       chimes up the shaft and at the eyes all taken out of the charge: Chad heard "2 repetitive gregorian style chants, one
+       female and one male during the naga stick charging"; it is now the sound of power itself gathering, sound/sfxR163.py) */
+    /* (R173: the strike made to hit. Read close in the film's own mix (every cue at its volume), the hit stood 2 dB over the
+       gathering before it, the gathering at its loudest ON the frame, and 0.55 s on the water rising, the Naga's water and
+       the burst summed to +1.1 dBFS: a clip in any browser. Now every layer of the gathering stops 80 ms before the stick
+       hits (the music goes on through it), the burst is 3 dB louder in its file (sound/pick.py), the stick's own plant is
+       under the boom, and the two waters under the burst) */
+    sfx(STRIKE + 0.05, 'u5waterup', 0.55);                                     // the water rising round the planted stick
     sfx(TITLE, 'u5title', 0.85);                                               // the NAGA word (R126: toned down)
-    /* (R162, Chad: "the music and sound dont seem to sync well": M9 began on the film's first frame, under the press's white,
-       so nothing in the picture met anything in the music, and the near-silence cut it off mid-phrase. Its first beat is a
-       struck hit (its loudest peak 0.1 s into the file), so it now comes in ON the strike, that beat with the boom, and the
-       Naga rises, flies and pierces under its body; the prologue before it is the powers' own sounds, the summoning, the
-       ground's rumble and the wind, rising to the strike) */
-    sfx(STRIKE - 0.08, 'u5m9naga', 0.75);                                      // M9: both themes at once, the only time in the chapter
-    sfx(0.1, 'u5shapeloop', 0.5);                                              // the tall shape standing over him
+    /* (R163, Chad, 26 Nov 2026: "i think the music should start from the very beginning"; R165: "I don't think the music should
+       be cut off , mute or fade at all". M9 from the press's white to the film's end, never held down: its first struck beat
+       with the press (build 109 had moved it to the strike). The tall shape's loop of voices is no longer laid under the
+       charge (R167)) */
+    sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
     /* (R129: the prologue. His student's arm to the stick and his hand closed on it; the violet in his fist, the gold in
        his teacher's; the two wound up the shaft together; its head takes their light; the two of them lift it, and drive it down) */
     sfx(T.reach + 0.05, 'u5robe', 0.32);                                       // his student's sleeve as his arm comes to the stick
-    sfx(T.zk, 'u5auraup', 0.6);                                                // the violet in his student's fist
-    sfx(T.pk, 'u5windup', 0.5);                                                // the gold gathering in his
-    sfx(T.braid + 0.35, 'u5togfill', 0.85);                                    // the two powers wound up the shaft together (R162: its 1.41 s ends as they reach the head)
-    sfx(T.lit - 0.05, 'u5togrise', 0.7);                                       // the carved head taking their light
+    sfx(T.zk - 0.1, 'u5pwgather', 0.5);                                        // the two powers gathering in their fists (R168: power itself, no voice; R173: under the music, the start is quiet)
+    /* (R173: the charge MADE as one rise, sound/pick.py: the long discharge turned back to front, climbing evenly from 2.4 s and
+       growing brighter, its loudest held through the slow, its sound stopping 9.22 s in: 80 ms before the strike) */
+    sfx(STRIKE - 9.3, 'u5pwcharge', 0.65);                                      // the charge, one rise from the grip to 80 ms before the strike
+    sfx(T.lit - 0.05, 'u5pwsurge', 0.65);                                      // the carved head taking their power
     sfx(T.lift, 'u5robe', 0.5);                                                // their arms come up with the stick
-    sfx(DRIVE - 0.02, 'u5swing1', 0.6);                                        // and drive it down (R157: in the slow, under the near-silence)
+    sfx(DRIVE - 0.02, 'u5swing1', 0.6);                                        // and drive it down (in the slow)
     /* (R149, Chad, 25 Nov 2026: "make the camera rumble and charge up before the naga gets summoned out of the stick": the
        ground's rumble under the charge, rising out of silence as their two powers are wound up the shaft and swelling to its
        loudest as they drive it down, ending under the strike (3.95 s, made from its take turned round: sound/pick.py); the
        camera's own rumble, its jolt at the strike and the push gathering speed are c_yfilm.js's (RUMBLE5); and the phone
        trembles with it, lightly as they lift it, more as they hold it high and drive it, once at the strike) */
-    sfx(T.slow0 - 3.95, 'u5rumble', 0.6);                                      // the ground's rumble under the charge (R162: at its loudest as the slow begins, with the wind)
+    /* (R173: the rumble and the wind now at their loudest as the stick comes down, with the charge, so every layer of the
+       gathering rises as one and stops together 80 ms before the hit: they had ended on the slow's start, where R157's
+       near-silence took over, and with the near-silence gone (R165) that left the half second before the strike without them) */
+    sfx(STRIKE - 4.03, 'u5rumble', 0.5);                                       // the ground's rumble under the charge, at its loudest 80 ms before the strike
     /* (R157, Chad, 25 Nov 2026: "Do 1, 2, 3, 5, 6 cleanly". 3: the wind drawn in toward the stick as the power grows, from
        when the lens comes round behind them, at its strongest as the slow motion begins, where the near-silence takes it
        (c_yfilm.js: kit.hush's floor through the slow, off 15 ms before the stick hits the ground); 5: the carved eyes'
        glint as they light in the close; 1: the boom, at full, on the frame the stick hits the ground (the ring of water and
        light racing out with it: c_yfilm.js STRIKEFX5)) */
-    sfx(T.slow0 - 2.25, 'u5windpull', 0.7);                                    // the wind drawn in (it ends at its loudest on the slow)
-    sfx(T.eyelit - 0.02, 'u5eyeglint', 0.8);                                   // the carved head's eyes lighting
+    sfx(STRIKE - 2.33, 'u5windpull', 0.6);                                     // the wind drawn in, at its loudest 80 ms before the strike
+    sfx(T.eyelit - 0.02, 'u5pweyes', 0.85);                                    // the carved head's eyes igniting
     sfx(STRIKE, 'u5strikeboom', 0.85);                                         // the boom
+    sfx(STRIKE, 'u5nagaburst', 0.9);                                           // R165: the Naga bursting out, the film's heaviest hit
     step(T.lift, () => { if (api.kit && api.kit.buzz) api.kit.buzz([14, 90, 14, 80, 16, 70, 16, 60, 18, 52, 18, 46, 20, 40, 20, 34]); });
     step(T.lifted, () => { if (api.kit && api.kit.buzz) api.kit.buzz([22, 30, 24, 26, 26, 22, 28, 18, 30, 16, 32, 14, 34, 12, 36, 10, 38, 10, 40, 10]); });
     step(DRIVE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([50, 20, 60]); });
     step(STRIKE, () => { if (api.kit && api.kit.buzz) api.kit.buzz([100]); });
-    sfx(STRIKE, 'u5plant', 0.9);                                               // and plants it
-    sfx(RISEN - 0.05, 'u5nagawater', 1.0);                                     // the Naga of water surging up out of its head
+    sfx(STRIKE, 'u5plant', 0.5);                                               // and plants it
+    sfx(RISEN - 0.05, 'u5nagawater', 0.55);                                    // the Naga of water surging up out of its head
     sfx(RISEN + 0.35, 'u5nagaclimb', 0.9);                                     // R70: its climb at speed
     sfx(CRY, 'u5nagacry', 1.0);                                                // R70: its cry, its eyes kindling
     sfx(RISEN + 0.6, 'u5mist', 0.3);
@@ -271,7 +281,6 @@
        where the house's rule is 10 to 15: the surge has done its work by his first word and goes out under it) */
     sfxFade(PH - 0.3, PH + 0.35, 'u5nagawater');
     sfx(STOOP - 0.1, 'u5nagadive', 0.9);                                       // over, and down onto the shape
-    sfxFade(APART - 0.2, APART + 0.6, 'u5shapeloop');
     sfx(APART - 0.04, 'u5shockhit', 0.75);                                     // the shape struck by its passing
     sfx(APART, 'u5shapebreak', 0.9);                                           // and bursting into its three
     fade(APART, APART + 0.05, 0, 0.35, FLASH); fade(APART + 0.05, APART + 0.35, 0.35, 0, FLASH);

@@ -1,0 +1,92 @@
+[
+ {
+  "name": "u5pwgather",
+  "secs": 3.2,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "Raw power gathering in two clenched fists: a deep electric hum swelling up from nothing, crackling arcs of energy snapping and fizzing, a low throbbing pulse growing faster, air sucked inward, a tense cinematic power-up building. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "fx",
+  "where": "R163: the two powers gathering in their fists as they grip the stick"
+ },
+ {
+  "name": "u5pwcharge",
+  "secs": 7.0,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "A huge power charge building for seven seconds: a deep electric hum rising steadily in pitch, crackling lightning arcs growing denser and louder, a roaring rush of energy and wind pulled inward, mounting to a peak at the very end, cinematic. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "fx",
+  "where": "R163: the charge up the shaft, through the lift, to the drive"
+ },
+ {
+  "name": "u5pwsurge",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "A surge of raw power igniting: a sharp crackling electric discharge with a heavy deep whoomp, flaring into a strong roaring energy glow that holds and settles, cinematic. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music. Its weight punchy and textured in the low-middle range, so a small phone speaker carries it; no deep sub bass alone.",
+  "family": "fx",
+  "where": "R163: the carved head taking their power"
+ },
+ {
+  "name": "u5pweyes",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "Two eyes igniting with raw power: a quick heavy energy ignition thump, a bright snapping electric crackle and a short fierce rising whine of energy, cinematic. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music. Its weight punchy and textured in the low-middle range, so a small phone speaker carries it; no deep sub bass alone.",
+  "family": "fx",
+  "where": "R163: the carved head's eyes igniting"
+ },
+ {
+  "name": "u5nagaburst",
+  "secs": 4.5,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.6,
+  "prompt": "A colossal cinematic impact as a giant serpent of water bursts up out of the ground: an enormous deep boom with a thunderclap crack on its front, a massive roaring eruption of water and energy surging upward, a shockwave rolling outward, spray raining, epic. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music. Punchy in the low-middle range for a small phone speaker.",
+  "family": "fx",
+  "where": "R165: the moment the Naga comes out"
+ },
+ {
+  "name": "u5windupv",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "Golden energy gathering fast in a fist: a swelling reverse whoosh with crackling electric energy and a rising power hum, tense, ending just before a release. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "pho",
+  "where": "windup: the gold gathers (1.5 s); R166: no choir"
+ },
+ {
+  "name": "u5togrisev",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "Raw power gathering into one point: a rising whoosh of energy with crackling sparks and a deep swelling electric hum building with anticipation, radiant and strong. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "together",
+  "where": "R68: the TOGETHER button appears in the middle; R166: no choir"
+ },
+ {
+  "name": "u5togpressv",
+  "secs": 2.4,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.55,
+  "prompt": "A powerful burst of golden energy released: a deep thunderous whoomp and a crackling electric flare exploding outward with a great rush of wind, triumphant and strong. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music. Its weight punchy and textured in the low-middle range, so a small phone speaker carries it; no deep sub bass alone.",
+  "family": "together",
+  "where": "R68: TOGETHER pressed: the burst; R166: no choir"
+ },
+ {
+  "name": "u5shapeloopv",
+  "secs": 8.0,
+  "loop": true,
+  "takes": 2,
+  "influence": 0.5,
+  "prompt": "A huge dark towering presence looming overhead: a deep ominous wavering drone with a slow menacing rumble and a cold dark wind moving through it, heavy and eerie, steady. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "nine",
+  "where": "surge: the tall shape stands (a loop); R167: no voices"
+ }
+]

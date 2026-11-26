@@ -1,0 +1,12 @@
+[
+ {
+  "name": "u5pwcharge2",
+  "secs": 9.5,
+  "loop": false,
+  "takes": 3,
+  "influence": 0.6,
+  "prompt": "A colossal surge of raw electric power released all at once: an enormous crackling discharge of lightning and energy with a deep powerful electric hum, then one long slow decay, the crackles thinning and the hum sinking lower and fading gradually over the whole nine and a half seconds, never stopping early. No voices, no singing, no choir, no humming voice, no chanting, no bells, no chimes, no gongs, no music.",
+  "family": "fx",
+  "where": "R173: the charge up the shaft to the strike (made: turned back to front)"
+ }
+]

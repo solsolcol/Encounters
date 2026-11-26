@@ -21,15 +21,29 @@ SFX += json.load(open(os.path.join(R, 'sfxR122.json'))); MS.update(json.load(ope
 SFX += json.load(open(os.path.join(R, 'sfxR149.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR149.json'))))
 # (R157, 25 Nov 2026: the boom, the wind drawn in and the carved eyes' glint, sfxR157.json; new names, so no pick before moves)
 SFX += json.load(open(os.path.join(R, 'sfxR157.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR157.json'))))
+# (R163 to R168, 26 Nov 2026: the Naga film's charge, sfxR163.json: five new sounds of power gathering (new names), and the
+#  four whose takes carried a choir or voices (u5windup's "building choir hum", u5togrise's "swelling choir hum",
+#  u5togpress's "rising choir", the tall shape's loop of "many wordless voices") MADE AGAIN with none: their takes are named
+#  with a v, and the game keeps its own names for them (SFXAGAIN, as AGAIN does for the music))
+SFX += json.load(open(os.path.join(R, 'sfxR163.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR163.json'))))
+# (R173: the charge asked again as one long slow discharge, sfxR173.json, to be turned back to front: see below)
+SFX += json.load(open(os.path.join(R, 'sfxR173.json'))); MS.update(json.load(open(os.path.join(R, 'measures-sfxR173.json'))))
+SFXAGAIN = {'u5windup': 'u5windupv', 'u5togrise': 'u5togrisev', 'u5togpress': 'u5togpressv', 'u5shapeloop': 'u5shapeloopv',
+            'u5pwcharge': 'u5pwcharge2'}
 MUS = json.load(open(os.path.join(R, 'music.json'))); MM = json.load(open(os.path.join(R, 'measures-music.json')))
 MM.update(json.load(open(os.path.join(R, 'measures-music4.json'))))
-AGAIN = {'u5m6prep': 'u5m6prep2'}      # made again (music4.json): the game's name keeps the cue's, the takes are the new ones
+# (R163 to R168: M9 made again as one piece for the whole Naga film, a composition plan (music5.json); its old takes asked
+#  for "a wordless choir swelling" and gongs, and stood at their full level from their first second)
+MM.update(json.load(open(os.path.join(R, 'measures-music5.json'))))
+AGAIN = {'u5m6prep': 'u5m6prep2', 'u5m9naga': 'u5m9naga2'}      # made again (music4.json, music5.json): the game's name keeps the cue's, the takes are the new ones
 STEPS = {'u5step1', 'u5step2', 'u5tile1', 'u5phostep', 'u5zstep'}
 PLAYCUES = {'u5m2walk': (52, 3), 'u5m4hunt': (52, 3), 'u5m10last': (30, 2), 'u5m13shop': (52, 3), 'u5m14sight': (34, 2)}
 SHAPED = {'u5nagaclimb': 'u5nagaclimb_a'}
 P = {}; refused = []
 for o in SFX:
-    n = o['name']; takes = {k: v for k, v in MS.items() if k.rsplit('_', 1)[0] == n}
+    n = o['name']
+    if n in SFXAGAIN.values(): continue          # (a take set made again for a name the game keeps: picked under that name)
+    takes = {k: v for k, v in MS.items() if k.rsplit('_', 1)[0] == SFXAGAIN.get(n, n)}
     ok = {}
     for k, m in sorted(takes.items()):
         if m.get('words'): refused.append((k, 'the transcriber writes "%s"' % m['words'])); continue
@@ -56,6 +70,7 @@ for o in SFX:
     if kind != 'fx': why += ', swing %.1f dB, %d %% in the voice band' % (m.get('swing', 0), round(100 * m['voice']))
     if others: why += ' (others, phone/loudest: %s)' % others
     if n in SHAPED and SHAPED[n] == k: why += '; by its SHAPE: it rises to its peak and passes, where the others hold one level'
+    if n in SFXAGAIN: why += '; MADE AGAIN as %s (R166/R167, sfxR163.json): the old takes carried a choir or voices' % SFXAGAIN[n]
     rf = [r for r in refused if r[0].rsplit('_', 1)[0] == n]
     if rf: why += '; refused: ' + '; '.join('%s %s' % (a[-1], b) for a, b in rf)
     e = dict(kind=kind, take=k, family=o['family'], where=o['where'], why=why)
@@ -89,6 +104,25 @@ if 'u5windpull' in P and P['u5windpull'].get('take'):
     P['u5windpull']['af'] = "areverse,atrim=end=2.25,asetpts=PTS-STARTPTS,afade=t=out:st=2.22:d=0.03"
     P['u5windpull']['why'] += ('; MADE from it (R157): turned back to front to swell out of silence, the wind drawn in, and cut '
                               'to end at its loudest (2.25 s)')
+# (R173: the charge MADE as one rise. Every take of u5pwcharge (sfxR163.json) came back loud in its first second and dying
+#  over the rest, its brightness falling with it, so the film's mix peaked three times with a hole before the strike; asked
+#  again as one long slow discharge (sfxR173.json): take a's brightness falls evenly with its level, 3707 to 245 Hz over
+#  9.5 s (b grows brighter as it fades, its tail a hiss: turned round it would dull as it climbs), so turned back to front
+#  it is ONE rise from silence that grows brighter as it climbs and ends on its own attack turned round, which the film
+#  lays on the strike. Its quiet first half lifted 23 dB, easing to none at 8 s: -40 dB at 1.5 s, climbing evenly to its
+#  loudest at 8 s and the swoosh of its end)
+if 'u5pwcharge' in P and P['u5pwcharge'].get('take'):
+    P['u5pwcharge']['take'] = 'u5pwcharge2_a'; P['u5pwcharge'].pop('harm', None); P['u5pwcharge'].pop('af', None)
+    P['u5pwcharge']['af'] = "areverse,volume='pow(10,(23*min(1,max(0,(8-t)/6.5)))/20)':eval=frame"
+    P['u5pwcharge']['why'] = ('a (sfxR173.json, MADE AGAIN as u5pwcharge2), by its SHAPE: its brightness falls evenly with its '
+                              'level, 3707 to 245 Hz over 9.5 s, 89 %% where a phone plays; MADE from it (R173): turned back to '
+                              'front, one rise from silence growing brighter as it climbs, ending on its own attack turned round '
+                              '(the film lays it on the strike), its quiet first half lifted 23 dB easing to none at 8 s') % ()
+# (R173: the burst, the moment the Naga comes out (R165: "increase the impact of that"), levelled 3 dB over the house's
+#  one-shot (its loudest 50 ms at -11 dBFS; the limiter still holds its peaks at -2), the film's loudest hit, the stick's
+#  plant and the two waters brought down under it in the film so the sum stays under full scale (z_tail.js))
+if 'u5nagaburst' in P and P['u5nagaburst'].get('take'):
+    P['u5nagaburst']['level'] = -11; P['u5nagaburst']['why'] += '; levelled at -11 (R173): the film\'s loudest hit'
 P['u5bowl']['kind'] = 'source'; P['u5bowl']['why'] += "; the SOURCE of the count's nine notes (notes.py): not a file of the game"
 # Spirit Vision: chapter 4's own five, byte for byte under this chapter's names (v7.1)
 for n, f in (('u5vison', 'u4vison'), ('u5visoff', 'u4visoff'), ('u5heart', 'u4heart'), ('u5visbed', 'u4visbed'), ('u5vismus', 'u4vismus')):
@@ -122,9 +156,28 @@ for o in MUS:
         if m['first'] > 0.1: e['af'] = 'atrim=start=%.2f,asetpts=PTS-STARTPTS,afade=t=in:d=0.04' % max(0, m['first'] - 0.05); why += '; its %.2f s silent head cut' % m['first']
         elif m['secs'] and m['secs'][0] > m['median'] - 3: e['af'] = 'afade=t=in:d=0.5'; why += '; it begins on signal, faded in'
     if wordy: why += '; refused: ' + ', '.join('%s (the transcriber writes "%s")' % (kk[-1], takes[kk]['words']) for kk in wordy)
-    if n in AGAIN: why += '; MADE AGAIN as %s (music4.json): the first two takes a phone played 22 and 6 %% of' % AGAIN[n]
+    if n == 'u5m6prep': why += '; MADE AGAIN as %s (music4.json): the first two takes a phone played 22 and 6 %% of' % AGAIN[n]
+    elif n in AGAIN: why += ('; MADE AGAIN as %s (music5.json, R163 to R168): one piece from the film\'s first frame, a composition '
+                             'plan timed to its real clock, no choir, no gong' % AGAIN[n])
     e.update(family='music', where=o['where'], why=why + '. THE MEASURED PICK: it stands until Chad\'s ear (sound/previews)')
     P[n] = e
+# (R163 to R168: M9 made again, music5.json. By the score above take a stands (b's quiet build reads as holes), but the
+#  piece is a crescendo meant to burst on the strike: b's burst is a real one, 8 dB up in 40 ms at 12.89 s of the take (read
+#  in 20 ms), where a has none (its biggest step 2.7 dB in a tenth), and a phone plays 31 % of a against 45 % of b. So b, by
+#  its SHAPE; its head cut at 2.294 s, so its burst lands on the film's 10.646 s (the strike: the cue at 0.05), faded in
+#  over 0.5 s out of the press's white; the build under the charge lifted 7 dB at its start, easing to 5 dB at 10.5 s and
+#  to none at the burst (a 90 ms draw-back before it), so the music is heard from the first frame under the charge and the
+#  burst still steps up out of it)
+if P.get('u5m9naga', {}).get('take', '').startswith('u5m9naga2'):
+    P['u5m9naga']['take'] = 'u5m9naga2_b'
+    P['u5m9naga']['af'] = ("atrim=start=2.294,asetpts=PTS-STARTPTS,"
+                           "volume='pow(10,(if(lt(t,10.5),7-2*t/10.5,if(lt(t,10.59),5*(10.59-t)/0.09,0)))/20)':eval=frame,"
+                           "afade=t=in:d=0.5")
+    P['u5m9naga']['why'] = ('b, by its SHAPE (R163 to R168): a burst 8 dB up in 40 ms at 12.89 s of the take, where a has '
+                            'none, and 45 %% where a phone plays against a\'s 31 %%; its head cut at 2.294 s so the burst '
+                            'lands on the strike, faded in 0.5 s, the build lifted 7 to 5 dB under the charge. MADE AGAIN as '
+                            'u5m9naga2 (music5.json): one piece from the film\'s first frame, a composition plan timed to its '
+                            'real clock, no choir, no gong. THE MEASURED PICK: it stands until Chad\'s ear (sound/previews)') % ()
 # M7: the five stems (sound/stems.py)
 for n, w in (('u5m7low', 'the floor: the drums\' body and the low strings (always up)'), ('u5m7drum', "the teacher's: the drums' skins and the gongs' strike"),
              ('u5m7line', "the teacher's: the struck line, piano and xylophone"), ('u5m7flute', "the student's: the flute and the small bell"),

@@ -722,7 +722,7 @@
    "kind": "loop",
    "gain": 0.5,
    "for": "surge and the Naga film: the tall shape stands (a loop)",
-   "why": "c: 98 % where a phone plays, loudest 50 ms -28.8 dBFS, swing 12.6 dB, 73 % in the voice band (others, phone/loudest: a 0.91/-29.3, b 0.96/-28.9, d 1.00/-25.2)"
+   "why": "b: 68 % where a phone plays, loudest 50 ms -12.5 dBFS, swing 26.4 dB, 37 % in the voice band (others, phone/loudest: a 0.26/-18.4); MADE AGAIN as u5shapeloopv (R166/R167, sfxR163.json): the old takes carried a choir or voices"
   },
   {
    "name": "u5laid",
@@ -841,7 +841,7 @@
    "kind": "one-shot",
    "gain": 0.8,
    "for": "windup: the gold gathers (1.5 s)",
-   "why": "d: 100 % where a phone plays, loudest 50 ms -15.7 dBFS (others, phone/loudest: a 1.00/-17.7, b 1.00/-17.1, c 0.89/-17.0); its 0.20 s silent head cut"
+   "why": "b: 93 % where a phone plays, loudest 50 ms -14.0 dBFS (others, phone/loudest: a 0.76/-10.7, c 0.55/-15.7); MADE AGAIN as u5windupv (R166/R167, sfxR163.json): the old takes carried a choir or voices"
   },
   {
    "name": "u5wave",
@@ -1327,7 +1327,7 @@
    "kind": "one-shot",
    "gain": 0.8,
    "for": "R68: the TOGETHER button appears in the middle",
-   "why": "d: 100 % where a phone plays, loudest 50 ms -19.1 dBFS (others, phone/loudest: a 1.00/-21.5, b 1.00/-24.9, c 1.00/-20.9)"
+   "why": "c: 53 % where a phone plays, loudest 50 ms -9.7 dBFS (others, phone/loudest: a 0.38/-15.7, b 0.53/-13.0); MADE AGAIN as u5togrisev (R166/R167, sfxR163.json): the old takes carried a choir or voices; its 0.35 s silent head cut"
   },
   {
    "name": "u5togloop",
@@ -1343,7 +1343,7 @@
    "kind": "one-shot",
    "gain": 1.0,
    "for": "R68: TOGETHER pressed: the burst",
-   "why": "a: 100 % where a phone plays, loudest 50 ms -12.2 dBFS (others, phone/loudest: b 1.00/-17.4, c 1.00/-15.3, d 1.00/-12.3)"
+   "why": "a: 78 % where a phone plays, loudest 50 ms -7.9 dBFS (others, phone/loudest: b 0.40/-11.7, c 0.49/-12.3); MADE AGAIN as u5togpressv (R166/R167, sfxR163.json): the old takes carried a choir or voices"
   },
   {
    "name": "u5bindshatter",
@@ -1771,6 +1771,46 @@
    "why": "c: 100 % where a phone plays, loudest 50 ms -16.2 dBFS (others, phone/loudest: a 1.00/-18.6, b 1.00/-27.0)"
   },
   {
+   "name": "u5pwgather",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R163: the two powers gathering in their fists as they grip the stick",
+   "why": "c: 2 % where a phone plays, loudest 50 ms -6.9 dBFS (others, phone/loudest: a 0.07/-7.1, b 0.02/-13.2); HARMONISED (a phone plays 2 %)"
+  },
+  {
+   "name": "u5pwcharge",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R163: the charge up the shaft, through the lift, to the drive",
+   "why": "a (sfxR173.json, MADE AGAIN as u5pwcharge2), by its SHAPE: its brightness falls evenly with its level, 3707 to 245 Hz over 9.5 s, 89 % where a phone plays; MADE from it (R173): turned back to front, one rise from silence growing brighter as it climbs, ending on its own attack turned round (the film lays it on the strike), its quiet first half lifted 23 dB easing to none at 8 s"
+  },
+  {
+   "name": "u5pwsurge",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R163: the carved head taking their power",
+   "why": "a: 36 % where a phone plays, loudest 50 ms -8.2 dBFS (others, phone/loudest: b 0.08/-5.8, c 0.10/-8.0)"
+  },
+  {
+   "name": "u5pweyes",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R163: the carved head's eyes igniting",
+   "why": "c: 39 % where a phone plays, loudest 50 ms -15.6 dBFS (others, phone/loudest: a 0.12/-10.8, b 0.27/-11.2)"
+  },
+  {
+   "name": "u5nagaburst",
+   "family": "fx",
+   "kind": "one-shot",
+   "gain": 0.8,
+   "for": "R165: the moment the Naga comes out",
+   "why": "c: 31 % where a phone plays, loudest 50 ms -7.6 dBFS (others, phone/loudest: a 0.23/-7.8, b 0.20/-8.2); HARMONISED (a phone plays 31 %); levelled at -11 (R173): the film's loudest hit"
+  },
+  {
    "name": "u5vison",
    "family": "vision",
    "kind": "one-shot",
@@ -1958,7 +1998,7 @@
    "kind": "music",
    "gain": 0.7,
    "for": "M9: TOGETHER (the Naga film: both themes at once, the only time)",
-   "why": "a: no hole in its body, 90 % where a phone plays, swing 121.7 dB, 64 % in the voice band (others, phone/holes: b 75 %/0 holes); its 1.40 s silent head cut. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
+   "why": "b, by its SHAPE (R163 to R168): a burst 8 dB up in 40 ms at 12.89 s of the take, where a has none, and 45 % where a phone plays against a's 31 %; its head cut at 2.294 s so the burst lands on the strike, faded in 0.5 s, the build lifted 7 to 5 dB under the charge. MADE AGAIN as u5m9naga2 (music5.json): one piece from the film's first frame, a composition plan timed to its real clock, no choir, no gong. THE MEASURED PICK: it stands until Chad's ear (sound/previews)"
   },
   {
    "name": "u5m10last",

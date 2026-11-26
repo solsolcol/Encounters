@@ -106,6 +106,38 @@
         fmHold(A, null, 1);
         FM5.shot = A.name || ''; fmLevels(); return;
       }
+      /* (R163, R164, R169, Chad, 26 Nov 2026: "it still cuts very abruptly from shot to shot"; "The entire start just does not
+         feel like a cohesive whole"; "Do you actually know how to direct the cutscene?". A run of keys marked `flow` is ONE
+         move: the eye, the aim, the lens and the roll pass through each key at a speed taken from the keys either side (a
+         cubic through the keys with Catmull-Rom's tangents on the clock), so the move never stops at a key and its speed
+         never steps; it rests only at a key marked `stop` and at the run's two ends (a key before a cut, or after one, is an
+         end). A track with no `flow` key is exactly as before) */
+      if (A.flow && B.flow) {
+        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? K[i - 1] : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? K[i + 2] : null;
+        /* (R173: each key's eye taken back by ITS OWN hold's pull, worked out with the lens standing as that key stands it
+           (its eye, its aim, its angle on this screen), so the cubic runs through eyes that already hold what each key must
+           hold, and nothing is laid on after it. The pull blended across a run (fmHold, as the cut keys still have it) is a
+           straight blend from key to key: wherever two keys' holds differ the lens's speed stepped at the key, measured on a
+           phone at 18 m/s per second as the grip handed to the braid and 11 as the push reached the eyes) */
+        const effE = (X) => { const e = v3_5(X.eye), a = v3_5(X.at); if (!X.hold || !a) return e;
+          fmLens(nar ? X.fp : X.fd); fmAim(e, a, X.roll || 0); const d = fmPullOf(X); if (!(d > 1e-4)) return e;
+          const bx = e[0] - a[0], by = e[1] - a[1], bz = e[2] - a[2], bl = Math.hypot(bx, by, bz) || 1;
+          return [e[0] + bx / bl * d, e[1] + by / bl * d, e[2] + bz / bl * d]; };
+        const val = (X) => { const e = effE(X), a = v3_5(X.at); return [e[0], e[1], e[2], a[0], a[1], a[2], nar ? X.fp : X.fd, X.roll || 0]; };
+        const vA = val(A), vB = val(B), dt = Math.max(1e-3, B.t - A.t), n = vA.length;
+        const m0 = new Array(n).fill(0), m1 = new Array(n).fill(0);
+        if (P0 && !A.stop) { const v0 = val(P0), d = Math.max(1e-3, B.t - P0.t); for (let j = 0; j < n; j++) m0[j] = (vB[j] - v0[j]) / d; }
+        if (P3 && !B.stop) { const v3 = val(P3), d = Math.max(1e-3, P3.t - A.t); for (let j = 0; j < n; j++) m1[j] = (v3[j] - vA[j]) / d; }
+        /* (R173: a key may carry `warp`, the film's real clock as a function of its story clock: the move into it is then timed
+           on the real clock, so a move made through a slow motion keeps its own ease in what is seen (the fall into the strike
+           was timed on the story's clock, so the slow's onset and its end made it start and stop in a few hundredths of a
+           second: 14 m/s per second measured). Used only where the move both starts and ends at rest, its speeds then 0) */
+        const sx = B.warp ? c01((B.warp(t) - B.warp(A.t)) / Math.max(1e-3, B.warp(B.t) - B.warp(A.t))) : c01((t - A.t) / dt);
+        const s2 = sx * sx, s3 = s2 * sx, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + sx, h01 = 3 * s2 - 2 * s3, h11 = s3 - s2;
+        const v = vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
+        fmLens(v[6]); fmAim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
+        FM5.shot = (A.name || '') + '>' + (B.name || ''); fmLevels(); return;
+      }
       /* (R149: a key may ask to be reached with an EASE-IN (`ease: 'in'`): the move creeps away from the key before it and
          gathers speed all the way to this one, a charge into a cut; absent, the smooth ease both ways, exactly as before) */
       const x0 = c01((t - A.t) / Math.max(1e-3, B.t - A.t)), u = B.ease === 'in' ? x0 * x0 : smo(x0);
@@ -221,12 +253,41 @@
        each target from its own time, the head carried from the last one to it over `ease` s. A look handed a new target
        in one frame turned the head there in that frame (lookNow lays a look on at once: v6.4), a snap of up to 60 degrees */
     const _gzA = new THREE.Vector3();
-    function fmGaze(P, t, list, k = 0.8, reach = 0.75, down = 0.03, ease = 0.5) {
+    /* (R175: a look's limits EASED INTO. The look (natLook) stops a head dead at the edge of its neck's reach, its turn's limit
+       and its nod's: following a thing that goes past one, the head turned at 50 degrees a second and stood still the next
+       twentieth (measured: his teacher 53 to 0 at 17.1 s, his student 46 to 6 at 2.8 s). With `soft`, the place looked at
+       is first brought inside every one of those limits along a curve, the whole of it up to six tenths of a limit and then
+       easing toward it and never reaching it, worked out in the look's own frame (the chest's, from the face as the take
+       has it now), so the head slows into the limit as a neck does and the look never meets a stop) */
+    const _sfq = new THREE.Quaternion(), _sfq2 = new THREE.Quaternion(), _sfF = new THREE.Vector3(), _sfU = new THREE.Vector3(), _sfR = new THREE.Vector3(),
+          _sfz = new THREE.Vector3(), _sfh = new THREE.Vector3(), _sfg = new THREE.Vector3();
+    const sfLim = (x, lo, hi) => { const L = x >= 0 ? hi : lo, a = Math.abs(x), K = 0.6 * L; return a <= K ? x : Math.sign(x) * (K + (L - K) * Math.tanh((a - K) / (L - K))); };
+    function fmSoftTarget(P, tg, reach, down) {
+      if (!P.head || !P.headRest || !tg) return tg;
+      const head = P.head, neck = neckOf(P), chest = neck ? neck.parent : head.parent;
+      P.group.updateWorldMatrix(true, true); head.getWorldPosition(_sfh); head.getWorldQuaternion(_sfq2);
+      _sfz.set(0, 0, 1).applyQuaternion(P.headRest).applyQuaternion(_sfq2).normalize();
+      const cr = boneRest(P, chest);
+      if (cr && chest) { chest.getWorldQuaternion(_sfq); _sfq.multiply(cr); } else P.group.getWorldQuaternion(_sfq);
+      _sfF.set(0, 0, 1).applyQuaternion(_sfq); _sfU.set(0, 1, 0).applyQuaternion(_sfq); _sfR.crossVectors(_sfU, _sfF).normalize();
+      _sfg.set(tg[0] - _sfh.x, tg[1] - _sfh.y, tg[2] - _sfh.z); const dist = _sfg.length(); if (dist < 1e-3) return tg;
+      _sfg.y -= down * dist; _sfg.normalize();
+      const yawOf = (v) => Math.atan2(v.dot(_sfR), v.dot(_sfF)), nodOf = (v) => Math.asin(Math.max(-1, Math.min(1, v.dot(_sfU))));
+      const fy = yawOf(_sfz), fn = nodOf(_sfz), gy = yawOf(_sfg), gn = nodOf(_sfg), ym = Math.max(LOOK_YAW, reach) * 0.97, r = reach * 0.97;
+      let dy = sfLim(Math.atan2(Math.sin(gy - fy), Math.cos(gy - fy)), r, r); dy = sfLim(fy + dy, ym, ym) - fy;
+      let dn = sfLim(gn, LOOK_DOWN * 0.97, LOOK_UP * 0.97) - fn; dn = sfLim(dn, r, r);
+      const yw = fy + dy, nd = fn + dn, cy = Math.cos(nd);
+      _sfg.copy(_sfF).multiplyScalar(cy * Math.cos(yw)).addScaledVector(_sfR, cy * Math.sin(yw)).addScaledVector(_sfU, Math.sin(nd)).normalize();
+      return [_sfh.x + _sfg.x * dist, _sfh.y + _sfg.y * dist, _sfh.z + _sfg.z * dist];
+    }
+    function fmGaze(P, t, list, k = 0.8, reach = 0.75, down = 0.03, ease = 0.5, soft = false) {
       if (!P || !P.ready || !list.length) return;
       const at = (q) => { const g = typeof q === 'function' ? q() : q; if (g === 'lens') { camera.getWorldPosition(_gzA); return [_gzA.x, _gzA.y, _gzA.z]; } return g; };
       let i = 0; while (i < list.length - 1 && t >= list[i + 1][0]) i++;
-      const A = list[i], B = list[i - 1], u = B ? smo(c01((t - A[0]) / ease)) : 1;
+      /* (R175: an entry may carry its own turn time, [t, target, secs]; the list's `ease` otherwise, exactly as before) */
+      const A = list[i], B = list[i - 1], u = B ? smo(c01((t - A[0]) / (A[2] || ease))) : 1;
       const tg = u >= 1 ? at(A[1]) : lp3(at(B[1]), at(A[1]), u);
+      if (tg && soft) { lookNow(P, fmSoftTarget(P, tg, reach, down), k, reach, 0); return; }
       if (tg) lookNow(P, tg, k, reach, down);
     }
     /* a person who speaks plays his talking take from the line's own start to its end, and is back in his rest after (v11.4) */
@@ -2328,6 +2389,14 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (R143: from its climb into the ring to its home, each man watches the Naga as nagaSoft5 says, never its head at this
            very instant) */
         const SOFTAT = (P) => () => nagaSoft5(P, tau, B, T) || HEADAT();
+        /* (R175: the stick's head as their eyes follow it through the lift and the drive: its rise and fall (TOGP5.lift, the film's own
+           curve, PHOGRIP5's) seen over the last 0.6 s, the newest counting most, so a head nods with the drive and eases to rest
+           after the stick meets the ground, where it had stopped dead on the frame the stick stopped (56 degrees a second to
+           none in a twentieth of a second, measured at 10.7 s). A pure function of the clock) */
+        const yOff5 = (x) => (x >= T.ko5c2 ? 0 : TOGP5.lift * smo(c01((x - T.lift) / (T.lifted - T.lift))) * (1 - Math.pow(c01((x - T.drive) / (T.strike - T.drive)), 2)));
+        const SHL = () => { const p = SH(); if (!p) return p; let a = 0, w = 0;
+          for (let j = 0; j < 9; j++) { const q = 0.5 + 0.5 * Math.cos(Math.PI * j / 8); a += q * yOff5(tau - 0.6 * j / 8); w += q; }
+          return [p[0], p[1] + a / w - yOff5(tau), p[2]]; };
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
           /* (HELD ON THE STRIKE: his cast plays to the moment the stick strikes the paving (1.7 s of it) and all but stops there,
              his hand on the stick as the Naga rises out of it; then he is handed to his rest over 0.9 s) */
@@ -2352,7 +2421,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              the stick he looked at the lens, the lab's picture of the new home shot) */
           /* (R129: on the two hands as his student's closes on the stick, to his student as their powers meet, up the stick to
              its head as it takes light; then as before) */
-          fmGaze(P, tau, [[0, HANDS], [T.pk + 0.25, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [T.braid + 0.15, SH], [T.rise + 0.2, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.2, [zj.x, 1.5, zj.z]]], 0.6, 0.7, 0.03, 0.8); });
+          /* (R175, Chad, 26 Nov 2026: "The way their heads track the naga or the stick is very jerky and abrupt, you need to
+             smoothen it more in a more natural way". From the moment the Naga comes out his look was laid on its head as it
+             stood that instant, through its climb, its dive and the three pierces (the softened look, R143's, came only at its
+             climb into the ring), so his head followed every turn of its flight at once. Now the softened look from the moment
+             it rises: the Naga as he saw it over the last 1.1 s, each sight within his neck's turn; and every turn from one
+             thing to the next taken over a full second, not 0.8) */
+          fmGaze(P, tau, [[0, HANDS], [T.pk + 0.25, () => fmHead(cast.zav, [zj.x, 1.6, zj.z])], [T.braid + 0.15, SHL], [T.rise + 0.2, SOFTAT(P)], [T.home - 0.3, B.S, 1.4], [T.tail + 1.2, [zj.x, 1.5, zj.z], 1.6]], 0.6, 0.7, 0.03, 1.0, true); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zNow.x, zNow.z, pz.ry + (tau < T.ko5c2 ? TOGP5.zry : 0));
           /* (his full body while the hands are close, given back at the cut to the paving: R132) */
           if (TOGP5.zavFull) P.force = tau < T.strike - 0.1 ? 0 : (this.zf0 != null ? this.zf0 : 1);
@@ -2362,7 +2437,8 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              then the Naga) */
           if (typeof ZAVGRIP5 === 'object') { const g = tau >= T.ko5c2 ? 0 : 1 - out;
             ZAVGRIP5.set({ k: smo(c01((tau - T.reach) / (T.close - T.reach + 0.15))) * g, kin: smo(c01((tau - T.close + 0.1) / 0.35)), kf: smo(c01((tau - T.close) / 0.3)) * g }); }
-          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [T.pk + 0.45, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [T.braid + 0.3, SH], [T.rise + 0.25, HEADAT], [T.climb - 0.4, SOFTAT(P)], [T.home - 0.3, B.S], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])]], 0.6, 0.7, 0.03, 0.7); });
+          /* (R175: as his teacher's, the softened look from the moment the Naga rises, each turn over a full second) */
+          if (tau < T.ko5c2) fmGaze(P, tau, [[0, HANDS], [T.pk + 0.45, () => fmHead(cast.pho, [pz.x, 1.65, pz.z])], [T.braid + 0.3, SHL], [T.rise + 0.25, SOFTAT(P)], [T.home - 0.3, B.S, 1.4], [T.tail + 1.0, () => fmHead(cast.pho, [pz.x, 1.65, pz.z]), 1.6]], 0.6, 0.7, 0.03, 1.0, true); });
         /* the cage: cracked under the shape, whole again once it has come apart */
         const kc = tau < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((tau - T.apart - 0.4) / 2.0));
         { const cc = tau < T.ko5c2 ? mid : zz, cin = tau < T.strike - 0.1 ? 0 : smo(c01((tau - T.strike + 0.1) / TOGP5.cageIn));
@@ -2442,8 +2518,10 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            the strike now (z_tail.js), so what draws down is the charge's own sound, the ground's rumble and the wind, at
            their loudest as the slow begins; drawn down over 0.45 s from 0.15 s before it, to 12 % and a softer close (900 Hz),
            and let go 15 ms before the stick meets the ground, where the boom and the score's first beat come in together) */
-        { const r0 = this.real(T.slow0) - 0.15, r1 = this.real(T.strike) - 0.015, dk = t > r0 && t < r1 ? smo(c01((t - r0) / 0.45)) : 0;
-          if (kit && kit.hush && (dk > 0.001 || this.dipOn)) { kit.hush(dk, { secs: 0, hz: 900, floor: 0.12 }); this.dipOn = dk > 0.001; } }
+        /* (R165, Chad, 26 Nov 2026: "I don't think the music should be cut off , mute or fade at all, totally redundant, instead
+           you should focus on the sound effect that will play the moment the naga comes out, and increase the impact of that".
+           The near-silence is gone: nothing of the film's sound is held down, the music plays from the first frame to the
+           last (z_tail.js), and the moment the Naga comes out is its own far heavier hit (z_tail.js u5nagaburst)) */
         /* (R122 idea 6: the bars drawn in as the court darkens, and given back once the title has gone: kit.bars, the
            seventy-ninth seam, a smooth function of the clock; then the gold NAGA over the picture) */
         /* (build 101: from the braid, not 0.8 s into the film: since R129's opening the film's first shot is the two of them
@@ -2528,6 +2606,18 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         /* (build 101: the braid's shots hold the carved head whole with the two fists under it: build 100's had the top of
            the lit head under the top bar as it took their light) */
         const HEADTOP = stickAt(1.38), HEADMID = stickAt(1.25), BRAID_HOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12), FISTS0().concat(0.05)];
+        /* (R163: the lit head whole (its top and its middle), and the low hero's angle's two faces, the raised head and his
+           teacher's fist (each head where the film stands him, as the opening's hold reads it)) */
+        const HEADHOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12)];
+        /* (R173: the lit head from below with his teacher's face above it, both whole: on a phone, with the bars drawn in,
+           build 110's first pictures held the head and cut his face at the mouth (5.8 s) or his student's at the chin (6.6 s);
+           so the head shot holds the carved head and his teacher's face, and aims between them) */
+        const LITHOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12), headAt5(this.pho, -0.01, -0.05, 1.70).concat(0.1), headAt5(this.pho, -0.01, -0.05, 1.56).concat(0.1)];
+        const LITAT = () => { const h = HEADMID(), q = headAt5(this.pho, -0.01, -0.05, 1.6); return [0.6 * h[0] + 0.4 * q[0], 0.6 * h[1] + 0.4 * q[1], 0.6 * h[2] + 0.4 * q[2]]; };
+        const HERO_HOLD = () => { const Z = this.zj || this.zav, out = [];
+          for (const y of HOLD_PHO) out.push(headAt5(this.pho, -0.01, -0.05, y).concat(0.1));
+          for (const y of HOLD_ZAV) out.push(headAt5(Z, -0.03, -0.07, y).concat(0.1));
+          out.push(HEADTOP().concat(0.12), FISTS().concat(0.06)); return out; };
         /* (R138: from behind at their shoulders' height his teacher's lifted fist sat on his student's shoulder in the picture; from
            over their shoulders, 1.85 to 1.95 m up, the two fists stand on the stick between them, the burning figures beyond) */
         const PAIR_BACK = rel(MID, -2.6, -0.05, 1.95), PAIR_BACK2 = rel(MID, -1.9, -0.05, 1.85), PAIR_AT = rel(MID, 1.6, 0.2, 1.15);
@@ -2542,6 +2632,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const EYES_EYE = (k) => () => { const at = nagaPt5(this.pho, [-0.06, 1.272, 0]), fd = nagaFace5(this.pho, 15); if (!at) return null;
           const nar = isNarrow(), d = nar ? (k ? 0.92 : 1.05) : (k ? 0.9 : 0.95); return [at[0] + fd[0] * d, at[1] - (k ? 0.08 : 0.1), at[2] + fd[1] * d]; };
         const STICK_FRONT = [B.foot[0] + fw[0] * 1.0 + lf[0] * 0.25, 0.4, B.foot[2] + fw[1] * 1.0 + lf[1] * 0.25];
+        /* (R173: THE STRIKE WIDE. From 1.0 m at 0.4 m up the strike was a picture of their legs and the stick's foot (build 110's
+           first pictures, 10.75 s), and the tilt up to the Naga after it turned at 294 degrees a second. Now the fall lands 1.55 m
+           before the stick, half a metre up, on the widest lens of the film: the stick whole from its foot to its head, both
+           men and the night above, the ring racing out over the paving at the picture's foot; then a tilt of 38 degrees as the
+           Naga comes out of the head, eased, never past 90 degrees a second) */
+        const STRIKE_EYE = [B.foot[0] + fw[0] * 1.55 + lf[0] * 0.2, 0.5, B.foot[2] + fw[1] * 1.55 + lf[1] * 0.2];
+        const STRIKE_AT = [B.foot[0], 1.0, B.foot[2]], ERUPT_AT = [B.foot[0], 2.8, B.foot[2]];
         /* (R157 idea 6: where the slow's shot starts, 0.3 m further out along the same line and a little higher, so the lens
            creeps in on the foot through the slow motion and stands exactly where it always stood at the strike) */
         const STICK_FRONT0 = [B.foot[0] + fw[0] * 1.3 + lf[0] * 0.33, 0.46, B.foot[2] + fw[1] * 1.3 + lf[1] * 0.33];
@@ -2572,32 +2669,45 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const P2CRANE = cw(sp[1][0] - 1.3, 3.4, sp[1][1] + 1.9), P3LOW = cw(sp[2][0] - 0.15, 0.35, sp[2][1] - 1.34);
         const HOME_EYE = cw(Pc[0] + 0.75, 1.25, Pc[1] - 2.3), HOME_UP = cw(Pc[0] + 0.2, 2.6, Pc[1] - 0.2), HOME_AT = cw(Pc[0] + 0.23, 1.45, Pc[1] - 0.2);
         fmTrack(tau, [
-          /* (the lab's pictures of 25 Nov: from 0.6 m under the hands the two hands filled the picture and the gold burned it
-             white; from 1.25 m before the two of them both hands read on the shaft, and from his student's side the braid
-             reads up to the head with both of them in the picture) */
-          /* (R132/R133: the two of them first, faces and hands, the lens coming in on them slowly as his student's hand closes on
-             the stick; from 1.25 m the hands filled a phone's picture and nothing told whose they were) */
-          /* (build 101: build 100's pictures had his teacher's face out of the top of the picture by 1.6 s on a phone and by
-             1.2 s on a desk, the lens pushing in on the hands while the bars came in. The shot HOLDS both faces and both fists
-             (fmHold: the eye drawn back along its line until they fit this screen) and is aimed between the faces and the
-             hands; a desk comes in on them, a phone, which must hold two men side by side, stays back) */
-          { t: 0, name: 'hands', eye: rel(MID, 2.3, -0.2, 1.46), at: rel(MID, 0, 0, 1.36), fp: 46, fd: 40, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
-          { t: T.braid - 0.06, name: 'hands', eye: rel(MID, 1.9, -0.16, 1.43), at: rel(MID, 0.08, 0, 1.33), fp: 46, fd: 38, hold: HANDS_HOLD, band: 0.74, back: 1.0 },
-          { t: T.braid - 0.05, name: 'braid', eye: rel(MID, 1.5, -1.0, 1.12), at: BRAID_AT(0.1), fp: 46, fd: 40, cut: true, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
-          { t: T.lit + 0.1, name: 'braid', eye: rel(MID, 1.38, -0.92, 1.18), at: BRAID_AT(0.9), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
-          { t: T.lit + 0.6, name: 'braid', eye: rel(MID, 1.34, -0.9, 1.2), at: BRAID_AT(1), fp: 44, fd: 38, hold: BRAID_HOLD, band: 0.6, back: 0.8 },
-          { t: T.lit + 0.65, name: 'plant', eye: PAIR_BACK, at: PAIR_AT, fp: 62, fd: 54, cut: true },
-          /* (R149: the push in on the two of them from behind reached by an EASE-IN: it creeps as the head takes their light and
-             gathers speed through the lift and the drive, into the cut to the strike; the same two keys, so the picture is never
-             tighter than before at any moment, only wider on the way) */
-          /* (R157: reached as the lens cuts to the carved head's eyes, where it was going) */
-          { t: T.eyecut - 0.01, name: 'plant', eye: PAIR_BACK2, at: PAIR_AT, fp: 58, fd: 50, ease: 'in' },
-          { t: T.eyecut, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 42, fd: 34, cut: true },
-          { t: T.slow0 - 0.01, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32 },
-          /* (R157 idea 6: the stick's foot from the paving as the slow motion takes it down, the dust drawn in round it) */
-          { t: T.slow0, name: 'erupt', eye: STICK_FRONT0, at: STICK_FOOT, fp: 74, fd: 64, cut: true },
-          { t: T.strike + 0.03, name: 'erupt', eye: STICK_FRONT, at: STICK_FOOT, fp: 74, fd: 64 },
-          { t: T.rise + 0.55, name: 'erupt', eye: STICK_FRONT, at: HEADAT, fp: 76, fd: 66 },
+          /* R163, R164, R169, R170 (Chad, 26 Nov 2026: "it still cuts very abruptly from shot to shot"; "The entire start just does
+             not feel like a cohesive whole"; "Do you actually know how to direct the cutscene?"; "Where are the cinematic angles,
+             framing, creative direction?"): THE SUMMONING AS ONE MOVE, from the press's white to the stick striking the ground,
+             with no cut and no stop but two (`flow`: one cubic through the keys). Build 109 cut five times in ten seconds and
+             crossed to behind the two of them and back, so each shot began somewhere new. Now, all of it before them:
+             THE GRIP: low before his student's side, the two of them from the chest up looking up at their faces, the stick
+             between them and their fists on it, drifting in as his student's hand closes and the two powers kindle in their
+             fists (it holds both faces and both fists on any screen: fmHold);
+             THE BRAID: down into the fists as the two powers start up the shaft, then rising with them, a crane up the shaft to
+             the carved head as it takes their light;
+             THE HEAD: round the lit head from his student's side to his teacher's, the head in the middle of the picture and
+             the two faces behind it;
+             THE LIFT: drawn back and down as they raise the stick, a low hero's angle, a little tilted, the two of them and the
+             raised head against the night (the one rest before the charge);
+             THE EYES: the charge, from rest gathering speed straight up into the carved head's eyes as they ignite, held close
+             as the slow motion begins (the second rest);
+             THE STRIKE: falling with the stick in the slow motion, the lens widening, down to the paving at its foot, landing on
+             the frame it strikes; then tilting up with the Naga as it bursts out (as before).
+             R173 (Chad: "Are you directing as a cohesive whole, or are you just randomly combining different ideas and bits and
+             pieces?"): ONE IDEA under all of it, the start is one breath drawn in and the Naga is that breath let out. The lens
+             works in closer and narrower from the grip to the eyes (50 degrees on a phone down to 40), the sound and the music
+             rise with it (z_tail.js), and it all opens at once on the strike: the fall in the slow motion to the widest lens of
+             the film (80), the stick whole and both men under the night. Measured on a phone and a desk every tenth of a second
+             and read in full-size phone pictures: the head shot is from below his student's side with his teacher's face whole
+             above the carved head (the bars took faces at the mouth); the hero's angle 2.2 m out, not 2.5, and no rest there, so
+             the push into the eyes is 1.3 m, not 1.6; the eyes held from the eyes lighting into the slow motion itself, so the
+             fall starts as the clock slows (it had begun a tenth before, and lurched as the slow took it: 16 m/s per second);
+             the strike 1.55 m out and half a metre up (its legs-only picture gone); the tilt after it eased, 90 degrees a
+             second at most (it was 294) */
+          { t: 0, name: 'grip', eye: rel(MID, 2.05, -0.3, 1.12), at: rel(MID, 0, -0.05, 1.40), fp: 50, fd: 42, hold: HANDS_HOLD, band: 0.74, back: 1.0, flow: true },
+          { t: 2.7, name: 'grip', eye: rel(MID, 1.65, -0.5, 1.02), at: rel(MID, 0.1, -0.08, 1.30), fp: 48, fd: 40, hold: HANDS_HOLD, band: 0.74, back: 1.0, flow: true },
+          { t: T.braid + 0.6, name: 'braid', eye: rel(MID, 1.12, -0.62, 0.92), at: BRAID_AT(0.15), fp: 48, fd: 42, hold: BRAID_HOLD, band: 0.6, back: 0.6, flow: true },
+          { t: T.lit - 0.1, name: 'braid', eye: rel(MID, 1.0, -0.62, 1.0), at: LITAT, fp: 46, fd: 40, hold: LITHOLD, band: 0.6, back: 0.7, flow: true },
+          { t: T.lift - 0.55, name: 'head', eye: rel(MID, 0.95, -0.75, 1.0), at: LITAT, fp: 46, fd: 40, hold: LITHOLD, band: 0.6, back: 0.7, flow: true },
+          { t: T.lifted - 0.45, name: 'hero', eye: rel(MID, 2.2, -0.12, 0.62), at: rel(MID, 0, 0, 1.55), fp: 62, fd: 54, roll: -0.04, hold: HERO_HOLD, band: 0.64, back: 1.0, flow: true },
+          { t: T.eyelit + 0.1, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 42, fd: 34, flow: true },
+          { t: T.slow0 + 0.02, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32, flow: true, stop: true },
+          { t: T.strike - 0.04, name: 'erupt', eye: STRIKE_EYE, at: STRIKE_AT, fp: 80, fd: 70, flow: true, warp: (x) => this.real(x) },
+          { t: T.rise + 0.55, name: 'erupt', eye: STRIKE_EYE, at: ERUPT_AT, fp: 82, fd: 72 },
           { t: T.rise + 0.6, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50, cut: true },
           { t: T.top + 0.15, name: 'ride', eye: RIDE, at: HEADAT, fp: 58, fd: 50 },
           { t: T.top + 0.2, name: 'top', eye: PHO_BACK, at: UPTO, fp: 78, fd: 66, cut: true },
@@ -3222,7 +3332,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
        closes, wholly by seven tenths of the way down.
        A pure function of the film's clock: every sight is read from the Naga's plan at its own moment (its eyes, NAGA5.eyeAt),
        his head's place from where he stands (never his laid head) */
-    const NSOFT5 = { W: 1.1, N: 12, KNEE: 0.4, YAW: 0.6, BACK: 100 * Math.PI / 180, UP: 0.33, DOWN: 0.55, far: 3.0, mid: 0.7, H: 1.6,
+    /* (R175: the sights weighed so the newest and the oldest count for nothing and the weight rises to its most a third of
+       the way back (x(1 - x)^2 over the window), one every twentieth of a second over a second: with the newest counting
+       most, the look took a sixth of the Naga's own speed on the frame the Naga started to move, and each of the twelve
+       sights a tenth of a second apart stepped it again (measured: his teacher 2 to 50 degrees a second in one twentieth as
+       the Naga began its dive at 16.1 s, 12 to 68 and back to 20 at 11.8 s). The look now gathers its speed and lets it go
+       as a neck does, 0.40 s behind the Naga where it was 0.33) */
+    const NSOFT5 = { W: 1.0, N: 21, KNEE: 0.4, YAW: 0.6, BACK: 100 * Math.PI / 180, UP: 0.33, DOWN: 0.55, far: 3.0, mid: 0.7, H: 1.6,
                      q: new THREE.Quaternion(), qi: new THREE.Quaternion(), v: new THREE.Vector3() };
     function nagaSoft5(P, tau, B, T) {
       if (!P || !P.ready || !P.group || !B || !B.pts || !B.NM || typeof NAGA5 !== 'object' || !NAGA5.eyeAt) return null;
@@ -3233,9 +3349,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
       if (!B.ringC5) { let x = 0, y = 0, z = 0, n = 0; for (let i = B.NM.ringIn; i < B.NM.ringOut; i++) { const p = B.pts[i]; if (!p) continue; x += p[0]; y += p[1]; z += p[2]; n++; }
         B.ringC5 = n ? [x / n, y / n, z / n] : [B.S[0], B.S[1] + 3, B.S[2]]; }
       const rc = B.ringC5, spin = Math.max(0.1, T.home - T.ringOut);
-      let sy = 0, sn = 0, sw = 0;
+      let sy = 0, sn = 0, sw = 0, swy = 0;
       for (let j = 0; j < S.N; j++) {
-        const s = tau - S.W * j / (S.N - 1), w = 0.5 + 0.5 * Math.cos(Math.PI * j / (S.N - 1));
+        const q = j / (S.N - 1), s = tau - S.W * q, w = q * (1 - q) * (1 - q);
         const a = NAGA5.eyeAt(s, 0), b = NAGA5.eyeAt(s, 1); if (!a || !b) continue;
         let x = (a[0] + b[0]) / 2, y = (a[1] + b[1]) / 2, z = (a[2] + b[2]) / 2;
         const sp = c01((s - T.ringOut) / spin), m = smo(c01((s - T.ringOut) / (spin * S.mid)));
@@ -3246,10 +3362,19 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         const turn = ay <= S.KNEE ? ay : S.KNEE + (S.YAW - S.KNEE) * Math.tanh((ay - S.KNEE) / (S.YAW - S.KNEE));
         const yaw = Math.sign(ry) * turn * smo(c01((Math.PI - ay) / (Math.PI - S.BACK)));
         const nod = Math.max(-S.DOWN, Math.min(S.UP, Math.atan2(v.y, Math.hypot(v.x, v.z))));
-        sy += w * yaw; sn += w * nod; sw += w;
+        /* (R175: a sight nearly overhead has no side to it: its turn, read from the little of it that is not straight up, swung
+           from one side to the other each twentieth of a second as the Naga climbed over them (measured: 106, 18, 80, 48 degrees
+           a second in turn, 11.7 to 12.5 s). So each sight's turn counts by how far it is from straight up (all of it up to 60
+           degrees of rise, none overhead), and when few sights have a side the turn eases toward straight ahead) */
+        const wy = w * smo(c01(Math.hypot(v.x, v.z) / (v.length() || 1) / 0.5));
+        sy += wy * yaw; swy += wy; sn += w * nod; sw += w;
       }
       if (!(sw > 0)) return null;
-      const yaw = sy / sw, nod = sn / sw;
+      /* (R175: the turn eased toward straight ahead along a smooth curve of the share of the sights that have a side (all of
+         the turn from half of them, none from none, smoothstep between): the corner it had (divided by the larger of the
+         share and 0.35) started the head turning at full speed on the twentieth of a second the share crossed 0.35, measured
+         on his teacher at 16.2 s, 0 to 79 degrees a second, and on his student at 16.04 s) */
+      const yaw = swy > 0 ? sy / swy * smo(c01(swy / sw / 0.5)) : 0, nod = sn / sw;
       const v = S.v.set(Math.sin(yaw) * Math.cos(nod), Math.sin(nod), Math.cos(yaw) * Math.cos(nod)).applyQuaternion(S.q);
       return [hx + v.x * S.far, hy + v.y * S.far, hz + v.z * S.far];
     }

@@ -93,7 +93,9 @@ const INSTALL = () => {
       let face = null;
       if (Q.head && Q.headRest) { const hq = Q.head.getWorldQuaternion(new cam.quaternion.constructor()), f = new v.constructor(0, 0, 1).applyQuaternion(Q.headRest).applyQuaternion(hq).normalize();
         const hp = Q.head.getWorldPosition(new v.constructor()), tl = cam.getWorldPosition(new v.constructor()).sub(hp).normalize();
-        face = [+(Math.atan2(f.x, f.z) * 180 / Math.PI).toFixed(1), +(Math.acos(Math.max(-1, Math.min(1, f.dot(tl)))) * 180 / Math.PI).toFixed(1)]; }
+        /* (R175: and its nod, up positive, so a look's turn is read both ways) */
+        face = [+(Math.atan2(f.x, f.z) * 180 / Math.PI).toFixed(1), +(Math.acos(Math.max(-1, Math.min(1, f.dot(tl)))) * 180 / Math.PI).toFixed(1),
+                +(Math.asin(Math.max(-1, Math.min(1, f.y))) * 180 / Math.PI).toFixed(1)]; }
       return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9, hands[0], hands[1], face]; });
     const T = {};
     if (!noThings)
