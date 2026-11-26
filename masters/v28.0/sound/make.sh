@@ -214,3 +214,13 @@
 #   ms (14.0720 where 14.0711 was due), no step at the join; peak -2.9 dBFS (mp3), -3.2 (Opus). The film's own mixdown
 #   (scratch r163/mix) with the Naga's burst moved to the moment it comes out (z_tail.js, R179/R180) summed a hair over full
 #   scale at 10.84 s (the boom's tail under the burst): the boom's cue 0.75 (was 0.85), the burst kept at the top of the mix.
+# ---- R182 (26 Nov 2026, Chad: "The music at the start can be louder still"): M9 (u5m9naga2_b, no new takes, no credits).
+#   Its build under the charge lifted 18 dB at its first frame easing to 8.5 by 10.5 s (was 12 to 6), let go over the same
+#   90 ms before the strike, and its peaks before the strike held 1.5 dB under the rest of the piece's by the numpy
+#   look-ahead limiter (encode.py limhead, 5 ms ahead, 80 ms release; it took 1.2 dB at most), so the file's own peak and
+#   everything from the strike on are as they were (pick.py lim; picks.json). Measured as made (48 kHz, both channels):
+#   the first second 5.5 dB louder (-24.0 to -18.5 dBFS RMS), 4.8 at 3 s, 3.4 at 7 s, 2.5 just before the strike, 0.0
+#   from the strike on; peak -2.9 dBFS (mp3), -3.2 (Opus); 35.29 s. The film's own mixdown (scratch r182: its cues from
+#   z_tail.js, every file at its cue's volume): the first 10.6 s sum to -1.1 dBFS at most (was -2.0), before the engine's
+#   sfx gain of 0.9.
+#   OUT=<scratch> python3 -I masters/v28.0/sound/encode.py u5m9naga   (then the two files copied into assets/)

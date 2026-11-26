@@ -67,9 +67,26 @@ def splice(w, cuts):
         x = np.concatenate([x[:ib - k // 2], j, x[ia + k // 2:]])
     wavfile.write(w, sr, x.astype(np.float32))
 
-def mus(n, src, af, fc=None, cuts=None):
+def limhead(w, end, under):
+    # (R182) the head of a piece, up to `end` s, held under the peak of the rest of it less `under` dB by the numpy look-ahead
+    # limiter (level_fx.py's: 5 ms ahead, 80 ms release; v10.7, ffmpeg's does not hold its limit): a build lifted under a
+    # limiter never sets the file's peak, so the normalising after it leaves the rest of the piece where it was
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float64) / (32768.0 if x.dtype == np.int16 else 1.0)
+    y = x if x.ndim > 1 else x[:, None]; ie = int(round(end * sr)); stop = min(len(y), ie + int(0.6 * sr))
+    ceil = np.abs(y[ie:]).max() * 10 ** (-under / 20); pk = np.abs(y[:stop]).max(1)
+    need = np.ones(stop); need[:ie] = np.minimum(1.0, ceil / np.maximum(pk[:ie], 1e-9)); win = int(0.005 * sr)
+    lim = np.lib.stride_tricks.sliding_window_view(np.concatenate([need, np.ones(win - 1)]), win).min(axis=1)
+    a_r = np.exp(-1 / (0.080 * sr)); gg = np.empty(stop); cur = 1.0
+    for i in range(stop):
+        v = lim[i]; cur = v if v < cur else v + a_r * (cur - v); gg[i] = cur
+    y[:stop] *= gg[:, None]
+    print(f'  head to {end:.2f} s held under {20 * np.log10(ceil + 1e-12):.1f} dBFS: the limiter took {-20 * np.log10(gg.min()):.1f} dB at most', flush=True)
+    wavfile.write(w, sr, (y if x.ndim > 1 else y[:, 0]).astype(np.float32))
+def mus(n, src, af, fc=None, cuts=None, lim=None):
     w = pre(src, n, af, fc); x = os.path.join(TMP, n + '_x.wav')
     if cuts: splice(w, cuts)
+    if lim: limhead(w, lim[0], lim[1])
     p = peak(w); run('ffmpeg', '-v', 'error', '-y', '-i', w, '-af', f'volume={-3 - p:.2f}dB', '-c:a', 'pcm_f32le', x)
     # the encoders move the peak a little each way (v9.6): one more pass on each from its own measure
     flat(n, x, 2, '128k')
@@ -97,7 +114,7 @@ for n, o in PICKS.items():
     elif k == 'loop': fx(n, src, o.get('level', -14), af, fc, loop=True)
     elif k == 'bed': bed(n, src, fc=fc)
     # (R181: a piece cut and joined: its `splice`, or a graph of its own, its `fc`)
-    elif k == 'music': mus(n, src, af or 'anull', o.get('fc'), o.get('splice'))
+    elif k == 'music': mus(n, src, af or 'anull', o.get('fc'), o.get('splice'), o.get('lim'))
     elif k == 'mbed': mbed(n, src, o['secs'], o['start'], af or 'anull')
     elif k in ('stem', 'note'): flat(n, os.path.join(os.environ.get('MADE', ''), o['wav']), 2 if k == 'stem' else 1, '128k' if k == 'stem' else '96k')
 shutil.rmtree(TMP, ignore_errors=True)

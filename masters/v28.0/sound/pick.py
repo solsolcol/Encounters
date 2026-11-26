@@ -178,9 +178,14 @@ if P.get('u5m9naga', {}).get('take', '').startswith('u5m9naga2'):
     #  scratch r181): one join, 15 ms before the later onset, crossfaded over 30 ms into the same place before the earlier one,
     #  after which the piece runs on unbroken (encode.py splice). In the file's own time (the film's less the cue's 0.05 s):
     #  the beats 12.2905 to 13.1490 played again from 13.1490)
+    # (R182, Chad, 26 Nov 2026: "The music at the start can be louder still": the build lifted 18 dB at its start easing
+    #  to 8.5 by 10.5 s, was 12 to 6: six more at the first frame, two and a half more just before the strike, so it still
+    #  rises to the burst; let go over the same 90 ms before the strike. Its peaks before the strike are held 1.5 dB under
+    #  the burst's own by the numpy limiter (encode.py lim), so the file's level from the strike on is as it was)
     P['u5m9naga']['af'] = ("atrim=start=2.294,asetpts=PTS-STARTPTS,"
-                           "volume='pow(10,(if(lt(t,10.5),12-6*t/10.5,if(lt(t,10.59),6*(10.59-t)/0.09,0)))/20)':eval=frame,"
+                           "volume='pow(10,(if(lt(t,10.5),18-9.5*t/10.5,if(lt(t,10.59),8.5*(10.59-t)/0.09,0)))/20)':eval=frame,"
                            "afade=t=in:d=0.5")
+    P['u5m9naga']['lim'] = [10.59, 1.5]
     P['u5m9naga']['splice'] = [[12.2905, 13.1490, 0.03]]
     P['u5m9naga']['why'] = ('b, by its SHAPE (R163 to R168): a burst 8 dB up in 40 ms at 12.89 s of the take, where a has '
                             'none, and 45 %% where a phone plays against a\'s 31 %%; its head cut at 2.294 s so the burst '
