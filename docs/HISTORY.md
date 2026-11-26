@@ -9714,6 +9714,13 @@ What the baseline contains, by release:
   pictures showed (the strike's frame hid the stick's foot and the ring of light behind the bars) and built R177 to
   R181: the hold is a third slow on the film's clock, exactly two of the music's beats long, and the music plays those
   two beats twice at the same moment, so everything after stays in step. The tracker's log has the measures.
+- **v28.0 build 112 (26 Nov 2026; LIVE, deploy `6b0872c481db6ca3bc39e6fa`).** My own finding on build 111's desk
+  pictures, read full size on the live build: on a desk the climb up the stick at the start of the Naga film lost Master
+  Zavier's face under the top bar to the nose (3.1 to 4.2 s, 5.6 to 7.0 s), where a phone loses him at its side. On a desk
+  only, those three camera keys now hold his eyes (a held place may name its own share of the picture's height), aim a few
+  centimetres higher and may come a little further back: his eyes inside the picture at every tenth of a second from 2.5 to
+  8.0 s, the camera's speed unchanged, and a phone's camera identical at all 111 measured moments. On build 111 the Continue
+  check passed whole (a refresh after the Naga film lands back at the TOGETHER button). The tracker's log has the numbers.
 
 ## The sheet, version by version
 

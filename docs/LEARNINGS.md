@@ -9283,6 +9283,14 @@ starts to move). Replace each with a smooth curve (soft limits exact to 0.6 of t
 a window weighing its newest and oldest sights at nothing) and measure the look's speed AND its change of speed (accel.py:
 under 500 degrees a second per second is a natural neck).
 
+**A desk loses the nearest face at the top, a phone at the side (build 112).** A low camera looking up past a near
+shoulder at a subject further off: on a phone the near man leaves by the picture's side, which reads as a framing; on a
+desk, wide but short, he stays across the picture and his face goes under the top bar to the nose. A hold written for
+the subject alone passes on both, so read each screen's pictures, and measure the near face's eyes against the bars as
+drawn (eyes.py). Hold that face's EYES on the screen that needs it (the top of the head may go), with a share of the
+height of its own (a fifth number on a held place) and a slight tilt up, before reaching for a wider lens, which would
+undo a move designed to narrow.
+
 **Time added to a film is added to its music in the same place (R181).** Holding a shot longer moves every later moment, so
 a score timed to the film falls out of step from there on. Find the music's beat from its own onsets (140 a minute here),
 make the hold exactly a whole number of beats, and play those beats twice at the same moment with one crossfaded join a
