@@ -175,7 +175,17 @@ const aimFrom9 = (x, z) => p.evaluate(([x, z]) => { const e = window.__enc; e.ya
   e.yaw.rotation.y = Math.atan2(-x, -(z - 9)); e.pitch.rotation.x = 0; }, [x, z]);
 const spotNow = () => p.evaluate(() => window.__enc.kitDebug().hotspot);
 const readNotes = () => p.evaluate(() => window.__enc.kitDebug().conduct.notes.filter(n => n === 'You read the sign.' || n === 'You read the plaque.'));
+/* v28.0 (R186): THE EIGHTIETH SEAM, THE AIM DOT. Absent (nothing armed that asks for it), no class and nothing drawn; with
+   the plaque armed (it declares `aimDot`) and in view, the dot in the middle of this fine-pointer page; gone once the plaque
+   is pressed (below, the tap on its mark) */
+const aimDotNow = () => p.evaluate(() => { const d = document.getElementById('aimDot'), r = d && d.getBoundingClientRect();
+  return { cls: document.body.classList.contains('aimdot'), shown: !!d && getComputedStyle(d).display !== 'none',
+           mid: !!r && Math.abs(r.left + r.width / 2 - innerWidth / 2) <= 1 && Math.abs(r.top + r.height / 2 - innerHeight / 2) <= 1 }; });
+await aimFrom9(-10.5, 0); await settle();
+{ const a = await aimDotNow(); K.aimDotAbsent = !a.cls && !a.shown; }
 await p.evaluate(() => { for (const h of window.__enc.stage.hotspots) if (h.id === 'sign' || h.id === 'plaque') h.armed = true; });
+await settle();
+{ const a = await aimDotNow(); K.aimDotShown = a.cls && a.shown && a.mid; }
 await aimFrom9(0, -8); await settle();
 K.pressNotOffAim = !['sign', 'plaque'].includes(await spotNow());
 await aimFrom9(-10.5, 0);
@@ -198,6 +208,8 @@ K.pressTapMark = await p.evaluate(() => {
   if (!m || m.z > 1 || e.hotspotTap(3, 3) !== false) return false;
   return e.hotspotTap(m.x, m.y) === true && e.kitDebug().conduct.notes.includes('You read the plaque.');
 });
+await settle();
+{ const a = await aimDotNow(); K.aimDotGone = !a.cls && !a.shown; }
 
 /* v24.0: a spot with NO MARK (`mark: false`): arming it adds no mark to the screen, a tap where its mark would be does
    nothing, and with the reticle on it the badge still names it and E presses it */
@@ -3636,7 +3648,7 @@ K.tagGoneWithChapter = await p.evaluate(() => {
   };
   for (const k of ['tagPhoneOpen', 'tagPhoneStaleFinger', 'tagPhoneStick', 'tagPhoneNoLook', 'tagPhonePickInStickHalf', 'tagPhoneButton', 'tagHudPhone', 'tagHudLowPhone',
                    'tagPartyShown', 'tagCallSeam', 'tagArtSeam', 'tagWideSeam', 'tagPartyFilm', 'tagPartyTap', 'tagPartyHere', 'tagPartyLock', 'tagPartyAsk', 'tagPartyTab', 'tagPartyHudPhone', 'tagPartyHudLowPhone', 'tagPartyHudWide', 'tagArrowClear', 'tagArrowBy',
-                   'tagSlowSeam', 'popSeam', 'cutInSeam', 'barsSeam']) K[k] = false;
+                   'tagSlowSeam', 'popSeam', 'cutInWide', 'cutInSeam', 'barsSeam']) K[k] = false;
   try {
     /* (a phone page boots slower than the desktop's on a shared box: the budgets are tools/probes/boot.mjs's kind, and the
        time it took is printed; a Start the tap did not take is said, and pressed as that probe presses it) */
@@ -4028,6 +4040,49 @@ K.tagGoneWithChapter = await p.evaluate(() => {
       R._m = { point: [Math.round(sx), Math.round(sy)], w1: c1 && c1.map(Math.round), w2: c2 && c2.map(Math.round), w3: r3 && [r3.top, r3.bottom].map(Math.round), box: rb3 && [rb3.top, rb3.bottom].map(Math.round),
                over: ro && [ro.top, ro.bottom].map(Math.round), under: ru && [ru.top, ru.bottom].map(Math.round), edge: re && [re.left, re.right].map(Math.round) };
       return R;`);
+    /* v28.0 (R185, Chad, 26 Nov 2026: "The together moment on desktop, after clicking together, when the split portraits show
+       up, it is broken on desktop. On mobile it is fine."): on a screen wide for its height each band is a stripe of its own
+       thickness (18 % of the screen's height) with the phone's slant, the two the word's room apart at the middle, the picture
+       drawn whole at twice the stripe in the band's middle; on the phone's 390 x 844 nothing of it is written and the numbers
+       are the phone's as they always were. Asked with the chapter's own two pictures (asset keys: img, as the fight asks) */
+    const ciLay = (tag, arg) => pCheck('cutInWide.' + tag, `
+      const R = {}, C = document.getElementById('cutIn'); await frames(3);
+      R.asked = kit.cutIn({ a: 'p5cutpho', b: 'p5cutzav', word: 'Together', secs: 1.6 }) === true;
+      const an = () => C.getAnimations({ subtree: true }), at = () => { const A = an(); return A.length ? +A[0].currentTime : -1; };
+      const imgs = () => [...C.querySelectorAll('.ciPic img')];
+      R.loaded = await poll(() => imgs().length === 2 && imgs().every(i => i.naturalWidth > 0), 60000);
+      R.held = await poll(() => at() >= 650, 120000); await frames(1);
+      const cs = getComputedStyle(C), e = parseFloat(cs.getPropertyValue('--ciE')), wide = C.classList.contains('wide');
+      const a = C.querySelector('.ciBand.a').getBoundingClientRect(), b = C.querySelector('.ciBand.b').getBoundingClientRect();
+      const wp = parseFloat(getComputedStyle(C.querySelector('.ciWord')).fontSize), mid = innerHeight / 2;
+      const thick = Math.min(a.height, b.height) - 2 * e, aBot = a.bottom - e, bTop = b.top + e;
+      R._m = { wide, e, aH: a.height, bH: b.height, thick, aBot, bTop, wp, vw: innerWidth, vh: innerHeight };
+      if (arg.wide) {
+        R.wide = wide;
+        R.thick = thick >= 0.16 * innerHeight;
+        R.apart = aBot <= mid - 0.7 * wp && bTop >= mid + 0.7 * wp && bTop - aBot <= 1.7 * wp + 0.08 * innerHeight;
+        R.onScreen = a.top + 2 * e * 0.9 >= 0 && b.bottom - 2 * e * 0.9 <= innerHeight;
+        const pics = imgs().map(i => { const q = i.getBoundingClientRect(), B = i.closest('.ciBand').getBoundingClientRect();
+          return { h: q.height, w: q.width, dx: (q.left + q.width / 2) - (B.left + B.width / 2), nat: i.naturalWidth / i.naturalHeight }; });
+        R._pics = pics;
+        R.picWhole = pics.every(q => Math.abs(q.h - 2 * thick) <= 3 && Math.abs(q.w / q.h - q.nat) < 0.02 && Math.abs(q.dx) <= 2);
+      } else {
+        R.notWide = !wide;
+        R.phoneNumbers = cs.getPropertyValue('--ciH').trim() === Math.round(Math.max(120, Math.min(340, innerHeight * 0.24))) + 'px'
+          && Math.abs(a.bottom - (mid - 7)) <= 1 && Math.abs(b.top - (mid + 7)) <= 1;
+        R.covers = imgs().every(i => { const q = i.getBoundingClientRect(), B = i.closest('.ciPic').getBoundingClientRect();
+          return Math.abs(q.width - B.width) <= 1 && Math.abs(q.height - B.height) <= 1; });
+      }
+      R.ended = await poll(() => !C.classList.contains('on'), 120000); await frames(2);
+      R.gone = C.querySelectorAll('.ciPic').length === 0;
+      return R;`, arg);
+    await pp.setViewportSize({ width: 390, height: 844 });
+    K.cutInWide = await ciLay('phone', { wide: false });
+    await pp.setViewportSize({ width: 1280, height: 800 });
+    K.cutInWide = await ciLay('desk', { wide: true }) && K.cutInWide;
+    await pp.setViewportSize({ width: 1920, height: 1080 });
+    K.cutInWide = await ciLay('wide', { wide: true }) && K.cutInWide;
+    await pp.setViewportSize({ width: 390, height: 844 }); await pEval(`await frames(4); return true;`);
     K.cutInSeam = await pCheck('cutInSeam', `
       const R = {}, C = document.getElementById('cutIn');
       await frames(2);

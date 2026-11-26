@@ -3159,6 +3159,24 @@ function nearestHotspot() {
   }
   return aimed || best;
 }
+/* v28.0 · THE EIGHTIETH SEAM: THE AIM DOT (`aimDot` on a `pressAim` spot). Chad, R186 (26 Nov 2026, of episode 4
+   chapter 5's table on a desktop: "it is very hard to find the area to trigger each action label, the trigger area is too
+   small. Make it easier to trigger."). A look-spot pressed by aiming is aimed with the middle of the screen, and in play
+   with no weapon up nothing is drawn there: three marks a hand apart could only be found by turning until one grew. A
+   pressAim spot that declares `aimDot` puts a small dot in the middle of the screen while it is enabled, in its reach and
+   on the screen, on a fine pointer only (a phone taps the marks themselves); in play only, never in the tag mode or under a
+   window. Absent, nothing is drawn and no class is set: no chapter before episode 4 chapter 5's table declares it */
+let aimDotOn = false;
+function aimDotFrame(off) {
+  let on = false;
+  if (!off && state === 'play' && !ev && !tag.on) {
+    for (const h of hotspotList()) {
+      if (!h || !h.aimDot || !h.pressAim || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+      if (Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z) < (h.radius || 2.2) && (h.anyView || hotspotVisible(h))) { on = true; break; }
+    }
+  }
+  if (on !== aimDotOn) { aimDotOn = on; document.body.classList.toggle('aimdot', on); }
+}
 /* v11.0: THE EIGHTEENTH SEAM — a hotspot SEEN BY LOOKING. Episode 2
    chapter 3's play is a torch: a spot in the jungle is "pressed" when the
    beam has rested on it, and there is no button for a thing you can only
@@ -8410,6 +8428,27 @@ function kitCutIn(o = {}) {
   E.root.style.setProperty('--ciT', secs + 's');
   E.root.style.setProperty('--ciH', H + 'px');
   E.root.style.setProperty('--ciE', e + 'px');
+  /* R185 (Chad, 26 Nov 2026: "The together moment on desktop, after clicking together, when the split portraits show up, it
+     is broken on desktop. On mobile it is fine."): a band's slant comes from the screen's WIDTH and its height from the
+     screen's HEIGHT, so on a screen wide for its height the slant took the whole band (at 1280 x 800, 158 px of its 192:
+     each portrait a sliver 35 px thick showing one eye, cut across), and its picture, covering a band eight times as wide
+     as it is tall, showed a fifth of its own height. Where the band would be over 2.6 times as wide as it is tall (a
+     phone's is 2.3, untouched: none of this is written there), each band is laid as a phone's is in proportion: a stripe
+     of its own thickness (18 % of the screen's height, a phone's share) with the same slant, the band that much taller;
+     the two stripes the word's room apart at the middle (a phone's share of the height, or 1.6 times the word); and its
+     picture drawn whole at twice the stripe's thickness in the band's middle (as much of the face as a phone's stripe
+     shows), its sides fading into the band's own dark (shell.html, #cutIn.wide) */
+  const wide = 1.2 * innerWidth / H > 2.6;
+  E.root.classList.toggle('wide', wide);
+  if (wide) {
+    const T = Math.round(Math.max(110, Math.min(300, innerHeight * 0.1825))), wp = Math.min(66, Math.max(30, innerWidth * 0.094));
+    const G = Math.round(Math.max(innerHeight * 0.0735, wp * 1.6)), HW = T + 2 * e;
+    E.root.style.setProperty('--ciH', HW + 'px');
+    E.root.style.setProperty('--ciTA', Math.round(e - G / 2 - HW) + 'px');
+    E.root.style.setProperty('--ciTB', Math.round(G / 2 - e) + 'px');
+    E.root.style.setProperty('--ciIH', (2 * T) + 'px');
+    E.root.style.setProperty('--ciIT', Math.round(e - 0.44 * T) + 'px');
+  }
   cutInPic(E.a, o.a || o.b); cutInPic(E.b, o.b || o.a);
   E.word.textContent = typeof o.word === 'string' ? o.word : '';
   void E.root.offsetWidth;                              // (the animations begin again from their start every time)
@@ -19823,6 +19862,7 @@ function tick(now = 0) {
     // badge names it; chapters 1–5 declare none, so `spot` is always null there
     const spot = (reach || tag.on) ? null : nearestHotspot();
     setInteractBadge(reach ? null : spot);
+    aimDotFrame(reach || tag.on);   // v28.0 (R186): the aim point drawn while a spot that asks for it is on offer
     if (reach || spot) {
       ui.interact.classList.remove('hide');
       ui.prompt.classList.add('hide');

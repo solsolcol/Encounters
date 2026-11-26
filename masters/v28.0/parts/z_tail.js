@@ -332,7 +332,7 @@
      film begins on it, with the card) */
   /* (R184, Chad, 26 Nov 2026: "Yes improve the other purple fade after the fight ends.": his violet's own light carries him
      back into his eyes, the field of R161 (c_yfilm.js VIOLETFX5) where one flat violet card stood: so it is seen moving, the
-     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is half a second later with it) */
+     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is 0.6 s later with it) */
   const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [1.5], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
                      ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);

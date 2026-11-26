@@ -1618,12 +1618,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         'precision highp float;\n' +
         'varying vec2 vUv;\n' +
         'uniform float uT, uK, uCore, uIn, uOut, uAsp, uRm;\n' +
+        'uniform vec2 uC;\n' +
         'float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }\n' +
         'float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);\n' +
         '  return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y); }\n' +
         'float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return s; }\n' +
         'void main(){\n' +
-        '  vec2 p = (vUv - 0.5) * vec2(uAsp, 1.0) * 2.0;\n' +
+        '  vec2 p = ((vUv - 0.5) * 2.0 - uC) * vec2(uAsp, 1.0);\n' +
         '  float r = length(p), a = atan(p.y, p.x);\n' +
         '  float rin = r * (1.0 + 1.6 * uIn);\n' +
         '  float tw = a + 1.5 * log(rin + 0.12) - uT * (0.55 + 1.8 * uIn);\n' +
@@ -1646,17 +1647,24 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         '  float d = (h21(gl_FragCoord.xy + fract(uT)) - 0.5) / 255.0;\n' +
         '  gl_FragColor = vec4(wash * cover + glow + d, cover);\n' +
         '}\n',
-        uniforms: { uT: { value: 0 }, uK: { value: 0 }, uCore: { value: 0 }, uIn: { value: 0 }, uOut: { value: 0 }, uAsp: { value: 0.5 }, uRm: { value: 1.1 } },
+        uniforms: { uT: { value: 0 }, uK: { value: 0 }, uCore: { value: 0 }, uIn: { value: 0 }, uOut: { value: 0 }, uAsp: { value: 0.5 }, uRm: { value: 1.1 }, uC: { value: new THREE.Vector2() } },
         transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,
         blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
         blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
       mats.push(m);
       const me = new THREE.Mesh(g, m); me.frustumCulled = false; me.renderOrder = 1e9 - 5; me.visible = false; world.add(me);
+      /* (R184: `on`, a place in the world the field is centred on, where it stands on the screen this frame (the lens as the
+         film has just laid it), so the light turns round him and gathers into him; absent, the picture's middle, exactly as
+         before the fight: the offset is a subtraction of nothing and a power of two, so the numbers are the same) */
+      const ON = new THREE.Vector3();
       return {
         set(o) { const U = m.uniforms; if (!o || !(o.k > 0.002)) { me.visible = false; return; }
           const asp = (camera && camera.aspect) || 1;
           U.uT.value = o.t; U.uK.value = Math.min(1, o.k); U.uCore.value = o.core; U.uIn.value = o.gather || 0; U.uOut.value = o.clear || 0;
-          U.uAsp.value = asp; U.uRm.value = Math.hypot(asp, 1); me.visible = true; },
+          U.uAsp.value = asp; U.uRm.value = Math.hypot(asp, 1); me.visible = true;
+          if (o.on && camera) { camera.updateWorldMatrix(true, false); ON.set(o.on[0], o.on[1], o.on[2]).project(camera);
+            if (ON.z < 1 && Number.isFinite(ON.x) && Number.isFinite(ON.y)) U.uC.value.set(Math.max(-0.95, Math.min(0.95, ON.x)), Math.max(-0.95, Math.min(0.95, ON.y))); else U.uC.value.set(0, 0); }
+          else U.uC.value.set(0, 0); },
         off() { me.visible = false; },
         lab() { return { on: me.visible, k: m.uniforms.uK.value, out: m.uniforms.uOut.value }; }
       };
@@ -3070,10 +3078,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         /* (R184) THE VIOLET'S PICTURE, AS BEFORE THE FIGHT (R161's field): in under the first flash, alive while the lens is
            drawn in behind him, gathered in and brightened into the second flash, under which the lens goes back into his
-           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands */
+           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands. Until the cut it turns
+           round HIM, its core on his head (`on`): centred on the picture's middle, its brightest light stood on Jun in the
+           doorway beyond him and gathered there, the light seen going into the house, not into him (build 114's pictures) */
         { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.eyes - 1.0) / 0.4)));
           const pre = t < T.eyes ? 1 : 0, gather = pre * smo(c01((t - T.eyes + 0.9) / 0.9));
-          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)) } : null); }
+          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)),
+                                      on: pre ? [zz.x, 1.6, zz.z] : null } : null); }
       },
       end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1); VIOLETFX5.off();
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;

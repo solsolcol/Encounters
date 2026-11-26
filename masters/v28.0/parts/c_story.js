@@ -497,8 +497,16 @@
     const stainSpot = (c, at, y) => ({ id: 'stain' + c.slice(1), pos: { x: at.x, y, z: at.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT,
       hits: markHit5(() => ({ x: at.x, y: 0.1, z: at.z }), 0.1),
       enabled: () => phase === 'hunt' && !play.busy && !play.found.has(c) && hunt5.shown.has(c) && hunt5.pending !== c && hereFor(c), onInteract() { return lookHere(c); } });
-    const lookSpot5 = (c, k, line) => ({ id: 'look' + c.slice(1), pos: { x: TABLE5.P[k].x, y: TABLE5.P[k].y, z: TABLE5.P[k].z }, radius: 3, aim: 0.13, pressAim: true,
-      markFar: 3, markY: 0.12, prompt: W.hotLook, ground: G_TABLE, hits: markHit5(presAt(k), 0.07),
+    /* (R186, Chad, 26 Nov 2026: "On desktop, for this part, it is very hard to find the area to trigger each action label, the
+       trigger area is too small. Make it easier to trigger.": each one's cone stood on its piece on the cloth, 0.12 m under
+       its mark, and 0.13 rad wide; seated 1.25 m from the back row, a mark stood 4 degrees above its own cone's middle and the
+       cone reached only 3 degrees past it, and the three pieces stand 5 degrees apart, so the reticle (drawn nowhere) found a
+       mark only in a narrow slot under it. Now the cone stands ON the mark (the mark drawn where it always was), 0.30 rad
+       wide, so the mark nearest the middle of the screen is the one offered anywhere round the three (the engine's nearer-
+       cone rule splits them halfway between), and on a desktop a dot marks the middle of the screen while they are on offer
+       (main.js aimDotFrame, the eightieth seam); a tap or a click on a mark or its presence works as before) */
+    const lookSpot5 = (c, k, line) => ({ id: 'look' + c.slice(1), pos: { x: TABLE5.P[k].x, y: TABLE5.P[k].y + 0.12, z: TABLE5.P[k].z }, radius: 3, aim: 0.30, pressAim: true, aimDot: true,
+      markFar: 3, markY: 0, prompt: W.hotLook, ground: G_TABLE, hits: markHit5(presAt(k), 0.07),
       enabled: () => phase === 'table' && !play.busy && play.found.has('m') && visOpen() && !play.found.has(c), onInteract() { return lookPresence(c, line); } });
     const hotspots = [hsTon, hsJun,
       { id: 'drain', pos: { x: FLOOR.DRAIN.x, y: 0.9, z: FLOOR.DRAIN.z }, radius: 1.9, prompt: W.hotDrain, markY: 0.1, hits: markHit5(() => ({ x: FLOOR.DRAIN.x, y: 0.05, z: FLOOR.DRAIN.z }), 0.1),

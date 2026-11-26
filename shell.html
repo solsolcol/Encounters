@@ -383,6 +383,14 @@ body.wpnIco-spray #fireBtn [data-t="hud.fire"]{display:none}
   z-index:6;display:none;pointer-events:none;opacity:.88;
   transition:transform .14s ease-out,opacity .14s ease-out}
 body.inplay.weaponUp #reticle{display:block}
+/* v28.0 (R186, the eightieth seam): the aim point while a look-spot that asks for it is on offer (main.js aimDotFrame): a
+   small dot in the middle of the screen, on a fine pointer only, under every window and film */
+#aimDot{position:fixed;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;z-index:6;display:none;
+  pointer-events:none;background:rgba(255,255,255,.95);box-shadow:0 0 0 1.5px rgba(0,0,0,.6),0 0 7px 1px rgba(120,255,220,.75)}
+body.finePtr.inplay.aimdot #aimDot{display:block}
+body.aimdot.cine #aimDot,body.aimdot.invopen #aimDot,body.aimdot.menuopen #aimDot,body.aimdot.cardup #aimDot,body.aimdot.evopen #aimDot,
+body.aimdot.unlockopen #aimDot,body.aimdot.chooseopen #aimDot,body.aimdot.galleryopen #aimDot,body.aimdot.pictureopen #aimDot,
+body.aimdot.weaponUp #aimDot{display:none}
 body.weaponUp.cine #reticle,body.weaponUp.invopen #reticle,body.weaponUp.menuopen #reticle,body.weaponUp.cardup #reticle,body.weaponUp.evopen #reticle{display:none}   /* v14.4: evopen was above the show rule at equal specificity, so it lost */
 /* v14.3: THE REFUSED SHOT (Chad, on the live range: "disable shooting until
    the player actually reaches lane 6. The HUD ui should say something like
@@ -866,6 +874,14 @@ body.unlockopen #popLayer,body.chooseopen #popLayer,body.galleryopen #popLayer,b
 #cutIn.on .ciBand.a .ciPic::after{animation:ciShine var(--ciT) linear both}
 #cutIn.on .ciBand.b .ciPic::after{animation:ciShine var(--ciT) linear .06s both}
 #cutIn.on .ciWord{animation:ciWord var(--ciT) linear both}
+/* (R185: on a screen wide for its height, main.js lays each band as a phone's is in proportion: a stripe of its own
+   thickness, the two the word's room apart at the middle, each band's place from its own offset; the picture drawn whole
+   at twice the stripe's thickness in the band's middle, its sides fading into the band's dark. A phone never has .wide) */
+#cutIn.wide .ciBand.a{top:calc(50% + var(--ciTA))}
+#cutIn.wide .ciBand.b{top:calc(50% + var(--ciTB))}
+#cutIn.wide .ciPic img{position:absolute;left:50%;top:var(--ciIT);width:auto;height:var(--ciIH);max-width:none;object-fit:contain;
+  transform:translateX(-50%);-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
 @keyframes ciFlash{0%{opacity:0}4%{opacity:1}16%{opacity:.18}80%{opacity:.12}100%{opacity:0}}
 @keyframes ciSlash{0%{opacity:1;transform:scaleX(0);animation-timing-function:cubic-bezier(.2,.8,.3,1)}10%{opacity:1;transform:scaleX(1)}
   20%{opacity:0;transform:scaleX(1) scaleY(.2)}100%{opacity:0;transform:scaleX(1) scaleY(.2)}}
@@ -3787,6 +3803,8 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
      broken". Four ticks and a dot, each with a dark outline so it reads on
      a white flare and on black tarmac alike; it tightens and turns sodium
      while the aim is narrowed. -->
+<!-- v28.0 (R186): the aim point for a look-spot that asks for it (main.js aimDotFrame) -->
+<div id="aimDot" aria-hidden="true"></div>
 <div id="reticle" aria-hidden="true">
   <i class="rdot"></i>
   <i class="rt rt-u"></i><i class="rt rt-d"></i><i class="rt rt-l"></i><i class="rt rt-r"></i>

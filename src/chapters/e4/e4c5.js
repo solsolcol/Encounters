@@ -14339,8 +14339,16 @@
     const stainSpot = (c, at, y) => ({ id: 'stain' + c.slice(1), pos: { x: at.x, y, z: at.z }, radius: 1.8, prompt: W.hotStain, markY: 0.2, ground: G_HUNT,
       hits: markHit5(() => ({ x: at.x, y: 0.1, z: at.z }), 0.1),
       enabled: () => phase === 'hunt' && !play.busy && !play.found.has(c) && hunt5.shown.has(c) && hunt5.pending !== c && hereFor(c), onInteract() { return lookHere(c); } });
-    const lookSpot5 = (c, k, line) => ({ id: 'look' + c.slice(1), pos: { x: TABLE5.P[k].x, y: TABLE5.P[k].y, z: TABLE5.P[k].z }, radius: 3, aim: 0.13, pressAim: true,
-      markFar: 3, markY: 0.12, prompt: W.hotLook, ground: G_TABLE, hits: markHit5(presAt(k), 0.07),
+    /* (R186, Chad, 26 Nov 2026: "On desktop, for this part, it is very hard to find the area to trigger each action label, the
+       trigger area is too small. Make it easier to trigger.": each one's cone stood on its piece on the cloth, 0.12 m under
+       its mark, and 0.13 rad wide; seated 1.25 m from the back row, a mark stood 4 degrees above its own cone's middle and the
+       cone reached only 3 degrees past it, and the three pieces stand 5 degrees apart, so the reticle (drawn nowhere) found a
+       mark only in a narrow slot under it. Now the cone stands ON the mark (the mark drawn where it always was), 0.30 rad
+       wide, so the mark nearest the middle of the screen is the one offered anywhere round the three (the engine's nearer-
+       cone rule splits them halfway between), and on a desktop a dot marks the middle of the screen while they are on offer
+       (main.js aimDotFrame, the eightieth seam); a tap or a click on a mark or its presence works as before) */
+    const lookSpot5 = (c, k, line) => ({ id: 'look' + c.slice(1), pos: { x: TABLE5.P[k].x, y: TABLE5.P[k].y + 0.12, z: TABLE5.P[k].z }, radius: 3, aim: 0.30, pressAim: true, aimDot: true,
+      markFar: 3, markY: 0, prompt: W.hotLook, ground: G_TABLE, hits: markHit5(presAt(k), 0.07),
       enabled: () => phase === 'table' && !play.busy && play.found.has('m') && visOpen() && !play.found.has(c), onInteract() { return lookPresence(c, line); } });
     const hotspots = [hsTon, hsJun,
       { id: 'drain', pos: { x: FLOOR.DRAIN.x, y: 0.9, z: FLOOR.DRAIN.z }, radius: 1.9, prompt: W.hotDrain, markY: 0.1, hits: markHit5(() => ({ x: FLOOR.DRAIN.x, y: 0.05, z: FLOOR.DRAIN.z }), 0.1),
@@ -16029,12 +16037,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         'precision highp float;\n' +
         'varying vec2 vUv;\n' +
         'uniform float uT, uK, uCore, uIn, uOut, uAsp, uRm;\n' +
+        'uniform vec2 uC;\n' +
         'float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }\n' +
         'float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);\n' +
         '  return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y); }\n' +
         'float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return s; }\n' +
         'void main(){\n' +
-        '  vec2 p = (vUv - 0.5) * vec2(uAsp, 1.0) * 2.0;\n' +
+        '  vec2 p = ((vUv - 0.5) * 2.0 - uC) * vec2(uAsp, 1.0);\n' +
         '  float r = length(p), a = atan(p.y, p.x);\n' +
         '  float rin = r * (1.0 + 1.6 * uIn);\n' +
         '  float tw = a + 1.5 * log(rin + 0.12) - uT * (0.55 + 1.8 * uIn);\n' +
@@ -16057,17 +16066,24 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         '  float d = (h21(gl_FragCoord.xy + fract(uT)) - 0.5) / 255.0;\n' +
         '  gl_FragColor = vec4(wash * cover + glow + d, cover);\n' +
         '}\n',
-        uniforms: { uT: { value: 0 }, uK: { value: 0 }, uCore: { value: 0 }, uIn: { value: 0 }, uOut: { value: 0 }, uAsp: { value: 0.5 }, uRm: { value: 1.1 } },
+        uniforms: { uT: { value: 0 }, uK: { value: 0 }, uCore: { value: 0 }, uIn: { value: 0 }, uOut: { value: 0 }, uAsp: { value: 0.5 }, uRm: { value: 1.1 }, uC: { value: new THREE.Vector2() } },
         transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,
         blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
         blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
       mats.push(m);
       const me = new THREE.Mesh(g, m); me.frustumCulled = false; me.renderOrder = 1e9 - 5; me.visible = false; world.add(me);
+      /* (R184: `on`, a place in the world the field is centred on, where it stands on the screen this frame (the lens as the
+         film has just laid it), so the light turns round him and gathers into him; absent, the picture's middle, exactly as
+         before the fight: the offset is a subtraction of nothing and a power of two, so the numbers are the same) */
+      const ON = new THREE.Vector3();
       return {
         set(o) { const U = m.uniforms; if (!o || !(o.k > 0.002)) { me.visible = false; return; }
           const asp = (camera && camera.aspect) || 1;
           U.uT.value = o.t; U.uK.value = Math.min(1, o.k); U.uCore.value = o.core; U.uIn.value = o.gather || 0; U.uOut.value = o.clear || 0;
-          U.uAsp.value = asp; U.uRm.value = Math.hypot(asp, 1); me.visible = true; },
+          U.uAsp.value = asp; U.uRm.value = Math.hypot(asp, 1); me.visible = true;
+          if (o.on && camera) { camera.updateWorldMatrix(true, false); ON.set(o.on[0], o.on[1], o.on[2]).project(camera);
+            if (ON.z < 1 && Number.isFinite(ON.x) && Number.isFinite(ON.y)) U.uC.value.set(Math.max(-0.95, Math.min(0.95, ON.x)), Math.max(-0.95, Math.min(0.95, ON.y))); else U.uC.value.set(0, 0); }
+          else U.uC.value.set(0, 0); },
         off() { me.visible = false; },
         lab() { return { on: me.visible, k: m.uniforms.uK.value, out: m.uniforms.uOut.value }; }
       };
@@ -17481,10 +17497,13 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
         ]);
         /* (R184) THE VIOLET'S PICTURE, AS BEFORE THE FIGHT (R161's field): in under the first flash, alive while the lens is
            drawn in behind him, gathered in and brightened into the second flash, under which the lens goes back into his
-           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands */
+           eyes, and cleared from the middle out over 1.3 s as his own sight comes home to his hands. Until the cut it turns
+           round HIM, its core on his head (`on`): centred on the picture's middle, its brightest light stood on Jun in the
+           doorway beyond him and gathered there, the light seen going into the house, not into him (build 114's pictures) */
         { const k = t < T.violet - 0.06 ? 0 : smo(c01((t - T.violet + 0.06) / 0.12)) * (1 - smo(c01((t - T.eyes - 1.0) / 0.4)));
           const pre = t < T.eyes ? 1 : 0, gather = pre * smo(c01((t - T.eyes + 0.9) / 0.9));
-          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)) } : null); }
+          VIOLETFX5.set(k > 0.002 ? { k, t, core: (0.75 + 0.35 * smo(c01((t - T.violet) / 1.5))) * (pre ? 1 : 0.6) + 0.6 * gather, gather, clear: smo(c01((t - T.eyes) / 1.3)),
+                                      on: pre ? [zz.x, 1.6, zz.z] : null } : null); }
       },
       end() { fmLens(PLAYFOV5); CURTAINS5.set(0); WISPS5.off(); liftDoors(0); lamp(LAMP_FLICK, 1); VIOLETFX5.off();
         if (things.bagTied && things.bagTied.parent !== world) world.attach(things.bagTied); if (things.bagTied) things.bagTied.visible = false; FM5.bagOff = null;
@@ -18388,7 +18407,7 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
      film begins on it, with the card) */
   /* (R184, Chad, 26 Nov 2026: "Yes improve the other purple fade after the fight ends.": his violet's own light carries him
      back into his eyes, the field of R161 (c_yfilm.js VIOLETFX5) where one flat violet card stood: so it is seen moving, the
-     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is half a second later with it) */
+     violet stands 1.5 s before the cut into his eyes, was 0.9, and everything after it is 0.6 s later with it) */
   const BT5 = tl(0, [[0.3], ['@thin'], [1.6], ['@violet'], [1.5], ['@eyes'], [0.8], ['@lamp1'], [0.8], ['@lamp2'], [1.2], ['@room1'], [4.4], ['@room2'], [3.6], ['@room3'], [3.6],
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
                      ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [3.8], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);

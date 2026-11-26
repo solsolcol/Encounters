@@ -399,7 +399,8 @@
       { id: 'sign', pos: { x: -10.5, y: 1.6, z: 0 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Read the sign', once: true, markFar: 16,
         enabled() { return !!this.armed; },
         onInteract() { if (kit) kit.conduct({ note: 'You read the sign.' }); return true; } },
-      { id: 'plaque', pos: { x: -10.5, y: 1.6, z: -2.5 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Read the plaque', once: true, markFar: 16,
+      /* (v28.0, the eightieth seam: the plaque asks for the aim dot, `aimDot`; the sign does not) */
+      { id: 'plaque', pos: { x: -10.5, y: 1.6, z: -2.5 }, radius: 16, aim: 0.25, pressAim: true, aimDot: true, prompt: 'Read the plaque', once: true, markFar: 16,
         enabled() { return !!this.armed; },
         onInteract() { if (kit) kit.conduct({ note: 'You read the plaque.' }); return true; } },
       /* v24.0: a spot the player must FIND (`mark: false`): pressed like the two above, but it wears no mark and so has
