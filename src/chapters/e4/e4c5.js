@@ -17062,7 +17062,12 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            T.lit the lens is up the shaft, the faces low in the picture, and the bars are whole by the cut to the lift) */
         /* (R144, Chad: "make it last one second longer on screen": the word now stands 2.5 s, and the bars are given back once
            it has gone, a second later than build 102b gave them back, so it never rides down with them) */
-        const barK = smo(c01((tau - (T.lit - 0.3)) / 0.8)) * (1 - smo(c01((tau - T.title - 2.55) / 0.6)));
+        /* (R188, Chad, 26 Nov 2026: "I will prefer that the black bars only start increasing in size when the naga shoots out
+           from the naga staff, and the black bars decrease back in size at the same timing as it is currently now"; R189: "which
+           is shortly after the naga text fades out. So keep that as it is": drawn in from the moment it bursts out of the
+           carved head (T.rise, where they began at T.lit - 0.3, 5.4 s before it), over the same 0.8 s, so they are whole as
+           the word comes up (T.title, 0.75 s after the burst: 0.99 of the way); given back exactly as before) */
+        const barK = smo(c01((tau - T.rise) / 0.8)) * (1 - smo(c01((tau - T.title - 2.55) / 0.6)));
         if (kit && kit.bars) kit.bars(barK);
         this.title(tau, T, kit && kit.bars ? barK : 0);
       },
