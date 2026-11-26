@@ -53,6 +53,8 @@
        (`band`, 0.88 unless said): a film whose bars are drawn in (kit.bars, up to 18 % of the screen each) shows only 0.64 of
        it, so a key under drawn-in bars says so (build 101: the Naga film's first shot, where the bars came in while the lens
        pushed in, and on a phone Grandmaster Pho's face went out of the top of the picture) */
+    /* (build 112: a held place may name its own share of the half-height as a fifth number, [x, y, z, r, band], where the
+       key's band would hold it too low or too high; a place without one is held by the key's band, exactly as before) */
     const _fhE = new THREE.Vector3(), _fhR = new THREE.Ray(), _fhH = new THREE.Vector3();
     let solidBoxes5 = null;
     function fmPullOf(K) {
@@ -63,7 +65,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * (K.band || 0.88)) - z); }
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * (h[4] || K.band || 0.88)) - z); }
       return Math.min(K.back != null ? K.back : 1.2, Math.max(0, d));
     }
     function fmHold(A, B, u) {
@@ -89,7 +91,7 @@
       for (const h of H) { if (!h) continue; const dx = h[0] - _fhE.x, dy = h[1] - _fhE.y, dz = h[2] - _fhE.z, r = h[3] || 0;
         const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
         const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
-        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (K.band || 0.88))); }
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (h[4] || K.band || 0.88))); }
       return th;
     }
     function fmKeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
@@ -2713,6 +2715,17 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
            so the head shot holds the carved head and his teacher's face, and aims between them) */
         const LITHOLD = () => [HEADTOP().concat(0.1), HEADMID().concat(0.12), headAt5(this.pho, -0.01, -0.05, 1.70).concat(0.1), headAt5(this.pho, -0.01, -0.05, 1.56).concat(0.1)];
         const LITAT = () => { const h = HEADMID(), q = headAt5(this.pho, -0.01, -0.05, 1.6); return [0.6 * h[0] + 0.4 * q[0], 0.6 * h[1] + 0.4 * q[1], 0.6 * h[2] + 0.4 * q[2]]; };
+        /* (build 112, build 111's desk pictures read full size on the live build: on a desk the climb up the stick and the
+           lit head held the carved head, the fists and his teacher's face, and his student's face, the nearest thing to the
+           lens and high in the picture, went out under the top bar to the nose from 3.1 to 4.2 s and from 5.6 to 7.0 s (a
+           phone's narrow picture loses him at its side instead, where a face may go). So on a desk those three keys also hold
+           his student's EYES (the top of his head may go; the eyes stay in), where the film stands him; a phone's keys are
+           exactly as they were) */
+        const ZAVEYES_D = (band) => { if (isNarrow()) return []; const Z = this.zj || this.zav; return [headAt5(Z, -0.03, -0.07, 1.60).concat(0.03, band)]; };
+        /* (and on a desk only, the aim a few centimetres higher (deskUp) and the eye free to come further back (each key's
+           `back` read on a desk as more), so the shot tilts up a little and widens a little rather than being thrown far back:
+           his eyes measured at 1.60 m, 15 cm over his head's bone, where build 111's desk pictures had them) */
+        const deskUp = (f, dy) => () => { const p = v3_5(f); return p && !isNarrow() ? [p[0], p[1] + dy, p[2]] : p; };
         const HERO_HOLD = () => { const Z = this.zj || this.zav, out = [];
           for (const y of HOLD_PHO) out.push(headAt5(this.pho, -0.01, -0.05, y).concat(0.1));
           for (const y of HOLD_ZAV) out.push(headAt5(Z, -0.03, -0.07, y).concat(0.1));
@@ -2805,9 +2818,9 @@ varying vec3 vNWp; varying vec3 vNWn; varying float vNS; varying vec2 vNCS; vary
              second at most (it was 294) */
           { t: 0, name: 'grip', eye: rel(MID, 2.05, -0.3, 1.12), at: rel(MID, 0, -0.05, 1.40), fp: 50, fd: 42, hold: HANDS_HOLD, band: 0.74, back: 1.0, flow: true },
           { t: 2.7, name: 'grip', eye: rel(MID, 1.65, -0.5, 1.02), at: rel(MID, 0.1, -0.08, 1.30), fp: 48, fd: 40, hold: HANDS_HOLD, band: 0.74, back: 1.0, flow: true },
-          { t: T.braid + 0.6, name: 'braid', eye: rel(MID, 1.12, -0.62, 0.92), at: BRAID_AT(0.15), fp: 48, fd: 42, hold: BRAID_HOLD, band: 0.6, back: 0.6, flow: true },
-          { t: T.lit - 0.1, name: 'braid', eye: rel(MID, 1.0, -0.62, 1.0), at: LITAT, fp: 46, fd: 40, hold: LITHOLD, band: 0.6, back: 0.7, flow: true },
-          { t: T.lift - 0.55, name: 'head', eye: rel(MID, 0.95, -0.75, 1.0), at: LITAT, fp: 46, fd: 40, hold: LITHOLD, band: 0.6, back: 0.7, flow: true },
+          { t: T.braid + 0.6, name: 'braid', eye: rel(MID, 1.12, -0.62, 0.92), at: deskUp(BRAID_AT(0.15), 0.07), fp: 48, fd: 42, hold: () => BRAID_HOLD().concat(ZAVEYES_D(0.7)), band: 0.6, get back() { return isNarrow() ? 0.6 : 0.9; }, flow: true },
+          { t: T.lit - 0.1, name: 'braid', eye: rel(MID, 1.0, -0.62, 1.0), at: deskUp(LITAT, 0.04), fp: 46, fd: 40, hold: () => LITHOLD().concat(ZAVEYES_D(0.6)), band: 0.6, get back() { return isNarrow() ? 0.7 : 0.95; }, flow: true },
+          { t: T.lift - 0.55, name: 'head', eye: rel(MID, 0.95, -0.75, 1.0), at: deskUp(LITAT, 0.04), fp: 46, fd: 40, hold: () => LITHOLD().concat(ZAVEYES_D(0.56)), band: 0.6, get back() { return isNarrow() ? 0.7 : 0.95; }, flow: true },
           { t: T.lifted - 0.45, name: 'hero', eye: rel(MID, 2.2, -0.12, 0.62), at: rel(MID, 0, 0, 1.55), fp: 62, fd: 54, roll: -0.04, hold: HERO_HOLD, band: 0.64, back: 1.0, flow: true },
           { t: T.eyelit + 0.1, name: 'eyes', eye: EYES_EYE(0), at: EYES_AT, fp: 42, fd: 34, flow: true },
           { t: T.slow0 - 0.25, name: 'eyes', eye: EYES_EYE(1), at: EYES_AT, fp: 40, fd: 32, flow: true, stop: true },

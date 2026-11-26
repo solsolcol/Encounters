@@ -15,7 +15,8 @@
   /* (R159, Chad, 26 Nov 2026: "when exiting the lift, the player's camera momentarily clips into jun's head. Have the player exit
      the lift after a slight delay": his step out 0.6 s later (the gap after Jun sets off 1.2 s, was 0.6). Jun walks out at
      1 m a second and his eyes at up to 1.3: 0.6 s behind Jun the lens came to 0.24 m of his head as Jun turned to look back
-     at him (open, build 108, measured); 1.2 s behind, never nearer than 0.83 m on the walk out. Every mark after it is 0.6 s
+     at him (open, build 108, measured); 1.2 s behind, never nearer than 0.78 m on the walk out (the live build 109 sought every
+     tenth of a second; 0.83 was the lab's figure). Every mark after it is 0.6 s
      later with it, the sounds tied to them too) */
   const OP5 = tl(0.5, [['q5o1', 0.55], ['ju5o1', 0.3], ['tn5o1', 0.4], ['@chime'], [0.45], ['@open'], [1.5], ['@out'], [0.8], ['@tonOut'], [0.8], ['@junOut'], [1.2],
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
