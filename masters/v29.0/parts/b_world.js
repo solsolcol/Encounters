@@ -45,21 +45,20 @@
     w3pchair: "the coffee shop's chairs stacked for the night, and his balcony chairs: episode 4 chapter 3's plastic chair",
     e4buddha: "the small Buddha image on his altar: Chad's own (props/RECORD.md)",
     w4framesmall: "his teacher's framed photograph on his altar: episode 4 chapter 4's frame (props/RECORD.md)",
-    w5wallclock: "the clock on his bedroom wall that reads 11:58 and 3:00 (props/RECORD.md)",
+    e4bag: "his own grey canvas bag by his front door, the white thread in it (the plan's 9.7): episode 4 chapter 2's, his",
     e4phone: "his own phone on his dining table: episode 4 chapter 2's, the same man's (props/RECORD.md)",
     w3candlesmall: "the candles on her cloth and on his altar (props/RECORD.md)",
     w4bigbowl: "Grandmaster Pho's own bowl for the holy water (props/RECORD.md)",
     w4clothesrack: "the clothes rack on his balcony (props/RECORD.md)",
     w5walllamp: "the wall lights of his corridor: episode 4 chapter 5's walkway lamps",
-    w5frame: "the two pictures in his passage that tap the wall at three o'clock: episode 4 chapter 5's wall frame",
-    w3hlotusvase: "the vase of flowers on his altar (the plan's jasmine: no vase of jasmine in the game): episode 4 chapter 3's hall"
+    w5frame: "the two pictures in his passage that tap the wall at three o'clock: episode 4 chapter 5's wall frame"
   };
   for (const k of Object.keys(WORLD_REUSE)) if (!DATA.assets.includes(k)) DATA.assets.push(k);
   Object.assign(DATA.reuseInEpisode, WORLD_REUSE);
   /* the new things of the plan's 7 the places stand, by the keys they land under (props/TABLE.txt): each placed now with
      an invisible stand-in for its collision, drawn the moment its file is in the build (keys.py adds it to `assets`),
      so nothing moves when it lands (v4.7) */
-  const WORLD_NEW = ['w51plate', 'w51lighter', 'w51jug', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop', 'w51takeaway', 'w51sofa', 'w51dintable',
+  const WORLD_NEW = ['w51clock', 'w51aircon', 'w51kettle', 'w51jasmine', 'w51incense', 'w51plate', 'w51lighter', 'w51jug', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop', 'w51takeaway', 'w51sofa', 'w51dintable',
                      'w51dinchair', 'w51bed', 'w51altarcab', 'w51bag', 'w51keepsake', 'w51bottle', 'w51threadreel'];
 
   function build(ctx) {
@@ -886,6 +885,7 @@
       place('plate', 'w51plate', ON_CLOTH.plate.x, ON_CLOTH.plate.y, ON_CLOTH.plate.z, 0);
       place('lighter', 'w51lighter', ON_CLOTH.lighter.x, ON_CLOTH.lighter.y, ON_CLOTH.lighter.z, 0.6);
       place('jug', 'w51jug', ON_CLOTH.jug.x, ON_CLOTH.jug.y, ON_CLOTH.jug.z, -0.4);
+      place('incense', 'w51incense', ON_CLOTH.incense.x, ON_CLOTH.incense.y, ON_CLOTH.incense.z, 0.3);
       /* the back room: her small table (its laptop closed on it), two chairs, the fridge, her takeaway boxes on the counter */
       place('dintable', 'w4dintable', -4.25, 0, 0.75, Math.PI / 2, { solid: [1.2, 0.85, 0.8], h: 0.74, done: matteOf });
       place('dinchairA', 'w4dinechair', -4.25, 0, 1.45, Math.PI, { solid: [0.48, 0.5, 0.9] });
@@ -934,7 +934,10 @@
       bedside: { x: HX + 7.95, z: 2.05 },
       getUp:   { x: HX + 6.7, z: -0.48 },                                // where he stands up from it (the bed's -z side)
       bedDoor: { x: BED.x0, z: 1.2, hingeZ: 1.65 },                      // the bedroom door, ajar
-      clock:   { x: BED.x0 + 0.02, y: 1.75, z: -0.25, ry: Math.PI / 2 },  // the wall clock he reads from his bed
+      clock:   { x: HX + 7.85, y: 0.5, z: 1.97, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside, turned to the bed
+      aircon:  { x: BED.x1 - 0.12, y: 2.25, z: 0.8, ry: -Math.PI / 2 },   // the wall unit over his bed's head, on the +x wall
+      kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
+      bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
       balcony: { x: HX + 0.05, z: LIV.z1, w: 1.5 },                      // the sliding door (x -0.7..0.8)
       frames:  [{ x: PASS.x0 + 0.45, y: 1.45, z: PASS.z1 - 0.01 }, { x: PASS.x0 + 1.05, y: 1.55, z: PASS.z1 - 0.01 }],
       oven:    { x: HX + 1.75, y: 0.86, z: LIV.z0 + 0.62 }
@@ -945,7 +948,7 @@
       place('buddha', 'e4buddha', HIS.altar.x + 0.02, HIS.altar.top, HIS.altar.z, HIS.altar.ry, { lift: 3 });
       place('photo', 'w4framesmall', HIS.altar.x - 0.05, HIS.altar.top, HIS.altar.z + 0.3, HIS.altar.ry + 0.25);
       place('altarCandle', 'w3candlesmall', HIS.altar.x + 0.12, HIS.altar.top, HIS.altar.z - 0.24, 0);
-      place('vase', 'w3hlotusvase', HIS.altar.x - 0.04, HIS.altar.top, HIS.altar.z - 0.36, 0, { s: 0.6 });
+      place('jasmine', 'w51jasmine', HIS.altar.x - 0.04, HIS.altar.top, HIS.altar.z - 0.34, 0);
       place('bottle', 'w51bottle', HIS.altar.x + 0.14, HIS.altar.top, HIS.altar.z - 0.08, 0); things.bottle.visible = false;   // set down by the film of home (9.4)
       place('hisSofa', 'w51sofa', HIS.sofa.x, 0, HIS.sofa.z, HIS.sofa.ry, { solid: [2.1, 0.9, 0.9] });
       place('dining', 'w51dintable', HIS.dining.x, 0, HIS.dining.z, HIS.dining.ry, { solid: [HIS.dining.w, HIS.dining.d, 0.9] });
@@ -957,7 +960,10 @@
       place('bedGlass', 'w51glass', HIS.bedside.x - 0.12, 0.5, HIS.bedside.z - 0.08, 0);            // the glass of water that trembles (8.3)
       place('altarGlass', 'w51glass', HIS.altar.x + 0.1, HIS.altar.top, HIS.altar.z + 0.12, 0);
       boxW(mVeneer, HIS.bedside.x, 0.25, HIS.bedside.z, 0.45, 0.5, 0.4, 63); solidXZ(HIS.bedside.x - 0.23, HIS.bedside.z - 0.2, HIS.bedside.x + 0.23, HIS.bedside.z + 0.2, 0.6);   // (a bedside cabinet: his bed's own set lands with w51bed if it has one)
-      place('wallClock', 'w5wallclock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);
+      place('bedClock', 'w51clock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);            // the alarm clock on his bedside (9.4's insert: 11:58, 3:00)
+      place('aircon', 'w51aircon', HIS.aircon.x, HIS.aircon.y, HIS.aircon.z, HIS.aircon.ry);
+      place('kettle', 'w51kettle', HIS.kettle.x, 0.92, HIS.kettle.z, 0.4);
+      place('hisBag', 'e4bag', HIS.bag.x, 0, HIS.bag.z, HIS.bag.ry);                                // his grey canvas bag by the door, the white thread in it (9.7)
       HIS.frames.forEach((f, i) => place('frame' + i, 'w5frame', f.x, f.y, f.z, Math.PI, { s: 0.55 }));
       /* the balcony: two plastic chairs, his clothes rack, a plant */
       place('bchair1', 'w3pchair', HX - 3.4, -0.05, 3.3, 0.3); place('bchair2', 'w3pchair', HX - 2.6, -0.05, 3.4, -0.2);
