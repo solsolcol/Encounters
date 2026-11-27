@@ -28,6 +28,8 @@
 #   python3 -I tools/srcbackup.py pushnew          (v26.18) every file new or changed since the last push, in chunks of
 #                                                  its own numbered after the last one up (the plan's numbers stop
 #                                                  matching the chunks already up once files are cleared or added)
+#   python3 -I tools/srcbackup.py adopt            (v29.0) a NEW scratch repository takes up the branch at GitHub's tip
+#                                                  without downloading it (blob-less; the state read back from the tip)
 #
 # RESTORING (the README on the branch says the same): fetch the branch BY NAME and unpack it with git archive, never a
 # checkout or a restore into the game's working copy (both would stage, or delete, the game's own files under masters/):
@@ -37,7 +39,10 @@
 #   sha256sum -c M.txt
 import hashlib, json, os, re, subprocess, sys, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 'v26.0', 'v27.0', 'v28.0']
+GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 'v26.0', 'v27.0', 'v28.0', 'v29.0']
+# (v29.0, 27 Nov 2026) episode 5 chapter 1's people and things, all made here; its src has folders (people/, props/,
+# people/first/, people/second/), so files() walks a version's src whole (the older versions' are flat: no change for
+# them), and passes over a src folder this machine does not hold and a download still being written (*.part).
 # (v28.0, 21 Nov 2026) v27.0 is episode 4 chapter 4's people and things, v28.0 chapter 5's: both scanned as the first set
 # was (no key, no signed link, no address; one link to Meshy's documentation in a log). NOT pushed from v28.0: the second
 # and third bodies of Master Zavier, made and refused (zavier2, zavier3, and zavier3's second rig): likenesses of a real
@@ -77,10 +82,14 @@ def files():
     out = []
     for v in GENERATED:
         d = os.path.join(ROOT, 'masters', v, 'src')
-        for name in sorted(os.listdir(d)):
-            p = os.path.join(d, name)
-            if v in SKIP and SKIP[v].search(name): continue
-            if os.path.isfile(p) and not os.path.islink(p): out.append((os.path.relpath(p, ROOT), os.path.getsize(p)))
+        if not os.path.isdir(d): continue
+        for top, dirs, names in os.walk(d):
+            dirs.sort()
+            for name in sorted(names):
+                p = os.path.join(top, name)
+                if v in SKIP and SKIP[v].search(os.path.relpath(p, d)): continue
+                if name.endswith('.part'): continue
+                if os.path.isfile(p) and not os.path.islink(p): out.append((os.path.relpath(p, ROOT), os.path.getsize(p)))
     return out
 
 def plan():
@@ -211,7 +220,25 @@ if __name__ == '__main__':
         print(f'{len(chunks)} chunks, {sum(n for c in chunks for _, n in c) >> 20} MiB, {sum(len(c) for c in chunks)} files')
         raise SystemExit
     setup()
-    if cmd == 'start': start(len(chunks))
+    if cmd == 'adopt':
+        # (27 Nov 2026: the scratch repository died with its machine.) A NEW scratch repository takes up the branch where
+        # GitHub has it, with none of its 13.6 GiB: its tip's commits and trees only (a blob-less, one-commit fetch), the
+        # index laid from the tip's tree, and the state (the chunks up, the manifest, the cut files) read back from the
+        # tip's own MANIFEST.txt, README and commit message. Refused if a state is already here.
+        if os.path.exists(STATEF()): raise SystemExit('a state is already here: nothing adopted')
+        g('fetch', '-q', '--filter=blob:none', '--depth=1', 'origin', f'refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}')
+        tip = g('rev-parse', f'refs/remotes/origin/{BRANCH}')
+        if tip != remote_tip(): raise SystemExit('the branch moved while it was read: run again')
+        m = re.search(r'chunk (\d+) of \d+', g('log', '-1', '--format=%s', tip))
+        if not m: raise SystemExit('the tip is not a chunk commit: stopping')
+        man = {}
+        for line in g('show', f'{tip}:MANIFEST.txt').splitlines():
+            h, rel = line.split('  ', 1); man[rel] = h
+        cut = {rel: int(k) for rel, k in re.findall(r'^- (\S+) \((\d+) pieces\)$', g('show', f'{tip}:README-SOURCES.md'), re.M)}
+        g('read-tree', tip)
+        save({'commit': tip, 'done': list(range(1, int(m.group(1)) + 1)), 'manifest': man, 'cut': cut})
+        print(f'adopted {tip[:12]}: {m.group(1)} chunks up, {len(man)} files in the manifest, {len(cut)} cut', flush=True)
+    elif cmd == 'start': start(len(chunks))
     elif cmd == 'push':
         st = load()
         want = [int(x) for x in sys.argv[2:]] or [i for i in range(1, len(chunks) + 1) if i not in st['done']]
