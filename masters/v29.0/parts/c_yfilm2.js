@@ -1619,14 +1619,16 @@
       const uK2 = D.knot2 - D.d0, kT = f2smo(f2win(u, uTie - 0.5, uTie + 0.5)) * (1 - f2smo(f2win(u, uK2 + 0.4, uK2 + 1.1)));
       if (kT > 0.001) {
         /* (facing +z here, his right hand at -x of the wrist and his left at +x, a little over it and toward himself, the
-           fingers in toward it and the palms down and in, pinching the thread's two ends; drawn apart at each knot) */
+           palms turned in to face each other across the wrist, the fingers forward along it and a little in, holding the
+           thread's two ends at its sides; drawn apart at each knot. Palms down with the fingers in across it, they lay over
+           the back of his hand, photographed) */
         const w = f2TieW();
         const pull = f2bell(u, D.knot1 - D.d0 - 0.35, D.knot1 - D.d0, D.knot1 - D.d0 + 0.05, D.knot1 - D.d0 + 0.4) + f2bell(u, D.knot2 - D.d0 - 0.35, D.knot2 - D.d0, D.knot2 - D.d0 + 0.05, D.knot2 - D.d0 + 0.4);
         /* (5 cm to each side of the wrist's middle: at 7 cm, on a phone's insert, 16 cm wide where the wrist is, his palms stood
            at the picture's two edges, photographed) */
         const sx = 0.05 + 0.02 * pull;
-        handTo(P, 'R', [w[0] - sx, w[1] + 0.025, w[2] - 0.03], [0.6, -0.15, 0.75], [0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
-        handTo(P, 'L', [w[0] + sx, w[1] + 0.025, w[2] - 0.03], [-0.6, -0.15, 0.75], [-0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
+        handTo(P, 'R', [w[0] - sx, w[1] + 0.01, w[2] - 0.03], [0.3, -0.25, 0.92], [0.94, -0.3, -0.1], kT, { out: 0.24, down: 0.3 });
+        handTo(P, 'L', [w[0] + sx, w[1] + 0.01, w[2] - 0.03], [-0.3, -0.25, 0.92], [-0.94, -0.3, -0.1], kT, { out: 0.24, down: 0.3 });
       }
       f2Curl(P, 'R', 0.6 * kT); f2Curl(P, 'L', 0.6 * kT);
     }
