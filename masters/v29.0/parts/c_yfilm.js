@@ -903,11 +903,16 @@
          to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
          in it at 12.5 s and set on the small white plate at his left (14 to 18 s); his right hand tilts the lit candle over
          the bowl for the wax (32 to 38 s) */
-      const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.57 * f1Env(t, T.pull + 1.2, T.give + 0.9, 1.4, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
+      /* (the set-down, KEEPSET1: his hand brought low beside the plate on his side of it, clear of the lit candle, his fingers
+         to its middle (13.7 to 14.9 s); the fingers dipped and the packet slid off them onto the plate (14.95 to 15.35); his
+         hand back to his knee after (15.4 to 16.2). 27 Nov: the hand went back from 14.3 s and was at his knee by 15.0 with
+         the packet still on it, which then jumped to the plate at 15.2) */
+      const out = f1Env(t, T.hand, T.place + KEEPSET1.back + 0.8, 1.2, 0.8), lean = 0.18 * out + 0.57 * f1Env(t, T.pull + 1.2, T.give + 0.9, 1.4, 0.9) + 0.36 * f1Env(t, T.place - 0.5, T.place + KEEPSET1.back + 0.8, 0.7, 0.8);
       f1Lean(P, lean, -0.55 * turnK);
-      if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
-        const tx = lp(lp(0.42, KEEPG1.meet[0] - 0.01, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, KEEPG1.meet[2] + 0.04, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, KEEPG1.meet[1] - 0.02, r), CLOTH_Y + 0.07, u);
-        handTo(P, 'L', [tx, ty, tz], [0.0, -0.1, -1], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
+      if (out > 0.001) { const u = smo(c01((t - T.place - KEEPSET1.go) / KEEPSET1.come)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9), sl = keepSlide1(t, T), B = keepBeside1();
+        const tx = lp(lp(0.42, KEEPG1.meet[0] - 0.01, r), B[0], u), tz = lp(lp(1.22, KEEPG1.meet[2] + 0.04, r), B[2], u), ty = lp(lp(0.66, KEEPG1.meet[1] - 0.02, r), B[1], u);
+        const D = KEEPSET1.dir, fx = lp(0.0, -D[0], u), fz = lp(-1, -D[1], u), fy = lp(-0.1, -KEEPSET1.dip0 - (KEEPSET1.dip1 - KEEPSET1.dip0) * sl, u);
+        handTo(P, 'L', [tx, ty, tz], [fx, fy, fz], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
       const wax = f1Env(t, T.wax - 1.2, T.chant + 4.5, 0.9, 1.0);
       if (wax > 0.001) handTo(P, 'R', [ON_CLOTH.bowl.x - 0.06, CLOTH_Y + 0.5, ON_CLOTH.bowl.z + 0.12], [0.3, 0.6, -0.4], [0.4, -0.2, 0.5], wax, { out: 0.25, down: 0.25 });
       f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
@@ -925,6 +930,15 @@
     /* (measured, the second build: his palm reached 0.56 m out from his cushion leaning half a radian, hers 0.5 m from where
        she stood: so both bend further to it, he 0.75 rad, she 0.8, and they meet 0.72 m out from his cushion) */
     const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.78, 1.15], head: 1.5 };
+    /* THE SET-DOWN ON THE PLATE (seconds from T.place; the plate is ON_CLOTH.plate, PLAY's): his left palm comes beside the
+       plate on his side of it, `off` m out from its middle along `dir` (a unit line from the plate toward his cushion that
+       leaves the lit candle at the plate's far side 0.15 m off), `y` over the cloth (his hand's back clear of it), arriving
+       at `go` + `come`; the fingers point back along `dir` to the plate's middle, `dip0` down, dipped to `dip1` as the
+       packet slides off them (the `slideFor` s before KS51.onPlate, when it lies on the plate and its sound is heard:
+       z_tail.js); the hand away from `back` */
+    const KEEPSET1 = { off: 0.12, dir: [0.707, 0.707], y: 0.07, go: -0.3, come: 1.2, dip0: 0.35, dip1: 0.5, slideFor: 0.4, back: 1.4 };
+    const keepBeside1 = () => [ON_CLOTH.plate.x + KEEPSET1.off * KEEPSET1.dir[0], CLOTH_Y + KEEPSET1.y, ON_CLOTH.plate.z + KEEPSET1.off * KEEPSET1.dir[1]];
+    const keepSlide1 = (t, T) => smo(c01((t - T.onPlate + KEEPSET1.slideFor) / KEEPSET1.slideFor));
     const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 1.0) / 2.4)));
     const keepGraceStep1 = (t, T) => smo(c01((t - T.pull - 2.3) / 0.6)) * (1 - smo(c01((t - T.give - 0.4) / 0.6)));
     const keepGraceH1 = (t, T) => lp(GRACE_HEAD_SEATED, KEEPG1.head, keepGraceUp1(t, T));
@@ -981,9 +995,12 @@
         /* (under her palm, between her fingers: she holds it out palm down. Photographed 27 Nov: laid 1.5 cm over the palm's
            middle, it sat on the back of her hand) */
         if (pm) f1Drop(g, pm.x, pm.y - 0.03, pm.z, 0.4); } }
-      else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.025); if (pm) f1Drop(g, pm.x, pm.y, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
+      else if (t < T.onPlate) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.025);
+        /* (on his palm; then slid off his fingers onto the plate: from where his palm is to its place on the plate, eased) */
+        const s = keepSlide1(t, T);
+        if (pm) f1Drop(g, lp(pm.x, ON_CLOTH.plate.x, s), lp(pm.y, CLOTH_Y + 0.018, s), lp(pm.z, ON_CLOTH.plate.z, s), 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
       else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
-      const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
+      const k = f1Env(t, T.onPlate + 0.15, T.turn - 0.4, 0.8, 0.8);
       /* (its dull red breathing slowly, at M3's pulse, 52 a minute: the pull, held still on the plate) */
       knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k * (0.72 + 0.28 * Math.sin(Math.PI * 2 * t * 52 / 60)); knotGlow1.q.visible = k > 0.001;
     }
@@ -1197,9 +1214,12 @@
          out from his cushion, and the plate stands 1.0 m from it (ON_CLOTH.plate: a layout call put to WORLD, the report); at
          0.65 rad his hands reach the place it is asked to move to) */
       f1Lean(P, 0.65 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim);
+      /* (each palm placed so its fingertips, about 9.5 cm on along the fingers, come to the packet's top at its near corners:
+         27 Nov, with the plate moved within his reach, palms 7 and 17 cm from the packet put his left fingertips 1.7 cm down
+         into the plate and his right ones on the cloth 13 cm from the knot) */
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
-        handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
-        handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
+        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.075, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
+        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.076, pk[2] + 0.056], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
       /* THE POUR (27 Nov: the first build set the bowl back on the cloth untouched and laid his hand on the bottle while the
          pour was heard): his right hand takes the bowl from his student, carries it by its rim over the bottle standing on
          the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;

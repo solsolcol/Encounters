@@ -109,6 +109,7 @@
   const KS51 = (() => {
     const T = { hand: 0.0, k1: 0.8, bag: 6.0, pull: 9.0, give: 12.5, place: 14.0, turn: 22.0, k2: 23.0, lift: 26.0, chant: 32.0, wax: 35.0, m4: 38.0 };
     T.k2 = Math.max(T.k2, T.k1 + SECS.ph51k1 + 0.4);
+    T.onPlate = T.place + 1.35;                                 // the packet lies on the plate, slid off his fingers (c_yfilm.js KEEPSET1)
     T.end = 42.0;
     return T;
   })();
@@ -118,7 +119,7 @@
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     sfx(T.k1, 'ph51k1', 1);                                                    // "May I hold it? Only for a while."
     sfx(T.pull - 0.1, 'u51zip', 0.6);                                          // her bag's zip
-    sfx(T.place + 0.5 - 0.04, 'u51plate', 0.6);                                // porcelain on cloth
+    sfx(T.onPlate - 0.04, 'u51plate', 0.6);                                    // the packet on the porcelain, as it lands (27 Nov: heard 0.74 s before it did)
     sfx(T.k2, 'ph51k2', 1);                                                    // "Hold the water. Whatever happens, keep it still."
     sfx(T.lift - 0.18, 'u51bowlup', 0.7);                                      // brass lifted off the cloth, the water's small slap
     /* THE CHANT begins (the play's own world sound: it carries on under the event and into the cord, PLAY.md 1) */
