@@ -175,7 +175,7 @@
     function f1Walk(P, t, t0, pts, v, rest, ryEnd, o = {}) {
       if (!P || !P.ready) return false;
       const L = f1PathLen(pts), v1 = Math.max(0.1, v), ease = Math.min(o.ease || 0.45, L / v1), T = L / v1 + ease, tw = t - t0, pace = (P.pace && P.pace.Walking) || 1.29;
-      const Y = (x, z) => (o.y != null ? o.y : flatGround(x, z));
+      const Y = (x, z) => (typeof o.y === 'function' ? o.y(x, z) : o.y != null ? o.y : flatGround(x, z));
       const restT = () => (rest[1] != null ? rest[1] : 0) + (rest[2] ? t * rest[2] : 0);
       if (tw <= 0) { const a = pts[0]; put(P, a[0], a[1], o.ry0 != null ? o.ry0 : f1PathAt(pts, 0)[2], Y(a[0], a[1])); pose(P, rest[0], restT(), !!rest[3]); return false; }
       if (tw >= T) { const b = pts[pts.length - 1]; const turnK = smo(c01((tw - T) / 0.6)), h = f1PathAt(pts, L)[2];
@@ -188,6 +188,9 @@
       else pose(P, rest[0], restT(), !!rest[3], 'Walking', 1 - outOf, sc / pace);
       return true;
     }
+    /* the street's heights under a walk (the ground function reads her floor under the five-foot way: WORLD.md 2): the road
+       GY - 0.15 past the kerb, the drain's grating GY - 0.03, the five-foot way GY */
+    const streetY1 = (x) => (x > STREET.kerb ? GY - 0.15 : x > STREET.face ? GY - 0.03 : GY);
     const f1Turn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
     /* A PERSON'S TALKING OVER HIS LINES IN A FILM (chapter 5's fmSpeak, R25): `lines` [[t0, secs, take], ...] each from the
        line's own start, eased in over 0.35 s and out over the half second after it, lines closer than a second one talk;
@@ -663,7 +666,7 @@
           /* (out of the taxi 1.6 s before the cut, so the cut finds him walking ahead of the lens, 1.1 m off and going; at his
              stand he turns to Marcus) */
           const pa = OPEN1.phoAt, pEnd = OPEN1.phoOut[OPEN1.phoOut.length - 1];
-          f1Walk(P, t, T.out - 1.6, OPEN1.phoOut, 0.95, phoRest1(t), faceTo(pa.x, pa.z, OPEN1.meet.x, OPEN1.meet.z), { y: GY });
+          f1Walk(P, t, T.out - 1.6, OPEN1.phoOut, 0.95, phoRest1(t), faceTo(pa.x, pa.z, OPEN1.meet.x, OPEN1.meet.z), { y: (x) => streetY1(x) });
           const g = P.group.position;
           if (Math.hypot(g.x - pEnd[0], g.z - pEnd[1]) < 0.02) f1Speak(P, t, phoRest1(t), [[T.ph1, SECS.ph51o1]]);
           f1Gaze(P, t, [[T.out - 1.6, [2.4, GY + 1.6, -1.9]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.6, OPEN1.meet.z], 1.58), 0.8], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
@@ -864,7 +867,8 @@
       else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.02, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
       else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
       const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
-      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k; knotGlow1.q.visible = k > 0.001;
+      /* (its dull red breathing slowly, at M3's pulse, 52 a minute: the pull, held still on the plate) */
+      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k * (0.72 + 0.28 * Math.sin(Math.PI * 2 * t * 52 / 60)); knotGlow1.q.visible = k > 0.001;
     }
     /* the bowl in his hands (from the lift): the engine's own `bowl` pose (episode 4 chapter 4's holy water), the left palm
        under it, the right hand's fingertips at its rim; the bowl drawn in the hands' pass (kit.hold, his left hand), the
