@@ -998,8 +998,8 @@
       else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A);
         /* (under her palm, between her fingers: she holds it out palm down. Photographed 27 Nov: laid 1.5 cm over the palm's
            middle, it sat on the back of her hand) */
-        if (pm) f1Drop(g, pm.x, pm.y - 0.03, pm.z, 0.4); } }
-      else if (t < T.onPlate) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.025);
+        if (pm) f1Drop(g, pm.x, pm.y - 0.045, pm.z, 0.4); } }   // (27 Nov, clipscan: at 0.03 under her palm her fingers stood in it, 1,023)
+      else if (t < T.onPlate) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.038);   // (at 0.025 his fingers stood in it: clipscan, 295)
         /* (on his palm; then slid off his fingers onto the plate: from where his palm is to its place on the plate, eased) */
         const s = keepSlide1(t, T);
         if (pm) f1Drop(g, lp(pm.x, ON_CLOTH.plate.x, s), lp(pm.y, CLOTH_Y + 0.018, s), lp(pm.z, ON_CLOTH.plate.z, s), 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
