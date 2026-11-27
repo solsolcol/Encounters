@@ -285,10 +285,14 @@
       for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); const r = Math.hypot(v.x - cx, v.z - cz) / R, u = (v.y - y0) / H;
         if (r < 0.5 && u > 0.33) hist[Math.min(N - 1, Math.floor(u * N))]++; }
       let bi = 0; for (let i = 1; i < N; i++) if (hist[i] > hist[bi]) bi = i;
-      const yW = y0 + (bi + 0.5) / N * H, band = 1.5 * H / N, rs = [];
-      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); if (Math.abs(v.y - yW) < band) rs.push(Math.hypot(v.x - cx, v.z - cz)); }
+      /* (the ring: the points at that level that FACE UP, the water's own face and its petals' tops: the bowl's outer wall
+         passes the same height facing out, and measured with it the ring was the bowl's whole width, 27 Nov) */
+      const yW = y0 + (bi + 0.5) / N * H, band = 1.5 * H / N, rs = [], Nm = g.attributes.normal, nv = new THREE.Vector3();
+      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); if (Math.abs(v.y - yW) >= band) continue;
+        if (Nm) { nv.fromBufferAttribute(Nm, i); if (nv.y < 0.8 * nv.length()) continue; }
+        rs.push(Math.hypot(v.x - cx, v.z - cz)); }
       rs.sort((a, b) => a - b);
-      const rW = rs.length ? rs[Math.floor(rs.length * 0.97)] : 0.8 * R;
+      const rW = rs.length ? rs[Math.floor(rs.length * 0.98)] : 0.8 * R;
       return { cx, cz, yW, rW, R, H, y0, eps: 1.2 * band, n: P.count };
     }
     function bowlLook(m, o = {}) {
@@ -347,6 +351,48 @@
       const lit = phase === 'room' && !play.found.has('l') ? 0.3 : 1;
       sh.position.set(BOWLFIT.x - 0.25 * BOWLFIT.r, BOWLFIT.y + 0.002, BOWLFIT.z + 0.2 * BOWLFIT.r); sh.scale.setScalar(0.28 * BOWLFIT.r);
       sh.material.opacity = 0.2 * fx.waterK * lit;
+    }
+    /* THE WATER IN THE JUG (27 Nov, PLAY): the jug at his knee is one clear shell with nothing in it (props/RECORD.md: "one
+       shell, so no water inside"), and an empty jug is not one to pour from. So the play draws the water in it: a body of
+       water the jug's own shape, read off its points as it lands (each band of its height, the median distance of its points
+       from the axis of its foot, a little inside: the handle is a few points in a band and does not move a median), filled
+       to 0.7 of its height and lowered by the pour to 0.3 (built again as the level moves: a few hundred points). Unlit, a
+       pale clear blue under the glass (no lamp: v9.4) */
+    const JUG = { got: false, prof: null, mesh: null, k: 0.7, built: -1, mat: null };
+    { const jm = new THREE.MeshBasicMaterial({ color: 0x86a6b8, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide }); mats.push(jm); JUG.mat = jm; }
+    function jugFit() {
+      const j = things.jug; if (!j || JUG.got || !j.userData.model) return;
+      JUG.got = true; j.updateWorldMatrix(true, true);
+      const inv = new THREE.Matrix4().copy(j.matrixWorld).invert(), v = new THREE.Vector3(), P = [];
+      j.userData.model.traverse(q => { if (!q.isMesh || !q.geometry.attributes.position) return; const A = q.geometry.attributes.position;
+        for (let i = 0; i < A.count; i++) { v.fromBufferAttribute(A, i).applyMatrix4(q.matrixWorld).applyMatrix4(inv); P.push([v.x, v.y, v.z]); } });
+      if (P.length < 50) return;
+      let y0 = Infinity, y1 = -Infinity; for (const p of P) { y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+      const H = y1 - y0; if (!(H > 0.02)) return;
+      let cx = 0, cz = 0, n = 0; for (const p of P) if (p[1] < y0 + 0.15 * H) { cx += p[0]; cz += p[2]; n++; } if (!n) return; cx /= n; cz /= n;
+      const NB = 20, bands = Array.from({ length: NB }, () => []);
+      for (const p of P) bands[Math.min(NB - 1, Math.floor((p[1] - y0) / H * NB))].push(Math.hypot(p[0] - cx, p[2] - cz));
+      const prof = bands.map((b, i) => { b.sort((a, c) => a - c); return { y: y0 + (i + 0.5) / NB * H, r: b.length ? 0.88 * b[Math.floor(b.length / 2)] : 0 }; });
+      JUG.prof = { prof, y0, H, cx, cz, wall: 0.004 };
+      const mesh = new THREE.Mesh(new THREE.BufferGeometry(), JUG.mat); mesh.renderOrder = 1; mesh.frustumCulled = false; j.add(mesh); JUG.mesh = mesh;
+    }
+    function jugBuild(k) {
+      const J = JUG.prof; if (!J || !JUG.mesh) return;
+      const top = J.y0 + k * J.H, pts = [new THREE.Vector2(0, J.y0 + J.wall)];
+      let rTop = 0;
+      for (const b of J.prof) { if (b.y >= top) break; const r = Math.max(0, b.r - J.wall); pts.push(new THREE.Vector2(r, Math.max(b.y, J.y0 + J.wall))); rTop = r; }
+      const lo = J.prof.filter(b => b.y < top).pop(), hi = J.prof.find(b => b.y >= top);
+      if (lo && hi) rTop = Math.max(0, lo.r + (hi.r - lo.r) * (top - lo.y) / (hi.y - lo.y) - J.wall);
+      pts.push(new THREE.Vector2(rTop, top), new THREE.Vector2(0, top));
+      const g = new THREE.LatheGeometry(pts, 28); g.translate(J.cx, 0, J.cz);
+      JUG.mesh.geometry.dispose(); JUG.mesh.geometry = g; JUG.built = k;
+    }
+    function jugTick() {
+      jugFit(); if (!JUG.mesh) return;
+      const poured = play.found.has('w') || phase !== 'room';
+      const want = poured ? (fx.pourT > 0 ? 0.3 + 0.4 * (fx.pourT / 2.0) : 0.3) : 0.7;
+      if (Math.abs(want - JUG.built) > 0.015) jugBuild(want);
+      JUG.mesh.visible = !!(things.jug && things.jug.visible);
     }
     /* her phone, on the sofa's cushion beside her (her hands are on her bag's strap) */
     const herPhone = place('herPhone', 'w51phone', SPOT.herPhone.x, HER.sofa.seat - 0.005, SPOT.herPhone.z, 2.6);
@@ -958,7 +1004,7 @@
     }
     function fxTick(wdt, st) {
       const t = wallClock.t;
-      waterTick(wdt); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
+      waterTick(wdt); jugTick(); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
       /* (an ending begins from the decision: once, on its first frame, the play's hold on the sound, the heart and the lens is
          given back, so an ending's film starts clean and lays its own pressure: PLAY.md 2. Never again after, so a film's
          own settings are never overwritten) */
