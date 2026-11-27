@@ -9322,3 +9322,27 @@ phone before it ships.
 **A look-spot's aim stands on its mark (R186).** Aimed at the thing while its mark is drawn above it, a spot is found
 only in a slot under the mark, and with nothing drawn at the middle of the screen the player cannot see where he aims.
 Put the aim where the mark is drawn, size it to the room between neighbours (the nearest wins), and show the aim point.
+
+**A session is made FROM A BRANCH, and dies with it (27 Nov 2026, R9).** The session that built from 28 Aug to 27 Nov
+(session_012dssR6qAN57acivr6t6QeS, 590 machine restarts) was made from `refs/heads/main`. `main` left GitHub at some
+point (nobody here recorded it), and nothing noticed while that machine lived. At 09:06 UTC its turn ended on an API
+error, Chad pressed "Try again", the session needed a fresh machine, the fresh machine could not clone `main` ("The
+requested branch or commit was not found", recoverable: false), and the session could never take a message again. What
+it had committed was safe on GitHub (its work branch, claude/new-session-bampns); what lived only on its disk went with
+it: the Meshy key (a file, /root/.config/meshy/key), every masters/*/src not yet on the sources branch (episode 5 chapter
+1's generated models, made that day; Meshy keeps a job's files three days), Chad's reference photographs
+(masters/v26.0/ref and the photograph of Master Zavier, never committed by rule), his and the bought models in
+masters/v24.*/src, his old Pho experiment files, Blender, and its helpers' last unsaved minutes. The lessons:
+- Never delete, rename or move the branch a running session was made from (get_session's `sources` names it). The
+  repository's default branch is what a NEW session is made from: it must carry the latest work.
+- A key is a network secret on the environment (request_credential: the proxy adds it to every request for that host,
+  in every session), never a file on one machine's disk.
+- A machine's disk is not a store. Sources go to the sources branch THE DAY THEY ARE MADE (tools/srcbackup.py), not at
+  the release; anything of his that cannot be committed (photographs of real people) is named in the plan as his to
+  send again, and asked for when a chapter needs it.
+- A helper saves its work in progress at every landing and at least every half hour (tools/gitsave.sh), so a machine
+  that dies costs minutes. Every tool that pushes reads the branch checked out and this machine's own session
+  (tools/gitsave.sh, tools/srcbackup.py: both had the old session's branch and link written in).
+- After a restart, the old session's own record is read for his messages (mcp list_events on the dead session, every
+  page back to the last message on record, each page read by tools/evhuman.py: only events with no helper's
+  agent_id and no tool result), and held against the plan's §0 before any work.

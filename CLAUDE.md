@@ -1592,7 +1592,7 @@ by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, neve
 chapters of episode 4 are live.
 **Episode 5 chapter 1, The Love Spell That Followed Me Home** (S1·16, case four: Grandmaster Pho breaks a love spell
 in Grace's own home while Master Zavier holds the water, and at three that morning it comes looking for him), is
-BEING BUILT from 27 Nov 2026 (R3), in the run since build 1 (27 Nov, deploy `6b0937cb2d0b6fb4faa299a0`: its places, play and films still being built): its tracker **docs/V29.0-E5C1-BUILD.md** (read it first: the milestones M0 to M10,
+BEING BUILT from 27 Nov 2026 (R3), in the run since build 1 (27 Nov, deploy `6b0937cb2d0b6fb4faa299a0`: its places, play and films still being built); since 09:06 UTC that day in a NEW session on branch `claude/vigilant-maxwell-frsy11`, the old one dead because `main`, the branch it was made from, left GitHub (R9; docs/LEARNINGS.md, "A session is made FROM A BRANCH": never delete the branch a session was made from); its tracker **docs/V29.0-E5C1-BUILD.md** (read it first: the milestones M0 to M10,
 each checkpoint ticked as it lands, section 6 how each piece is picked up), its plan docs/V29.0-E5C1-PLAN.md, its
 research docs/research/V29.0-LOVESPELL.md. **`src/chapters/e5/e5c1.js` is GENERATED** by masters/v29.0/assemble.py
 from masters/v29.0/parts/*.js: edit the parts, never the chapter file.
