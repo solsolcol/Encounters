@@ -1420,9 +1420,9 @@
     /* his hands: the keycard to the reader (his right, the engine's `reach`), the bottle set down on his altar (`place`, the
        bottle in his hand), his palms together a moment (the clasp: `pray`), his phone set on its charger (`place`); each a
        thing in his right hand (kit.hold) and its pose eased in and out, drawn only while they are in the frame */
-    PROPS1.handPhone = stand('e4phone', 0, 0, 0, 0, { parent: nowhere1 });
-    PROPS1.handCard = stand('w51keycard', 0, 0, 0, 0, { parent: nowhere1 });
-    PROPS1.handBottleR = stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) });
+    PROPS1.handPhone = stand('e4phone', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => handsPass1(m) });
+    PROPS1.handCard = stand('w51keycard', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => handsPass1(m) });
+    PROPS1.handBottleR = stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => { glassOff1(m); handsPass1(m); } });
     function f1HandR(api, pose, prop, k) {
       if (!api) return;
       if (k > 0.001 && pose) {
