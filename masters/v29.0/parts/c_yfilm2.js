@@ -828,8 +828,10 @@
         K.push({ t: E.cut - 0.01, e: [seat[0], seat[1] - 0.09, seat[2] + 0.11], a: [seat[0] + 0.2, 0.0, seat[2] + 1.2], fp: 52, fd: 46, n: 'B:feet2', stop: true });
         /* the oven's clock: an insert of a thing (v21.30), its digits 3:41 */
         const ov = F2P.oven;
-        K.push({ t: E.cut, e: [ov.x - 0.12, ov.y + 0.1, ov.z + 0.55], a: [ov.x, ov.y, ov.z], fp: 26, fd: 22, n: 'B:oven', cut: true });
-        K.push({ t: E.floor - 0.01, e: [ov.x - 0.11, ov.y + 0.09, ov.z + 0.5], a: [ov.x, ov.y, ov.z], fp: 25, fd: 21, n: 'B:oven2', stop: true });
+        /* (a little wider, and turned onto the clock's last figure's side: on a phone the 1 of 3:41 touched the picture's edge,
+           photographed) */
+        K.push({ t: E.cut, e: [ov.x - 0.12, ov.y + 0.1, ov.z + 0.55], a: [ov.x + 0.008, ov.y, ov.z], fp: 29, fd: 22, n: 'B:oven', cut: true });
+        K.push({ t: E.floor - 0.01, e: [ov.x - 0.11, ov.y + 0.09, ov.z + 0.5], a: [ov.x + 0.008, ov.y, ov.z], fp: 28, fd: 21, n: 'B:oven2', stop: true });
         K.push({ t: E.floor, e: fl, a: [fl[0] + 2.4, 0.72, fl[2] + 0.1], fp: 52, fd: 46, n: 'B:floor', cut: true });
         K.push({ t: E.crawl, e: [fl[0] + 0.05, fl[1] - 0.04, fl[2]], a: [ph.x, 0.7, ph.z + 0.3], fp: 52, fd: 46, n: 'B:floor2', stop: true });
         K.push({ t: E.crawl + 1.0, e: [fl[0] + 0.5, F2EYE.crawl, fl[2] + 0.2], a: [ph.x, 0.5, ph.z + 0.4], fp: 56, fd: 50, n: 'B:crawl' });
