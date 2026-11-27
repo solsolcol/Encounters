@@ -216,6 +216,14 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     dawn's door his cloth bag's side lies over his right forearm (A 104.6 s; clipscan 1,092 crossings of the bag with his
     body there, from 1,639 at FILMS-1's place: the strap's way down past his shoulder and the bag's side by his forearm),
     and a flat white patch stands over his right elbow (A 110.3 s: his robe's inner face unshaded, the model's, CAST's).
+  - RUN t16 (27 Nov, the fixes above read back full size): the strip of pills hangs under his fist with its tablets to him
+    on a phone (5.1, 5.4 s) and a desktop (5.4 s); the tap's water falls from the spout onto his knuckles and goes into his
+    hand on both (6.9 s), the shot turned and lifted for each shape by `f2TapGeo` (a phone: turned 3.8 degrees to his left
+    and lifted 13.3; a desktop: 6.9 to his right and 9.3; the water's line crosses his knuckles' middle and meets the sink
+    a tenth of the half-screen under their line); his sight in C opens over his room at its old pace and then over the city
+    (17.6 s on a desktop: the room turned and the city still dark beyond the wave; 19.6 s: all of it turned, no edge across
+    the blocks). Found and fixed from it: at 8.1 s his hand under the tap and his hands to his mouth shared 0.3 s and the
+    reach dropped to nothing in one frame (its share now ends before the mouth's begins).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
