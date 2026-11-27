@@ -563,12 +563,15 @@
       if (!A || !A.armR || !A.vmCam || !A.handPose) return null;
       f2Hands(true, 'place', 1, { p: 0 });
       const R = A.armR; R.updateWorldMatrix(true, true);
-      const th = R.getObjectByName('thumb03R'), ix = R.getObjectByName('f_index02R'), wr = R.getObjectByName('handR');
-      if (!th || !ix || !wr) return null;
-      const T = th.getWorldPosition(new THREE.Vector3()), I = ix.getWorldPosition(new THREE.Vector3()), W = wr.getWorldPosition(new THREE.Vector3());
-      const Q = T.clone().add(I).multiplyScalar(0.5), u = Q.clone().sub(W).normalize(), C = Q.clone().addScaledVector(u, 0.04);
-      A.vmCam.updateMatrixWorld(); const eye = A.vmCam.getWorldPosition(new THREE.Vector3());
-      const n = eye.clone().sub(C).normalize(); n.addScaledVector(u, -n.dot(u)).normalize();
+      const th = R.getObjectByName('thumb03R'), ix = R.getObjectByName('f_index02R');
+      if (!th || !ix) return null;
+      const T = th.getWorldPosition(new THREE.Vector3()), I = ix.getWorldPosition(new THREE.Vector3());
+      /* (standing UP out of the pinch, held up to be read: along the fingers it hung down under the fist, the fist's grip
+         curling them down, and was seen as a sliver under it, photographed) */
+      A.vmCam.updateMatrixWorld(); const eye = A.vmCam.getWorldPosition(new THREE.Vector3()), up = new THREE.Vector3().setFromMatrixColumn(A.vmCam.matrixWorld, 1).normalize();
+      const Q = T.clone().add(I).multiplyScalar(0.5), C = Q.clone().addScaledVector(up, 0.06);
+      const n = eye.clone().sub(C).normalize(), u = up.clone().addScaledVector(n, -up.dot(n)).normalize();
+      C.addScaledVector(n, 0.02);
       const zx = new THREE.Vector3().crossVectors(u, n).normalize(), qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(u, n, zx));
       const rq = R.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qW), pl = R.worldToLocal(C.clone()), e = new THREE.Euler().setFromQuaternion(rq);
       F2PILL.g = { asp, pos: [pl.x, pl.y, pl.z], rot: [e.x, e.y, e.z] };
