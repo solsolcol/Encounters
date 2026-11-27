@@ -58,3 +58,12 @@ from here, what is measured, and what is still open. Read with PLAY.md (the play
 
 ## 4 · Measured (27 Nov, FILMS-1's fresh session; tools/probes/e5c1films.mjs VIEW=both MODE=seek STEP=0.1 on a working build, then tools/probes/e5c1bounce.py, which runs framebounce.py on each shape; my scratch's near.py reads the lens's distance to every shown head and hip from the same rows)
 - No shot's aim or fit rides a LIVING head (every lens and every hold reads a person's group, `f1Head`, a smooth function of the film's clock), so filmlive.mjs is not owed for these four films.
+- THE FIRST BUILD, measured before anything moved (rows every 0.1 s on both shapes; the faults found, each fixed in §2):
+  the opening: the crane's eye went there and back (a phone: 9.09, 9.31, 9.05 m along the street at 4.5 to 7.0 s; a desk:
+  7.07, 7.82, 6.61 m across it at 9.5 to 12.5 s, 1.68 m a second at 11 to 12 s) and ended behind the next unit's pillar on
+  Marcus's back; the lens 0.43 m from Grandmaster Pho's head from 16.7 to 21.0 s (a phone saw the back of his head through
+  Marcus's whole line) and 0.05 m at 23.6 s (through it); his back filling the picture on the stair (0.68 m from his hips);
+  Marcus 0.74 m on the landing, the door's leaf over half of Grace's face. The keepsake: no fast or there-and-back move
+  outside its cuts. The cord: the phone's insert 0.36 m from Marcus's head and 0.48 m from Grace's; the look to his wrist
+  136 degrees a second. Home: 2.1 m of walk in 0.6 s into the room (4.2 m a second), 3.4 m from the altar to the table in
+  2 s with the look on the floor (pitch -69 degrees, 78 degrees a second), the wake 225 degrees a second.
