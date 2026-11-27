@@ -24,6 +24,11 @@ const ENDS = (process.env.ENDS || 'A,B,C,D').split(',').filter(Boolean);
 const CIRPICS = (process.env.CIRPICS || '').split(',').filter(Boolean).map(Number);
 const OUT = process.env.OUT || '/tmp/e5c1ends'; fs.mkdirSync(OUT, { recursive: true });
 const PICS = {}; for (const it of (process.env.PICS || '').split(';').filter(Boolean)) { const i = it.lastIndexOf('@'); PICS[it.slice(0, i)] = it.slice(i + 1).split(',').map(Number).sort((a, b) => a - b); }
+/* (per ending, so one probe covers several: WIN='A:36-50;B:0-3' a seek's window, CWIN='A:0-148.3;B:0-38.5' the clipping sweep's,
+   CLIPAT and BODIES as PICS ('A@1,5;B@2'), a plain list for every ending as before) */
+const perWin = (v) => { const o = {}; for (const it of (v || '').split(';').filter(Boolean)) { const m = /^([A-D]):([\d.]+)-([\d.]+)$/.exec(it.trim()); if (m) o[m[1]] = [+m[2], +m[3]]; } return o; };
+const perAt = (v) => { if (!v || v.indexOf('@') < 0) return null; const o = {}; for (const it of v.split(';').filter(Boolean)) { const i = it.lastIndexOf('@'); o[it.slice(0, i).trim()] = it.slice(i + 1).split(',').filter(Boolean).map(Number); } return o; };
+const WIN = perWin(process.env.WIN), CWIN = perWin(process.env.CWIN), CLIPAT_K = perAt(process.env.CLIPAT), BODIES_K = perAt(process.env.BODIES);
 /* the row maker, e5c1films.mjs's own text */
 const FS = fs.readFileSync(new URL('./e5c1films.mjs', import.meta.url), 'utf8'), I0 = FS.indexOf('const INSTALL = '), I1 = FS.indexOf('\n};\n', I0);
 const INSTALL = (0, eval)('(' + FS.slice(I0 + 'const INSTALL = '.length, I1 + 2) + ')');
@@ -110,7 +115,8 @@ for (const k of ENDS) {
     if (MODE === 'seek') {
       const res = { view: VIEW, mode: MODE, job: 'end:' + k, dur, labels, step: STEP, rows: [], rowsD: BOTH ? [] : undefined, clips: [], errs, marks: M };
       res.solids = await p.evaluate(() => (window.__enc.stage.blockers || []).map(b => b.isEmpty() ? null : [b.min.x, b.max.x, b.min.z, b.max.z]));
-      const kA = Math.ceil(FROM / STEP - 1e-6), kZ = Math.floor(Math.min(dur - 0.05, UNTIL) / STEP + 1e-6);
+      const W0 = WIN[k] ? WIN[k][0] : FROM, W1 = WIN[k] ? WIN[k][1] : UNTIL;
+      const kA = Math.ceil(W0 / STEP - 1e-6), kZ = Math.floor(Math.min(dur - 0.05, W1) / STEP + 1e-6);
       for (let i = kA; i <= kZ; i += 50) {
         const j = Math.min(kZ + 1, i + 50);
         if ((j - 1) * STEP >= circleT - 1e-3 && !circled) {
@@ -152,11 +158,11 @@ for (const k of ENDS) {
          files so they never differ: jointscan's (every joint against a real body's ranges; WHO a regex, 'pho|grace|marcus'
          unless said), feetscan's (each foot against the floor under it, the near skin: LV 1), clipscan's (the pairs whose
          surfaces cross, R m round the lens). Written to <OUT>/bodies-end<K>.json and the flags printed */
-      if (process.env.BODIES) {
+      if (BODIES_K ? (BODIES_K[k] || []).length : process.env.BODIES) {
         const rd = (f, a, b) => { const s = fs.readFileSync(new URL('./' + f, import.meta.url), 'utf8'), i0 = s.indexOf(a), i1 = s.indexOf(b, i0); return (0, eval)('(' + s.slice(i0 + a.length, i1 + 2) + ')'); };
         const JM = rd('jointscan.mjs', 'const MEASURE = ', '\n};\n'), FM = rd('feetscan.mjs', 'const MEASURE = ', '\n};\n'), CA = rd('clipscan.mjs', 'const ANALYSE = ', '\n};\n');
         const out = [];
-        for (const t of process.env.BODIES.split(',').map(Number)) {
+        for (const t of (BODIES_K ? BODIES_K[k] : process.env.BODIES.split(',').map(Number))) {
           await passCircle(t, null); await seekTo(t); await seekTo(t);
           await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
           const J = await p.evaluate(JM, [process.env.WHO || 'pho|grace|marcus', null]).catch(e => ({ err: String(e).slice(0, 200) }));
@@ -178,12 +184,12 @@ for (const k of ENDS) {
          HANDS' scene (stage.films.ends2.vm(): his arms and what he holds, the phone, the strip of pills, the spool, the rings,
          the cushion), its cells 2 cm and nothing left out for being flat. Every moment gets a row, pairs or none, written to
          <OUT>/clips-end<K>.json; a line a moment is printed */
-      if (process.env.CLIPS || process.env.CLIPAT) {
+      if ((process.env.CLIPS && (!process.env.CWIN || CWIN[k])) || (CLIPAT_K ? (CLIPAT_K[k] || []).length : process.env.CLIPAT)) {
         const rd2 = (f, a, b) => { const s = fs.readFileSync(new URL('./' + f, import.meta.url), 'utf8'), i0 = s.indexOf(a), i1 = s.indexOf(b, i0); return (0, eval)('(' + s.slice(i0 + a.length, i1 + 2) + ')'); };
         const CA2 = rd2('clipscan.mjs', 'const ANALYSE = ', '\n};\n');
         await p.evaluate(fs.readFileSync(new URL('./limbclip.js', import.meta.url), 'utf8'));
-        const step = +(process.env.CLIPS || 0), c0 = +(process.env.CFROM || 0), c1 = Math.min(dur - 0.05, +(process.env.CUNTIL || 1e9));
-        const ts = new Set((process.env.CLIPAT || '').split(',').filter(Boolean).map(Number).filter(t => t >= 0 && t < dur - 0.05));
+        const step = (process.env.CWIN && !CWIN[k]) ? 0 : +(process.env.CLIPS || 0), c0 = CWIN[k] ? CWIN[k][0] : +(process.env.CFROM || 0), c1 = Math.min(dur - 0.05, CWIN[k] ? CWIN[k][1] : +(process.env.CUNTIL || 1e9));
+        const ts = new Set((CLIPAT_K ? (CLIPAT_K[k] || []) : (process.env.CLIPAT || '').split(',').filter(Boolean).map(Number)).filter(t => t >= 0 && t < dur - 0.05));
         if (step > 0) for (let t = c0; t <= c1 + 1e-6; t += step) ts.add(+t.toFixed(2));
         const out = [];
         for (const t of [...ts].sort((a, b) => a - b)) {
