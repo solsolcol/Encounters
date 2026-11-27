@@ -20,3 +20,10 @@ breakfast     w51breakfast  0.30  w  16000  2048  0
 pills         w51pills      0.10  w   6000  1024  0
 keycard       w51keycard    0.15  w   6000  1024  0
 gracephone    w51phone      0.15  l   8000  2048  0
+# (27 Nov, R6: the six things cut only for want of credits; keys named by the coordinator)
+clock         w51clock      0.12  w   8000  2048  0
+aircon        w51aircon     0.90  w  12000  1024  0
+phobag        w51phobag     0.32  w  16000  2048  0
+incense       w51incense    0.24  h  12000  2048  0
+kettle        w51kettle     0.24  h  12000  1024  0
+jasmine       w51jasmine    0.22  h  20000  2048  0

@@ -55,4 +55,31 @@ PROPS = [
      "with two ordinary brass door keys, lying flat. No printing on the card."),
     ('gracephone', '0.15 h', "A modern smartphone about 15 cm tall in a soft dusty-pink silicone case, lying flat on its "
      "back, its black screen off, a thin bezel. No logo."),
+    # (27 Nov, R4: the four small ritual things as ONE picture, one Meshy job, cut apart by connected components)
+    ('ritualset', 'set', "Four separate small household objects standing well apart in a row on a pure white seamless studio "
+     "background, with wide clear white space between each object, none touching or overlapping: (1) a plain red plastic "
+     "disposable cigarette lighter standing upright; (2) a clear glass water jug with a handle, half full of clear water; (3) "
+     "a small round plain white porcelain plate, about 15 cm across, lying flat; (4) a plain clear drinking glass, a "
+     "tumbler, filled with clear water. Photorealistic product photograph ... (as sent, its own tail; refs.tsv)"),
+    # (27 Nov, R6: Chad's top-up; the six things cut only for want of credits, each with the TAIL above, as sent; the
+    #  clock's tail adds "no numbers", the air-conditioner's is "from slightly below ... no pipes, no wall", the bag's
+    #  "standing upright with its strap laid up behind it", the incense's "No smoke ... no symbols")
+    ('clock', '0.12 w', "A small modern bedside digital alarm clock, about 12 cm wide, 7 cm tall and 6 cm deep: a plain matte "
+     "black rectangular body with softly rounded edges, a large flat dark glass display panel across its front that is "
+     "switched off and completely blank (no digits, no numbers lit), two small plain buttons on its top."),
+    ('aircon', '0.90 w', "A modern indoor wall-mounted split air-conditioner unit for a new condominium bedroom, about 90 cm "
+     "wide, 30 cm tall and 22 cm deep: a clean glossy white plastic casing with softly curved front, a closed horizontal "
+     "louvre flap along its lower edge, a tiny dark status window at the right of its front."),
+    ('phobag', '0.32 w', "A plain simple cloth shoulder bag of natural off-white cotton, like a monk's simple sling bag: one "
+     "soft rectangular pouch about 32 cm wide and 34 cm tall, a flap folded over its top, a single long flat cotton strap "
+     "of the same cloth, the cloth a little creased and softly worn, the bag slightly filled. Plain cloth only, no print, "
+     "no pattern, no embroidery."),
+    ('incense', '0.24 h', "A small round brass incense holder, a low bowl about 8 cm across and 4 cm tall filled with fine "
+     "pale grey ash, with three thin unlit joss sticks standing upright in it side by side, each stick about 20 cm tall "
+     "with a dark reddish-brown incense coating and a plain red bamboo stem at its base."),
+    ('kettle', '0.24 h', "A plain modern electric kettle for a home kitchen, about 24 cm tall: a brushed stainless-steel body "
+     "with a black plastic handle and a black lid on top, standing on its round black power base, a small spout."),
+    ('jasmine', '0.22 h', "A small plain white porcelain vase about 14 cm tall, a simple rounded body and a short narrow neck, "
+     "holding a modest bunch of fresh white jasmine flowers with their small dark green leaves, a few sprigs leaning out, "
+     "as offered on a home Buddhist altar."),
 ]
