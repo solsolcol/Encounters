@@ -32,6 +32,7 @@
   }
  },
  "grace": {
+  "STOPPED": "second throw stopped at the rig (27 Nov 2026): both rigs came back with 36 joints and no finger bones (r1 01a21b8f-260a-7316-9162-bccff4a66c5a, kept as rigged-grace-r1nofingers.glb; r2 = rig, rigged-grace.glb); the coordinator: one re-rig only, then to Chad. Remesh 40000 done and laid (body-grace-40000.glb, 36 joints); no clip laid, no prep, assets untouched",
   "credits": 40,
   "expires_at": 1796017859725,
   "image": "masters/v29.0/src/people/refs/grace-a2-2k.png",

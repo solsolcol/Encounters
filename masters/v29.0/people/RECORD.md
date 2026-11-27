@@ -125,3 +125,69 @@ Talk_with_Hands_Open, Talk_with_Left_Hand_on_Hip, mage_soell_cast, _3 to _8. (Ch
 | kneel and wind a thread | MISSING |
 | sit at a dining table | PARTLY: Sit_to_Stand_Transition_M's start is a chair sit; Sitting_Answering_Questions seated |
 | talk | Talk_with_Hands_Open, Talk_with_Left_Hand_on_Hip (standing), Sitting_Answering_Questions (seated) |
+
+## 8 · The second throw (R5, 27 Nov 2026; helper CAST-2)
+Chad, R5: "Just use meshy". Each body made AGAIN at Meshy, once, instead of being mended here; R6 (credits added) sent
+Marcus's jobs at once beside Grace's. The first throw is KEPT, never deleted: its sources and both levels of each asset as
+they shipped are src/people/first/first-* (the assets copied, not linked), its ledger rows are `grace_first` and
+`marcus_first` in src/people/jobs.json, its photographs are scratch e5c1/cast/<name>/. The second throw's photographs are
+scratch e5c1/cast2/<name>/ (the same camera jobs as the first, the hand shots aimed at the new body's own hands).
+
+### 8.1 · The references (people/PROMPTS2.txt: the first prompts word for word except where the first throw failed)
+Higgsfield 21.16 before; each 3.5 by estimate_image_cost (gpt_image_2_6, xhigh, 2k, 2:3, no image reference); after 14.16.
+| who | Higgsfield job | file | checked full size (face and each hand enlarged from the 2k picture) |
+|---|---|---|---|
+| Grace | 0b2816b6-7bd0-4a39-9dde-ffb6eb6ef5e7 | src/people/refs/grace-a2-2k.png (1360 x 2048) | hair pulled back smooth and close to the head, NO loose strands (two fine wisps above the ears only), the bun low at the nape out of sight from the front; even skin round the nose; a relaxed, softly closed mouth, tired eyes with dark circles; both palms to the lens, five fingers each, every gap open; the A pose with white between arms and body; the same clothes and black flats. PASS, first picture |
+| Marcus | c62374a3-0e4c-4397-b713-21914f6bfe40 | src/people/refs/marcus-a2-2k.png (1360 x 2048) | solid matte black rectangular frames of medium thickness, clearly black (the temple arms grey near the hinges), clear lenses with only a faint sheen at the outer corners; eyes level into the lens; relaxed cheeks and a closed mouth (the brows drawn a little: the "slightly worried" asked); arms near straight (a slight bend at the elbow still), palms to the lens, five fingers each, gaps open. PASS, first picture |
+
+### 8.2 · The Meshy jobs, the balance read before each (the balance also fell beside these: THINGS-2's remeshes and things)
+| job | who | id | balance before | cost | came back |
+|---|---|---|---|---|---|
+| image-to-3D (latest, 4k geometry, meshy-7 8k PBR, a-pose, remesh 300k, pre-remesh kept) | Grace | 01a21b89-9759-728a-9143-1ac174c9c389 | 1,123 | 40 | 68.5 MB model, 14.0 MB untouched surface |
+| image-to-3D (the same) | Marcus | 01a21b8c-b892-7308-a894-f062cec450b6 | 1,083 | 40 | 50.4 MB, 9.2 MB |
+| rig, fingers asked, 1.60 m | Grace | 01a21b8f-260a-7316-9162-bccff4a66c5a | 793 | 5 | **36 joints, NO FINGER BONES**: each hand a middle-finger chain (Middle1-3, Hand_End) and one stray bone (Bone_035 on the left hand, Bone_036 on the right, holding 1,169 and 2,293 points); her first rig had all 66. Kept: src/people/rigged-grace-r1nofingers.glb |
+| rig, fingers asked, 1.72 m | Marcus | 01a21b92-0378-71b7-a898-6fee5002dfd3 | 793 | 5 | **72 joints, EVERY FINGER** (thumb, index, middle, ring, little, each hand) and six stray bones (Bone_023/046/045 on the left forearm, Bone_018/029/028 on the right) that hold NO points at all: harmless. His first rig had 52 and no fingers |
+| remesh 40,000 | Grace | 01a21b92-03d1-76a6-a828-50f46a76d840 | 793 | 5 | laid on her rig by riglod: src/people/body-grace-40000.glb, 41,399 triangles, 36 joints |
+| **re-rig, unchanged** (the coordinator's word, option A: her hands matter, the strap, the packet, her hands over her face; ONE re-rig only) | Grace | 01a21b92-7b06-746c-a47b-3cc287963770 | 783 | 5 | **36 joints again, NO FINGER BONES** (the same skeleton). STOPPED THERE at the coordinator's rule: both rigs' files and ids kept, the body goes to Chad. No clip laid on her (gsofa, gcry not spent), no prep, her assets UNTOUCHED (assets/p51grace.glb and p51graceh.glb are still the first throw) |
+| remesh 40,000 | Marcus | 01a21b95-7114-7397-b15b-7c0acf4379c7 | 778 | 5 | src/people/body-marcus-40000.glb, 41,371 triangles on 72 joints (fit 0.25 mm average, 3.2 mm worst) |
+| mknock laid on his new rig (the clip of §2, not made again) | Marcus | 01a21b95-71d2-72cc-ae87-029d943aba82 | 778 | 3 | src/people/takes-marcus-mknock.glb |
+CAST-2's Meshy spend: **108** (Grace 55: model 40, two rigs 10, remesh 5; Marcus 53: model 40, rig 5, remesh 5, the knock
+3). No text-to-motion clip made; no third throw. The balance read after: 695. Higgsfield: 7.
+
+### 8.3 · Marcus, made end to end (assets/p51marcus.glb, assets/p51marcush.glb overwritten; the first throw's in first/)
+- His library takes retargeted again (people/retakes.sh, now on his own rig, `MRIG` for the first throw's mended one): 58
+  bones each, the fingers included. Jun's and Mr Koh's library files (masters/v28.0/src/takes-jun-lib.glb, takes-koh-lib.glb)
+  had been cleared from this machine at R4 since the first throw; each was fetched back from the sources branch alone
+  (GitHub's contents API, not the branch) and its sha256 matched the branch's MANIFEST (663eee25..., 038250b9...).
+- The prep (people/people.sh: the second throw's line uses his rig as made, no rigmend; `FIRSTTHROW=1` runs the old one):
+  near 41,358 triangles, full 313,548, 72 joints, sheets 2048. Texels a metre, face / head / hands / body: near 2,288 /
+  1,717 / 1,163 / 844, full 2,279 / 1,167 / 1,277 / 892 (the first: 2,225 / 1,709 / 1,178 / 843 and 2,312 / 1,128 /
+  1,271 / 886).
+- The assets were hard-linked into dist/ and a test snapshot: the links were broken before the prep wrote, so the live
+  build's copies are as they were.
+
+### 8.4 · What is wrong with the new Marcus, seen at full size, point by point against the first (§5)
+| point | first throw | second throw | better / worse |
+|---|---|---|---|
+| glasses' frames | thick, pale BEIGE, fused | dark (black-brown, mottled like tortoiseshell), thinner than asked, separate from the face; the temple arms thin and clear of the head | BETTER |
+| glasses' lenses | a white shard across the left lens | no shard; the lenses still carry a pale beige fill (the skin's colour painted into the lens), plainest at three-quarter on the far lens | better, still a fault |
+| his eyes | a little up | level, looking ahead | BETTER |
+| cheeks and mouth | puffed, holding a breath | relaxed; the lips a little full | BETTER |
+| his hands | one rigid piece each (no finger bones, mended to 26 joints) | every finger bends (the knock makes a fist, the kneel's hands curl). In the A pose the four fingers lie together edge to edge as before (the reference spread them), thin seams between them. fingerskin: each thumb clean; the other fingers' points are read partly onto their neighbours' bones (the fingers touch, so the measure cannot fully separate them: I am not sure how much of it is weighting bleed and how much is the measure) | MUCH BETTER (fingers exist); a curl may drag a neighbour |
+| the shirt's open neck | a dotted grey fringe and a skin patch inside the collar | a ragged pale grey edge inside the collar opening, a little pink at its left (front, close) | about the same |
+| hair | a pale hairline shard at the right front | the front fringe comes down as a comb of separate strips with tan tips (three-quarter and side); a few black slivers float just above the crown; a pale nick at the left temple | WORSE in the close shots (the fringe); at 2.2 m it is not seen |
+| nose | — | a raw pink edge at both nostrils, plainer on the near body | new fault |
+| belt buckle | — | painted whitish with a ragged rim | small new fault |
+| shirt's colour | white under the lights | white under the lights (asked light grey) | the same |
+| in the takes | the knock above his head; the talk's arms out | the same clips: the knock still goes above his head with the head tipped (right hand to 1.62 m by takefk, 0.5 to 2.0 s); the talk's arms out; Chair_Sit_Idle_M's fingers sink into his thighs (front, 0.1; a fingertip shows through under the knee from the side); Listening_Gesture puts his hands into his trouser fronts. Motion travel matches the first within a few cm (takefk, 24 samples: Idle_3 head 0.48 m, Listening 1.23, Stand_and_Chat 0.74, Talk 0.39, kneelhold 0.25, Chair_Sit 1.13, Sitting_Answering 0.76, Walking 0.32, mknock 0.33) | the same takes, fingers now moving |
+| at 2.2 m on a phone's frame | reads as made | reads as made, the glasses black | BETTER |
+Not measured here (they read a chapter, not a file: the coordinator's CP9.3): jointscan, feetscan, headturn, clipscan in place.
+
+### 8.5 · Grace's second body as it stands (unprepped: the near remesh on the fingerless rig, photographed raw)
+Seen at full size (scratch e5c1/cast2/grace/raw-*): the hair is SOLID and neat, the bun round and low at the nape, no
+ribbons, no strands, no white specks, no wet shine (BETTER than the first on its worst fault); the cardigan's edges and the
+slacks clean at this size. Faults: the eyelids' rims read red and sore; the nostrils' rims still dark and raw, a pale chip
+under her left nostril (about the same as the first); the lips dark red-brown and full, the mouth still reads pursed
+(about the same); a colour seam under the jaw. HER HANDS cannot bend: that is the stop. What it costs to go on, for Chad:
+another rig is 5 credits and has come back fingerless twice from this model; another body is about 55 (and may rig the
+same); or a skeleton for her made here (the B and D of §3, which R5 turned away from). The first throw's Grace stays live.
