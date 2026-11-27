@@ -55,6 +55,7 @@
        into a cushion, v9.3). And her ankles are laid where her knees can stand highest with her feet flat, under them and a
        little ahead: both at z 0.20 in the room (0.45 ahead of her place), the shins near upright; laid by the same amount
        forward of the take's own, the right one stood 9 cm further out and its knee 3 cm lower, into the front roll) */
+    const GRACE_SITUP = 15;
     const GRACE_HIPOVER = 0.19, GRACE_ANKLE_Z = 0.45;   // (0.184 left 16 points of her right thigh 1 to 1.5 cm in: measured)
     const graceFeetOut = (P) => { const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
       for (const S0 in LG.R) { const r = LG.R[S0], d = GRACE_ANKLE_Z - r.ank.z; r.ank.z += d; r.pole.z += d; } };
@@ -66,7 +67,11 @@
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
         win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
         seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: GRACE_HIPOVER, edge: -9 }), rise: 'rise' },
-        headDamp: { gsofa: [0.5, 'gsofa'] } });
+        headDamp: { gsofa: [0.5, 'gsofa'] },
+        /* (R16: her gsofa leans her back into a sofa back that is lower now, 0.58 m, and she leaned on nothing: photographed.
+           Her pelvis is turned forward GRACE_SITUP degrees about its own joint, her thighs given back the turn so her legs lie
+           where they are laid, so she sits up on her seat as someone who has not settled in does) */
+        upright: { gsofa: { hips: GRACE_SITUP } } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
     /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
        0.19 m up and her toes 0.03, against 0.125 and 0.028 standing in her Idle_3. The written take stands her up on tiptoe,
