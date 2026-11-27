@@ -930,6 +930,27 @@ ASSETS = {
     'w51jug':       ('assets/w51jug.glb', True, False),     # a clear glass water jug with a handle, 20 cm tall (the ritual set's piece; drawn as clear glass: its own material named glass, alpha-blended; the game draws glass with depthWrite off). ORDER 1 of the room, pressed
     'w51plate':     ('assets/w51plate.glb', True, False),     # a small round white porcelain plate, 16 cm across (the ritual set's piece; Meshy's oval levelled and made round at no credits, mend/plate.mjs). The keepsake is laid on it
     'w51glass':     ('assets/w51glass.glb', True, False),     # a plain drinking glass, 9.5 cm (the ritual set's piece, its outer shell; drawn as clear glass, material named glass, depthWrite off in the game). FAULT: torn inner sheets show through as grey patches (RECORD.md)
+    'w51ctable':    ('assets/w51ctable.glb', True, False),     # Grace's low teak coffee table with a lower shelf, 1.00 m
+    'w51gsofa':     ('assets/w51gsofa.glb', True, False),     # Grace's dusty-blue two-seat sofa, 1.50 m
+    'w51rattan':    ('assets/w51rattan.glb', True, False),     # Grace's rattan armchair with a cream cushion, 0.68 m wide
+    'w51shelf':     ('assets/w51shelf.glb', True, False),     # Grace's timber bookshelf with books, a pothos, a succulent and a box, 0.80 m wide
+    'w51laptop':    ('assets/w51laptop.glb', True, False),     # Grace's closed silver laptop, 0.32 m. FAULT: torn edges, dark blotched metal (RECORD.md); across the room only
+    'w51takeaway':  ('assets/w51takeaway.glb', True, False),     # leftover takeaway: two paper boxes, chopsticks, a knotted bag, 0.22 m across
+    'w51sofa':      ('assets/w51sofa.glb', True, False),     # his charcoal three-seat sofa, 2.10 m
+    'w51dintable':  ('assets/w51dintable.glb', True, False),     # his oak dining table with black legs, 1.60 m
+    'w51dinchair':  ('assets/w51dinchair.glb', True, False),     # his oak and grey fabric dining chair, 0.82 m tall
+    'w51bed':       ('assets/w51bed.glb', True, False),     # his queen bed, grey upholstered, the duvet turned back, 1.70 m wide
+    'w51altarcab':  ('assets/w51altarcab.glb', True, False),     # his altar cabinet, 0.90 m wide. FAULT: the back panel's top edge torn into slivers with a dark smear, the wood red mahogany (RECORD.md)
+    'w51breakfast': ('assets/w51breakfast.glb', True, False),     # a takeaway breakfast: paper bag, two coffee cups, wrapped toast, 0.30 m across
+    'w51pills':     ('assets/w51pills.glb', True, False),     # a blister strip of ten tablets, one pushed through, 0.10 m
+    'w51keycard':   ('assets/w51keycard.glb', True, False),     # a grey access card on a ring with two brass keys, 0.15 m across (sized on its width with the keys)
+    'w51phone':     ('assets/w51phone.glb', True, False),     # Grace's phone in a dusty-pink case, 0.15 m long
+    'w51clock':     ('assets/w51clock.glb', True, False),     # his bedside digital alarm clock, 0.12 m wide, its display blank and black for the chapter's own painted 11:58 and 3:00; turned so the display faces +z (mend/finish.mjs TURN=180, no loss)
+    'w51aircon':    ('assets/w51aircon.glb', True, False),     # the white wall-mounted split air-conditioner over his bed, 0.90 m wide
+    'w51phobag':    ('assets/w51phobag.glb', True, False),     # Grandmaster Pho's plain off-white cotton shoulder bag with a flap, 0.32 m wide
+    'w51incense':   ('assets/w51incense.glb', True, False),     # a small brass incense holder of ash with three red joss sticks, 0.24 m tall (Meshy made four; one taken out at no credits, mend/incense3.py)
+    'w51kettle':    ('assets/w51kettle.glb', True, False),     # his electric kettle, brushed steel and black, 0.24 m (its metal factor set to 0.8 so the steel reads as steel, mend/finish.mjs)
+    'w51jasmine':   ('assets/w51jasmine.glb', True, False),     # a small white porcelain vase of white jasmine for his altar, 0.22 m tall
     # <<< e5c1 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -1105,7 +1126,10 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            # <<< e4c5 keys <<<
            # >>> e5c1 keys (masters/v29.0/keys.py) >>>
            'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
-           'w51lighter', 'w51jug', 'w51plate', 'w51glass',
+           'w51lighter', 'w51jug', 'w51plate', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf',
+           'w51laptop', 'w51takeaway', 'w51sofa', 'w51dintable', 'w51dinchair', 'w51bed', 'w51altarcab',
+           'w51breakfast', 'w51pills', 'w51keycard', 'w51phone', 'w51clock', 'w51aircon', 'w51phobag', 'w51incense',
+           'w51kettle', 'w51jasmine',
            # <<< e5c1 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

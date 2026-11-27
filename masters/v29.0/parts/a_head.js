@@ -171,7 +171,9 @@
     assets: [
       /* >>> this chapter's own keys: written by masters/v29.0/keys.py (edit its table, not this list) >>> */
       'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
-      'w51lighter', 'w51jug', 'w51plate', 'w51glass',
+      'w51lighter', 'w51jug', 'w51plate', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop',
+      'w51takeaway', 'w51sofa', 'w51dintable', 'w51dinchair', 'w51bed', 'w51altarcab', 'w51breakfast', 'w51pills',
+      'w51keycard', 'w51phone', 'w51clock', 'w51aircon', 'w51phobag', 'w51incense', 'w51kettle', 'w51jasmine',
       /* <<< this chapter's own keys <<< */
       /* the shared cast's stand-ins and reuse (masters/v29.0/parts/c_cast.js), each declared in `reuseInEpisode`:
          Grandmaster Pho as episode 4 chapter 5 casts him seated (his own file, look D), the white cloth over his crossed
