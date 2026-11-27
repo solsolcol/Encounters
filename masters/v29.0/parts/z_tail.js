@@ -45,9 +45,15 @@
     T.m3b = T.inn + 4.0;                                        // M3: a low cello note bending down
     T.turnG = T.kneel + 1.2;                                    // his look to the glass, over 1.8 s
     T.narrow = T.turnG + 1.8;                                   // the lens narrows on the glass over 7 s
-    T.sofa = T.inn + 10.0;                                      // she comes to the sofa; her reflection follows a beat late
-    T.black = T.inn + 14.0;                                     // black: the title over it
+    T.sofa = T.inn + 9.3;                                       // she comes to the sofa; her reflection follows a beat late
+    /* (her walk from the door round the sofa's end, 4.15 m at a metre a second with its easing, and her sitting by her rise
+       played backward: she is seated on the sofa, as the play keeps her, before the picture goes: PLAY.md 2, v5.25) */
+    T.sofaWalk = 4.6; T.sofaSit = T.sofa + T.sofaWalk + 0.4; T.seated = T.sofaSit + 2.0;
+    T.black = Math.max(T.inn + 14.0, T.seated + 0.7);          // black: the title over it
     T.end = T.black + 1.7;
+    /* (M1's last sound is 57.9 s into it, its held unresolved chord: it comes in a little later than the plan's 3.5 s so the
+       chord is still sounding as the picture goes, and goes down with it: v15.3) */
+    T.m1 = Math.max(T.m1, T.black - 58.2);
     return T;
   })();
   function intro(c, s, api) {
@@ -89,8 +95,8 @@
     sfx(T.cloth - 0.61, 'u51cloth', 0.7);                                      // the cloth shaken out over the table
     sfx(T.o3, 'zv51o3', 1);                                                    // "She had let us in. But something kept turning her back to the door."
     sfx(T.gecko, 'u51gecko', 0.45);                                            // a gecko's chirp
-    sfx(T.sofa + 0.5, 'u51tile', 0.22); sfx(T.sofa + 1.1, 'u51tile', 0.2); sfx(T.sofa + 1.7, 'u51tile', 0.2); sfx(T.sofa + 2.3, 'u51tile', 0.18);   // her steps, soft
-    sfx(T.sofa + 3.6 - 0.43, 'u51sofa', 0.55);                                 // the sofa's give as she sits
+    for (let i = 0; i < 7; i++) sfx(T.sofa + 0.45 + i * 0.6, 'u51tile', i ? 0.2 : 0.22);   // her steps, soft, to the sofa
+    sfx(T.sofaSit + 1.25 - 0.43, 'u51sofa', 0.55);                            // the sofa's give as her weight lands
     fade(T.black, T.end - 0.25, 0, 1);
     sfxFade(T.black, T.end - 0.2, 'u51m1blue');                                // (the music goes down with the picture: v15.3)
     step(T.end, () => F.end());

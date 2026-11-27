@@ -338,6 +338,13 @@
       }
       L.on = true;
     }
+    /* THE STAIR'S STAGING (27 Nov, photographed: his teacher's back filled the whole phone picture a metre before the lens,
+       and on a straight narrow flight every head the same height over its tread stands on the line of the stair, so the man
+       further up hides behind the nearer one). So: Marcus a third of the flight ahead and climbing faster, keeping to the
+       flight's left side (seen from below: its south wall), his teacher a tread a little over half a second on its right
+       (the north wall), and the lens behind them in the middle, waiting a moment at the street door and then climbing at
+       his teacher's pace, seven treads and more behind him: both men are in the picture, side by side up the flight */
+    const STAIR1 = { mk: { s0: 7.0, z: -3.9 }, pho: { s0: 4.0, cad: 0.6, z: -3.55 }, eye: { s0: -2.5, cad: 0.6, wait: 0.6, z: -3.72 } };
     /* how many treads a climber has climbed at film time t: from `t0` at `cad` seconds a tread, starting with `s0` climbed,
        standing still through [p0, p1] (Marcus stops to look back down; those behind him wait), never past the landing */
     function climbAt(t, t0, cad, s0, p0, p1) {
@@ -381,27 +388,41 @@
          pass); the one on his altar is the world's (things.bottle) */
       clothBottle: stand('w51bottle', 0, -50, 0, 0, { parent: world, done: (m) => glassOff1(m) }),
       handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) }),
-      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3, done: (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); }) })
+      /* (its paint is the play's: the metal brass and the water poured, laid by stage.plan.bowlLook once it has landed, so the
+         film's last picture and the event's first are one bowl: PLAY.md 2) */
+      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3 })
     };
     for (const k of ['mkPhone', 'grPhone', 'phoBag', 'keycard', 'clothBottle']) PROPS1[k].visible = false;
     /* (THINGS-2: a material named glass is drawn without writing depth, so what stands behind it is drawn) */
     function glassOff1(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && /glass/i.test(mt.name || '')) { mt.depthWrite = false; mt.transparent = true; } }); }
-    /* THE WATER IN HIS HANDS: a disc at the bowl's water line (drawn in the hands' pass with it), the candle's reflection a
-       warm point on it, and a ring that spreads across it (the cord's one ring): its own picture */
+    /* THE WATER IN HIS HANDS (27 Nov, PLAY.md 2): the bowl's own water and petals, painted by the play's bowlLook (poured),
+       its candle's glint the play's own (a soft warm dot lying on the water, its size and place), and the film's own ring
+       that spreads across it for each drop of wax and for the cord's snap. Only if the play's look is not there does the
+       film paint the brass flat and lay a water disc of its own */
     const ringTex1 = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
       const g = x.createRadialGradient(64, 64, 40, 64, 64, 62); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.55, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = g; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); })();
+    const dotTex1 = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
     const waterMat1 = new THREE.MeshBasicMaterial({ color: 0x1c2630, transparent: true, opacity: 0.72, depthWrite: false }); mats.push(waterMat1);
     const water1 = new THREE.Mesh(new THREE.CircleGeometry(1, 40), waterMat1); water1.rotation.x = -Math.PI / 2; owned.push(water1.geometry);
     const ringMat1 = new THREE.MeshBasicMaterial({ map: ringTex1, color: 0xfff0d8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(ringMat1);
     const ring1 = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), ringMat1); ring1.rotation.x = -Math.PI / 2; owned.push(ring1.geometry);
-    const glintMat1 = new THREE.SpriteMaterial({ map: glowTex, color: 0xffc070, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(glintMat1);
-    const glint1 = new THREE.Sprite(glintMat1);
-    whenThing1(PROPS1.handBowl, (g, m) => { const bb = new THREE.Box3().setFromObject(m), w = Math.max(0.05, Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z));
-      const y = bb.min.y + (bb.max.y - bb.min.y) * 0.62, r = w * 0.4;
-      water1.scale.setScalar(r); water1.position.set((bb.min.x + bb.max.x) / 2 - g.position.x, y - g.position.y, (bb.min.z + bb.max.z) / 2 - g.position.z);
-      ring1.position.copy(water1.position); ring1.position.y += 0.002; glint1.position.copy(water1.position); glint1.position.y += 0.004; glint1.position.x -= r * 0.25; glint1.scale.set(r * 0.5, r * 0.5, 1);
-      PROPS1.bowlR = r; g.add(water1); g.add(ring1); g.add(glint1); });
+    const glintMat1 = new THREE.MeshBasicMaterial({ map: dotTex1, color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(glintMat1);
+    const glint1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), glintMat1); glint1.rotation.x = -Math.PI / 2; glint1.renderOrder = 3; owned.push(glint1.geometry);
+    whenThing1(PROPS1.handBowl, (g, m) => {
+      g.updateWorldMatrix(true, true);
+      const F = S && S.plan && S.plan.bowlLook ? S.plan.bowlLook(m, { empty: { value: 0 } }) : null;
+      let c, r;
+      if (F && F.world) { c = g.worldToLocal(F.world.c.clone()); r = g.worldToLocal(F.world.c.clone().setX(F.world.c.x + F.world.r)).distanceTo(c); }
+      else { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); });
+        const bb = new THREE.Box3().setFromObject(m), w = Math.max(0.05, Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z)), sc = g.getWorldScale(new THREE.Vector3()).x || 1;
+        r = w * 0.4 / sc; c = g.worldToLocal(new THREE.Vector3((bb.min.x + bb.max.x) / 2, bb.min.y + (bb.max.y - bb.min.y) * 0.62, (bb.min.z + bb.max.z) / 2));
+        water1.scale.setScalar(r); water1.position.copy(c); g.add(water1); }
+      ring1.position.copy(c); ring1.position.y += 0.002;
+      glint1.position.set(c.x - r * 0.25, c.y + 0.002, c.z + r * 0.2); glint1.scale.setScalar(r * 0.56);
+      PROPS1.bowlR = r; g.add(ring1); g.add(glint1); });
     /* (a thing stood by stand(): its model once it has landed) */
     function whenThing1(g, fn) { if (!g) return; if (g.userData.model) { fn(g, g.userData.model); return; } const iv = setInterval(() => { if (!alive) { clearInterval(iv); return; } if (g.userData.model) { clearInterval(iv); fn(g, g.userData.model); } }, 250); }
 
@@ -472,13 +493,19 @@
       phoIn:   [[2.05, -1.5], [1.85, -2.45], [1.5, -3.45], [1.12, -3.72]],
       /* (the landing: his eye at the top of the stair; Marcus at the hinge end of her door, at the picture's left on a desk;
          his teacher on the lobby's far side, at its right; Grace in the doorway's middle) */
-      land:    { eye: [-3.66, EYE, -3.34], marcus: { x: -3.14, z: -2.8, ry: Math.PI / 2 }, pho: { x: -3.78, z: -2.12, ry: Math.PI / 2 + 0.35 }, grace: { x: -2.3, z: -2.36, ry: -Math.PI / 2 } },
+      /* (the landing, 27 Nov, photographed: Marcus stood 0.75 m before the lens with his back to it, filling a phone's picture
+         and hiding the door, his teacher stood in the potted plant, and her door's open leaf hid half her face. Now: Marcus
+         before the door, clear of her slippers, knocking with his right hand at the latch side; his teacher at the lobby's far
+         side by the wall, clear of the plant; she opens the door and stands on its threshold, before its leaf, then steps
+         back into her room to let them in; the lens at the stair's top looking through the lobby's opening. Nobody walks in
+         under this shot (the lobby is 1.2 by 1.25 m, her slippers in its middle): the cut inside finds them in) */
+      land:    { eye: [-3.62, EYE, -3.38], marcus: { x: -3.15, z: -2.3, ry: Math.PI / 2 }, pho: { x: -3.6, z: -1.95 }, grace: { x: -2.8, z: -2.3, ry: -Math.PI / 2 } },
       /* inside, along her room's north side behind his teacher's back (half a metre clear of it: the first path passed a
          tenth of a metre from it, the lens over his head), his teacher at the left, to his place by the windows */
       inEye:   [[-1.55, 2.0], [-0.3, 2.55], [1.2, 2.42], [1.45, 1.9]],
-      graceIn: { x: -2.22, z: -2.18, ry: Math.PI / 2 },                  // just inside her door, facing the room
-      graceSofa: [[-2.22, -2.18], [-0.75, -1.35], [-0.45, 0.32], [0.38, 0.42]],
-      marcusIn: [[-2.25, -2.1], [-1.75, -1.55], [-1.6, -1.05]]
+      graceIn: { x: -2.05, z: -2.3, ry: Math.PI / 2 - 0.3 },             // just inside her door, a step back and aside from it (clear of its leaf), facing the room
+      graceSofa: [[-2.05, -2.3], [-0.75, -1.3], [-0.5, 0.3], [0.38, 0.42]],
+      marcusIn: [[-2.3, -1.95], [-1.85, -1.5], [-1.6, -1.05]]
     };
     FILMS1.open = {
       begin(api, s) {
@@ -498,7 +525,7 @@
         taxiFrame1(t, T);
         /* HER PLACE AS IT STANDS: the street door shut until Marcus opens it; the tube on the stair, flickering twice; her door
            shut until she opens it; her shutters as the play keeps them; the cloth laid by his teacher inside */
-        WORLD.streetDoor(smo(c01((t - T.turn - 0.25) / 0.7)) * (1 - smo(c01((t - T.climb - 1.6) / 1.2))));
+        WORLD.streetDoor(smo(c01((t - T.turn - 0.25) / 0.7)) * (1 - smo(c01((t - T.stair - 3.5) / 1.2))));   // (shut behind him once he is two treads up)
         { const d = t - T.tube; WORLD.stairTube(d > 0 && d < 0.9 ? (d < 0.12 || (d > 0.3 && d < 0.42) ? 0.08 : 1) : 1); }
         WORLD.herDoor(t < T.lock + 0.15 ? 0 : t < T.inn ? 0.86 * smo(c01((t - T.lock - 0.15) / 1.3)) : 0);
         WORLD.cloth(t < T.inn ? 0 : smo(c01((t - T.cloth + 0.3) / 1.4)));
@@ -590,8 +617,8 @@
       if (t < T.land) {
         /* (the climb: two treads ahead of his teacher at the cut, a tread every half second; at the flicker he stops and looks
            back down at the street door, then climbs on) */
-        const s = climbAt(t, T.stair, 0.5, 4.5, T.tube, T.tube + 1.4);
-        climbPose(P, s);
+        const s = climbAt(t, T.stair, 0.5, STAIR1.mk.s0, T.tube, T.tube + 1.4);
+        climbPose(P, s, { z: STAIR1.mk.z });
         const back = f1Env(t, T.tube + 0.1, T.tube + 1.5, 0.35, 0.4);
         if (back > 0.001) lookNow(P, [1.15, GY + 1.2, -3.72], back * 0.95, 1.05, 0.0);
         PROPS1.mkPhone.visible = false;
@@ -599,19 +626,17 @@
       }
       if (t < T.inn) {
         /* AT HER DOOR: the knock (his written take's rising window, where his hand is at the height of a door's knocking),
-           his line to the door, a step aside to let his teacher in first, then in after him */
+           his line to the door; at her door until the cut inside */
         const L = OPEN1.land.marcus;
-        if (t < T.ph2 + 0.6) {
+        {
           put(P, L.x, L.z, L.ry, 0);
           f1Speak(P, t, MK_REST1, [[T.mk2, SECS.mk51o2, 'Stand_and_Chat', 0.55]]);
           /* (his written knock goes above his head: people/RECORD.md 9. So the knock is his hand's own: raised to the door's
              leaf at 1.42 m, the knuckles meeting it at the sound's two knocks, 0.29 s apart) */
           const kk = f1Env(t, T.knock - 0.55, T.knock + 0.75, 0.4, 0.4);
           if (kk > 0.001) { const tap = (d) => Math.exp(-((d * d) / 0.0025)), back = 0.06 * (1 - Math.max(tap(t - T.knock), tap(t - T.knock - 0.29)));
-            handTo(P, 'R', [FRONT.x0 - 0.04 - back, 1.42, HER.door.hingeZ + 0.3], [0.15, 1, 0.05], [1, 0, 0], kk, { out: 0.22, down: 0.3 }); }
-          f1Gaze(P, t, [[T.land, [-2.75, 1.5, -2.3]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [-3.78, 1.5, -2.32], 0.7]], 0.8, 0.8, 0.0);
-        } else {
-          f1Walk(P, t, T.ph2 + 1.9, [[L.x, L.z], [-2.75, -2.32], [-2.1, -1.95]], 0.9, MK_REST1, null, { ry0: L.ry });
+            handTo(P, 'R', [FRONT.x0 - 0.125 - back, 1.42, -2.08], [0.15, 1, 0.05], [1, 0, 0], kk, { out: 0.22, down: 0.3 }); }
+          f1Gaze(P, t, [[T.land, [-2.8, 1.5, -2.1]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 0.7]], 0.8, 0.8, 0.0);
         }
         return;
       }
@@ -644,12 +669,12 @@
           f1Gaze(P, t, [[T.out - 1.6, [2.4, GY + 1.6, -1.9]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.6, OPEN1.meet.z], 1.58), 0.8], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
         } else f1Walk(P, t, T.ph1 + SECS.ph51o1 + 0.2, OPEN1.phoIn, 0.9, phoRest1(t), -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
       } else if (t < T.land) {
-        climbPose(P, climbAt(t, T.stair, 0.5, 1.2, T.tube + 0.2, T.tube + 1.6));
+        climbPose(P, climbAt(t, T.stair, STAIR1.pho.cad, STAIR1.pho.s0, T.tube + 0.2, T.tube + 1.6), { z: STAIR1.pho.z });
       } else {
-        const L = OPEN1.land.pho;
-        if (t < T.ph2 + SECS.ph51o2 + 0.3) { put(P, L.x, L.z, L.ry, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
-          f1Gaze(P, t, [[T.land, [-2.75, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02); }
-        else f1Walk(P, t, T.ph2 + SECS.ph51o2 + 0.3, [[L.x, L.z], [-2.95, -2.3], [-2.3, -1.8]], 0.85, phoRest1(t), null, { ry0: L.ry });
+        /* (at the lobby's far side, turned to her door, until the cut inside) */
+        const L = OPEN1.land.pho, lRy = faceTo(L.x, L.z, -2.8, -2.3);
+        put(P, L.x, L.z, lRy, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
+        f1Gaze(P, t, [[T.land, [-2.85, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.8, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02);
       }
       /* the cloth bag on his left shoulder, hung at his right hip by its strap (it goes where his body goes) */
       phoBagOn1(P);
@@ -682,8 +707,9 @@
       const shown = t > T.lock + 0.2; f1Show(P, shown); if (!shown) { PROPS1.grPhone.visible = false; if (WORLD.reflect) WORLD.reflect.set('grace', { face: null }); return; }
       if (!P.ready) return;
       if (t < T.inn) {
-        const L = OPEN1.land.grace, back = smo(c01((t - T.ph2 - 0.4) / 1.4));
-        put(P, lp(L.x, L.x + 0.55, back), lp(L.z, L.z + 0.4, back), L.ry + 0.25 * back, 0);
+        /* (a step back and aside, clear of her door's leaf, to let them in: OPEN1.graceIn, where the cut inside finds her) */
+        const L = OPEN1.land.grace, G0 = OPEN1.graceIn, back = smo(c01((t - T.ph2 - 0.4) / 1.4));
+        put(P, lp(L.x, G0.x, back), lp(L.z, G0.z, back), L.ry - 0.35 * back, 0);
         f1Speak(P, t, GR_REST1, [[T.gr1, SECS.gr51o1, 'Idle_3']]);
         /* her look: to Marcus, to his teacher, and then past them, down the stairs */
         f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, [-3.78, 1.55, -2.32], 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
@@ -695,9 +721,11 @@
       if (t < T.sofa) { put(P, G.x, G.z, G.ry, 0); pose(P, GR_REST1[0], GR_REST1[1] + t * GR_REST1[2], true);
         if (WORLD.reflect) WORLD.reflect.set('grace', { face: GRACE_FACE_STAIRS(), turn: 0 }); return; }
       /* to the sofa: her walk, and at the sofa her turn and her sitting down (her rise played backward: people/RECORD.md) */
-      const pts = OPEN1.graceSofa, wsec = f1WalkSecs(pts, 0.85), arrive = T.sofa + wsec;
-      if (t < arrive + 0.6) f1Walk(P, t, T.sofa, pts, 0.85, GR_REST1, Math.PI, { ry0: G.ry, y: 0 });
-      else { const st = STATION.room.grace, u = c01((t - arrive - 0.6) / 2.4);
+      /* (her pace is her path's own length over the walk's seconds, OP51.sofaWalk, so the sounds and the black that follow
+         her land with her: z_tail.js) */
+      const pts = OPEN1.graceSofa, v = f1PathLen(pts) / Math.max(0.5, T.sofaWalk - 0.45);
+      if (t < T.sofaSit) f1Walk(P, t, T.sofa, pts, v, GR_REST1, Math.PI, { ry0: G.ry, y: 0 });
+      else { const st = STATION.room.grace, u = c01((t - T.sofaSit) / (T.seated - T.sofaSit));
         if (P.acts.rise) { put(P, lp(pts[3][0], st.x, smo(u)), lp(pts[3][1], st.z, smo(u)), st.ry, 0); pose(P, 'rise', lp(4.9, 0.05, smo(u)), false); }
         else put(P, st.x, st.z, st.ry, 0);
         if (u >= 1 && P.acts.gsofa) pose(P, 'gsofa', 0.25, false); }
@@ -710,8 +738,8 @@
       const MK = () => f1Head(cast.marcus, [OPEN1.marcus0.x, GY + 1.0, OPEN1.marcus0.z], 1.0);
       const glass = [FILMPLACE.glass.x, FILMPLACE.glass.y, FILMPLACE.glass.z + 0.06];
       const kneelEye = [HER.him.x, KNEEL_EYE, HER.him.z];
-      const eyeClimb = (t) => { const s = climbAt(t, T.stair, 0.5, -2.0, T.tube + 0.4, T.tube + 1.8), sc = Math.max(0, s);
-        return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), CLIMB1.z + 0.1]; };
+      const eyeClimb = (t) => { const s = climbAt(t, T.stair + STAIR1.eye.wait, STAIR1.eye.cad, STAIR1.eye.s0, T.tube + 0.3, T.tube + 1.7), sc = Math.max(0, s);
+        return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), STAIR1.eye.z]; };
       return [
         /* THE CRANE (2 to 15.5 s): from 7 m up and over the road, the row's roofline against the deep blue and her lit windows
            in the lower half, down and in under the five-foot way's ceiling to Marcus by the stair door, seen from up the
@@ -736,11 +764,11 @@
         { t: T.turn + 0.2, name: 'door', eye: [OPEN1.eyeAt[0] - 0.05, GY + EYE, OPEN1.eyeAt[1] - 0.08], at: [1.15, GY + 1.45, -3.72], fp: 60, fd: 52 },
         { t: T.stair - 0.05, name: 'door', eye: [2.72, GY + EYE, -1.6], at: [1.15, GY + 1.4, -3.72], fp: 60, fd: 52 },
         /* THE STAIR: climbing behind his teacher and Marcus, looking up the flight */
-        { t: T.stair, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.35 - 0.25 * c01((F1.t - T.stair) / 9.5), CLIMB1.z]; }, fp: 64, fd: 56, cut: true },
-        { t: T.land - 0.05, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.1, CLIMB1.z]; }, fp: 64, fd: 56, ease: 'lin' },
+        { t: T.stair, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.75 - 0.3 * c01((F1.t - T.stair) / 9.5), STAIR1.eye.z]; }, fp: 64, fd: 56, cut: true },
+        { t: T.land - 0.05, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.45, STAIR1.eye.z]; }, fp: 64, fd: 56, ease: 'lin' },
         /* THE LANDING: at the top of the stair, level with her; her door, Marcus's knock; Grace, her head, both hands and the
            door's edge held */
-        { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.75, 1.5, -2.38], fp: 52, fd: 44, cut: true },
+        { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.95, 1.38, -2.12], fp: 52, fd: 44, cut: true },
         { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.32), fp: 52, fd: 44,
           hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
         { t: T.ph2 + SECS.ph51o2 + 0.2, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.3), fp: 52, fd: 44,
@@ -866,7 +894,7 @@
        one ring (ringAt) */
     function f1Water(t, wax, k, ringAt) {
       if (!PROPS1.bowlR) return;
-      glintMat1.opacity = 0.55 * k;
+      glintMat1.opacity = 0.3 * k;
       let rk = 0, rs = 0.2;
       if (wax != null) for (const dt of [0, 1.5, 3.0]) { const d = t - wax - dt; if (d > 0 && d < 1.6) { rk = Math.max(rk, (1 - d / 1.6) * 0.8); rs = 0.15 + d * 0.5; } }
       if (ringAt != null) { const d = t - ringAt; if (d > 0 && d < 2.6) { rk = Math.max(rk, 0.85 * (1 - d / 2.6)); rs = 0.15 + 0.38 * c01(d / 2.6); } }
