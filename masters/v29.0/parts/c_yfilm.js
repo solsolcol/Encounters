@@ -736,7 +736,9 @@
     function openKeys1(T) {
       const W = [2.75, 1.6, -0.1];                                                    // her two lit windows' middle
       const MK = () => f1Head(cast.marcus, [OPEN1.marcus0.x, GY + 1.0, OPEN1.marcus0.z], 1.0);
-      const glass = [FILMPLACE.glass.x, FILMPLACE.glass.y, FILMPLACE.glass.z + 0.06];
+      /* (the reflected people stand 0.86 to 1.21 m up the glass from his kneeling eye: aimed at their middle, 27 Nov, where
+         the first aim at 1.45 m left them at the picture's foot under a black reflected ceiling) */
+      const glass = [FILMPLACE.glass.x, 1.08, FILMPLACE.glass.z + 0.06];
       const kneelEye = [HER.him.x, KNEEL_EYE, HER.him.z];
       const eyeClimb = (t) => { const s = climbAt(t, T.stair + STAIR1.eye.wait, STAIR1.eye.cad, STAIR1.eye.s0, T.tube + 0.3, T.tube + 1.7), sc = Math.max(0, s);
         return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), STAIR1.eye.z]; };
@@ -809,7 +811,7 @@
         f1Levels();
       },
       end() { f1Lens(PLAYFOV1); F1.beds = null; F1.film = ''; knotGlow1.m.opacity = 0; knotGlow1.q.visible = false;
-        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); F1.api = null; }
+        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; waxMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); F1.api = null; }
     };
     function keepPho1(t, T) {
       const P = cast.pho; if (!P || !P.ready) return;
@@ -892,9 +894,32 @@
     }
     /* the water in his bowl: the candle's warm point on it, still; a ring for each drop of wax (from `wax`), and the cord's
        one ring (ringAt) */
+    /* THE WAX (the plan's 9.2, 32 to 42 s: "three drops of wax fall into the water, ripples"): each drop SEEN falling into
+       the water in his hands, from above the picture where his teacher tilts the candle (a pale bead of wax and a short
+       streak behind it, children of the held bowl, so they are drawn in the hands' pass with it), landing on the ring's own
+       moment; the candle's warm glint on the water brightening and moving to the middle while the flame is over it. (27
+       Nov: the first build's ripples came from nothing in the picture) */
+    const waxMat1 = new THREE.MeshBasicMaterial({ color: 0xf6ecd2, transparent: true, opacity: 0, depthWrite: false }); mats.push(waxMat1);
+    const waxDrop1 = new THREE.Mesh(new THREE.SphereGeometry(0.0055, 8, 6), waxMat1); waxDrop1.renderOrder = 4; owned.push(waxDrop1.geometry);
+    const waxTail1 = new THREE.Mesh(new THREE.CylinderGeometry(0.0018, 0.0042, 0.05, 6, 1, true), waxMat1); waxTail1.renderOrder = 4; owned.push(waxTail1.geometry);
+    const WAXFALL1 = 0.21;                                                       // (0.22 m of fall at g)
     function f1Water(t, wax, k, ringAt) {
       if (!PROPS1.bowlR) return;
-      glintMat1.opacity = 0.3 * k;
+      const g = PROPS1.handBowl, r = PROPS1.bowlR, c = ring1.position;
+      /* (the candle over the water: the glint brightened and drawn to the middle while the drops fall) */
+      const over = wax != null ? f1Env(t, wax - 0.9, wax + 3.6, 0.6, 0.7) : 0;
+      glintMat1.opacity = (0.3 + 0.35 * over) * k;
+      glint1.position.set(c.x - r * 0.25 * (1 - over), c.y + 0.002, c.z + r * 0.2 * (1 - over));
+      let drop = -1;
+      if (wax != null) for (const dt of [0, 1.5, 3.0]) { const u = (t - (wax + dt - WAXFALL1)) / WAXFALL1; if (u >= 0 && u < 1) drop = u; }
+      if (drop >= 0 && g && k > 0.001) {
+        if (waxDrop1.parent !== g) { g.add(waxDrop1); g.add(waxTail1); }
+        /* (in the held bowl's own frame, which the hold scales by BOWLHELD.s: the fall and the bead's size in world metres) */
+        const inv = 1 / Math.max(1e-6, g.scale.x), y = c.y + 0.22 * inv * (1 - drop * drop);
+        waxDrop1.position.set(c.x + 0.012 * inv, y, c.z - 0.01 * inv); waxDrop1.scale.setScalar(inv);
+        waxTail1.position.set(c.x + 0.012 * inv, y + 0.027 * inv, c.z - 0.01 * inv); waxTail1.scale.setScalar(inv);
+        waxMat1.opacity = 0.95 * k;
+      } else waxMat1.opacity = 0;
       let rk = 0, rs = 0.2;
       if (wax != null) for (const dt of [0, 1.5, 3.0]) { const d = t - wax - dt; if (d > 0 && d < 1.6) { rk = Math.max(rk, (1 - d / 1.6) * 0.8); rs = 0.15 + d * 0.5; } }
       if (ringAt != null) { const d = t - ringAt; if (d > 0 && d < 2.6) { rk = Math.max(rk, 0.85 * (1 - d / 2.6)); rs = 0.15 + 0.38 * c01(d / 2.6); } }
