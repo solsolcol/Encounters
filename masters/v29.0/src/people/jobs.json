@@ -143,8 +143,25 @@
   }
  },
  "marcus": {
+  "credits": 40,
+  "expires_at": 1796026107559,
   "image": "masters/v29.0/src/people/refs/marcus-a3-2k.png",
   "image_to_3d": "01a21c08-6b2e-7257-b56a-50e81896ece9",
+  "remesh": {
+   "40000": "01a21c0f-1b28-779d-8707-d64a37294b2d"
+  },
+  "rig": "01a21c0c-b706-7709-9104-fdaf57e51a6f",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21c08-6b2e-7257-b56a-50e81896ece9",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 50369688,
+   "walk": 50617440
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -163,6 +180,18 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 46584312,
+   "pre": 9127380
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 51017628,
+    "task": "01a21c0f-22ec-7656-bb08-17fe06c5c070"
+   }
   }
  },
  "marcus_first": {
