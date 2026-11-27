@@ -322,7 +322,7 @@
   { float br = length(vBowlP.xz - uBowlC.xz);
     float inW = (1.0 - smoothstep(uBowlC.w * 0.97, uBowlC.w * 1.03, br)) * step(uBowlC.y, vBowlP.y);
     float mxc = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)), mnc = min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
-    float water = (1.0 - smoothstep(0.16, 0.3, (mxc - mnc) / max(mxc, 1e-3))) * (1.0 - smoothstep(0.42, 0.6, mxc));
+    float water = (1.0 - smoothstep(0.22, 0.36, (mxc - mnc) / max(mxc, 1e-3))) * (1.0 - smoothstep(0.8, 0.92, mxc));
     vec3 dry = diffuseColor.rgb * uBowlTint * (0.62 + 0.3 * smoothstep(0.0, uBowlC.w, br));
     vec3 wet = mix(diffuseColor.rgb, dry, uBowlEmpty * water);
     diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, wet, inW); }`);
@@ -369,7 +369,7 @@
        to 0.7 of its height and lowered by the pour to 0.3 (built again as the level moves: a few hundred points). Unlit, a
        pale clear blue under the glass (no lamp: v9.4) */
     const JUG = { got: false, prof: null, mesh: null, k: 0.7, built: -1, mat: null };
-    { const jm = new THREE.MeshBasicMaterial({ color: 0x86a6b8, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide }); mats.push(jm); JUG.mat = jm; }
+    { const jm = new THREE.MeshBasicMaterial({ color: 0x5c7c90, transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide }); mats.push(jm); JUG.mat = jm; }
     function jugFit() {
       const j = things.jug; if (!j || JUG.got || !j.userData.model) return;
       JUG.got = true; j.updateWorldMatrix(true, true);
