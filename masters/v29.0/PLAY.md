@@ -133,3 +133,12 @@ again; the night in bed, or standing if `u`).
 r in the world), `fn` (the cast machinery: `span`, `rest`, `take`, `pose`, `hold`, `put`, `gaze`, for a lab to pose a body).
 tools/probes/e5c1play.mjs (play by real input), e5c1lab.mjs (views; PRE, PRE2 and VIEWS2), e5c1save.mjs (Continue from every
 phase, a same-sitting Continue, a replay by reset and one by the chapter selector).
+
+## 8 · Clipping, measured (Chad's R15, "Also check for all kinds of clipping": the PLAY phases)
+
+| what | how | read | done |
+|---|---|---|---|
+| things and bodies through one another, the room | tools/probes/clipscan.mjs PHASE=room (75735c0, then d3f65f4) | her bag through the sofa (585, its back in the back cushion), her phone sunk into the cushion and under her hand (305), Grace's calves in the sofa's front, Marcus's calves in the rattan chair's front (1,046 from 0.09 to 0.42 m up) | bag and phone set on the cushion as read under their footprints (`sofaRest`), the bag 5 cm off the back cushion, the phone 6 cm clear of her hand; the feet of both laid forward (GRACE_FEET 0.32, MARCUS_FEET 0.2). Left, read as a sitter resting: Grace against the sofa 1,031 (her seat and back in its cushions, 0.31 to 0.78 m up), Marcus against his chair 447 (0.35 to 0.42 m: his seat in its cushion) |
+| a limb in a solid or another body, the room | tools/probes/limbclip.js in the page (lab, PRE) | pho, p51grace, p51marcus read; all three seated (the solids check leaves a sitter out); no two bodies in each other | nothing to fix |
+| her feet when she stands | lab: her ankles and toes over a stand-up | the rise stood her on tiptoe, 7 cm off the floor | the rise's feet laid flat (`riseFeetFlat`): ankles 0.116, toes 0.019 m at its end (her Idle_3: 0.125, 0.028) |
+| the held bowl, its size | lab, breaking: its box in the hands' pass against the cloth's | 0.198 m in his hands, 0.32 on the cloth | one size, `BOWL_S` 0.62 |
