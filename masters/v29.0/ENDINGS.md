@@ -161,6 +161,19 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     his robe (photographed from his side); at the tie his right hand's twelve finger joints found and its first joint bent 38
     degrees by the films' own curl; his left hand has no finger bones (his standing file carries them in the right hand only:
     build.py's `p5pho`), so its fingers lie straight along the wrist's side.
+  - THE LENS AS A MOVE (run s7: each ending sought from 0 to its end every tenth of a second on a phone's shape and a desk's,
+    tools/probes/e5c1ends.mjs MODE=seek, read by tools/probes/e5c1bounce.py and framebounce.py). What it found and what was
+    done: his sitting down into the circle (every ending) dropped the eye its last 0.38 m in a tenth of a second (the keys
+    0.1 s apart: now over 1.45 s), and the lens stepped from the circle's 70 degrees to the chant's 66 in one frame (now eased
+    as his eye lifts); B's first look down to his phone fell 42 degrees and closed the lens 12 to 20 in 0.3 s (now 0.9 s); C's
+    look dipped to 0.72 m and rose at 112 degrees a second as he came to the drawer (now kept on the counter's top), and he
+    sat and lay back at 1.5 m a second (now 0.9 s each); D's first look rose 40 degrees in 0.4 s (now a second), and between
+    the door and the doorway the keys' curve through a look-at point 40 m out threw the look back under his eye, 80 degrees
+    down and round in half a second (now 6 m out). Read and left: every lens leap it lists at a cut (the door's insert, the
+    dawn's door, winding, table, tie and face: cuts with no person in the frame, which the reader cannot tell from a leap);
+    the dawn's first frame (a change in the black); head turns of 90 to 100 degrees a second as he turns to walk or to the
+    knock; and his teacher's "drawn height" steps, which are parts of him outside the picture (their extent past the
+    screen's edge) or a reading taken before he is in it. The fixed moves are measured again (runs s12, s13).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
