@@ -1363,7 +1363,7 @@
     function pourAt1(t, T) {
       /* (his hand on the bowl's near rim held off from the bottle toward his right knee by the bowl's width less a lip, so its
          far rim, tilted down, pours into the bottle's mouth: 27 Nov, held 8 cm off the bottle, the bowl hung beyond it) */
-      const Rs = (BOWL1.R || 0.22) * (holdOf1("bowl").s || 1), off = 2 * Rs - 0.02;
+      const Rs = (BOWL1.R || 0.16) * ((S && S.plan && S.plan.BOWL_S) || holdOf1("bowl").s || 1), off = 2 * Rs - 0.02;
       const P0 = T.pour, B = [CB1.x + POURDIR1[0] * off, CLOTH_Y + 0.25, CB1.z + POURDIR1[1] * off], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
       const k = smo(c01((t - P0 + 0.3) / 0.6)) * (1 - smo(c01((t - P0 - 2.95) / 0.25)));
       const u1 = smo(c01((t - P0 - 0.9) / 0.5)), u2 = smo(c01((t - P0 - 2.6) / 0.4));
@@ -1387,13 +1387,13 @@
     function cordBowl1(t, T) {
       const W = things.holyBowl, g = PROPS1.pourBowl, pr = pourAt1(t, T), P = cast.pho;
       const set = t >= T.pour + 3.0, held = t >= T.pour + 0.9 && !set;
-      /* (the bowl the size it was in his hands, holdOf1("bowl").s of the cloth's, from his hands to his teacher's and set
-         down at the cloth's bowl's place, where it stays to the film's end; the cloth's own, the larger, is hidden till then
-         (end() shows it again). 27 Nov, photographed: at the cloth's size it was 0.45 m across in one of his hands) */
-      const sc = holdOf1("bowl").s || 1;
-      if (W) W.visible = false;
+      /* (the bowl at the one size every bowl is drawn at, PLAY's S.plan.BOWL_S (0.62 of the file, 0.198 m across: PLAY.md 2),
+         from his hands to his teacher's, eased onto the cloth's bowl's own place and turn, and the cloth's own shown again
+         there. 27 Nov, photographed: drawn at the file's size it was 0.45 m across in one of his hands) */
+      const sc = (S && S.plan && S.plan.BOWL_S) || holdOf1("bowl").s || 1;
+      if (W) W.visible = set;
       if (!g) return;
-      g.visible = (held || set) && !!g.userData.model && BOWL1.R > 0;
+      g.visible = held && !!g.userData.model && BOWL1.R > 0;
       if (!g.visible || !P || !P.ready) return;
       P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1pb, 0); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
       /* (the pour's direction: from his hand toward the bottle's mouth; the bowl's near rim under his fingers, 2 cm below the
