@@ -105,6 +105,23 @@ from here, what is measured, and what is still open. Read with PLAY.md (the play
   every stretch of 1.5 s or more without a voice is held by the room's beds and music (the keepsake's 3.6 to 23.0 by her
   flat's bed, M2 and M3 under the pull; the cord's by the bed and M2 warming after the snap; home's by M5, the clock and
   the pressure's tone, its silence at 49.5 the designed one with the clock).
+- CHAD'S R15 SWEEP ("check for all kinds of clipping", 27 Nov night: clipscan every 2 s round the lens, the shared limbclip.js
+  on every row (it read this chapter's people from 9805545), people-centred clipscan outdoors and in the hands' pass, feet,
+  the lens against the solids). THE CORD (build of HEAD 9eec7bc and mine): her phone turned face down lay in the cushion
+  (908 crossings: now turned about its own lowest face); his teacher's fingertips 1 to 2 cm in the packet (300 to 600: raised
+  2 cm); bent 0.75 rad, his chest met the incense sticks' tips (40 to 52: 0.68); Marcus's right foot 2.4 cm in her right
+  shin with her feet out 0.32 m (PLAY's d3f65f4: his kneel moved out); his talking hand 25 cm in the sofa's back (now z
+  -1.12); the pour's bowl at his teacher's grip, a touch (29). Left, PLAY's: Grace seated against the seat's top (886, a
+  2 cm band under her thighs). THE VISION at the snap opened to DATA.vision.rmax (75f0be6, as FILMS-2's F2VR): photographed
+  at 9.6 s, the whole picture inverted, no edge. THE KEEPSAKE: at the handoff her front foot and shins 10 to 13 cm in the
+  coffee table's front (1,669) and her free hand through the lit candle2 (64), stepping to 0.55 (now 0.43); her fingers in
+  the packet under her palm (1,023: held 1.5 cm lower) and his teacher's in it on his palm (295: 1.3 cm higher); her body in
+  the sofa 16 to 20 s (1,832, under the plate's insert, which cannot see her), 642 from 22 s; the limbs' check's "in solid"
+  on the sofa while she rises and sits and on Marcus's arm over its back is the sofa's solid box (0.9 m over the whole seat),
+  not its surfaces: clipscan's mesh pairs are the measure there. The set-down photographed (15.3 s: the packet sliding off
+  his fingers onto the plate, his hand beside it); the bowl lifted, his right index fingertip dips into the water inside its
+  rim (30 s: the engine's `bowl` pose with bowlInHands, shared with PLAY's breaking: listed). Each fix measured again on the
+  next build (scratch m26k).
 - JOINTS, by jointscan.mjs's own measure (its MEASURE read and run at the films' moments: my scratch f1joints.mjs). Marcus's
   knocking hand: curled by +1.3 its fingers bent backward 58 to 69 degrees (the curl's sign turned, measured again). What
   stays, not mine: the player's own hands in the engine's `bowl` and `bottle` poses read out of a real hand's range in
