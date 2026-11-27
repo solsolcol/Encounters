@@ -257,15 +257,18 @@
        left-right line): a seated body reaching across a low table leans into the reach, as a person does; laid after the
        pose, kept off the next (v11.5: taken back before the mixer runs again) */
     function f1LeanBack(P) { const L = P && P.f1lean; if (!L || !L.on) return; for (const r of L.b) r[0].quaternion.copy(r[1]); L.on = false; }
-    function f1Lean(P, ang) {
-      if (!P || !P.ready || !(Math.abs(ang) > 1e-4)) return;
+    /* (and a TWIST, `tw` radians about the body's own up, shared by the same three bones: a seated man turning his shoulders
+       to someone at his side, negative to his right; 27 Nov: his head alone could not turn to his student kneeling at his
+       right, and his lines to him were said in profile) */
+    function f1Lean(P, ang, tw = 0) {
+      if (!P || !P.ready || !(Math.abs(ang) > 1e-4 || Math.abs(tw) > 1e-4)) return;
       if (!P.f1lean) { const b = ['Spine', 'Spine1', 'Spine2'].map(n => f1Bone(P, n)).filter(Boolean); P.f1lean = { b: b.map(x => [x, new THREE.Quaternion()]), on: false }; }
       const L = P.f1lean; if (!L.b.length || L.on) return;
       P.group.updateWorldMatrix(true, true);
-      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(P.group.getWorldQuaternion(_f1Q)), per = ang / L.b.length;
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(P.group.getWorldQuaternion(_f1Q)), up = new THREE.Vector3(0, 1, 0).applyQuaternion(_f1Q), per = ang / L.b.length, tper = tw / L.b.length;
       for (const r of L.b) r[1].copy(r[0].quaternion);
       for (const r of L.b) { const bone = r[0], wq = bone.getWorldQuaternion(new THREE.Quaternion());
-        wq.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, per)); const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion());
+        wq.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, per)); if (tper) wq.premultiply(new THREE.Quaternion().setFromAxisAngle(up, tper)); const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion());
         bone.quaternion.copy(pq.invert().multiply(wq)); bone.updateWorldMatrix(false, true); }
       L.on = true;
     }
@@ -867,18 +870,18 @@
       const P = cast.pho; if (!P || !P.ready) return;
       f1LeanBack(P);
       /* (TURNED TO HIM from 22 s, as he asks him to hold the water: photographed 27 Nov, his head alone could not turn the
-         right angle to where his student kneels at his right, and he spoke his line in profile. He turns on his cushion, a
-         third of the way, and his look goes the rest; he stays turned to him, over the bowl in his hands, to the film's end,
-         which looks down into the bowl: the play seats him square again unseen) */
+         right angle to where his student kneels at his right, and he spoke his line in profile. His shoulders turn to him a
+         third of the way (f1Lean's twist) and his look goes the rest; he stays turned to him, over the bowl in his hands, to
+         the film's end, which looks down into the bowl: the play's rest takes the turn back unseen) */
       const st = STATION.room.pho, turnK = f1Env(t, T.turn - 0.4, T.end + 9, 1.3, 0.5);
-      put(P, st.x, st.z, st.ry - 0.55 * turnK, (P.home && P.home.y) || 0.12);
+      put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
       f1Speak(P, t, ['Sit_to_Stand_Transition_M', 0.02, 0, false], [[T.k1, SECS.ph51k1, 'Sitting_Answering_Questions', 0.6], [T.k2, SECS.ph51k2, 'Sitting_Answering_Questions', 0.6]]);
       /* HIS LEFT HAND held out open across the cloth toward her, palm up (0 to 13 s), leaning into the reach as she reaches
          to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
          in it at 12.5 s and set on the small white plate at his left (14 to 18 s); his right hand tilts the lit candle over
          the bowl for the wax (32 to 38 s) */
       const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.32 * f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
-      f1Lean(P, lean);
+      f1Lean(P, lean, -0.55 * turnK);
       if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
         const tx = lp(lp(0.42, 0.44, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, 0.86, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, 0.6, r), CLOTH_Y + 0.07, u);
         handTo(P, 'L', [tx, ty, tz], [0.0, -0.1, -1], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
@@ -1091,7 +1094,10 @@
          white and bind it (32 to 44 s); his right hand to take the bowl from him (44 s), the bottle filled and corked on the
          cloth, then held out to him (47 s) */
       const untie = f1Env(tau, 0, T.snap + 0.25, 0.2, 0.25), bind = f1Env(tau, T.wrap - 0.6, T.pour - 0.4, 0.6, 0.6), work = Math.min(1, untie + bind);
-      f1Lean(P, 0.3 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7));
+      /* (his shoulders turned to his student, a third of a right angle, to take the bowl from him and to hold the bottle out to
+         him, square to the cloth for the pour and the cork between: his look to him goes the rest) */
+      const toHim = Math.max(f1Env(tau, T.pour - 0.9, T.pour + 1.0, 0.6, 0.6), f1Env(tau, T.give - 0.5, T.end + 9, 0.9, 0.5));
+      f1Lean(P, 0.3 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim);
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
         handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
         handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
