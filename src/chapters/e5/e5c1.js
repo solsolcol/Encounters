@@ -314,7 +314,10 @@
        o'clock (the plan's 8). TODO-SOUND: its own sounds (u51...), never another chapter's: a sound of another chapter
        named here would leave that chapter's pack. Until they land it is silent. */
     vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
-              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1 },
+              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
+              /* (PLAY, M6: its own two sounds, chapter 4's copied under this chapter's names; no bed or music of its own: the
+                 room's and the night's play their own under it. The night's heart is the play's: c_play.js) */
+              sound: { on: 'u51vison', off: 'u51visoff', vol: 0.85 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
 
     assets: [
@@ -326,9 +329,9 @@
       /* <<< this chapter's own keys <<< */
       /* the shared cast's stand-ins and reuse (masters/v29.0/parts/c_cast.js), each declared in `reuseInEpisode`:
          Grandmaster Pho as episode 4 chapter 5 casts him seated (his own file, look D), the white cloth over his crossed
-         legs; and until Grace and Marcus land (M3), the two of the game's people who wear their roles. (Standing, at
+         legs. (Grace and Marcus are their own bodies, above: PLAY put them in on 27 Nov 2026.) (Standing, at
          dawn, he is chapter 5's copy with finger bones, p5pho: the FILMS piece adds it with his standing body) */
-      'pho', 'w3pholap', 'p4mala', 'p4malah', 'p5collector'
+      'pho', 'w3pholap'
     ],
     /* FRESH (chaptertest): what this chapter takes from episodes 1 to 3, declared (Chad, v17.4): nothing */
     reuse: {},
@@ -337,16 +340,15 @@
     reuseInEpisode: {
       pho: "Grandmaster Pho, Chad's own model, as episode 4 chapters 3 to 5 cast him (his look D): seated on his cushion at Grace's low table",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, episode 4 chapter 3's hall: his seat at her table" },
-    placeholders: {
-      p4mala: "STAND-IN for Grace until her own body lands (M3): Mala, Amma's daughter, met only in episode 4 chapter 4 (her mother's flat)",
-      p4malah: "Mala's full body, for within 2.2 m (v26.5), with the stand-in",
-      p5collector: "STAND-IN for Marcus until his own body lands (M3): the collector, met only in episode 4 chapter 5's last case (the receiving room)" },
+    placeholders: {},
     items: [],
 
     musicVol: 0,
-    /* THE BEDS (the plan's 11.3): TODO-SOUND, each a loop at 0 here, set by the play's mixer by place and beat once SOUND
-       has made them (u51...). None is declared until its file exists: a bed named before then plays nothing. */
-    ambience: { beds: [] },
+    /* THE BEDS (the plan's 11.3) and the play's loops, each declared at 0 and eased by the play's mixer by place and beat
+       (c_play.js PLAYSOUND: her flat, his flat at night and at three, M2 and M3 in the room, M6's three layers, the water's
+       lap, the tinnitus, his breath, the threads). In a film every one is the film's (`stage.beds.film`), else 0 */
+    ambience: { beds: [['u51bflat', 0], ['u51bnight', 0], ['u51bthree', 0], ['u51m2room', 0], ['u51m3pull', 0], ['u51m6a', 0], ['u51m6b', 0],
+                       ['u51m6c', 0], ['u51lap', 0], ['u51tinnitus', 0], ['u51breath', 0], ['u51threads', 0]] },
     voiceLine: null,
 
     words: {
@@ -386,7 +388,11 @@
       evCircleKey: 'Lay the thread all the way round you. Circle the mouse round the screen.',
       // THE SKELETON'S STAND-INS (TODO-PLAY): what is pressed until its play is built. Mine, not the plan's: each goes
       // when the play it stands for is built
-      hotStill: 'Hold the bowl'
+      hotStill: 'Hold the bowl',
+      /* (PLAY, M6: mine, plain words) the eye's lock while the breaking holds his sight open (a lock always says why: v8.1),
+         the room's look-spots' second name, the decision's thing to press */
+      visionHeld: 'Keep your eyes on the water.',
+      hotLook: 'Look'
     },
     sayPrefix: 'zv51'
   };
@@ -3930,7 +3936,7 @@
       plate:    { x: 0.08, y: CLOTH_Y, z: 0.96 },                     // the small white plate's corner, apart from everything (9.2)
       lighter:  { x: 0.95, y: CLOTH_Y, z: 1.36 },
       incense:  { x: 0.52, y: CLOTH_Y, z: 1.38 },
-      jug:      { x: 1.18, y: 0, z: 1.58 }                            // on the floor at his knee
+      jug:      { x: 1.12, y: 0, z: 1.36 }                            // on the floor at his knee, by the table's end (PLAY, M6: from 1.18, 1.58, under his own knees and out of his sight)
     };
     {
       const T = HER.table;
@@ -4327,7 +4333,11 @@
       room:  { at: { x: HER.him.x, z: HER.him.z, ry: HER.him.ry },
                pho: { x: HER.pho.x, z: HER.pho.z, ry: HER.pho.ry }, grace: { x: HER.grace.x, z: HER.grace.z, ry: HER.grace.ry, y: HER.sofa.seat },
                marcus: { x: HER.rattan.x, z: HER.rattan.z, ry: HER.rattan.ry, y: HER.rattan.seat } },
-      night: { at: { x: HIS.getUp.x, z: HIS.getUp.z, ry: 2.17 } }
+      night: { at: { x: HIS.getUp.x, z: HIS.getUp.z, ry: 2.17 },
+               /* (PLAY, M6) where he LIES in bed when three o'clock begins (the film of home ends here: PLAY.md): on his back on
+                  the mattress, his head toward its head on the +x wall, the eye 0.82 m up, his head turned toward the side he
+                  gets up on (yaw 0.8: the getting-up spot in view on a phone), a little up (pitch 0.12) */
+               bed: { x: HIS.bed.x + 0.2, z: HIS.bed.z, ry: 0.8, y: 0.82, pitch: 0.12 } }
     };
     STATION.breaking = STATION.room;
     STATION.ask = { at: { x: WORLD_AT.phone.x + 0.25, z: WORLD_AT.phone.z + 0.85, ry: 0.3 } };
@@ -4380,11 +4390,10 @@
                       v24.52: "unlit, except for the robe"), every posture law episode 4 learned on him: copied here number
                       for number (a declared reuse). Standing at dawn he is chapter 5's copy with finger bones (p5pho):
                       FILMS adds that body with the dawn
-         cast.grace   GRACE (the plan's 6). STAND-IN until her own body lands (M3, `p51grace`): Mala, Amma's daughter,
-                      whom the player met only in episode 4 chapter 4 (her mother's flat), standing by the sofa
-         cast.marcus  MARCUS (the plan's 6). STAND-IN until his own body lands (M3, `p51marcus`): the collector, whom the
-                      player met only in episode 4 chapter 5's last case (the receiving room), seated on the rattan chair
-       (Neither stand-in is admintee, granny or yinkeeper, each of whom Chad has ruled out.) Nobody is a block figure: a body
+         cast.grace   GRACE (the plan's 6): her own body, `p51grace` (CAST's first throw, which stays: Chad has not
+                      answered on her second), seated on her sofa
+         cast.marcus  MARCUS (the plan's 6): his own body, `p51marcus`, seated on the rattan chair by her door
+       (PLAY swapped the stand-ins, Mala and the collector, for these on 27 Nov 2026.) Nobody is a block figure: a body
        is not drawn at all until its model has landed (v21.16). */
 
     /* ---------------------------------------------------------------- GRANDMASTER PHO'S LAWS, copied from episode 4
@@ -6181,21 +6190,32 @@
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.pho.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
-    /* GRACE (STAND-IN: p4mala, as episode 4 chapter 4 cast her: her rest, her talk, her full body within 2.2 m). TODO-CAST:
-       her own body, `p51grace`, seated on the sofa (the plan's 8.1: her two stand-ups at 40 s and 110 s) */
+    /* GRACE (the plan's 6; CAST's first throw, `p51grace`, her full body `p51graceh` within 2.2 m: v26.5) ON HER SOFA (its
+       cushions' top 0.51 m, measured: WORLD.md), seated by her own posed skin (seatDown, as chapter 5 seats its sitters).
+       Her rest is `gsofa` (written for her: restless, the hands working the strap) inside its clean window only: at 0.6 of
+       its length her right forearm goes into her hip (people/RECORD.md 4), so the window is its first quarter, there and
+       back slowly. She stands up twice in the room (the plan's 8.1) by `rise` (seat.rise: her height laid from her own
+       feet as she comes up) and sits again by the same take played back. She has met the player only here (a new body). */
+    const GRACE_SEAT = (STATION.room.grace && STATION.room.grace.y) || 0.51;
+    const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
-      cast.grace = mkPerson('p4mala', S0.x, S0.z, S0.ry, { take: 'Idle_3', phase: 0.15,
-        talk: 'Stand_and_Chat', skins: { 0: 'p4malah' }, blobW: 0.75, blobD: 0.6 });
-      cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
-    /* MARCUS (STAND-IN: p5collector, as episode 4 chapter 5 seated him in case three: his sit, his full body). TODO-CAST:
-       his own body, `p51marcus`, on the rattan chair by the door. TODO-WORLD: the chair's seat height (here the plain block's 0.45 m) */
+      cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
+        win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
+        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
+        headDamp: { gsofa: [0.5, 'gsofa'] } });
+      cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
+       word, R7, under the same keys, so a new body drops in here unchanged) ON THE RATTAN CHAIR by her door (its cushion's
+       top 0.42 m, measured), seated by his own posed skin; his rest the seated talk's upright first second, there and back
+       slowly (Chair_Sit_Idle_M sinks his fingertips into his thighs: people/RECORD.md 8.4). A new body: met only here */
+    const MARCUS_SEAT = (STATION.room.marcus && STATION.room.marcus.y) || 0.42;
     { const S0 = at0('room', 'marcus');
-      cast.marcus = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, skins: false,
-        win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
-        seat: { y: 0.45, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
+      cast.marcus = mkPerson('p51marcus', S0.x, S0.z, S0.ry, { y: 0, take: 'Sitting_Answering_Questions', centre: true,
+        skins: { 0: 'p51marcush' }, win: { Sitting_Answering_Questions: [0.2, 1.0, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
+        seat: { y: MARCUS_SEAT, takes: /^(Sit|Chair)/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
         shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
-      cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0.45 }; }
+      cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
 
     /* ================================================================ THE WORLD'S PHASES (the hooks: c_play.js book() and
        applyPhase() call worldPhase, d_play.js's frame calls worldFrame, its reset worldReset). The evening's three stand
@@ -6210,7 +6230,8 @@
     function worldPhase(p, place = true) {
       const st = STATION[p] || STATION.room; worldAt = p;
       standAt(cast.pho, st.pho ? Object.assign({ y: CUSHION_TOP }, st.pho) : null);
-      standAt(cast.grace, st.grace || null); standAt(cast.marcus, st.marcus ? Object.assign({ y: 0.45 }, st.marcus) : null);
+      /* (a sitter's group stands on the FLOOR: seatDown lays the body on its seat, `seat.y` above it; a station's y is its seat's height) */
+      standAt(cast.grace, st.grace ? Object.assign({}, st.grace, { y: 0 }) : null); standAt(cast.marcus, st.marcus ? Object.assign({}, st.marcus, { y: 0 }) : null);
       if (place && st.at) { yaw.position.set(st.at.x, EYE, st.at.z); yaw.rotation.y = st.at.ry; pitch.rotation.x = -0.04; }
     }
     function worldFrame(wdt, st) {
@@ -6239,25 +6260,28 @@
     /* EACH THING TO PRESS IS TRIED BY THE WALK TEST IN THE GROUND IT BELONGS TO (v26.18 `ground`): the night's in his flat */
     const GROUND_OF = { getup: GROUNDS[0].what, phone: GROUNDS[0].what };
     function worldHotspots(list) { for (const h of list) if (h && GROUND_OF[h.id] && !h.ground) h.ground = GROUND_OF[h.id]; return list; }
-    /* ================================================================ THE STORY'S SKELETON (the tracker's M1; PLAY builds
-       it out: M6, the plan's 8)
+    /* ================================================================ THE PLAY (masters/v29.0/parts/c_play.js: PLAY's, M6;
+       the plan's 8, its 9.6 and 9.10, its 12 and 13; masters/v29.0/PLAY.md writes out every number the films read)
        THE PHASES (the plan's 8: "each a save"): room -> breaking -> night -> ask.
-         room      her front room, the evening: the four orders, the four things to look at, Spirit Vision (8.1)  TODO-PLAY
-         breaking  KEEP THE WATER STILL, briefed with START, three surges, never failed (8.2)                 TODO-PLAY
-         night     three o'clock: the PRESSURE walk from his bed to his phone (8.3)                           TODO-PLAY
-         ask       his phone in his hand at 3:03: the decision is open, and opens again after a step back (9.6)
-       A Continue lands at the START of its phase, and what was found in a phase rides the phase string, as episode 4's
-       did: 'room:w,l,p' is the room with the water poured, the candle lit and her phone looked at. The phase string is the
-       save's only receipt (v7.3).
-       BETWEEN THE PHASES, the films (z_tail.js): the opening before `room`; `keepsake` into the breaking; `cord` and then
-       `home` into the night. The next phase is BOOKED before its film begins (a film from play saves first: v21.1), so a
-       game closed in the middle of a film comes back at the start of the phase the film hands to. Each ending carries the
-       barrier (its 9.7, with CLOSE THE CIRCLE inside it) and the dawn (its 9.9).
-       IN THIS SKELETON each order is one thing to press, and what is pressed says its own lines and hands on: so the whole
-       chapter can be walked to its four endings, and nothing soft-locks. */
+         room      her front room, the evening: kneeling at his place by her windows (he does not walk, as at chapter 5's
+                   table); the four orders one at a time; the four things to look at, each a press on the thing itself
+                   (the aim dot on a desktop), each answered; Spirit Vision on Grace, the red line under her door; her two
+                   stand-ups on the phase's clock (40 s and 110 s) (8.1)
+         breaking  KEEP THE WATER STILL: the steady kind with its own picture (`bowl`), briefed with START; three surges of
+                   8, 10 and 12 s, a surge taken once more at most, never failed; Spirit Vision held open (8.2)
+         night     three o'clock: in bed, up by a press, then the PRESSURE walk to his phone: in waves, harder as he moves
+                   or looks, easing as he stands; the tip told once; the knee at full pressure; Spirit Vision forced open
+                   for four seconds at the bedroom door, his own footsteps red and the threads; the trembling things; the
+                   phone picked up by a press (8.3)
+         ask       his phone in his hand at 3:03: the decision (9.6), opened again at the table after a step back
+       A Continue lands at the START of its phase, and what was found rides the phase string ('room:w,l,p': the water poured,
+       the candle lit, her phone looked at). The phase string is the save's only receipt (v7.3).
+       BETWEEN THE PHASES, the films (z_tail.js, FILMS-1): the opening before `room`; `keepsake` into the breaking; `cord`
+       and then `home` into the night. The next phase is BOOKED before its film begins (a film from play saves first:
+       v21.1), so a game closed in the middle of a film comes back at the start of the phase the film hands to. */
     const W = DATA.words;
     const PHASES = ['room', 'breaking', 'night', 'ask'];
-    /* THE RECEIPTS a phase can carry on the phase string (the plan's 8):
+    /* THE RECEIPTS a phase can carry on the phase string:
          room      w the water poured, l the candle lit, p her phone, g her reflection, h her hands, k the packet (and asked
                    where it is from), v Spirit Vision on Grace (the red line seen)
          breaking  (none: the event is one beat, and a Continue opens its brief again)
@@ -6268,6 +6292,8 @@
     let phase = null, booted = false, decOpen = false, lookName = 'LAMP';
     const live = (run) => alive && run === play.run;
     const looksFound = () => LOOKS.filter(c => play.found.has(c)).length;
+    const myX = () => yaw.position.x, myZ = () => yaw.position.z;
+    const distTo = (x, z) => Math.hypot(myX() - x, myZ() - z);
 
     function mark() { return (RECEIPTS[phase] || []).filter(c => play.found.has(c)).join(','); }
     function readMark(p0) {
@@ -6282,7 +6308,7 @@
        the new phase's order waits for whatever hands off to it (v21.21) */
     function book(p) {
       phase = p; play.found = new Set();
-      if (kit) { kit.setPhase(p + ':'); kit.objective(null); kit.waypoint(null); }
+      if (kit) { kit.setPhase(p + ':'); kit.objective(null); kit.waypoint(null); if (kit.visionUrge) kit.visionUrge(false); }
     }
 
     /* ---------------------------------------------------------------- the light of each phase (the chapter's own presets) */
@@ -6300,19 +6326,28 @@
     const heard = new Set();
     const speak = { until: 0, pending: null, voiceTo: 0 };
     function speakReset() { speak.until = 0; speak.pending = null; speak.voiceTo = 0; }
-    /* A LINE WHOSE TAKE HAS NOT LANDED IS SHOWN (TODO-SOUND): its words at the foot of the screen for its provisional
-       length, under who says them, so the skeleton can be read. It shows ONLY when the line's bytes never came (the give-up
-       below): the day a take lands under its key, the line is heard and its caption is gone, with nothing here to change. */
+    const lineBusy = () => dayClock.t < speak.until || !!speak.pending || lineQ.length > 0;
+    /* A LINE WHOSE TAKE HAS NOT LANDED IS SHOWN: its words at the foot of the screen for its length, under who says them.
+       It shows ONLY when the line's bytes never came (the give-up below) */
     function showLine(name) {
       const L = LINES[name];
       if (!L || !kit || !kit.captions) return;
       kit.captions([{ at: 0, end: (SECS[name] || 2.5) + 0.4, text: L[2], sub: WHO[L[0]] || '' }]);
     }
+    /* WHO SAYS IT TALKS FROM THE LINE'S OWN START and rests after (v11.4), and looks at whom he says it to */
+    const SPEAKER = { ph: () => cast.pho, gr: () => cast.grace, mk: () => cast.marcus };
+    function speakerStarts(name) {
+      const L = LINES[name], f = L && SPEAKER[L[0]]; if (!f) return;
+      const P = f(); if (!P || !P.ready || P.hidden) return;
+      if (P.talkTake && !(P === cast.grace && grace5.up)) talk(P, SECS[name] || 2.5);
+      gaze(P, 'lens', { secs: 0.7, reach: 0.7 });
+      after((SECS[name] || 2.5) + 0.6, () => { if (P.gaze && P.gaze.target === 'lens') gazeRest(P); });
+    }
     /* A LINE IS A BEAT, HEARD OR NOT (e3c3's law): a muted game speaks it silently on its own length, a line whose bytes
        have not landed is held a moment (v8.0) and then spoken silently, so a beat chained on a line never stops */
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
-      const start = (silent) => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); if (silent) showLine(name); if (onStart) onStart(); };
+      const start = (silent) => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); speakerStarts(name); if (silent) showLine(name); if (onStart) onStart(); };
       if ((soundOff && soundOff()) || !worldSfx) { start(false); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(false); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
@@ -6338,144 +6373,803 @@
       if (q.gap) { speak.until = dayClock.t + q.gap; return; }
       sayLine(q.name, q.vol, q.onStart, q.pan);
     }
-    /* a line of the script, by its key (TODO-PLAY: who says it talks from its own start and rests after: v11.4) */
+    /* a line of the script, by its key */
     function say(name) { if (!LINES[name]) console.warn('e5c1: no line ' + name + ' in the script'); queueLine(name); }
     /* what follows the lines now queued, once every one of them is done (v21.21); dropped if the phase has been left */
     function andThen(fn) { const run = play.run; queueFn(() => { if (live(run)) fn(); }); }
+
+    /* ================================================================ THE CHANT ACROSS THREE PIECES (the Ratana, ph51ratana:
+       44.36 s, take c; its six verses on its breaths, lines.json `times`). It begins in the film of the keepsake at 32.0
+       (FILMS-1 calls `stage.chant.begin()` in a step there), runs on under KEEP THE WATER STILL, and its last verse is
+       under the first 8 s of the cord: ONE chant, never restarted, never a seam.
+       HOW, AND WHY SO: the engine plays a sample only from its start (snd) and cuts a film's cues as the film ends
+       (stopCineVoices), so the chant is the PLAY's, a world sound (worldSfx: on the effects path, never a voice bus; it
+       outlives a film's end and is taken down at the title by stopWorldSfx). The take holds six verses, 34 s of which are
+       left when the keepsake's film hands over; the event and its pauses are longer and the brief waits on the player. So
+       Grandmaster Pho DRAWS BREATH AND WAITS at a breath between verses: the take's own playhead is held still exactly in
+       the silence between two verses (the source's playback rate set to 0 on the audio clock, at the breath's middle, and
+       to 1 again when the next verse may begin). Nothing is cut and nothing is played twice: it sounds like one man
+       chanting, verse by verse, at the pace of the work. A verse is let go ("released") by the play:
+         v1 (0.06 - 9.58)   at begin
+         v2 .. v5           one at each surge's start (and the next too, while that surge has 4 s left and more verses are
+                            left than surges); a surge taken once more takes one
+         v6 (38.92 - 44.24) the last: 2.7 s after the event ends (so its last word lands at 8.0 s of the cord: the plan's 9.3)
+       Each verse's caption (CHANTS.ph51ratana, the Pali over its meaning) is laid as its verse begins, on wall time, so it
+       works muted (v21.31). Its level swells with each surge (its own gain, never over 1: v23.1). A probe reads it:
+       `stage.chant.state()` */
+    const RATANA = (() => {
+      const KEY = 'ph51ratana', VERSES = [[0.06, 9.58], [10.0, 15.34], [15.74, 24.02], [24.46, 29.8], [30.18, 38.52], [38.92, 44.24]];
+      const VOL = { base: 0.62, swell: 0.95 };
+      const R = { on: false, src: null, pos: 0, rate: 1, released: 0, verse: -1, holdAt: null, vol: VOL.base, t0: 0, last: 0, done: false, finishAt: null };
+      const capOf = (i) => { const c = CHANTS[KEY] && CHANTS[KEY][i]; return c ? [{ at: 0, end: VERSES[i][1] - VERSES[i][0] + 0.3, text: c[0], sub: c[1] }] : null; };
+      const actxOf = () => (R.src && R.src.context) || null;
+      const gapMid = (i) => (VERSES[i][1] + VERSES[i + 1][0]) / 2;      // the breath after verse i
+      function setRate(r, when) {
+        R.rate = r;
+        const A = actxOf(); if (!A || !R.src || !R.src.playbackRate) return;
+        try { const t = Math.max(A.currentTime, when || 0); R.src.playbackRate.cancelScheduledValues(A.currentTime); R.src.playbackRate.setValueAtTime(r, t); } catch {}
+      }
+      /* the hold at the breath after the last verse let go, on the audio clock (exact, whatever a frame takes) */
+      function armHold() {
+        const i = R.released - 1; if (i < 0 || i >= VERSES.length - 1) { R.holdAt = null; return; }
+        R.holdAt = gapMid(i);
+        const A = actxOf(); if (!A || !R.src) return;
+        if (R.pos < R.holdAt && R.rate > 0) { try { R.src.playbackRate.cancelScheduledValues(A.currentTime); R.src.playbackRate.setValueAtTime(0, A.currentTime + (R.holdAt - R.pos)); } catch {} }
+      }
+      return {
+        /* (the film of the keepsake, at 32.0; and the breaking itself on a Continue: it never begins twice) */
+        begin() {
+          if (R.on || R.done) return false;
+          Object.assign(R, { on: true, pos: 0, rate: 1, released: 1, verse: -1, vol: VOL.base, last: wallNow(), finishAt: null });
+          R.src = (worldSfx && !(soundOff && soundOff())) ? worldSfx(KEY, VOL.base, 1, 0) : null;
+          armHold();
+          return true;
+        },
+        /* a verse more may begin (the play: each surge) */
+        release(n = 1) {
+          if (!R.on) return;
+          const was = R.released; R.released = Math.min(VERSES.length, R.released + n);
+          if (R.released === was) return;
+          if (R.rate === 0) { R.rate = 1; setRate(1, 0); }
+          armHold();
+        },
+        /* the last verse, `at` seconds from now (wall time) */
+        finish(at = 0) { if (R.on) R.finishAt = wallNow() + Math.max(0, at); },
+        swell(on, secs = 1.2) {
+          if (!R.on) return; R.vol = on ? VOL.swell : VOL.base;
+          const A = actxOf(); if (!A || !R.src || !R.src.__g) return;
+          try { const g = R.src.__g.gain, t = A.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(R.vol, t + secs); } catch {}
+        },
+        left() { return R.on ? VERSES.length - R.released : 0; },
+        stop() {
+          if (R.src) { const A = actxOf(); try { if (A && R.src.__g) { const g = R.src.__g.gain, t = A.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.4); } R.src.stop(A ? A.currentTime + 0.42 : 0); } catch {} }
+          R.src = null; R.on = false; R.finishAt = null;
+        },
+        reset() { this.stop(); R.done = false; R.released = 0; R.verse = -1; R.pos = 0; },
+        /* every frame (wall time): the playhead read as the audio has it (held at a breath, or running), each verse's caption
+           laid as it begins, the end of the take */
+        tick() {
+          if (!R.on) return;
+          const now = wallNow(), dt = Math.min(0.25, Math.max(0, now - R.last)); R.last = now;
+          if (R.finishAt != null && now >= R.finishAt) { R.finishAt = null; this.release(VERSES.length); }
+          if (R.rate > 0) { R.pos += dt * R.rate; if (R.holdAt != null && R.pos >= R.holdAt) { R.pos = R.holdAt; R.rate = 0; } }
+          let v = -1; for (let i = 0; i < VERSES.length; i++) if (R.pos >= VERSES[i][0] - 0.02 && R.pos < VERSES[i][1]) v = i;
+          if (v >= 0 && v !== R.verse) { R.verse = v; const cp = capOf(v); if (cp && kit && kit.captions) kit.captions(cp); }
+          if (R.pos >= VERSES[VERSES.length - 1][1] + 0.15) { R.on = false; R.done = true; R.src = null; }
+        },
+        state() { return { on: R.on, done: R.done, pos: +R.pos.toFixed(2), rate: R.rate, released: R.released, verse: R.verse, holdAt: R.holdAt, sounding: !!R.src }; }
+      };
+    })();
 
     /* ---------------------------------------------------------------- the orders (one at a time, after the lines that
        hand off to them: v21.21; COMPLETE only for what he did: v8.7), each marked where it lives (v14.8) */
     function objectiveFor(opts) {
       if (!kit || play.busy) return;                           // a line is handing off: the order waits for it
-      let o = null, wp = null;
+      let o = null, wp = null, urge = false;
       if (phase === 'room') {
         if (!play.found.has('w')) { o = W.objPour; wp = SPOT.jug; }
         else if (!play.found.has('l')) { o = W.objLight; wp = SPOT.lighter; }
         else if (looksFound() < 4) o = W.objWatch;
-        else if (!play.found.has('v')) { o = W.objVision; wp = SPOT.grace; }
+        else if (!play.found.has('v')) { o = W.objVision; urge = true; }
       }
-      else if (phase === 'breaking') { o = W.evStillTitle; wp = SPOT.bowl; }
       else if (phase === 'night') {
         if (!play.found.has('u')) o = W.objGetUp;
         else { o = W.objPhone; wp = SPOT.phone; }
       }
       kit.objective(o, opts);
       kit.waypoint(wp);
+      if (kit.visionUrge) kit.visionUrge(urge ? 'open' : false);
     }
 
     /* ---------------------------------------------------------------- a film from play, and what it hands to. A film
        the engine will not play (not in play, or no such film) costs the film, never the story: its hand-off runs */
     function film(key, next) {
       const run = play.run, go = () => { if (live(run)) next(); };
-      if (!kit || !kit.film || !kit.film(key, { onDone: go })) go();
+      unseat();
+      if (!kit || !kit.film || !kit.film(key, { onDone: go, layFirst: true })) go();
     }
 
-    /* WHERE THE STAND-INS LIE (each at the height a mark is read at: v7.5). TODO-WORLD: each becomes the thing itself */
+    /* ================================================================ WHERE HE IS AND WHAT HE PRESSES (each mark at the
+       height it is read at: v7.5; each a press on the thing itself: v14.7, the aim dot on a desktop: the eightieth seam) */
     const SPOT = {
-      jug:     { x: 0.35, y: 0.55, z: 0.25 },
-      lighter: { x: -0.25, y: 0.55, z: 0.2 },
+      jug:     { x: ON_CLOTH.jug.x, y: 0.42, z: ON_CLOTH.jug.z },
+      lighter: { x: ON_CLOTH.lighter.x, y: CLOTH_Y + 0.12, z: ON_CLOTH.lighter.z },
       phone:   { x: DATA.shrine.x, y: 0.85, z: DATA.shrine.z },
-      grace:   { x: 0, y: 1.0, z: -1.4 },
-      glass:   { x: ROOM.x1 - 0.05, y: 1.4, z: -0.6 },
-      hands:   { x: 0.25, y: 0.6, z: -1.2 },
-      packet:  { x: -0.4, y: 0.55, z: -1.15 },
-      bowl:    { x: 0.2, y: 0.55, z: 0.15 },
-      bed:     { x: 203.4, y: 0.9, z: 2.6 }
+      grace:   { x: HER.grace.x, y: 1.0, z: HER.grace.z },
+      herPhone: { x: HER.grace.x - 0.33, y: HER.sofa.seat + 0.02, z: HER.grace.z + 0.1 },
+      glass:   { x: MIRROR_X - 0.03, y: 1.12, z: 1.08 },            // her reflection on window B, as seen from his place (WORLD.md 1)
+      packet:  { x: HER.bag.x + 0.02, y: HER.bag.y + 0.1, z: HER.bag.z },
+      bowl:    { x: ON_CLOTH.bowl.x, y: CLOTH_Y + 0.1, z: ON_CLOTH.bowl.z },
+      bed:     { x: HIS.getUp.x, y: 0.95, z: HIS.getUp.z },          // (where he will stand: the walk test reaches it)
+      bedDoor: { x: HIS.bedDoor.x, z: HIS.bedDoor.z }
     };
+    /* KNEELING AT HIS PLACE (the plan's 8.1, as chapter 5 seats him at its table: kit.pose 'lying' is the engine's way to hold
+       the eye low, kit.root keeps him there). The look is free about the room from Grace on his right across the table to
+       the glass on his left (82 degrees apart, WORLD.md 1), and down to the jug at his knee. Play begins looking at the cloth
+       and Grace (what the play needs first in his line of sight, v12.3): the films that hand to the room end on this look */
+    const KNEEL = { y: KNEEL_EYE, yaw: -0.15, span: 1.2, lo: -1.05, hi: 0.55, startYaw: 0.55, get pitch() { return isNarrow() ? -0.6 : -0.5; } };
+    const LIE = { y: STATION.night.bed.y, yaw: 1.15, span: 1.3, lo: -0.35, hi: 1.3, startYaw: STATION.night.bed.ry, pitch: STATION.night.bed.pitch };
+    let seated = null;
+    function seatHim(at, P) {
+      if (!kit) return;
+      yaw.position.set(at.x, P.y, at.z);
+      yaw.rotation.y = P.startYaw != null ? P.startYaw : P.yaw; pitch.rotation.x = P.pitch;
+      if (kit.pose) kit.pose('lying', { y: P.y, yaw: P.yaw, span: P.span, pitchLo: P.lo, pitchHi: P.hi, secs: 0.05 });
+      if (kit.root) kit.root(true);
+      seated = P;
+    }
+    function unseat() { if (seated && kit) { if (kit.root) kit.root(false); } seated = null; }
 
-    /* ================================================================ PLAY I · THE ROOM (the plan's 8.1) · TODO-PLAY
-       To be built: kneeling at his place (he does not walk, as at chapter 5's table); the jug poured into the brass bowl,
-       the lighter; the four things to look at, each a press on the thing itself (the aim dot on a desktop), each
-       answered; the packet's question to Grace and her answer; Spirit Vision on Grace, the red line under the door;
-       her two stand-ups on the phase's clock (40 s and 110 s: gr51r2, mk51r2, ph51r5; gr51r3 the second time).
-       THE STAND-IN: one press for each order, in the plan's order; the four looks in any order. All found: the film of
-       the keepsake. */
-    function roomBegin(found) { play.found = new Set(found); lookAt0(LOOK_OF.room); objectiveFor({ complete: false }); if (roomDone()) roomEnd(); }
+    /* ================================================================ WHAT THE PLAY DRAWS (light without a lamp added: v9.4)
+       THE WATER in the brass bowl (poured by the first order); HER PHONE on the sofa beside her, its screen lighting every
+       20 s; and in SPIRIT VISION only (ctx.spirit: drawn in the vision's own layer, nowhere else) the spell's thin RED line
+       from her chest along the floor and out under her door, a slow pulse travelling along it toward the door, taut when she
+       stands and fraying with each flick of the fan; the packet's knot a dull red glow; at three o'clock his own footsteps
+       and the threads. Red is the spell's alone (the plan's 4.5) */
+    const RED = 0xff2233;
+    const fx = { line: [], lineMats: [], knot: null, foot: [], threads: [], fray: 0, taut: 0, phoneLit: 0, water: null, waterK: 0 };
+    /* the water: a disc inside the bowl's lip (the bowl's own measure: its rim's height and radius read off its model when it lands) */
+    {
+      const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0, depthWrite: false }); mats.push(wm);
+      const wg = new THREE.CircleGeometry(1, 40); wg.rotateX(-Math.PI / 2);
+      const w = new THREE.Mesh(wg, wm); w.visible = false; w.renderOrder = 2; world.add(w); fx.water = w;
+      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
+      const sg = new THREE.CircleGeometry(0.16, 20); sg.rotateX(-Math.PI / 2);
+      const sh = new THREE.Mesh(sg, sheen); sh.position.y = 0.002; w.add(sh); fx.sheen = sh;
+    }
+    const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, got: false };
+    function bowlFit() {
+      const b = things.holyBowl; if (!b || BOWLFIT.got || !b.userData.model) return;
+      b.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(b.userData.model); if (bb.isEmpty()) return;
+      BOWLFIT.got = true; BOWLFIT.r = Math.max(0.05, 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z)); BOWLFIT.y = bb.min.y + 0.72 * (bb.max.y - bb.min.y);
+    }
+    function waterTick(wdt) {
+      bowlFit();
+      const w = fx.water, want = play.found.has('w') || phase !== 'room' ? 1 : 0;
+      fx.waterK += (want * (fx.pourT > 0 ? Math.min(1, 1 - fx.pourT / 2.0) : 1) - fx.waterK) * Math.min(1, wdt * 3);
+      if (fx.pourT > 0) fx.pourT = Math.max(0, fx.pourT - wdt);
+      const b = things.holyBowl, onCloth = b && b.visible && b.parent;
+      w.visible = !!onCloth && fx.waterK > 0.01;
+      if (!w.visible) return;
+      w.position.set(b.position.x, BOWLFIT.y - 0.03 * (1 - fx.waterK), b.position.z); w.scale.setScalar(BOWLFIT.r * (0.85 + 0.15 * fx.waterK));
+      w.material.opacity = 0.62 * fx.waterK;
+      const lit = phase === 'room' && !play.found.has('l') ? 0.35 : 1;
+      fx.sheen.material.opacity = 0.22 * fx.waterK * lit; fx.sheen.position.set(-0.25, 0.002, 0.2);
+    }
+    /* her phone, on the sofa's cushion beside her (her hands are on her bag's strap) */
+    const herPhone = place('herPhone', 'w51phone', SPOT.herPhone.x, HER.sofa.seat - 0.005, SPOT.herPhone.z, 2.6);
+    { const gm = new THREE.MeshBasicMaterial({ color: 0xbfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(gm);
+      const gg = new THREE.PlaneGeometry(0.11, 0.2); gg.rotateX(-Math.PI / 2);
+      const g = new THREE.Mesh(gg, gm); g.position.set(SPOT.herPhone.x, HER.sofa.seat + 0.025, SPOT.herPhone.z); g.rotation.y = 2.6; g.renderOrder = 3; world.add(g); fx.phoneGlow = g; }
+    /* the red line (and the knot) in Spirit Vision: sixteen short lengths of one curve, each its own glow, so a pulse can run
+       along it toward the door */
+    const LINE_N = 16;
+    const lineCurve = (chest, k) => new THREE.CatmullRomCurve3([
+      chest, new THREE.Vector3(chest.x - 0.05, 0.42 + 0.06 * k, chest.z - 0.5), new THREE.Vector3(-0.35, 0.03, -1.25),
+      new THREE.Vector3(-1.55, 0.02 + 0.04 * k, -1.95), new THREE.Vector3(-2.55, 0.02, -2.33), new THREE.Vector3(FRONT.x0 - 0.25, 0.015, HER.door.z)]);
+    const lineChest = new THREE.Vector3(HER.grace.x, 0.9, HER.grace.z + 0.1), _lc = new THREE.Vector3();
+    let lineBuilt = null;
+    function lineBuild(force) {
+      const key = lineChest.x.toFixed(2) + lineChest.y.toFixed(2) + lineChest.z.toFixed(2) + (fx.taut > 0.5 ? 't' : '');
+      if (!force && key === lineBuilt) return; lineBuilt = key;
+      const C = lineCurve(lineChest.clone(), fx.taut);
+      for (let i = 0; i < LINE_N; i++) {
+        const pts = []; for (let j = 0; j <= 4; j++) pts.push(C.getPoint((i + j / 4) / LINE_N));
+        const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 4, 0.0065, 6, false);
+        let m = fx.line[i];
+        if (!m) { m = new THREE.Mesh(g, new THREE.MeshBasicMaterial()); m.frustumCulled = false; world.add(m); fx.line[i] = m;
+          const sp = ctx.spirit ? ctx.spirit(m, { color: RED, fill: 0.55, rim: 1.2, flicker: 0.15, xray: 0.55 }) : null; fx.lineMats[i] = sp; }
+        else { m.geometry.dispose(); m.geometry = g; }
+      }
+    }
+    { const kg = new THREE.SphereGeometry(0.03, 12, 10), km = new THREE.Mesh(kg, new THREE.MeshBasicMaterial());
+      km.position.set(SPOT.packet.x, SPOT.packet.y - 0.03, SPOT.packet.z); km.frustumCulled = false; world.add(km);
+      fx.knot = ctx.spirit ? ctx.spirit(km, { color: RED, fill: 0.5, rim: 1.4, flicker: 0.3 }) : null; fx.knotMesh = km; }
+    function graceChest(out) {
+      const P = cast.grace, b = P && P.ready && (P.bone.Spine2 || P.bone['mixamorig:Spine2'] || P.bone.Spine1 || P.bone.Neck);
+      if (b) { b.getWorldPosition(out); out.y -= 0.06; return out; }
+      return out.set(HER.grace.x, 0.9, HER.grace.z + 0.1);
+    }
+    function lineTick(t) {
+      const inRoom = phase === 'room' || phase === 'breaking';
+      for (const m of fx.line) if (m) m.visible = inRoom;
+      if (fx.knotMesh) fx.knotMesh.visible = inRoom;
+      if (!inRoom) return;
+      graceChest(_lc); if (_lc.distanceTo(lineChest) > 0.03) lineChest.copy(_lc);
+      lineBuild(false);
+      for (let i = 0; i < LINE_N; i++) { const sp = fx.lineMats[i]; if (!sp) continue;
+        /* the pulse: a brighter swell running from her chest to the door every 1.15 s (52 a minute: M3's pulse) */
+        const u = i / LINE_N, ph = ((t * 0.87 - u) % 1 + 1) % 1, pul = Math.exp(-Math.pow((ph - 0.5) / 0.12, 2));
+        const fr = fx.fray > 0 ? (0.55 + 0.45 * Math.sin(t * 13 + i * 2.7)) : 1;
+        sp.set('uAlpha', (0.55 + 0.45 * pul + 0.35 * fx.taut) * (1 - 0.6 * fx.fray * (1 - fr)) * (1 - 0.35 * fx.fray));
+        sp.set('uFlick', 0.15 + 0.6 * fx.fray); }
+      if (fx.knot) fx.knot.set('uAlpha', (0.55 + 0.25 * Math.sin(t * 2.2)) * (1 - 0.5 * fx.fray));
+    }
+
+    /* ================================================================ PLAY I · THE ROOM (the plan's 8.1)
+       Kneeling; the jug poured into the brass bowl; the lighter; the four things to look at, each a press on the thing (the
+       aim dot on a desktop), each answered; the packet's question to Grace and her answer; Spirit Vision on Grace, the red
+       line under the door; her two stand-ups on the phase's clock (40 s and 110 s). All found: the film of the keepsake */
+    const room5 = { t0: 0, ups: 0, phoneAt: 0 };
+    const grace5 = { up: false, reflK: 0, reflWant: 0 };
+    function roomBegin(found) {
+      play.found = new Set(found); lookAt0(LOOK_OF.room); seatHim(STATION.room.at, KNEEL);
+      if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
+      warm('room');
+      room5.t0 = dayClock.t; room5.ups = 0; room5.phoneAt = dayClock.t + 6;
+      things.holyBowl && (things.holyBowl.visible = true);
+      if (WORLD.candleLit) WORLD.candleLit('candle2', play.found.has('l'));
+      gazeRest(cast.pho); gazeRest(cast.marcus); gazeRest(cast.grace);
+      objectiveFor({ complete: false });
+      if (roomDone()) roomEnd();
+    }
     const roomDone = () => ['w', 'l', 'v'].every(c => play.found.has(c)) && looksFound() === 4;
-    function roomDo(c, lines) {
+    /* a look answered: his thought and his teacher's word (or the packet's question), then the next order */
+    function roomDo(c, lines, before) {
       if (phase !== 'room' || play.busy || play.found.has(c)) return false;
       play.busy = true; if (kit) kit.waypoint(null);
-      for (const n of lines) say(n);
+      if (before) before();
+      for (const n of lines) { if (n === '|') queueGap(1.4); else say(n); }
       andThen(() => { play.busy = false; got(c); if (roomDone()) roomEnd(); else objectiveFor({ complete: false }); });
       return true;
     }
+    /* THE FIRST TWO ORDERS: his hands at the jug and at the lighter (a reach of the hands' library), the water rising in the
+       bowl, the candle catching (WORLD.candleLit) */
+    function pour() {
+      return roomDo('w', [], () => {
+        if (kit.handPose) { kit.handPose('reach', 1, { secs: 0.5 }); after(2.2, () => { if (phase === 'room') kit.handPose(null, 0, { secs: 0.6 }); }); }
+        fx.pourT = 2.0; sfx5('u51pour', 0.7); after(2.3, () => sfx5('u51brass', 0.4));
+        queueGap(2.6);
+      });
+    }
+    function lightCandle() {
+      return roomDo('l', [], () => {
+        if (kit.handPose) { kit.handPose('reach', 0.85, { secs: 0.4 }); after(1.8, () => { if (phase === 'room') kit.handPose(null, 0, { secs: 0.6 }); }); }
+        sfx5('u51lighter', 0.7); after(0.9, () => { sfx5('u51wick', 0.6); if (WORLD.candleLit) WORLD.candleLit('candle2', true); });
+        queueGap(1.8);
+      });
+    }
+    /* HER PHONE lights up every 20 s (the plan's 8.1), buzzing; she leans toward the door (her look goes over her shoulder) */
+    function phoneTick(wdt) {
+      fx.phoneLit = Math.max(0, fx.phoneLit - wdt / 2.6);
+      if (fx.phoneGlow) fx.phoneGlow.material.opacity = 0.75 * smo(c01(fx.phoneLit * 1.6));
+      if (phase !== 'room' || dayClock.t < room5.phoneAt) return;
+      room5.phoneAt = dayClock.t + 20;
+      fx.phoneLit = 1; sfx5('u51buzz', 0.45, panTo(SPOT.herPhone.x, SPOT.herPhone.z));
+      if (cast.grace && !grace5.up) { gaze(cast.grace, [HER.door.x, 1.0, HER.door.z], { secs: 0.8, reach: 0.8 }); const run = play.run; after(3.2, () => { if (live(run) && !grace5.up) gazeRest(cast.grace); }); }
+      pullFor(3);
+    }
+    /* M3, the pull: heard wherever the pull is shown (her phone, her standing, the red line), a few seconds at a time */
+    let pullTill = 0;
+    function pullFor(secs) { pullTill = Math.max(pullTill, dayClock.t + secs); }
+    /* HER TWO STAND-UPS (the plan's 8.1, on the phase's clock: 40 s and 110 s). Each time her reflection turns to the stairs
+       first, then she stands (rise), "I should go."; Marcus "Grace, please."; Grandmaster Pho "Sit. A little longer."; she
+       sits again (rise played back). The red line pulls taut while she is up. A stand-up waits for a line in progress */
+    const UPS = [40, 110];
+    function standTick() {
+      if (phase !== 'room' || room5.ups >= UPS.length || grace5.up || play.busy || lineBusy() || roomDone()) return;
+      if (dayClock.t - room5.t0 < UPS[room5.ups]) return;
+      const n = room5.ups++, run = play.run, G = cast.grace;
+      if (!G || !G.ready) return;
+      grace5.up = true; grace5.reflWant = 1;                     // her reflection turns first
+      play.busy = true; if (kit) kit.waypoint(null);
+      const RISE = (G.acts.rise && G.acts.rise.getClip().duration) || 4.97;
+      after(0.9, () => { if (!live(run)) return; sfx5('u51stand', 0.55, panTo(HER.grace.x, HER.grace.z)); pullFor(9);
+        gaze(G, [HER.door.x, 1.2, HER.door.z], { secs: 1.0, reach: 0.85 });
+        span(G, 'rise', 0, RISE - 0.05, 2.0, { hold: 0, fade: 0.35 }); });
+      after(2.6, () => { if (!live(run)) return;
+        say(n ? 'gr51r3' : 'gr51r2'); say('mk51r2'); say('ph51r5');
+        andThen(() => { grace5.reflWant = 0; gaze(G, null, { secs: 1.0 });
+          sfx5('u51sofa', 0.4, panTo(HER.grace.x, HER.grace.z));
+          /* (she is back on her seat when the take says so: the span runs on the wall clock, the chapter's clock is another,
+             and on a slow phone the two part: the room is given back by the take's own end) */
+          span(G, 'rise', RISE - 0.05, 0, 2.0, { fade: 0.3, then: (P) => { if (P !== cast.grace) return; rest(P, 0.5);
+            if (!live(run)) return; grace5.up = false; play.busy = false; objectiveFor({ complete: false }); } }); }); });
+    }
+    /* her reflection, a beat ahead of her: the hook WORLD gives (WORLD.reflect.set 'grace' { face }: the turn her mirrored
+       body faces in the room), eased on the wall clock */
+    function graceReflTick(wdt) {
+      grace5.reflK += (grace5.reflWant - grace5.reflK) * Math.min(1, wdt * 2.2);
+      fx.taut += ((grace5.up ? 1 : 0) - fx.taut) * Math.min(1, wdt * 2.5);
+      if (!WORLD.reflect || !WORLD.reflect.set) return;
+      const G = cast.grace; if (!G) return;
+      const g = G.group.position, door = Math.atan2(HER.door.x - g.x, HER.door.z - g.z), k = smo(c01(grace5.reflK));
+      /* (at rest her reflection stands half turned to the stairs already, the plan's 9.1: "it faces the stairs"; on her
+         stand-up it turns the rest of the way) */
+      const rest0 = G.group.rotation.y, half = rest0 + angTo(rest0, door) * 0.55;
+      if (phase === 'room' || phase === 'breaking') WORLD.reflect.set('grace', { face: half + angTo(half, door) * k });
+    }
+    /* THE LOOKS: her phone, her reflection, her hands, the packet (any order, once the candle is lit) */
+    const _hv = new THREE.Vector3();
+    const markHit = (posF, frac = 0.09) => function (x, y) {
+      const p = posF(), r = Math.min(innerWidth, innerHeight) * frac;
+      camera.updateMatrixWorld();
+      const pts = [[p.x, p.y, p.z]];
+      if (this && this.pos) pts.push([this.pos.x, (this.pos.y ?? 1.0) + (this.markY ?? 0.55), this.pos.z]);
+      return pts.some(([px, py, pz]) => { _hv.set(px, py, pz).project(camera);
+        return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < r; });
+    };
+    const graceHands = { x: HER.grace.x + 0.15, y: 0.68, z: HER.grace.z + 0.12 };
+    function handsTick() {
+      const G = cast.grace; if (!G || !G.ready) return;
+      const L = G.bone.LeftHand || G.bone['mixamorig:LeftHand'], R = G.bone.RightHand || G.bone['mixamorig:RightHand'];
+      if (!L || !R) return; L.getWorldPosition(_hv); const ax = _hv.x, ay = _hv.y, az = _hv.z; R.getWorldPosition(_hv);
+      graceHands.x = (ax + _hv.x) / 2; graceHands.y = (ay + _hv.y) / 2; graceHands.z = (az + _hv.z) / 2;
+    }
+    const lookLive = (c) => () => phase === 'room' && !play.busy && play.found.has('l') && !play.found.has(c) && !grace5.up;
+    const lookSpot = (id, c, posF, lines, prompt) => ({ id, pos: posF(), radius: 3.2, aim: 0.2, pressAim: true, aimDot: true, markFar: 3.4, markY: 0,
+      prompt, hits: markHit(posF, 0.075), enabled: lookLive(c), onInteract() { return roomDo(c, lines, () => { pullFor(4); lookFace(c); }); } });
+    /* (while a look is answered, Grandmaster Pho turns his eyes to what was looked at, then to him for his word) */
+    function lookFace(c) {
+      const at = c === 'p' ? SPOT.herPhone : c === 'g' ? SPOT.glass : c === 'h' ? graceHands : SPOT.packet;
+      gaze(cast.pho, [at.x, at.y, at.z], { secs: 0.8, reach: 0.7 });
+      if (c === 'k') { const run = play.run; after(SECS.zv51r4 + SECS.ph51r4 + 0.6, () => { if (live(run)) gaze(cast.grace, 'lens', { secs: 0.8 }); }); }
+    }
+    /* SPIRIT VISION ON GRACE (the fourth order): the eye opened (a press), and the red line seen from her chest to the door */
+    const visOpen = () => { const v = kit && kit.vision ? kit.vision() : null; return !!(v && v.on && !(v.held && v.held.lock)); };
+    function visionTick() {
+      if (phase !== 'room' || play.busy || play.found.has('v') || looksFound() < 4) return;
+      const v = kit && kit.vision ? kit.vision() : null; if (!v || !v.on || !(v.k > 0.85)) return;
+      graceChest(_hv); _hv.project(camera); if (!(_hv.z < 1 && Math.abs(_hv.x) < 0.9 && Math.abs(_hv.y) < 0.9)) return;
+      pullFor(6); roomDo('v', ['zv51r6']);
+    }
     function roomEnd() {
-      play.busy = true; if (kit) { kit.objective(null); kit.waypoint(null); }
-      andThen(() => { play.busy = false; book('breaking'); film('keepsake', () => breakingBegin()); });
+      play.busy = true; if (kit) { kit.objective(null); kit.waypoint(null); if (kit.visionUrge) kit.visionUrge(false); }
+      andThen(() => { play.busy = false; if (kit && kit.vision) kit.vision(false); book('breaking');
+        film('keepsake', () => breakingBegin()); });
     }
 
-    /* ================================================================ PLAY II · THE BREAKING (the plan's 8.2) · TODO-PLAY
-       To be built: KEEP THE WATER STILL, the hold-it-steady event (`steady`) with its own picture (`bowl`: ENGINE, M2),
-       briefed with START (W.evStillTitle, evStillTouch, evStillKey); three surges with the chant swelling; a surge out
-       of the ring too long taken once more, once (ph51s1); never failed; Spirit Vision held open by the scene.
-       THE STAND-IN: one press. Then the cord and the film of home, into three o'clock. */
-    function breakingBegin() { lookAt0(LOOK_OF.breaking); objectiveFor({ complete: false }); }
-    function still() {
-      if (phase !== 'breaking' || play.busy) return false;
+    /* ================================================================ PLAY II · THE BREAKING · KEEP THE WATER STILL (8.2)
+       The hold-it-steady kind (episode 3 chapter 4's Yin locket, declared) with its own picture, `bowl`; briefed first with
+       START (v8.7), nothing timed before it. The bowl in his hands (the hands' library's own `bowl`: the left palm under
+       it, the right's fingertips over the water; a copy of Grandmaster Pho's own bowl, the water in it), the lens looking
+       down into it (phone 50 / desk 44 degrees); the candle's light on the water is the mark. THREE SURGES of 8, 10 and 12
+       s, each with the chant swelling; between them Grandmaster Pho dips his fan and flicks the water over Grace and the
+       packet (the scene's part: nothing to press), and the red line frays. Out of the ring too long (the kind's own slip,
+       1.6 s together): a little water spills, his teacher's hand comes under the bowl, "Slowly. Again.", and that surge is
+       taken once more, ONCE in the whole breaking: from then on nothing slips, so it can never hold him (v7.4). Graded on
+       the share of the time the light stayed in: it moves Sanity and Awareness only (v7.0). Spirit Vision held open */
+    /* (the event's picture and the hands' pose are both named "bowl" in DOUBLE quotes: the same word in single quotes is
+       another chapter's sound, and build.py reads a single-quoted name as this chapter asking for it) */
+    const SURGE = [8, 10, 12];
+    const BRK = { ring: 0.17, amp0: [0.28, 0.32, 0.36], amp1: [0.6, 0.72, 0.84], grace: 1.6, gap: 4.2 };
+    const brk = { i: 0, retook: false, shares: [], spills: 0, on: false, held: null };
+    function holdBowl(on) {
+      if (!kit) return;
+      if (!on) { if (brk.held) { if (kit.hold) kit.hold(null, { hand: 'left' }); brk.held = null; } if (kit.handPose) kit.handPose(null, 0, { secs: 0.4 });
+        if (things.holyBowl) things.holyBowl.visible = true; return; }
+      if (kit.handPose) kit.handPose("bowl", 1, { secs: 0.6, p: 0 });
+      if (brk.held || !have('w4bigbowl')) return;
+      parseOnce('w4bigbowl').then(({ scene: src }) => {
+        if (!alive || phase !== 'breaking' || brk.held) return;
+        const g = new THREE.Group(), m = src.clone(true); m.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); mats.push(q.material); if (q.material.color) q.material.color.multiply(new THREE.Color(0xffd9a0)); q.frustumCulled = false; } });
+        m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
+        m.position.set(-cx, -bb.min.y, -cz); g.add(m);
+        const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0.62, depthWrite: false }); mats.push(wm);
+        const r = 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z), wg = new THREE.CircleGeometry(r, 40); wg.rotateX(-Math.PI / 2);
+        const w = new THREE.Mesh(wg, wm); w.position.y = 0.72 * (bb.max.y - bb.min.y); g.add(w);
+        const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.32, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
+        const sg = new THREE.CircleGeometry(r * 0.28, 20); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, w.position.y + 0.002, r * 0.2); g.add(sh);
+        g.userData.water = w; g.userData.sheen = sh;
+        g.scale.setScalar(BOWLHELD.s);
+        brk.held = g;
+        if (kit.hold) kit.hold(g, { hand: 'left', pos: BOWLHELD.pos, rot: BOWLHELD.rot });
+        if (things.holyBowl) things.holyBowl.visible = false;
+      }).catch(() => {});
+    }
+    /* where the bowl stands in his left hand (the hands' own frame: kit.hold's left), its size in it */
+    const BOWLHELD = { pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62 };
+    function breakingBegin() {
+      lookAt0(LOOK_OF.breaking); seatHim(STATION.room.at, Object.assign({}, KNEEL, { startYaw: STATION.room.at.ry, get pitch() { return -0.95; } }));
+      warm('breaking');
+      if (things.holyBowl) things.holyBowl.visible = true;
+      if (WORLD.candleLit) WORLD.candleLit('candle2', true);
+      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: true });
+      holdBowl(true);
+      if (kit.lens) kit.lens(isNarrow() ? 50 : 44, { secs: 0.6 });
+      if (kit.vision) { kit.vision(true); kit.vision({ lock: true, why: W.visionHeld }); }
+      if (!RATANA.state().on) RATANA.begin();                  // (a Continue into the breaking: the chant begins at its start)
+      gazeRest(cast.pho); gaze(cast.grace, null, { secs: 0.6 }); gaze(cast.marcus, [HER.grace.x, 1.0, HER.grace.z], { secs: 0.8 });
+      objectiveFor({ complete: false });
+      const run = play.run; after(0.4, () => { if (live(run)) surge(0, false); });
+    }
+    function surge(i, again) {
+      if (phase !== 'breaking' || !kit || !kit.event) return;
+      brk.i = i; const run = play.run, first = i === 0 && !again;
+      kit.event({ kind: 'steady', label: W.evStillTitle, brief: first ? (TOUCHY ? W.evStillTouch : W.evStillKey) : undefined, demo: "bowl",
+        prompt: W.evStillTitle,
+        secs: SURGE[i], ring: BRK.ring, amp0: BRK.amp0[i], amp1: BRK.amp1[i], tug0: 0.35 + 0.1 * i, tug1: 0.7 + 0.15 * i, tugGap0: 2.0, tugGap1: 1.1,
+        grace: brk.retook ? Infinity : BRK.grace, pass: 0.5, seed: 31 + i * 7 + (again ? 3 : 0), lead: 0.8,
+        onBegin: () => { if (!live(run)) return; RATANA.release(1); RATANA.swell(true); sfx5('u51tremor', 0.45); if (kit.tremble) kit.tremble(0.35, { secs: 0.5 }); },
+        onDrift: (k) => { if (kit.tremble) kit.tremble(0.25 + 0.6 * Math.min(1, k), { secs: 0.15 }); brk.drift = k; },
+        onTug: () => { sfx5('u51tremor', 0.32 + 0.08 * i); }
+      }).then(r => {
+        if (!live(run) || !r || r.aborted) return;
+        RATANA.swell(false); if (kit.tremble) kit.tremble(0, { secs: 0.6 });
+        if (!r.ok && r.score === 0 && !brk.retook && !r.skipped && r.t < SURGE[i] - 0.05) { spill(i); return; }
+        brk.shares.push(r.score);
+        kit.award('awareness', Math.round(1 + 2 * r.score), { minigame: true });
+        if (i < SURGE.length - 1) flick(i, () => surge(i + 1, false));
+        else breakingDone();
+      });
+      /* (another verse while this surge still has four seconds and more verses are left than the surges to come) */
+      const tAt = dayClock.t;
+      const more = () => { if (!live(run) || phase !== 'breaking') return; const st = RATANA.state();
+        if (st.on && st.rate === 0 && RATANA.left() > (SURGE.length - 1 - i) + 1 && dayClock.t - tAt < SURGE[i] - 4) RATANA.release(1); };
+      for (const dt of [5.8, 9.0]) after(dt + (first ? 0 : 0), more);
+    }
+    /* out of the ring too long: the spill, his teacher's hand, "Slowly. Again.", the surge once more */
+    function spill(i) {
+      const run = play.run; brk.retook = true; brk.spills++;
+      sfx5('u51spill', 0.6); kit.award('sanity', -4, { minigame: true });
+      if (kit.flash) kit.flash({ color: 'rgba(170,190,210,0.18)', secs: 0.4 });
+      gaze(cast.pho, 'lens', { secs: 0.5 }); say('ph51s1');
+      andThen(() => { if (live(run)) after(0.6, () => { if (live(run)) surge(i, true); }); });
+    }
+    /* BETWEEN THE SURGES: the fan dipped and flicked over Grace and the packet (his seated toss of the left hand, the
+       nearest take he has: people/RECORD.md 6), and the red line frays */
+    function flick(i, next) {
+      const run = play.run, P = cast.pho;
+      sfx5('u51dip', 0.55, panTo(HER.pho.x, HER.pho.z));
+      if (P && P.ready && P.acts.Sit_Cheer_with_Left_Hand) { const d = P.acts.Sit_Cheer_with_Left_Hand.getClip().duration;
+        span(P, 'Sit_Cheer_with_Left_Hand', 0.2, Math.min(d - 0.05, 1.7), 1.3, { fade: 0.3, then: (Q) => after(0.4, () => { if (Q === cast.pho) rest(Q, 0.5); }) }); }
+      gaze(P, [HER.grace.x, 0.9, HER.grace.z], { secs: 0.5 });
+      after(1.2, () => { if (!live(run)) return; sfx5('u51flick', 0.6, panTo(HER.grace.x, HER.grace.z)); sfx5('u51fray', 0.45, panTo(HER.grace.x, HER.grace.z));
+        fx.fray = Math.min(1, fx.fray + 0.34); });
+      after(BRK.gap, () => { if (live(run)) { gazeRest(P); next(); } });
+    }
+    function breakingDone() {
+      const run = play.run; brk.on = false;
+      const share = brk.shares.length ? brk.shares.reduce((a, b) => a + b, 0) / brk.shares.length : 0;
+      if (brk.spills === 0) kit.award('sanity', 3, { minigame: true });
+      brk.share = +share.toFixed(3);
+      RATANA.finish(2.7);                                      // its last verse lands its last word at 8.0 s of the cord
       book('night');
-      film('cord', () => film('home', () => { worldPhase('night'); nightBegin([]); }));   // (TODO-FILM: home's own last picture puts him in bed)
-      return true;
+      after(0.3, () => { if (!live(run)) return; holdBowl(false); if (kit.lens) kit.lens(null, { secs: 0.3 }); if (kit.vision) { kit.vision(null); kit.vision(false); }
+        film('cord', () => film('home', () => { worldPhase('night'); nightBegin([]); })); });
     }
 
-    /* ================================================================ PLAY III · THREE O'CLOCK (the plan's 8.3) · TODO-PLAY
-       To be built: waking in bed at 3:00; the pressure in waves (the eighty-first seam, kit.press: ENGINE, M2), the heart,
-       the sound closing; the tip told once (W.tipPress); the knee at full pressure; Spirit Vision forced open for four
-       seconds at the bedroom door, his own footsteps red (zv51n4); the trembling things (zv51n1 to zv51n3); the phone.
-       THE STAND-IN: get up (a press by the bed), then the phone on the dining table. The phone pressed: the decision. */
-    function nightBegin(found) { play.found = new Set(found); lookAt0(LOOK_OF.night); objectiveFor({ complete: false }); }
+    /* ================================================================ PLAY III · THREE O'CLOCK · THE PRESSURE WALK (8.3)
+       He wakes in bed (the film of home leaves him lying there: STATION.night.bed). "Something is pressing on your head. Get
+       up." (a press). "Get to your phone." (marked from the moment it is the goal). THE PRESSURE, 0 to 1, comes in WAVES, one
+       every 7 to 9 s (up by 0.15 over 1.5 s, then back a little); it presses harder while he moves and while Spirit Vision is
+       open, and eases slowly while he stands still. SEEN (kit.press: the picture pressed in from every edge, the colour
+       draining there), FELT (kit.pulse: the heart on the HUD and the phone's buzz, 70 to 140 a minute) and HEARD (kit.hush:
+       the world's sound closing down to his blood and his breath; M6's three layers entering at 0.2, 0.5 and 0.8; the
+       tinnitus over 0.6). His steps slow as it rises. TOLD ONCE, plainly (a caption, no timer). NEVER A FAIL: at full
+       pressure he sinks to one knee for two seconds and it falls back to 0.7. At the bedroom door the strongest wave forces
+       Spirit Vision open for four seconds: his own footsteps red from the front door to his bed, thin red threads coming in
+       under the front door and through the glass and following them. What he meets, each with its reason: the glass of
+       water on his bedside trembling with each wave; the pictures in the passage tapping the wall; the glass doors ticking
+       as if pressed from outside; the bottle of holy water on his altar trembling. At the table he picks up his phone: 3:03,
+       his teacher's name. The decision */
+    const PR = { up: 0.018, look: 0.03, ease: 0.035, floor: 0.12, waveUp: 0.15, waveRise: 1.5, waveKeep: 0.33, gap: [7, 9], knee: 2.0, after: 0.7, slow: 0.6 };
+    const night5 = { p: 0, waves: [], nextWave: 0, kneeT: 0, tipSaid: false, forced: 0, said: new Set(), last: null, getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, ask: false };
+    function nRand() { night5.seed = (night5.seed + 0x6D2B79F5) | 0; let t = night5.seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+    function nightBegin(found) {
+      play.found = new Set(found); lookAt0(LOOK_OF.night); warm('night');
+      Object.assign(night5, { p: found.includes('u') ? 0.3 : 0.18, waves: [], nextWave: dayClock.t + 2.5, kneeT: 0, tipSaid: found.includes('u'), forced: 0, said: new Set(), last: null, getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, ask: false });
+      if (WORLD.bedDoor) WORLD.bedDoor(1);
+      if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
+      footSet(found.includes('f') ? 1 : 0);
+      if (found.includes('u')) { unseat(); if (kit.pose) kit.pose('standing', { secs: 0.05 }); const a = STATION.night.at; yaw.position.set(a.x, yaw.position.y, a.z); yaw.rotation.y = a.ry; pitch.rotation.x = -0.05; }
+      else seatHim(STATION.night.bed, LIE);
+      if (kit.pulse) kit.pulse({ bpm: 82, secs: 2, sound: 'u51heart', vol: 0.5 });
+      objectiveFor({ complete: false });
+    }
     function getUp() {
       if (phase !== 'night' || play.busy || play.found.has('u')) return false;
-      play.busy = true;
-      say('zv51n1');                                           // "Like my head was in a vice."
-      andThen(() => { play.busy = false; got('u'); objectiveFor({ complete: false }); });
+      play.busy = true; const run = play.run, a = STATION.night.at;
+      night5.getUpT = 1.4; night5.from = { x: myX(), z: myZ(), ry: yaw.rotation.y, pitch: pitch.rotation.x };
+      unseat(); if (kit.pose) kit.pose('standing', { secs: 1.4 }); if (kit.root) kit.root(true);
+      sfx5('u51floor', 0.5);
+      after(1.5, () => { if (!live(run)) return; if (kit.root) kit.root(false); play.busy = false; got('u'); objectiveFor({ complete: false });
+        night5.nextWave = Math.min(night5.nextWave, dayClock.t + 1.5); });
       return true;
     }
+    /* the rise from the bed to where he stands (eased on the wall clock), the look turned to the bedroom door */
+    function getUpTick(wdt) {
+      if (!(night5.getUpT > 0) || !night5.from) return;
+      night5.getUpT = Math.max(0, night5.getUpT - wdt); const k = smo(1 - night5.getUpT / 1.4), F = night5.from, a = STATION.night.at;
+      yaw.position.x = lp(F.x, a.x, k); yaw.position.z = lp(F.z, a.z, k);
+      yaw.rotation.y = F.ry + angTo(F.ry, a.ry) * k; pitch.rotation.x = lp(F.pitch, -0.05, k);
+      if (night5.getUpT === 0) night5.from = null;
+    }
+    /* a wave: up by 0.15 over 1.5 s, then back a third of it (a stronger one at the bedroom door) */
+    function waveAt(k) { night5.waves.push({ t: 0, k }); night5.waveN++; waveMeets(); }
+    function waveVal(w) { const r = PR.waveRise; return w.t < r ? smo(w.t / r) : PR.waveKeep + (1 - PR.waveKeep) * Math.exp(-(w.t - r) / 1.2); }
+    let lastPos = null;
+    function pressureTick(wdt) {
+      if (phase !== 'night' && phase !== 'ask') { lastPos = null; return; }
+      const asking = phase === 'ask';
+      /* how much he moved this frame (and his steps slowed by the pressure: the walk is the engine's, so the step is taken
+         back by the share the pressure asks, along the line he just walked, which he has already been through) */
+      const x = myX(), z = myZ();
+      if (lastPos && phase === 'night' && !(night5.getUpT > 0) && !seated) {
+        const dx = x - lastPos.x, dz = z - lastPos.z, d = Math.hypot(dx, dz);
+        const f = 1 - PR.slow * night5.p;
+        if (d > 1e-5 && d < 0.6 && f < 1) { yaw.position.x = lastPos.x + dx * f; yaw.position.z = lastPos.z + dz * f; }
+        night5.moving = d / Math.max(1e-3, wdt);
+      } else night5.moving = 0;
+      lastPos = { x: yaw.position.x, z: yaw.position.z };
+      const up = play.found.has('u');
+      if (!asking) {
+        /* the waves, on the chapter's clock */
+        if (dayClock.t >= night5.nextWave) { night5.nextWave = dayClock.t + PR.gap[0] + (PR.gap[1] - PR.gap[0]) * nRand(); waveAt(PR.waveUp); }
+        const moving = night5.moving > 0.25, look = visOpen();
+        let base = night5.p - night5.waves.reduce((s, w) => s + w.k * waveVal(w), 0);
+        if (night5.kneeT > 0) { night5.kneeT = Math.max(0, night5.kneeT - wdt); if (night5.kneeT === 0) kneeUp(); }
+        else base += ((moving ? PR.up : 0) + (look ? PR.look : 0) - (!moving && !look ? PR.ease : 0)) * wdt * (up ? 1 : 0.4);
+        base = Math.max(PR.floor, Math.min(1.2, base));
+        for (const w of night5.waves) w.t += wdt;
+        /* a wave's rise spent, what it keeps goes into the base */
+        night5.waves = night5.waves.filter(w => { if (w.t > PR.waveRise + 5) { base += w.k * PR.waveKeep; return false; } return true; });
+        night5.p = Math.min(1, base + night5.waves.reduce((s, w) => s + w.k * waveVal(w), 0));
+        if (night5.p >= 0.999 && !(night5.kneeT > 0) && up && !(night5.getUpT > 0)) kneeDown();
+        if (up && !night5.tipSaid && night5.waveN >= 1 && !lineBusy()) { night5.tipSaid = true; if (kit.captions) kit.captions([{ at: 0, end: 7, text: W.tipPress, sub: '' }]); }
+      }
+      /* SEEN, FELT, HEARD (nothing presses under a panel: v11.4 — at the decision it stands where it was, no waves) */
+      const p = night5.p;
+      if (kit.press) kit.press(p, { secs: 0.12 });
+      if (kit.pulse) kit.pulse({ bpm: 70 + 70 * p, secs: 1.5, erratic: p > 0.8 ? 0.25 : 0, sound: 'u51heart', vol: 0.35 + 0.3 * p });
+      if (kit.hush) kit.hush(Math.min(0.85, p * 0.95), { secs: 0.25, floor: 1 - 0.45 * p });
+      if (kit.lens) kit.lens(72 - 10 * p, { secs: 0.3 });
+    }
+    /* full pressure: down on one knee for two seconds, and it falls back to 0.7 (never a fail: v7.4) */
+    function kneeDown() {
+      night5.kneeT = PR.knee; sfx5('u51knee', 0.7);
+      if (kit.pose) kit.pose('lying', { y: 0.95, yaw: yaw.rotation.y, span: 3.2, pitchLo: -0.9, pitchHi: 0.6, secs: 0.5 });
+      if (kit.root) kit.root(true);
+      if (kit.buzz) kit.buzz([40, 60, 40]);
+    }
+    function kneeUp() {
+      night5.p = PR.after; night5.waves = [];
+      if (kit.pose) kit.pose('standing', { secs: 0.9 });
+      if (kit.root && !seated) kit.root(false);
+    }
+    /* WHAT HE MEETS, with each wave (and once each, his thought: "Like my head was in a vice." after he is up; "Not a
+       headache..." in the passage; "The water I brought home was shaking." where the bottle is) */
+    const shake = new Map();
+    function shakeThing(o, k, secs = 1.6) { if (!o) return; const s = shake.get(o) || { t: 0, k: 0, base: o.position.clone(), rot: o.rotation.clone() }; s.t = secs; s.k = Math.max(s.k, k); shake.set(o, s); }
+    function shakeTick(wdt, t) {
+      for (const [o, s] of shake) { s.t = Math.max(0, s.t - wdt);
+        const a = s.k * (s.t / 1.6);
+        o.position.set(s.base.x + Math.sin(t * 61) * 0.0025 * a, s.base.y + Math.abs(Math.sin(t * 47)) * 0.0015 * a, s.base.z + Math.cos(t * 53) * 0.0025 * a);
+        o.rotation.set(s.rot.x + Math.sin(t * 37) * 0.02 * a, s.rot.y, s.rot.z + Math.cos(t * 41) * 0.02 * a);
+        if (s.t === 0) { o.position.copy(s.base); o.rotation.copy(s.rot); shake.delete(o); } }
+    }
+    function waveMeets() {
+      if (phase !== 'night') return;
+      sfx5('u51wave', 0.55);
+      const x = myX(), z = myZ(), up = play.found.has('u');
+      if (x > BED.x0 - 0.3) { shakeThing(things.bedGlass, 1); sfx5('u51glass', 0.5, panTo(things.bedGlass ? things.bedGlass.position.x : x, things.bedGlass ? things.bedGlass.position.z : z)); }
+      if (Math.abs(x - (PASS.x0 + PASS.x1) / 2) < 3.2) { shakeThing(things.frame0, 1.4); shakeThing(things.frame1, 1.4); sfx5('u51frames', 0.5, panTo((PASS.x0 + PASS.x1) / 2, PASS.z1)); }
+      if (x < LIV.x1 + 1.5) { sfx5(night5.waveN % 2 ? 'u51gtick1' : 'u51gtick2', 0.55, panTo(x + (nRand() - 0.5) * 3, LIV.z1)); }
+      if (distTo(HIS.altar.x, HIS.altar.z) < 5.2 && things.bottle && things.bottle.visible) { shakeThing(things.bottle, 1.6, 2.2); sfx5('u51bottle', 0.6, panTo(HIS.altar.x, HIS.altar.z)); }
+      if (!up || lineBusy()) return;
+      if (!night5.said.has('n1')) { night5.said.add('n1'); say('zv51n1'); }
+      else if (!night5.said.has('n2') && x > PASS.x0 - 0.8 && x < PASS.x1 + 0.3) { night5.said.add('n2'); say('zv51n2'); }
+      else if (!night5.said.has('n3') && distTo(HIS.altar.x, HIS.altar.z) < 5.2) { night5.said.add('n3'); say('zv51n3'); }
+    }
+    /* THE BEAT NEVER LEFT TO CHANCE (v21.17): at the bedroom door, the strongest wave, and Spirit Vision forced open for four
+       seconds: his footsteps lit red from the front door in, a few at a time, and the threads coming in after them */
+    function doorTick(wdt) {
+      if (phase !== 'night' || !play.found.has('u')) return;
+      if (night5.forced > 0) {
+        night5.forced = Math.max(0, night5.forced - wdt);
+        if (night5.forced === 0) { if (kit.vision) { kit.vision(null); kit.vision(false); } }
+        return;
+      }
+      if (play.found.has('f') || night5.kneeT > 0) return;
+      if (Math.hypot(myX() - SPOT.bedDoor.x, myZ() - SPOT.bedDoor.z) > 1.05) return;
+      night5.forced = 4.0; got('f');
+      waveAt(0.26);
+      if (kit.vision) { kit.vision(true); kit.vision({ lock: true, why: W.visionHeld }); }
+      sfx5('u51vison', 1.0); footSet(0); fx.footRun = 0;
+      lineQ.length = 0; say('zv51n4');
+    }
+    /* the footsteps (FILMPLACE.steps, the film of home's own walk) and the threads, in Spirit Vision only */
+    const FOOT = FILMPLACE.steps;
+    { const fg = new THREE.CircleGeometry(1, 16); fg.rotateX(-Math.PI / 2);
+      for (let i = 0; i < FOOT.length; i++) {
+        const [x, z] = FOOT[i], [x2, z2] = FOOT[Math.min(FOOT.length - 1, i + 1)], [x0, z0] = FOOT[Math.max(0, i - 1)];
+        const ang = Math.atan2(x2 - x0, z2 - z0), side = (i % 2 ? 1 : -1) * 0.1;
+        const m = new THREE.Mesh(fg, new THREE.MeshBasicMaterial()); m.scale.set(0.05, 1, 0.12);
+        m.position.set(x + Math.cos(ang) * side, 0.012, z - Math.sin(ang) * side); m.rotation.y = ang; m.frustumCulled = false; world.add(m);
+        fx.foot.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0.8 }) : null, k: 0 }); }
+      const TH = [[[HIS.door.x, -2.45], [HX - 3.4, -1.6], [HX - 3.2, -0.6]], [[HIS.door.x + 0.3, -2.45], [HX - 2.6, -1.2], [HX - 2.0, -0.1]],
+                  [[HX - 1.4, LIV.z1 - 0.05], [HX - 0.9, 1.1], [HX - 0.8, 0.2]], [[HX + 1.0, LIV.z1 - 0.05], [HX + 1.3, 1.6], [HX + 1.4, 0.8]],
+                  [[HX + 5.6, BED.z1 - 0.05], [HX + 5.4, 1.6], [HX + 5.6, 0.7]], [[HX + 2.0, LIV.z1 - 0.05], [HX + 2.5, 1.5], [HX + 2.6, 0.95]]];
+      for (const T of TH) { const c = new THREE.CatmullRomCurve3(T.map(([x, z]) => new THREE.Vector3(x, 0.02, z)));
+        const g = new THREE.TubeGeometry(c, 24, 0.0045, 5, false), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial()); m.frustumCulled = false; world.add(m);
+        g.setDrawRange(0, 0); fx.threads.push({ m, g, n: g.index ? g.index.count : g.attributes.position.count, k: 0, sp: ctx.spirit ? ctx.spirit(m, { color: RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null }); } }
+    function footSet(k) { for (const f of fx.foot) f.k = k; for (const t of fx.threads) t.k = k; }
+    function footTick(wdt, t) {
+      const show = phase === 'night' || phase === 'ask';
+      for (const f of fx.foot) f.m.visible = show;
+      for (const th of fx.threads) th.m.visible = show;
+      if (!show) return;
+      if (night5.forced > 0 || play.found.has('f')) fx.footRun = (fx.footRun || 0) + wdt;
+      const run = fx.footRun || 0;
+      fx.foot.forEach((f, i) => { const want = run > 0 ? c01((run - i * 0.22) / 0.35) : f.k; f.k = Math.max(f.k, want);
+        if (f.sp) f.sp.set('uAlpha', f.k * (0.75 + 0.25 * Math.sin(t * 2.0 + i))); });
+      for (const th of fx.threads) { const want = run > 0 ? c01((run - 0.8) / 3.0) : th.k; th.k = Math.max(th.k, want);
+        th.g.setDrawRange(0, Math.floor(th.n * th.k / 6) * 6); if (th.sp) th.sp.set('uAlpha', 0.8 * th.k); }
+    }
+    /* the phone picked up (a press), its screen in his hand: 3:03, his teacher's name; the decision */
     function atPhone() {
-      if (phase !== 'night' || play.busy || !play.found.has('u')) return false;
+      if (phase !== 'night' || play.busy || !play.found.has('u') || night5.kneeT > 0) return false;
+      sfx5('u51phoneup', 0.6);
+      if (things.hisPhone) things.hisPhone.visible = false;
+      holdPhone(true);
       book('ask'); askBegin();
       return true;
     }
+    const phone5 = { g: null };
+    function holdPhone(on) {
+      if (!kit || !kit.hold) return;
+      if (!on) { if (phone5.g) kit.hold(null); phone5.g = null; if (things.hisPhone) things.hisPhone.visible = true; return; }
+      if (phone5.g) return;
+      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 512; const x = cv.getContext('2d'); x.fillStyle = '#070b12'; x.fillRect(0, 0, 256, 512);
+      x.fillStyle = '#dfe8f4'; x.textAlign = 'center'; x.font = '300 74px sans-serif'; x.fillText('3:03', 128, 150);
+      x.font = '22px sans-serif'; x.fillStyle = '#9fb0c6'; x.fillText('Grandmaster Pho', 128, 300);
+      x.fillStyle = '#2f9e5a'; x.beginPath(); x.arc(128, 420, 34, 0, Math.PI * 2); x.fill();
+      const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; madeTex.push(tx);
+      const sm = new THREE.MeshBasicMaterial({ map: tx, toneMapped: false }); mats.push(sm);
+      const g = new THREE.Group(), body = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.136), sm); g.add(body);
+      if (things.hisPhone && things.hisPhone.userData.model) { const m = things.hisPhone.userData.model.clone(true); m.traverse(q => { if (q.isMesh) q.frustumCulled = false; });
+        m.rotation.x = Math.PI / 2; m.position.z = -0.006; g.add(m); }
+      phone5.g = g; kit.hold(g, { pos: PHONEHELD.pos, rot: PHONEHELD.rot });
+    }
+    const PHONEHELD = { pos: [-0.045, 0.06, -0.035], rot: [0.35, 0.25, 0] };
 
     /* ================================================================ THE DECISION (the plan's 9.6): 3:03, his teacher's
-       name on his phone's screen. Not timed; the world is held while the panel is open (v11.4). It opens here, and
-       again at the table after a step back (d_play.js: the pile is live only while the question stands) */
+       name on his phone's screen. Not timed; the world is held while the panel is open (v11.4). It opens here, and again
+       at the table after a step back (d_play.js: the pile is live only while the question stands) */
     function openDecision() {
       decOpen = true;
       if (getState() === 'play') startDecision();
     }
-    function askBegin() { lookAt0(LOOK_OF.ask); const run = play.run; after(0.6, () => { if (live(run)) openDecision(); }); }
+    function askBegin() {
+      lookAt0(LOOK_OF.ask); warm('ask');
+      if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
+      if (!phone5.g) holdPhone(true);
+      night5.p = Math.max(0.35, Math.min(0.75, night5.p || 0.5)); night5.waves = [];
+      footSet(1);
+      night5.handed = false;
+      const run = play.run; after(0.6, () => { if (live(run)) openDecision(); });
+    }
 
-    /* ---------------------------------------------------------------- the things he can press (each offered only in
-       its phase, only while no line is handing off, and never once it is done: derived, so a replay needs nothing put
-       back). TODO-PLAY: every one is a stand-in */
-    const roomLive = () => phase === 'room' && !play.busy;
+    /* ================================================================ THE PLAY'S SOUND (the plan's 11; every sound in main.js's
+       STING_SAMPLE, made by SOUND: masters/v29.0/sound/picks.json): the beds of each place eased by place and beat (the
+       engine ducks every bed under a voice), M2 under the room and M3 laid over it wherever the pull is shown, the water's
+       lap under the event, and at three o'clock the night thinned to almost nothing as the pressure rises, M6's three
+       layers entering at 0.2, 0.5 and 0.8, the tinnitus over 0.6, his breath faster with it, the threads' dry rustle while
+       his sight is open on them. In a film every one is the film's (`stage.beds.film`, when a film writes it), else 0 */
+    const BED_NAMES = ['flat', 'night', 'three', 'm2', 'm3', 'm6a', 'm6b', 'm6c', 'lap', 'tin', 'brth', 'threads'];
+    const BED_SND = { flat: 'u51bflat', night: 'u51bnight', three: 'u51bthree', m2: 'u51m2room', m3: 'u51m3pull', m6a: 'u51m6a', m6b: 'u51m6b', m6c: 'u51m6c',
+                      lap: 'u51lap', tin: 'u51tinnitus', brth: 'u51breath', threads: 'u51threads' };
+    const BED_VOL = { flat: 0.55, night: 0.5, three: 0.55, m2: 0.3, m3: 0.26, m6a: 0.32, m6b: 0.3, m6c: 0.3, lap: 0.32, tin: 0.16, brth: 0.32, threads: 0.3 };
+    const BED_EASE = { flat: 1.2, night: 1.2, three: 1.0, m2: 2.0, m3: 0.8, m6a: 1.2, m6b: 1.2, m6c: 1.2, lap: 0.5, tin: 0.8, brth: 0.6, threads: 0.4 };
+    const BEDS = { mix: {}, film: null }, BED_AT = {};
+    for (const k of BED_NAMES) BEDS.mix[k] = 0;
+    DATA.ambience.beds.forEach((b, i) => { for (const k in BED_SND) if (BED_SND[k] === b[0]) BED_AT[k] = i; });
+    function bedsTick(wdt, st) {
+      if (!(wdt > 0)) return;
+      const want = {}; for (const k of BED_NAMES) want[k] = 0;
+      if (st === 'cine') { if (BEDS.film) for (const k in BEDS.film) if (k in want) want[k] = BEDS.film[k]; }
+      else if (st !== 'title' && st !== 'chapter' && phase) {
+        if (phase === 'room') { want.flat = BED_VOL.flat; want.m2 = BED_VOL.m2; if (dayClock.t < pullTill || visOpen()) want.m3 = BED_VOL.m3; }
+        else if (phase === 'breaking') { want.flat = BED_VOL.flat * 0.6; want.lap = ev5() ? BED_VOL.lap * (0.6 + 0.4 * Math.min(1, brk.drift || 0)) : 0; }
+        else {
+          const p = night5.p || 0;
+          want.night = BED_VOL.night * Math.max(0, 1 - p * 1.4); want.three = BED_VOL.three * Math.min(1, p * 1.6);
+          want.m6a = p >= 0.2 ? BED_VOL.m6a : 0; want.m6b = p >= 0.5 ? BED_VOL.m6b : 0; want.m6c = p >= 0.8 ? BED_VOL.m6c : 0;
+          want.tin = p > 0.6 ? BED_VOL.tin * (p - 0.6) / 0.4 : 0; want.brth = play.found.has('u') || phase === 'ask' ? BED_VOL.brth * (0.4 + 0.6 * p) : 0;
+          want.threads = visOpen() || night5.forced > 0 ? BED_VOL.threads : 0;
+          if (phase === 'ask') { for (const k of ['m6b', 'm6c', 'tin']) want[k] *= 0.5; }
+        }
+      }
+      const B = DATA.ambience.beds;
+      for (const n of BED_NAMES) { BEDS.mix[n] += (want[n] - BEDS.mix[n]) * (1 - Math.exp(-wdt / BED_EASE[n])); if (B[BED_AT[n]]) B[BED_AT[n]][1] = BEDS.mix[n]; }
+    }
+    const ev5 = () => !!(kit && kit.eventActive && kit.eventActive());
+    /* a one-shot of the play (a literal name, warmed with its phase: v10.2), panned to where it comes from */
+    function sfx5(name, vol, pan = 0) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, pan); }
+    function panTo(x, z) { const dx = x - myX(), dz = z - myZ(), a = Math.atan2(dx, -dz) + yaw.rotation.y; return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75); }
+    const WARM = {
+      room: ['u51bflat', 'u51m2room', 'u51m3pull', 'u51pour', 'u51brass', 'u51lighter', 'u51wick', 'u51buzz', 'u51stand', 'u51sofa', 'u51vison', 'u51visoff', 'ph51ratana'],
+      breaking: ['u51bflat', 'u51lap', 'u51tremor', 'u51spill', 'u51dip', 'u51flick', 'u51fray', 'ph51ratana', 'ph51s1'],
+      night: ['u51bnight', 'u51bthree', 'u51m6a', 'u51m6b', 'u51m6c', 'u51tinnitus', 'u51breath', 'u51threads', 'u51heart', 'u51wave', 'u51glass', 'u51frames',
+              'u51gtick1', 'u51gtick2', 'u51bottle', 'u51floor', 'u51knee', 'u51vison', 'u51visoff', 'u51phoneup'],
+      ask: ['u51bthree', 'u51m6a', 'u51heart']
+    };
+    function warm(p) {
+      if (warmSounds && WARM[p]) warmSounds(WARM[p]);
+      // the barrier's hiss as each thread meets the gold is fired from y_endings.js's shared barrier, not from a scene's
+      // own source, so the decision's warm scan cannot see it: warmed here, literally, with the decision (chaptertest)
+      if (p === 'ask' && warmSounds) warmSounds(['u51burn']);
+    }
+    function soundReset() { for (const k of BED_NAMES) BEDS.mix[k] = 0; BEDS.film = null; pullTill = 0; for (const b of DATA.ambience.beds) b[1] = 0; }
+
+    /* ---------------------------------------------------------------- the people at rest in the room: Grandmaster Pho's eyes
+       on Grace, Grace's on her own lap and the door, Marcus's on Grace */
+    function gazeRest(P) {
+      if (!P) return;
+      if (P === cast.pho) gaze(P, [HER.grace.x, 0.95, HER.grace.z], { secs: 1.0, reach: 0.6 });
+      else if (P === cast.marcus) gaze(P, [HER.grace.x, 0.95, HER.grace.z], { secs: 1.0, reach: 0.6 });
+      else gaze(P, null, { secs: 1.0 });
+    }
+
+    /* ---------------------------------------------------------------- the things he can press (each offered only in its
+       phase, only while no line is handing off, and never once it is done: derived, so a replay needs nothing put back) */
+    const roomLive = () => phase === 'room' && !play.busy && !grace5.up;
     const hotspots = [
-      { id: 'jug', pos: SPOT.jug, radius: 1.8, prompt: W.hotJug,
-        enabled: () => roomLive() && !play.found.has('w'), onInteract() { return roomDo('w', []); } },
-      { id: 'lighter', pos: SPOT.lighter, radius: 1.8, prompt: W.hotLighter,
-        enabled: () => roomLive() && play.found.has('w') && !play.found.has('l'), onInteract() { return roomDo('l', []); } },
-      { id: 'phoneher', pos: SPOT.grace, radius: 2.6, prompt: W.hotPhone,
-        enabled: () => roomLive() && play.found.has('l') && !play.found.has('p'), onInteract() { return roomDo('p', ['zv51r1', 'ph51r1']); } },
-      { id: 'glass', pos: SPOT.glass, radius: 2.6, prompt: W.hotGlass,
-        enabled: () => roomLive() && play.found.has('l') && !play.found.has('g'), onInteract() { return roomDo('g', ['zv51r2', 'ph51r2']); } },
-      { id: 'hands', pos: SPOT.hands, radius: 2.6, prompt: W.hotHands,
-        enabled: () => roomLive() && play.found.has('l') && !play.found.has('h'), onInteract() { return roomDo('h', ['zv51r3', 'ph51r3']); } },
-      { id: 'packet', pos: SPOT.packet, radius: 2.6, prompt: W.hotPacket,
-        enabled: () => roomLive() && play.found.has('l') && !play.found.has('k'), onInteract() { return roomDo('k', ['zv51r4', 'ph51r4', 'zv51r5', 'gr51r1', 'mk51r1']); } },
-      { id: 'vision', pos: SPOT.grace, radius: 2.6, prompt: W.objVision,
-        enabled: () => roomLive() && looksFound() === 4 && !play.found.has('v'), onInteract() { return roomDo('v', ['zv51r6']); } },
-      { id: 'still', pos: SPOT.bowl, radius: 2.0, prompt: W.hotStill,
-        enabled: () => phase === 'breaking' && !play.busy, onInteract() { return still(); } },
-      { id: 'getup', pos: SPOT.bed, radius: 2.2, prompt: W.hotGetUp,
+      { id: 'jug', pos: SPOT.jug, radius: 1.6, prompt: W.hotJug, markY: 0, hits: markHit(() => ({ x: ON_CLOTH.jug.x, y: 0.12, z: ON_CLOTH.jug.z }), 0.1),
+        enabled: () => roomLive() && !play.found.has('w'), onInteract() { return pour(); } },
+      { id: 'lighter', pos: SPOT.lighter, radius: 1.6, prompt: W.hotLighter, markY: 0, hits: markHit(() => ON_CLOTH.lighter, 0.09),
+        enabled: () => roomLive() && play.found.has('w') && !play.found.has('l'), onInteract() { return lightCandle(); } },
+      lookSpot('phoneher', 'p', () => SPOT.herPhone, ['zv51r1', 'ph51r1'], W.hotPhone),
+      lookSpot('glass', 'g', () => SPOT.glass, ['zv51r2', 'ph51r2'], W.hotGlass),
+      lookSpot('hands', 'h', () => graceHands, ['zv51r3', 'ph51r3'], W.hotHands),
+      lookSpot('packet', 'k', () => SPOT.packet, ['zv51r4', 'ph51r4', 'zv51r5', '|', 'gr51r1', 'mk51r1'], W.hotPacket),
+      { id: 'getup', pos: SPOT.bed, radius: 2.4, prompt: W.hotGetUp, markY: 0,
         enabled: () => phase === 'night' && !play.busy && !play.found.has('u'), onInteract() { return getUp(); } },
-      { id: 'phone', pos: SPOT.phone, radius: 2.0, prompt: W.hotPhoneHis,
-        enabled: () => phase === 'night' && !play.busy && play.found.has('u'), onInteract() { return atPhone(); } }
+      { id: 'phone', pos: SPOT.phone, radius: 1.7, prompt: W.hotPhoneHis, markY: 0, hits: markHit(() => FILMPLACE.phoneAt, 0.09),
+        enabled: () => phase === 'night' && !play.busy && play.found.has('u') && !(night5.kneeT > 0), onInteract() { return atPhone(); } }
     ];
+    /* (a look-spot's mark follows what it marks: her hands move with her take) */
+    function spotsTick() { const h = hotspots.find(q => q.id === 'hands'); if (h) { h.pos = { x: graceHands.x, y: graceHands.y, z: graceHands.z }; } }
+
+    /* ================================================================ THE PLAY'S FRAME (d_play.js calls it every frame of
+       play, after the line queue; the chant's and the effects' every frame whatever the state) */
+    function storyTick(wdt) {
+      if (phase === 'room') { handsTick(); spotsTick(); phoneTick(wdt); standTick(); visionTick(); }
+      else if (phase === 'night') { getUpTick(wdt); doorTick(wdt); }
+      pressureTick(wdt);
+    }
+    function fxTick(wdt, st) {
+      const t = wallClock.t;
+      waterTick(wdt); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
+      /* (an ending begins from the decision: once, on its first frame, the play's hold on the sound, the heart and the lens is
+         given back, so an ending's film starts clean and lays its own pressure: PLAY.md 2. Never again after, so a film's
+         own settings are never overwritten) */
+      if (st === 'cine' && phase === 'ask' && !night5.handed && kit) { night5.handed = true;
+        if (kit.hush) kit.hush(0, { secs: 0.4 }); if (kit.pulse) kit.pulse(null); if (kit.lens) kit.lens(null, { secs: 0 }); }
+    }
 
     /* ---------------------------------------------------------------- a phase set from outside (a probe; the walk
        test's later grounds) and a phase applied from the save (a Continue, the selector, a replay: every phase is
        covered, and anything else is the room) */
     function setPhase(p) { applyPhase(PHASES.includes(p) ? p : 'room'); saveMark(); }
+    function playClear() {
+      if (!kit) return;
+      if (kit.press) kit.press(0, { secs: 0 }); if (kit.pulse) kit.pulse(null); if (kit.hush) kit.hush(0, { secs: 0 }); if (kit.lens) kit.lens(null, { secs: 0 });
+      if (kit.tremble) kit.tremble(0, { secs: 0 }); if (kit.visionUrge) kit.visionUrge(false);
+      holdBowl(false); holdPhone(false); unseat(); if (kit.pose) kit.pose('standing', { secs: 0.05 });
+      grace5.up = false; grace5.reflWant = 0; fx.fray = 0; fx.taut = 0;
+      for (const [o, s] of shake) { o.position.copy(s.base); o.rotation.copy(s.rot); } shake.clear();
+    }
     function applyPhase(saved) {
       const R = readMark(saved);
       /* (a jump from one phase to another drops what the last one had queued: its lines, its timers, its busy hand-off:
@@ -6483,31 +7177,2250 @@
       phase = R.p; play.run++; play.busy = false; play.found = new Set(R.found); decOpen = false;
       lineQ.length = 0; speakReset(); dropTodo();
       if (kit && kit.captions) kit.captions(null);
+      if (kit && kit.eventActive && kit.eventActive() && kit.abortEvent) kit.abortEvent();
+      if (R.p !== 'breaking') RATANA.stop();
+      playClear();
+      if (things.hisPhone) things.hisPhone.visible = true;
       worldPhase(R.p);
       if (R.p === 'room') roomBegin(R.found);
       else if (R.p === 'breaking') breakingBegin();
       else if (R.p === 'night') nightBegin(R.found);
-      else askBegin();
+      else { nightBegin(['u', 'f']); phase = 'ask'; if (kit) { kit.objective(null, { complete: false }); kit.waypoint(null); } const a = STATION.ask.at; yaw.position.set(a.x, yaw.position.y, a.z); yaw.rotation.y = a.ry; askBegin(); }
     }
     function storyReset() {
       play.run++; play.busy = false; play.found = new Set(); decOpen = false;
       if (kit && kit.captions) kit.captions(null);
+      RATANA.reset(); playClear(); soundReset();
+      Object.assign(room5, { t0: 0, ups: 0, phoneAt: 0 }); Object.assign(grace5, { up: false, reflK: 0, reflWant: 0 });
+      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false });
+      Object.assign(night5, { p: 0, waves: [], nextWave: 0, kneeT: 0, tipSaid: false, forced: 0, said: new Set(), getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, handed: false });
+      fx.waterK = 0; fx.pourT = 0; fx.phoneLit = 0; fx.footRun = 0; footSet(0); lastPos = null;
+      if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true;
+      if (WORLD.candleLit) WORLD.candleLit('candle2', null);
       lookAt0('LAMP');
     }
-    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName }; }
-    /* ================================================================ THE FILMS' PICTURES (masters/v29.0/parts/c_yfilm.js)
-       · TODO-FILM (FILMS, M7: the plan's 9 entire, its 4.4 the camera's grammar, its 12 the effects)
-       What each film's own clock (z_tail.js) asks of the world as a pure function of that clock (v6.4): who stands where
-       and in which take at which moment (pose), what is drawn (the cord, the bowl's water, the snap's wisp, the red
-       footsteps and threads, the gold of the barrier), each a track so a seek, a skip and a slow phone land on the same
-       picture. The stage hands these to the films and to probes as `films` (d_play.js).
-       IN THIS SKELETON nothing is posed: the people stand where their phase's station puts them. */
+    function storySnap() { return { phase, found: [...play.found], busy: play.busy, decOpen, look: lookName, pressure: +(night5.p || 0).toFixed(3),
+      chant: RATANA.state(), brk: { i: brk.i, retook: brk.retook, shares: brk.shares.slice(), spills: brk.spills, share: brk.share },
+      grace: { up: grace5.up, ups: room5.ups }, night: { waves: night5.waveN, knee: night5.kneeT > 0, forced: +night5.forced.toFixed(2), tip: night5.tipSaid, said: [...night5.said] } }; }
+    /* ================================================================ THE FILMS' PICTURES (masters/v29.0/parts/c_yfilm.js:
+       FILMS-1's, M7: the opening, the keepsake, the cord and home; FILMS-2's c_yfilm2.js has the barrier, the endings and the
+       dawn, and builds on what is here). masters/v29.0/FILMS.md is the record: every shot, every number and why.
+       THE CLOCKS are z_tail.js's (built by tl() from SECS, so a measured take moves everything after it: v5.15); here is what
+       each frame of each film shows, a PURE FUNCTION of the film's clock (v6.4): people POSED at the moment the clock asks
+       for, every place, light and effect a function of it, so a seek, a skip and a slow phone land on one picture.
+       THE CAMERA'S GRAMMAR (the plan's 4.4): every shot is HIS EYES (the lens stands where he stands, turns and narrows, and
+       never moves through the people); a film cuts away from his eyes only to an insert of a thing, or to a person who is
+       looking at him (v21.30); the opening's crane down the street, before he steps out of the taxi, is the one exception.
+       Evening: still and patient (slow pushes, held frames, eye level). Night: tight (handheld drift, a smooth function of the
+       clock, never noise). A shot is a track of keys: each key's eye, its aim and its lens for a phone (fp) and a desk (fd),
+       eased between keys (a smooth function of the clock: v25.5); a key marked `cut` is jumped to; a key may name what it
+       must HOLD on this screen and the eye comes back along its line of sight for it (chapter 5's solve, R25), never
+       through a solid. Each film ENDS where play keeps things (v5.25): its last picture is the view the phase it hands to
+       begins in, the people at that phase's stations (c_cast.js worldPhase). */
+    const F1 = { s: null, lit: '', vis: false, shot: '', beds: null, film: '', once: new Set(), hands: false, press: false };
+    const PLAYFOV1 = 72;
+    /* his look D's face and hands unlit at the level the light asks (chapter 5's R33 measure: night 0.55, the evening 0.7,
+       dusk 0.8, day 1), wherever a film sets the light; the play's own light is PLAY's (said in FILMS.md) */
+    const PHO_LEVEL1 = { BLUE: 0.8, LAMP: 0.7, HOME: 0.55, NIGHT: 0.55, DAWN: 1 };
+    function f1PhoLevel(name) { if (typeof phoLook === 'object' && phoLook && phoLook.level) phoLook.level.value = PHO_LEVEL1[name] != null ? PHO_LEVEL1[name] : 1; }
+    function f1Look(name, secs = 0) { if (F1.lit !== name) { F1.lit = name; f1PhoLevel(name); if (kit && kit.daylight) kit.daylight(PRESETS[name] || LAMP, secs); } }
+    function f1Lens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
+    /* the rig at an eye, aimed at a point (yaw turns, pitch tilts: a turn of 0 looks toward -z) */
+    function f1Aim(p, q, roll = 0) {
+      yaw.position.set(p[0], p[1], p[2]);
+      const dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2];
+      yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz)); camera.rotation.z = roll;
+    }
+    /* (the levels of the people and the things for THIS frame's lens, never the last one's: v24.22) */
+    function f1Levels() { camera.updateMatrixWorld(true); lodTick(); peopleLevels(); }
+    const f1v = (o) => (typeof o === 'function' ? o() : o);
+    /* A SHOT SOLVED FOR THE SCREEN IT IS DRAWN ON (chapter 5's fmHold, R25; CLAUDE.md v21.8): a key's `hold` lists places
+       [x, y, z, r] that must stand inside 0.86 of the half-width and 0.88 of the half-height of THIS screen; the eye is drawn
+       back along its own line of sight until they do (at most `back`, 0.6 m unless said: these are his eyes, a lean, never a
+       walk), never through a solid (it stops 0.3 m short and the lens widens for the rest, to `fmax`) */
+    const _f1E = new THREE.Vector3(), _f1R = new THREE.Ray(), _f1H = new THREE.Vector3();
+    let f1Solids = null;
+    function f1PullOf(K) {
+      const H = K && K.hold ? f1v(K.hold) : null; if (!H || !H.length) return 0;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_f1E);
+      const e = camera.matrixWorld.elements, th = Math.tan(camera.fov * Math.PI / 360), tw = th * camera.aspect;
+      let d = 0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _f1E.x, dy = h[1] - _f1E.y, dz = h[2] - _f1E.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        d = Math.max(d, (Math.abs(x) + r) / (tw * 0.86) - z, (Math.abs(y) + r) / (th * (h[4] || K.band || 0.88)) - z); }
+      return Math.min(K.back != null ? K.back : 0.6, Math.max(0, d));
+    }
+    function f1NeedTh(K) {
+      const th0 = Math.tan(camera.fov * Math.PI / 360), H = K && K.hold ? f1v(K.hold) : null; if (!H || !H.length) return th0;
+      camera.getWorldPosition(_f1E); const e = camera.matrixWorld.elements; let th = th0;
+      for (const h of H) { if (!h) continue; const dx = h[0] - _f1E.x, dy = h[1] - _f1E.y, dz = h[2] - _f1E.z, r = h[3] || 0;
+        const z = -(dx * e[8] + dy * e[9] + dz * e[10]); if (z <= 0.05) continue;
+        const x = dx * e[0] + dy * e[1] + dz * e[2], y = dx * e[4] + dy * e[5] + dz * e[6];
+        th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (h[4] || K.band || 0.88))); }
+      return th;
+    }
+    function f1Hold(A, B, u) {
+      if (!(A && A.hold) && !(B && B.hold)) return;
+      const d = B ? lp(f1PullOf(A), f1PullOf(B), u) : f1PullOf(A); if (!(d > 1e-4)) return;
+      camera.updateMatrixWorld(true); camera.getWorldPosition(_f1E);
+      const e = camera.matrixWorld.elements; _f1R.origin.copy(_f1E); _f1R.direction.set(e[8], e[9], e[10]).normalize();
+      if (!f1Solids) { f1Solids = []; for (const s of solids) { s.updateWorldMatrix(true, false); f1Solids.push(new THREE.Box3().setFromObject(s)); } }
+      let dd = d;
+      for (const bb of f1Solids) { if (bb.containsPoint(_f1E)) continue; const hit = _f1R.intersectBox(bb, _f1H); if (hit) dd = Math.min(dd, Math.max(0, _f1E.distanceTo(hit) - 0.3)); }
+      yaw.position.addScaledVector(_f1R.direction, dd);
+      camera.updateMatrixWorld(true);
+      if (dd < d - 1e-3) {
+        const th = B ? lp(f1NeedTh(A), f1NeedTh(B), u) : f1NeedTh(A), fmax = (B ? lp(A.fmax || 76, B.fmax || 76, u) : A.fmax || 76);
+        const f = Math.min(fmax, 2 * Math.atan(th) * 180 / Math.PI); if (f > camera.fov) { f1Lens(f); camera.updateMatrixWorld(true); }
+      }
+    }
+    function f1KeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
+      const p = f1v(K.eye), q = f1v(K.at), dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2]; return [Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz))]; }
+    const f1Bad = new Set();
+    /* the track: `K` a list of keys { t, name, eye, at (or yaw, pitch), fp, fd, roll, cut, hold, back, fmax, band, flow, stop }.
+       Between two keys the eye, the aim, the lens and the roll ease (smoothstep); a run of keys marked `flow` is ONE move,
+       passing through each key at a speed taken from the keys either side (chapter 5's R169: a cubic with Catmull-Rom's
+       tangents on the clock), resting only at a key marked `stop` and at the run's ends */
+    function f1Track(t, K) {
+      for (let j = 1; j < K.length; j++) if (K[j].t < K[j - 1].t) { const w = (K[j - 1].name || '') + '@' + K[j - 1].t.toFixed(2) + ' > ' + (K[j].name || '') + '@' + K[j].t.toFixed(2);
+        if (!f1Bad.has(w)) { f1Bad.add(w); console.error('e5c1: a film\'s camera keys run backwards in time: ' + w); } }
+      let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
+      const A = K[i], B = K[i + 1], nar = isNarrow();
+      if (!B || B.cut) {
+        f1Lens(nar ? A.fp : A.fd);
+        if (A.yaw != null || !A.at) { const p = f1v(A.eye), [yw, pt] = f1KeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
+        else f1Aim(f1v(A.eye), f1v(A.at), A.roll || 0);
+        f1Hold(A, null, 1);
+        F1.shot = A.name || ''; return;
+      }
+      if (A.flow && B.flow && A.at && B.at && A.yaw == null && B.yaw == null) {
+        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? K[i - 1] : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? K[i + 2] : null;
+        const val = (X) => { const e = f1v(X.eye), a = f1v(X.at); return [e[0], e[1], e[2], a[0], a[1], a[2], nar ? X.fp : X.fd, X.roll || 0]; };
+        const vA = val(A), vB = val(B), dt = Math.max(1e-3, B.t - A.t), n = vA.length;
+        const m0 = new Array(n).fill(0), m1 = new Array(n).fill(0);
+        if (P0 && !A.stop) { const v0 = val(P0), d = Math.max(1e-3, B.t - P0.t); for (let j = 0; j < n; j++) m0[j] = (vB[j] - v0[j]) / d; }
+        if (P3 && !B.stop) { const v3 = val(P3), d = Math.max(1e-3, P3.t - A.t); for (let j = 0; j < n; j++) m1[j] = (v3[j] - vA[j]) / d; }
+        const sx = c01((t - A.t) / dt), s2 = sx * sx, s3 = s2 * sx, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + sx, h01 = 3 * s2 - 2 * s3, h11 = s3 - s2;
+        const v = vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
+        f1Lens(v[6]); f1Aim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
+        f1Hold(A, B, smo(sx));
+        F1.shot = (A.name || '') + '>' + (B.name || ''); return;
+      }
+      const x0 = c01((t - A.t) / Math.max(1e-3, B.t - A.t)), u = B.ease === 'in' ? x0 * x0 : B.ease === 'lin' ? x0 : smo(x0);
+      f1Lens(lp(nar ? A.fp : A.fd, nar ? B.fp : B.fd, u));
+      const pe = lp3(f1v(A.eye), f1v(B.eye), u);
+      if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = f1KeyYP(A), [yb, pb] = f1KeyYP(B);
+        yaw.position.set(pe[0], pe[1], pe[2]); yaw.rotation.y = ya + angTo(ya, yb) * u; pitch.rotation.x = lp(pa, pb, u); camera.rotation.z = lp(A.roll || 0, B.roll || 0, u); }
+      else f1Aim(pe, lp3(f1v(A.at), f1v(B.at), u), lp(A.roll || 0, B.roll || 0, u));
+      f1Hold(A, B, u);
+      F1.shot = (A.name || '') + '>' + (B.name || '');
+    }
+    /* the view a phase begins in (the snapshot the engine restores at a film's end), as a key */
+    const f1SnapKey = (t, name = 'play') => { const s = F1.s; return s && s.yawPos ? { t, name, eye: [s.yawPos.x, s.yawPos.y, s.yawPos.z], yaw: s.yawRot, pitch: s.pitchX, fp: PLAYFOV1, fd: PLAYFOV1 } : null; };
+    const f1Run = (t, t0, t1, a, b) => lp(a, b, smo(c01((t - t0) / Math.max(1e-3, t1 - t0))));
+    const f1Ping = (t, from, len, secs) => from + len * (0.5 - 0.5 * Math.cos(Math.PI * 2 * t / secs));
+    /* a smooth bump: 0 before t0, up to 1 over `a`, held, down to 0 over `b` before t1 */
+    const f1Env = (t, t0, t1, a = 0.4, b = 0.4) => smo(c01((t - t0) / Math.max(1e-3, a))) * (1 - smo(c01((t - t1 + b) / Math.max(1e-3, b))));
+    /* WHERE A PERSON'S HEAD IS, FOR A SHOT OR A LOOK: where the film stands him (his group) at the height named, never his
+       LIVING head (v25.5: a shot whose aim rides a talking head sways with his take) */
+    function f1Head(P, fb, h) { if (P && P.ready && P.group.visible) { const g = P.group.position; return [g.x, h != null ? g.y + h : (fb ? fb[1] : 1.55), g.z]; } return fb; }
+    const f1Show = (P, on) => { if (!P) return; P.hidden = !on; if (P.ready) P.group.visible = on; };
+    const f1Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+    const _f1S = new THREE.Vector3();
+    function f1Palm(P, sd, out) { const hb = f1Bone(P, sd + 'Hand'), kb = f1Bone(P, sd + 'HandMiddle1'); if (!hb) return null; hb.getWorldPosition(out); if (kb) out.lerp(kb.getWorldPosition(_f1S), 0.5); return out; }
+    /* SPIRIT VISION held by a film's clock (the engine's curve, out from his eyes over `secs` from `t0`, full until `t1`, home
+       over `back`), held only round the moments it is open */
+    const VR1 = 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
+    function f1Vision(t, t0, secs = 2.2, t1 = Infinity, back = 1.6) {
+      if (!kit || !kit.vision) return;
+      let r = 0, mv = false;
+      if (t >= t0 && t < t0 + secs) { r = VR1 * visCurve1((t - t0) / secs); mv = true; }
+      else if (t >= t0 + secs && t < t1) r = VR1;
+      else if (t >= t1 && t < t1 + back) { r = VR1 * visCurve1(1 - (t - t1) / back); mv = true; }
+      if (r > 0.001 || mv) { kit.vision({ r, moving: mv }); F1.vis = true; }
+      else if (F1.vis) { kit.vision(null); F1.vis = false; }
+    }
+    function f1VisionOff() { if (F1.vis && kit && kit.vision) kit.vision(null); F1.vis = false; }
+    /* THE BEDS IN A FILM (PLAY.md 5): the play's loops (her flat's, his flat's, the room's two music beds M2 and M3) are 0 in a
+       film unless the film writes how loud each is, every frame, as the play's own levels (flat 0.55, night 0.5, m2 0.3, m3
+       0.26 are the play's): `stage.beds.film`. The street's, the stair's and the corridor's beds are these films' own cues */
+    const BEDLV1 = { flat: 0.55, night: 0.5, m2: 0.3, m3: 0.26 };
+    function f1Beds(o) { F1.beds = o; const B = S && S.beds; if (B) B.film = o ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, (BEDLV1[k] || 0.5) * v])) : null; }
+    /* A WALK ALONG A PATH (pts [[x, z], ...]) from `t0` at `v` metres a second, the walking take's time read from the ground
+       covered (P.pace: v26.0), eased out of its rest and into it at the end, turned along the path and at its end to `ryEnd`;
+       `rest` [take, moment, rate, loop]. `o.y` a height to stand it at (the five-foot way's GY); answers whether it walks */
+    function f1PathLen(pts) { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; }
+    function f1PathAt(pts, s) { for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], l = Math.hypot(b[0] - a[0], b[1] - a[1]); if (s <= l || i === pts.length - 1) { const u = l > 1e-6 ? Math.min(1, s / l) : 1; return [lp(a[0], b[0], u), lp(a[1], b[1], u), Math.atan2(b[0] - a[0], b[1] - a[1])]; } s -= l; } return [pts[0][0], pts[0][1], 0]; }
+    const f1WalkSecs = (pts, v, ease = 0.45) => { const L = f1PathLen(pts), v1 = Math.max(0.1, v); return L / v1 + Math.min(ease, L / v1); };
+    function f1Walk(P, t, t0, pts, v, rest, ryEnd, o = {}) {
+      if (!P || !P.ready) return false;
+      const L = f1PathLen(pts), v1 = Math.max(0.1, v), ease = Math.min(o.ease || 0.45, L / v1), T = L / v1 + ease, tw = t - t0, pace = (P.pace && P.pace.Walking) || 1.29;
+      const Y = (x, z) => (o.y != null ? o.y : flatGround(x, z));
+      const restT = () => (rest[1] != null ? rest[1] : 0) + (rest[2] ? t * rest[2] : 0);
+      if (tw <= 0) { const a = pts[0]; put(P, a[0], a[1], o.ry0 != null ? o.ry0 : f1PathAt(pts, 0)[2], Y(a[0], a[1])); pose(P, rest[0], restT(), !!rest[3]); return false; }
+      if (tw >= T) { const b = pts[pts.length - 1]; const turnK = smo(c01((tw - T) / 0.6)), h = f1PathAt(pts, L)[2];
+        put(P, b[0], b[1], ryEnd != null ? h + angTo(h, ryEnd) * turnK : h, Y(b[0], b[1])); pose(P, rest[0], restT(), !!rest[3]); return false; }
+      const s = !(ease > 0) ? L * tw / T : tw < ease ? 0.5 * v1 * tw * tw / ease : tw > T - ease ? L - 0.5 * v1 * (T - tw) * (T - tw) / ease : v1 * (tw - 0.5 * ease);
+      const sc = Math.max(0, Math.min(L, s)), at = f1PathAt(pts, sc), r0 = o.ry0 != null ? o.ry0 : at[2];
+      put(P, at[0], at[1], r0 + angTo(r0, at[2]) * smo(c01(tw / 0.35)), Y(at[0], at[1]));
+      const into = smo(c01(tw / 0.35)), outOf = smo(c01((tw - T + 0.35) / 0.35));
+      if (outOf <= 0) pose(P, 'Walking', sc / pace, true, rest[0], 1 - into, restT());
+      else pose(P, rest[0], restT(), !!rest[3], 'Walking', 1 - outOf, sc / pace);
+      return true;
+    }
+    const f1Turn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
+    /* A PERSON'S TALKING OVER HIS LINES IN A FILM (chapter 5's fmSpeak, R25): `lines` [[t0, secs, take], ...] each from the
+       line's own start, eased in over 0.35 s and out over the half second after it, lines closer than a second one talk;
+       `rest` [take, moment, rate, loop] his rest between */
+    function f1Speak(P, t, rest, lines) {
+      if (!P || !P.ready) return;
+      const rT = (rest[1] || 0) + (rest[2] ? t * rest[2] : 0), S = [];
+      for (const [t0, secs, take0, wmax] of lines.slice().sort((a, b) => a[0] - b[0])) { const tk = take0 || P.talkTake; if (!tk || !P.acts[tk]) continue;
+        const last = S[S.length - 1];
+        if (last && t0 - last.t1 < 1.0) { last.t1 = Math.max(last.t1, t0 + secs); if (last.seg[last.seg.length - 1].tk !== tk) last.seg.push({ tk, t0 }); }
+        else S.push({ t0, t1: t0 + secs, seg: [{ tk, t0 }], wmax: wmax || 1 }); }
+      const s = S.find(q => t >= q.t0 && t < q.t1 + 0.45);
+      if (!s || !P.acts[rest[0]]) { if (P.acts[rest[0]]) pose(P, rest[0], rT, !!rest[3]); return; }
+      const W = (s.wmax || 1) * smo(c01((t - s.t0) / 0.35)) * (1 - smo(c01((t - s.t1 + 0.1) / 0.5)));
+      let i = 0; while (i < s.seg.length - 1 && t >= s.seg[i + 1].t0) i++;
+      const tt = (g) => { const d = P.acts[g.tk].getClip().duration; return ((t - s.t0) % d + d) % d; };
+      const A = s.seg[i];
+      if (A.tk === rest[0]) { pose(P, rest[0], rT + 0.6 * (t - s.t0) * W, !!rest[3]); return; }
+      pose(P, A.tk, tt(A), true, rest[0], 1 - W, rT);
+    }
+    /* A LOOK THAT MOVES FROM ONE THING TO THE NEXT (chapter 5's fmGaze): `list` [[t, target, secs], ...] (a point, a function
+       of one, or 'lens'), each from its own time, carried from the last over its secs (0.6) */
+    const _f1G = new THREE.Vector3();
+    function f1Gaze(P, t, list, k = 0.8, reach = 0.75, down = 0.03) {
+      if (!P || !P.ready || !list.length) return;
+      const at = (q) => { const g = typeof q === 'function' ? q() : q; if (g === 'lens') { camera.getWorldPosition(_f1G); return [_f1G.x, _f1G.y, _f1G.z]; } return g; };
+      let i = 0; while (i < list.length - 1 && t >= list[i + 1][0]) i++;
+      if (t < list[0][0]) return;
+      const A = list[i], B = list[i - 1], u = B ? smo(c01((t - A[0]) / (A[2] || 0.6))) : smo(c01((t - A[0]) / (A[2] || 0.6)));
+      const ga = at(A[1]); if (!ga) return;
+      if (!B) { lookNow(P, ga, k * u, reach, down); return; }
+      const gb = at(B[1]); const tg = u >= 1 || !gb ? ga : lp3(gb, ga, u);
+      lookNow(P, tg, k, reach, down);
+    }
+
+    /* ---------------------------------------------------------------- A THING IN A HAND (chapter 5's handHold5): its offset
+       from the hand bone made once (`grip`: where its middle sits from the palm, in the hand's own frame) and the thing
+       carried by the hand bone after, so it goes where the hand goes in every take; or (`hang`) hung upright below the palm,
+       turned with the body */
+    const _f1A = new THREE.Vector3(), _f1M = new THREE.Matrix4(), _f1Q = new THREE.Quaternion(), _f1One = new THREE.Vector3(1, 1, 1);
+    function f1Carry(P, sd, g, o = {}) {
+      const hb = f1Bone(P, sd + 'Hand'); if (!hb || !g || !P || !P.ready) return false;
+      if (o.hang != null) { if (g.parent !== world) world.attach(g); P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, sd, _f1A); if (!pm) return false;
+        g.position.set(pm.x, pm.y - o.hang, pm.z); g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0); g.visible = true; return true; }
+      if (g.parent !== hb) { hb.add(g); }
+      const p = o.pos || [0, 0.06, 0.03], r = o.rot || [0, 0, 0];
+      g.position.set(p[0], p[1], p[2]); g.rotation.set(r[0], r[1], r[2]); g.scale.setScalar(1 / Math.max(1e-6, hb.getWorldScale(_f1A).x)); g.visible = true; return true;
+    }
+    function f1Drop(g, x, y, z, ry = 0) { if (!g) return; if (g.parent !== world) world.attach(g); g.position.set(x, y, z); g.rotation.set(0, ry, 0); g.scale.setScalar(1); }
+    /* A LEAN FORWARD of the trunk (`ang` radians, shared by the three spine bones, each turned about the body's own
+       left-right line): a seated body reaching across a low table leans into the reach, as a person does; laid after the
+       pose, kept off the next (v11.5: taken back before the mixer runs again) */
+    function f1LeanBack(P) { const L = P && P.f1lean; if (!L || !L.on) return; for (const r of L.b) r[0].quaternion.copy(r[1]); L.on = false; }
+    function f1Lean(P, ang) {
+      if (!P || !P.ready || !(Math.abs(ang) > 1e-4)) return;
+      if (!P.f1lean) { const b = ['Spine', 'Spine1', 'Spine2'].map(n => f1Bone(P, n)).filter(Boolean); P.f1lean = { b: b.map(x => [x, new THREE.Quaternion()]), on: false }; }
+      const L = P.f1lean; if (!L.b.length || L.on) return;
+      P.group.updateWorldMatrix(true, true);
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(P.group.getWorldQuaternion(_f1Q)), per = ang / L.b.length;
+      for (const r of L.b) r[1].copy(r[0].quaternion);
+      for (const r of L.b) { const bone = r[0], wq = bone.getWorldQuaternion(new THREE.Quaternion());
+        wq.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, per)); const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion());
+        bone.quaternion.copy(pq.invert().multiply(wq)); bone.updateWorldMatrix(false, true); }
+      L.on = true;
+    }
+
+    /* ================================================================ A CLIMB UP THE STAIR (the plan's 9.1, 24 to 34 s: "the
+       stair, climbing behind Marcus and Grandmaster Pho"). Nobody in the game has a take that climbs, and a walk slid up the
+       treads is not a climb (every foot would go through a riser: feetscan reads it). So a climb is MADE from the body's own
+       walk: its upper body and its arms are the walk's, at the walk's own pace of two steps a cycle (one step a tread, the
+       cadence a climb has), the body carried up the flight along the treads' nosing line, and EACH FOOT SET ON ITS TREAD by
+       the leg's own two bones (the machinery's armTo, a two-bone solve about the knee's own forward): the foot that stands
+       flat on the tread its step reached, the other lifted over the nose of the riser in an arc onto the tread two above.
+       Each foot keeps the turn the walk gives it (heel down at the strike, the toe off as it leaves), so the walk's own
+       roll of the foot is kept. The legs' turns are laid after the mixer and taken back before it runs again (v11.5); a
+       body with grafted shins under a robe (Grandmaster Pho's, LegGraftUp/Low) has them carried with its legs by the same
+       turn (chapter 5's seatLegsLay). The stair: STAIR (b_world.js), 19 risers of 0.2026 m, treads 0.235 m, the bottom
+       riser at x 0.95, going -x to the landing at x -3.28, its middle line z -3.72 */
+    const CLIMB1 = { rise: -GY / STAIR.risers, run: 0.235, x1: STAIR.x1, z: -3.72, n: STAIR.risers };
+    const treadX = (q) => CLIMB1.x1 - (q - 0.5) * CLIMB1.run;                 // the middle of tread q (1..19) along the flight
+    const treadY = (q) => GY + Math.max(0, Math.min(CLIMB1.n, q)) * CLIMB1.rise;  // the top of tread q (0 the bottom, 19 the landing)
+    const _cl = { a: new THREE.Vector3(), b: new THREE.Vector3(), q: new THREE.Quaternion(), q2: new THREE.Quaternion(), q3: new THREE.Quaternion() };
+    function climbLegs(P) {
+      if (P.f1legs !== undefined) return P.f1legs;
+      P.f1legs = null;
+      const R = {};
+      for (const S0 of ['Left', 'Right']) { const up = f1Bone(P, S0 + 'UpLeg'), fore = f1Bone(P, S0 + 'Leg'), foot = f1Bone(P, S0 + 'Foot'); if (!up || !fore || !foot) return null;
+        R[S0] = { up, fore, hand: foot, gUp: f1Bone(P, S0 + 'LegGraftUp'), gLow: f1Bone(P, S0 + 'LegGraftLow'), save: null }; }
+      /* when in the walk each foot is flattest and lowest: its middle of stance (the walk's own time) */
+      const A = P.acts.Walking; if (!A) return null;
+      const d = A.getClip().duration, low = { Left: [Infinity, 0], Right: [Infinity, 0] }, keep = {};
+      for (const k in P.acts) keep[k] = [P.acts[k].time, P.acts[k].getEffectiveWeight()];
+      for (const k in P.acts) P.acts[k].setEffectiveWeight(k === 'Walking' ? 1 : 0);
+      for (let i = 0; i < 40; i++) { A.time = d * i / 40; P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+        for (const S0 of ['Left', 'Right']) { R[S0].hand.getWorldPosition(_cl.a); P.group.worldToLocal(_cl.a); if (_cl.a.y < low[S0][0]) low[S0] = [_cl.a.y, d * i / 40]; } }
+      for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); } P.mixer.update(0);
+      P.f1legs = { R, d, mid: { Left: low.Left[1], Right: low.Right[1] }, ankle: Math.max(0.04, Math.min(low.Left[0], low.Right[0])), on: false };
+      return P.f1legs;
+    }
+    /* before the body's mixer runs again: the legs as the mixer wrote them */
+    function climbBack(P) { const L = P.f1legs; if (!L || !L.on) return; for (const S0 in L.R) { const r = L.R[S0]; if (!r.save) continue;
+      r.up.quaternion.copy(r.save[0]); r.fore.quaternion.copy(r.save[1]); r.hand.quaternion.copy(r.save[2]); if (r.gUp) r.gUp.quaternion.copy(r.save[3]); if (r.gLow) r.gLow.quaternion.copy(r.save[4]); } L.on = false; }
+    /* the body at climb position `s` (treads climbed, a real number: 0 at the foot of the flight, 19 on the landing), facing
+       up the flight (-x). Answers the height its group stands at */
+    function climbPose(P, s, o = {}) {
+      if (!P || !P.ready) return;
+      const L = climbLegs(P); climbBack(P);
+      const ry = -Math.PI / 2, zc = (o.z != null ? o.z : CLIMB1.z);
+      /* (the walk's time: one step a tread, two a cycle, so that the foot the step stands on is at its own middle of stance
+         halfway through the step; the left foot stands on the odd treads) */
+      const d = L ? L.d : 1.03, ph = L ? L.mid.Left - 0.75 * d : 0;
+      const ss = Math.max(0, Math.min(CLIMB1.n, s));
+      /* (the body over the treads it stands between: its group a third of a tread behind the foot that stands, on the line of
+         the nosings, so the hips are never further from either foot than the leg reaches) */
+      const xb = s <= 0 ? CLIMB1.x1 + 0.12 : Math.min(CLIMB1.x1 + 0.12, treadX(ss - 0.15));
+      const yb = GY + Math.max(0, Math.min(CLIMB1.n, ss - 0.35)) * CLIMB1.rise;
+      put(P, xb, zc, ry, s <= 0 ? GY : yb);
+      const moving = o.moving !== false;
+      pose(P, 'Walking', ph + ss * d / 2, true);
+      if (!L || !moving || s <= 0.02) return;
+      P.group.updateWorldMatrix(true, true);
+      const n = Math.floor(ss), u = ss - n;
+      for (const S0 of ['Left', 'Right']) {
+        const r = L.R[S0]; r.save = r.save || [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
+        r.save[0].copy(r.up.quaternion); r.save[1].copy(r.fore.quaternion); r.save[2].copy(r.hand.quaternion); if (r.gUp) r.save[3].copy(r.gUp.quaternion); if (r.gLow) r.save[4].copy(r.gLow.quaternion);
+        /* which tread this foot stands on, or which two it swings between */
+        const odd = S0 === 'Left', stands = ((n % 2) === 1) === odd;          // stands on tread n through step n -> n+1
+        let tq, lift = 0;
+        if (stands) tq = n;
+        else { const from = n - 1, to = n + 1, w = smo(u); tq = lp(Math.max(0, from), Math.min(CLIMB1.n, to), w); lift = Math.sin(Math.PI * u) * 0.11; }
+        const tqc = Math.max(0, Math.min(CLIMB1.n, tq));
+        /* (the foot's place across the flight is the walk's own, in the body's frame; along it and up, the tread's) */
+        r.hand.getWorldPosition(_cl.a); P.group.worldToLocal(_cl.a); const side = _cl.a.x;
+        const tx = tqc <= 0 ? CLIMB1.x1 + 0.08 : treadX(tqc), ty = (stands ? treadY(Math.round(tqc)) : Math.max(treadY(Math.floor(tqc + 1e-6)), lp(treadY(Math.max(0, n - 1)), treadY(Math.min(CLIMB1.n, n + 1)), smo(u)))) + L.ankle + lift;
+        _cl.b.set(side, 0, 0).applyQuaternion(P.group.quaternion);
+        const target = new THREE.Vector3(tx + _cl.b.x, ty, zc + _cl.b.z);
+        /* (the foot keeps its own turn in the world as the walk had it) */
+        r.hand.getWorldQuaternion(_cl.q);
+        const upW0 = r.up.getWorldQuaternion(new THREE.Quaternion()), foW0 = r.fore.getWorldQuaternion(new THREE.Quaternion());
+        /* (a grafted shin's own turn in the world, before the leg moves: it is set after to the leg's change of turn laid on
+           this, so it follows its leg once, whether it hangs from the leg or beside it) */
+        const gUpW0 = r.gUp ? r.gUp.getWorldQuaternion(new THREE.Quaternion()) : null, gLowW0 = r.gLow ? r.gLow.getWorldQuaternion(new THREE.Quaternion()) : null;
+        r.fore.getWorldPosition(_cl.a); const pole = _cl.a.clone().add(new THREE.Vector3(-0.6, 0.1, 0));   // the knee forward, up the flight
+        armTo(r, target, pole);
+        r.hand.parent.getWorldQuaternion(_cl.q2); r.hand.quaternion.copy(_cl.q2.invert().multiply(_cl.q)); r.hand.updateWorldMatrix(false, true);
+        if (r.gUp) { const dq = r.up.getWorldQuaternion(new THREE.Quaternion()).multiply(upW0.invert()), w = gUpW0.premultiply(dq); r.gUp.parent.getWorldQuaternion(_cl.q2); r.gUp.quaternion.copy(_cl.q2.invert().multiply(w)); r.gUp.updateWorldMatrix(false, true); }
+        if (r.gLow) { const dq = r.fore.getWorldQuaternion(new THREE.Quaternion()).multiply(foW0.invert()), w = gLowW0.premultiply(dq); r.gLow.parent.getWorldQuaternion(_cl.q2); r.gLow.quaternion.copy(_cl.q2.invert().multiply(w)); r.gLow.updateWorldMatrix(false, true); }
+      }
+      L.on = true;
+    }
+    /* how many treads a climber has climbed at film time t: from `t0` at `cad` seconds a tread, starting with `s0` climbed,
+       standing still through [p0, p1] (Marcus stops to look back down; those behind him wait), never past the landing */
+    function climbAt(t, t0, cad, s0, p0, p1) {
+      let tw = Math.max(0, t - t0); if (p1 > p0 && t > p0) tw -= Math.min(t, p1) - Math.max(p0, t0) > 0 ? Math.min(t, p1) - Math.max(p0, t0) : 0;
+      return Math.min(CLIMB1.n, s0 + Math.max(0, tw) / cad);
+    }
+
+    /* ================================================================ THE PEOPLE ONLY THE FILMS SHOW
+       GRANDMASTER PHO STANDING (`FILMSAPI.phoStand`; FILMS-2 stands him at the dawn with it): episode 4 chapter 5's standing
+       body exactly, its every posture law (c_cast.js copies them: PHO_STAND_*), p5pho, his copy with finger bones (declared:
+       z_tail.js). His rest is the end of his rise from a seat (both arms down, a slow breath), his talk the library's open
+       hands with his head greatly restrained, his walk his own file's. Hidden unless a film shows him; he and the seated
+       cast.pho are never both drawn (a swap is made on a cut or in a shot that cannot see it: v24.12) */
+    const phoStand = mkPerson('p5pho', 0, 0, 0, { take: 'Sit_to_Stand_Transition_M', hidden: true,
+      win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
+      centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD, pace: true,
+      upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES,
+      armOut: PHO_ARM_OUT });
+    const PHO_REST1 = ['Sit_to_Stand_Transition_M', 5.85, 0, false];
+    /* his rest, breathing a little round its moment (a pure function of the clock) */
+    const phoRest1 = (t) => ['Sit_to_Stand_Transition_M', f1Ping(t, 5.85, 0.22, PHO_BREATH), 0, false];
+    /* THE TAXI'S DRIVER (v24.22: every moving vehicle has its driver): a man at the wheel on the right, as Singapore drives,
+       seen only through the windscreen as the taxi draws in (the crane, 13 to 15.5 s). The collector of episode 4 chapter
+       5's last case, at night behind tinted glass (declared: z_tail.js), his seated take's quiet window, his hands laid on
+       the wheel; carried in the taxi's own group, so he goes where it goes */
+    const driver1 = mkPerson('p5collector', 0, 0, 0, { take: 'Sitting_Answering_Questions', hidden: true, centre: true, skins: false,
+      win: { Sitting_Answering_Questions: [0.2, 0.6, 9] }, blobW: 0.01, blobD: 0.01, noBlob: true, parent: things.taxi || world });
+
+    /* ---------------------------------------------------------------- THE FILMS' OWN THINGS (each a real model the
+       chapter keys: v25.2), stood hidden and shown by the film that needs it: Marcus's phone in his hand on the five-foot
+       way, Grace's in hers at the door and on the cloth in the cord, Grandmaster Pho's cloth bag on his shoulder, the bowl
+       in HIS hands (drawn in the hands' pass: kit.hold), his keycard. FILMSAPI.props hands them to the play, so nothing is
+       made twice (FILMS.md) */
+    const nowhere1 = new THREE.Group(); nowhere1.name = 'the films\' things not drawn';
+    const PROPS1 = {
+      mkPhone: stand('w51phone', 0, -50, 0, 0, { parent: world }),
+      grPhone: stand('w51phone', 0, -50, 0, 0, { parent: world }),
+      phoBag: stand('w51phobag', 0, -50, 0, 0, { parent: world }),
+      keycard: stand('w51keycard', 0, -50, 0, 0, { parent: world }),
+      /* the small corked bottle: on the cloth as his teacher fills and corks it (the cord), then in his hands (the hands'
+         pass); the one on his altar is the world's (things.bottle) */
+      clothBottle: stand('w51bottle', 0, -50, 0, 0, { parent: world, done: (m) => glassOff1(m) }),
+      handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) }),
+      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3, done: (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); }) })
+    };
+    for (const k of ['mkPhone', 'grPhone', 'phoBag', 'keycard', 'clothBottle']) PROPS1[k].visible = false;
+    /* (THINGS-2: a material named glass is drawn without writing depth, so what stands behind it is drawn) */
+    function glassOff1(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && /glass/i.test(mt.name || '')) { mt.depthWrite = false; mt.transparent = true; } }); }
+    /* THE WATER IN HIS HANDS: a disc at the bowl's water line (drawn in the hands' pass with it), the candle's reflection a
+       warm point on it, and a ring that spreads across it (the cord's one ring): its own picture */
+    const ringTex1 = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+      const g = x.createRadialGradient(64, 64, 40, 64, 64, 62); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.55, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); })();
+    const waterMat1 = new THREE.MeshBasicMaterial({ color: 0x1c2630, transparent: true, opacity: 0.72, depthWrite: false }); mats.push(waterMat1);
+    const water1 = new THREE.Mesh(new THREE.CircleGeometry(1, 40), waterMat1); water1.rotation.x = -Math.PI / 2; owned.push(water1.geometry);
+    const ringMat1 = new THREE.MeshBasicMaterial({ map: ringTex1, color: 0xfff0d8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(ringMat1);
+    const ring1 = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), ringMat1); ring1.rotation.x = -Math.PI / 2; owned.push(ring1.geometry);
+    const glintMat1 = new THREE.SpriteMaterial({ map: glowTex, color: 0xffc070, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(glintMat1);
+    const glint1 = new THREE.Sprite(glintMat1);
+    whenThing1(PROPS1.handBowl, (g, m) => { const bb = new THREE.Box3().setFromObject(m), w = Math.max(0.05, Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z));
+      const y = bb.min.y + (bb.max.y - bb.min.y) * 0.62, r = w * 0.4;
+      water1.scale.setScalar(r); water1.position.set((bb.min.x + bb.max.x) / 2 - g.position.x, y - g.position.y, (bb.min.z + bb.max.z) / 2 - g.position.z);
+      ring1.position.copy(water1.position); ring1.position.y += 0.002; glint1.position.copy(water1.position); glint1.position.y += 0.004; glint1.position.x -= r * 0.25; glint1.scale.set(r * 0.5, r * 0.5, 1);
+      PROPS1.bowlR = r; g.add(water1); g.add(ring1); g.add(glint1); });
+    /* (a thing stood by stand(): its model once it has landed) */
+    function whenThing1(g, fn) { if (!g) return; if (g.userData.model) { fn(g, g.userData.model); return; } const iv = setInterval(() => { if (!alive) { clearInterval(iv); return; } if (g.userData.model) { clearInterval(iv); fn(g, g.userData.model); } }, 250); }
+
+    /* THE RED (the plan's 4.5 and 12): the spell's one colour. The cord's wisp: a ribbon of red light leaping from the knot
+       across the table to his wrist under the bowl (a strip of sprites along a curve, its head and its fading tail a
+       function of the film's clock), and the faint ring it leaves round the wrist; drawn over what stands at its depth (a
+       sprite among bodies: v25.5 `depthTest` off) */
+    const wispMat1 = new THREE.SpriteMaterial({ map: glowTex, color: 0xff2a24, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending }); mats.push(wispMat1);
+    const wisp1 = []; const wispG1 = new THREE.Group(); wispG1.name = 'the cord\'s wisp'; wispG1.visible = false; world.add(wispG1);
+    for (let i = 0; i < 26; i++) { const sp = new THREE.Sprite(wispMat1.clone()); mats.push(sp.material); sp.renderOrder = 9; wispG1.add(sp); wisp1.push(sp); }
+    const wristMat1 = new THREE.MeshBasicMaterial({ map: ringTex1, color: 0xff3a30, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending }); mats.push(wristMat1);
+    const wristRing1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), wristMat1); wristRing1.renderOrder = 10; owned.push(wristRing1.geometry);
+    /* THE KNOT'S GLOW (the room's red, in Spirit Vision): the play's; the films lay a dull red glow on the packet's knot
+       while it is the subject */
+    const knotGlow1 = glow(0, -50, 0, 0.12, 0xff3020, 0, world, null);
+    /* THE AIR-CONDITIONER'S SMALL BLUE LIGHT over his bed (the plan's 9.4: "the air-conditioner's blue light") */
+    const acLed1 = glow(HIS.aircon.x - 0.18, HIS.aircon.y - 0.1, HIS.aircon.z + 0.32, 0.035, 0x58a8ff, 0, hisG, null);
+    /* THE TAXI'S LIGHTS (painted: v9.4): its headlamps and the kerbside indicator, carried with it */
+    const taxiLamps1 = { L: glow(0, -50, 0, 0.5, 0xfff0d0, 0, world, null), R: glow(0, -50, 0, 0.5, 0xfff0d0, 0, world, null), ind: glow(0, -50, 0, 0.28, 0xffa020, 0, world, null), box: null };
+    /* THE BEDSIDE CLOCK'S FACE (the plan's 9.4: 11:58, then 3:00): its digits a picture laid on the clock's own face, the
+       time a function of the film's clock */
+    const clockC1 = document.createElement('canvas'); clockC1.width = 128; clockC1.height = 64; const clockX1 = clockC1.getContext('2d');
+    const clockTex1 = tex(done(THREE, clockC1, false));
+    const clockMat1 = new THREE.MeshBasicMaterial({ map: clockTex1, transparent: true, opacity: 0, depthWrite: false }); mats.push(clockMat1);
+    const clockFace1 = new THREE.Mesh(new THREE.PlaneGeometry(0.075, 0.0375), clockMat1); owned.push(clockFace1.geometry); clockFace1.renderOrder = 3; hisG.add(clockFace1);
+    let clockShown1 = '';
+    function clockSet1(text) { if (text === clockShown1) return; clockShown1 = text; clockX1.clearRect(0, 0, 128, 64); clockX1.fillStyle = 'rgba(0,0,0,0)'; clockX1.fillRect(0, 0, 128, 64);
+      clockX1.fillStyle = '#7cf0b8'; clockX1.font = 'bold 40px monospace'; clockX1.textAlign = 'center'; clockX1.textBaseline = 'middle'; clockX1.fillText(text, 64, 34); clockTex1.needsUpdate = true; }
+    clockSet1('11:52');
+    whenThing1(things.bedClock, (g, m) => { const bb = new THREE.Box3().setFromObject(m), c = bb.getCenter(new THREE.Vector3());
+      /* (its face looks toward the bed: the clock is turned to it, HIS.clock.ry; laid 4 mm proud of the face's middle) */
+      const f = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), HIS.clock.ry);
+      const d = Math.max(0.005, Math.abs((bb.max.x - bb.min.x) * f.x) / 2 + Math.abs((bb.max.z - bb.min.z) * f.z) / 2);
+      clockFace1.position.set(c.x + f.x * (d + 0.004), c.y + 0.004, c.z + f.z * (d + 0.004)); clockFace1.rotation.set(0, HIS.clock.ry, 0);
+      clockFace1.scale.setScalar(Math.max(0.6, Math.min(2.2, (bb.max.y - bb.min.y) / 0.06))); });
+
+    /* ================================================================ THE FILMS */
+    const FILMS1 = {};
+    const HERDOOR1 = { x: FRONT.x0, z: HER.door.z };
+    const GRACE_FACE_STAIRS = () => { const P = cast.grace; if (!P) return -Math.PI / 2; const g = P.group.position; return Math.atan2(-2.75 - g.x, -2.375 - g.z); };
+    /* where a film leaves everyone: the phase's stations (c_cast.js worldPhase), the reflection as the play has it */
+    function f1Stations(p) { if (typeof worldPhase === 'function') worldPhase(p, false); }
+
+    /* ================================================================ THE OPENING · "Blue hour" (the plan's 9.1; its clock
+       OP51, z_tail.js). Black, the street; the CRANE down the shophouse row (the one shot that is not his eyes: it watches
+       Marcus wait for them), her lit windows behind half-open shutters, the fan's shadow on her ceiling, down to the five-foot
+       way where Marcus waits by the stair door, his phone in his hand, and a taxi draws in. HIS EYES out of the taxi: his
+       teacher ahead in white, the cloth bag on his shoulder; Marcus comes to meet them, looks up at her windows; the stair,
+       climbing behind the two, the tube flickering twice, Marcus looking back down at the street door; the landing, her
+       door, Grace with her phone, her eyes going past them down the stairs; inside, his teacher at the low table spreading
+       his white cloth, he kneels by her windows, and in the black glass her reflection faces the stairs; black, the card */
+    const OPEN1 = {
+      marcus0: { x: 1.62, z: -2.85, ry: Math.PI / 2 + 0.55 },             // by the stair door, turned toward the road and the taxi's lights
+      meet:    { x: 2.15, z: -2.5 },                                      // where he comes to meet them
+      phoOut:  [[3.5, -1.12], [3.1, -1.42], [2.78, -1.72]],               // his teacher out of the taxi first, a step ahead on the five-foot way
+      eyeOut:  [[3.6, -1.05], [3.4, -1.2], [3.15, -1.45]],                // his own steps out (a metre a second), from beside the taxi's door
+      stairIn: [[2.15, -2.5], [1.55, -3.55], [1.12, -3.72]],              // Marcus to the stair door and in
+      phoIn:   [[2.78, -1.72], [2.05, -2.85], [1.5, -3.62], [1.12, -3.72]],
+      /* (the landing: his eye at the top of the stair; Marcus at the hinge end of her door, at the picture's left on a desk;
+         his teacher on the lobby's far side, at its right; Grace in the doorway's middle) */
+      land:    { eye: [-3.66, EYE, -3.34], marcus: { x: -3.14, z: -2.8, ry: Math.PI / 2 }, pho: { x: -3.78, z: -2.12, ry: Math.PI / 2 + 0.35 }, grace: { x: -2.3, z: -2.36, ry: -Math.PI / 2 } },
+      inEye:   [[-1.55, 1.95], [-1.05, 2.32], [0.95, 2.36], [1.45, 2.0]],   // inside, along her room's north side (his teacher at the left), to his place
+      graceIn: { x: -2.22, z: -2.18, ry: Math.PI / 2 },                  // just inside her door, facing the room
+      graceSofa: [[-2.22, -2.18], [-0.75, -1.35], [-0.45, 0.32], [0.38, 0.42]],
+      marcusIn: [[-2.25, -2.1], [-1.75, -1.55], [-1.6, -1.05]]
+    };
+    FILMS1.open = {
+      begin(api, s) {
+        F1.s = s; F1.lit = ''; F1.film = 'open'; F1.once = new Set();
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        f1Show(cast.pho, false); f1Show(phoStand, true); f1Show(cast.grace, false); f1Show(cast.marcus, true); f1Show(driver1, true);
+        if (WORLD.reflect) WORLD.reflect.strength(0);
+      },
+      frame(t) {
+        const T = OP51; F1.t = t;
+        /* THE LIGHT: blue hour on the street and the stair; her room's lamps from the cut inside (v16.1: in the black) */
+        f1Look(t < T.inn ? 'BLUE' : 'LAMP');
+        f1Beds({ flat: t >= T.inn ? (1 - 0.45 * f1Env(t, T.m3b, T.m3b + 2.4, 0.5, 0.9)) * (1 - smo(c01((t - T.black) / 1.2))) : t >= T.land ? 0.3 : 0,
+                 m3: 0.7 * f1Env(t, T.look - 0.2, T.look + 3.2, 0.8, 1.6) + 0.85 * f1Env(t, T.m3b, T.black + 0.6, 0.8, 1.4) });
+        /* THE TAXI: draws in from up the street at 13 s (its lamps, its indicator), stands while they get out, and pulls away
+           once his door shuts (gone up the street by 20 s); its driver at the wheel */
+        taxiFrame1(t, T);
+        /* HER PLACE AS IT STANDS: the street door shut until Marcus opens it; the tube on the stair, flickering twice; her door
+           shut until she opens it; her shutters as the play keeps them; the cloth laid by his teacher inside */
+        WORLD.streetDoor(smo(c01((t - T.turn - 0.25) / 0.7)) * (1 - smo(c01((t - T.climb - 1.6) / 1.2))));
+        { const d = t - T.tube; WORLD.stairTube(d > 0 && d < 0.9 ? (d < 0.12 || (d > 0.3 && d < 0.42) ? 0.08 : 1) : 1); }
+        WORLD.herDoor(t < T.lock + 0.15 ? 0 : t < T.inn ? 0.86 * smo(c01((t - T.lock - 0.15) / 1.3)) : 0);
+        WORLD.cloth(t < T.inn ? 0 : smo(c01((t - T.cloth + 0.3) / 1.4)));
+        WORLD.candleLit('candle1', t >= T.inn ? true : null);
+        /* the reflection is the room's own only from where he kneels (WORLD.md): walking in, the glass shows nobody where he
+           stands, so it is down while he walks and comes up once he kneels, in a turn that cannot see the glass */
+        if (WORLD.reflect) WORLD.reflect.strength(t < T.kneel ? 0 : 1);
+        /* THE PEOPLE */
+        openMarcus1(t, T); openPho1(t, T); openGrace1(t, T);
+        /* THE LENS */
+        f1Track(t, openKeys1(T));
+        /* (his steps on the five-foot way and the stair carry a small bob of the eye; kneeling eases it down) */
+        if (t > T.out && t < T.mk1 - 0.2) yaw.position.y += -0.016 * Math.abs(Math.sin((t - T.out) * Math.PI / 0.55)) * smo(c01((t - T.out - 0.6) / 0.4));
+        if (t > T.inn && t < T.kneel) yaw.position.y += -0.014 * Math.abs(Math.sin((t - T.inn) * Math.PI / 0.55));
+        f1Levels();
+      },
+      end() { f1Lens(PLAYFOV1); f1VisionOff(); F1.beds = null; F1.film = '';
+        f1Show(phoStand, false); f1Show(driver1, false); f1Show(cast.pho, true); f1Show(cast.grace, true); f1Show(cast.marcus, true);
+        for (const k of ['mkPhone', 'grPhone', 'phoBag']) { PROPS1[k].visible = false; f1Drop(PROPS1[k], 0, -50, 0); }
+        WORLD.streetDoor(0); WORLD.herDoor(0); WORLD.cloth(1); WORLD.light('tube', null); WORLD.candleLit('candle1', null);
+        if (WORLD.reflect) { WORLD.reflect.strength(1); WORLD.reflect.set('grace', { face: null, turn: 0 }); }
+        taxiPark1(); f1Stations('room'); }
+    };
+    /* THE TAXI'S WAY: from z 22 up the street at 7 m a second, slowing to stand at its stop (z -1.6) by 14.85 s; away up the
+       street from 15.9 s, gathering speed. Its group's place a function of the clock */
+    const TAXI1 = { x: 4.55, z: -1.6, ry: Math.PI };
+    function taxiZ1(t, T) {
+      const a0 = T.taxi - 0.6, a1 = T.stop, z0 = 24.0;
+      if (t < a0) return z0;
+      if (t < a1) { const u = (t - a0) / (a1 - a0); return lp(z0, TAXI1.z, 1 - (1 - u) * (1 - u)); }   // (slowing all the way in: a car pulling up)
+      const g = t - (T.door + 0.3); if (g <= 0) return TAXI1.z;
+      return TAXI1.z - 0.5 * 2.6 * g * g;                                                              // (away, 2.6 m a second each second)
+    }
+    function taxiFrame1(t, T) {
+      const g = things.taxi; if (!g) return;
+      const z = taxiZ1(t, T), shown = t < T.door + 6.0 && z > -40;
+      g.position.set(TAXI1.x, GY - 0.15, z); g.rotation.y = TAXI1.ry; g.visible = shown;
+      /* (its lamps, at its front corners by its own box once it has landed) */
+      const m = g.userData.model;
+      if (m && !taxiLamps1.box) { const bb = new THREE.Box3(); m.updateWorldMatrix(true, true); const inv = new THREE.Matrix4().copy(g.matrixWorld).invert();
+        m.traverse(q => { if (q.isMesh && q.geometry) { if (!q.geometry.boundingBox) q.geometry.computeBoundingBox(); bb.union(q.geometry.boundingBox.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, q.matrixWorld))); } });
+        taxiLamps1.box = bb;
+        /* (the driver in the seat on the car's right, as Singapore drives: the car's own +z is its front, its right is -x) */
+        if (driver1.group.parent === g) { driver1.group.position.set(bb.min.x + (bb.max.x - bb.min.x) * 0.28, bb.min.y + 0.12, bb.min.z + (bb.max.z - bb.min.z) * 0.5); driver1.group.rotation.y = 0; } }
+      const B = taxiLamps1.box, lit = shown && t < T.door + 6.0 ? 1 : 0;
+      for (const [k, sx] of [['L', 0.82], ['R', 0.18]]) { const L = taxiLamps1[k];
+        if (B) { const p = new THREE.Vector3(lp(B.min.x, B.max.x, sx), B.min.y + (B.max.y - B.min.y) * 0.38, B.max.z + 0.02).applyMatrix4(g.matrixWorld); L.q.position.copy(p); }
+        L.m.opacity = 0.75 * lit; L.q.visible = lit > 0; }
+      { const L = taxiLamps1.ind, on = shown && t > T.taxi - 0.4 && t < T.door + 4.0 && (Math.floor((t - T.taxi) / 0.36) % 2 === 0);
+        if (B) { const p = new THREE.Vector3(B.max.x - 0.04, B.min.y + (B.max.y - B.min.y) * 0.42, B.max.z - 0.05).applyMatrix4(g.matrixWorld); L.q.position.copy(p); }
+        L.m.opacity = on ? 0.9 : 0; L.q.visible = on; }
+      whenReady(driver1, (P) => { if (!g.visible) { P.group.visible = false; return; } P.group.visible = !P.hidden; pose(P, 'Sitting_Answering_Questions', 0.3 + 0.1 * Math.sin(t * 0.7), false);
+        /* his hands on the wheel's rim before him (the car's own frame: the wheel 0.42 m before his hips, 0.32 up) */
+        P.group.updateWorldMatrix(true, true); const h = P.hips; if (!h) return; h.getWorldPosition(_f1A);
+        const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(g.getWorldQuaternion(_f1Q)), rt = new THREE.Vector3(-1, 0, 0).applyQuaternion(_f1Q);
+        for (const [sd, sgn] of [['L', -1], ['R', 1]]) { const w = _f1A.clone().addScaledVector(fw, 0.46).addScaledVector(rt, sgn * 0.17); w.y += 0.36;
+          handTo(P, sd, [w.x, w.y, w.z], [fw.x * 0.3, 0.6, fw.z * 0.3], [-rt.x * sgn, 0, -rt.z * sgn], 1, { out: 0.16, down: 0.3 }); } });
+    }
+    function taxiPark1() { const g = things.taxi; if (g) { g.position.set(TAXI1.x, GY - 0.15, TAXI1.z); g.rotation.y = TAXI1.ry; g.visible = true; }
+      for (const k of ['L', 'R', 'ind']) { taxiLamps1[k].m.opacity = 0; taxiLamps1[k].q.visible = false; } f1Show(driver1, false); }
+    /* MARCUS: waiting by the stair door, his phone in his hand; he looks up the street at the taxi's lights, comes to meet
+       them, says his line; looks up at her windows (M3); turns to the stair door and in; the climb ahead of them, a stop to
+       look back down at the street door; at her door: two knocks, his line; in, to his chair by the door */
+    const MK_REST1 = ['Idle_3', 1.4, 0.32, true];
+    function openMarcus1(t, T) {
+      const P = cast.marcus; if (!P || !P.ready) return;
+      if (t < T.stair) {
+        const st = OPEN1.marcus0;
+        if (t < T.mk1 - 1.4) { put(P, st.x, st.z, f1Turn(t, T.taxi - 0.2, T.taxi + 1.2, st.ry, faceTo(st.x, st.z, 4.4, 2.0)), GY); pose(P, MK_REST1[0], MK_REST1[1] + t * MK_REST1[2], true);
+          f1Gaze(P, t, [[0, [3.6, GY + 1.5, -1.4]], [3.2, [2.0, GY + 0.95, -2.55], 0.8], [9.0, [4.0, GY + 1.4, 4.0], 0.9], [T.taxi - 0.1, () => [TAXI1.x - 0.6, GY + 1.0, taxiZ1(t, T)], 0.7]], 0.85, 0.75, 0.05);
+          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+        } else if (t < T.turn) {
+          const walked = f1Walk(P, t, T.mk1 - 1.4, [[st.x, st.z], [OPEN1.meet.x, OPEN1.meet.z]], 0.9, MK_REST1, faceTo(OPEN1.meet.x, OPEN1.meet.z, 2.95, -1.6), { y: GY, ry0: P.group.rotation.y });
+          if (!walked && t > T.mk1 - 0.3) { put(P, OPEN1.meet.x, OPEN1.meet.z, faceTo(OPEN1.meet.x, OPEN1.meet.z, 2.95, -1.6), GY);
+            f1Speak(P, t, MK_REST1, [[T.mk1, SECS.mk51o1, 'Stand_and_Chat', 0.55]]); }
+          /* his look: to his teacher as he speaks, then up at her windows (M3), then to the stair door */
+          f1Gaze(P, t, [[T.mk1 - 1.4, [2.8, GY + 1.55, -1.7]], [T.look, [3.2, GY + 4.6, -1.3], 1.1], [T.turn - 0.4, [1.15, GY + 1.3, -3.7], 0.6]], 0.9, 0.9, 0.0);
+          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+        } else {
+          f1Walk(P, t, T.turn, OPEN1.stairIn, 1.0, MK_REST1, -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
+          PROPS1.mkPhone.visible = false;
+        }
+        return;
+      }
+      if (t < T.land) {
+        /* (the climb: two treads ahead of his teacher at the cut, a tread every half second; at the flicker he stops and looks
+           back down at the street door, then climbs on) */
+        const s = climbAt(t, T.stair, 0.5, 4.5, T.tube, T.tube + 1.4);
+        climbPose(P, s);
+        const back = f1Env(t, T.tube + 0.1, T.tube + 1.5, 0.35, 0.4);
+        if (back > 0.001) lookNow(P, [1.15, GY + 1.2, -3.72], back * 0.95, 1.05, 0.0);
+        PROPS1.mkPhone.visible = false;
+        return;
+      }
+      if (t < T.inn) {
+        /* AT HER DOOR: the knock (his written take's rising window, where his hand is at the height of a door's knocking),
+           his line to the door, a step aside to let his teacher in first, then in after him */
+        const L = OPEN1.land.marcus;
+        if (t < T.ph2 + 0.6) {
+          put(P, L.x, L.z, L.ry, 0);
+          f1Speak(P, t, MK_REST1, [[T.mk2, SECS.mk51o2, 'Stand_and_Chat', 0.55]]);
+          /* (his written knock goes above his head: people/RECORD.md 9. So the knock is his hand's own: raised to the door's
+             leaf at 1.42 m, the knuckles meeting it at the sound's two knocks, 0.29 s apart) */
+          const kk = f1Env(t, T.knock - 0.55, T.knock + 0.75, 0.4, 0.4);
+          if (kk > 0.001) { const tap = (d) => Math.exp(-((d * d) / 0.0025)), back = 0.06 * (1 - Math.max(tap(t - T.knock), tap(t - T.knock - 0.29)));
+            handTo(P, 'R', [FRONT.x0 - 0.04 - back, 1.42, HER.door.hingeZ + 0.3], [0.15, 1, 0.05], [1, 0, 0], kk, { out: 0.22, down: 0.3 }); }
+          f1Gaze(P, t, [[T.land, [-2.75, 1.5, -2.3]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [-3.78, 1.5, -2.32], 0.7]], 0.8, 0.8, 0.0);
+        } else {
+          f1Walk(P, t, T.ph2 + 1.9, [[L.x, L.z], [-2.75, -2.32], [-2.1, -1.95]], 0.9, MK_REST1, null, { ry0: L.ry });
+        }
+        return;
+      }
+      /* INSIDE: to the rattan chair by the door, and seated (the play's station) before the lens can see that corner, in the
+         glass or out of it (the glass is down while he walks: above) */
+      if (t < T.inn + 2.6) { f1Walk(P, t, T.inn - 0.6, OPEN1.marcusIn, 0.9, MK_REST1, HER.rattan.ry, {}); return; }
+      const st = STATION.room.marcus; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
+      if (P.acts.Sitting_Answering_Questions) pose(P, 'Sitting_Answering_Questions', 0.6 + 0.4 * Math.sin(t * 0.7), false);
+    }
+    /* GRANDMASTER PHO, STANDING: out of the taxi first and a step ahead on the five-foot way, the cloth bag on his
+       shoulder; his answer to Marcus; up the stair behind him; on the landing behind Marcus, his thank you to Grace; in. From
+       the cut inside he is the seated cast.pho at his cushion (the swap made on the cut: v24.12) */
+    function openPho1(t, T) {
+      const P = phoStand;
+      if (t >= T.inn) { f1Show(P, false); PROPS1.phoBag.visible = false; openPhoSeated1(t, T); return; }
+      f1Show(cast.pho, false);
+      if (!P.ready) return;
+      /* (out of the taxi first, and seen only from the cut to his eyes: nobody gets out under the crane, whose taxi has no
+         door that opens) */
+      const out = t >= T.out - 0.02;
+      P.group.visible = out && !P.hidden; if (!out) { PROPS1.phoBag.visible = false; return; }
+      if (t < T.stair) {
+        if (t < T.ph1 + SECS.ph51o1 + 0.2) {
+          f1Walk(P, t, T.out - 0.4, OPEN1.phoOut, 0.95, phoRest1(t), faceTo(2.78, -1.72, OPEN1.meet.x, OPEN1.meet.z), { y: GY });
+          const g = P.group.position;
+          if (Math.hypot(g.x - OPEN1.phoOut[2][0], g.z - OPEN1.phoOut[2][1]) < 0.02) f1Speak(P, t, phoRest1(t), [[T.ph1, SECS.ph51o1]]);
+          f1Gaze(P, t, [[T.stop, [2.4, GY + 1.6, -2.3]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [2.15, GY + 1.6, -2.5], 1.58), 0.8], [T.look + 0.4, [3.2, GY + 4.6, -1.3], 1.2], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
+        } else f1Walk(P, t, T.ph1 + SECS.ph51o1 + 0.2, OPEN1.phoIn, 0.9, phoRest1(t), -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
+      } else if (t < T.land) {
+        climbPose(P, climbAt(t, T.stair, 0.5, 1.2, T.tube + 0.2, T.tube + 1.6));
+      } else {
+        const L = OPEN1.land.pho;
+        if (t < T.ph2 + SECS.ph51o2 + 0.3) { put(P, L.x, L.z, L.ry, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
+          f1Gaze(P, t, [[T.land, [-2.75, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02); }
+        else f1Walk(P, t, T.ph2 + SECS.ph51o2 + 0.3, [[L.x, L.z], [-2.95, -2.3], [-2.3, -1.8]], 0.85, phoRest1(t), null, { ry0: L.ry });
+      }
+      /* the cloth bag on his left shoulder, hung at his right hip by its strap (it goes where his body goes) */
+      phoBagOn1(P);
+    }
+    function phoBagOn1(P) {
+      const g = PROPS1.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
+      const sh = f1Bone(P, 'Spine2') || f1Bone(P, 'Spine1') || P.hips; if (!sh) return;
+      P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A);
+      const ry = P.group.rotation.y, rt = new THREE.Vector3(-Math.cos(ry), 0, Math.sin(ry)), fw = new THREE.Vector3(Math.sin(ry), 0, Math.cos(ry));
+      if (g.parent !== world) world.attach(g);
+      g.position.copy(_f1A).addScaledVector(rt, 0.2).addScaledVector(fw, -0.02); g.position.y -= 0.52;
+      g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
+    }
+    /* his teacher seated, from the cut inside: at the low table spreading his white cloth over it as the lens comes in, then
+       at rest, his hands in his lap (the play's seat) */
+    function openPhoSeated1(t, T) {
+      const P = cast.pho; f1Show(P, true); if (!P || !P.ready) return;
+      const st = STATION.room.pho; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
+      pose(P, 'Sit_to_Stand_Transition_M', 0.02 + 0.01 * Math.sin(t * 0.9), false);
+      const k = f1Env(t, T.inn - 0.4, T.cloth + 1.5, 0.3, 0.6);
+      if (k > 0.001) { const u = smo(c01((t - T.cloth + 0.3) / 1.4)), tz = lp(HER.table.z + 0.05, HER.table.z - 0.2, u);
+        for (const [sd, dx] of [['L', 0.3], ['R', -0.3]]) handTo(P, sd, [st.x + dx * (0.75 + 0.35 * u), CLOTH_Y + 0.03, tz], [0, -0.25, -1], [0, 1, 0], k, { out: 0.22, down: 0.25 }); }
+    }
+    /* GRACE: at her door when it opens, her phone in her hand, her eyes going past them down the stairs as she steps back;
+       inside, standing just inside the door facing the room, her reflection facing the stairs; then to the sofa (the play's
+       place), her reflection turning to follow a beat late */
+    const GR_REST1 = ['Idle_3', 2.2, 0.3, true];
+    function openGrace1(t, T) {
+      const P = cast.grace; if (!P) return;
+      const shown = t > T.lock + 0.2; f1Show(P, shown); if (!shown) { PROPS1.grPhone.visible = false; if (WORLD.reflect) WORLD.reflect.set('grace', { face: null }); return; }
+      if (!P.ready) return;
+      if (t < T.inn) {
+        const L = OPEN1.land.grace, back = smo(c01((t - T.ph2 - 0.4) / 1.4));
+        put(P, lp(L.x, L.x + 0.55, back), lp(L.z, L.z + 0.4, back), L.ry + 0.25 * back, 0);
+        f1Speak(P, t, GR_REST1, [[T.gr1, SECS.gr51o1, 'Idle_3']]);
+        /* her look: to Marcus, to his teacher, and then past them, down the stairs */
+        f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, [-3.78, 1.55, -2.32], 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
+        f1Carry(P, 'Right', PROPS1.grPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+        return;
+      }
+      PROPS1.grPhone.visible = false;
+      const G = OPEN1.graceIn;
+      if (t < T.sofa) { put(P, G.x, G.z, G.ry, 0); pose(P, GR_REST1[0], GR_REST1[1] + t * GR_REST1[2], true);
+        if (WORLD.reflect) WORLD.reflect.set('grace', { face: GRACE_FACE_STAIRS(), turn: 0 }); return; }
+      /* to the sofa: her walk, and at the sofa her turn and her sitting down (her rise played backward: people/RECORD.md) */
+      const pts = OPEN1.graceSofa, wsec = f1WalkSecs(pts, 0.85), arrive = T.sofa + wsec;
+      if (t < arrive + 0.6) f1Walk(P, t, T.sofa, pts, 0.85, GR_REST1, Math.PI, { ry0: G.ry, y: 0 });
+      else { const st = STATION.room.grace, u = c01((t - arrive - 0.6) / 2.4);
+        if (P.acts.rise) { put(P, lp(pts[3][0], st.x, smo(u)), lp(pts[3][1], st.z, smo(u)), st.ry, 0); pose(P, 'rise', lp(4.9, 0.05, smo(u)), false); }
+        else put(P, st.x, st.z, st.ry, 0);
+        if (u >= 1 && P.acts.gsofa) pose(P, 'gsofa', 0.25, false); }
+      /* her reflection: it faced the stairs; it turns to follow her a beat late (0.8 s behind her own turn) */
+      if (WORLD.reflect) { const lag = smo(c01((t - T.sofa - 0.8) / 1.1)); WORLD.reflect.set('grace', { face: lag >= 1 ? null : GRACE_FACE_STAIRS() + angTo(GRACE_FACE_STAIRS(), P.group.rotation.y) * lag, turn: 0 }); }
+    }
+    /* THE OPENING'S LENS */
+    function openKeys1(T) {
+      const W = [2.75, 1.6, -0.1];                                                    // her two lit windows' middle
+      const MK = () => f1Head(cast.marcus, [OPEN1.marcus0.x, GY + 1.0, OPEN1.marcus0.z], 1.0);
+      const glass = [FILMPLACE.glass.x, FILMPLACE.glass.y, FILMPLACE.glass.z + 0.06];
+      const kneelEye = [HER.him.x, KNEEL_EYE, HER.him.z];
+      const eyeClimb = (t) => { const s = climbAt(t, T.stair, 0.5, -2.0, T.tube + 0.4, T.tube + 1.8), sc = Math.max(0, s);
+        return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), CLIMB1.z + 0.1]; };
+      return [
+        /* THE CRANE (2 to 15.5 s): from 7 m up and over the road, the row's roofline against the deep blue and her lit windows
+           in the lower half, down to Marcus by the stair door at standing height on the five-foot way, the taxi drawing in at
+           the kerb at the right */
+        { t: 0, name: 'crane', eye: [9.6, GY + 7.0, -6.2], at: [2.9, GY + 7.95, -0.4], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
+        { t: T.up, name: 'crane', eye: [9.6, GY + 7.0, -6.2], at: [2.9, GY + 7.95, -0.4], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
+        { t: T.out - 0.05, name: 'crane', eye: [2.85, GY + 1.6, -6.35], at: () => MK(), fp: 62, fd: 50,
+          hold: () => [[MK()[0], GY + 1.75, MK()[2], 0.2], [MK()[0], GY + 0.5, MK()[2], 0.2], [3.7, GY + 0.9, -1.15, 0.35]], back: 1.6 },
+        /* HIS EYES, for the first time: out of the taxi onto the five-foot way, his teacher ahead in white; Marcus coming to
+           meet them, his face held in the middle third as he speaks; up at her windows with him; to the stair door */
+        { t: T.out, name: 'out', eye: [OPEN1.eyeOut[0][0], GY - 0.15 + 1.2, OPEN1.eyeOut[0][1]], at: [2.4, GY + 1.45, -2.15], fp: 60, fd: 52, cut: true },
+        { t: T.out + 0.8, name: 'out', eye: [OPEN1.eyeOut[1][0], GY + EYE - 0.02, OPEN1.eyeOut[1][1]], at: [2.3, GY + 1.5, -2.35], fp: 60, fd: 52 },
+        { t: T.mk1 - 0.3, name: 'meet', eye: [OPEN1.eyeOut[2][0], GY + EYE, OPEN1.eyeOut[2][1]], at: () => f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5), fp: 60, fd: 52 },
+        { t: T.ph1 - 0.2, name: 'meet', eye: [OPEN1.eyeOut[2][0], GY + EYE, OPEN1.eyeOut[2][1]], at: () => f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5), fp: 60, fd: 52 },
+        { t: T.look + 0.3, name: 'up', eye: [OPEN1.eyeOut[2][0] - 0.05, GY + EYE, OPEN1.eyeOut[2][1] - 0.05], at: () => { const h = f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5); return [h[0], h[1] + 0.35, h[2]]; }, fp: 60, fd: 52 },
+        { t: T.turn + 0.3, name: 'door', eye: [OPEN1.eyeOut[2][0] - 0.3, GY + EYE, OPEN1.eyeOut[2][1] - 0.45], at: [1.15, GY + 1.45, -3.72], fp: 60, fd: 52 },
+        { t: T.stair - 0.05, name: 'door', eye: [2.6, GY + EYE, -2.4], at: [1.15, GY + 1.4, -3.72], fp: 60, fd: 52 },
+        /* THE STAIR: climbing behind his teacher and Marcus, looking up the flight */
+        { t: T.stair, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.35 - 0.25 * c01((F1.t - T.stair) / 9.5), CLIMB1.z]; }, fp: 64, fd: 56, cut: true },
+        { t: T.land - 0.05, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.1, CLIMB1.z]; }, fp: 64, fd: 56, ease: 'lin' },
+        /* THE LANDING: at the top of the stair, level with her; her door, Marcus's knock; Grace, her head, both hands and the
+           door's edge held */
+        { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.75, 1.5, -2.38], fp: 52, fd: 44, cut: true },
+        { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.32), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
+        { t: T.ph2 + SECS.ph51o2 + 0.2, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.3), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
+        /* INSIDE (cut in the black of the doorway): along her room's north side, his teacher at the left spreading his cloth;
+           he kneels at his place; his look goes to the black glass by the shutter's edge; the lens narrows on it */
+        { t: T.inn, name: 'in', eye: [OPEN1.inEye[0][0], EYE, OPEN1.inEye[0][1]], at: [2.7, 1.25, 2.1], fp: 66, fd: 58, cut: true, flow: true },
+        { t: T.inn + 1.6, name: 'in', eye: [OPEN1.inEye[1][0] + 0.5, EYE, OPEN1.inEye[1][1] + 0.02], at: [2.7, 1.15, 1.65], fp: 66, fd: 58, flow: true },
+        { t: T.kneel - 0.35, name: 'in', eye: [OPEN1.inEye[2][0] + 0.25, EYE - 0.02, OPEN1.inEye[2][1] - 0.15], at: [2.4, 1.05, 0.6], fp: 66, fd: 58, flow: true },
+        { t: T.kneel + 1.2, name: 'kneel', eye: kneelEye, at: [0.9, 0.95, -0.4], fp: 66, fd: 58, flow: true, stop: true },
+        { t: T.turnG, name: 'kneel', eye: kneelEye, at: [0.9, 0.95, -0.4], fp: 66, fd: 58 },
+        { t: T.narrow, name: 'glass', eye: kneelEye, at: glass, fp: 66, fd: 58 },
+        { t: T.narrow + 7.0, name: 'glass', eye: kneelEye, at: glass, fp: 50, fd: 44 },
+        { t: T.end, name: 'glass', eye: kneelEye, at: glass, fp: 50, fd: 44 }
+      ];
+    }
+
+    /* ================================================================ THE KEEPSAKE (the plan's 9.2; its clock KS51). From the
+       room, all four found. His teacher's open hand held out across the cloth to Grace; her hand to her bag, stopped, Marcus's
+       hand on her shoulder; the packet that her fingers will not let go, then do, into his palm; set apart on the small white
+       plate at the cloth's far corner (an insert from above, its red knot); his teacher turns to him; his hands lift the bowl
+       and hold it before him, the water catching the candlelight; the wax: three drops, the ripples, the chant begins; into
+       the breaking's brief, the lens looking down into the bowl in his hands */
+    const KEEP1 = { mkStand: { x: 0.12, z: -1.02, ry: 0.12 } };   // behind the sofa at her right shoulder
+    FILMS1.keepsake = {
+      begin(api, s) { F1.s = s; F1.lit = ''; F1.film = 'keepsake'; F1.api = api; F1.hands = false;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        f1Show(cast.pho, true); f1Show(cast.grace, true); f1Show(cast.marcus, true); f1Show(phoStand, false); },
+      frame(t) {
+        const T = KS51, api = F1.api; F1.t = t;
+        f1Look('LAMP'); f1Beds({ flat: 1, m2: 0.75 * (1 - smo(c01((t - T.chant) / 2.0))), m3: f1Env(t, T.bag, T.give + 0.3, 0.8, 0.7) });
+        WORLD.cloth(1); WORLD.candleLit('candle1', true);
+        keepPho1(t, T); keepGrace1(t, T); keepMarcus1(t, T); keepPacket1(t, T);
+        /* THE BOWL: on the cloth until his hands lift it (out of the frame, under Pho's face: 26 s), then in his hands, drawn
+           with them (kit.hold, the left hand under it; the engine's `bowl` pose); its water catching the candle */
+        keepBowl1(t, T, api);
+        f1Track(t, keepKeys1(T));
+        f1Levels();
+      },
+      end() { f1Lens(PLAYFOV1); F1.beds = null; F1.film = ''; knotGlow1.m.opacity = 0; knotGlow1.q.visible = false;
+        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); F1.api = null; }
+    };
+    function keepPho1(t, T) {
+      const P = cast.pho; if (!P || !P.ready) return;
+      f1LeanBack(P);
+      const st = STATION.room.pho; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
+      f1Speak(P, t, ['Sit_to_Stand_Transition_M', 0.02, 0, false], [[T.k1, SECS.ph51k1, 'Sitting_Answering_Questions', 0.6], [T.k2, SECS.ph51k2, 'Sitting_Answering_Questions', 0.6]]);
+      /* HIS LEFT HAND held out open across the cloth toward her, palm up (0 to 13 s), leaning into the reach as she reaches
+         to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
+         in it at 12.5 s and set on the small white plate at his left (14 to 18 s); his right hand tilts the lit candle over
+         the bowl for the wax (32 to 38 s) */
+      const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.32 * f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
+      f1Lean(P, lean);
+      if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
+        const tx = lp(lp(0.42, 0.44, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, 0.86, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, 0.6, r), CLOTH_Y + 0.07, u);
+        handTo(P, 'L', [tx, ty, tz], [0.0, -0.1, -1], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
+      const wax = f1Env(t, T.wax - 1.2, T.chant + 4.5, 0.9, 1.0);
+      if (wax > 0.001) handTo(P, 'R', [ON_CLOTH.bowl.x - 0.06, CLOTH_Y + 0.5, ON_CLOTH.bowl.z + 0.12], [0.3, 0.6, -0.4], [0.4, -0.2, 0.5], wax, { out: 0.25, down: 0.25 });
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.65)], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
+    }
+    function keepGrace1(t, T) {
+      const P = cast.grace; if (!P || !P.ready) return;
+      f1LeanBack(P);
+      const st = STATION.room.grace; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
+      const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : P.acts.Sitting_Answering_Questions ? 'Sitting_Answering_Questions' : 'Idle_3';
+      pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false);
+      /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out and held across to his
+         teacher's palm, her fingers closed on it, leaning to him (9 to 12.5 s); let go; her hands back to her lap */
+      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull, T.give + 0.9, 0.9, 0.8);
+      f1Lean(P, 0.45 * hold);
+      if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
+      if (hold > 0.001) handTo(P, 'L', [0.46, 0.6, 0.78], [0.05, -0.1, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 });
+      f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [0.46, 0.6, 0.9], 0.6], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
+    }
+    function keepMarcus1(t, T) {
+      const P = cast.marcus; if (!P || !P.ready) return;
+      /* (he came to stand behind her as his teacher held out his hand: the film's first frame is a cut, and he stands there
+         from it, behind the sofa at her right shoulder; his left hand on her shoulder from 7 to 13 s) */
+      const M = KEEP1.mkStand; put(P, M.x, M.z, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
+      const on = f1Env(t, T.bag + 0.4, T.give + 1.4, 0.8, 0.8);
+      if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightShoulder') || f1Bone(g, 'RightArm')) : null;
+        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); handTo(P, 'L', [_f1A.x - 0.03, _f1A.y + 0.07, _f1A.z - 0.02], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.72)], [T.give + 0.2, [0.46, 0.6, 0.86], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
+    }
+    /* THE PACKET: in her bag; in her left hand from 9.5 s; laid in his palm at 12.5 s; in his hand to the plate; on the plate,
+       its red knot glowing dully while it is the insert's subject */
+    function keepPacket1(t, T) {
+      const g = things.keepsake; if (!g) return;
+      if (t < T.pull + 0.3) { f1Drop(g, HER.bag.x + 0.02, HER.bag.y + 0.07, HER.bag.z, 0.4); }
+      else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.015, pm.z, 0.4); } }
+      else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.02, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
+      else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
+      const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
+      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k; knotGlow1.q.visible = k > 0.001;
+    }
+    /* the bowl in his hands (from the lift): the engine's own `bowl` pose (episode 4 chapter 4's holy water), the left palm
+       under it, the right hand's fingertips at its rim; the bowl drawn in the hands' pass (kit.hold, his left hand), the
+       one on the cloth hidden once it is lifted, which is out of the frame (under his teacher's face) */
+    /* (the bowl in his hands as the play holds it, PLAY.md 2: stage.plan.BOWLHELD, so the film's last picture and the event's
+       first are one; these numbers are the play's own of 27 Nov, used only if the stage does not hand them) */
+    const HOLD1 = { bowl: { prop: 'handBowl', pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62, play: 'BOWLHELD' }, bottle: { prop: 'handBottle', pos: [0.0, 0.03, 0.0], rot: [0, 0, 0], s: 1 } };
+    const holdOf1 = (which) => { const H = HOLD1[which], P = H.play && S && S.plan && S.plan[H.play]; return P ? { prop: H.prop, pos: P.pos || H.pos, rot: P.rot || H.rot, s: P.s != null ? P.s : H.s } : H; };
+    function keepBowl1(t, T, api) {
+      const lifted = t >= T.lift;
+      const wb = things.holyBowl; if (wb) wb.visible = !lifted;
+      f1HandsHold(api, "bowl", lifted ? smo(c01((t - T.lift) / 1.2)) : 0);
+      f1Water(t, T.wax, lifted ? 1 : 0);
+    }
+    /* WHAT HIS HANDS HOLD in a film (his left hand under it, drawn in the hands' pass: kit.hold; the engine's own pose for
+       it at k: `bowl`, episode 4 chapter 4's holy water, the left palm under it; `bottle`, episode 3 chapter 5's, both hands
+       round it). k 0 lets go and hides his hands */
+    function f1HandsHold(api, which, k) {
+      if (!api) return;
+      if (k > 0.001 && which) {
+        if (F1.held !== which) { if (F1.held && api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' });
+          F1.held = which; const H = holdOf1(which); if (api.handsRoot) api.handsRoot.visible = true;
+          PROPS1[H.prop].scale.setScalar(H.s || 1);
+          if (api.kit && api.kit.hold) api.kit.hold(PROPS1[H.prop], { hand: 'left', pos: H.pos, rot: H.rot }); }
+        if (api.handPose) api.handPose(which, k, { p: 0 });
+      } else if (F1.held) { if (api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' }); if (api.handPose) api.handPose(F1.held, 0); F1.held = null; if (api.handsRoot) api.handsRoot.visible = false; }
+    }
+    /* the water in his bowl: the candle's warm point on it, still; a ring for each drop of wax (from `wax`), and the cord's
+       one ring (ringAt) */
+    function f1Water(t, wax, k, ringAt) {
+      if (!PROPS1.bowlR) return;
+      glintMat1.opacity = 0.55 * k;
+      let rk = 0, rs = 0.2;
+      if (wax != null) for (const dt of [0, 1.5, 3.0]) { const d = t - wax - dt; if (d > 0 && d < 1.6) { rk = Math.max(rk, (1 - d / 1.6) * 0.8); rs = 0.15 + d * 0.5; } }
+      if (ringAt != null) { const d = t - ringAt; if (d > 0 && d < 2.6) { rk = Math.max(rk, 0.85 * (1 - d / 2.6)); rs = 0.15 + 0.38 * c01(d / 2.6); } }
+      ringMat1.opacity = rk * k; ring1.scale.setScalar(PROPS1.bowlR * rs);
+    }
+    function keepKeys1(T) {
+      const eye = [HER.him.x, KNEEL_EYE, HER.him.z];
+      const phoFace = () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.98);
+      const graceFace = () => f1Head(cast.grace, [0.42, 1.05, -0.32], 0.7);
+      const handAt = [0.5, 0.64, 1.1];
+      return [
+        /* Pho's open hand across the cloth, his face: a slight push toward the hand */
+        { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
+        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
+        /* across the table to her: her face, both hands, the packet */
+        { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.2, g[2] + 0.35]; }, fp: 46, fd: 38, cut: true,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.13], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
+        { t: T.give + 0.4, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.05, g[1] - 0.22, g[2] + 0.45]; }, fp: 46, fd: 38,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.13], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
+        /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
+        { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
+        { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
+        /* his eyes: his teacher turns to him, looking into the lens; the bowl rises into the frame in his hands */
+        { t: T.turn, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0], f[1] - 0.1, f[2]]; }, fp: 52, fd: 44, cut: true },
+        { t: T.lift + 0.4, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0] + 0.15, f[1] - 0.22, f[2] - 0.05]; }, fp: 52, fd: 44 },
+        /* INSERT, his eyes looking down into the bowl in his hands: the candle tilted over it, three drops of wax */
+        { t: T.wax - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
+        { t: T.end - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
+        /* (the lens opens to the event's own as its brief comes up: the breaking begins on this view) */
+        { t: T.end - 0.05, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.95, fp: 50, fd: 44 }
+      ];
+    }
+
+    /* ================================================================ THE CORD (the plan's 9.3; its clock CD51). From the
+       breaking. The bowl still in his hands; his teacher's fingers on the packet's red cord, untying it as he chants. THE LAST
+       STRAND SNAPS BY ITSELF, in slow motion (the story's clock at 0.35 for four seconds of the film's), Spirit Vision opened
+       by the film for three: a wisp of red leaps from the cord across the table and slips round his wrist under the bowl, a
+       faint red ring there for an instant, gone; one ring spreads across the water; still again. Grace breathes out and
+       cries; Marcus kneels beside her; his teacher's "It's alright"; her phone on the cloth lights up, and she turns it face
+       down; the packet bound in white; his teacher's words to her and to Marcus; the water poured into the small bottle,
+       given to him; his look at his own wrist, where nothing is. Black (home follows) */
+    /* THE SLOW (the plan's 4.4: once in play's story, on the film's own clock): the story's clock runs at 0.35 of the film's
+       from SL0, eased into and out of it over a third of a second each way, so no speed steps; every picture of the snap reads
+       the story's clock; the sounds are on the film's (they are what is heard as it happens) */
+    const CORD_SLOW1 = { a: 8.0, b: 12.0, k: 0.35, ramp: 0.3 };
+    function cordTau1(t) {
+      const { a, b, k, ramp } = CORD_SLOW1;
+      /* the story's clock is the integral of a speed that eases from 1 to k over [a, a + ramp] and back over [b - ramp, b] */
+      const seg = (x0, x1, v0, v1, x) => { const u = c01((x - x0) / (x1 - x0)), L = x1 - x0; return L * (v0 * u + (v1 - v0) * (u * u * u - 0.5 * u * u * u * u)); };
+      if (t <= a) return t;
+      let tau = a + seg(a, a + ramp, 1, k, Math.min(t, a + ramp));
+      if (t <= a + ramp) return tau;
+      tau += k * (Math.min(t, b - ramp) - (a + ramp));
+      if (t <= b - ramp) return tau;
+      tau += seg(b - ramp, b, k, 1, Math.min(t, b));
+      if (t <= b) return tau;
+      return tau + (t - b);
+    }
+    FILMS1.cord = {
+      begin(api, s) { F1.s = s; F1.lit = ''; F1.film = 'cord'; F1.api = api; F1.hands = false;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        f1Show(cast.pho, true); f1Show(cast.grace, true); f1Show(cast.marcus, true); f1Show(phoStand, false);
+        if (things.holyBowl) things.holyBowl.visible = false; },
+      frame(t) {
+        const T = CD51, api = F1.api, tau = cordTau1(t); F1.t = t;
+        f1Look('LAMP'); f1Beds({ flat: 1 - smo(c01((t - T.black) / 1.2)), m2: (1 - smo(c01((t - T.black) / 1.2))) * smo(c01((t - T.snap - 1.9) / 2.2)), m3: 0.5 * f1Env(t, T.wrist + 0.9, T.wrist + 2.6, 0.5, 1.0) });
+        WORLD.cloth(1); WORLD.candleLit('candle1', true);
+        /* Spirit Vision: the film opens it as the strand snaps, for three seconds of the film's (its 8 to 11), then home */
+        f1Vision(t, T.snap - 0.05, 0.45, T.snap + 2.6, 1.4);
+        cordPho1(t, T); cordGrace1(t, T, t); cordMarcus1(t, T); cordPacket1(t, T, t); cordWisp1(t, tau, T);
+        /* the bowl in his hands until he hands it to his teacher to pour (44 s); then nothing; then the bottle */
+        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb); f1Water(t, null, kb, T.snap + 0.55); }
+        else if (t < T.take) f1HandsHold(api, null, 0);
+        else f1HandsHold(api, 'bottle', smo(c01((t - T.take) / 0.7)));
+        cordBottle1(t, T, api);
+        f1Track(t, cordKeys1(T));
+        /* (the breath of a held shot as he holds the bowl: a slight sway, a smooth function of the clock) */
+        if (t < T.cry) { yaw.position.x += 0.004 * Math.sin(t * 0.9); yaw.position.y += 0.003 * Math.sin(t * 1.3 + 0.7); }
+        f1Levels();
+      },
+      end() { f1Lens(PLAYFOV1); f1VisionOff(); F1.beds = null; F1.film = ''; wispG1.visible = false; wristMat1.opacity = 0;
+        if (wristRing1.parent) wristRing1.parent.remove(wristRing1);
+        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; if (things.holyBowl) things.holyBowl.visible = true; F1.api = null;
+        PROPS1.clothBottle.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
+        { const ph = herPhone1(); if (ph && F1.phoneRy != null) ph.rotation.set(0, F1.phoneRy, 0); F1.phoneRy = null; phoneLit1.m.opacity = 0; phoneLit1.q.visible = false; }
+        }
+    };
+    function cordPho1(tau, T) {
+      const P = cast.pho; if (!P || !P.ready) return;
+      f1LeanBack(P);
+      const st = STATION.room.pho; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
+      f1Speak(P, tau, ['Sit_to_Stand_Transition_M', 0.02, 0, false], [[T.c1, SECS.ph51c1, 'Sitting_Answering_Questions', 0.6], [T.c2, SECS.ph51c2, 'Sitting_Answering_Questions', 0.6], [T.c3, SECS.ph51c3, 'Sitting_Answering_Questions', 0.6], [T.c4, T.c5 + SECS.ph51c5 - T.c4, 'Sitting_Answering_Questions', 0.5]]);
+      const pk = [ON_CLOTH.plate.x, CLOTH_Y + 0.04, ON_CLOTH.plate.z];
+      /* both hands at the packet on the plate at his left, untying the red cord as he chants (to the snap); again to wrap it in
+         white and bind it (32 to 44 s); his right hand to take the bowl from him (44 s), the bottle filled and corked on the
+         cloth, then held out to him (47 s) */
+      const untie = f1Env(tau, 0, T.snap + 0.25, 0.2, 0.25), bind = f1Env(tau, T.wrap - 0.6, T.pour - 0.4, 0.6, 0.6), work = Math.min(1, untie + bind);
+      f1Lean(P, 0.3 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7));
+      if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
+        handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
+        handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
+      const take = f1Env(tau, T.pour - 0.3, T.pour + 1.1, 0.6, 0.5);
+      if (take > 0.001) handTo(P, 'R', [1.06, 0.76, 1.58], [0.7, -0.1, 0.4], [0, 1, 0], take, { out: 0.25, down: 0.25 });
+      const fill = f1Env(tau, T.pour + 1.0, T.give + 0.1, 0.4, 0.4);
+      if (fill > 0.001) handTo(P, 'R', [CB1.x + 0.02, CLOTH_Y + 0.12, CB1.z + 0.03], [-0.2, -0.6, -0.6], [0.3, 0, 0.9], fill, { out: 0.24, down: 0.25 });
+      const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
+      if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.6, -0.1, 0.3], [0, 1, 0], give, { out: 0.25, down: 0.25 });
+      f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.68), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.68), 0.7], [T.c3, () => f1Head(cast.marcus, [-0.18, 0.75, 0.22], 0.75), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
+    }
+    function cordGrace1(tau, T, t) {
+      const P = cast.grace; if (!P || !P.ready) return;
+      const st = STATION.room.grace; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
+      /* her long breath out, then quiet crying, her hands over her face (her written take's EARLY window only: its later fold
+         to her knees is far more than the plan's "cries quietly": people/RECORD.md 4); her phone; her small thank you */
+      if (P.acts.gcry && tau >= T.cry) { const u = c01((tau - T.cry) / 2.2); pose(P, 'gcry', lp(0.0, 1.6, smo(u)) + 0.05 * Math.sin(tau * 1.7) * u, false); }
+      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false); }
+      const face = f1Env(tau, T.cry + 1.0, T.phone - 0.3, 0.9, 0.6);
+      if (face > 0.001) { const h = P.head; if (h) { P.group.updateWorldMatrix(true, true); h.getWorldPosition(_f1A); const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(P.group.quaternion);
+        for (const [sd, sx] of [['L', 0.05], ['R', -0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
+          handTo(P, sd, [at.x, at.y, at.z], [rt.x * -sx * 4, 1, rt.z * -sx * 4], [-fw.x, 0, -fw.z], face, { out: 0.12, down: 0.35 }); } } }
+      const ph = f1Env(tau, T.phone + 1.6, T.phone + 4.2, 0.8, 0.8);
+      if (ph > 0.001) handTo(P, 'R', [GRPHONE1.x, GRPHONE1.y + 0.04, GRPHONE1.z], [-0.3, -0.6, 0.6], [0, -1, 0], ph, { out: 0.2, down: 0.3 });
+      f1Gaze(P, tau, [[0, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z]], [T.cry, [0.4, 0.5, 0.4], 1.2], [T.phone + 0.3, () => [GRPHONE1.x, GRPHONE1.y, GRPHONE1.z], 0.6], [T.c2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8], [T.g1 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.5]], 0.8, 0.75, 0.05);
+    }
+    /* her phone: the play's own, on the sofa beside her (PLAY.md 4: things.herPhone), lit by his message; face down after */
+    const phoneLit1 = glow(0, -50, 0, 0.1, 0xd8e8ff, 0, world, null);
+    const herPhone1 = () => things.herPhone || PROPS1.grPhone;
+    const GRPHONE1 = { get x() { const g = herPhone1(); return g ? g.position.x : 0.09; }, get z() { const g = herPhone1(); return g ? g.position.z : -0.22; }, get y() { const g = herPhone1(); return g ? g.position.y : 0.51; } };
+    function cordMarcus1(tau, T) {
+      const P = cast.marcus; if (!P || !P.ready) return;
+      /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right) */
+      const M = { x: 0.12, z: 0.15, ry: Math.PI * 0.85 };
+      if (P.acts.kneelhold && tau < T.c3 - 0.8) { put(P, M.x, M.z, faceTo(M.x, M.z, 0.42, -0.32), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
+      else { const K = KEEP1.mkStand; put(P, K.x, K.z, K.ry, 0); f1Speak(P, tau, ['Idle_3', 1.2, 0.3, true], [[T.m1, SECS.mk51c1, 'Stand_and_Chat', 0.55]]); }
+      f1Gaze(P, tau, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.7)], [T.c3 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
+    }
+    function cordPacket1(tau, T, t) {
+      const g = things.keepsake; if (!g) return;
+      f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
+      /* (bound in white from 32 s: the knot's glow gone at the snap; the cloth folded over it is the play's last state) */
+      const k = 1 - smo(c01((tau - T.snap) / 0.25));
+      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.4 * k * (t < T.snap + 0.3 ? 1 : 0); knotGlow1.q.visible = knotGlow1.m.opacity > 0.001;
+      /* her phone: lit while it buzzes (24 to 27 s), then turned face down by her hand (27 s), its screen to the sofa */
+      const ph = herPhone1(); if (ph) { if (F1.phoneRy == null) F1.phoneRy = ph.rotation.y;
+        const down = smo(c01((tau - T.phone - 2.75) / 0.45)); ph.rotation.set(Math.PI * down, F1.phoneRy, 0); ph.visible = true;
+        const lit = tau > T.phone - 0.05 && tau < T.phone + 2.8 ? 1 : 0; phoneLit1.q.position.set(ph.position.x, ph.position.y + 0.02, ph.position.z); phoneLit1.m.opacity = 0.55 * lit; phoneLit1.q.visible = lit > 0; }
+    }
+    /* THE WISP: from the knot, a leap across the table that curls round under the bowl to his left wrist (where the hands'
+       pass draws it: its end is a point of his own frame, carried into the world each frame), its tail fading behind it */
+    const _wA = new THREE.Vector3(), _wB = new THREE.Vector3(), _wC = new THREE.Vector3();
+    function cordWisp1(t, tau, T) {
+      const u0 = tau - (T.snap + 0.05), dur = 0.42;
+      const on = u0 > -0.01 && u0 < dur + 0.5;
+      wispG1.visible = on;
+      if (on) {
+        _wA.set(ON_CLOTH.plate.x, CLOTH_Y + 0.05, ON_CLOTH.plate.z);
+        camera.updateMatrixWorld(true); _wB.set(-0.1, -0.24, -0.34).applyMatrix4(camera.matrixWorld);   // his left wrist under the bowl, in the lens's own frame
+        _wC.copy(_wA).lerp(_wB, 0.5); _wC.y += 0.16;
+        const head = c01(u0 / dur);
+        for (let i = 0; i < wisp1.length; i++) { const s = head - i * 0.035, sp = wisp1[i];
+          if (s < 0 || s > 1) { sp.visible = false; continue; }
+          const a = 1 - s, p = new THREE.Vector3().copy(_wA).multiplyScalar(a * a).addScaledVector(_wC, 2 * a * s).addScaledVector(_wB, s * s);
+          const swirl = 0.03 * Math.sin(s * 9 + tau * 5); p.x += swirl * (1 - s); p.z += swirl * 0.6;
+          sp.position.copy(p); const fade = (1 - i / wisp1.length) * (u0 > dur ? Math.max(0, 1 - (u0 - dur) / 0.5) : 1);
+          sp.material.opacity = 0.75 * fade; sp.scale.setScalar(0.05 * (1 - 0.5 * i / wisp1.length) * (0.6 + 0.4 * s)); sp.visible = true; }
+      }
+      /* the ring round his wrist for an instant (drawn in the hands' pass, on his left arm) */
+      const api = F1.api, arm = api && api.prayerArm ? api.prayerArm() : null, d = tau - (T.snap + 0.05 + dur);
+      const k = d > -0.05 && d < 0.75 ? (d < 0.08 ? c01((d + 0.05) / 0.13) : 1 - c01((d - 0.08) / 0.67)) : 0;
+      if (arm && k > 0.001) { if (wristRing1.parent !== arm) arm.add(wristRing1); wristRing1.position.set(0.0, 0.0, 0.06); wristRing1.rotation.set(Math.PI / 2, 0, 0); wristRing1.scale.setScalar(0.075); wristMat1.opacity = 0.8 * k; }
+      else wristMat1.opacity = 0;
+    }
+    /* THE BOTTLE (on the cloth by his teacher's right knee): filled and corked there, held out to him, taken into his hands;
+       THE BOWL back on the cloth once his teacher has it; THE SPOOL of white thread out for the binding, the packet's cloth
+       wrapped white as the hands work (a white wrap over the red: the knot's red is covered) */
+    const CB1 = { x: 0.74, z: 1.4 };
+    PROPS1.spool = stand('w51threadreel', 0, -50, 0, 0, { parent: world }); PROPS1.spool.visible = false;
+    function cordBottle1(t, T, api) {
+      const b = PROPS1.clothBottle;
+      if (things.holyBowl) { things.holyBowl.visible = t >= T.pour + 0.9; if (t >= T.pour + 0.9) f1Drop(things.holyBowl, ON_CLOTH.bowl.x + 0.02, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z + 0.06, 0); }
+      if (b) { const on = t >= T.pour + 0.9 && t < T.take + 0.2;
+        if (on) { if (t < T.give) { f1Drop(b, CB1.x, CLOTH_Y, CB1.z, 0); }
+          else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1A); if (pm) f1Drop(b, pm.x, pm.y - 0.05, pm.z, 0); } } }
+        b.visible = on; }
+      const sp = PROPS1.spool; if (sp) { const on = t >= T.wrap - 0.3 && t < T.pour; if (on) f1Drop(sp, ON_CLOTH.plate.x + 0.2, CLOTH_Y, ON_CLOTH.plate.z - 0.06, 0.4); sp.visible = on; }
+    }
+    /* (the packet wrapped in white cloth and bound: there is no model of it wrapped yet, so the insert shows his teacher's
+       hands binding it with the white thread from the spool, the packet as it is: FILMS.md lists the model needed) */
+    function knotWhite1() {}
+    function cordKeys1(T) {
+      const eye = [HER.him.x, KNEEL_EYE, HER.him.z];
+      const pk = [ON_CLOTH.plate.x, CLOTH_Y + 0.03, ON_CLOTH.plate.z];
+      const graceFace = () => f1Head(cast.grace, [0.42, 1.05, -0.32], 0.68);
+      return [
+        /* INSERT from above (his eyes looking down): his hands and the bowl at the picture's foot, the packet in its middle */
+        { t: 0, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.35), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.35)], fp: 38, fd: 32 },
+        { t: T.snap - 0.2, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 38, fd: 32 },
+        /* (the lens narrows across the slow: a smooth function of the film's clock) */
+        { t: T.cry - 0.05, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 32, fd: 27 },
+        /* his eyes across the table: Grace and Marcus */
+        { t: T.cry, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.05, g[1] - 0.18, g[2] + 0.3]; }, fp: 46, fd: 40, cut: true,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.14], [0.12, 1.15, 0.15, 0.16]]; }, back: 0.45, fmax: 58 },
+        { t: T.phone - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.03, g[1] - 0.2, g[2] + 0.32]; }, fp: 46, fd: 40,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.14], [0.12, 1.15, 0.15, 0.16]]; }, back: 0.45, fmax: 58 },
+        /* INSERT: her phone on the cloth, her hand */
+        { t: T.phone, name: 'phone', eye: () => [GRPHONE1.x + 0.42, GRPHONE1.y + 0.55, GRPHONE1.z + 0.4], at: () => [GRPHONE1.x - 0.02, GRPHONE1.y, GRPHONE1.z], fp: 40, fd: 34, cut: true },
+        { t: T.wrap - 0.05, name: 'phone', eye: () => [GRPHONE1.x + 0.39, GRPHONE1.y + 0.52, GRPHONE1.z + 0.37], at: () => [GRPHONE1.x - 0.02, GRPHONE1.y, GRPHONE1.z], fp: 40, fd: 34 },
+        /* INSERT from above: his teacher's hands wrapping the packet in white and binding it */
+        { t: T.wrap, name: 'wrap', eye: [pk[0] + 0.3, CLOTH_Y + 0.7, pk[2] + 0.26], at: pk, fp: 40, fd: 34, cut: true },
+        { t: T.pour - 0.05, name: 'wrap', eye: [pk[0] + 0.28, CLOTH_Y + 0.66, pk[2] + 0.24], at: pk, fp: 40, fd: 34 },
+        /* his eyes: his teacher looking at him, the bottle; his look drops to his own wrist for a moment, and back */
+        { t: T.pour, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.1, f[1] - 0.15, f[2] - 0.05]; }, fp: 50, fd: 42, cut: true },
+        { t: T.wrist - 0.1, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
+        { t: T.wrist + 0.5, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.85, eye[2] - 0.32], fp: 50, fd: 42 },
+        { t: T.wrist + 1.6, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.85, eye[2] - 0.32], fp: 50, fd: 42 },
+        { t: T.wrist + 2.4, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
+        { t: T.end, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 }
+      ];
+    }
+
+    /* ================================================================ HOME (the plan's 9.4; its clock HM51; 11:52 PM). The
+       condominium's corridor at night, carpet and wall lights, a window at its end with the city in it; his keycard, the
+       lock, the door on his dark flat and the city glowing through the glass; the bottle set on his altar beside the candle,
+       his palms together a moment; his phone on its charger; the bedroom, the bathroom door open on steam and light, the
+       shower; the bed's edge, looking out of the bedroom door at the city's glow; he lies down: the ceiling, the air-
+       conditioner's small blue light; 11:58 on the bedside clock; his eyes closing slowly (never to full black: a faint
+       warm glow through the lids), his thought; they open: the ceiling, the clock, 3:00. Play begins in bed */
+    FILMS1.home = {
+      begin(api, s) { F1.s = s; F1.lit = ''; F1.film = 'home'; F1.api = api;
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        f1Show(cast.pho, false); f1Show(cast.grace, false); f1Show(cast.marcus, false); f1Show(phoStand, false);
+        if (things.bottle) things.bottle.visible = false; },
+      frame(t) {
+        const T = HM51, api = F1.api; F1.t = t;
+        f1Look('HOME');
+        f1Beds({ night: t < T.door ? 0 : t < T.open ? smo(c01((t - T.door) / 1.5)) * (1 - 0.6 * smo(c01((t - T.close) / 4.0))) : 0.35 * smo(c01((t - T.open - 1.0) / 1.2)) });
+        WORLD.hisDoor(t < T.card + 0.4 ? 0 : t < T.door + 2.4 ? smo(c01((t - T.card - 0.4) / 1.1)) * 0.92 : 0.92 * (1 - smo(c01((t - T.door - 2.4) / 0.9))));
+        WORLD.bedDoor(t < T.bed ? 1 : lp(1, 0.15, smo(c01((t - T.bed - 0.4) / 1.6))));
+        WORLD.bathLight(t > T.bed - 2.0 && t < T.lie ? f1Env(t, T.bed - 2.0, T.lie, 0.8, 0.6) : 0);
+        WORLD.light('altar', 1);
+        /* the bottle on his altar from the moment his hand sets it there */
+        if (things.bottle) things.bottle.visible = t >= T.setb;
+        if (things.hisPhone) things.hisPhone.visible = t >= T.charge;
+        acLed1.m.opacity = t >= T.lie ? 0.9 : 0.35; acLed1.q.visible = true;
+        /* the clock's face: 11:58 at the insert, 3:00 as his eyes open */
+        clockMat1.opacity = 1; clockSet1(t < T.open ? (t < T.clock - 6 ? '11:52' : '11:58') : '3:00');
+        homeHands1(t, T, api);
+        f1Track(t, homeKeys1(T));
+        /* his walk's small bob down the corridor and across his flat */
+        const walking = (t > 0.3 && t < T.card - 1.2) || (t > T.door + 0.8 && t < T.altar - 0.2) || (t > T.palms + 1.6 && t < T.phone - 0.3);
+        if (walking) yaw.position.y += -0.015 * Math.abs(Math.sin(t * Math.PI / 0.55));
+        /* HIS EYES CLOSING (never to full black: the lids' warm glow) and opening on 3:00: the picture narrowed to a sliver
+           from top and bottom, and dimmed (the engine's pressure seam is not this; this is the film's own fade in a warm
+           near-black) */
+        homeLids1(t, T, api);
+        f1Levels();
+      },
+      end() { f1Lens(PLAYFOV1); F1.beds = null; F1.film = ''; lidsOff1(); WORLD.bathLight(0); WORLD.light('altar', null); WORLD.hisDoor(0); WORLD.bedDoor(1);
+        if (things.bottle) things.bottle.visible = true; if (things.hisPhone) things.hisPhone.visible = true; acLed1.m.opacity = 0.9;
+        clockSet1('3:00'); PROPS1.keycard.visible = false; f1HandR(F1.api, null, null, 0); if (F1.api && F1.api.handPose) F1.api.handPose('pray', 0); F1.api = null; }
+    };
+    /* his hands: the keycard to the reader (his right, the engine's `reach`), the bottle set down on his altar (`place`, the
+       bottle in his hand), his palms together a moment (the clasp: `pray`), his phone set on its charger (`place`); each a
+       thing in his right hand (kit.hold) and its pose eased in and out, drawn only while they are in the frame */
+    PROPS1.handPhone = stand('e4phone', 0, 0, 0, 0, { parent: nowhere1 });
+    PROPS1.handCard = stand('w51keycard', 0, 0, 0, 0, { parent: nowhere1 });
+    PROPS1.handBottleR = stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) });
+    function f1HandR(api, pose, prop, k) {
+      if (!api) return;
+      if (k > 0.001 && pose) {
+        if (F1.heldR !== prop) { if (api.kit && api.kit.hold) api.kit.hold(prop ? PROPS1[prop] : null); F1.heldR = prop; }
+        if (api.handsRoot) api.handsRoot.visible = true;
+        if (api.handPose) api.handPose(pose, k, {});
+      } else if (F1.heldR !== undefined && F1.heldR !== null) { if (api.kit && api.kit.hold) api.kit.hold(null); F1.heldR = null; }
+    }
+    function homeHands1(t, T, api) {
+      if (!api) return;
+      const card = f1Env(t, T.card - 0.9, T.card + 0.45, 0.55, 0.45), bottle = f1Env(t, T.setb - 1.5, T.setb + 0.25, 0.7, 0.45),
+            pray = f1Env(t, T.palms - 0.55, T.palms + 1.5, 0.55, 0.6), phone = f1Env(t, T.charge - 1.3, T.charge + 0.25, 0.6, 0.45);
+      if (card > 0.001) f1HandR(api, 'reach', 'handCard', card);
+      else if (bottle > 0.001) f1HandR(api, 'place', 'handBottleR', bottle);
+      else if (phone > 0.001) f1HandR(api, 'place', 'handPhone', phone);
+      else if (pray > 0.001) { f1HandR(api, null, null, 0); if (api.handsRoot) api.handsRoot.visible = true; if (api.handPose) api.handPose('pray', pray, {}); }
+      else { f1HandR(api, null, null, 0); if (api.handPose) api.handPose('pray', 0); if (api.handsRoot) api.handsRoot.visible = false; }
+    }
+    /* THE LIDS: two near-black bands from the top and the bottom of the picture closing to a sliver at its middle, and a faint
+       warm glow between them as they close (the lids lit from the city through them): laid in front of the lens, drawn last
+       and over everything, never to full black */
+    const lidMat1 = new THREE.MeshBasicMaterial({ color: 0x060403, transparent: true, opacity: 0, depthWrite: false, depthTest: false }); mats.push(lidMat1);
+    const lidGlowMat1 = new THREE.MeshBasicMaterial({ color: 0x2c140a, transparent: true, opacity: 0, depthWrite: false, depthTest: false }); mats.push(lidGlowMat1);
+    const lidTop1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), lidMat1), lidBot1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), lidMat1), lidGlow1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), lidGlowMat1);
+    for (const q of [lidTop1, lidBot1, lidGlow1]) { q.renderOrder = 60; q.frustumCulled = false; owned.push(q.geometry); }
+    lidGlow1.renderOrder = 59;
+    function lidsOff1() { for (const q of [lidTop1, lidBot1, lidGlow1]) if (q.parent) q.parent.remove(q); lidMat1.opacity = 0; lidGlowMat1.opacity = 0; }
+    function homeLids1(t, T) {
+      /* how far shut, 0 open to 1 a sliver: shutting slowly from T.close over 5 s; open at once at T.open */
+      const close = t >= T.close && t < T.open ? smo(c01((t - T.close) / 5.0)) : 0;
+      if (close < 0.002) { lidsOff1(); return; }
+      if (lidTop1.parent !== camera) { camera.add(lidTop1); camera.add(lidBot1); camera.add(lidGlow1); }
+      const d = 0.2, h = Math.tan(camera.fov * Math.PI / 360) * d, w = h * camera.aspect, c = close * 0.985;
+      lidTop1.position.set(0, h - h * c / 2, -d); lidTop1.scale.set(w * 2.4, h * c, 1);
+      lidBot1.position.set(0, -h + h * c / 2, -d); lidBot1.scale.set(w * 2.4, h * c, 1);
+      lidMat1.opacity = 1;
+      lidGlow1.position.set(0, 0, -d - 0.002); lidGlow1.scale.set(w * 2.4, h * 2.4, 1); lidGlowMat1.opacity = 0.8 * smo(c01((close - 0.5) / 0.5));
+    }
+    /* where the play lays him in bed at three o'clock (PLAY.md 2: STATION.night.bed), his eye and his look */
+    const LIEAT1 = () => (STATION.night && STATION.night.bed) || { x: HIS.bed.x + 0.2, z: HIS.bed.z, ry: 0.8, y: 0.82, pitch: 0.12 };
+    function homeKeys1(T) {
+      /* (the corridor walked toward its window: from the lifts' end, west, his door on his left) */
+      const c0 = [HX + 1.6, -3.45], c1 = [HIS.door.x + 0.35, -3.25];
+      const doorEye = [HIS.door.x + 0.08, EYE, CORR.z1 - 0.62];
+      const inEye = [HIS.door.x + 0.15, EYE, LIV.z0 + 0.55];
+      const altarEye = [HIS.altar.x + 0.72, EYE, HIS.altar.z - 0.02];
+      const tableEye = [HIS.dining.x - 0.95, EYE, HIS.dining.z + 0.45];
+      const bedEye = [HIS.bed.x - 0.72, 1.12, HIS.bed.z - 0.62];
+      const LB = LIEAT1(), lieEye = [LB.x, LB.y, LB.z];
+      const ceil = [LB.x - 1.2, FLAT.ceil, LB.z + 0.05];
+      const clk = [HIS.clock.x, HIS.clock.y + 0.04, HIS.clock.z];
+      const bath = [(BATH.x0 + 0.7 + BATH.x0 + 1.4) / 2, 1.1, BATH.z1];
+      return [
+        /* the corridor: his eyes at a walk toward the window at its end, the city in it */
+        { t: 0, name: 'corr', eye: [c0[0], EYE, c0[1]], at: [CORR.x0, 1.45, c0[1] + 0.1], fp: 60, fd: 52 },
+        { t: T.card - 1.1, name: 'corr', eye: [c1[0], EYE, c1[1]], at: [CORR.x0 + 1.0, 1.4, c1[1] + 0.2], fp: 60, fd: 52 },
+        { t: T.card - 0.35, name: 'door', eye: doorEye, at: [HIS.door.x + 0.42, 1.12, LIV.z0], fp: 60, fd: 52 },
+        { t: T.door + 0.8, name: 'door', eye: doorEye, at: [HIS.door.x + 0.6, 1.3, LIV.z1], fp: 60, fd: 52 },
+        /* in: the city glowing through the glass across the room; to his altar on the left wall */
+        { t: T.door + 2.4, name: 'in', eye: inEye, at: [HIS.door.x + 1.8, 1.25, LIV.z1], fp: 60, fd: 52 },
+        { t: T.altar, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.15, HIS.altar.z - 0.05], fp: 50, fd: 42 },
+        { t: T.altar + 3.0, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.12, HIS.altar.top + 0.1, HIS.altar.z - 0.08], fp: 50, fd: 42 },
+        { t: T.palms + 1.6, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.2, HIS.altar.z], fp: 50, fd: 42 },
+        /* to the dining table: the phone on its charger */
+        { t: T.phone - 0.3, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x, FILMPLACE.phoneAt.y, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
+        { t: T.phone + 2.4, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x + 0.1, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
+        { t: T.bed - 0.05, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x + 0.1, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
+        /* the bedroom: the bathroom door open on its light, the shower; then the bed's edge, looking out at the city's glow */
+        { t: T.bed, name: 'bath', eye: [BED.x0 + 0.85, EYE, 0.7], at: bath, fp: 66, fd: 58, cut: true },
+        { t: T.sit - 0.05, name: 'bath', eye: [BED.x0 + 0.85, EYE, 0.68], at: [bath[0], bath[1] + 0.05, bath[2]], fp: 66, fd: 58 },
+        { t: T.sit, name: 'bed', eye: bedEye, at: [BED.x0 - 1.0, 1.15, 1.4], fp: 66, fd: 58, cut: true },
+        { t: T.lie - 0.1, name: 'bed', eye: bedEye, at: [BED.x0 - 1.2, 1.1, 1.5], fp: 66, fd: 58 },
+        /* he lies down (eased over 1.5 s): the ceiling, the air-conditioner's light, the bedroom door ajar on the living room */
+        { t: T.lie + 1.5, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58 },
+        { t: T.clock - 0.05, name: 'lie', eye: lieEye, at: [ceil[0] - 0.3, ceil[1], ceil[2] - 0.05], fp: 66, fd: 58 },
+        /* INSERT: the bedside clock, 11:58 */
+        { t: T.clock, name: 'clockface', eye: [clk[0] - 0.55, clk[1] + 0.32, clk[2] - 0.45], at: clk, fp: 34, fd: 28, cut: true },
+        { t: T.clock + 5.95, name: 'clockface', eye: [clk[0] - 0.52, clk[1] + 0.3, clk[2] - 0.42], at: clk, fp: 32, fd: 27 },
+        /* the ceiling in the dark; his eyes close; they open: the ceiling */
+        { t: T.clock + 6.0, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58, cut: true },
+        { t: T.open + 0.45, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58 },
+        /* the bedside clock: 3:00; the ceiling again; and down along the bed to the room, where the play begins (its own
+           lying view: the lens through the zenith, so the turn from one side of him to the other is a roll of the view) */
+        { t: T.open + 1.5, name: 'wake', eye: lieEye, at: [clk[0], clk[1] + 0.03, clk[2]], fp: 66, fd: 58 },
+        { t: T.open + 2.4, name: 'wake', eye: lieEye, at: [clk[0], clk[1] + 0.03, clk[2]], fp: 66, fd: 58 },
+        { t: T.open + 3.3, name: 'wake', eye: lieEye, at: [lieEye[0] - 0.2, FLAT.ceil, lieEye[2] + 0.1], fp: 68, fd: 62 },
+        { t: T.end - 0.05, name: 'play', eye: lieEye, yaw: LB.ry, pitch: LB.pitch, fp: PLAYFOV1, fd: PLAYFOV1 }
+      ];
+    }
+
+    /* ================================================================ WHAT THE OTHER PIECES TAKE FROM HERE (FILMS.md says
+       how each is meant): the shared cast, the stations, the standing Grandmaster Pho (FILMS-2's dawn), the films' things,
+       each film's pictures (begin, frame, end), the beds a film asks for, and the helpers c_yfilm2.js may call by name */
     const FILMSAPI = {
       cast,
       station: STATION,
       /* (where a film's last picture hands him back: the phase's own `at`) */
-      endAt: (p) => (STATION[p] && STATION[p].at) || null
+      endAt: (p) => (STATION[p] && STATION[p].at) || null,
+      phoStand,
+      driver: driver1,
+      props: PROPS1,
+      films: FILMS1,
+      beds: () => (F1.film ? F1.beds : null),
+      state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds }),
+      shot: () => F1.shot,
+      helpers: { track: f1Track, walk: f1Walk, speak: f1Speak, gaze: f1Gaze, head: f1Head, show: f1Show, vision: f1Vision, look: f1Look, lens: f1Lens,
+                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1 },
+      /* every person the films can show (a probe's: chapter 5's films probe reads `people()`) */
+      people: () => ({ pho: cast.pho, grace: cast.grace, marcus: cast.marcus, phoStand, driver: driver1 })
     };
+    /* ================================================================ THE BARRIER, THE FOUR ENDINGS AND THE DAWN: THEIR PICTURES
+       (masters/v29.0/parts/c_yfilm2.js: helper FILMS-2's from M7; the plan's 9.7 to 9.11, its 4.4 the camera's grammar, its
+       12 the effects; masters/v29.0/ENDINGS.md writes every number below out with its reason). Their clocks are y_endings.js
+       (EN2: each ending's own beginning, then THE BARRIER, then THE DAWN), built by tl() from SECS; what each frame of them
+       shows is drawn here as a PURE FUNCTION OF THAT CLOCK (v6.4): the lens, his hands and what is in them, the thread laid
+       round him, the gold, the red threads and their burning, the pressure on the picture, Spirit Vision held by the film,
+       the things of his flat. A seek, a skip and a slow phone land on the same picture; nothing here keeps a timer.
+       THE ONE THING THAT IS NOT THE CLOCK'S is CLOSE THE CIRCLE: the film's clock stands still on its event (eventWait) while
+       the player lays the thread, so while it is open the thread and the lens follow how far round it is (the event's own
+       progress, eased on the wall so a finger's stop and start never jerk the picture); once it has resolved (or the film
+       was skipped past it) the circle stands closed.
+       FIRST PERSON THROUGHOUT (v24.56): the grown Master Zavier is never seen; his hands are the game's own viewmodel (kit.hold,
+       api.handPose). His legs in the circle are framed out, not drawn: the game has no take of his body (p5zavier) sitting
+       cross-legged, and a take retargeted from another body is a new motion that must pass the body rules before it is
+       shown; so the lens looks out over the floor beyond his knees, where the thread is laid, never straight down at them. */
+    const F2 = { api: null, s: null, k: null, E: null, on: false, shot: '', look: null, vis: false, cirK: 0, cirShow: 0, cirDone: false,
+                 cirWall: 0, closeSaid: false, last: -1, p0: 0.5, held: null, heldHand: null, bedsSet: false, said: new Set() };
+    const F2HX = HX;
+    /* the places of his flat the films use (HIS, FILMPLACE, LIV and the rest are WORLD's: masters/v29.0/WORLD.md 3) */
+    const F2P = {
+      table:   { x: STATION.ask.at.x, z: STATION.ask.at.z, ry: STATION.ask.at.ry },   // where the decision leaves him (PLAY.md 2)
+      bag:     { x: HIS.bag.x, z: HIS.bag.z },                                          // his bag by his front door
+      bagAt:   { x: HIS.bag.x + 0.3, z: HIS.bag.z + 0.64 },                            // where he crouches to it, the bag at his feet ahead
+      circle:  { x: HIS.circle.x, z: HIS.circle.z, r: HIS.circle.r },
+      door:    { x: HIS.door.x, z: LIV.z0 },                                            // his front door, its foot
+      sofa:    { x: HIS.sofa.x, z: HIS.sofa.z, seat: HIS.sofa.seat },
+      kitchen: { x: FILMPLACE.kitchen.x, z: FILMPLACE.kitchen.z },
+      tap:     { x: F2HX + 0.95, z: LIV.z0 + 0.31 - 0.24 },
+      balc:    { x: FILMPLACE.balconyAt.x, z: FILMPLACE.balconyAt.z },
+      oven:    { x: HIS.oven.x, y: HIS.oven.y, z: HIS.oven.z }
+    };
+    /* THE BARRIER'S WALKS (ENDINGS.md 2): from where each ending leaves him to where he crouches at his bag (the sofa, 2.1 m
+       long at x HX-3.35..HX-1.25, z -1.4..-0.5, passed behind; the dining table and the kitchen counter cleared by half a
+       metre), and from the bag round the sofa's far end, past his altar, to the middle of the room */
+    const F2PATH = {
+      A: [[F2HX + 0.4, 0.65], [F2HX - 0.7, 0.1], [F2HX - 0.95, -1.6], [F2HX - 2.6, -1.62]],
+      B: [[F2HX - 0.3, 0.35], [F2HX - 0.75, -0.6], [F2HX - 1.0, -1.62], [F2HX - 2.6, -1.62]],
+      C: [[F2HX - 2.55, -0.3], [F2HX - 3.65, -0.6], [F2HX - 3.5, -1.55], [F2HX - 2.7, -1.56]],
+      D: [[F2HX - 0.25, 2.0], [F2HX - 0.7, 0.6], [F2HX - 0.8, -0.5], [F2HX - 1.0, -1.62], [F2HX - 2.6, -1.62]],
+      on: [[F2HX - 2.7, -1.56], [F2HX - 3.6, -1.5], [F2HX - 3.7, -0.2], [F2HX - 3.0, 0.6], [F2HX - 2.2, 0.95]]
+    };
+    const F2EYE = { stand: EYE, sofa: HIS.sofa.seat + 0.66, floor: 0.82, crouch: 1.0, knees: 1.12, crawl: 0.5, lie: 0.17 };
+    const F2SIT = { x: F2P.circle.x, y: F2EYE.floor, z: F2P.circle.z - 0.05 };          // his eye sitting in the circle (his hips at its middle)
+    const F2RED = 0xff2233;                                                             // the spell's red, the play's own (PLAY.md 4)
+    const F2GOLD = 0xffc24a;                                                            // Grandmaster Pho's gold (v25.5: his alone)
+    const f2Narrow = () => camera.aspect < 1;
+    const f2smo = (k) => { k = c01(k); return k * k * (3 - 2 * k); };
+    const f2s5 = (k) => { k = c01(k); return k * k * k * (k * (6 * k - 15) + 10); };
+    const f2win = (t, a, b) => c01((t - a) / Math.max(1e-3, b - a));
+    const f2bell = (t, a, b, c, d) => f2smo(f2win(t, a, b)) * (1 - f2smo(f2win(t, c, d)));
+
+    /* ---------------------------------------------------------------- THE LENS
+       A shot is a list of KEYS { t, e: [x, y, z] the eye, a: [x, y, z] what it looks at, fp, fd the lens (vertical degrees,
+       phone / desk: the plan's 4.4), roll, cut, stop }. Between keys the eye, the aim, the lens and the roll pass through
+       each key at a speed taken from the keys either side (a cubic on the clock with Catmull-Rom's tangents, episode 4
+       chapter 5's `flow`), so a move never stops at a key and its speed never steps; it rests only at a key marked `stop`,
+       at the run's ends and either side of a CUT (a key marked `cut` begins a new shot on its own clock moment). */
+    const _f2v = new THREE.Vector3();
+    function f2Aim(e, a, roll) {
+      yaw.position.set(e[0], e[1], e[2]);
+      const dx = a[0] - e[0], dy = a[1] - e[1], dz = a[2] - e[2];
+      yaw.rotation.y = Math.atan2(-dx, -dz);
+      pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
+      camera.rotation.z = roll || 0;
+    }
+    function f2Lens(fov) { if (Math.abs(camera.fov - fov) > 1e-4) { camera.fov = fov; camera.updateProjectionMatrix(); } }
+    const f2Val = (K, nar) => [K.e[0], K.e[1], K.e[2], K.a[0], K.a[1], K.a[2], nar ? K.fp : K.fd, K.roll || 0];
+    function f2Keys(K, t) {
+      const nar = f2Narrow();
+      if (!K.length) return null;
+      let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
+      const A = K[i], B = K[i + 1];
+      if (!B || B.cut || t <= A.t) { const v = f2Val(A, nar); F2.shot = A.n || ''; return v; }
+      const vA = f2Val(A, nar), vB = f2Val(B, nar), dt = Math.max(1e-3, B.t - A.t), n = vA.length;
+      const P0 = (!A.cut && !A.stop && K[i - 1]) ? K[i - 1] : null, P3 = (!B.stop && K[i + 2] && !K[i + 2].cut) ? K[i + 2] : null;
+      const m0 = new Array(n).fill(0), m1 = new Array(n).fill(0);
+      if (P0) { const v0 = f2Val(P0, nar), d = Math.max(1e-3, B.t - P0.t); for (let j = 0; j < n; j++) m0[j] = (vB[j] - v0[j]) / d; }
+      if (P3) { const v3 = f2Val(P3, nar), d = Math.max(1e-3, P3.t - A.t); for (let j = 0; j < n; j++) m1[j] = (v3[j] - vA[j]) / d; }
+      const s = c01((t - A.t) / dt), s2 = s * s, s3 = s2 * s, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + s, h01 = 3 * s2 - 2 * s3, h11 = s3 - s2;
+      F2.shot = (A.n || '') + '>' + (B.n || '');
+      return vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
+    }
+    /* HANDHELD (the plan's 4.4: "handheld drift in the films, a smooth function of the clock, never noise"): sums of slow
+       sines at unrelated rates, laid on the aim and the eye by `amp` (1: about a degree either way) */
+    function f2Drift(v, t, amp) {
+      if (!(amp > 0)) return v;
+      const yw = amp * (0.0105 * Math.sin(0.71 * t + 0.3) + 0.0062 * Math.sin(1.37 * t + 1.1) + 0.003 * Math.sin(2.3 * t + 2.0));
+      const pt = amp * (0.0085 * Math.sin(0.93 * t + 0.4) + 0.005 * Math.sin(1.71 * t + 2.3));
+      const dx = v[3] - v[0], dz = v[5] - v[2], d = Math.max(0.2, Math.hypot(dx, dz)), c = Math.cos(yw), sn = Math.sin(yw);
+      const rx = dx * c - dz * sn, rz = dx * sn + dz * c;
+      v[3] = v[0] + rx; v[5] = v[2] + rz; v[4] += pt * d;
+      v[0] += amp * 0.004 * Math.sin(0.83 * t + 0.7); v[1] += amp * 0.003 * Math.sin(1.13 * t + 0.5); v[2] += amp * 0.004 * Math.sin(0.67 * t + 1.9);
+      v[7] += amp * 0.004 * Math.sin(0.61 * t + 0.8);
+      return v;
+    }
+    /* A WALK on his own feet from point to point ([x, z]...), as a run of keys: the eye at `y`, looking `ahead` metres along the
+       path (and at `a` over its last metre when given), arriving at `t1`; the head's bob is laid on in the frame (f2Bob) */
+    function f2PathLen(P) { let L = 0; for (let i = 1; i < P.length; i++) L += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); return L; }
+    function f2PathAt(P, s) { for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (s <= l || i === P.length - 1) { const u = l > 1e-6 ? c01(s / l) : 1; return [lp(a[0], b[0], u), lp(a[1], b[1], u)]; } s -= l; } return P[0].slice(); }
+    function f2WalkKeys(P, t0, t1, y, o = {}) {
+      const L = f2PathLen(P), n = Math.max(2, Math.ceil(L / 0.7)), out = [], ahead = o.ahead || 1.4, aY = o.aY != null ? o.aY : y - 0.12;
+      for (let i = 0; i <= n; i++) {
+        const u = i / n, s = L * u, p = f2PathAt(P, s), q = f2PathAt(P, Math.min(L, s + ahead)), qq = (q[0] === p[0] && q[1] === p[1]) ? f2PathAt(P, L) : q;
+        let dx = qq[0] - p[0], dz = qq[1] - p[1]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
+        let a = [p[0] + dx * 2.5, aY, p[1] + dz * 2.5];
+        if (o.a && s > L - 1.0) { const w = f2smo((s - (L - 1.0)) / 1.0); a = [lp(a[0], o.a[0], w), lp(a[1], o.a[1], w), lp(a[2], o.a[2], w)]; }
+        /* (the time at each key: eased away from his first step and into his last, a constant pace between) */
+        const ease = Math.min(0.3, 0.5 * 1.0 / Math.max(1, L));
+        const tu = u < ease ? Math.sqrt(u * ease) : u > 1 - ease ? 1 - Math.sqrt((1 - u) * ease) : u;
+        out.push({ t: lp(t0, t1, tu), e: [p[0], y, p[1]], a, fp: o.fp || 64, fd: o.fd || 56, n: o.n || 'walk' });
+      }
+      out[0].stop = !!o.stopStart; out[out.length - 1].stop = o.stopEnd !== false;
+      return out;
+    }
+    /* the head's bob as he walks: down at each footfall, `rate` steps a second, by how fast the eye is going (so it is still
+       when he stands), a smooth function of the clock */
+    function f2Bob(v, t, speed, rate = 1.7) { const k = c01(speed / 0.7); v[1] -= 0.018 * k * (0.5 - 0.5 * Math.cos(2 * Math.PI * rate * t)); v[7] += 0.006 * k * Math.sin(Math.PI * rate * t); return v; }
+
+    /* ---------------------------------------------------------------- THE THINGS IN HIS HANDS AND ON HIS FLOOR
+       Every one a real model (v25.2): his own phone (`e4phone`, the play's copy of it, its screen drawn: PLAY.md 2), his white
+       thread's spool (`w51threadreel`), the strip of pills (`w51pills`), a cushion (`w5cushion`), Grandmaster Pho's breakfast
+       (`w51breakfast`). Each is unpacked under the curtain (parseOnce) and cloned once, so nothing loads on screen (v14.15) */
+    const F2M = { phone: null, phoneFloor: null, spool: null, spoolFloor: null, pills: null, cushion: null };
+    const F2SCR = (() => { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 512; return { cv, x: cv.getContext('2d'), sig: '' }; })();
+    const F2SCRTEX = tex(new THREE.CanvasTexture(F2SCR.cv)); F2SCRTEX.colorSpace = THREE.SRGBColorSpace;
+    /* THE CALL ON HIS SCREEN (words drawn into the world are art: v14.5): the decision's 3:03 and his teacher's name, then the
+       call ringing, then the call itself with its seconds */
+    function f2Screen(mode, secs, clock) {
+      const sig = mode + '|' + (mode === 'call' ? Math.floor(secs) : '') + '|' + (clock || '');
+      if (sig === F2SCR.sig) return; F2SCR.sig = sig;
+      const x = F2SCR.x; x.fillStyle = '#070b12'; x.fillRect(0, 0, 256, 512); x.textAlign = 'center';
+      if (mode === 'home') {
+        x.fillStyle = '#dfe8f4'; x.font = '300 74px sans-serif'; x.fillText(clock || '3:03', 128, 150);
+        x.font = '22px sans-serif'; x.fillStyle = '#9fb0c6'; x.fillText('Grandmaster Pho', 128, 300);
+        x.fillStyle = '#2f9e5a'; x.beginPath(); x.arc(128, 420, 34, 0, Math.PI * 2); x.fill();
+      } else {
+        x.fillStyle = '#9fb0c6'; x.font = '22px sans-serif'; x.fillText(clock || '3:03', 128, 46);
+        x.fillStyle = '#26364c'; x.beginPath(); x.arc(128, 150, 54, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#dfe8f4'; x.font = '44px sans-serif'; x.fillText('P', 128, 166);
+        x.font = '26px sans-serif'; x.fillText('Grandmaster Pho', 128, 250);
+        x.font = '22px sans-serif'; x.fillStyle = '#9fb0c6';
+        if (mode === 'ring') x.fillText('Calling…', 128, 290);
+        else { const s = Math.max(0, Math.floor(secs)); x.fillText(String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'), 128, 290); }
+        x.fillStyle = '#3a4a60'; x.beginPath(); x.arc(70, 400, 26, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#5a92d8'; x.beginPath(); x.arc(128, 400, 26, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#d8483e'; x.beginPath(); x.arc(186, 400, 26, 0, Math.PI * 2); x.fill();
+      }
+      F2SCRTEX.needsUpdate = true;
+    }
+    const F2SCRMAT = B({ map: F2SCRTEX, toneMapped: false });
+    /* the phone as the play holds it (c_play.js holdPhone, PLAY.md 2: its model's clone turned up to his eyes, the screen laid
+       over its glass), so the first frame of every ending is the decision's own */
+    function f2PhoneGroup() {
+      const g = new THREE.Group(); g.name = 'his phone (the endings)';
+      const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.136), F2SCRMAT); owned.push(scr.geometry); g.add(scr);
+      const src = things.hisPhone && things.hisPhone.userData.model;
+      if (src) { const m = src.clone(true); m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); m.rotation.x = Math.PI / 2; m.position.z = -0.006; g.add(m); }
+      return g;
+    }
+    const F2HELD = () => (S && S.plan && S.plan.PHONEHELD) || { pos: [-0.045, 0.06, -0.035], rot: [0.35, 0.25, 0] };
+    /* the phone on the floor of the circle in front of him, on the speaker: the same phone face up, its call lit */
+    const f2FloorPhone = new THREE.Group(); f2FloorPhone.name = 'his phone on the floor (the barrier)'; f2FloorPhone.visible = false; hisSideG.add(f2FloorPhone);
+    {
+      const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.136), F2SCRMAT); owned.push(scr.geometry); scr.rotation.x = -Math.PI / 2; scr.position.y = 0.0115; f2FloorPhone.add(scr);
+      const glowQ = pool(0, 0.004, 0, 0.5, 0.6, 0x9fb8e0, 0.16, { parent: f2FloorPhone, look: null });   // its light on the floor round it
+      F2M.phoneGlow = glowQ;
+    }
+    /* a model cloned for a film (unpacked under the curtain) */
+    function f2Clone(key, done) { if (!have(key)) { waiting.add(key); return; }
+      parseOnce(key).then(({ scene: src }) => { if (!alive) return; const m = src.clone(true);
+        m.traverse(q => { if (q.isMesh) { q.castShadow = false; q.receiveShadow = false; q.frustumCulled = false; q.material = q.material.clone(); mats.push(q.material); } });
+        done(m); }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); }); }
+    /* (his phone's model lands through the world: the copies are made when the first film asks for them) */
+    const f2PhoneFloorDress = () => { if (F2M.phoneFloor || !(things.hisPhone && things.hisPhone.userData.model)) return;
+      const m = things.hisPhone.userData.model.clone(true); m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); f2FloorPhone.add(m); F2M.phoneFloor = m; };
+    /* THE SPOOL OF WHITE THREAD (`w51threadreel`): in his hand (a held copy) and, the thread laid, set down on the floor by him */
+    const f2SpoolHand = new THREE.Group(); f2SpoolHand.name = 'the spool in his hand';
+    const f2SpoolFloor = new THREE.Group(); f2SpoolFloor.name = 'the spool on the floor'; f2SpoolFloor.visible = false; hisSideG.add(f2SpoolFloor);
+    f2Clone('w51threadreel', (m) => { m.scale.setScalar(0.62); f2SpoolHand.add(m); F2M.spool = m; const m2 = m.clone(true); m2.scale.setScalar(0.62); f2SpoolFloor.add(m2); F2M.spoolFloor = m2; });
+    /* THE STRIP OF PILLS (ending C), in his right hand */
+    const f2Pills = new THREE.Group(); f2Pills.name = 'the strip of pills';
+    f2Clone('w51pills', (m) => { f2Pills.add(m); F2M.pills = m; });
+    /* THE CUSHION over his eyes (ending C): a cushion of the sofa's held against his face, its weave filling the lens */
+    const f2Cushion = new THREE.Group(); f2Cushion.name = 'the cushion over his eyes';
+    f2Clone('w5cushion', (m) => { m.scale.set(0.9, 0.9, 0.9); f2Cushion.add(m); F2M.cushion = m; });
+
+    /* ---------------------------------------------------------------- THE WHITE THREAD ROUND HIM (the plan's 9.7, 12)
+       A cotton thread on his floor in a circle of 0.75 m round where he sits, laid from in front of him (toward his glass) to
+       his right, behind him, his left and round to the front again, where its ends meet in a small white spark. Drawn as a
+       tube a few millimetres thick that lies on the tiles with a hand's irregularity, laid by how far round it is (its draw
+       range); in Spirit Vision a white glow of its own (spiritAura), since the vision draws the world as a negative */
+    const F2C = { N: 180, R: 6, r: 0.0026, y: 0.0035 };
+    const f2Circle = (() => {
+      const curve = new THREE.Curve(); curve.getPoint = (u, out = new THREE.Vector3()) => { const C = F2P.circle, a = 2 * Math.PI * u,
+        rr = C.r * (1 + 0.018 * Math.sin(a * 3 + 0.7) + 0.012 * Math.sin(a * 7 + 2.1));
+        /* (from in front of him, +z, round to his right: facing his glass his right is -x) */
+        return out.set(C.x - Math.sin(a) * rr, F2C.y + 0.0012 * Math.sin(a * 6.4), C.z + Math.cos(a) * rr); };
+      const g = new THREE.TubeGeometry(curve, F2C.N, F2C.r, F2C.R, false); owned.push(g);
+      const m = new THREE.Mesh(g, M({ color: 0xf2f0e8, roughness: 0.85, emissive: 0x34342e })); m.name = 'the white thread round him'; m.frustumCulled = false;
+      m.visible = false; hisSideG.add(m);
+      const aura = ctx.spiritAura ? ctx.spiritAura(m, { color: 0xffffff, fill: 0.5, rim: 1.0, power: 1.6, flicker: 0.05, xray: 1 }) : null;
+      return { m, g, curve, aura, per: F2C.R * 6 };
+    })();
+    function f2CircleLay(u) { const n = Math.max(0, Math.min(F2C.N, Math.round(F2C.N * c01(u)))); f2Circle.g.setDrawRange(0, n * f2Circle.per); f2Circle.m.visible = n > 0; }
+    /* the spark where its ends meet */
+    const f2Spark = glow(F2P.circle.x, 0.02, F2P.circle.z + F2P.circle.r, 0.16, 0xffffff, 0.0, hisSideG, null);
+
+    /* ---------------------------------------------------------------- THE GOLD (the plan's 12; Grandmaster Pho's alone, v25.5)
+       Rings of gold rise from the white thread into a dome round him: each ring a thin band of light that climbs from the
+       floor and narrows to the dome's crown; behind them the dome's own skin, faint, brightest where it is seen edgewise; its
+       warmth laid on the floor inside it. Drawn as light on the world (additive, no lamp: v9.4) and, while his sight is open,
+       as a glow of its own in the vision (spiritAura: the vision draws the world as a negative) */
+    const F2G = { rings: 7, R0: F2P.circle.r + 0.03, H: 1.32 };
+    const f2GoldRingMat = B({ color: F2GOLD, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
+    const f2GoldRingGeo = new THREE.TorusGeometry(1, 0.006, 6, 120); f2GoldRingGeo.rotateX(Math.PI / 2); owned.push(f2GoldRingGeo);
+    const f2Gold = new THREE.Group(); f2Gold.name = 'the gold round him'; f2Gold.position.set(F2P.circle.x, 0, F2P.circle.z); f2Gold.visible = false; hisSideG.add(f2Gold);
+    const f2Rings = [];
+    for (let i = 0; i < F2G.rings; i++) { const m = new THREE.Mesh(f2GoldRingGeo, f2GoldRingMat.clone()); mats.push(m.material); m.frustumCulled = false; f2Gold.add(m); f2Rings.push(m); }
+    /* the dome's skin: an upper half of a sphere stretched to the rings' crown, lit by a picture of light made in its own small
+       program (light only, no lamp): brightest edgewise, bands climbing it */
+    const f2DomeMat = new THREE.ShaderMaterial({
+      uniforms: { uK: { value: 0 }, uT: { value: 0 }, uCol: { value: new THREE.Color(F2GOLD) }, uPush: { value: 0 } },
+      vertexShader: 'varying vec3 vN; varying vec3 vV; varying float vY; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vY = position.y;'
+        + ' vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }',
+      fragmentShader: 'uniform float uK; uniform float uT; uniform vec3 uCol; uniform float uPush; varying vec3 vN; varying vec3 vV; varying float vY;'
+        + ' void main() { float f = 1.0 - abs(dot(vN, vV)); float rim = pow(f, 2.2);'
+        + ' float bands = 0.5 + 0.5 * sin(vY * 26.0 - uT * 3.2); bands = pow(bands, 6.0);'
+        + ' float a = uK * (0.10 + 0.55 * rim + 0.22 * bands * (0.4 + uPush)) * (1.0 - smoothstep(0.92, 1.0, vY));'
+        + ' gl_FragColor = vec4(uCol * a, 1.0); }',
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false
+    });
+    mats.push(f2DomeMat);
+    const f2DomeGeo = new THREE.SphereGeometry(1, 64, 20, 0, Math.PI * 2, 0, Math.PI / 2); owned.push(f2DomeGeo);
+    const f2Dome = new THREE.Mesh(f2DomeGeo, f2DomeMat); f2Dome.name = 'the gold dome'; f2Dome.scale.set(F2G.R0, F2G.H, F2G.R0); f2Dome.frustumCulled = false; f2Gold.add(f2Dome);
+    const f2GoldPool = pool(F2P.circle.x, 0.006, F2P.circle.z, 2.2, 2.2, F2GOLD, 0.0, { parent: hisSideG, look: null });
+    const f2GoldCeil = pool(F2P.circle.x, FLAT.ceil - 0.01, F2P.circle.z, 3.4, 3.4, 0xffb850, 0.0, { rx: Math.PI / 2, parent: hisSideG, look: null });
+    /* in the vision: the rings and the dome's skin as glows of the vision's own (Grandmaster Pho's gold in it, as chapter 5
+       lays his) */
+    const f2GoldAura = ctx.spiritAura ? ctx.spiritAura(f2Gold, { color: F2GOLD, fill: 0.08, rim: 1.25, power: 2.0, flicker: 0.12, xray: 1 }) : null;
+
+    /* ---------------------------------------------------------------- THE RED THREADS (the plan's 12): fine filaments of
+       red that come in under his front door and through his glass, feeling along the floor, following his footsteps toward
+       him; a dry, slow growth, never a face, never a hand. In Spirit Vision only (ctx.spirit: the vision's layer, nowhere
+       else), as the play draws them at three o'clock (PLAY.md 4: its red, its thickness). Each is a tube re-laid every frame
+       from where its tail is to where its head has got to along its own way (a pure function of the clock); where its head
+       meets the gold it BURNS: sparks, and the thread burning back from the tip toward where it came in, curls of it going
+       to ash. */
+    const F2T = { M: 44, R: 5, r: 0.0045 };
+    function f2TubeGeo() {
+      const nv = (F2T.M + 1) * F2T.R, pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), idx = [];
+      for (let i = 0; i < F2T.M; i++) for (let j = 0; j < F2T.R; j++) { const a = i * F2T.R + j, b = i * F2T.R + (j + 1) % F2T.R, c = (i + 1) * F2T.R + j, d = (i + 1) * F2T.R + (j + 1) % F2T.R; idx.push(a, c, b, b, c, d); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); g.setIndex(idx);
+      g.boundingSphere = new THREE.Sphere(new THREE.Vector3(F2HX, 0, 0), 60); owned.push(g); return g;
+    }
+    const _tA = new THREE.Vector3(), _tB = new THREE.Vector3(), _tT = new THREE.Vector3(), _tN = new THREE.Vector3(), _tBi = new THREE.Vector3(), _tUp = new THREE.Vector3(0, 1, 0);
+    /* lay a tube along `at(s)` from s0 to s1 (metres along its way), its thickness `r` thinning to nothing at its head */
+    function f2TubeLay(g, at, s0, s1, r, taper = 0.06) {
+      const P = g.attributes.position.array, Nn = g.attributes.normal.array, L = Math.max(1e-4, s1 - s0);
+      for (let i = 0; i <= F2T.M; i++) {
+        const s = s0 + L * i / F2T.M; at(s, _tA); at(Math.min(s1, s + 0.01) === s ? s - 0.01 : s + 0.01, _tB);
+        _tT.subVectors(_tB, _tA); if (Math.min(s1, s + 0.01) === s) _tT.negate(); _tT.normalize();
+        _tN.crossVectors(_tT, _tUp); if (_tN.lengthSq() < 1e-6) _tN.set(1, 0, 0); _tN.normalize(); _tBi.crossVectors(_tN, _tT).normalize();
+        const head = c01((s1 - s) / taper), rr = r * (0.25 + 0.75 * head);
+        for (let j = 0; j < F2T.R; j++) { const a = j / F2T.R * Math.PI * 2, cx = Math.cos(a), sy = Math.sin(a), k = (i * F2T.R + j) * 3;
+          const nx = _tN.x * cx + _tBi.x * sy, ny = _tN.y * cx + _tBi.y * sy, nz = _tN.z * cx + _tBi.z * sy;
+          P[k] = _tA.x + nx * rr; P[k + 1] = _tA.y + ny * rr; P[k + 2] = _tA.z + nz * rr; Nn[k] = nx; Nn[k + 1] = ny; Nn[k + 2] = nz; }
+      }
+      g.attributes.position.needsUpdate = true; g.attributes.normal.needsUpdate = true;
+    }
+    /* each thread's way: from where it comes in, along the floor, to the gold's edge. `from` 'door' (under his front door, out
+       of the corridor) or 'glass' (through his glass from the night outside: in at a height, down the pane, onto the floor),
+       its points, and the lateral feel of it (a slow sideways wave, the thread searching) */
+    const F2DOME_EDGE = F2G.R0 + 0.07;
+    function f2Way(from, x0, z0, aim, seed) {
+      const C = F2P.circle, pts = [];
+      if (from === 'door') { pts.push([x0, 0.006, LIV.z0 - 0.6], [x0, 0.006, LIV.z0 + 0.05]); }
+      else { pts.push([x0, 1.5, LIV.z1 + 1.4], [x0, 0.6, LIV.z1 + 0.25], [x0 + 0.05, 0.03, LIV.z1 - 0.15]); }
+      /* across the floor to the gold's edge, at the angle `aim` (radians about the circle's middle, 0 toward +z) */
+      const ex = C.x + Math.sin(aim) * F2DOME_EDGE, ez = C.z + Math.cos(aim) * F2DOME_EDGE, last = pts[pts.length - 1];
+      const mx = lp(last[0], ex, 0.5) + Math.sin(seed * 3.1) * 0.35, mz = lp(last[2], ez, 0.5) + Math.cos(seed * 2.3) * 0.3;
+      pts.push([mx, 0.008, mz], [ex, 0.01, ez]);
+      const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
+      return { curve, L: curve.getLength(), seed };
+    }
+    function f2WayAt(W, s, t, out) {
+      const u = c01(s / W.L); W.curve.getPointAt(u, out);
+      /* (the search: a sideways wave along it, travelling with the head, smaller near where it came in and at the gold) */
+      const k = Math.sin(Math.PI * u) * 0.06, w = Math.sin(s * 5.1 - t * 1.3 + W.seed * 7.0) * k;
+      W.curve.getTangentAt(Math.min(0.999, u), _tT); out.x += -_tT.z * w; out.z += _tT.x * w;
+      if (out.y < 0.006) out.y = 0.006;
+      return out;
+    }
+    const F2THREADS = [
+      { from: 'door', x: HIS.door.x - 0.22, aim: Math.PI + 0.55, t0: 0.0, v: 0.55 },
+      { from: 'door', x: HIS.door.x + 0.08, aim: Math.PI + 0.2, t0: 0.7, v: 0.5 },
+      { from: 'door', x: HIS.door.x + 0.3, aim: Math.PI - 0.35, t0: 1.5, v: 0.58 },
+      { from: 'glass', x: F2P.circle.x - 1.1, aim: -0.55, t0: 0.4, v: 0.5 },
+      { from: 'glass', x: F2P.circle.x + 0.25, aim: 0.25, t0: 1.0, v: 0.45 },
+      { from: 'glass', x: F2P.balc.x - 0.2, aim: 1.0, t0: 0.2, v: 0.6 },
+      { from: 'glass', x: F2P.circle.x + 2.9, aim: 1.6, t0: 1.8, v: 0.62 }
+    ].map((T, i) => {
+      const W = f2Way(T.from, T.x, 0, T.aim, i + 1), g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial());
+      m.name = 'a red thread (the barrier)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
+      const sp = ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null;
+      return Object.assign({}, T, { W, g, m, sp, i });
+    });
+    /* THE SPARKS where a thread burns on the gold, and its ash: small motes in the vision (ctx.spirit on an instanced mote),
+       each a pure function of the clock (born at a moment, flying out and falling, fading) */
+    const F2S = { n: 160 };
+    const f2SparkGeo = new THREE.OctahedronGeometry(0.0055, 0); owned.push(f2SparkGeo);
+    const f2Sparks = new THREE.InstancedMesh(f2SparkGeo, new THREE.MeshBasicMaterial(), F2S.n); f2Sparks.name = 'the sparks (the barrier)';
+    f2Sparks.frustumCulled = false; f2Sparks.visible = false; owned.push(f2Sparks); hisSideG.add(f2Sparks); f2Sparks.position.set(F2P.circle.x, 0, F2P.circle.z);
+    const f2SparksSp = ctx.spirit ? ctx.spirit(f2Sparks, { color: 0xffb04a, fill: 1.4, rim: 0.6, flicker: 0.6, xray: 1 }) : null;
+    const f2Ash = new THREE.InstancedMesh(f2SparkGeo, new THREE.MeshBasicMaterial(), F2S.n); f2Ash.name = 'the ash (the barrier)';
+    f2Ash.frustumCulled = false; f2Ash.visible = false; owned.push(f2Ash); hisSideG.add(f2Ash); f2Ash.position.set(F2P.circle.x, 0, F2P.circle.z);
+    const f2AshSp = ctx.spirit ? ctx.spirit(f2Ash, { color: 0x8a3a30, fill: 0.7, rim: 0.4, flicker: 0.1, xray: 1 }) : null;
+    const _sM = new THREE.Matrix4(), _sQ = new THREE.Quaternion(), _sP = new THREE.Vector3(), _sS = new THREE.Vector3(), _sE = new THREE.Euler();
+    const f2Hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+    /* ---------------------------------------------------------------- THE FOOTSTEPS OF ENDING C (the plan's 9.8 C: "the red
+       footsteps end at the sofa"): his steps of the night after the decision, from his table to the kitchen drawer and the
+       tap, and to the sofa, red in Spirit Vision as the play's are (PLAY.md 4); the play's own from his door to his bed are
+       the play's and stay as it lays them */
+    const f2Feet = [];
+    { const fg = new THREE.CircleGeometry(1, 16); fg.rotateX(-Math.PI / 2); owned.push(fg);
+      const W = [[F2P.table.x, F2P.table.z], [F2P.table.x - 0.1, F2P.table.z - 0.9], [F2P.kitchen.x + 0.2, F2P.kitchen.z + 0.3], [F2P.kitchen.x, F2P.kitchen.z],
+                 [F2P.kitchen.x + 0.7, F2P.kitchen.z + 0.05], [F2P.kitchen.x - 0.4, F2P.kitchen.z + 0.7], [F2P.sofa.x + 1.2, F2P.sofa.z + 0.75], [F2P.sofa.x + 0.2, F2P.sofa.z + 0.62]];
+      const L = f2PathLen(W), n = Math.round(L / 0.36);
+      for (let i = 0; i <= n; i++) { const s = L * i / n, p = f2PathAt(W, s), q = f2PathAt(W, Math.min(L, s + 0.2)), ang = Math.atan2(q[0] - p[0], q[1] - p[1]), side = (i % 2 ? 1 : -1) * 0.1;
+        const m = new THREE.Mesh(fg, new THREE.MeshBasicMaterial()); m.scale.set(0.05, 1, 0.12); m.name = 'his footstep (ending C)';
+        m.position.set(p[0] + Math.cos(ang) * side, 0.012, p[1] - Math.sin(ang) * side); m.rotation.y = ang; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
+        f2Feet.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0.8 }) : null }); } }
+
+    /* ---------------------------------------------------------------- HIS WRIST (the plan's 9.8 D, 9.9): the band of red light
+       a thread wraps round his left wrist at the balcony's door (ending D), burned off by the gold in a white flash, the red
+       mark it leaves, and the white thread his teacher ties over the same wrist at dawn. Each a ring laid round the left
+       hand's wrist bone in the hands' own pass (the left hand is the mirrored copy of the right: buildPrayerArm) */
+    const F2W = { band: null, mark: null, thread: null, flash: null, on: false };
+    function f2WristDress() {
+      if (F2W.band || !F2.api || !F2.api.buildPrayerArm) return !!F2W.band;
+      const L = F2.api.buildPrayerArm(); if (!L || !L.userData || !L.userData.model) return false;
+      const wr = L.userData.model.getObjectByName('handR'); if (!wr || !wr.parent) return false;
+      const mk = (r, th, color, add, op) => { const g = new THREE.TorusGeometry(r, th, 6, 40); owned.push(g);
+        const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
+        m.position.copy(wr.position); m.quaternion.copy(wr.quaternion); m.rotateX(Math.PI / 2); m.visible = false; m.frustumCulled = false; m.renderOrder = 3; wr.parent.add(m); return m; };
+      F2W.band = mk(0.034, 0.006, F2RED, true, 0.9);
+      F2W.band2 = mk(0.036, 0.011, 0xff5040, true, 0.35);
+      F2W.mark = mk(0.0335, 0.0042, 0xb04a46, false, 0.85);
+      F2W.thread = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0);
+      F2W.thread2 = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0); F2W.thread2.translateZ(0.004);
+      return true;
+    }
+    function f2WristShow(band, mark, thread, flash) {
+      if (!f2WristDress()) return;
+      F2W.band.visible = band > 0.001; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = band > 0.001 || flash > 0.001;
+      F2W.band2.material.opacity = 0.35 * band + 0.9 * flash; F2W.band2.material.color.setHex(flash > band ? 0xffffff : 0xff5040);
+      F2W.mark.visible = mark > 0.001; F2W.mark.material.opacity = 0.85 * mark;
+      F2W.thread.visible = thread > 0.5; F2W.thread2.visible = thread > 1.5;
+    }
+
+    /* ---------------------------------------------------------------- THE FILMS' FRAME, AND WHAT EACH ONE OWNS
+       begin(k, api, s, E) at the scene's first frame; frame(t) every frame of it; end() at its last (and on a skip). What a film
+       changes it puts back at its end: the things it moved, the press, the vision, his hands, the lens's roll */
+    function f2Beds(o) { if (S && S.beds) S.beds.film = o; }
+    /* the beds the play would have at pressure p in his flat at night (PLAY.md 5, c_play.js bedsTick), so a film's night is the
+       play's night */
+    function f2NightBeds(p, vision, extra) {
+      const o = { night: 0.5 * Math.max(0, 1 - p * 1.4), three: 0.55 * Math.min(1, p * 1.6), m6a: p >= 0.2 ? 0.32 : 0, m6b: p >= 0.5 ? 0.3 * c01((p - 0.5) / 0.1) : 0,
+                  m6c: p >= 0.8 ? 0.3 * c01((p - 0.8) / 0.08) : 0, tin: p > 0.6 ? 0.16 * (p - 0.6) / 0.4 : 0, brth: 0.32 * (0.4 + 0.6 * p), threads: vision ? 0.3 : 0 };
+      if (extra) Object.assign(o, extra);
+      return o;
+    }
+    /* SPIRIT VISION held by the film's clock (the engine's own curve out from his eyes over `secs` from `t0`, full until `t1`,
+       home over `back`), held only round the moments it is open (a held radius of 0 draws every frame through the vision's
+       pass for nothing: episode 4 chapter 5's R51) */
+    const F2VR = 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
+    function f2VisionR(t, t0, secs, t1, back) {
+      if (t >= t0 && t < t0 + secs) return [F2VR * f2VisCurve((t - t0) / secs), true];
+      if (t >= t0 + secs && t < t1) return [F2VR, false];
+      if (t >= t1 && t < t1 + back) return [F2VR * f2VisCurve(1 - (t - t1) / back), true];
+      return [0, false];
+    }
+    function f2Vision(r, mv, t) {
+      if (!kit || !kit.vision) return;
+      if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; }
+      /* (shut: held at nothing for a third of a second, so the vision's own radius is nothing when it is let go; let go while
+         it stood open, it would run home by itself over its own 1.6 s, across a cut) */
+      else if (F2.vis) { if (t != null && t - (F2.visT || 0) < 0.3 && t >= (F2.visT || 0)) kit.vision({ r: 0, moving: false }); else { kit.vision({ r: 0, moving: false }); kit.vision(null); F2.vis = false; } }
+    }
+    function f2Look(name) { if (F2.look === name) return; F2.look = name; if (kit && kit.daylight && PRESETS[name]) kit.daylight(PRESETS[name], 0); }
+    function f2Press(k) { if (kit && kit.press) kit.press(c01(k), { secs: 0, cine: true }); F2.press = k; }
+    /* a thing held in his hand for the film (kit.hold: drawn in the hands' pass), or let go; `hand` 'left' or right */
+    function f2Hold(obj, o) {
+      const key = obj ? obj.uuid + (o && o.hand || '') : null;
+      if (key === F2.held) return; F2.held = key;
+      if (!kit || !kit.hold) return;
+      kit.hold(null);
+      if (obj) kit.hold(obj, o || {});
+    }
+    /* the hands: shown or not, and in which library pose at what share (api.handPose draws the pose at exactly k) */
+    function f2Hands(show, pose, k, o) {
+      const A = F2.api; if (!A) return;
+      if (A.handsRoot) A.handsRoot.visible = !!show;
+      if (!show) return;
+      if (A.handPose) A.handPose(pose || null, pose ? c01(k) : 0, o || {});
+    }
+    /* the left hand placed as the right one's mirror (the library's poses lay most things in the right; a left hand on a door's
+       frame or held out to his teacher is the right one's pose turned over), the right one hidden */
+    function f2MirrorLeft(on) {
+      const A = F2.api; if (!A || !A.armR) return;
+      const L = A.buildPrayerArm ? A.buildPrayerArm() : null; if (!L) return;
+      if (!on) { L.visible = false; A.armR.visible = true; return; }
+      L.visible = true; L.position.set(-A.armR.position.x, A.armR.position.y, A.armR.position.z);
+      const q = A.armR.quaternion; L.quaternion.set(q.x, -q.y, -q.z, q.w);
+      A.armR.visible = false;
+    }
+    /* where a world point stands on this screen (NDC), for a hand laid over it */
+    function f2Ndc(p) { camera.updateMatrixWorld(); return _f2v.set(p.x, p.y, p.z).project(camera); }
+    /* his own bottle of holy water on his altar, trembling with each wave and still the moment the barrier holds (the plan's 9.7) */
+    let f2BottleRest = null;
+    function f2Bottle(shake, t) {
+      const b = things.bottle; if (!b) return;
+      if (!f2BottleRest) f2BottleRest = { x: b.position.x, z: b.position.z, ry: b.rotation.y };
+      const k = c01(shake);
+      b.position.x = f2BottleRest.x + 0.0016 * k * Math.sin(t * 61); b.position.z = f2BottleRest.z + 0.0014 * k * Math.sin(t * 53 + 1);
+      b.rotation.z = 0.012 * k * Math.sin(t * 47 + 2); b.rotation.x = 0.01 * k * Math.sin(t * 43);
+    }
+    function f2BottleRestore() { const b = things.bottle; if (!b || !f2BottleRest) return; b.position.x = f2BottleRest.x; b.position.z = f2BottleRest.z; b.rotation.set(0, f2BottleRest.ry, 0); }
+
+    /* ================================================================ THE BARRIER'S PICTURE (the plan's 9.7), from `b` its
+       start on the ending's clock; B its own marks (y_endings.js BAR2 on the ending's clock), `from` the view the ending leaves
+       him in. Returns the lens [eye, aim, lens, roll] for the frame */
+    function f2BarrierCam(t, Bm, from) {
+      const C = F2P.circle, eyeSit = [F2SIT.x, F2SIT.y, F2SIT.z], glassA = [C.x, 0.55, LIV.z1 + 2.0];
+      if (!F2.barKeys || F2.barKeysFor !== Bm) {
+        const K = [];
+        K.push({ t: Bm.b0, e: from.e.slice(), a: from.a.slice(), fp: from.fp, fd: from.fd, n: 'bar:call', stop: true });
+        K.push({ t: Bm.walk0, e: from.e.slice(), a: [lp(from.a[0], F2P.bagAt.x, 0.25), lp(from.a[1], 1.2, 0.3), lp(from.a[2], F2P.bagAt.z, 0.25)], fp: from.fp, fd: from.fd, n: 'bar:turn' });
+        /* to the bag, around his sofa's near end: up from where the ending left him first if he was down */
+        const path1 = F2PATH[F2.k] || F2PATH.A, rise = Bm.rise1 || 0;
+        if (rise > 0) K.push({ t: Bm.walk0 + rise, e: [path1[0][0], F2EYE.stand, path1[0][1]], a: [path1[1][0], 1.3, path1[1][1]], fp: 64, fd: 56, n: 'bar:rise' });
+        f2WalkKeys(path1, Bm.walk0 + rise, Bm.bag, F2EYE.stand, { a: [F2P.bag.x, 0.2, F2P.bag.z], fp: 64, fd: 56, n: 'bar:tobag' }).slice(1).forEach(k => K.push(k));
+        /* down to the bag: his right hand into it (the zip, the spool), and up again */
+        K.push({ t: Bm.bag + 0.9, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x, 0.15, F2P.bag.z + 0.05], fp: 62, fd: 54, n: 'bar:bag', stop: true });
+        K.push({ t: Bm.spool, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x + 0.02, 0.18, F2P.bag.z + 0.08], fp: 62, fd: 54, n: 'bar:spool', stop: true });
+        K.push({ t: Bm.spool + 0.9, e: [F2P.bagAt.x + 0.05, F2EYE.stand, F2P.bagAt.z + 0.1], a: [F2P.bagAt.x + 0.9, 1.3, F2P.bagAt.z + 1.8], fp: 64, fd: 56, n: 'bar:up' });
+        const path2 = F2PATH.on;
+        f2WalkKeys(path2, Bm.spool + 0.9, Bm.sit0, F2EYE.stand, { a: glassA, fp: 66, fd: 58, n: 'bar:tocircle' }).slice(1).forEach(k => K.push(k));
+        /* he sits down, in the middle of the room, facing his glass (a pained sit, eased over 1.6 s) */
+        K.push({ t: Bm.sit0 + 0.8, e: [F2SIT.x, 1.2, F2SIT.z - 0.06], a: [C.x, 0.95, C.z + 3.0], fp: 68, fd: 60, n: 'bar:sit' });
+        K.push({ t: Bm.circle - 0.7, e: eyeSit, a: [C.x, 0.62, C.z + 3.0], fp: 70, fd: 62, n: 'bar:seated', stop: true });
+        K.push({ t: Bm.circle, e: eyeSit, a: [C.x, 0.02, C.z + 1.5], fp: 70, fd: 62, n: 'bar:down', stop: true });
+        F2.barKeys = K; F2.barKeysFor = Bm;
+      }
+      if (t < Bm.circle + 0.001) return f2Keys(F2.barKeys, t);
+      /* CLOSE THE CIRCLE (the film's clock stands at Bm.circle while it is open): his head follows the thread as it is laid,
+         within a neck's reach (to his right as it goes round to his right, back to the front while it passes behind him, to his
+         left as it comes round, and to the front where its ends meet), looking at the floor beyond his knees */
+      if (t < Bm.after) {
+        const u = F2.cirShow, turn = 1.05 * Math.sin(Math.PI * c01(u / 0.5)) * (u < 0.5 ? -1 : 0) + 1.05 * Math.sin(Math.PI * c01((u - 0.5) / 0.5)) * (u >= 0.5 ? 1 : 0);
+        const yw = Math.PI + turn, d = 1.5, nar = f2Narrow();
+        const a = [C.x - Math.sin(yw) * d, 0.02 + 0.08 * Math.abs(Math.sin(turn)), C.z - Math.cos(yw) * d];
+        const v = [eyeSit[0], eyeSit[1], eyeSit[2], a[0], a[1], a[2], nar ? 70 : 62, 0];
+        /* after it closes, the eye lifts to level for his teacher's words */
+        const lift = f2smo(f2win(t, Bm.circle + 0.05, Bm.after));
+        return v.map((q, j) => (j === 4 ? lp(q, 0.75, lift) : q));
+      }
+      /* THE CHANT (the plan's 9.7, 26-40 s, the measured take): low, from the floor inside the circle, looking out to his glass
+         and the balcony's door; a slow turn of 40 degrees as the threads come; an insert of the foot of his front door as they
+         come in under it; the eye rising a little as he breathes out at the break */
+      if (!F2.chantKeys || F2.chantKeysFor !== Bm) {
+        const K = [], c0 = Bm.chant, Y0 = Math.PI - 0.15, Y1 = Math.PI - 0.15 - 0.7;
+        const at = (yw, h, d = 2.2) => [C.x - Math.sin(yw) * d, h, C.z - Math.cos(yw) * d];
+        K.push({ t: Bm.after, e: eyeSit, a: at(Math.PI, 0.75), fp: 66, fd: 58, n: 'bar:level', stop: true });
+        K.push({ t: c0 + 0.5, e: eyeSit, a: at(Math.PI - 0.05, 0.62), fp: 66, fd: 58, n: 'bar:gold' });
+        K.push({ t: Bm.door0 - 0.01, e: [eyeSit[0], 0.78, eyeSit[2]], a: at(Y0, 0.55), fp: 66, fd: 58, n: 'bar:gold2', stop: true });
+        /* the insert: the foot of his front door, the red threads slipping in under it (a cut to a thing: v21.30) */
+        K.push({ t: Bm.door0, e: [F2P.door.x + 0.75, 0.32, F2P.door.z + 1.35], a: [F2P.door.x + 0.05, 0.03, F2P.door.z + 0.02], fp: 40, fd: 34, n: 'bar:door', cut: true });
+        K.push({ t: Bm.door1, e: [F2P.door.x + 0.7, 0.28, F2P.door.z + 1.25], a: [F2P.door.x + 0.1, 0.03, F2P.door.z + 0.2], fp: 38, fd: 32, n: 'bar:door2', stop: true });
+        K.push({ t: Bm.door1 + 0.001, e: [eyeSit[0], 0.76, eyeSit[2]], a: at(Y0, 0.42), fp: 66, fd: 58, n: 'bar:low', cut: true });
+        K.push({ t: Bm.touch + 1.6, e: [eyeSit[0], 0.74, eyeSit[2]], a: at(lp(Y0, Y1, 0.45), 0.36), fp: 66, fd: 58, n: 'bar:turn' });
+        K.push({ t: Bm.surge, e: [eyeSit[0], 0.73, eyeSit[2]], a: at(Y1, 0.38), fp: 64, fd: 56, n: 'bar:surge', stop: true });
+        K.push({ t: Bm.brk + 1.4, e: [eyeSit[0], 0.8, eyeSit[2]], a: at(Y1 + 0.2, 0.72), fp: 66, fd: 58, n: 'bar:break' });
+        if (F2.k === 'D' && Bm.wrist0 != null) {
+          K.push({ t: Bm.wrist0 + 0.6, e: [eyeSit[0], 0.81, eyeSit[2]], a: at(Math.PI - 0.2, 0.35, 1.4), fp: 64, fd: 56, n: 'bar:wrist', stop: true });
+          K.push({ t: Bm.burn + 0.8, e: [eyeSit[0], 0.8, eyeSit[2]], a: at(Math.PI - 0.22, 0.32, 1.4), fp: 64, fd: 56, n: 'bar:burnt', stop: true });
+        }
+        K.push({ t: Bm.calm, e: [eyeSit[0], 0.82, eyeSit[2]], a: at(Math.PI - 0.3, 0.78), fp: 66, fd: 58, n: 'bar:quiet', stop: true });
+        /* he lies down inside the circle on his back, his knees up: the ceiling, the city's glow on it */
+        K.push({ t: Bm.lie, e: [eyeSit[0], 0.82, eyeSit[2]], a: at(Math.PI - 0.3, 0.9), fp: 66, fd: 58, n: 'bar:quiet2', stop: true });
+        K.push({ t: Bm.lie + 0.8, e: [C.x, 0.5, C.z - 0.3], a: [C.x, 1.8, C.z + 1.6], fp: 66, fd: 58, n: 'bar:down' });
+        K.push({ t: Bm.lie + 1.8, e: [C.x, F2EYE.lie, C.z - 0.5], a: [C.x + 0.05, FLAT.ceil, C.z + 0.6], fp: 66, fd: 58, n: 'bar:ceiling', stop: true });
+        K.push({ t: Bm.end, e: [C.x, F2EYE.lie, C.z - 0.5], a: [C.x + 0.07, FLAT.ceil, C.z + 0.62], fp: 64, fd: 56, n: 'bar:ceiling2', stop: true });
+        F2.chantKeys = K; F2.chantKeysFor = Bm;
+      }
+      return f2Keys(F2.chantKeys, t);
+    }
+    /* how hard the picture is pressed in the barrier, from the ending's own pressure at its start (`p0`) */
+    function f2BarrierPress(t, Bm, p0) {
+      if (t < Bm.chant) {
+        const wave = Math.max(0, Math.sin((t - Bm.b0) * 2 * Math.PI / 8.0 - 0.4)) * 0.12;
+        const sit = f2smo(f2win(t, Bm.circle, Bm.after)) * 0.08;
+        return Math.min(0.95, p0 + wave - sit);
+      }
+      const rise = 0.12 * f2smo(f2win(t, Bm.chant, Bm.touch)) + 0.18 * f2smo(f2win(t, Bm.touch, Bm.surge)) + 0.12 * f2smo(f2win(t, Bm.surge - 0.6, Bm.surge + 0.4));
+      const k = Math.min(1, p0 - 0.08 + rise);
+      return t < Bm.brk ? k : k * (1 - f2s5(f2win(t, Bm.brk, Bm.brk + 0.55)));
+    }
+    /* THE BARRIER'S THINGS AND EFFECTS at its time t (Bm its marks; `push` the gold pushing harder, B's; `band` the band on his
+       wrist, D's) */
+    function f2BarrierFx(t, Bm, o) {
+      const C = F2P.circle;
+      /* the phone: in his hand through the call and the walk, then on the floor in front of him (set down as he sits, out of
+         the lens's sight) */
+      const onFloor = t >= Bm.sit0 + 1.0;
+      f2PhoneFloorDress();
+      f2FloorPhone.visible = onFloor && t < Bm.end + 1; f2FloorPhone.position.set(C.x + 0.12, 0, C.z + 0.62); f2FloorPhone.rotation.y = Math.PI + 0.35;
+      if (F2M.phoneGlow) F2M.phoneGlow.m.opacity = 0.16 * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.calm)));
+      /* the thread: laid by the event (or closed past it) */
+      const lay = t < Bm.circle - 1e-3 ? 0 : (t >= Bm.after - 1e-3 || F2.cirDone) ? 1 : F2.cirShow;
+      f2CircleLay(lay);
+      if (f2Circle.aura) f2Circle.aura.set('uAlpha', 1);
+      const spark = lay >= 1 ? Math.max(0, 1 - (t - Bm.circle) / 0.9) : 0;
+      f2Spark.q.visible = spark > 0.01; f2Spark.m.opacity = spark; f2Spark.q.scale.setScalar(0.08 + 0.2 * spark);
+      /* the spool set down by him, the thread laid */
+      f2SpoolFloor.visible = t >= Bm.circle && lay >= 1 && t < Bm.end + 1; f2SpoolFloor.position.set(C.x + C.r - 0.06, 0.0, C.z + 0.25); f2SpoolFloor.rotation.set(Math.PI / 2, 0, 0.4);
+      /* THE GOLD: rings rising from the thread over the chant's first verse, building the dome; it holds and pushes as the
+         threads burn on it; at the break it settles into the thread and fades */
+      const c0 = Bm.chant, up = f2smo(f2win(t, c0 + 0.3, c0 + 6.5)), fadeG = 1 - f2smo(f2win(t, Bm.brk + 1.5, Bm.calm + 1.2)), push = (o.push ? 0.45 : 0) + 0.55 * f2bell(t, Bm.touch - 0.5, Bm.touch + 1.0, Bm.surge, Bm.brk + 0.4);
+      const gk = up * fadeG;
+      f2Gold.visible = gk > 0.002;
+      f2DomeMat.uniforms.uK.value = gk * (0.85 + 0.4 * push) * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.brk + 1.0)));
+      f2DomeMat.uniforms.uT.value = t; f2DomeMat.uniforms.uPush.value = push;
+      for (let i = 0; i < f2Rings.length; i++) {
+        /* each ring climbs from the floor to the crown over 4.4 s, one every 0.9 s from the chant's start, then round again */
+        const ph = ((t - c0 - 0.3 - i * 0.9) / 4.4), cyc = ph - Math.floor(ph), born = t >= c0 + 0.3 + i * 0.9;
+        const h = F2G.H * Math.pow(cyc, 0.85), rr = F2G.R0 * Math.sqrt(Math.max(0, 1 - Math.pow(h / F2G.H, 2)));
+        const m = f2Rings[i]; m.position.y = Math.max(0.004, h); m.scale.set(Math.max(0.02, rr), 1, Math.max(0.02, rr));
+        const fadeTop = 1 - f2smo(c01((cyc - 0.78) / 0.22)), fadeBot = f2smo(c01(cyc / 0.06));
+        m.material.opacity = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0; m.visible = m.material.opacity > 0.002;
+      }
+      if (f2GoldAura) f2GoldAura.set('uAlpha', gk * (0.8 + 0.4 * push));
+      f2GoldPool.m.opacity = 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;
+      f2GoldCeil.m.opacity = 0.07 * gk; f2GoldCeil.q.visible = f2GoldCeil.m.opacity > 0.002;
+      /* THE RED THREADS: in from the door and the glass from the vision's opening, to the gold; each meets it and burns back */
+      const tv = Bm.vis0 + 0.4, burnK = 0.9, te = (F2.E && F2.E.slow) ? F2.E.slow(t) : t;
+      let sparkN = 0, ashN = 0;
+      for (const T of F2THREADS) {
+        const t0 = tv + T.t0 * (o.near ? 0.4 : 1), grow = Math.max(0, te - t0), Lhit = T.W.L;
+        /* (ending B and C: the threads are already at his feet: they begin most of the way along) */
+        const start = o.near ? Lhit * 0.72 : 0;
+        const tHit = t0 + (Lhit - start) / T.v, tTouch = Math.max(tHit, Bm.touch + T.i * 0.32);
+        let head = Math.min(Lhit, start + grow * T.v), tail = 0;
+        /* held off by the gold until its moment to touch it (the first touch is the slow motion's: Bm.touch) */
+        if (te < tTouch) head = Math.min(head, Lhit - 0.02 - 0.03 * Math.sin(te * 2.0 + T.i));
+        const burnT = te - tTouch;
+        let alive = 1;
+        if (burnT > 0) { head = Math.max(0, Lhit - burnT * burnK * (1 + 0.15 * T.i)); alive = head > 0.02 ? 1 : 0; }
+        const shown = te >= t0 && head > tail + 0.01 && alive && t < Bm.calm + 2;
+        T.m.visible = shown;
+        if (shown) { f2TubeLay(T.g, (s, out) => f2WayAt(T.W, s, te, out), tail, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
+        /* its sparks: where it burns, a few motes a tenth of a second, born at the burning head */
+        if (burnT > -0.05 && head > 0.02) {
+          for (let j = 0; j < 7 && sparkN < F2S.n; j++) {
+            const born = Math.floor((te - tTouch) * 10 - j) / 10, age = te - tTouch - born; if (born < 0 || age < 0 || age > 0.7) continue;
+            const sb = Math.max(0, Lhit - born * burnK * (1 + 0.15 * T.i)); f2WayAt(T.W, sb, tTouch + born, _sP);
+            const h1 = f2Hash(T.i * 97 + born * 31 + j), h2 = f2Hash(T.i * 13 + born * 71 + j * 3), h3 = f2Hash(T.i * 41 + born * 17 + j * 7);
+            _sP.x += (h1 - 0.5) * 0.5 * age; _sP.z += (h2 - 0.5) * 0.5 * age; _sP.y += 0.35 * age * (0.6 + h3) - 1.2 * age * age;
+            if (_sP.y < 0.005) _sP.y = 0.005;
+            const sc = (1 - age / 0.7) * (0.7 + h3);
+            _sP.x -= F2P.circle.x; _sP.z -= F2P.circle.z;
+            _sS.setScalar(sc); _sE.set(h1 * 6, h2 * 6, h3 * 6); _sQ.setFromEuler(_sE); _sM.compose(_sP, _sQ, _sS); f2Sparks.setMatrixAt(sparkN++, _sM);
+          }
+        }
+        /* its ash: curls of it lying where it burned, fading over 2.5 s */
+        if (burnT > 0) {
+          const step = 0.16;
+          for (let s = Lhit; s > head && ashN < F2S.n; s -= step) {
+            const bt = (Lhit - s) / (burnK * (1 + 0.15 * T.i)), age = burnT - bt; if (age < 0 || age > 2.5) continue;
+            f2WayAt(T.W, s, tTouch + bt, _sP); _sP.y = 0.006 + 0.01 * f2Hash(s * 9 + T.i); _sP.x -= F2P.circle.x; _sP.z -= F2P.circle.z;
+            const sc = 1.3 * (1 - age / 2.5);
+            _sS.set(sc * 1.6, sc * 0.5, sc); _sE.set(0, f2Hash(s * 3 + T.i) * 6, 0); _sQ.setFromEuler(_sE); _sM.compose(_sP, _sQ, _sS); f2Ash.setMatrixAt(ashN++, _sM);
+          }
+        }
+      }
+      f2Sparks.count = sparkN; f2Sparks.visible = sparkN > 0; f2Sparks.instanceMatrix.needsUpdate = true;
+      f2Ash.count = ashN; f2Ash.visible = ashN > 0; f2Ash.instanceMatrix.needsUpdate = true;
+      /* D: the band of red light round his left wrist until the gold burns it off (a white flash), the red mark it leaves */
+      if (o.band) { const fl = f2bell(t, Bm.burn - 0.12, Bm.burn, Bm.burn + 0.1, Bm.burn + 0.45);
+        f2WristShow(t < Bm.burn ? 1 : 0, t >= Bm.burn ? 1 : 0, 0, fl); }
+      /* the bottle on his altar: trembling with the pressure, still the moment the barrier holds */
+      f2Bottle(t < Bm.brk ? 0.6 + 0.4 * Math.max(0, Math.sin((t - Bm.b0) * 2 * Math.PI / 8.0 - 0.4)) : 0, t);
+    }
+    /* THE THREADS AT HIS FEET (endings B and C, before the barrier): the barrier's threads, most of the way along their ways,
+       held off the gold's edge (there is no gold yet), searching */
+    function f2ThreadsAt(t, te, o) {
+      for (const T of F2THREADS) {
+        const L = T.W.L, start = L * 0.6, grow = Math.max(0, te - o.t0 - T.t0 * 0.4);
+        const head = Math.min(L - 0.04 - 0.05 * Math.sin(te * 1.7 + T.i), start + grow * T.v);
+        T.m.visible = head > 0.05;
+        if (T.m.visible) { f2TubeLay(T.g, (s2, out) => f2WayAt(T.W, s2, te, out), 0, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
+      }
+    }
+    /* ENDING D'S THREADS: streaming in from the dark beyond the city's lights, all from one direction, across his balcony and
+       in at the open door; one turns the way a head turns and lunges at the wrist of his hand on the frame (where that wrist
+       is on this screen, laid out into the world a hand's reach before the lens) */
+    const F2D = { n: 6 };
+    const f2DT = [];
+    for (let i = 0; i < F2D.n; i++) { const g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial()); m.name = 'a red thread (ending D)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
+      f2DT.push({ g, m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null, i }); }
+    const _dA = new THREE.Vector3(), _dB = new THREE.Vector3(), _dW = new THREE.Vector3();
+    function f2DThreads(t, E) {
+      const bl = F2P.balc, door = [bl.x - 0.08, LIV.z1], src = [bl.x + 22, 9.0, LIV.z1 + 70];
+      for (const D of f2DT) {
+        const show = F2.vis && t >= E.vis + 0.6 && t < E.wrap + 0.05;
+        D.m.visible = show; if (!show) continue;
+        const i = D.i, lunge = i === 2, sp = (i - (F2D.n - 1) / 2) * 0.07;
+        /* each from far away out in the dark, low over the city, in at the door and onto his floor toward where he stands */
+        const grow = c01((t - E.vis - 0.6 - i * 0.25) / 4.0);
+        const at = (s, out) => {
+          const u = s;
+          if (lunge && t >= E.turn) {
+            /* the one that turns: its head lifts off the floor like a head turning, then lunges at the wrist */
+            const tu = f2smo(f2win(t, E.turn, E.lunge)), lu = f2s5(f2win(t, E.lunge, E.wrap));
+            camera.updateMatrixWorld(); const W2 = f2WristWorld(_dW);
+            const base = _dA.set(lp(src[0], door[0], u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] + 0.3, u));
+            const lift = Math.sin(Math.PI * c01((u - 0.82) / 0.18)) * 0.45 * tu;
+            base.y += lift;
+            if (W2 && u > 0.7) { const w = f2smo((u - 0.7) / 0.3) * lu; base.lerp(W2, w); }
+            return out.copy(base);
+          }
+          return out.set(lp(src[0], door[0] + sp, u) + Math.sin(u * 9 + t * 0.9 + i) * 0.25 * (1 - u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] - 0.6 * u * u, u) + sp * 0.5);
+        };
+        f2TubeLay(D.g, at, 0.0, Math.max(0.02, grow), F2T.r * 1.3, 0.02);
+        if (D.sp) D.sp.set('uAlpha', 0.9);
+      }
+    }
+    /* where his left wrist is in the world, for a thread to reach it: the wrist bone of the left hand as the hands' lens draws
+       it, laid out along the world lens's own ray at 0.42 m */
+    const _wv = new THREE.Vector3();
+    function f2WristWorld(out) {
+      const A = F2.api; if (!A || !A.buildPrayerArm || !A.vmCam) return null;
+      const L = A.buildPrayerArm(); if (!L || !L.visible || !L.userData.model) return null;
+      const wr = L.userData.model.getObjectByName('handR'); if (!wr) return null;
+      wr.updateWorldMatrix(true, false); wr.getWorldPosition(_wv);
+      if (A.handsRoot) { A.handsRoot.updateWorldMatrix(true, false); }
+      _wv.project(A.vmCam);
+      out.set(_wv.x, _wv.y, 0.5).unproject(camera).sub(camera.getWorldPosition(_dB)).normalize().multiplyScalar(0.42).add(_dB);
+      return out;
+    }
+    /* ending B: his phone face down on his table (the play's own copy of it, turned over) */
+    const f2TablePhone = new THREE.Group(); f2TablePhone.name = 'his phone face down (ending B)'; f2TablePhone.visible = false; hisSideG.add(f2TablePhone);
+    f2TablePhone.position.set(FILMPLACE.phoneAt.x + 0.05, FILMPLACE.phoneAt.y - 0.002, FILMPLACE.phoneAt.z + 0.08); f2TablePhone.rotation.set(0, 0.5, Math.PI);
+    const f2TablePhoneDress = () => { if (f2TablePhone.children.length || !(things.hisPhone && things.hisPhone.userData.model)) return;
+      const m = things.hisPhone.userData.model.clone(true); m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); m.position.y = -0.011; f2TablePhone.add(m); };
+    /* ending C: the water from his tap (a thin stream, light on it) */
+    const f2TapMat = B({ color: 0xc8d8e8, transparent: true, opacity: 0.5, depthWrite: false });
+    const f2Tap = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.006, 0.27, 8, 1, true), f2TapMat); owned.push(f2Tap.geometry);
+    f2Tap.name = 'the water from his tap (ending C)'; f2Tap.position.set(F2HX + 0.95, 1.2 - 0.135 - 0.01, LIV.z0 + 0.31 - 0.06); f2Tap.visible = false; hisSideG.add(f2Tap);
+    /* ending C: the cushion held over his eyes, close before the lens in the hands' own pass (so a wall never cuts it), its
+       lower edge leaving a sliver of the room */
+    function f2CushionAt(k, t) {
+      const A = F2.api; if (!A || !A.handsRoot) return;
+      if (k > 0.001 && f2Cushion.parent !== A.handsRoot.parent) { A.handsRoot.parent.add(f2Cushion); }
+      f2Cushion.visible = k > 0.001;
+      if (!f2Cushion.visible) return;
+      /* (it comes up from under the lens and settles over his eyes, slipping down off them as his sight opens) */
+      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.035, -0.17);
+      f2Cushion.rotation.set(Math.PI / 2 - 0.25, 0, 0.05 * Math.sin(t * 0.7));
+      f2Cushion.scale.setScalar(0.62);
+    }
+    function worldOven(text) { if (F2.oven !== text) { F2.oven = text; WORLD.ovenClock(text); } }
+    /* what is held in his hands in the barrier, and how (his phone, then the spool, then nothing: the lens looks out) */
+    function f2BarrierHands(t, Bm) {
+      const A = F2.api; if (!A) return;
+      if (t < Bm.walk0 + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2MirrorLeft(false); f2Hands(true, null, 0); return; }
+      if (t < Bm.bag + 0.3) { f2Hold(null); f2Hands(false); return; }
+      /* at the bag: his right hand reaches into it, and comes back with the spool */
+      if (t < Bm.spool + 1.2) {
+        const into = f2smo(f2win(t, Bm.bag + 0.3, Bm.bag + 0.9)) * (1 - f2smo(f2win(t, Bm.zip + 0.6, Bm.zip + 1.0))) + f2smo(f2win(t, Bm.spool - 0.25, Bm.spool + 0.1)) * (1 - f2smo(f2win(t, Bm.spool + 0.7, Bm.spool + 1.2)));
+        f2Hold(t >= Bm.spool - 0.3 ? f2SpoolHand : null, { pos: [0.01, -0.07, -0.15], rot: [0.2, 0.4, 0.2] });
+        f2Hands(into > 0.01, 'reach', into); f2MirrorLeft(false); return;
+      }
+      if (t < Bm.circle - 1e-3) { f2Hands(false); return; }
+      /* CLOSE THE CIRCLE: the spool in his right hand while the thread goes round to his right, in his left as it comes round
+         from behind him (passed behind his back), each hand reaching low where the thread is laid (the library's reach) */
+      if (t < Bm.after) {
+        const u = F2.cirDone ? 1 : F2.cirShow, right = u < 0.3, left = u > 0.68 && u < 1;
+        if (right || left) {
+          const k = right ? f2smo(c01(u / 0.05)) * (1 - f2smo(c01((u - 0.24) / 0.06))) : f2smo(c01((u - 0.68) / 0.06)) * (1 - f2smo(c01((u - 0.96) / 0.04)));
+          f2Hold(f2SpoolHand, left ? { hand: 'left', pos: [-0.01, -0.07, -0.15], rot: [0.2, -0.4, -0.2] } : { pos: [0.01, -0.07, -0.15], rot: [0.2, 0.4, 0.2] });
+          f2Hands(k > 0.01, 'reach', k * 0.92, { p: 0 });
+          if (k > 0.01) f2MirrorLeft(left);
+        } else { f2Hold(null); f2Hands(false); f2MirrorLeft(false); }
+        return;
+      }
+      /* D: once his sight has gone, he lifts his left hand: the band still round its wrist; the gold burns it off */
+      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm) {
+        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm - 0.7, Bm.calm)));
+        f2Hold(null); f2Hands(up > 0.01, 'reach', up * 0.8, { p: 0 });
+        if (up > 0.01 && A.armR) { A.armR.position.y += 0.1 * up; A.armR.position.x -= 0.02 * up; A.armR.position.z += 0.03 * up;
+          A.armR.rotateZ(-0.5 * up); }
+        if (up > 0.01) f2MirrorLeft(true); else f2MirrorLeft(false);
+        return;
+      }
+      f2Hold(null); f2MirrorLeft(false); f2Hands(false);
+    }
+
+    /* ================================================================ THE ENDINGS' OWN BEGINNINGS (the plan's 9.8), each a pure
+       function of its clock: E its marks (y_endings.js EN2[k]) */
+    /* where the decision left him (the engine's snapshot: the first key of every ending is the play's last view) */
+    function f2From(s) {
+      if (!s || !s.yawPos) return { e: [F2P.table.x, EYE, F2P.table.z], a: [FILMPLACE.phoneAt.x, 0.7, FILMPLACE.phoneAt.z], fp: 72, fd: 72 };
+      const yw = s.yawRot, pt = s.pitchX, d = 2.0;
+      return { e: [s.yawPos.x, s.yawPos.y, s.yawPos.z], a: [s.yawPos.x - Math.sin(yw) * Math.cos(pt) * d, s.yawPos.y + Math.sin(pt) * d, s.yawPos.z - Math.cos(yw) * Math.cos(pt) * d], fp: 72, fd: 72 };
+    }
+    function f2EndKeys(k, E, s) {
+      const F = f2From(s), K = [], tb = F2P.table, C = F2P.circle;
+      K.push({ t: 0, e: F.e, a: F.a, fp: F.fp, fd: F.fd, n: k + ':decision', stop: true });
+      const ph = FILMPLACE.phoneAt, sf = F2P.sofa, kn = F2P.kitchen, bl = F2P.balc;
+      if (k === 'A') {
+        /* A · his thumb on his teacher's name; the call; the lens close on the phone and up as he speaks (60 / 52) */
+        K.push({ t: 1.6, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.35, 1.0, tb.z - 1.6], fp: 60, fd: 52, n: 'A:phone' });
+        K.push({ t: E.zv51A1, e: [tb.x + 0.02, EYE - 0.03, tb.z + 0.02], a: [tb.x - 0.6, 1.35, tb.z - 1.9], fp: 60, fd: 52, n: 'A:speak' });
+        K.push({ t: E.b0, e: [tb.x + 0.03, EYE - 0.04, tb.z + 0.03], a: [tb.x - 0.9, 1.25, tb.z - 1.7], fp: 62, fd: 54, n: 'A:listen', stop: true });
+      } else if (k === 'B') {
+        /* B · the phone set face down on his table; to his sofa as he says it; sitting, his palms together; two waves, the lens
+           narrowing with them; his sight forced open on the threads at his feet; then the oven's clock (3:41); on the floor
+           against the sofa, the picture a slit; he crawls to his table and calls from his knees */
+        const seat = [sf.x + 0.05, F2EYE.sofa, sf.z + 0.2], fl = [sf.x + 0.1, 0.86, sf.z + 0.78], knee = [F2HX - 0.3, F2EYE.knees, 0.35];
+        K.push({ t: E.down, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
+        K.push({ t: E.walk, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 1.6, 1.15, tb.z - 0.9], fp: 62, fd: 54, n: 'B:turn' });
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
+        K.push({ t: E.sit + 1.1, e: seat, a: [seat[0], 1.0, 2.6], fp: 64, fd: 56, n: 'B:sit', stop: true });
+        K.push({ t: E.wave1, e: seat, a: [seat[0] + 0.05, 0.98, 2.6], fp: 64, fd: 56, n: 'B:pray', stop: true });
+        K.push({ t: E.wave2, e: [seat[0], seat[1] - 0.02, seat[2] + 0.02], a: [seat[0] + 0.1, 0.92, 2.6], fp: 56, fd: 50, n: 'B:wave' });
+        K.push({ t: E.forced + 0.2, e: [seat[0], seat[1] - 0.05, seat[2] + 0.06], a: [seat[0] + 0.1, 0.55, 2.4], fp: 50, fd: 46, n: 'B:narrow' });
+        K.push({ t: E.forced + 1.6, e: [seat[0], seat[1] - 0.08, seat[2] + 0.1], a: [seat[0] + 0.15, 0.0, seat[2] + 1.15], fp: 52, fd: 46, n: 'B:feet', stop: true });
+        K.push({ t: E.cut - 0.01, e: [seat[0], seat[1] - 0.09, seat[2] + 0.11], a: [seat[0] + 0.2, 0.0, seat[2] + 1.2], fp: 52, fd: 46, n: 'B:feet2', stop: true });
+        /* the oven's clock: an insert of a thing (v21.30), its digits 3:41 */
+        const ov = F2P.oven;
+        K.push({ t: E.cut, e: [ov.x - 0.12, ov.y + 0.1, ov.z + 0.55], a: [ov.x, ov.y, ov.z], fp: 26, fd: 22, n: 'B:oven', cut: true });
+        K.push({ t: E.floor - 0.01, e: [ov.x - 0.11, ov.y + 0.09, ov.z + 0.5], a: [ov.x, ov.y, ov.z], fp: 25, fd: 21, n: 'B:oven2', stop: true });
+        K.push({ t: E.floor, e: fl, a: [fl[0] + 2.4, 0.72, fl[2] + 0.1], fp: 52, fd: 46, n: 'B:floor', cut: true });
+        K.push({ t: E.crawl, e: [fl[0] + 0.05, fl[1] - 0.04, fl[2]], a: [ph.x, 0.7, ph.z + 0.3], fp: 52, fd: 46, n: 'B:floor2', stop: true });
+        K.push({ t: E.crawl + 1.0, e: [fl[0] + 0.5, F2EYE.crawl, fl[2] + 0.2], a: [ph.x, 0.5, ph.z + 0.4], fp: 56, fd: 50, n: 'B:crawl' });
+        K.push({ t: E.reach - 0.6, e: [knee[0] - 0.3, F2EYE.crawl + 0.05, knee[2] + 0.05], a: [ph.x, 0.62, ph.z], fp: 56, fd: 50, n: 'B:crawl2' });
+        K.push({ t: E.reach + 0.2, e: knee, a: [ph.x, 0.7, ph.z], fp: 56, fd: 50, n: 'B:table', stop: true });
+        K.push({ t: E.connect, e: [knee[0], knee[1] - 0.02, knee[2]], a: [knee[0] - 0.4, 0.75, knee[2] - 1.6], fp: 58, fd: 52, n: 'B:call' });
+        K.push({ t: E.b0, e: [knee[0], knee[1] - 0.04, knee[2]], a: [knee[0] - 0.9, 0.8, knee[2] - 1.4], fp: 60, fd: 52, n: 'B:listen', stop: true });
+      } else if (k === 'C') {
+        /* C · to the kitchen as he says it: the drawer, the pills, the tap; to his sofa; he lies back with a cushion over his
+           eyes; a wave, the glass doors ticking; his sight opens on its own as the cushion slides off: his red footsteps end
+           at the sofa, the threads at his feet; he calls */
+        const dr = [kn.x, EYE - 0.04, kn.z], tp = [F2P.tap.x - 0.05, EYE - 0.04, kn.z + 0.05], lie = [sf.x - 0.75, 0.66, sf.z + 0.02];
+        K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.9, 1.25, tb.z - 1.8], fp: 62, fd: 54, n: 'C:turn' });
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.45, 0.35], [F2HX - 0.4, -0.95], [kn.x, kn.z]], E.walk + 0.3, E.drawer, EYE, { a: [kn.x, 0.72, LIV.z0 + 0.3], fp: 62, fd: 54, n: 'C:tokitchen' }).slice(1).forEach(q => K.push(q));
+        K.push({ t: E.drawer + 0.5, e: dr, a: [kn.x, 0.66, LIV.z0 + 0.36], fp: 60, fd: 52, n: 'C:drawer', stop: true });
+        K.push({ t: E.tap - 0.1, e: [dr[0] + 0.05, dr[1], dr[2]], a: [kn.x + 0.1, 0.78, LIV.z0 + 0.5], fp: 60, fd: 52, n: 'C:pills', stop: true });
+        K.push({ t: E.tap + 0.9, e: tp, a: [F2P.tap.x, 0.95, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap', stop: true });
+        K.push({ t: E.sofa0, e: [tp[0] - 0.05, tp[1], tp[2] + 0.05], a: [F2P.tap.x, 0.93, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap2', stop: true });
+        f2WalkKeys([[tp[0], tp[2]], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
+        K.push({ t: E.lie + 0.7, e: [lie[0] + 0.35, 1.05, lie[2] + 0.25], a: [lie[0] - 0.3, 1.4, lie[2] + 0.6], fp: 64, fd: 56, n: 'C:sit' });
+        K.push({ t: E.cushion, e: lie, a: [lie[0] + 0.25, FLAT.ceil, lie[2] + 0.15], fp: 64, fd: 56, n: 'C:lie', stop: true });
+        K.push({ t: E.forced, e: lie, a: [lie[0] + 0.28, FLAT.ceil, lie[2] + 0.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
+        K.push({ t: E.forced + 1.4, e: [lie[0] + 0.05, lie[1] + 0.14, lie[2]], a: [sf.x + 1.4, 0.25, sf.z + 0.9], fp: 60, fd: 52, n: 'C:feet' });
+        K.push({ t: E.phone, e: [lie[0] + 0.06, lie[1] + 0.16, lie[2]], a: [sf.x + 2.6, 0.1, sf.z + 0.6], fp: 60, fd: 52, n: 'C:steps', stop: true });
+        K.push({ t: E.connect, e: [lie[0] + 0.08, lie[1] + 0.12, lie[2]], a: [lie[0] + 0.6, FLAT.ceil * 0.75, lie[2] + 0.9], fp: 62, fd: 54, n: 'C:call' });
+        K.push({ t: E.b0, e: [lie[0] + 0.08, lie[1] + 0.1, lie[2]], a: [lie[0] + 0.5, FLAT.ceil * 0.8, lie[2] + 1.1], fp: 62, fd: 54, n: 'C:listen', stop: true });
+      } else if (k === 'D') {
+        /* D · his sight opened on purpose; he follows the threads to his balcony's door and slides it open; the night's air;
+           in the doorway, his left hand on its frame (never past it; the rail never near), he looks along them out over the
+           city; one turns like a head and lunges: a band of red light round his wrist, the pressure doubled, the picture
+           crushed to a slit and the lens narrowing (64 to 48 / 56 to 42), pulled half a step; he tears himself back inside,
+           the door slides shut in the wind; on his knees, he calls */
+        const dr = [bl.x, EYE - 0.02, bl.z - 0.15], out = [bl.x - 0.1, 1.5, LIV.z1 + 40], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
+        K.push({ t: E.vis, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.5, 0.2, tb.z - 0.4], fp: 64, fd: 56, n: 'D:look' });
+        K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.6, 0.35, tb.z + 1.6], fp: 64, fd: 56, n: 'D:turn' });
+        K.push({ t: E.door, e: dr, a: [bl.x - 0.05, 0.6, LIV.z1 + 1.2], fp: 64, fd: 56, n: 'D:door', stop: true });
+        K.push({ t: E.slide + 1.2, e: [dr[0] - 0.02, dr[1], dr[2] + 0.02], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
+        K.push({ t: E.step + 0.9, e: [bl.x - 0.08, EYE - 0.02, LIV.z1 - 0.12], a: out, fp: 64, fd: 56, n: 'D:doorway' });
+        K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 1.2, 1.0, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
+        K.push({ t: E.lunge, e: [bl.x - 0.08, EYE - 0.04, LIV.z1 - 0.12], a: [bl.x + 0.4, 1.1, LIV.z1 + 2.0], fp: 62, fd: 54, n: 'D:turns' });
+        K.push({ t: E.wrap + 0.45, e: [bl.x - 0.05, EYE - 0.08, LIV.z1 - 0.04], a: [bl.x + 0.5, 0.95, LIV.z1 + 1.6], fp: 48, fd: 42, n: 'D:pulled' });
+        K.push({ t: E.tear - 0.1, e: [bl.x - 0.05, EYE - 0.1, LIV.z1 - 0.05], a: [bl.x + 0.45, 0.9, LIV.z1 + 1.8], fp: 48, fd: 42, n: 'D:held', stop: true });
+        K.push({ t: E.slam, e: [bl.x - 0.12, EYE - 0.3, bl.z - 0.25], a: [bl.x - 0.05, 0.6, LIV.z1 + 1.0], fp: 54, fd: 48, n: 'D:back' });
+        K.push({ t: E.knees + 0.8, e: knees, a: [bl.x - 0.1, 0.35, LIV.z1 + 0.6], fp: 58, fd: 50, n: 'D:knees', stop: true });
+        K.push({ t: E.connect, e: [knees[0], knees[1] - 0.02, knees[2]], a: [bl.x - 0.6, 0.6, bl.z - 1.6], fp: 60, fd: 52, n: 'D:call' });
+        K.push({ t: E.b0, e: [knees[0], knees[1] - 0.03, knees[2]], a: [bl.x - 1.0, 0.55, bl.z - 1.8], fp: 60, fd: 52, n: 'D:listen', stop: true });
+      }
+      return K;
+    }
+    /* the view each ending hands the barrier (its last key), for the barrier's first */
+    function f2EndFrom(K) { const L = K[K.length - 1]; return { e: L.e, a: L.a, fp: L.fp, fd: L.fd }; }
+
+    const END2 = {
+      begin(k, api, s, E) {
+        F2.api = api; F2.s = s; F2.k = k; F2.E = E; F2.on = true; F2.look = null; F2.cirK = 0; F2.cirShow = 0; F2.cirDone = false; F2.cirWall = 0;
+        F2.closeSaid = false; F2.held = null; F2.barKeys = null; F2.chantKeys = null; F2.said = new Set(); f2BottleRest = null;
+        F2.p0 = (S && S.info && S.info().story && Number.isFinite(S.info().story.pressure)) ? S.info().story.pressure : 0.55;
+        if (!(F2.p0 > 0.2)) F2.p0 = 0.55;
+        F2.keys = f2EndKeys(k, E, s); F2.from = f2EndFrom(F2.keys);
+        F2.pB = f2EndPress(E.b0 - 1e-3, E, k);
+        if (!F2M.phone) F2M.phone = f2PhoneGroup();
+        f2TablePhoneDress(); f2PhoneFloorDress(); F2.oven = null;
+        if (things.hisPhone) things.hisPhone.visible = false;
+        f2Look('NIGHT');
+        if (api.duck) for (const n of ['u51bdawn', 'u51bbalc']) api.duck(n, 0);
+      },
+      frame(t) {
+        if (!F2.on) return;
+        const E = F2.E, k = F2.k, Bm = E.bar, nar = f2Narrow();
+        f2Look(t < E.d0 - 0.02 ? 'NIGHT' : 'DAWN');
+        if (t >= Bm.circle - 1e-3 && t < Bm.after) END2.circleTick();
+        /* THE LENS */
+        const camAt = (q) => (q < E.b0 ? f2Keys(F2.keys, q) : q < E.d0 ? f2BarrierCam(q, Bm, F2.from) : f2DawnCam(q - E.d0, E));
+        const v = camAt(t);
+        if (!v) return;
+        /* (how fast his eye goes over the floor, for the head's bob: the same lens a twentieth of a second either side) */
+        let speed = 0;
+        if (t < E.d0 && !(t >= Bm.circle - 0.05 && t < Bm.after)) { const a = camAt(Math.max(0, t - 0.05)), b = camAt(t + 0.05); if (a && b) speed = Math.hypot(b[0] - a[0], b[2] - a[2]) / 0.1; camAt(t); }
+        /* handheld at night (the plan's 4.4: tight), still in the circle once it is closed, level and still at dawn */
+        const night = t < E.d0, amp = night ? (t < Bm.circle ? 0.9 + 0.5 * c01(F2.p0) : t < Bm.brk ? 0.55 : 0.25 * (1 - f2smo(f2win(t, Bm.calm, Bm.end)))) : 0;
+        f2Drift(v, t, amp);
+        if (speed > 0.05) f2Bob(v, t, speed);
+        f2Lens(v[6]); f2Aim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
+        /* THE PRESSURE, the vision, the beds, the things */
+        let p = 0, vr = [0, false];
+        if (t < E.b0) { p = f2EndPress(t, E, k); vr = f2EndVision(t, E, k); }
+        else if (t < E.d0) { p = f2BarrierPress(t, Bm, F2.pB); vr = f2VisionR(t, Bm.vis0, 2.2, Bm.vis1, 1.6); }
+        f2Press(p);
+        f2Vision(vr[0], vr[1], t);
+        if (t < E.d0) f2Beds(f2NightBeds(t < E.b0 ? p : Math.min(p, t < Bm.chant ? 1 : 0.4), vr[0] > 0.5, t >= Bm.chant ? { m6a: 0, m6b: 0, m6c: 0, tin: 0, brth: t < Bm.brk ? 0.22 : 0.1, night: t >= Bm.brk ? 0.32 : 0.05 } : null));
+        else f2Beds({ night: 0, three: 0 });
+        /* the screen of his phone: the decision's, the call ringing, the call with its seconds */
+        if (t < E.ring) f2Screen('home', 0, '3:03');
+        else if (t < E.connect) f2Screen('ring', 0, E.clock);
+        else f2Screen('call', t - E.connect, E.clock);
+        if (t >= E.b0 && t < E.d0) { f2BarrierFx(t, Bm, { push: k === 'B', near: k === 'B' || k === 'C', band: k === 'D' }); f2BarrierHands(t, Bm); }
+        else if (t < E.b0) { f2EndFx(t, E, k); f2EndHands(t, E, k); }
+        else { f2DawnFx(t - E.d0, E); }
+      },
+      end() {
+        if (!F2.on) return;
+        F2.on = false;
+        f2Press(0); if (kit && kit.press) kit.press(0, { secs: 0, cine: false });
+        if (F2.vis && kit && kit.vision) kit.vision(null); F2.vis = false;
+        if (kit && kit.captions) kit.captions(null);
+        f2Hold(null); f2MirrorLeft(false);
+        if (F2.api && F2.api.handsRoot) { F2.api.handsRoot.visible = true; F2.api.handsRoot.position.set(0, 0, 0); }
+        if (F2.api && F2.api.handPose) F2.api.handPose(null, 0);
+        f2Beds(null);
+        f2BottleRestore();
+        f2FloorPhone.visible = false; f2SpoolFloor.visible = false; f2Circle.m.visible = false; f2Gold.visible = false;
+        for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
+        for (const f of f2Feet) f.m.visible = false;
+        f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false; f2Spark.q.visible = false;
+        if (F2W.band) f2WristShow(0, 0, 0, 0);
+        f2TablePhone.visible = false; f2Tap.visible = false; f2CushionAt(0, 0); for (const D of f2DT) D.m.visible = false;
+        if (F2.k === 'D') WORLD.balconyDoor(0);
+        if (things.hisPhone) things.hisPhone.visible = true;
+        camera.rotation.z = 0;
+      },
+      /* CLOSE THE CIRCLE's event (the plan's 9.7: the hands-on kind's circling step, its own picture `circle`, briefed with
+         START, never failed): its options, and what it tells the film */
+      circleOpts() {
+        const Wd = DATA.words;
+        return { kind: 'craft', label: Wd.evCircleTitle, brief: TOUCHY ? Wd.evCircleTouch : Wd.evCircleKey, demo: 'circle',
+                 steps: [{ g: 'twist', turns: 1, fast: 1e9, word: Wd.evCircleTitle }],
+                 at: () => ({ sx: 0.5, sy: 0.56 }),
+                 onProgress: (i, k) => { F2.cirK = Math.max(F2.cirK, c01(k)); },
+                 onStep: () => { F2.cirK = 1; } };
+      },
+      circleDone() { F2.cirK = 1; F2.cirDone = true; F2.cirShow = 1; },
+      /* the chant's captions on its breaths, the Pali as chanted over its meaning (CHANTS.ph51jina; kit.captions on wall time
+         from this call, so they work muted: v21.31) */
+      chantOn() {
+        const E = F2.E; if (!kit || !kit.captions || !E || !E.jina) return;
+        const C = CHANTS.ph51jina || [];
+        kit.captions(E.jina.map((v, i) => ({ at: v[0], end: v[1] + 0.35, text: C[i] ? C[i][0] : '', sub: C[i] ? C[i][1] : '' })).filter(q => q.text));
+      },
+      /* the laid thread follows the event's progress, eased on the wall (a finger's stop and start never jerk the picture),
+         and "Close it." is said as it nears its end (once) */
+      circleTick() {
+        const now = performance.now() / 1000, dt = F2.cirWall ? Math.min(0.1, now - F2.cirWall) : 0; F2.cirWall = now;
+        const to = F2.cirDone ? 1 : F2.cirK;
+        F2.cirShow += (to - F2.cirShow) * (1 - Math.exp(-dt / 0.18));
+        if (Math.abs(to - F2.cirShow) < 0.002) F2.cirShow = to;
+        if (!F2.closeSaid && F2.cirK >= 0.78 && !F2.cirDone) { F2.closeSaid = true; if (worldSfx && !(soundOff && soundOff())) worldSfx('ph51x3tel', 1, 1, 0); }
+      },
+      /* (a probe's) */
+      marks: () => F2.E,
+      state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
+      subjects() {
+        const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
+                   glass: [C.x, 1.0, LIV.z1, 1], altarBottle: [HIS.altar.x + 0.14, 1.05, HIS.altar.z - 0.08, 1] };
+        return o;
+      }
+    };
+    /* the pressure of each ending's own beginning, from the play's (F2.p0); waves of it (the plan's 8.3: one every 7 to 9 s) */
+    function f2Wave(t, at, len = 1.5) { const u = (t - at) / len; return u < 0 ? 0 : u < 1 ? f2smo(u) : Math.max(0, 1 - (u - 1) / 2.5); }
+    function f2EndPress(t, E, k) {
+      const p0 = F2.p0;
+      if (k === 'A') return Math.min(0.95, p0 + 0.1 * f2Wave(t, 1.2));
+      if (k === 'B') {
+        if (t < E.cut) return Math.min(0.97, p0 + 0.12 * f2Wave(t, E.wave1) + 0.14 * f2Wave(t, E.wave2) + 0.1 * f2smo(f2win(t, E.forced, E.forced + 1.0)));
+        /* forty minutes on: the picture a slit, easing a little as he reaches the phone */
+        return 0.95 - 0.1 * f2smo(f2win(t, E.reach, E.connect + 2.0)) + 0.06 * f2Wave(t, E.crawl + 1.2);
+      }
+      if (k === 'C') return Math.min(0.95, p0 + 0.1 * f2Wave(t, E.drawer - 0.5) + 0.16 * f2Wave(t, E.wave) + 0.08 * f2smo(f2win(t, E.forced, E.forced + 1.0)) - 0.05 * f2smo(f2win(t, E.connect, E.connect + 3)));
+      if (k === 'D') {
+        const base = p0 + 0.1 * f2smo(f2win(t, E.vis, E.vis + 2.0)) + 0.05 * f2smo(f2win(t, E.door, E.step));
+        if (t < E.wrap) return Math.min(0.9, base);
+        /* the band round his wrist: the pressure doubled, the picture crushed to a slit; less once he is back inside */
+        return Math.min(0.99, 0.99 - 0.12 * f2smo(f2win(t, E.tear, E.knees + 0.6)) - 0.08 * f2smo(f2win(t, E.connect, E.connect + 3)));
+      }
+      return p0;
+    }
+    function f2EndVision(t, E, k) {
+      if (k === 'B') return t < E.cut ? f2VisionR(t, E.forced, 0.9, E.cut, 0.0) : [0, false];
+      if (k === 'C') return f2VisionR(t, E.forced, 1.0, E.phone + 0.3, 1.4);
+      if (k === 'D') return t < E.wrap + 0.05 ? f2VisionR(t, E.vis, 2.2, E.wrap, 0.0) : [0, false];
+      return [0, false];
+    }
+    /* the play's footsteps and threads at three o'clock (c_play.js fx, PLAY.md 4) stand as it laid them; these are the
+       endings' own: ending C's steps of the night, the threads at his feet in B and C, the threads streaming in from the
+       dark at his balcony's door in D */
+    function f2EndFx(t, E, k) {
+      const visOpen = F2.vis;
+      for (const f of f2Feet) f.m.visible = k === 'C' && t >= E.walk && visOpen;
+      if (k === 'C') { const lit = f2smo(f2win(t, E.forced, E.forced + 1.6)); f2Feet.forEach((f, i) => { if (f.sp) f.sp.set('uAlpha', lit * c01((lit * f2Feet.length - (f2Feet.length - 1 - i) * 0.5) / 2) * (0.75 + 0.25 * Math.sin(t * 2 + i))); }); }
+      /* B and C: the threads at his feet the moment his sight is forced open */
+      const near = (k === 'B' && t < E.cut) || k === 'C';
+      if (near && visOpen) f2ThreadsAt(t, t, { near: true, t0: k === 'B' ? E.forced - 1.0 : E.forced - 1.0, hold: true });
+      else if (k !== 'D') for (const T of F2THREADS) T.m.visible = false;
+      /* B: the phone face down on his table from when he lays it there until he takes it again */
+      f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.55;
+      if (k === 'B') worldOven(t >= E.cut ? '3:41' : '3:03');
+      /* C: the tap's water */
+      f2Tap.visible = k === 'C' && t >= E.tap + 0.25 && t < E.sofa0 + 0.2;
+      if (f2Tap.visible) { f2Tap.scale.y = 1 + 0.03 * Math.sin(t * 40); f2TapMat.opacity = 0.5 + 0.1 * Math.sin(t * 23); }
+      /* D: his balcony's door, the threads streaming in from the dark, the one that turns and lunges, the band */
+      if (k === 'D') {
+        WORLD.balconyDoor(f2smo(f2win(t, E.slide, E.slide + 1.2)) * (1 - f2smo(f2win(t, E.slam - 0.25, E.slam + 0.2))));
+        f2DThreads(t, E);
+        f2WristShow(t >= E.wrap ? 1 : 0, 0, 0, 0);
+      }
+    }
+    function f2EndHands(t, E, k) {
+      const A = F2.api;
+      if (k === 'A') {
+        /* the phone in his right hand as the play held it: lifted a little to his eyes as he calls, and lowered as he listens */
+        f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot });
+        f2Hands(true, null, 0);
+        if (A && A.armR) { const lift = f2smo(f2win(t, 0.2, 1.2)) * (1 - 0.5 * f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0)));
+          A.armR.position.y += 0.03 * lift; A.armR.position.x -= 0.012 * lift; }
+        return;
+      }
+      if (k === 'B') {
+        if (t < E.flat) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); const d = f2smo(f2win(t, E.down, E.flat));
+          f2Hands(true, d > 0.01 ? 'place' : null, d); return; }
+        if (t < E.flat + 0.6) { f2Hold(null); f2Hands(true, 'place', 1 - f2smo(f2win(t, E.flat, E.flat + 0.6))); return; }
+        if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1)))); return; }
+        if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6)); return; }
+        if (t >= E.reach + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); return; }
+        f2Hold(null); f2Hands(false); return;
+      }
+      if (k === 'C') {
+        if (t < E.walk + 0.5) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk, E.walk + 0.5)); return; }
+        if (t >= E.drawer - 0.2 && t < E.sofa0 + 0.3) {
+          /* the drawer, the strip of pills in his hand, one to his mouth, his hand under the tap */
+          const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.4, E.pills + 0.5, E.pills + 0.9), m = f2bell(t, E.pills + 0.6, E.pills + 1.0, E.tap - 0.2, E.tap + 0.1);
+          const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
+          f2Hold(t >= E.pills && t < E.tap ? f2Pills : null, { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
+          if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp); else f2Hands(r > 0.01, 'reach', r);
+          return;
+        }
+        if (t >= E.cushion - 0.6 && t < E.forced + 0.9) {
+          /* the cushion over his eyes, its lower edge a sliver of the room; it slides off as his sight opens */
+          f2Hold(null); f2Hands(false);
+          const on = f2smo(f2win(t, E.cushion - 0.6, E.cushion)) * (1 - f2smo(f2win(t, E.forced + 0.1, E.forced + 0.9)));
+          f2CushionAt(on, t);
+          return;
+        }
+        f2CushionAt(0, t);
+        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.04 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        f2Hold(null); f2Hands(false); return;
+      }
+      if (k === 'D') {
+        if (t < E.walk + 0.3) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk - 0.2, E.walk + 0.3)); return; }
+        /* his left hand: on the door's handle as he slides it, then on its frame; the band round its wrist */
+        if (t >= E.slide - 0.3 && t < E.tear + 0.2) {
+          const k2 = f2smo(f2win(t, E.slide - 0.3, E.slide + 0.1)) * (1 - f2smo(f2win(t, E.tear - 0.1, E.tear + 0.2)));
+          f2Hold(null); f2Hands(k2 > 0.01, 'reach', k2 * 0.85, { p: 0 });
+          if (k2 > 0.01 && A && A.armR) {
+            /* (on the frame at his left: the hand a little higher than the reach lays it, nearer the frame's edge on screen) */
+            const onFrame = f2smo(f2win(t, E.step, E.step + 0.8)), pull = f2bell(t, E.wrap, E.wrap + 0.2, E.tear - 0.4, E.tear);
+            A.armR.position.x += 0.02 * onFrame + 0.03 * pull; A.armR.position.y += 0.07 * onFrame - 0.02 * pull; A.armR.position.z -= 0.04 * pull;
+          }
+          if (k2 > 0.01) f2MirrorLeft(true);
+          return;
+        }
+        f2MirrorLeft(false);
+        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.03 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        f2Hold(null); f2Hands(false); return;
+      }
+    }
+    /* ================================================================ THE DAWN (the plan's 9.9) */
+    function f2DawnCam(t, E) {
+      const C = F2P.circle;
+      return [C.x, 0.82, C.z - 0.05, C.x, 0.9, C.z + 2.0, 66, 58].concat([]).slice(0, 7).concat([0]);
+    }
+    function f2DawnFx(t, E) {
+      f2CircleLay(1); f2Gold.visible = false; f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false;
+      for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
+      f2FloorPhone.visible = false; f2SpoolFloor.visible = true;
+      f2Hold(null); f2Hands(false);
+    }
+
+    Object.assign(FILMSAPI, { ends2: END2 });
     /* ================================================================ THE FRAME, AND THE STAGE HANDED TO THE ENGINE
        (masters/v29.0/parts/d_play.js: PLAY's from M6) */
     const wallClock = { t: 0 };
@@ -6535,6 +9448,7 @@
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       wallClock.t += wdt;
       worldFrame(wdt, st);                                     // (the world's hook: its people and their levels)
+      fxTick(wdt, st);                                         // (the play's drawn things, the chant, the beds: c_play.js)
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
@@ -6542,6 +9456,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue();
+      storyTick(Math.min(0.25, wdt));
     }
     function updatePile() {}
     function updateFire() {}
@@ -6551,7 +9466,7 @@
     function restore() {}
     /* A SAME-CHAPTER REPLAY never runs build() again: everything a run changes is put back here (v8.1) */
     function reset() {
-      phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
+      phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); lineBuilt = null;
       dayClock.t = 0; wallClock.t = 0; lastWall0 = 0; lastWall = 0; pausedAt = 0;
       storyReset(); worldReset();
     }
@@ -6601,9 +9516,13 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,
-      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS },
+      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE },
+      /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
+      chant: RATANA, beds: BEDS,
+      /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
+      dbg: { cast, people, clocks: {} },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
-                     pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen }),
+                     pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen, story: storySnap() }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       /* (a probe's handle on the script as the chapter holds it) */
       script: { SECS, LINES, SAID, CHANTS },
@@ -6613,45 +9532,308 @@
       snap, restore, reset, dispose
     });
   }
-  /* ================================================================ THE FOUR ENDINGS, THE BARRIER AND THE DAWN
-     (masters/v29.0/parts/y_endings.js: helper FILMS-2's from M7; moved here unchanged from z_tail.js so that two
-     helpers can build the films at once, each in files of its own. The pictures these films ask of the world are
-     FILMS-2's c_yfilm2.js; the registration that names scCall, scWait, scPill and scSeek stays in z_tail.js) */
-  /* THE FOUR ENDINGS (the plan's 9.8), each a whole story: its own beginning, then THE BARRIER (its 9.7, the case file's:
-     the call on the speaker, the white thread, CLOSE THE CIRCLE inside it by eventWait (W.evCircleTitle), the
-     Jinapañjara through the phone with its captions, the gold rising and the red threads burning, the release) and THE
-     DAWN (its 9.9: Pho at the door with breakfast, the thread wound up, the ending's own line, the thread tied on his
-     wrist). Each ending's lines: SAID.endA to SAID.endD, with SAID.barrier and SAID.dawn. Then the four lines and the
-     lesson card. TODO-FILM: all four, and the barrier and the dawn they share. */
+  /* ================================================================ THE FOUR ENDINGS, THE BARRIER AND THE DAWN: THEIR CLOCKS
+     AND CUES (masters/v29.0/parts/y_endings.js: helper FILMS-2's from M7; their pictures are c_yfilm2.js's, reached as
+     stage.films.ends2; masters/v29.0/ENDINGS.md is the record: every mark below with its reason). The registration that
+     names scCall, scWait, scPill and scSeek stays in z_tail.js.
+     THE FOUR ENDINGS (the plan's 9.8), each a whole story (v21.30): its own beginning, then THE BARRIER (its 9.7, the case
+     file's: the call on the speaker, the white thread, CLOSE THE CIRCLE inside it by eventWait, the Jinapañjara through the
+     phone with its captions, the gold rising and the red threads burning, the release) and THE DAWN (its 9.9: his teacher
+     at the door with breakfast, the thread wound up, the ending's own line, the thread tied on his wrist). Then the four
+     lines (zv51A to zv51D, the engine's under the card: its 9.10) and the lesson card (DATA.core: its 9.11).
+     EVERY CLOCK is built by tl() from SECS (v5.15: a measured take moves what follows it); Grandmaster Pho's words on the
+     phone are timed by their lines (SECS) and cued as their phone copies (`<key>tel`: band-limited, the plan's 11.1).
+     EVERY CUE is a literal call of the film language's sound verb in the scene's own source (v10.2, v14.16): the four scenes
+     are ONE function with its letter (mkEnding2), so the engine's reading of any ending's source finds every cue of every
+     ending, the barrier's and the dawn's among them; none is written past the film's last track (v12.3). The beds are the
+     play's (PLAY.md 5: stage.beds.film, written by the picture every frame); the music and the effects are cued here.
+     Every stretch of a second and a half with no voice is held by a sound with a reason (v21.30): the night's beds and its
+     pressure, his steps and his breath, the call, the chant, the music, the dawn's birds. */
+
+  /* WHERE EACH ENDING LEAVES HIM FOR THE BARRIER, and the walk from there to his bag by his front door and on to the middle
+     of the room (the paths are c_yfilm2.js's, walked over these seconds: about 0.8 m a second, a man in pain; `rise` is the
+     getting up first, from wherever the ending had him down). Measured from the paths (ENDINGS.md 2) */
+  const WALK2 = {
+    A: { rise: 0, bag: 5.6, circle: 4.6 },
+    B: { rise: 1.6, bag: 5.2, circle: 4.6 },
+    C: { rise: 2.0, bag: 3.6, circle: 4.6 },
+    D: { rise: 1.4, bag: 6.0, circle: 4.6 }
+  };
+  /* THE BARRIER'S MARKS from b0 (the plan's 9.7, its measured lines): his teacher's two lines on the speaker; the walk to the
+     bag, the zip, the spool; the walk to the middle of the room and the sit; CLOSE THE CIRCLE (the film waits on it); "Good.
+     Now stay inside..."; the Jinapañjara (its four verses on the take's breaths: lines.json `times`); the gold over its first
+     verse, Spirit Vision opened at its second and the threads coming (the insert of his door's foot), the first touch and the
+     slow motion at its third, the last surge, the break at its fourth; the quiet, his question, the last words; he lies down;
+     the black */
+  const JINA_T = [[0.06, 9.32], [9.66, 18.1], [18.48, 27.4], [27.68, 36.46]];      // ph51jina's verses on its take's breaths (lines.json `times`)
+  const SLOW2 = { len: 1.5, rate: 0.4, ramp: 0.22 };                               // the threads meeting the gold (the plan's 4.4: once in each ending)
+  function bar2(b0, w, k) {
+    const T = tl(b0, [[0.35], ['ph51x1', 0.35], ['ph51x2', 0]]);
+    T.b0 = b0;
+    T.walk0 = T.ph51x2 + 2.2;                                                      // ("Get the white thread from your bag." and he goes)
+    T.rise1 = w.rise;
+    T.bag = T.walk0 + w.rise + w.bag;
+    T.zip = T.bag + 0.75; T.spool = T.zip + 1.45;
+    T.sit0 = T.spool + 0.9 + w.circle;
+    T.circle = T.sit0 + 1.6;                                                       // CLOSE THE CIRCLE (eventWait: the film's clock stands here)
+    T.after = T.circle + 0.6;
+    T.ph51x4 = T.circle + 0.5;
+    T.chant = T.ph51x4 + SECS.ph51x4 + 0.6;
+    const c0 = T.chant;
+    T.verse = JINA_T.map(v => c0 + v[0]);
+    T.vis0 = c0 + JINA_T[1][0] - 0.2;                                              // his sight opened by the film at the second verse
+    T.door0 = T.vis0 + 2.2; T.door1 = T.door0 + 2.6;                               // the insert: his door's foot, the threads under it
+    T.touch = c0 + JINA_T[2][0] - 0.1;                                             // the first thread meets the gold: the slow motion
+    T.surge = c0 + JINA_T[2][1] - 1.2;                                             // the last surge, the vice at its loudest
+    T.brk = c0 + JINA_T[3][0] - 0.1;                                               // it breaks
+    T.vis1 = T.brk + 2.6;                                                          // his sight let go, the curls gone out
+    T.calm = T.brk + 4.0;
+    /* D: the band of red light still round his wrist once his sight has gone; the gold burns it off (a white flash at the
+       wrist, a sharp hiss) */
+    if (k === 'D') { T.wrist0 = T.vis1 + 0.2; T.burn = T.wrist0 + 1.5; T.calm = T.burn + 1.6; }
+    T.m7 = T.brk - 19.75;                                                          // M7: its swell (19.5 to 20 s of the take) on the break
+    T.chantEnd = c0 + SECS.ph51jina;
+    const Q = tl(T.chantEnd, [[0.7], ['ph51x5', 0.55], ['zv51x1', 0.45], ['ph51x6', 0]]);
+    Object.assign(T, { ph51x5: Q.ph51x5, zv51x1: Q.zv51x1, ph51x6: Q.ph51x6 });
+    T.lie = T.ph51x6 + 3.2;                                                        // ("... Rest." and he lies down inside the circle)
+    T.black = Q.end + 0.5; T.end = T.black + 1.3;
+    /* the slow motion's own clock for the threads and the sparks: slowed to SLOW2.rate over SLOW2.len from the first touch */
+    T.slow0 = T.touch;
+    return T;
+  }
+  /* the effects' clock through the slow motion: t on the film's clock to the threads' own (a smooth slowing in and out; after
+     it the threads run SLOW2.len x (1 - rate) behind the film, which nothing after them needs: the surge, the break and the
+     chant are the film's) */
+  function slow2(t, t0) {
+    const a = t0, r = SLOW2.ramp, b = t0 + SLOW2.len, k = 1 - SLOW2.rate;
+    const plat = (x) => (x <= a ? 0 : x < a + r ? (x - a) * (x - a) / (2 * r) : x <= b - r ? r / 2 + (x - a - r) : x < b ? (b - a - r / 2) - (b - x) * (b - x) / (2 * r) : b - a - r);
+    return t - k * plat(t);
+  }
+  function slow2Inv(e, t0) { let lo = e, hi = e + SLOW2.len * 2; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (slow2(m, t0) < e) lo = m; else hi = m; } return (lo + hi) / 2; }
+
+  /* THE DAWN'S MARKS from d0 (the plan's 9.9): the morning on his floor, the knock; his teacher at the door with breakfast;
+     the thread wound up; at the table his "I only held the water.", his teacher's answer and the ending's own line; the
+     thread tied on his wrist, the last words; the picture and the music fade together (v15.3) */
+  function dawn2(d0, k) {
+    const own = { A: [['ph51A3', 0.8]], B: [['ph51B4', 0.8]], C: [['ph51C3', 0.8]], D: [['ph51D3', 1.1], ['ph51D4', 0.9]] }[k];
+    const T = tl(d0, [[1.2], ['@wake'], [2.6], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.6], ['@inside'], [2.2], ['@wind'], [5.4], ['@table'], [2.2],
+                      ['zv51w1', 0.45], ['ph51w2', 0.8]].concat(own, [['@tie'], [0.4], ['ph51w3', 0.5], ['zv51w2', 0.6], ['@black']]));
+    T.d0 = d0; T.end = T.black + 1.6;
+    return T;
+  }
+
+  /* EACH ENDING'S OWN BEGINNING, its marks from 0 (the plan's 9.8, its measured lines), then the barrier from b0 and the dawn
+     from d0, all on the ending's one clock */
+  const EN2 = {};
+  {
+    /* A · "CALL GRANDMASTER PHO NOW." (best): his thumb on his teacher's name; the call rings twice and he answers */
+    const A = tl(0, [[0.45], ['@ring'], [4.4], ['@connect'], [0.4], ['ph51A1', 0.35], ['zv51A1', 0.35], ['ph51A2', 0.3]]);
+    A.clock = '3:03';
+    EN2.A = A;
+    /* B · "DON'T WAKE HIM." (good): the phone face down; to the sofa as he says it; his palms together; two waves; his sight
+       forced open on the threads at his feet; his thought; the oven's clock, 3:41; on the floor, a slit; the crawl; the call */
+    const B = tl(0, [[0.3], ['@down'], [0.7], ['@flat'], [0.2], ['zv51B1', 0]]);
+    B.walk = B.zv51B1 + 1.2; B.sit = B.walk + 3.6; B.pray = B.sit + 1.2; B.wave1 = B.pray + 1.2; B.wave2 = B.wave1 + 2.2; B.forced = B.wave2 + 0.8;
+    Object.assign(B, tl(B.forced + 0.3, [['zv51B2', 0.4], ['@cut'], [2.6], ['@floor'], [1.6], ['@crawl'], [3.2], ['@reach'], [0.9], ['@ring'], [0.9], ['@connect'], [0.3],
+                                         ['ph51B1', 0.35], ['zv51B3', 0.4], ['ph51B2', 0.35], ['zv51B4', 0.4], ['ph51B3', 0.3]]));
+    B.clock = '3:41';
+    EN2.B = B;
+    /* C · "IT'S ONLY A MIGRAINE." (bad): to the kitchen as he says it; the drawer, the pills, the tap; to his sofa, lying back,
+       the cushion over his eyes; a wave, the glass doors ticking; his sight open on its own; his thought; the call, 3:22 */
+    const C = tl(0, [[0.3], ['zv51C1', 0]]);
+    C.walk = C.zv51C1 + 0.5; C.drawer = C.walk + 3.2; C.pills = C.drawer + 0.9; C.tap = C.pills + 1.2; C.sofa0 = C.tap + 2.2; C.lie = C.sofa0 + 4.0;
+    C.cushion = C.lie + 1.4; C.wave = C.cushion + 1.0; C.forced = C.wave + 1.8;
+    Object.assign(C, tl(C.forced + 0.5, [['zv51C2', 0.4], ['@phone'], [0.8], ['@ring'], [1.6], ['@connect'], [0.3], ['ph51C1', 0.35], ['zv51C3', 0.35], ['ph51C2', 0.3]]));
+    C.clock = '3:22';
+    EN2.C = C;
+    /* D · "OPEN SPIRIT VISION AND FIND WHO'S DOING THIS." (worst): his sight opened on purpose; to his balcony's door after the
+       threads; the door slid open, the night's air; in the doorway, his hand on its frame; one thread turns at 10.0 and
+       lunges: the band round his wrist; he tears himself back inside at 13.0, the door slides shut; on his knees, the call */
+    const D = tl(0, [[0.3], ['zv51D1', 0.2], ['@vis'], [0.4], ['@walk'], [2.0], ['@door'], [0.5], ['@slide'], [1.2], ['@air'], [0.6], ['@step'], [1.5], ['@look'], [2.0],
+                     ['@turn'], [0.8], ['@lunge'], [0.3], ['@wrap'], [1.9], ['@tear'], [0.6], ['@slam'], [0.6], ['@knees'], [1.8], ['@phone'], [0.8], ['@ring'], [1.1],
+                     ['@connect'], [0.3], ['ph51D1', 0.35], ['zv51D2', 0.35], ['ph51D2', 0.3]]);
+    D.clock = '3:05';
+    EN2.D = D;
+  }
+  for (const k of ['A', 'B', 'C', 'D']) {
+    const E = EN2[k];
+    E.b0 = E.end;
+    E.bar = bar2(E.b0, WALK2[k], k);
+    E.d0 = E.bar.end;
+    E.dawn = dawn2(E.d0, k);
+    E.end = E.dawn.end;
+    E.slow = (t) => slow2(t, E.bar.slow0);                                         // the threads' own clock through the slow motion
+    E.jina = JINA_T;
+  }
+
+  /* ONE BODY FOR THE FOUR (each scene is this function with its letter, so the engine's reading of any scene's own source
+     finds every cue of every ending: main.js cuesOf) */
+  function mkEnding2(k) {
+    return function (c, s, api) {
+      const { tr, step, sfx, sfxFade, fade, rawK, stage, eventWait } = api, F = stage.films.ends2, E = EN2[k], B = E.bar, D = E.dawn;
+      step(0, () => F.begin(k, api, s, E));
+      tr(0, E.end, (kk, t) => F.frame(t), rawK);
+      /* ================================ EACH ENDING'S OWN BEGINNING */
+      if (k === 'A') {
+        sfx(0.15, 'u51phoneup', 0.45);                                             // his thumb on the name
+        sfx(E.ring + 0.15, 'u51ring', 0.75); sfx(E.ring + 3.15, 'u51ring', 0.75);   // the call rings twice (a Singapore ring)
+        sfx(E.connect, 'u51connect', 0.8);                                         // and he answers
+        sfx(E.ph51A1, 'ph51A1tel', 1);                                             // "I'm here. Tell me what you feel."
+        sfx(E.zv51A1, 'zv51A1', 1);                                                // "My head... it's like something's crushing it from every side."
+        sfx(E.ph51A2, 'ph51A2tel', 1);                                             // "Listen to me, and do exactly what I say."
+        sfx(1.6, 'u51wave', 0.45);                                                 // a wave of it as he calls
+        for (let t = 0.3; t < E.b0; t += 0.7) sfx(t, 'u51heart', 0.32);            // his heart, fast
+      } else if (k === 'B') {
+        sfx(E.flat - 0.05, 'u51facedown', 0.7);                                   // the phone set face down on the table
+        sfx(E.zv51B1, 'zv51B1', 1);                                                // "It's three in the morning. He worked all evening. Let him sleep."
+        for (let t = E.walk + 0.35; t < E.sit; t += 0.66) sfx(t, 'u51tile', 0.32);  // to his sofa
+        sfx(E.sit + 0.3, 'u51sofa', 0.55);                                         // down onto it
+        sfx(E.pray + 0.2, 'u51palms', 0.5);                                        // his palms together
+        sfx(E.pray + 0.9, 'u51exhale', 0.45);                                      // breathing as he was taught
+        sfx(E.wave1 - 1.24, 'u51wave', 0.55); sfx(E.wave2 - 1.24, 'u51wave', 0.65); // a wave; another
+        sfx(E.forced, 'u51vison', 1.0);                                            // his sight forced open by the strain
+        sfx(E.zv51B2, 'zv51B2', 1);                                                // "I told myself I could carry it till morning."
+        sfx(E.cut + 0.1, 'u51clock', 0.45);                                        // the oven's clock, 3:41
+        sfx(E.floor - 0.2, 'u51wave', 0.6);                                        // on the floor against the sofa, the picture a slit
+        for (let t = E.crawl + 0.2; t < E.reach - 0.2; t += 0.55) sfx(t, 'u51floor', 0.28);   // he crawls to his table
+        sfx(E.reach + 0.25, 'u51phoneup', 0.6);                                    // his phone taken from the table
+        sfx(E.ring + 0.1, 'u51ring', 0.75);                                        // one ring: he answers at once
+        sfx(E.connect, 'u51connect', 0.8);
+        sfx(E.ph51B1, 'ph51B1tel', 1);                                             // "How long has it been like this?"
+        sfx(E.zv51B3, 'zv51B3', 1);                                                // "Since three."
+        sfx(E.ph51B2, 'ph51B2tel', 1);                                             // "Forty minutes. Why did you wait?"
+        sfx(E.zv51B4, 'zv51B4', 1);                                                // "I didn't want to wake you."
+        sfx(E.ph51B3, 'ph51B3tel', 1);                                             // "You held the water for her. Now let me hold it for you."
+        for (let t = 0.4; t < E.cut; t += 0.72) sfx(t, 'u51heart', 0.3);           // his heart
+        for (let t = E.floor; t < E.b0; t += 0.6) sfx(t, 'u51heart', 0.34);        // and faster, forty minutes on
+      } else if (k === 'C') {
+        sfx(E.zv51C1, 'zv51C1', 1);                                                // "It's a migraine. That's all it is."
+        for (let t = E.walk + 0.3; t < E.drawer; t += 0.64) sfx(t, 'u51tile', 0.32);   // to the kitchen
+        sfx(E.drawer + 0.1, 'u51drawer', 0.7);                                     // the drawer
+        sfx(E.pills + 0.2, 'u51foil', 0.75);                                       // a strip of pills, the foil's crackle
+        sfx(E.tap + 0.2, 'u51tap', 0.6);                                           // water from the tap
+        for (let t = E.sofa0 + 0.4; t < E.lie; t += 0.64) sfx(t, 'u51tile', 0.32);  // to his sofa
+        sfx(E.lie + 0.4, 'u51sofa', 0.55);                                         // he lies back on it
+        sfx(E.cushion - 0.3, 'u51cushion', 0.7);                                   // a cushion over his eyes
+        sfx(E.wave - 1.24, 'u51wave', 0.6);                                        // a wave
+        sfx(E.wave + 0.4, 'u51gtick1', 0.5); sfx(E.wave + 1.3, 'u51gtick2', 0.5);  // the glass doors ticking, as if pressed from outside
+        sfx(E.forced, 'u51vison', 1.0);                                            // his sight open on its own
+        sfx(E.zv51C2, 'zv51C2', 1);                                                // "The pills did nothing. It was still pressing."
+        sfx(E.phone - 0.1, 'u51phoneup', 0.5);                                     // his phone out
+        sfx(E.ring + 0.1, 'u51ring', 0.75);                                        // the call
+        sfx(E.connect, 'u51connect', 0.8);
+        sfx(E.ph51C1, 'ph51C1tel', 1);                                             // "Tell me."
+        sfx(E.zv51C3, 'zv51C3', 1);                                                // "It's just a migraine, I think. It won't stop."
+        sfx(E.ph51C2, 'ph51C2tel', 1);                                             // "This is not a headache. A headache does not follow you home."
+        for (let t = 0.4; t < E.b0; t += 0.74) sfx(t, 'u51heart', 0.28);           // his heart
+      } else {
+        sfx(E.zv51D1, 'zv51D1', 1);                                                // "Who's doing this?"
+        sfx(E.vis, 'u51vison', 0.9);                                               // his sight opened on purpose
+        for (let t = E.walk + 0.3; t < E.door; t += 0.64) sfx(t, 'u51tile', 0.32);  // after the threads, to his balcony's door
+        sfx(E.slide - 0.3, 'u51slide', 0.75);                                      // the door slid open
+        sfx(E.air, 'u51bbalc', 0.6);                                               // the night's air rushes in: wind, the city louder, the expressway
+        sfx(E.turn - 0.2, 'u51threads', 0.5);                                      // one of them turns, a dry rustle
+        sfx(E.wrap - 1.23, 'u51band', 0.85);                                       // a band of red light round his wrist (its crackle tight on the wrap)
+        sfx(E.wrap, 'u51visoff', 0.7);                                             // his sight slammed shut
+        sfx(E.wrap - 0.4, 'u51wave', 0.8);                                         // the pressure doubled
+        sfx(E.slam - 1.03, 'u51slam', 0.75);                                       // the door slides shut in the wind
+        sfx(E.knees, 'u51knee', 0.6);                                              // on his knees
+        sfx(E.phone, 'u51phoneup', 0.5);
+        sfx(E.ring + 0.1, 'u51ring', 0.75);
+        sfx(E.connect, 'u51connect', 0.8);
+        sfx(E.ph51D1, 'ph51D1tel', 1);                                             // "I'm here."
+        sfx(E.zv51D2, 'zv51D2', 1);                                                // "It's outside. It's looking for me."
+        sfx(E.ph51D2, 'ph51D2tel', 1);                                             // "Then stop looking for it. Sit down. Now."
+        for (let t = 0.4; t < E.wrap; t += 0.7) sfx(t, 'u51heart', 0.3);           // his heart
+        for (let t = E.wrap; t < E.b0; t += 0.52) sfx(t, 'u51heart', 0.36);        // and racing
+      }
+      /* ================================ THE BARRIER (the plan's 9.7) */
+      sfx(B.ph51x1, 'ph51x1tel', 1);                                               // "The one who made the spell felt it break. He is sending it back, to find out who helped her."
+      sfx(B.ph51x1 + 2.4, 'u51wave', 0.5);                                         // a wave; the picture pinches
+      sfx(B.ph51x2, 'ph51x2tel', 1);                                               // "Get the white thread from your bag. Sit on the floor, in the middle of the room."
+      for (let t = B.walk0 + B.rise1 + 0.25; t < B.bag - 0.1; t += 0.64) sfx(t, 'u51tile', 0.34);   // his bare feet on the tiles, to the bag
+      sfx(B.zip, 'u51zip', 0.7);                                                   // his bag's zip, his hand in it
+      for (let t = B.spool + 1.15; t < B.sit0 + 0.2; t += 0.64) sfx(t, 'u51tile', 0.34);   // to the middle of the room
+      sfx(B.sit0 + 0.4, 'u51floor', 0.4);                                          // down onto the floor
+      sfx(B.sit0 + 0.7, 'u51wave', 0.45);
+      for (let t = B.b0 + 0.4; t < B.circle; t += 0.68) sfx(t, 'u51heart', 0.3);   // his heart, through all of it
+      sfx(B.circle - 0.2, 'u51spool', 0.55);                                       // the thread drawn off the spool as he begins
+      /* CLOSE THE CIRCLE: the film's clock stands on it until the thread is laid (its drag and "Close it." are the event's own,
+         c_yfilm2.js circleTick); the spark's tiny chime as the film goes on */
+      eventWait(B.circle, F.circleOpts(), (r) => F.circleDone(r));
+      sfx(B.circle + 0.02, 'u51closed', 0.75);
+      sfx(B.ph51x4, 'ph51x4tel', 1);                                               // "Good. Now stay inside. Whatever you hear, stay inside."
+      /* the Jinapañjara through the phone, its captions on its breaths (kit.captions, wall time: v21.31) */
+      sfx(B.chant, 'ph51jinatel', 1);
+      step(B.chant, () => F.chantOn());
+      sfx(B.m7, 'u51m7circle', 0.7);                                               // M7 The Circle: low strings and khim under the chant, rising to the break
+      sfx(B.vis0, 'u51vison', 0.85);                                               // his sight opened, held by the film
+      sfx(B.door0 + 0.2, 'u51gtick1', 0.45); sfx(B.door0 + 1.7, 'u51gtick2', 0.4);  // the glass ticking, pressed from outside
+      sfx(B.touch - 0.87, 'u51swell', 0.65);                                       // the deep swell, its peak on the first touch
+      for (let i = 0; i < 7; i++) sfx(slow2Inv(B.touch + i * 0.32, B.slow0) - 0.46, 'u51burn', i ? 0.5 : 0.75);   // each thread meeting the gold: a hiss and a crackle
+      sfx(B.surge - 1.81, 'u51vice', 0.8);                                         // the last surge, the vice at its loudest
+      sfx(B.brk - 0.96, 'u51bloom', 0.75);                                         // it breaks: a soft bloom
+      sfx(B.brk + 0.3, 'u51pop', 0.6);                                             // his ears pop
+      sfx(B.brk + 0.6, 'u51exhale', 0.75);                                         // the long breath out
+      sfx(B.brk + 1.5, 'u51ticklast', 0.5);                                        // the bottle's last tick on the wood as its water stills
+      sfx(B.vis1, 'u51visoff', 0.6);                                               // his sight let go
+      if (k === 'D') { sfx(B.burn - 0.2, 'u51wburn', 0.8); sfx(B.burn + 0.15, 'u51exhale', 0.5); }   // the band burned off his wrist: a white flash, a sharp hiss
+      sfx(B.ph51x5, 'ph51x5tel', 1);                                               // "It's gone. Breathe."
+      sfx(B.zv51x1, 'zv51x1', 1);                                                  // "Who was it?"
+      sfx(B.ph51x6, 'ph51x6tel', 1);                                               // "Who it was does not matter tonight. Rest. I will come in the morning."
+      sfx(B.lie + 0.5, 'u51floor', 0.3);                                           // he lies down inside the circle
+      fade(B.black, B.end - 0.05, 0, 1);
+      /* ================================ THE DAWN (the plan's 9.9) */
+      if (k === 'A') sfx(D.d0 + 0.05, 'u51m8dawnA', 0.7);                         // M8 Dawn, warm and full
+      else if (k === 'B') sfx(D.d0 + 0.05, 'u51m8dawnB', 0.7);                    // tender, a solo piano
+      else if (k === 'C') sfx(D.d0 + 0.05, 'u51m8dawnC', 0.7);                    // light
+      else sfx(D.d0 + 0.05, 'u51m8dawnD', 0.7);                                   // low strings, warming at the thread
+      sfx(D.d0, 'u51bdawn', 0.5); sfx(D.d0 + 28.5, 'u51bdawn', 0.5);               // the morning outside (a koel, mynas, a far train; the AC off)
+      sfx(D.d0 + 0.5, 'u51koel', 0.5);
+      fade(D.d0 + 0.05, D.d0 + 1.3, 1, 0);
+      sfx(D.knock - 0.82, 'u51knock', 0.7);                                        // a knock at his door
+      sfx(D.ph51w1, 'ph51w1', 1);                                                  // "Eat first. You fought all night, even sitting still."
+      sfx(D.zv51w1, 'zv51w1', 1);                                                  // "I only held the water."
+      sfx(D.ph51w2, 'ph51w2', 1);                                                  // "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it."
+      if (k === 'A') sfx(D.ph51A3, 'ph51A3', 1);                                   // "You called at once. That is the first protection: knowing when something is more than you."
+      else if (k === 'B') sfx(D.ph51B4, 'ph51B4', 1);                              // "A student who won't wake his teacher is protecting the wrong person."
+      else if (k === 'C') sfx(D.ph51C3, 'ph51C3', 1);                              // "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
+      else { sfx(D.ph51D3, 'ph51D3', 1); sfx(D.ph51D4, 'ph51D4', 1); }            // "You went to a stranger's door and knocked. It answered." ... "Curiosity is not courage."
+      sfx(D.tie + 0.3, 'u51knot', 0.6);                                            // the thread drawn and knotted twice
+      sfx(D.ph51w3, 'ph51w3', 1);                                                  // "Before we help anyone, we protect ourselves. From now on, we prepare first."
+      sfx(D.zv51w2, 'zv51w2', 1);                                                  // "I had thought I was only there to assist my teacher."
+      fade(D.black, D.end - 0.1, 0, 1);
+      if (k === 'A') sfxFade(D.black, D.end - 0.15, 'u51m8dawnA');                 // the music down with the picture (v15.3)
+      else if (k === 'B') sfxFade(D.black, D.end - 0.15, 'u51m8dawnB');
+      else if (k === 'C') sfxFade(D.black, D.end - 0.15, 'u51m8dawnC');
+      else sfxFade(D.black, D.end - 0.15, 'u51m8dawnD');
+      sfxFade(D.black, D.end - 0.15, 'u51bdawn');
+      step(E.end, () => F.end());
+      c.endFade = 1; c.keepFade = true;
+    };
+  }
   /* A · "CALL GRANDMASTER PHO NOW." (best): he knows at once that it is more than him, and asks */
-  function scCall(c, s, api) { stubEnding(c, s, api); }
+  const scCall = mkEnding2('A');
   /* B · "DON'T WAKE HIM. IT'S THREE IN THE MORNING." (good): humility misread; 3:41, the call made at last */
-  function scWait(c, s, api) { stubEnding(c, s, api); }
+  const scWait = mkEnding2('B');
   /* C · "IT'S ONLY A MIGRAINE. TAKE A PILL AND SLEEP." (bad): dismissal before looking; 3:22, the call */
-  function scPill(c, s, api) { stubEnding(c, s, api); }
+  const scPill = mkEnding2('C');
   /* D · "OPEN SPIRIT VISION AND FIND WHO'S DOING THIS." (worst): curiosity dressed as courage; a thread wraps his wrist at
      the balcony's door (he never goes past its frame), then the call */
-  function scSeek(c, s, api) { stubEnding(c, s, api); }
-  /* ================================================================ THE FILMS AND THE FOUR ENDINGS · TODO-FILM, every one
-     (FILMS, M7: the plan's 9, shot by shot, with its sound column and its lenses phone / desk)
-     EACH IS A STUB: a few seconds of the place as it stands, with no word said and no sound cued, ending as its kind
-     must (the opening on its black, the title over it; a film from play back in play with the picture clear; an ending
-     on its black, the card over it). So the chapter runs from its first frame to its four cards and nothing soft-locks.
-     WHEN ONE IS BUILT: its lines are SAID.<place>, in the script's order; its clock is made by tl() from SECS, so a
-     measured take moves everything after it (v5.15); its pictures are the stage's (c_yfilm.js) and are a pure function
-     of the film's clock (v6.4); every cue is a literal call of the film language's sound verb, with the sound's name in
-     quotes, in the film's own source, so the engine can read it and warm it (v10.2), and none is written past the film's
-     last track (v12.3). A cue needs its sound in the build first (its take in assets/audio, its row in main.js's
-     STING_SAMPLE): chaptertest fails a cue that plays nothing, which is why a stub cues none. A chant's captions are
-     CHANTS.<key>, timed on the take's breaths (kit.captions). */
-  const STUB = { open: 4.0, film: 3.4, ending: 4.0 };          // seconds; a film from play is past 3.0 so that Skip is offered too
-
-  /* a film from play, as a stub: the picture held where he stands, then play again */
-  function stubFilm(c, s, api) {
-    const { tr, step, rawK } = api, T = STUB.film;
-    tr(0, T, () => {}, rawK);
-    step(T, () => {});
-  }
+  const scSeek = mkEnding2('D');
+  /* ================================================================ THE FILMS' CLOCKS AND CUES (masters/v29.0/parts/z_tail.js:
+     FILMS-1's, M7: the opening, the keepsake, the cord and home; their pictures are the stage's, c_yfilm.js FILMS1, reached as
+     api.stage.films.films). Each clock is built from SECS (a_head.js) by tl() and by marks laid after each measured line, so a
+     measured take moves everything after it (v5.15). Every cue is a literal call of the film language's sound verb in the
+     film's own source, so the engine's reading of a scene warms it and chaptertest checks it (v10.2), none is written past the
+     film's last track (v12.3), and each lands on its second: an effect is cued its own hit early (masters/v29.0/sound/
+     picks.json: `hit`, the moment in its file the sound's event lands). The voices are the lines' own takes, each on its
+     measured start, one at a time. THE BEDS: the street's, the stair's and the corridor's are these films' own cues; her
+     flat's, his flat's and the two music beds of the room (M2, M3) are the play's loops, each film writing how loud it wants
+     them every frame (stage.beds.film: PLAY.md 5). THE CHANT (Grandmaster Pho's Ratana, from the keepsake's 32 s to the cord's
+     8 s) is the play's world sound (stage.chant: PLAY.md 1): the keepsake begins it by a step and cues no copy of it, and lays
+     none of its captions. masters/v29.0/FILMS.md is the record. */
+  const STUB = { open: 4.0, film: 3.4, ending: 4.0 };          // (the endings' stubs, y_endings.js, FILMS-2's until theirs land)
   /* an ending, as a stub: the picture held, then its black, which the outcome card lies over */
   function stubEnding(c, s, api) {
     const { tr, step, fade, rawK } = api, T = STUB.ending;
@@ -6661,39 +9843,202 @@
     c.endFade = 1; c.keepFade = true;
   }
 
-  /* THE OPENING · "Blue hour" (the plan's 9.1: about 68 s; skip from 3 s) · TODO-FILM
-     Black, the street's bed, his thought (zv51o1); the crane down the shophouse row at blue hour to Marcus waiting by the
-     stair door, a taxi drawing in (zv51o2); his eyes out of the taxi (mk51o1, ph51o1); the stair, the tube flickering; the
-     landing, her door, Grace (mk51o2, gr51o1, ph51o2); inside, he kneels by the windows and in the black glass her
-     reflection faces the stairs (zv51o3); the card. Play begins where the film left him, at his place by her windows (no
-     "Loading" after an opening film: v15.3). Its lines: SAID.open. It begins on black (v4.6) and keeps its black at its
-     end, the title over it (v14.1). */
+  /* THE OPENING · "Blue hour" (the plan's 9.1). The plan's seconds where its lines allow them; where a measured line runs
+     longer than the plan's gap, what follows waits for it (Marcus's first line is 3.91 s: his teacher answers at 21.3 s, not
+     20.0; the stair from 24.6 s) */
+  const OP51 = (() => {
+    const T = { moto: 0.0, o1: 1.0, up: 2.0, o2: 2.6, m1: 3.5, bus: 8.0, fan: 12.5, taxi: 13.0, stop: 14.85, out: 15.5, door: 15.6, mk1: 17.0 };
+    T.ph1 = T.mk1 + SECS.mk51o1 + 0.35;                        // "Thank you. Show us the way."
+    T.look = T.ph1 + 0.75;                                      // Marcus looks up at her windows (M3's first breath)
+    T.turn = T.ph1 + SECS.ph51o1 + 0.05;                        // Marcus to the stair door
+    T.stair = T.turn + 0.85;                                    // the cut to the stair
+    T.climb = T.stair + 0.3;
+    T.tube = T.stair + 5.0;                                     // the tube flickers twice; Marcus stops and looks back down
+    T.land = T.stair + 10.0;                                    // the cut to the landing
+    T.knock = T.land + 0.6;                                     // the first knock (the second 0.29 s after)
+    T.mk2 = T.land + 1.5;                                       // "Grace? They're here."
+    T.lock = T.mk2 + SECS.mk51o2 - 0.9;                         // the lock, the door's old hinge (under his line's end)
+    T.gr1 = Math.max(T.mk2 + SECS.mk51o2 + 0.3, T.lock + 1.4);  // "Come in. Sorry about the mess."
+    T.ph2 = T.gr1 + SECS.gr51o1 + 0.2;                          // "Thank you for letting us in."
+    T.inn = Math.max(T.land + 12.0, T.ph2 + SECS.ph51o2 + 1.3); // the cut inside
+    T.cloth = T.inn + 0.5;                                      // the cloth shaken out
+    T.o3 = T.inn + 1.0;                                         // "She had let us in. But something kept turning her back to the door."
+    T.gecko = T.inn + 2.5;
+    T.kneel = T.inn + 3.35;                                     // he kneels at his place (eased over 1.2 s)
+    T.m3b = T.inn + 4.0;                                        // M3: a low cello note bending down
+    T.turnG = T.kneel + 1.2;                                    // his look to the glass, over 1.8 s
+    T.narrow = T.turnG + 1.8;                                   // the lens narrows on the glass over 7 s
+    T.sofa = T.inn + 10.0;                                      // she comes to the sofa; her reflection follows a beat late
+    T.black = T.inn + 14.0;                                     // black: the title over it
+    T.end = T.black + 1.7;
+    return T;
+  })();
   function intro(c, s, api) {
-    const { tr, step, fade, rawK } = api, T = STUB.open;
-    tr(0, T, () => {}, rawK);
-    fade(0.5, 1.6, 1, 0);
-    fade(T - 0.9, T - 0.2, 0, 1);
-    step(T, () => {});
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, T = OP51, F = stage.films.films.open;
+    step(0, () => F.begin(api, s));
+    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    fade(T.up, T.up + 1.2, 1, 0);                                              // (2.0: the picture comes up over 1.2 s)
+    /* THE STREET: the coffee shop closing, a motorbike, the case over black; the row at blue hour; a bus; the fan above */
+    sfx(0.0, 'u51bstreet', 0.55); sfx(19.4, 'u51bstreet', 0.5);               // (two of its 20 s, the second under the five-foot way's end)
+    sfxFade(T.stair - 0.4, T.stair + 0.3, 'u51bstreet');
+    sfx(T.moto, 'u51moto', 0.75);                                              // a motorbike passing, left to right (its pass at 1.4 s)
+    sfx(T.o1, 'zv51o1', 1);                                                    // "Case four."
+    sfx(T.o2, 'zv51o2', 1);                                                    // "A man asked us to come and see his colleague. He said she was not herself."
+    sfx(T.m1, 'u51m1blue', 0.7);                                               // M1 "Blue Hour": solo khim, slow; strings from 8 s
+    sfx(T.bus, 'u51busaway', 0.6);                                             // a bus pulling away, the air-brake's hiss
+    sfx(T.fan - 0.76, 'u51fantick', 0.5);                                      // the fan's tick from her window above
+    sfx(T.taxi - 0.29, 'u51taxiin', 0.8);                                      // the taxi's tyres on wet tarmac, its indicator
+    /* HIS EYES ON THE FIVE-FOOT WAY: the taxi's door shut behind him and away; his steps; Marcus's line, his teacher's */
+    sfx(T.door - 0.58, 'u51taxiout', 0.75);                                    // its door shut, and away up the street
+    sfx(T.out - 0.25, 'u51walk', 0.55); sfxFade(T.mk1 - 0.4, T.mk1 + 0.2, 'u51walk');   // his steps out onto the tiles
+    sfx(T.mk1 - 1.3, 'u51shoe', 0.32); sfx(T.mk1 - 0.75, 'u51shoe', 0.36);    // Marcus's two steps to meet them
+    sfx(T.mk1, 'mk51o1', 1);                                                   // "Thank you for coming, Grandmaster. She said you can come up."
+    sfx(T.ph1, 'ph51o1', 1);                                                   // "Thank you. Show us the way."
+    sfx(T.turn + 0.1, 'u51shoe', 0.34); sfx(T.turn + 0.45, 'u51shoe', 0.36);  // Marcus to the stair door
+    sfx(T.turn + 0.3, 'u51shoe', 0.4); sfx(T.turn + 0.85, 'u51shoe', 0.44);   // and his own, after his teacher
+    /* THE STAIR: the tube's hum, their steps on terrazzo, the flicker */
+    sfx(T.stair - 0.1, 'u51bstair', 0.55);
+    sfx(T.stair + 0.15, 'u51stair', 0.6); sfx(T.tube + 1.3, 'u51stair', 0.55);   // the climb (6 s each, the second after the stop)
+    sfx(T.tube, 'u51tube', 0.7);                                               // the tube flickers twice, its hum dropping out
+    /* THE LANDING: two knocks, Marcus's line, the lock and the old hinge, Grace's line, his teacher's thanks */
+    sfx(T.knock - 0.82, 'u51knock', 0.8);                                      // (its knocks 0.82 and 1.11 s into it)
+    sfx(T.mk2, 'mk51o2', 1);                                                   // "Grace? They're here."
+    sfx(T.lock - 1.31, 'u51unlock', 0.7); sfx(T.lock + 0.1, 'u51hinge', 0.6);  // the lock; the door's old hinge as it opens
+    sfx(T.gr1, 'gr51o1', 1);                                                   // "Come in. Sorry about the mess."
+    sfx(T.ph2, 'ph51o2', 1);                                                   // "Thank you for letting us in."
+    sfxFade(T.inn - 0.6, T.inn + 0.2, 'u51bstair');
+    /* INSIDE: her room's bed (the play's: the fan, the street below, a neighbour's TV) from the cut; the cloth shaken out;
+       his thought; a gecko; M3's low note; her steps and the sofa's give, heard; the silence as her reflection turns */
+    sfx(T.cloth - 0.61, 'u51cloth', 0.7);                                      // the cloth shaken out over the table
+    sfx(T.o3, 'zv51o3', 1);                                                    // "She had let us in. But something kept turning her back to the door."
+    sfx(T.gecko, 'u51gecko', 0.45);                                            // a gecko's chirp
+    sfx(T.sofa + 0.5, 'u51tile', 0.22); sfx(T.sofa + 1.1, 'u51tile', 0.2); sfx(T.sofa + 1.7, 'u51tile', 0.2); sfx(T.sofa + 2.3, 'u51tile', 0.18);   // her steps, soft
+    sfx(T.sofa + 3.6 - 0.43, 'u51sofa', 0.55);                                 // the sofa's give as she sits
+    fade(T.black, T.end - 0.25, 0, 1);
+    sfxFade(T.black, T.end - 0.2, 'u51m1blue');                                // (the music goes down with the picture: v15.3)
+    step(T.end, () => F.end());
     c.keepFade = true; c.endFade = 1;
   }
 
-  /* THE KEEPSAKE (the plan's 9.2: about 42 s), from the room into the breaking · TODO-FILM
-     Pho's open hand across the cloth (ph51k1); her hand that will not open; the packet set apart on a small white plate;
-     the bowl in his hands (ph51k2); three drops of wax and the chant begins (ph51ratana, captioned from CHANTS); into the
-     event's brief. Its lines: SAID.keepsake. */
-  function filmKeepsake(c, s, api) { stubFilm(c, s, api); }
+  /* THE KEEPSAKE (the plan's 9.2): from the room, into the breaking's brief */
+  const KS51 = (() => {
+    const T = { hand: 0.0, k1: 0.8, bag: 6.0, pull: 9.0, give: 12.5, place: 14.0, turn: 22.0, k2: 23.0, lift: 26.0, chant: 32.0, wax: 35.0, m4: 38.0 };
+    T.k2 = Math.max(T.k2, T.k1 + SECS.ph51k1 + 0.4);
+    T.end = 42.0;
+    return T;
+  })();
+  function filmKeepsake(c, s, api) {
+    const { tr, step, sfx, sfxFade, rawK, stage } = api, T = KS51, F = stage.films.films.keepsake;
+    step(0, () => F.begin(api, s));
+    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    sfx(T.k1, 'ph51k1', 1);                                                    // "May I hold it? Only for a while."
+    sfx(T.pull - 0.1, 'u51zip', 0.6);                                          // her bag's zip
+    sfx(T.place + 0.5 - 0.04, 'u51plate', 0.6);                                // porcelain on cloth
+    sfx(T.k2, 'ph51k2', 1);                                                    // "Hold the water. Whatever happens, keep it still."
+    sfx(T.lift - 0.18, 'u51bowlup', 0.7);                                      // brass lifted off the cloth, the water's small slap
+    /* THE CHANT begins (the play's own world sound: it carries on under the event and into the cord, PLAY.md 1) */
+    step(T.chant, () => { const ch = stage && stage.chant; if (ch && ch.begin) ch.begin(); });
+    sfx(T.wax - 0.03, 'u51wax', 0.6); sfx(T.wax + 1.5 - 0.03, 'u51wax', 0.6); sfx(T.wax + 3.0 - 0.03, 'u51wax', 0.6);   // a tiny hiss with each drop
+    sfx(T.m4, 'u51m4break', 0.5); sfxFade(T.end - 1.4, T.end - 0.1, 'u51m4break');   // M4's prelude: a bowed metal drone, low strings
+    step(T.end, () => F.end());
+    /* (it ends on its own view, the lens down into the bowl in his hands: the breaking begins there, PLAY.md 2) */
+    c.keep.view = true;
+  }
 
-  /* THE CORD (the plan's 9.3: about 55 s), from the breaking · TODO-FILM
-     The last strand snaps by itself, in slow motion: a wisp of red slips round his wrist under the bowl and is gone; Grace
-     breathes out and cries (ph51c1); her phone face down (zv51c1); the packet bound in white thread (ph51c2, ph51c3,
-     mk51c1, gr51c1); the bottle for his altar (ph51c4, ph51c5); his look at his wrist (zv51c2). Its lines: SAID.cord. */
-  function filmCord(c, s, api) { stubFilm(c, s, api); }
+  /* THE CORD (the plan's 9.3): from the breaking, straight into home. Where a measured line runs past the plan's next
+     second, the next waits for it (his teacher's two lines to Grace and Marcus are 5.37 and 4.41 s: the bottle at 47 s) */
+  const CD51 = (() => {
+    const T = { snap: 8.6, cry: 12.0, c1: 15.0, phone: 24.0, z1: 29.0, wrap: 32.0, c2: 33.0 };
+    T.c3 = Math.max(37.5, T.c2 + SECS.ph51c2 + 0.35);          // "Don't let her meet him alone. A friend is medicine too."
+    T.m1 = Math.max(41.0, T.c3 + SECS.ph51c3 + 0.3);           // "I won't. Thank you, Grandmaster."
+    T.g1 = Math.max(43.0, T.m1 + SECS.mk51c1 + 0.25);          // "Thank you."
+    T.pour = Math.max(44.0, T.g1 + SECS.gr51c1 + 0.3);         // the bowl to his teacher; the pour; the cork
+    T.give = T.pour + 2.8;                                      // the bottle held out to him
+    T.c4 = T.give + 0.4;                                        // "For your altar."
+    T.take = T.give + 1.3;                                      // his hands take it
+    T.c5 = T.c4 + SECS.ph51c4 + 0.45;                           // "You held it well."
+    T.wrist = T.c5 + SECS.ph51c5 + 0.3;                         // his look drops to his wrist for 1.5 s
+    T.z2 = T.wrist;                                             // "My part was small. I only held the water."
+    T.black = T.z2 + SECS.zv51c2 + 0.5;
+    T.end = T.black + 1.1;
+    return T;
+  })();
+  function filmCord(c, s, api) {
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, T = CD51, F = stage.films.films.cord;
+    step(0, () => F.begin(api, s));
+    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    /* (the chant's last verse is the play's, let go before this film began: its last word at about 8 s) */
+    sfx(T.snap - 0.6, 'u51vison', 0.55);                                       // Spirit Vision forced open as the strand goes
+    sfx(T.snap - 0.86, 'u51snap', 0.85);                                       // a taut string snapping (its reverse swell before it)
+    sfx(T.snap + 0.1 - 0.25, 'u51whoosh', 0.7);                                // a low whoosh crossing toward him
+    sfx(T.snap + 0.4 - 0.15, 'u51wrist', 0.65);                                // a thin glassy ring as it touches his wrist
+    sfx(T.snap + 2.7, 'u51visoff', 0.45);
+    sfx(T.c1, 'ph51c1', 1);                                                    // "It's alright. It's finished."
+    sfx(T.phone, 'u51buzz', 0.55); sfx(T.phone + 0.85, 'u51buzz', 0.55); sfx(T.phone + 1.7, 'u51buzz', 0.5);   // her phone's vibration
+    sfx(T.phone + 3.0 - 0.07, 'u51facedown', 0.6);                             // face down
+    sfx(T.z1, 'zv51c1', 1);                                                    // "For the first time all evening, she let it ring."
+    sfx(T.wrap + 0.6 - 0.4, 'u51fold', 0.55);                                  // cloth folded
+    sfx(T.c2, 'ph51c2', 1);                                                    // "Rest tonight. Tomorrow, stay close to people who listen to you."
+    sfx(T.c3, 'ph51c3', 1);                                                    // "Don't let her meet him alone. A friend is medicine too."
+    sfx(T.m1 - 1.6, 'u51knot', 0.45);                                          // the thread wound and knotted
+    sfx(T.m1, 'mk51c1', 1);                                                    // "I won't. Thank you, Grandmaster."
+    sfx(T.g1, 'gr51c1', 1);                                                    // "Thank you."
+    sfx(T.pour + 0.6 - 0.94, 'u51pour', 0.6);                                  // the pour into the bottle
+    sfx(T.pour + 2.2 - 0.53, 'u51cork', 0.6);                                  // the cork
+    sfx(T.c4, 'ph51c4', 1);                                                    // "For your altar."
+    sfx(T.c5, 'ph51c5', 1);                                                    // "You held it well."
+    sfx(T.z2, 'zv51c2', 1);                                                    // "My part was small. I only held the water."
+    fade(T.black, T.end - 0.15, 0, 1);
+    step(T.end, () => F.end());
+    c.keepFade = true; c.endFade = 1; c.keep.view = true;
+  }
 
-  /* HOME (the plan's 9.4: about 50 s; 11:52 PM), into three o'clock · TODO-FILM
-     The corridor, the keycard, his dark flat and the city through the glass; the bottle on his altar; his phone on its
-     charger; the shower, the bed, 11:58; his eyes closing (zv51h1); 3:00. Play begins in bed. Its lines: SAID.home. */
-  function filmHome(c, s, api) { stubFilm(c, s, api); }
+  /* HOME (the plan's 9.4; 11:52 PM): from the cord's black, into three o'clock in bed */
+  const HM51 = (() => {
+    const T = { m5: 0.5, card: 6.2, lock: 6.6, door: 7.0, altar: 10.0, setb: 12.5, palms: 14.0, phone: 18.0, charge: 19.0, keys: 21.0, bed: 24.0,
+                shower: 24.0, showerOff: 28.0, sit: 28.4, lie: 31.0, clock: 34.0, close: 40.0, h1: 41.0, tick: 45.0, press: 46.0, open: 49.5 };
+    T.h1 = Math.max(T.h1, T.close + 0.8);
+    T.cut = T.open;
+    T.end = T.open + 4.6;                                       // the clock read (3:00), the ceiling again, and the room: where play begins
+    return T;
+  })();
+  function filmHome(c, s, api) {
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, T = HM51, F = stage.films.films.home;
+    step(0, () => F.begin(api, s));
+    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    fade(0, 0.9, 1, 0);                                                        // (from the cord's black)
+    sfx(0.0, 'u51bcorr', 0.55);                                                // the corridor's hush, the air vents
+    sfx(0.1, 'u51carpet', 0.6);                                                // his steps on carpet
+    sfx(T.m5, 'u51m5city', 0.7);                                               // M5 "Night City": an electric piano, two chords, a pad
+    sfx(2.6, 'u51liftfar', 0.3);                                               // a lift's motor far off
+    sfx(T.card - 0.36, 'u51keycard', 0.7);                                     // the reader's beep
+    sfx(T.lock - 0.49, 'u51clunk', 0.7);                                       // the lock's clunk
+    sfx(T.door - 0.31, 'u51door', 0.6);                                        // the door
+    sfxFade(T.door + 1.0, T.door + 2.6, 'u51bcorr');
+    sfx(T.setb - 0.05, 'u51setglass', 0.6);                                    // glass on wood
+    sfx(T.palms - 0.38, 'u51palms', 0.55);                                     // his palms meeting
+    sfx(T.charge - 0.18, 'u51charger', 0.55);                                  // the charger's chirp
+    sfx(T.keys - 0.05, 'u51keys', 0.5);                                        // the keys in a bowl
+    sfx(T.shower, 'u51shower', 0.55); sfxFade(T.showerOff - 0.1, T.showerOff + 0.25, 'u51shower');
+    sfx(T.showerOff, 'u51showeroff', 0.6);                                     // the shower off
+    sfx(T.lie + 0.6 - 0.17, 'u51liedown', 0.6);                                // the bed
+    sfx(T.clock, 'u51clock', 0.55);                                            // the clock's soft tick
+    sfx(T.h1, 'zv51h1', 1);                                                    // "Everyone thought that was the end of it."
+    sfx(T.tick, 'u51clock', 0.5);                                              // a clock ticking
+    sfx(T.press, 'u51press', 0.55);                                            // the pressure's tone, rising very low
+    sfxFade(T.open - 0.05, T.open + 0.05, 'u51press'); sfxFade(T.open - 0.05, T.open + 0.05, 'u51clock');   // cut to silence as his eyes open
+    sfx(T.open + 1.0, 'u51clock', 0.45);                                       // the clock again, in the silence
+    step(T.end, () => F.end());
+    /* (it ends on its own view, lying in bed: three o'clock begins there, PLAY.md 2) */
+    c.keep.view = true;
+  }
 
+  /* THE MODELS ONLY THESE FILMS USE (declared, v17.4), asked for with the chapter's own: Grandmaster Pho standing (episode 4
+     chapter 5's copy of his body with finger bones) and the taxi's driver */
+  for (const k of ['p5pho', 'p5collector']) if (!DATA.assets.includes(k)) DATA.assets.push(k);
+  Object.assign(DATA.reuseInEpisode, {
+    p5pho: "Grandmaster Pho STANDING, episode 4 chapter 5's copy of his body with finger bones on his right hand (R26), his own takes and look D: on the five-foot way, the stair and her landing in the opening (FILMS-2 stands him at the dawn with it)",
+    p5collector: "the taxi's driver in the opening, at the wheel behind the windscreen at dusk for the two seconds the taxi draws in: the collector of episode 4 chapter 5's last case, his seated take's quiet window (v24.22: every moving vehicle has its driver)" });
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e5c1 = Object.assign(DATA, {
     build,
