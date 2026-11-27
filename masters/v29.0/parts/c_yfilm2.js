@@ -458,6 +458,14 @@
       const K = new THREE.Group(); K.add(new THREE.Mesh(kg, km)); const t1 = new THREE.Mesh(tg, km), t2 = new THREE.Mesh(tg, km); K.add(t1, t2);
       K.traverse(o => { o.frustumCulled = false; o.renderOrder = 3; }); K.visible = false; wr.parent.add(K);
       F2W.knot = { K, t1, t2, wr };
+      /* the burn's flash (ending D): a soft round light at the band's middle, its own radial falloff (the band's haze ring,
+         opened out to be the flash, stood as a hard-edged white disc behind his wrist: d7's desktop picture at 91.3 s) */
+      { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gr.addColorStop(0, 'rgba(255,250,240,1)'); gr.addColorStop(0.22, 'rgba(255,238,214,0.72)'); gr.addColorStop(0.55, 'rgba(255,214,184,0.22)'); gr.addColorStop(1, 'rgba(255,196,170,0)');
+        x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+        const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; owned.push(tx);
+        const fm = new THREE.SpriteMaterial({ map: tx, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }); mats.push(fm);
+        F2W.flashSp = new THREE.Sprite(fm); F2W.flashSp.name = "the burn's flash at his wrist (ending D)"; F2W.flashSp.frustumCulled = false; F2W.flashSp.renderOrder = 4; F2W.flashSp.visible = false; wr.parent.add(F2W.flashSp); }
       /* IN SPIRIT VISION THE BAND IS A SPIRIT: the vision draws his hands black and white with the world (everything but the
          entities: its rule since episode 4 chapter 4), so the red band in the hands' pass read there as a grey ring (run 7's
          photograph at the barrier). Its twin in the world's vision layer is laid each frame exactly where the hands' pass
@@ -503,11 +511,15 @@
       F2W.band.visible = band > 0.001 && !sp; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = (band > 0.001 || flash > 0.001) && !sp;
       f2BandSpirit(sp, Math.max(band, flash), flash > band);
       /* (the burn's flash a soft warm light that opens out from the wrist as it fades, about the ring's own middle: drawn
-         white at 0.9 it stood as a solid white bangle, photographed) */
-      F2W.band2.material.opacity = 0.35 * band + 0.5 * flash; F2W.band2.material.color.setHex(flash > band ? 0xfff0d6 : 0xff5040);
-      { const f = F2W.band2.userData.fit, kx = flash > 0.001 && band < 0.5 ? 1 + 0.6 * (1 - flash) : 1;
+         white at 0.9 it stood as a solid white bangle, photographed; the haze ring opened out for it stood as a hard white
+         disc, photographed: so the ring only warms, and the light is a soft round glow of its own, 7 cm across at its height
+         and 19 cm as it fades) */
+      F2W.band2.material.opacity = 0.35 * band + 0.3 * flash; F2W.band2.material.color.setHex(flash > band ? 0xfff0d6 : 0xff5040);
+      { const f = F2W.band2.userData.fit;
         if (!f.mid) { f.mid = new THREE.Vector3(); for (const q of f.pts) f.mid.add(q); f.mid.multiplyScalar(1 / f.pts.length); }
-        F2W.band2.scale.setScalar(kx); F2W.band2.position.copy(f.mid).multiplyScalar(1 - kx); }
+        F2W.band2.scale.setScalar(1); F2W.band2.position.set(0, 0, 0);
+        const fs = F2W.flashSp; if (fs) { fs.visible = flash > 0.001 && !sp; fs.material.opacity = 0.95 * c01(flash);
+          fs.position.copy(f.mid); fs.scale.setScalar((0.07 + 0.12 * (1 - c01(flash))) / f.sp); } }
       F2W.mark.visible = mark > 0.001; F2W.mark.material.opacity = 0.85 * mark;
       F2W.thread.visible = thread > 0.5; F2W.thread2.visible = thread > 1.5;
       f2KnotLay(thread > 0.5);
