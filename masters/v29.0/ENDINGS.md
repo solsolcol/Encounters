@@ -228,6 +228,12 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     passes 190 m (the chapter's sky), all of it turned at 8.5 s: no edge across the blocks. The burn's flash at 91.2 and
     91.4 s is the soft round light at his wrist, the welt left under it; found and fixed from it: the haze ring, warmed for
     the flash, still stood round the light as a pale hard-edged ring over his hand (now the band's alone).
+  - RUN v19 (a phone): the gold in Spirit Vision (A 62.0, 77.0 s) is solid gold bands, unbroken over the glass's frame and
+    whatever stands behind it, the city all turned at 77.0 s (at 62.0 s its sky still dark, the wave not yet at 190 m); the
+    cushion over his eyes drawn at last (C 14.2 s: the stand-in in plain faded indigo, its folds facets at that nearness,
+    which THINGS' own cushion replaces), its lower edge in the vignette's dark, so it is lifted 1.5 cm for the room's
+    sliver; as he brings his hands to his mouth after the tap (8.1 s) the library's `mouth` pose carries both hands up
+    through the lower picture, the fingers large across it for 0.3 s (the pose's own way up, read and left).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
