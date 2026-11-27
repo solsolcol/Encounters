@@ -516,13 +516,14 @@
       if (!f2WristDress()) return;
       /* (in Spirit Vision the band is its spirit twin's, red: the hands' pass would draw it grey) */
       const sp = !!F2.vis && (band > 0.001 || flash > 0.001);
-      F2W.band.visible = band > 0.001 && !sp; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = (band > 0.001 || flash > 0.001) && !sp;
+      F2W.band.visible = band > 0.001 && !sp; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = band > 0.001 && !sp;
       f2BandSpirit(sp, Math.max(band, flash), flash > band);
       /* (the burn's flash a soft warm light that opens out from the wrist as it fades, about the ring's own middle: drawn
          white at 0.9 it stood as a solid white bangle, photographed; the haze ring opened out for it stood as a hard white
-         disc, photographed: so the ring only warms, and the light is a soft round glow of its own, 7 cm across at its height
-         and 19 cm as it fades) */
-      F2W.band2.material.opacity = 0.35 * band + 0.3 * flash; F2W.band2.material.color.setHex(flash > band ? 0xfff0d6 : 0xff5040);
+         disc, photographed: so the light is a soft round glow of its own, 7 cm across at its height and 19 cm as it fades) */
+      /* (the haze ring is the band's alone: warmed for the flash it still stood as a pale hard-edged ring round the soft light,
+         run t16's phone at D 91.2 s; the flash is the round light's) */
+      F2W.band2.material.opacity = 0.35 * band; F2W.band2.material.color.setHex(0xff5040);
       { const f = F2W.band2.userData.fit;
         if (!f.mid) { f.mid = new THREE.Vector3(); for (const q of f.pts) f.mid.add(q); f.mid.multiplyScalar(1 / f.pts.length); }
         F2W.band2.scale.setScalar(1); F2W.band2.position.set(0, 0, 0);
