@@ -218,8 +218,8 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     and a flat white patch stands over his right elbow (A 110.3 s: his robe's inner face unshaded, the model's, CAST's).
   - RUN t16 (27 Nov, the fixes above read back full size): the strip of pills hangs under his fist with its tablets to him
     on a phone (5.1, 5.4 s) and a desktop (5.4 s); the tap's water falls from the spout onto his knuckles and goes into his
-    hand on both (6.9 s), the shot turned and lifted for each shape by `f2TapGeo` (a phone: turned 3.8 degrees to his left
-    and lifted 13.3; a desktop: 6.9 to his right and 9.3; the water's line crosses his knuckles' middle and meets the sink
+    hand on both (6.9 s), the shot turned and lifted for each shape by `f2TapGeo` (a phone: turned 3.8 degrees one way
+    and lifted 13.3; a desktop: 6.9 the other way and 9.3; the water's line crosses his knuckles' middle and meets the sink
     a tenth of the half-screen under their line); his sight in C opens over his room at its old pace and then over the city
     (17.6 s on a desktop: the room turned and the city still dark beyond the wave; 19.6 s: all of it turned, no edge across
     the blocks). Found and fixed from it: at 8.1 s his hand under the tap and his hands to his mouth shared 0.3 s and the
