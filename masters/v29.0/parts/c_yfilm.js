@@ -62,8 +62,12 @@
        and on a desk 7.07 -> 7.82 -> 6.61 m across it), so the keys' own answers are what is eased (v25.5: a fit is a smooth
        function of the clock). Answers the world offset of the eye and the lens the key is drawn with */
     const _f1Sv = { p: new THREE.Vector3(), ry: 0, rx: 0, rz: 0, f: 0 };
-    function f1Solve(K, nar) {
-      const f0 = nar ? K.fp : K.fd, out = { x: 0, y: 0, z: 0, f: f0 };
+    /* A KEY'S OWN AIM AND HOLD FOR A PHONE (`atP`, `holdP`; 27 Nov, photographed: on a phone, a third of a desk's width, the
+       keepsake's first shot could hold his teacher's face or his open hand, never both, and held neither): a key that names
+       them is aimed and held by them on a narrow screen, and by `at` and `hold` on a wide one */
+    const f1Shape = (K, nar) => (K && nar && (K.atP || K.holdP) ? Object.assign({}, K, { at: K.atP || K.at, hold: K.holdP || K.hold }) : K);
+    function f1Solve(K0, nar) {
+      const K = f1Shape(K0, nar), f0 = nar ? K.fp : K.fd, out = { x: 0, y: 0, z: 0, f: f0 };
       if (!K.hold) return out;
       _f1Sv.p.copy(yaw.position); _f1Sv.ry = yaw.rotation.y; _f1Sv.rx = pitch.rotation.x; _f1Sv.rz = camera.rotation.z; _f1Sv.f = camera.fov;
       f1Lens(f0);
@@ -105,7 +109,7 @@
       for (let j = 1; j < K.length; j++) if (K[j].t < K[j - 1].t) { const w = (K[j - 1].name || '') + '@' + K[j - 1].t.toFixed(2) + ' > ' + (K[j].name || '') + '@' + K[j].t.toFixed(2);
         if (!f1Bad.has(w)) { f1Bad.add(w); console.error('e5c1: a film\'s camera keys run backwards in time: ' + w); } }
       let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
-      const A = K[i], B = K[i + 1], nar = isNarrow();
+      const nar = isNarrow(), A = f1Shape(K[i], nar), B = f1Shape(K[i + 1], nar);
       if (!B || B.cut) {
         f1Lens(nar ? A.fp : A.fd);
         if (A.yaw != null || !A.at) { const p = f1v(A.eye), [yw, pt] = f1KeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
@@ -114,7 +118,7 @@
         F1.shot = A.name || ''; return;
       }
       if (A.flow && B.flow && A.at && B.at && A.yaw == null && B.yaw == null) {
-        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? K[i - 1] : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? K[i + 2] : null;
+        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? f1Shape(K[i - 1], nar) : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? f1Shape(K[i + 2], nar) : null;
         const val = (X) => { const e = f1v(X.eye), a = f1v(X.at); return [e[0], e[1], e[2], a[0], a[1], a[2], nar ? X.fp : X.fd, X.roll || 0]; };
         const vA = val(A), vB = val(B), dt = Math.max(1e-3, B.t - A.t), n = vA.length;
         const m0 = new Array(n).fill(0), m1 = new Array(n).fill(0);
@@ -405,12 +409,15 @@
       /* the small corked bottle: on the cloth as his teacher fills and corks it (the cord), then in his hands (the hands'
          pass); the one on his altar is the world's (things.bottle) */
       clothBottle: stand('w51bottle', 0, -50, 0, 0, { parent: world, done: (m) => glassOff1(m) }),
-      handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) }),
+      handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => { glassOff1(m); handsPass1(m); } }),
       /* (its paint is the play's: the metal brass and the water poured, laid by stage.plan.bowlLook once it has landed, so the
          film's last picture and the event's first are one bowl: PLAY.md 2) */
-      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3 })
+      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3, near: true, done: (m) => handsPass1(m) })
     };
     for (const k of ['mkPhone', 'grPhone', 'phoBag', 'keycard', 'clothBottle']) PROPS1[k].visible = false;
+    /* (a thing drawn in the hands' pass is never culled by bounds that mean nothing there: the play's own held bowl is
+       drawn so, c_play.js holdBowl) */
+    function handsPass1(m) { m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); }
     /* (THINGS-2: a material named glass is drawn without writing depth, so what stands behind it is drawn) */
     function glassOff1(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && /glass/i.test(mt.name || '')) { mt.depthWrite = false; mt.transparent = true; } }); }
     /* THE WATER IN HIS HANDS (27 Nov, PLAY.md 2): the bowl's own water and petals, painted by the play's bowlLook (poured),
@@ -859,7 +866,12 @@
     function keepPho1(t, T) {
       const P = cast.pho; if (!P || !P.ready) return;
       f1LeanBack(P);
-      const st = STATION.room.pho; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
+      /* (TURNED TO HIM from 22 s, as he asks him to hold the water: photographed 27 Nov, his head alone could not turn the
+         right angle to where his student kneels at his right, and he spoke his line in profile. He turns on his cushion, a
+         third of the way, and his look goes the rest; he stays turned to him, over the bowl in his hands, to the film's end,
+         which looks down into the bowl: the play seats him square again unseen) */
+      const st = STATION.room.pho, turnK = f1Env(t, T.turn - 0.4, T.end + 9, 1.3, 0.5);
+      put(P, st.x, st.z, st.ry - 0.55 * turnK, (P.home && P.home.y) || 0.12);
       f1Speak(P, t, ['Sit_to_Stand_Transition_M', 0.02, 0, false], [[T.k1, SECS.ph51k1, 'Sitting_Answering_Questions', 0.6], [T.k2, SECS.ph51k2, 'Sitting_Answering_Questions', 0.6]]);
       /* HIS LEFT HAND held out open across the cloth toward her, palm up (0 to 13 s), leaning into the reach as she reaches
          to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
@@ -879,13 +891,13 @@
       f1LeanBack(P);
       const st = STATION.room.grace; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
       const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : P.acts.Sitting_Answering_Questions ? 'Sitting_Answering_Questions' : 'Idle_3';
-      pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false);
+      pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false);   // (inside the take's clean window, 0.25 on: c_cast.js; at 0.1 she slid off the seat's edge, her knees in its front)
       /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out and held across to his
          teacher's palm, her fingers closed on it, leaning to him (9 to 12.5 s); let go; her hands back to her lap */
       const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull, T.give + 0.9, 0.9, 0.8);
       f1Lean(P, 0.45 * hold);
       if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
-      if (hold > 0.001) handTo(P, 'L', [0.46, 0.6, 0.78], [0.05, -0.1, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 });
+      if (hold > 0.001) { handTo(P, 'L', [0.46, 0.6, 0.78], [0.05, -0.1, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
       f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [0.46, 0.6, 0.9], 0.6], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
     }
     function keepMarcus1(t, T) {
@@ -897,8 +909,11 @@
       const on = f1Env(t, T.bag + 0.4, T.give + 1.4, 0.8, 0.8);
       /* (her shoulder is 0.8 m from his across the sofa's back: he leans over it to lay his hand there, as a person does) */
       f1Lean(P, 0.28 * on);
-      if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightShoulder') || f1Bone(g, 'RightArm')) : null;
-        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); handTo(P, 'L', [_f1A.x - 0.03, _f1A.y + 0.07, _f1A.z - 0.02], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
+      /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
+         now on the top of her shoulder, over its joint, a little in from it) */
+      if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
+        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); if (nk) { nk.getWorldPosition(_f1S); _f1A.lerp(_f1S, 0.2); }
+          handTo(P, 'L', [_f1A.x, _f1A.y + 0.06, _f1A.z], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
       f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.give + 0.2, [0.46, 0.6, 0.86], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
     /* THE PACKET: in her bag; in her left hand from 9.5 s; laid in his palm at 12.5 s; in his hand to the plate; on the plate,
@@ -906,7 +921,10 @@
     function keepPacket1(t, T) {
       const g = things.keepsake; if (!g) return;
       if (t < T.pull + 0.3) { f1Drop(g, HER.bag.x + 0.02, HER.bag.y + 0.07, HER.bag.z, 0.4); }
-      else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.015, pm.z, 0.4); } }
+      else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A);
+        /* (under her palm, between her fingers: she holds it out palm down. Photographed 27 Nov: laid 1.5 cm over the palm's
+           middle, it sat on the back of her hand) */
+        if (pm) f1Drop(g, pm.x, pm.y - 0.03, pm.z, 0.4); } }
       else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.02, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
       else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
       const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
@@ -979,13 +997,22 @@
       const handAt = [0.5, 0.64, 1.1];
       return [
         /* Pho's open hand across the cloth, his face: a slight push toward the hand */
-        { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
-        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
+        /* (a phone holds his face as he asks, his arm reaching out of the picture toward her: 41 degrees part his face and his
+           hand from where he kneels, and a phone sees 25; a desk holds both) */
+        { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+          atP: () => { const f = phoFace(); return [f[0] + 0.05, f[1] - 0.1, f[2] - 0.12]; }, holdP: () => { const f = phoFace(); return [[f[0], f[1] + 0.08, f[2], 0.12], [f[0], f[1] - 0.28, f[2] - 0.08, 0.14]]; } },
+        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+          atP: () => { const f = phoFace(); return [f[0] + 0.06, f[1] - 0.12, f[2] - 0.16]; }, holdP: () => { const f = phoFace(); return [[f[0], f[1] + 0.08, f[2], 0.12], [f[0], f[1] - 0.28, f[2] - 0.08, 0.14]]; } },
         /* across the table to her: her face, both hands, the packet */
         { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.52, g[2] + 0.35]; }, fp: 46, fd: 38, cut: true,
           hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
-        { t: T.give + 0.4, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.05, g[1] - 0.54, g[2] + 0.45]; }, fp: 46, fd: 38,
+        /* (photographed 27 Nov: on a phone her face and the two hands meeting over the table are 25 degrees apart, and the
+           packet passing was out of the picture. So the look goes down to the hands as she holds it out, and stays on them
+           as it is laid in his palm: the beat is seen on every screen) */
+        { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 38,
           hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
+        { t: T.give - 0.9, name: 'hands', eye, at: [0.47, 0.6, 0.8], fp: 44, fd: 38, hold: [[0.46, 0.62, 0.84, 0.2]], back: 0.3, fmax: 56 },
+        { t: T.place - 0.15, name: 'hands', eye, at: [0.46, 0.62, 0.92], fp: 44, fd: 38, hold: [[0.46, 0.62, 0.9, 0.2]], back: 0.3, fmax: 56 },
         /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
         { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
         { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
@@ -1410,7 +1437,7 @@
       props: PROPS1,
       films: FILMS1,
       beds: () => (F1.film ? F1.beds : null),
-      state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds }),
+      state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds, held: F1.held || null }),
       shot: () => F1.shot,
       helpers: { track: f1Track, walk: f1Walk, speak: f1Speak, gaze: f1Gaze, head: f1Head, show: f1Show, vision: f1Vision, look: f1Look, lens: f1Lens,
                  env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1 },
