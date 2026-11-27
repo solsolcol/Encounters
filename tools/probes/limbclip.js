@@ -36,7 +36,10 @@
   const a = new V3(), b = new V3(), q = new Q4(), up = new V3();
   /* each shown floor body's capsules in the world: [{ who, key, low, caps: [[name, ax, ay, az, bx, by, bz, r]] }] */
   function bodies() {
-    const F = S.films || {}, P = F.people ? F.people() : [], out = [];
+    /* (v29.0, R15: a chapter's films may answer people() as an array (episode 4 chapter 5) or as an object by name
+       (episode 5 chapter 1: { pho, grace, marcus, phoStand, driver }): both read as a list) */
+    const F = S.films || {}, P0 = F.people ? F.people() : [], out = [];
+    const P = Array.isArray(P0) ? P0 : Object.values(P0 || {}).filter(Boolean);
     /* (R75's debug, B12: what the chapter lays on at the render (its arms held to a real range, c_cast.js LIM5) runs in the
        world's updateMatrixWorld, and a seek poses the bodies and draws nothing: the world is updated here first, as a render
        updates it, so what is read is what is drawn) */
