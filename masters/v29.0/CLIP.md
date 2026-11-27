@@ -49,7 +49,11 @@ d²/(near·2²⁴) m apart (0.02 mm at 5 m, 0.7 mm at 30 m with near 0.08), so a
 `safeTo` = sqrt(gmin / 2 / that) m and FIGHTS beyond it (gap 0: always); a pair turned away from the lens with both sides
 one-sided is `away`; two layers that both write no depth (a painted shadow under a painted glow) cannot fight in depth and
 are `order` (drawn in their sorted order). A still thing is indexed once and kept, so each film moment costs its people
-and what moved. Usage as lensclip's (FILMS, PHASES, VIEW, STEP, OUT; and R, VOX, ANG, DIST, MINAREA):
+and what moved; the people (every skinned mesh, posed) are met in a film only at moments a multiple of BODYSTEP s (2;
+BODYSTEP=0 every moment): eight posed bodies cost about 18 s a moment on this box (the cord, run c2), the still things a
+fraction of one. Against the still things a body meets only its triangles of BODYMIN m² (4 cm²) and over; its clothes
+against its skin, and one body against another, every triangle. Usage as lensclip's (FILMS, PHASES, VIEW, STEP, OUT; and
+R, VOX, ANG, DIST, MINAREA, BODYMIN, BODYSTEP):
 
     ENC_DIST=<snap> CHROMIUM_PATH=/opt/pw-browsers/chromium CH=e5c1 PHASES=room,breaking,night,night:u,ask OUT=<dir> \
       sh tools/bslot.sh node tools/probes/coplanar.mjs
@@ -74,7 +78,40 @@ coplanar, in the room phase (phone, run c1):
 - two quads laid exactly on one another in two materials: paired (0.3 m², gap 0). PASS.
 (Both throwaway checks are in the probes as CHECK=1 and print `pass`.)
 
-## 3 · The short runs on this chapter (HEAD 5b212b7)
-(see §4: written as they land)
+## 3 · The short runs on this chapter (HEAD 5b212b7's chapter, snapshot /home/user/snap-clip; scratch /home/user/clipscratch)
+
+| run | probe | what | result |
+|---|---|---|---|
+| t1 | lensclip VIEW=both STEP=1 CHECK=1 | the cord's first 6 s, both shapes | the proofs of §2 PASS; 14 moments, no hit |
+| t2 | lensclip VIEW=phone STEP=0.5 | the whole cord (59.4 s) and the room phase | 119 moments, no hit; the room's yaw FOUND held at -1.35..1.05 (PLAY.md's -0.15 ± 1.2, read back from the chapter's own frame), pitch -1.05..0.55, 65 looks, no hit |
+| c1 | coplanar VIEW=phone CHECK=1 | the room phase | the proofs of §2 PASS; 196 meshes, 62 pairs before the FIGHTS reading was added (read again in c2) |
+| c2 | coplanar VIEW=both STEP=2 | the whole cord, both shapes | 60 moments, 40 pairs: 5 FIGHT from the lens, the rest away, order or safe (below); 18.6 s a moment with 8 posed bodies, hence BODYSTEP |
 
 ## 4 · Findings, by owner (leads: each to be photographed at its place and read against the design before anything moves)
+
+Every pair below is a LEAD from the measure (coplanar, run c2, the cord: the lens in her room and on her stair), not yet
+seen flicker; the owner photographs it at its place (two frames with the lens moved a little show a depth fight as a
+changed pattern) and reads it against the design before anything moves. A box is the pair's overlaps together (x, y, z
+from, x, y, z to).
+
+PLAY (the places, b_world.js):
+1. HER FRONT WALL'S SILL: the wall's white (`her front wall`, col ffffff) and the window frame's wood (col 5a3a26) in one
+   plane at y 0.42, x 2.75..2.77, z -2.2..2.2 (0.064 m², gap 0): the top of the sill by his left as he kneels (2.4 m from
+   the cord's lens). FIGHTS at every moment of the cord.
+2. HER DOOR'S FRAME IN HER WALL: `her flat` white (ffffff) and dark wood (3a2618) in one plane, normal +z, box x -2.9..-2.75,
+   y 0..2.12, z -2.85..-1.9 (0.078 m², gap 0), 3.2 m from the lens; and its copy in the reflection (`refl:Mesh` 21140b
+   against a2a2a2, x 8.25..8.4) with it.
+3. THE SHOPHOUSE ROW against the REFLECTION's floor: `refl:Mesh` (a2a2a2) and the shophouse row's ece8dc at y 0, x 2.98..3.1,
+   z -3..3 (0.72 m², gap 0), just outside her front wall below the sill: likely never seen (behind the wall from inside, and
+   facing up, away from the street below): photograph before reading it as one.
+4. THE SHOPHOUSE ROW against itself: two of its white materials in one plane facing up, x 0.91..1.15, y -3.85..-0.3, z 3..3.15
+   (0.072 m², gap 0), 3.4 m from the lens (the stair's side).
+Read and left as designed (v19.3's millimetres): the street's painted pools of light (additive, ff9030) 1 mm over the
+shophouse row's ground (safe to 26 m); her flat's white 1 mm over its grey shelf top (safe to 26 m); the takeaway box on its
+shelf (1.5 mm); the black painted shadows on the floor and the low table under the candles' warm glow, and the glows over one
+another (`order`: neither writes depth, so they cannot fight in depth); the shophouse row's undersides at y -0.3 and her
+flat's wall backs (`away`: one-sided and turned from every lens of the cord).
+THINGS-3 / CAST (the things and the cast, for their owners to read; each `safe` from the cord's lens, listed because they
+are near him): the plate on the low table 0.03..0.7 mm under the candle glow (safe to 4.8 m: from the far side of her room it
+would fight); her phone 0.3..1.5 mm over the sofa's seat (safe to 13.6 m); Grandmaster Pho's lap cloth 1.6..2 mm over his
+robe (0.17 cm², safe to 32 m); the jug's glass and its water 0.01..0.1 mm apart at its foot (order).

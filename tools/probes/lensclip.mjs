@@ -77,6 +77,7 @@ export const LIB = () => {
     const cn = castNames(), out = [];
     scene.traverse(q => {
       if (!q.isMesh || !visibleChain(q)) return;
+      if (o.still && q.isSkinnedMesh) return;                                   // (coplanar's moments that meet no people)
       const mats = Array.isArray(q.material) ? q.material : [q.material], mat = mats[0];
       if (!mat || mat.visible === false) return;
       if (mat.blending === 2 && !o.fx) return;                                   // additive glows: light, not things
@@ -335,8 +336,8 @@ export async function sweepFilm(p, { fn, STEP, FROM = 0, UNTIL = 1e9, BOTH, args
   for (let i = 0; i < ts.length; i += 8) {
     const part = await p.evaluate(([ts, fn, both, args]) => { const E = window.__enc, C = E.cine, cam = E.camera, aP = cam.aspect, out = [];
       for (const t of ts) {
-        cam.aspect = aP; cam.updateProjectionMatrix(); C.seek(t); out.push({ t, v: 'p', r: window.__clip[fn](args) });
-        if (both) { cam.aspect = 1280 / 800; cam.updateProjectionMatrix(); C.seek(t); out.push({ t, v: 'd', r: window.__clip[fn](args) }); } }
+        cam.aspect = aP; cam.updateProjectionMatrix(); C.seek(t); out.push({ t, v: 'p', r: window.__clip[fn]({ ...args, t }) });
+        if (both) { cam.aspect = 1280 / 800; cam.updateProjectionMatrix(); C.seek(t); out.push({ t, v: 'd', r: window.__clip[fn]({ ...args, t }) }); } }
       cam.aspect = aP; cam.updateProjectionMatrix(); return out; }, [ts.slice(i, i + 8), fn, BOTH, args]);
     rows.push(...part);
     if (log && i % 80 === 0) log(job, 't', ts[i], 'of', dur.toFixed(1), ((Date.now() - T0) / 1000).toFixed(0) + 's');
