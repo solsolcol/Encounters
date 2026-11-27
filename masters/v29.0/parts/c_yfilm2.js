@@ -1230,10 +1230,10 @@
            seat in his rest and 0.19 m in his talk, as each take stands its own feet on the floor (read: the talk's sat 4.9 cm
            into the floor at 0.64), eased by how far the talk is on) */
         phoHips: [HIS.chair2.x, 0.64, HIS.chair2.z - 0.105],
-        /* (the breakfast on his teacher's half of the table to his right, clear of the middle where the wrist is held out to be
-           tied (at the middle it stood between the lens and the tie, photographed) and of his teacher's right forearm reaching
-           it; the spool set down on the other side) */
-        food: [dn.x - 0.40, TOP + 0.003, dn.z - 0.2, 0.5],
+        /* (the breakfast at the table's end on his teacher's right, clear of the middle where the wrist is held out to be tied
+           (at the middle it stood between the lens and the tie, photographed) and of his teacher's right hand as he talks (0.4
+           m in, it went through the bag: clipscan, 291 crossings); the spool set down on the other side) */
+        food: [dn.x - 0.60, TOP + 0.003, dn.z - 0.05, 0.5],
         spoolT: [dn.x + 0.22, TOP + 0.002, dn.z - 0.25]
       };
     })();
@@ -1393,14 +1393,17 @@
     }
     /* (a bone by its name, the rig's prefix with or without its colon: glTF strips it, mixamorigSpine2: v3.8) */
     const f2Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
-    /* his cloth bag on his left shoulder, hung at his right hip by its strap (as FILMS-1 hangs it: c_yfilm.js phoBagOn1) */
+    /* his cloth bag hung at his right hip by its strap (FILMS-1 hangs it 0.2 m out from his spine, 0.52 m under his chest's
+       bone: c_yfilm.js phoBagOn1); here 0.25 m out, 0.08 m behind his hip's line and 0.55 m down, so his right arm hangs and
+       swings before it: at FILMS-1's place its strap and side went through his arm and side, clipscan 1,639 crossings at the
+       door and 2,234 coming in */
     function f2PhoBag(P) {
       const g = FILMSAPI.props.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
       const sh = f2Bone(P, 'Spine2') || f2Bone(P, 'Spine1') || P.hips; if (!sh) return;
       P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_dwA);
       const ry = P.group.rotation.y;
       if (g.parent !== world) world.attach(g);
-      g.position.set(_dwA.x - Math.cos(ry) * 0.2 - Math.sin(ry) * 0.02, _dwA.y - 0.52, _dwA.z + Math.sin(ry) * 0.2 - Math.cos(ry) * 0.02);
+      g.position.set(_dwA.x - Math.cos(ry) * 0.25 - Math.sin(ry) * 0.08, _dwA.y - 0.55, _dwA.z + Math.sin(ry) * 0.25 - Math.cos(ry) * 0.08);
       g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
     }
     /* WIND: on the floor at the circle's edge, seated as he sits at her table (cast.pho, CROSS). His seated body has no finger
@@ -1425,11 +1428,14 @@
       handTo(P, 'L', Lc, [0.62, -0.08, -0.78], [0.08, -0.99, 0.06], 1, { out: 0.24, down: 0.28 });
       const g = F2M.spoolPho;
       if (g) { if (g.parent !== world) world.attach(g); g.position.set(S[0], S[1], S[2]); g.rotation.set(0, -ph, 0); g.scale.setScalar(1); g.visible = true; }
-      /* the thread from where it leaves the floor up to his left hand's fingers and round onto the spool's side */
-      const pk = F2DW.pick, Sx = [S[0] + 0.03 * Math.cos(ph + 0.6), S[1] + 0.03, S[2] + 0.03 * Math.sin(ph + 0.6)];
+      /* the thread from where it leaves the floor STRAIGHT UP before his knees to above his lap, then in over it to his left
+         hand's fingers and round onto the spool's side (drawn straight from the floor to his hand it went through his knees
+         and robe: clipscan, 45 crossings) */
+      const pk = F2DW.pick, Sx = [S[0] + 0.03 * Math.cos(ph + 0.6), S[1] + 0.03, S[2] + 0.03 * Math.sin(ph + 0.6)], up = [pk[0], 0.33, pk[2] - 0.03];
       f2TubeLay(f2Lift.g, (s, out) => {
-        if (s < 0.85) { const q = s / 0.85; return out.set(lp(pk[0], Lc[0], q), lp(pk[1], Lc[1] - 0.02, Math.pow(q, 0.6)), lp(pk[2], Lc[2], q)); }
-        const q = (s - 0.85) / 0.15; return out.set(lp(Lc[0], Sx[0], q), lp(Lc[1] - 0.02, Sx[1], q), lp(Lc[2], Sx[2], q)); }, 0, 1, F2C.r * 1.1, 0.001);
+        if (s < 0.45) { const q = s / 0.45; return out.set(lp(pk[0], up[0], q), lp(pk[1], up[1], q), lp(pk[2], up[2], q * q)); }
+        if (s < 0.88) { const q = (s - 0.45) / 0.43; return out.set(lp(up[0], Lc[0], q), lp(up[1], Lc[1] - 0.02, Math.sqrt(q)), lp(up[2], Lc[2], q)); }
+        const q = (s - 0.88) / 0.12; return out.set(lp(Lc[0], Sx[0], q), lp(Lc[1] - 0.02, Sx[1], q), lp(Lc[2], Sx[2], q)); }, 0, 1, F2C.r * 1.1, 0.001);
     }
     /* HIS HIPS ON THE SEAT, whatever the take: his rest (the first moment of his rise) and his talk carry their hips at
        different places from the body's own, so in the rest he sat behind the chair's back and in the talk before it
