@@ -245,7 +245,7 @@
        the eye low, kit.root keeps him there). The look is free about the room from Grace on his right across the table to
        the glass on his left (82 degrees apart, WORLD.md 1), and down to the jug at his knee. Play begins looking at the cloth
        and Grace (what the play needs first in his line of sight, v12.3): the films that hand to the room end on this look */
-    const KNEEL = { y: KNEEL_EYE, yaw: -0.15, span: 1.2, lo: -1.05, hi: 0.55, startYaw: 0.55, get pitch() { return isNarrow() ? -0.6 : -0.5; } };
+    const KNEEL = { y: KNEEL_EYE, yaw: -0.15, span: 1.2, lo: -1.05, hi: 0.55, startYaw: 0.55, get pitch() { return isNarrow() ? -0.5 : -0.44; } };
     const LIE = { y: STATION.night.bed.y, yaw: 1.15, span: 1.3, lo: -0.35, hi: 1.3, startYaw: STATION.night.bed.ry, pitch: STATION.night.bed.pitch };
     let seated = null;
     function seatHim(at, P) {

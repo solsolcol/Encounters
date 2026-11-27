@@ -42,7 +42,7 @@ steps), and the chant begins as the event opens. A Continue into the breaking be
 
 | phase | where | the look |
 |---|---|---|
-| `room` (the opening's end, the cord's start) | kneeling at `STATION.room.at` = (1.45, 1.9), the eye `KNEEL_EYE` 1.12 | play's first look: yaw **0.6**, pitch **-0.56** on a phone (-0.5 a desktop): the cloth, the jug at his knee and Grace (`stage.plan.KNEEL.startYaw`, `.pitch`). The look is clamped yaw -0.15 ± 1.2 (Grace on his right to the glass on his left), pitch -1.05..0.55 |
+| `room` (the opening's end, the cord's start) | kneeling at `STATION.room.at` = (1.45, 1.9), the eye `KNEEL_EYE` 1.12 | play's first look: yaw **0.55**, pitch **-0.5** on a phone (-0.44 a desktop; 27 Nov, from -0.6/-0.5: Grace's face was cut by the screen's top): the cloth, the jug at his knee and Grace (`stage.plan.KNEEL.startYaw`, `.pitch`). The look is clamped yaw -0.15 ± 1.2 (Grace on his right to the glass on his left), pitch -1.05..0.55 |
 | `breaking` (the keepsake's end) | the same place, kneeling | yaw `STATION.room.at.ry` (0.41), pitch **-0.95** (down into the bowl in his hands), the lens **50 / 44** (phone / desk); the bowl held (below); Spirit Vision OPEN and held |
 | `night` (home's end) | LYING in bed at `STATION.night.bed` = (HX + 7.465, 0.8), eye y **0.82**, yaw **0.8**, pitch **0.12** | he presses "Get up", rises over 1.4 s to `STATION.night.at` = (306.7, -0.48), yaw 2.17 |
 | `ask` (the decision; every ending begins here) | standing at `STATION.ask.at` = (300.4, 0.65), yaw 0.3, his phone in his RIGHT hand (`kit.hold`, `stage.plan.PHONEHELD`), its screen 3:03 and "Grandmaster Pho", seen 2.2 s before the decision opens over the lower half | the pressure stands at what it was (0.35 to 0.75), no waves |
