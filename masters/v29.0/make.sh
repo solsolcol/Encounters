@@ -20,6 +20,12 @@ set -e
 #   every line whose take is on disk and measured (chaptertest takes no row without its take: this chapter is never a preview).
 #   the Ratana chant's words: Thanissaro Bhikkhu's A Chanting Guide carries the Discourse on Treasures as its Cha Ratana Paritta
 #   Gatha (Section0052, read 27 Nov 2026), not the sutta's opening verses the plan names: its first three verses are taken.
+# THE SKELETON, CHECKED (27 Nov 2026): node --check, tools/probes/usebefore.mjs, undefscan.mjs and dupfuncs.mjs over every chapter
+#   (assemble.py runs the same before it writes), chaptertest exit 0; built on a snapshot (tools/buildlock.sh) and booted
+#   (CH=e5c1 tools/probes/boot.mjs: play, no page error); then pressed through by a one-off probe from the title: the room's
+#   seven stand-ins, the keepsake, the breaking, the cord and home, three o'clock's two, the decision's four answers on the
+#   card, ending A to its card, with no page error and the three people (pho, p4mala, p5collector) landed and drawn.
+#   (Committed in the coordinator's work-in-progress save 51d1b14 and here.)
 words() {
   python3 -I masters/v29.0/keys.py --write
   python3 -I masters/v29.0/script/registry.py --write
