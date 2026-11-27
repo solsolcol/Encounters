@@ -907,7 +907,9 @@
       night5.p = Math.max(0.35, Math.min(0.75, night5.p || 0.5)); night5.waves = [];
       footSet(1);
       night5.handed = false;
-      const run = play.run; after(0.6, () => { if (live(run)) openDecision(); });
+      /* (his phone's screen is seen in his hand, 3:03 and his teacher's name, before the question covers the lower half of
+         the screen: the plan's 8.3, "its screen in his hand") */
+      const run = play.run; after(2.2, () => { if (live(run)) openDecision(); });
     }
 
     /* ================================================================ THE PLAY'S SOUND (the plan's 11; every sound in main.js's

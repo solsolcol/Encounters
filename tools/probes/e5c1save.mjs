@@ -34,8 +34,12 @@ const read = () => p.evaluate(() => { const E = window.__enc, S = E.stage, i = S
            pose: E.kit.getPose(), ev: !!E.kit.eventActive(), obj: ((document.querySelector('#objective .obox') || {}).textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70),
            vis: (E.kit.vision() || {}).on, chant: i.story.chant, p: i.story.pressure,
            takes: Object.fromEntries(Object.entries(S.dbg.cast).map(([k, P]) => [k, P.hidden ? '-' : P.cur])) }; });
+/* (the save is laid by a one-shot script that runs before the page's own, on the next load: laid from the page in play, the
+   game's own autosave could write its run back over it before the reload, and the Continue landed where the last one was) */
+let saveN = 0;
 async function continueFrom(save) {
-  await p.evaluate((s) => localStorage.setItem('mz.encounters.checkpoint', JSON.stringify(s)), save);
+  const tok = 'probeSave' + (++saveN);
+  await p.addInitScript(([tok, s]) => { try { if (!sessionStorage.getItem(tok)) { sessionStorage.setItem(tok, '1'); localStorage.setItem('mz.encounters.checkpoint', s); } } catch {} }, [tok, JSON.stringify(save)]);
   await boot(); await tapEl('startBtn'); await landed();
 }
 /* a first game, so the title has a save of the game's own making to change */
