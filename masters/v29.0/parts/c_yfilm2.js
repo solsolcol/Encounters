@@ -1593,7 +1593,9 @@
       const uTie = D.tie - D.d0, uK2 = D.knot2 - D.d0;
       /* (held out for the tie; drawn down out of the picture once it is knotted, before his eyes rise to his teacher's face) */
       /* (drawn back out of the insert after the second knot, gone by the cut up to his teacher's face) */
-      const uUp = D.up - D.d0, inK = f2smo(f2win(u, uTie - 0.3, uTie + 0.4)), outK = f2smo(f2win(u, uK2 + 0.3, uUp - 0.05)), out = inK * (1 - outK);
+      /* (it comes up into the insert from the cut, into his teacher's waiting hands: brought up in the table's wide shot, it
+         stood near him while his teacher reached for the table's middle) */
+      const uUp = D.up - D.d0, inK = f2smo(f2win(u, uTie, uTie + 0.45)), outK = f2smo(f2win(u, uK2 + 0.3, uUp - 0.05)), out = inK * (1 - outK);
       f2Hold(null);
       if (inK > 0.01 && outK < 0.995) { f2Hands(true, F2DW.tiePose, inK, { p: 0 });
         /* (the held hand placed for the insert before the left is laid as its mirror: F2TUNE.tieArm, metres in the hands' pass) */
@@ -1603,7 +1605,7 @@
       const thread = u >= D.knot1 - D.d0 ? (u >= D.knot2 - D.d0 ? 2 : 1) : 0;
       /* (in D the red mark the band left stays on his wrist, the white thread tied over it) */
       f2WristShow(0, k === 'D' && out > 0.01 ? 1 : 0, out > 0.01 ? thread : 0, 0);
-      if (F2W.thread) { F2W.thread.visible = out > 0.01 && u >= uTie + 0.3; }
+      if (F2W.thread) { F2W.thread.visible = out > 0.01 && u >= uTie + 0.6; }
     }
     /* DUST IN THE MORNING LIGHT (the plan's 12: "Dawn: long light through the glass, dust in it"): motes in the low sun inside
        his glass, each drifting slowly up and aside and twinkling as it turns in the light, a pure function of the clock;
