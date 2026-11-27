@@ -57,22 +57,36 @@
       const A = P.acts.rise, I = P.acts.Idle_3, R = P.rise && P.rise.rise, skins = P.lv && P.lv[1];
       if (!A || !I || !R || !skins || !skins[0]) return;
       const clip = A.getClip(); if (FEETFLAT.has(clip)) return; FEETFLAT.add(clip);
-      const ic = I.getClip(), qa = new THREE.Quaternion(), qb = new THREE.Quaternion(), done = [];
-      for (const tr of clip.tracks) {
-        const m = /(Left|Right)(Foot|ToeBase)\.quaternion$/.exec(tr.name); if (!m) continue;
-        const it = ic.tracks.find(u => u.name.endsWith(m[1] + m[2] + '.quaternion')); if (!it) continue;
-        qb.fromArray(it.values, 0);
-        for (let i = 0; i < tr.times.length; i++) {
-          const k = riseOff(R, tr.times[i], 'k'); if (!(k > 0)) continue;
-          qa.fromArray(tr.values, i * 4); if (qa.dot(qb) < 0) qb.set(-qb.x, -qb.y, -qb.z, -qb.w);
-          qa.slerp(qb, k).toArray(tr.values, i * 4); }
-        done.push(m[1] + m[2]); }
-      if (!done.length) return;
       const keep = Object.assign({}, P.w), kt = {}; for (const k in P.acts) kt[k] = P.acts[k].time;
+      const only = (name) => { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0); };
+      const gq = new THREE.Quaternion(), bq = (b, out) => { P.group.updateMatrixWorld(true); P.group.getWorldQuaternion(gq).invert(); return b.getWorldQuaternion(out).premultiply(gq); };
+      const bone = (n) => P.bone[n] || P.bone['mixamorig' + n] || P.bone['mixamorig:' + n];
+      /* her standing feet, in her body's own frame (a foot's turn in the world, not against its shin: her shins lean
+         otherwise at the rise's end, and the shin's own turn copied put her toes 7 cm in the air, measured) */
+      only('Idle_3'); I.time = 0; P.mixer.update(0);
+      const want = {};
+      for (const sd of ['Left', 'Right']) { const f = bone(sd + 'Foot'), t = bone(sd + 'ToeBase'); if (f) want[sd + 'Foot'] = bq(f, new THREE.Quaternion()); if (t) want[sd + 'ToeBase'] = t.quaternion.clone(); }
+      const tracks = [];
+      for (const tr of clip.tracks) { const m = /(Left|Right)(Foot|ToeBase)\.quaternion$/.exec(tr.name); if (m && want[m[1] + m[2]]) tracks.push({ tr, side: m[1], part: m[2] }); }
+      /* each foot key's shin, read off the take as it stands, before any key is changed */
+      only('rise'); const plan = [];
+      for (const T of tracks) { if (T.part !== 'Foot') continue; const f = bone(T.side + 'Foot'), legs = [];
+        for (let i = 0; i < T.tr.times.length; i++) { A.time = T.tr.times[i]; P.mixer.update(0); legs.push(bq(f.parent, new THREE.Quaternion())); }
+        plan.push({ T, legs }); }
+      const qa = new THREE.Quaternion(), qw = new THREE.Quaternion();
+      for (const { T, legs } of plan) for (let i = 0; i < T.tr.times.length; i++) {
+        const k = riseOff(R, T.tr.times[i], 'k'); if (!(k > 0)) continue;
+        qw.copy(legs[i]).invert().multiply(want[T.side + 'Foot']);
+        qa.fromArray(T.tr.values, i * 4); if (qa.dot(qw) < 0) qw.set(-qw.x, -qw.y, -qw.z, -qw.w);
+        qa.slerp(qw, k).toArray(T.tr.values, i * 4); }
+      for (const T of tracks) { if (T.part !== 'ToeBase') continue; const qb = want[T.side + 'ToeBase'];
+        for (let i = 0; i < T.tr.times.length; i++) { const k = riseOff(R, T.tr.times[i], 'k'); if (!(k > 0)) continue;
+          qa.fromArray(T.tr.values, i * 4); qw.copy(qb); if (qa.dot(qw) < 0) qw.set(-qw.x, -qw.y, -qw.z, -qw.w);
+          qa.slerp(qw, k).toArray(T.tr.values, i * 4); } }
       riseCurve(P, 'rise', skins);
       for (const k in P.acts) { P.acts[k].setEffectiveWeight(keep[k] || 0); P.acts[k].time = kt[k]; }
       personSettle(P); P.mixer.update(0);
-      P.feetFlat = done;
+      P.feetFlat = tracks.map(T => T.side + T.part);
     }
     whenReady(cast.grace, riseFeetFlat);
     /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
