@@ -59,7 +59,7 @@ All eighteen pictures were made and all eighteen image-to-3D jobs ran ONCE; none
 | bottle | w51bottle | 01a21b43-0359-75bc-813b-fcdfb4f4e112 | 01a21b52-9270-743b-97cc-bbd26b43c4ac (8000) | 0.100* tall | 8,338 | 2048 | MADE, **FAULT**: the glass came back OPAQUE, a glossy grey-white like a ceramic jar (no water seen in it), with a few lines of invented faint print near its foot, and the cork's colour runs down over the neck (shots/bottle-q.jpg). As v28.0's Rak Yom found, Meshy does not make clear glass. Mend here at no credits: the body's material drawn as glass at runtime (transparent, a low opacity, the water a separate inner shape made in code is NOT allowed by v25.2, so the mend is the material alone; the print stays faint at 10 cm). Another job: 45 credits and very likely opaque again |
 | threadreel (mend) | w51threadreel | (chapter 5's w5threadreel, no job) | — | 0.100 x 0.084 x 0.080 | 12,231 | 1024 | MADE at no credits (mend/threadmend.mjs): the 278 points of the strand that hung under the ball are laid out along the ground away from it, and the whole set down on its lowest point; the ball now sits 1.6 mm over the strand on the ground (shots/threadreel51-front.jpg, -side.jpg). The old file `w5threadreel` is untouched (measured by mend/measure.mjs before: the ball's foot 7.5 mm up, on the strand's tip) |
 
-**NOT YET PREPARED (STOPPED FOR ROOM, 27 Nov 2026 04:50).** `df -h /` fell to 366 to 419 MB free during the bottle's prep
+**(DONE since: all fifteen prepared by THINGS-2, below.) NOT YET PREPARED (STOPPED FOR ROOM, 27 Nov 2026 04:50).** `df -h /` fell to 366 to 419 MB free during the bottle's prep
 (the rule: under 700 MB, stop and report). The cause is not these things alone: my eighteen originals are 1.1 GB, the
 cast's sources 0.4 GB, and the scratchpad holds 7.1 GB, 1.2 GB of it ENGINE's build snapshot (scratchpad/e5c1/snap-engine)
 and other helpers' and older work (b56 is Chad's and stays). Nothing was cleared by me. The fifteen below have their
@@ -141,6 +141,27 @@ its connected components with only its own points (mend/piece.mjs), then prepmes
 | w51jug | 0.20 h | 8,286 | 2048 | MADE, drawn as clear glass (mend/glass.mjs); one shell, so no water inside (shots/jug51-glass-q.jpg) |
 | w51plate | 0.16 across | 2,406 | 1024 | MADE, MENDED at no credits: Meshy made it an oval (0.162 x 0.134) tipped 9.2 degrees; levelled on its own plane and made round (mend/plate.mjs; the plain white sheet cannot show the stretch). shots/plate51-levelled.jpg; one side of its rim sits a little higher |
 | w51glass | 0.095 h | 7,059 | 1024 | **FAULT**: the outer shell alone (the torn inner pieces left out), drawn as clear glass; its own inner wall is torn, and through the glass that shows as grey patches with a line like a water level (shots/glass51-glass-q-FAULT.jpg). Tried at no credits and refused: its outermost skin alone, drawn from both sides and from one (mend/tumbler-outer.py; shots/glass51-outerskin-tried.jpg: worse, its faces overlap). Another: a picture of one tumbler (191 ElevenLabs) and a job (45 Meshy), likely the same; or the jug's glass alone serves at the bedside |
+
+**The six of R6** (Chad's top-up, 27 Nov: the things the shots need that had been cut only for want of credits; keys named
+by the coordinator). Each: one picture (gpt-image-2.6-sunburst through ElevenLabs, 191 credits; refs.tsv, PROMPTS.py),
+looked at full size (all six true to the ask, none with print); Meshy image-to-3D (40) and its remesh (5), ONCE; prepped;
+photographed at 1100 px and opened full size (shots/clock-aircon-phobag51-asmade.jpg, incense-kettle-jasmine51-asmade.jpg).
+| thing | key | image-to-3D | remesh | size | tris | sheet | state |
+|---|---|---|---|---|---|---|---|
+| clock | w51clock | 01a21b8e-3927-712d-a969-4d3076ab65ef | 01a21b9b-bad1-7636-8456-50fc08ff0ea3 (8000) | 0.12 w | 7,148 | 2048 | MADE, MENDED at no credits: Meshy put the blank display on the model's BACK and invented a speaker grille, knobs and ports on its front (shots/clock51-front-side-back-asmade.jpg); turned 180 degrees so the blank black display faces +z like every other prop (mend/finish.mjs TURN, points and normals baked, the sheets untouched). The display is blank black: the chapter paints 11:58 and 3:00 on it |
+| aircon | w51aircon | 01a21b8e-3e61-7052-834f-ffd4c37023c1 | 01a21b9b-bc7b-7525-a9fa-60ce921544d6 (12000) | 0.90 w | 10,909 | 1024 | MADE. White casing, its louvre and status window; clean |
+| phobag | w51phobag | 01a21b8e-43c5-77e1-83ae-3bd07bc072f5 | 01a21b9b-be1a-77f0-bd8c-e83ff549b61a (16000) | 0.32 w | 16,592 | 2048 | MADE. Off-white cotton, flap, one strap standing up as a loop (for a shoulder the chapter hangs it, or a pose); clean |
+| incense | w51incense | 01a21b8e-4a70-7760-8b55-9c9a6e7874a4 | 01a21b9b-bfac-7576-9ba9-26398726a58a (12000) | 0.24 h | 11,817 | 2048 | MADE, MENDED at no credits: Meshy stood FOUR sticks in a diamond where the picture has three; above the ash the four are separate, and the one at +z was taken out (mend/incense3.py), three left in a row. Its ash came white where the picture's is pale grey (shots/incense-clock-kettle51-mended.jpg) |
+| kettle | w51kettle | 01a21b8e-4f5a-755b-8441-8e2816a2649b | 01a21b9b-c192-7035-9b9b-6e7511d52463 (12000) | 0.24 h | 11,947 | 1024 | MADE, MENDED at no credits: its steel came fully metal and drew near black (as v25.5's cars); the material's metal factor set to 0.8 (0.3 read as white paint, 0.6 near it: shots/kettle51-metal-06-08.jpg, 0.8 the right of the two), the sheets untouched. Its body carries a few invented scratches |
+| jasmine | w51jasmine | 01a21b8e-54f8-702f-aa96-f3a20440a5e7 | 01a21b9b-c3ca-70ea-a032-82ad47f27d6a (20000) | 0.22 h | 20,718 | 2048 | MADE. White vase, white flowers, green leaves; clean |
+
+**Reused, declared (R6)**: his own bag by the door, where the spool of white thread comes from at 3 AM ("Get the white
+thread from your bag", already voiced) is `e4bag` (assets/e4bag.glb), his grey canvas messenger bag from episode 4
+chapter 2 (where the player met it): the same man's bag, so it fits; no model made.
+
+**Credits, THINGS-2 (27 Nov):** Meshy: the fifteen remeshes 75; the ritual set 45 (40 + 5); the six 270 (6 x 45);
+390 in all, none failed, none twice; balance read 695 at the end (others spent beside). ElevenLabs: seven pictures, 7 x
+191 = 1,337; balance read 30,406 left at the end.
 
 ## What it cost (27 Nov 2026)
 | service | spent | balance |

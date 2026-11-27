@@ -46,5 +46,131 @@
   "key": "w51glass",
   "file": "assets/w51glass.glb",
   "note": "a plain drinking glass, 9.5 cm (the ritual set's piece, its outer shell; drawn as clear glass, material named glass, depthWrite off in the game). FAULT: torn inner sheets show through as grey patches (RECORD.md)"
+ },
+ {
+  "group": "things",
+  "key": "w51ctable",
+  "file": "assets/w51ctable.glb",
+  "note": "Grace's low teak coffee table with a lower shelf, 1.00 m"
+ },
+ {
+  "group": "things",
+  "key": "w51gsofa",
+  "file": "assets/w51gsofa.glb",
+  "note": "Grace's dusty-blue two-seat sofa, 1.50 m"
+ },
+ {
+  "group": "things",
+  "key": "w51rattan",
+  "file": "assets/w51rattan.glb",
+  "note": "Grace's rattan armchair with a cream cushion, 0.68 m wide"
+ },
+ {
+  "group": "things",
+  "key": "w51shelf",
+  "file": "assets/w51shelf.glb",
+  "note": "Grace's timber bookshelf with books, a pothos, a succulent and a box, 0.80 m wide"
+ },
+ {
+  "group": "things",
+  "key": "w51laptop",
+  "file": "assets/w51laptop.glb",
+  "note": "Grace's closed silver laptop, 0.32 m. FAULT: torn edges, dark blotched metal (RECORD.md); across the room only"
+ },
+ {
+  "group": "things",
+  "key": "w51takeaway",
+  "file": "assets/w51takeaway.glb",
+  "note": "leftover takeaway: two paper boxes, chopsticks, a knotted bag, 0.22 m across"
+ },
+ {
+  "group": "things",
+  "key": "w51sofa",
+  "file": "assets/w51sofa.glb",
+  "note": "his charcoal three-seat sofa, 2.10 m"
+ },
+ {
+  "group": "things",
+  "key": "w51dintable",
+  "file": "assets/w51dintable.glb",
+  "note": "his oak dining table with black legs, 1.60 m"
+ },
+ {
+  "group": "things",
+  "key": "w51dinchair",
+  "file": "assets/w51dinchair.glb",
+  "note": "his oak and grey fabric dining chair, 0.82 m tall"
+ },
+ {
+  "group": "things",
+  "key": "w51bed",
+  "file": "assets/w51bed.glb",
+  "note": "his queen bed, grey upholstered, the duvet turned back, 1.70 m wide"
+ },
+ {
+  "group": "things",
+  "key": "w51altarcab",
+  "file": "assets/w51altarcab.glb",
+  "note": "his altar cabinet, 0.90 m wide. FAULT: the back panel's top edge torn into slivers with a dark smear, the wood red mahogany (RECORD.md)"
+ },
+ {
+  "group": "things",
+  "key": "w51breakfast",
+  "file": "assets/w51breakfast.glb",
+  "note": "a takeaway breakfast: paper bag, two coffee cups, wrapped toast, 0.30 m across"
+ },
+ {
+  "group": "things",
+  "key": "w51pills",
+  "file": "assets/w51pills.glb",
+  "note": "a blister strip of ten tablets, one pushed through, 0.10 m"
+ },
+ {
+  "group": "things",
+  "key": "w51keycard",
+  "file": "assets/w51keycard.glb",
+  "note": "a grey access card on a ring with two brass keys, 0.15 m across (sized on its width with the keys)"
+ },
+ {
+  "group": "things",
+  "key": "w51phone",
+  "file": "assets/w51phone.glb",
+  "note": "Grace's phone in a dusty-pink case, 0.15 m long"
+ },
+ {
+  "group": "things",
+  "key": "w51clock",
+  "file": "assets/w51clock.glb",
+  "note": "his bedside digital alarm clock, 0.12 m wide, its display blank and black for the chapter's own painted 11:58 and 3:00; turned so the display faces +z (mend/finish.mjs TURN=180, no loss)"
+ },
+ {
+  "group": "things",
+  "key": "w51aircon",
+  "file": "assets/w51aircon.glb",
+  "note": "the white wall-mounted split air-conditioner over his bed, 0.90 m wide"
+ },
+ {
+  "group": "things",
+  "key": "w51phobag",
+  "file": "assets/w51phobag.glb",
+  "note": "Grandmaster Pho's plain off-white cotton shoulder bag with a flap, 0.32 m wide"
+ },
+ {
+  "group": "things",
+  "key": "w51incense",
+  "file": "assets/w51incense.glb",
+  "note": "a small brass incense holder of ash with three red joss sticks, 0.24 m tall (Meshy made four; one taken out at no credits, mend/incense3.py)"
+ },
+ {
+  "group": "things",
+  "key": "w51kettle",
+  "file": "assets/w51kettle.glb",
+  "note": "his electric kettle, brushed steel and black, 0.24 m (its metal factor set to 0.8 so the steel reads as steel, mend/finish.mjs)"
+ },
+ {
+  "group": "things",
+  "key": "w51jasmine",
+  "file": "assets/w51jasmine.glb",
+  "note": "a small white porcelain vase of white jasmine for his altar, 0.22 m tall"
  }
 ]
