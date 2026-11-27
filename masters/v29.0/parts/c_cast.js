@@ -38,18 +38,23 @@
        back slowly. She stands up twice in the room (the plan's 8.1) by `rise` (seat.rise: her height laid from her own
        feet as she comes up) and sits again by the same take played back. She has met the player only here (a new body). */
     const GRACE_SEAT = (STATION.room.grace && STATION.room.grace.y) || 0.51;
-    /* (PLAY, 27 Nov, MEASURED by tools/probes/e5c1lab.mjs: her gsofa tucks her feet back, and seated at the sofa's middle her
-       shins stood inside it, 1,628 of her points under the seat's top, the deepest 0.36 m, her ankles some 0.2 m behind the
-       seat's front face, z 0.087, while her hips are at z -0.316: so her seat names its front, 0.38 m ahead of her hips where
-       the cushion's rounded edge begins, and seatDown brings her forward until her shins clear it, as the masters' were, down
-       its whole face to 0.15 m over the floor (`apron` 0.36: with the default 0.14 her ankles, 0.15 m up, were still inside
-       it, measured again). She sits forward on the edge of her seat, as someone already half leaving does (the plan's 8.1) */
-    const GRACE_EDGE = 0.38;
+    /* HER FEET IN FRONT OF THE SOFA (PLAY, 27 Nov, MEASURED by tools/probes/e5c1lab.mjs): her gsofa tucks her feet far back,
+       and seated deep on the sofa, as her leaning take needs, her shins stood inside its front: 1,628 of her points under the
+       seat's top, the deepest 0.36 m, her ankles some 0.2 m behind its face (z 0.087) while her hips are at z -0.316. Brought
+       forward whole by seatDown's `edge` until the shins cleared, she sat on the very edge leaning back on nothing, sliding off
+       (photographed). So her body stays where it sits and only her FEET go forward: the ankles her seated legs are laid to
+       (restLegs, the seat's own leg-laying) moved `GRACE_FEET` m ahead, the knees' pole with them, so her shins stand just in
+       front of the sofa's face */
+    const GRACE_FEET = 0.26;
+    function graceFeetOut(P) {
+      const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
+      for (const S0 in LG.R) { const r = LG.R[S0]; r.ank.z += GRACE_FEET; r.pole.z += GRACE_FEET; }
+    }
     const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
         win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
-        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: GRACE_EDGE, apron: 0.36 }), rise: 'rise' },
+        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
         headDamp: { gsofa: [0.5, 'gsofa'] } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
     /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
@@ -96,6 +101,7 @@
       P.feetFlat = tracks.map(T => T.side + T.part);
     }
     whenReady(cast.grace, riseFeetFlat);
+    whenReady(cast.grace, graceFeetOut);
     /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
        word, R7, under the same keys, so a new body drops in here unchanged) ON THE RATTAN CHAIR by her door (its cushion's
        top 0.42 m, measured), seated by his own posed skin; his rest the seated talk's upright first second, there and back
