@@ -190,5 +190,71 @@
   "key": "w51palm",
   "file": "assets/w51palm.glb",
   "note": "an areca palm in a square charcoal planter, 1.20 m tall: the plant on his balcony (in place of w3dracaena there, so her flat and his do not share one plant). Made new at Meshy his way (R13: THINGS-3; RECORD.md)"
+ },
+ {
+  "group": "things",
+  "key": "w51altarcab2",
+  "file": "assets/w51altarcab2.glb",
+  "note": "his altar cabinet, made in code (R13; props/code/altarcab.py): dark walnut, its top flat at 1.00 m over its whole 0.90 x 0.61 (a low back ledge to 1.055), two drawers, two panelled doors, brass knobs; in place of w51altarcab (Meshy's, torn)"
+ },
+ {
+  "group": "things",
+  "key": "w51candle",
+  "file": "assets/w51candle.glb",
+  "note": "a white taper candle in a small brass holder, 0.24 m to its wick's tip as w3candlesmall (the flame at +0.255 sits on it), made in code (props/code/candle.py); in place of w3candlesmall on her cloth and his altar"
+ },
+ {
+  "group": "things",
+  "key": "w51cushion",
+  "file": "assets/w51cushion.glb",
+  "note": "a square floor cushion of faded indigo cotton with thin cream stripes, 0.50 x 0.50, 0.119 tall, made in code with cloth-pressure (props/code/cushion.py); in place of w5cushion (red: the spell's colour)"
+ },
+ {
+  "group": "things",
+  "key": "w51frame",
+  "file": "assets/w51frame.glb",
+  "note": "his teacher's photograph frame: teak moulding with a brass slip, PORTRAIT 0.18 x 0.227, its easel behind (0.113 deep); the picture is its own material named 'picture' (UV 0..1, u right, v up) for the chapter's photograph; made in code (props/code/frame.py); in place of w4framesmall"
+ },
+ {
+  "group": "things",
+  "key": "w51lamp",
+  "file": "assets/w51lamp.glb",
+  "note": "her table lamp: a celadon crackle-glaze base on a turned wooden foot, a brass neck, an oatmeal linen drum shade, 0.55 tall, 0.34 across; made in code (props/code/lamp.py); in place of w5tablelamp"
+ },
+ {
+  "group": "things",
+  "key": "w51fridge",
+  "file": "assets/w51fridge.glb",
+  "note": "her two-door fridge, freezer on top, off-white, grip handles, two papers and four plain magnets, 0.76 x 0.79, 1.70 tall; made in code (props/code/fridge.py); in place of w4fridge"
+ },
+ {
+  "group": "things",
+  "key": "w51bchair",
+  "file": "assets/w51bchair.glb",
+  "note": "his balcony armchair: charcoal aluminium frame, weathered grey teak slats, 0.57 x 0.57, 0.80 tall; made in code to a checked picture (props/code/balcchair.py); in place of w3pchair on his balcony only (the coffee shop's stacks keep w3pchair)"
+ },
+ {
+  "group": "things",
+  "key": "w51rack",
+  "file": "assets/w51rack.glb",
+  "note": "his folding gull-wing drying rack, white steel, a sage towel, a pale blue pillowcase and a white hand towel draped by Blender's cloth simulation, 1.35 x 0.74, 0.98 tall; made in code (props/code/rack.py); in place of w4clothesrack"
+ },
+ {
+  "group": "things",
+  "key": "w51keydish",
+  "file": "assets/w51keydish.glb",
+  "note": "the small stoneware bowl his keys go into (9.4, 21.0 s), speckled grey-blue glaze, a bare foot, 0.16 across, 0.045 tall, its inside floor at 0.012; made in code (props/code/keydish.py)"
+ },
+ {
+  "group": "things",
+  "key": "w51paperbag",
+  "file": "assets/w51paperbag.glb",
+  "note": "the brown kraft paper bag of breakfast his teacher carries at dawn (9.9, 6-14 s), its top folded into a roll (the grip, along x at y 0.22 to 0.238), 0.16 x 0.12, 0.238 tall; made in code (props/code/paperbag.py)"
+ },
+ {
+  "group": "things",
+  "key": "w51wrapped",
+  "file": "assets/w51wrapped.glb",
+  "note": "the keepsake wrapped in white cloth and bound with white thread (9.3, 32-44 s), 0.086 x 0.075, 0.032 tall (its long side along x), for the plate; made in code (props/code/wrapped.py)"
  }
 ]
