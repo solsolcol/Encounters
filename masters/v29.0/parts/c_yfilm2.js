@@ -1100,6 +1100,9 @@
            still going at seven in the morning, photographed) */
         else if (t < E.bar.lie) f2Screen('call', t - E.connect, E.clock);
         else f2Screen('off');
+        /* (his oven's clock at the ending's own time, in every ending and at dawn: only B's was set, and A's desk picture showed
+           11:52 by his phone's 3:03, the world's own setting) */
+        worldOven(t >= E.d0 ? '7:10' : k === 'B' ? (t >= E.cut ? '3:41' : '3:03') : k === 'C' ? (t >= E.forced ? E.clock : '3:03') : k === 'D' ? (t >= E.phone ? E.clock : '3:03') : (E.clock || '3:03'));
         if (t >= E.b0 && t < E.d0) { f2BarrierFx(t, Bm, { push: k === 'B', near: k === 'B' || k === 'C', band: k === 'D' }); f2BarrierHands(t, Bm); }
         else if (t < E.b0) { f2CircleLay(0); f2EndFx(t, E, k); f2EndHands(t, E, k); }
         else { f2DawnFx(t - E.d0, E.dawn, k); }
@@ -1224,7 +1227,6 @@
       /* B: the phone face down on his table from when he lays it there until he takes it again */
       /* (taken from the table as his hand closes on it: one phone, never two) */
       f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.22;
-      if (k === 'B') worldOven(t >= E.cut ? '3:41' : '3:03');
       /* C: the tap's water */
       f2Tap.visible = k === 'C' && t >= E.tap + 0.25 && t < E.sofa0 + 0.2;
       if (f2Tap.visible) { f2Tap.scale.y = 1 + 0.03 * Math.sin(t * 40); f2TapMat.opacity = 0.5 + 0.1 * Math.sin(t * 23); }
