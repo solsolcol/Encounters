@@ -1,0 +1,86 @@
+{
+ "arecapalm": {
+  "credits": 35,
+  "expires_at": 1796058130564,
+  "image": "masters/v29.0/props/refs/arecapalm.png",
+  "image_to_3d": "01a21dee-d015-7269-a6a2-484e4edfc435",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "symmetry_mode": "off",
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74709328
+  }
+ },
+ "fiddlefig": {
+  "credits": 40,
+  "expires_at": 1796057998430,
+  "image": "masters/v29.0/props/refs/fiddlefig.png",
+  "image_to_3d": "01a21dee-c7ed-737a-8828-0e41266503ad",
+  "remesh": {
+   "30000": "01a21dfd-2dca-74c3-997b-b51bc45be8b4"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74052920
+  }
+ },
+ "snakeplant": {
+  "credits": 40,
+  "expires_at": 1796058069627,
+  "image": "masters/v29.0/props/refs/snakeplant.png",
+  "image_to_3d": "01a21dee-cc05-74bb-90ea-9e34150a6113",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 88028208
+  }
+ }
+}
