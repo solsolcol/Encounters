@@ -11,7 +11,7 @@ Set at file level before build() (b_world.js's top), so the head's DATA is compl
 - `DATA.spawn` = his place kneeling by her windows: x 1.45, z 1.9, rot 0.41 (the opening film leaves him there).
 - `DATA.shrine` / `ghostHome` = his phone on his dining table: x 300.15, z -0.2 (the engine's pile; the decision's anchor).
 - `DATA.bounds` = { minX -6.2, maxX 308.6, minZ -4.6, maxZ 4.4 }: the two flats he walks in (her place at the origin, his 300 m along +x).
-- `DATA.assets` += the 29 models of the game the places stand (`WORLD_REUSE`), each declared in `DATA.reuseInEpisode` with its reason (all episode 4's; none of episodes 1 to 3).
+- `DATA.assets` += the models of the game the places stand (`WORLD_REUSE`), each declared in `DATA.reuseInEpisode` with its reason (all episode 4's; none of episodes 1 to 3).
 - The coordinator may move these into a_head.js; nothing else reads them from b_world.js.
 
 His pocket moved from x 200 to **x 300** (`HX`): at 200 his city's towers stood inside the far plane of her street.
@@ -50,9 +50,9 @@ His pocket moved from x 200 to **x 300** (`HX`): at 200 his city's towers stood 
 | `bag` | 1.02, y 0.44, -0.33 | her open bag on the sofa (`w51bag`), the packet in it (`w51keepsake`, things.keepsake) |
 | `plant` | 2.25, -2.55 | dracaena in the window corner |
 
-**On the cloth (`ON_CLOTH`, y = CLOTH_Y unless said):** bowl 0.78, 1.22 (`w4bigbowl`, warm-tinted: the plan's brass) ·
-candle1 0.18, 1.34 (lit in LAMP) · candle2 0.30, 0.98 (unlit) · plate 0.08, 0.96 · lighter 0.95, 1.36 · incense 0.52, 1.38 ·
-jug 1.18, y 0, 1.58 (at his knee). No model yet for the plate, lighter, incense or jug (props/RECORD.md): their spots wait.
+**On the cloth (`ON_CLOTH`, y = CLOTH_Y 0.412 unless said):** bowl 0.78, 1.22 (`w4bigbowl`, warm-tinted: the plan's brass) ·
+candle1 0.18, 1.34 (lit in LAMP) · candle2 0.30, 0.98 (unlit) · plate 0.08, 0.96 (`w51plate`) · lighter 0.95, 1.36
+(`w51lighter`) · incense 0.52, 1.38 (`w51incense`) · jug 1.18, y 0, 1.58 at his knee (`w51jug`). Each is `things.<name>`.
 `WORLD.candleLit('candle1'|'candle2', on)` (null gives it back to the look).
 
 **THE REFLECTION (plan §12), measured from his kneeling eye (1.45, 1.12, 1.9):** a reflected point P' (P mirrored about
@@ -111,7 +111,8 @@ and costs one draw per body part and per piece of her room while drawn.
 | name | x, z (ry) | notes |
 |---|---|---|
 | `door` | 296.2, -2.5; hinge x 295.8 | his front door (`w5frontdoor`, dark veneer); `WORLD.hisDoor(k)` 0 shut (solid), 1 open into his flat; keycard reader at 296.68 |
-| `altar` | 295.72, 0.35 (π/2), top 0.9 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, flowers; `things.bottle` (hidden until the film of home sets it down at 295.86, top, 0.27); the spool is in its drawer (`w51threadreel` placed by FILMS) |
+| `altar` | 295.72, 0.35 (π/2), top 0.9 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, the jasmine (`w51jasmine`), a glass of water (`w51glass`); `things.bottle` (hidden until the film of home sets it down at 295.86, top, 0.27) |
+| `bag` | 297.0, -2.2 (0.2) | his own grey canvas bag on the floor inside his front door (`e4bag`, `things.hisBag`): at three o'clock he takes the white thread out of it (9.7); the spool `w51threadreel` is FILMS' to put in his hand |
 | `phone` | 300.15, y 0.758, -0.2 | his phone on its charger (`things.hisPhone`, `e4phone`); DATA.shrine |
 | `dining` | 300.75, -0.25 (0) | 1.6 x 0.9, top 0.75 (`w51dintable`); `chair1` 300.75, 0.45 (π, his), `chair2` 300.75, -0.95 (0, Pho's at dawn) |
 | `sofa` | 297.7, -0.95 (0), seat 0.45 | `w51sofa`, facing his glass |
@@ -119,7 +120,9 @@ and costs one draw per body part and per piece of her room while drawn.
 | `bed` | 307.15, 0.8 (-π/2), top 0.55 | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
 | `getUp` | 306.7, -0.48 | where he stands up from it: `STATION.night.at` (yaw 2.17, toward the bedroom door) |
 | `bedDoor` | 304.4, 1.2; hinge z 1.65 | `WORLD.bedDoor(k)` 1 open (play), ~0.15 ajar |
-| `clock` | 304.42, y 1.75, -0.25 (π/2) | `w5wallclock` he reads from bed (11:58, 3:00: the face is the films') |
+| `clock` | 307.79, y 0.5, 2.16 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside cabinet 307.95, 2.05, top 0.5, with his lamp and a glass of water (`things.bedGlass`, the one that trembles) |
+| `aircon` | 308.08, y 2.25, 0.8 | the wall unit over his bed's head (`w51aircon`) |
+| `kettle` | 302.0, -2.2, y 0.92 | on his kitchen counter (`w51kettle`) |
 | `oven` | 301.75, y 0.86, -1.88 | `WORLD.ovenClock('3:41')` (ending B) |
 | `kitchen` | 300.1, -1.55 | at the drawer (its front x 299.8..300.4) and the tap (300.95): ending C |
 | `balconyAt` | 299.85, 2.15 | ending D: the doorway's frame, never past it |
@@ -144,6 +147,7 @@ one light (candle1, candle2, tube, bath, altar, corr, lamp, street, dawn, city, 
 
 ## 5 · The things not landed yet (they appear the moment keys.py adds them; their collision stands now)
 
-w51ctable, w51gsofa, w51rattan, w51shelf, w51laptop, w51takeaway, w51sofa, w51dintable, w51dinchair (two), w51bed,
-w51altarcab. Models that are not in the game and are not placed: the lighter, incense, the white plate, the water jug, a
-glass of water, a bedside clock, an indoor air-conditioner, a kettle, a standing lamp (props/RECORD.md).
+Her room: w51ctable, w51gsofa, w51rattan, w51shelf, w51plate, w51lighter, w51jug, w51incense, w51laptop, w51takeaway.
+His: w51sofa, w51dintable, w51dinchair (two), w51bed, w51altarcab, w51jasmine, w51glass (two), w51clock, w51aircon,
+w51kettle. Not placed by the world: w51phobag (Grandmaster Pho's, CAST and FILMS hang it on him), w51breakfast, w51pills,
+w51keycard, w51phone (the films' and the play's, in hands). Not made: a standing lamp (her room has its table lamp only).

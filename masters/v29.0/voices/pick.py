@@ -93,8 +93,13 @@ def measure(model, path, text):
 REFUSED = {}
 
 # PICKS MADE BY READING THE MEASURES, where every take of a line fails the same test the same way: the take that fails
-# it least, and why (written into make.sh's voices section too)
-CHOSEN = {}
+# it least, and why (written into make.sh's voices section too). And PICKS MADE BY THE WORDS: every pick was heard again by
+# an UNPROMPTED transcriber (finish.py; the prompted one writes the script back, R110 of episode 4 chapter 5), and where
+# the measured pick's word was heard as another and another clean take's was heard right, that take is taken
+CHOSEN = {'ph51r3': ('a', 'the one take whose "pulled" an unprompted transcriber hears (b and c "pooed")'),
+          'ph51k1': ('c', 'the one clean take whose "May I" is heard unprompted (a "may hold it"; b cut on its last word)'),
+          'ph51x2': ('c', 'its "bag" heard unprompted (b "your back"); c the slower of a and c'),
+          'ph51x5': ('c', 'its "It\'s" heard unprompted (b "is gone"; a cut on its last word)')}
 
 def score(t, who, nwords, med=None):
     ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8 and not t.get('refused')

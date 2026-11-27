@@ -704,8 +704,8 @@
  "ph51r3": {
   "who": "ph",
   "text": "[gentle] She is not weak. She is tired of being pulled.",
-  "pick": "c",
-  "why": "the unhurried read",
+  "pick": "a",
+  "why": "the one take whose \"pulled\" an unprompted transcriber hears (b and c \"pooed\")",
   "med": 3.7399999999999998,
   "takes": {
    "a": {
@@ -1298,8 +1298,8 @@
  "ph51k1": {
   "who": "ph",
   "text": "[gentle] May I hold it? Only for a while.",
-  "pick": "a",
-  "why": "equal by every measure: the first",
+  "pick": "c",
+  "why": "the one clean take whose \"May I\" is heard unprompted (a \"may hold it\"; b cut on its last word)",
   "med": 2.7399999999999998,
   "takes": {
    "a": {
@@ -2270,8 +2270,8 @@
  "ph51x2": {
   "who": "ph",
   "text": "[firm] Get the white thread from your bag. Sit on the floor, in the middle of the room.",
-  "pick": "b",
-  "why": "the unhurried read",
+  "pick": "c",
+  "why": "its \"bag\" heard unprompted (b \"your back\"); c the slower of a and c",
   "med": 5.12,
   "takes": {
    "a": {
@@ -2432,8 +2432,8 @@
  "ph51x5": {
   "who": "ph",
   "text": "[relieved] It's gone. Breathe.",
-  "pick": "b",
-  "why": "the unhurried read",
+  "pick": "c",
+  "why": "its \"It's\" heard unprompted (b \"is gone\"; a cut on its last word)",
   "med": 2.1,
   "takes": {
    "a": {

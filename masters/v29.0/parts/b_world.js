@@ -286,7 +286,7 @@
       x.fillStyle = '#f0dca0'; x.font = 'bold 50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('咖 啡 店   KOPI', 256, 50);
       const t = tex(done(THREE, c, false)); return M({ map: t, roughness: 0.8, emissive: 0x1a0a06 }); })();
     /* glass: her windows' panes, dark at night (what they reflect is built behind them: the reflection below); a shop's */
-    const mPaneNight = M({ color: 0x0a0e18, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide });
+    const mPaneNight = M({ color: 0x0c1220, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.58, depthWrite: false, side: THREE.DoubleSide });
     const mPaneOut = M({ color: 0x1a2236, roughness: 0.08, metalness: 0.3, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide });
     /* his place's surfaces */
     const mPorcelain = M({ map: wPic(wTiles(512, 2, [196, 190, 180], '#8a847a', 51020, 0.05, 60), 1.2, 1.2), roughness: 0.38 });
@@ -913,7 +913,7 @@
       many('w3pchair', stacks, world, 0.5);
       /* the street: lamps on both kerbs (sodium, painted), the taxi at her kerb (the opening's: `taxi`), a car parked across
          the street and one up it, a motorbike at the kerb */
-      for (const z of [-22, 2.5, 27]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
+      for (const z of [-24, 9.5, 30]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
       for (const z of [-10, 15]) { place('lampF' + z, 'w4streetlamp', STREET.road[1] - 0.25, GY - 0.03, z, -Math.PI / 2, { lift: 1.5 }); }
       place('taxi', 'e4sedan', 4.55, GY - 0.15, -1.6, Math.PI, { lift: 2, done: tint(0x6a8cc8, 1.0) });
       place('parkedA', 'e4sedanfar', 12.4, GY - 0.15, 9.5, 0, { lift: 2 });
@@ -934,7 +934,7 @@
       bedside: { x: HX + 7.95, z: 2.05 },
       getUp:   { x: HX + 6.7, z: -0.48 },                                // where he stands up from it (the bed's -z side)
       bedDoor: { x: BED.x0, z: 1.2, hingeZ: 1.65 },                      // the bedroom door, ajar
-      clock:   { x: HX + 7.85, y: 0.5, z: 1.97, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside, turned to the bed
+      clock:   { x: HX + 7.79, y: 0.5, z: 2.16, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside, turned to the bed
       aircon:  { x: BED.x1 - 0.12, y: 2.25, z: 0.8, ry: -Math.PI / 2 },   // the wall unit over his bed's head, on the +x wall
       kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
       bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
@@ -956,8 +956,8 @@
       place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.5, 0.5, 0.9] });
       place('hisPhone', 'e4phone', WORLD_AT.phone.x, WORLD_AT.phone.y, WORLD_AT.phone.z, 0.2);
       place('bed', 'w51bed', HIS.bed.x, 0, HIS.bed.z, HIS.bed.ry, { solid: [HIS.bed.w, HIS.bed.l, 0.7] });
-      place('bedLamp', 'w5tablelamp', HIS.bedside.x + 0.08, 0.5, HIS.bedside.z, 0, { s: 0.8 });
-      place('bedGlass', 'w51glass', HIS.bedside.x - 0.12, 0.5, HIS.bedside.z - 0.08, 0);            // the glass of water that trembles (8.3)
+      place('bedLamp', 'w5tablelamp', HIS.bedside.x + 0.09, 0.5, HIS.bedside.z, 0, { s: 0.8 });
+      place('bedGlass', 'w51glass', HIS.bedside.x - 0.14, 0.5, HIS.bedside.z - 0.13, 0);            // the glass of water that trembles (8.3)
       place('altarGlass', 'w51glass', HIS.altar.x + 0.1, HIS.altar.top, HIS.altar.z + 0.12, 0);
       boxW(mVeneer, HIS.bedside.x, 0.25, HIS.bedside.z, 0.45, 0.5, 0.4, 63); solidXZ(HIS.bedside.x - 0.23, HIS.bedside.z - 0.2, HIS.bedside.x + 0.23, HIS.bedside.z + 0.2, 0.6);   // (a bedside cabinet: his bed's own set lands with w51bed if it has one)
       place('bedClock', 'w51clock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);            // the alarm clock on his bedside (9.4's insert: 11:58, 3:00)
@@ -1027,7 +1027,7 @@
     const MIRROR_X = FRONT.x1;
     const MIRROR = new THREE.Matrix4().set(-1, 0, 0, 2 * MIRROR_X, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     const mirrorG = new THREE.Group(); mirrorG.name = 'the reflection'; mirrorG.visible = false; world.add(mirrorG);
-    const REFL_K = 0.55;                                                // how bright the room is in the glass, before the pane
+    const REFL_K = 0.36;                                                // how bright the room is in the glass, before the pane
     const reflMats = new Map();
     function reflMat(mt) {
       if (!mt) return mt;
@@ -1113,7 +1113,7 @@
         for (let i = 0; i < 4; i++) { x.rotate(Math.PI / 2); const g = x.createLinearGradient(0, 0, 118, 0); g.addColorStop(0, 'rgba(0,0,0,0.5)'); g.addColorStop(1, 'rgba(0,0,0,0.18)');
           x.fillStyle = g; x.beginPath(); x.moveTo(10, -8); x.quadraticCurveTo(70, -26, 120, -16); x.quadraticCurveTo(126, 0, 120, 16); x.quadraticCurveTo(70, 26, 10, 8); x.closePath(); x.fill(); }
         x.filter = 'blur(6px)'; return tex(done(THREE, c, false)); })();
-      const fs = pool(HER.fan.x + 0.62, FRONT.ceil - 0.012, HER.fan.z - 0.7, 1.85, 1.85, 0xffffff, 0.42, { map: sh, add: false, rx: Math.PI / 2, parent: herThingsG, look: 'lamp' });
+      const fs = pool(HER.fan.x + 0.62, FRONT.ceil - 0.012, HER.fan.z - 0.7, 1.85, 1.85, 0xffffff, 0.3, { map: sh, add: false, rx: Math.PI / 2, parent: herThingsG, look: 'lamp' });
       things.fanShadow = fs.q;
       /* the two candles' warmth on the cloth (their flames are the films' and the play's: `candleLit`) */
       for (const n of ['candle1', 'candle2']) { const c = ON_CLOTH[n];
@@ -1128,7 +1128,7 @@
       pool(0.0, GY + 0.004, 0.0, 4.4, 6.6, 0xd8e8ff, 0.12, { look: 'street' });
       pool(STREET.shop + 0.9, GY + 0.006, 0.0, 1.8, 5.6, 0xd8e8ff, 0.1, { look: 'street' });
       /* the street lamps' sodium on the road and the five-foot way's edge */
-      for (const z of [-22, 2.5, 27]) { glow(STREET.kerb + 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.kerb + 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
+      for (const z of [-24, 9.5, 30]) { glow(STREET.kerb + 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.kerb + 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
       for (const z of [-10, 15]) { glow(STREET.road[1] - 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.road[1] - 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
       /* his altar's candle: a small warm point in his dark flat, and its light on the wall behind */
       things.altarGlow = glow(HIS.altar.x + 0.12, HIS.altar.top + 0.27, HIS.altar.z - 0.24, 0.32, 0xffb060, 0.85, hisG, 'altar');

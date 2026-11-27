@@ -5,7 +5,8 @@
    waiting). A phone is 390 x 844 CSS pixels at two device pixels a point, touch (CLAUDE.md: never a smaller picture); a
    desktop 1280 x 800.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... VIEW=phone|desktop [OUT=dir] [VIEWS=a,b] [SETTLE=1500] sh tools/bslot.sh node tools/probes/e5c1world.mjs
-   A view: [phase, look, x, y, z, yawDeg (0 looks -z, 90 looks -x), pitchDeg, fovDeg (vertical; 0 = the play lens)]. */
+   A view: [phase, look, x, y, z, the point looked at x, y, z, fovDeg (vertical; 0 = the play lens)]; the hands hidden as a film
+   hides them (HANDS=1 keeps them). */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -16,37 +17,37 @@ fs.mkdirSync(OUT, { recursive: true });
 const HX = 300, GY = -3.85;
 const ALL = {
   /* the opening's crane (9.1): from 7 m up and 6 m out, down to the five-foot way at Marcus */
-  crane0:    ['room', 'BLUE', 9.6, GY + 7.0, -6.2, -70, 8, PHONE ? 62 : 50],
-  crane1:    ['room', 'BLUE', 6.6, GY + 3.6, -4.8, -72, -1, PHONE ? 62 : 50],
-  crane2:    ['room', 'BLUE', 4.2, GY + 1.6, -3.6, -84, -4, PHONE ? 62 : 50],
-  fivefoot:  ['room', 'BLUE', 3.05, GY + 1.62, -1.4, 160, -3, PHONE ? 60 : 52],
-  upstreet:  ['room', 'BLUE', 2.2, GY + 1.62, 2.0, 180, 0, 0],
-  stairfoot: ['room', 'BLUE', 1.5, GY + 1.62, -3.72, 90, 22, PHONE ? 64 : 56],
-  stairmid:  ['room', 'BLUE', -0.6, GY + 2.6 + 1.62, -3.72, 90, 18, PHONE ? 64 : 56],
-  landing:   ['room', 'BLUE', -3.7, 1.62, -3.6, 0, -4, PHONE ? 52 : 44],
-  herdoor:   ['room', 'LAMP', -3.55, 1.62, -2.4, -90, -2, PHONE ? 52 : 44],
+  crane0:    ['room', 'BLUE', 9.6, GY + 7.0, -6.2,  3.0, 1.6, -0.2, PHONE ? 62 : 50],
+  crane1:    ['room', 'BLUE', 6.6, GY + 3.6, -4.8,  2.5, GY + 2.4, -3.3, PHONE ? 62 : 50],
+  crane2:    ['room', 'BLUE', 4.2, GY + 1.6, -3.6,  1.6, GY + 1.2, -3.2, PHONE ? 62 : 50],
+  fivefoot:  ['room', 'BLUE', 3.05, GY + 1.62, -1.4, 2.0, GY + 1.5, -3.6, PHONE ? 60 : 52],
+  upstreet:  ['room', 'BLUE', 2.2, GY + 1.62, 2.0,  2.2, GY + 1.4, 20, 0],
+  stairfoot: ['room', 'BLUE', 1.5, GY + 1.62, -3.72, -2, GY + 3.6, -3.72, PHONE ? 64 : 56],
+  stairmid:  ['room', 'BLUE', -0.6, GY + 2.6 + 1.62, -3.72, -4, 1.0, -3.72, PHONE ? 64 : 56],
+  landing:   ['room', 'LAMP', -3.7, 1.62, -3.6,  -3.5, 1.4, -1.9, PHONE ? 52 : 44],
+  herdoor:   ['room', 'LAMP', -3.55, 1.62, -2.4, -2.7, 1.3, -2.4, PHONE ? 52 : 44],
   /* her front room (5.3, 8.1, 9.1, 9.2): from the door, from his place kneeling, his turn to the glass */
-  roomdoor:  ['room', 'LAMP', -2.3, 1.62, -2.3, -125, -8, PHONE ? 66 : 58],
-  kneel:     ['room', 'LAMP', 1.45, 1.12, 1.9, 23.5, -12, 0],
-  glass:     ['room', 'LAMP', 1.45, 1.12, 1.9, -58, 2, PHONE ? 50 : 44],
-  glassnear: ['room', 'LAMP', 1.45, 1.12, 1.9, -58, 2, PHONE ? 36 : 30],
-  table:     ['room', 'LAMP', 1.45, 1.12, 1.9, 40, -42, 0],
-  back:      ['room', 'LAMP', 1.9, 1.62, -1.6, 100, -6, 0],
-  kitchen:   ['room', 'LAMP', -2.4, 1.62, 1.2, 80, -10, 0],
+  roomdoor:  ['room', 'LAMP', -2.3, 1.62, -2.3,  2.75, 1.4, 1.0, PHONE ? 66 : 58],
+  kneel:     ['room', 'LAMP', 1.45, 1.12, 1.9,   0.42, 0.8, -0.32, 0],
+  glass:     ['room', 'LAMP', 1.45, 1.12, 1.9,   2.75, 1.4, 1.0, PHONE ? 50 : 44],
+  glassnear: ['room', 'LAMP', 1.45, 1.12, 1.9,   2.75, 1.3, 1.05, PHONE ? 32 : 28],
+  table:     ['room', 'LAMP', 1.45, 1.12, 1.9,   0.6, 0.42, 1.15, 0],
+  back:      ['room', 'LAMP', 1.9, 1.62, -1.6,   -4, 1.2, 1.0, 0],
+  kitchen:   ['room', 'LAMP', -2.4, 1.62, 1.2,   -4.2, 1.0, 2.4, 0],
   /* his home (5.4, 9.4, 8.3, 9.7, 9.9) */
-  corridor:  ['night', 'HOME', HX - 8.6, 1.62, -3.45, -90, 0, PHONE ? 60 : 52],
-  hisdoor:   ['night', 'HOME', HX - 3.8, 1.62, -1.9, 180, -4, 0],
-  living:    ['night', 'HOME', HX - 3.6, 1.62, -1.9, -20, -4, 0],
-  altar:     ['night', 'HOME', HX - 3.4, 1.62, 0.35, 90, -12, PHONE ? 50 : 42],
-  diningN:   ['night', 'NIGHT', HX + 0.9, 1.62, 0.9, 160, -18, 0],
-  bedroom:   ['night', 'NIGHT', HX + 6.7, 1.62, -0.48, 124, -6, 0],
-  bedlie:    ['night', 'NIGHT', HX + 7.6, 0.85, 0.8, 90, 20, PHONE ? 66 : 58],
-  beddoor:   ['night', 'NIGHT', HX + 4.4, 1.62, 1.2, 110, -8, 0],
-  circle:    ['night', 'NIGHT', HX - 2.2, 0.8, 1.0, 150, 2, PHONE ? 66 : 58],
-  balcony:   ['night', 'NIGHT', HX - 0.1, 1.62, 2.1, 0, -6, 0],
-  citydown:  ['night', 'NIGHT', HX + 0.0, 1.62, 2.3, 0, -38, 0],
-  dawn:      ['night', 'DAWN', HX - 3.6, 1.62, -1.9, -20, -10, 0],
-  dawntable: ['night', 'DAWN', HX + 0.75, 1.2, 0.45, 180, -10, PHONE ? 50 : 42]
+  corridor:  ['night', 'HOME', HX - 8.6, 1.62, -3.45, HX - 3.8, 1.2, -3.0, PHONE ? 60 : 52],
+  hisdoor:   ['night', 'HOME', HX - 3.8, 1.62, -1.6,  HX - 3.8, 1.2, -2.6, 0],
+  living:    ['night', 'HOME', HX - 3.6, 1.62, -1.9,  HX + 1, 1.2, 2.5, 0],
+  altar:     ['night', 'HOME', HX - 3.4, 1.62, 0.35,  HX - 4.28, 1.0, 0.35, PHONE ? 50 : 42],
+  diningN:   ['night', 'NIGHT', HX + 0.9, 1.62, 0.9,  HX + 0.15, 0.76, -0.2, 0],
+  bedroom:   ['night', 'NIGHT', HX + 6.7, 1.62, -0.48, HX + 4.4, 1.0, 1.2, 0],
+  bedclock:  ['night', 'NIGHT', HX + 7.4, 0.9, 1.2,   HX + 7.79, 0.55, 2.16, PHONE ? 40 : 34],
+  beddoor:   ['night', 'NIGHT', HX + 4.4, 1.62, 1.2,  HX - 3.8, 0.2, -2.3, 0],
+  circle:    ['night', 'NIGHT', HX - 2.2, 0.8, 1.0,   HX - 3.8, 1.0, -2.5, PHONE ? 66 : 58],
+  balcony:   ['night', 'NIGHT', HX - 0.1, 1.62, 2.1,  HX + 5, 1.0, 40, 0],
+  citydown:  ['night', 'NIGHT', HX + 0.0, 1.62, 2.3,  HX + 2, -78, 18, 0],
+  dawn:      ['night', 'DAWN', HX - 3.6, 1.62, -1.9,  HX + 1, 0.3, 1.5, 0],
+  dawntable: ['night', 'DAWN', HX + 0.75, 1.2, 0.45,  HX + 0.75, 1.1, -0.95, PHONE ? 50 : 42]
 };
 const pick = process.env.VIEWS ? process.env.VIEWS.split(',') : Object.keys(ALL);
 const b = await chromium.launch(LAUNCH);
@@ -63,12 +64,14 @@ await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForFunction(() => { try { return window.__enc.stage.ready() && window.__enc.stage.info().applied; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 console.log(el(), 'ready');
+if (process.env.HANDS !== '1') await p.evaluate(() => { if (window.__enc.handsRoot) window.__enc.handsRoot.visible = false; });
 await p.addStyleTag({ content: '#hud, #objective, #reticle, .hudel, #hotBadge, #caption, #captions, #vignette { opacity: 0 !important; }' });
 const frames = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
 let curPhase = null;
 for (const name of pick) {
   const v = ALL[name]; if (!v) { console.log('no view', name); continue; }
-  const [phase, look, x, y, z, yawD, pitchD, fov] = v;
+  const [phase, look, x, y, z, tx, ty, tz, fov] = v;
+  const yawD = Math.atan2(-(tx - x), -(tz - z)) * 180 / Math.PI, pitchD = Math.atan2(ty - y, Math.hypot(tx - x, tz - z)) * 180 / Math.PI;
   if (phase !== curPhase) { await p.evaluate((ph) => window.__enc.stage.setPhase(ph), phase); curPhase = phase;
     await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 300 }); await frames(4); }
   await p.evaluate(([look, x, y, z, yawD, pitchD, fov]) => { const E = window.__enc, S = E.stage, d = Math.PI / 180;
