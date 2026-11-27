@@ -38,11 +38,16 @@
        back slowly. She stands up twice in the room (the plan's 8.1) by `rise` (seat.rise: her height laid from her own
        feet as she comes up) and sits again by the same take played back. She has met the player only here (a new body). */
     const GRACE_SEAT = (STATION.room.grace && STATION.room.grace.y) || 0.51;
+    /* (PLAY, 27 Nov, MEASURED by tools/probes/e5c1lab.mjs: her gsofa tucks her feet back, and seated at the sofa's middle her
+       shins stood inside it, 1,628 of her points under the seat's top, the deepest 0.36 m, her ankles some 0.2 m behind the
+       seat's front face, z 0.087, while her hips are at z -0.316: so her seat names its front, 0.38 m ahead of her hips where
+       the cushion's rounded edge begins, and seatDown lays her feet forward until her shins clear it, as the masters' were) */
+    const GRACE_EDGE = 0.38;
     const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
         win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
-        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
+        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: GRACE_EDGE }), rise: 'rise' },
         headDamp: { gsofa: [0.5, 'gsofa'] } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
     /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
