@@ -1015,8 +1015,12 @@
        the pose puts it in every shot). 1, the pose whole: the bowl in the picture's lower half, its water seen from above, as
        he looks down into it; BOWLLOW1, the pose part way (the hands lower, the bowl at the picture's foot) where he looks
        at something across it: photographed 27 Nov, held at 1 it covered the packet on the plate as the cord was untied and
-       his teacher's mouth as he watched it lifted */
-    const BOWLLOW1 = 0.55;
+       his teacher's mouth as he watched it lifted. MEASURED the same evening (my scratch f1bowlk.mjs: the bowl's every point
+       in a phone's picture by the share): its top edge stands at -0.61 of the picture's half-height at 0.1, -0.43 at 0.25,
+       -0.07 at 0.55 (its brass side then filled the picture's lower half, photographed: a flat brown wall to the middle,
+       the people's knees and the cloth's near half under it), +0.47 at 1; 30 cm across, it is wider than a phone's
+       picture at any share. 0.25: the far rim and the water's far side above the picture's lower bar, its lowest quarter */
+    const BOWLLOW1 = 0.25;
     function keepBowl1(t, T, api) {
       const lifted = t >= T.lift;
       const wb = things.holyBowl; if (wb) wb.visible = !lifted;
@@ -1217,9 +1221,11 @@
       /* (each palm placed so its fingertips, about 9.5 cm on along the fingers, come to the packet's top at its near corners:
          27 Nov, with the plate moved within his reach, palms 7 and 17 cm from the packet put his left fingertips 1.7 cm down
          into the plate and his right ones on the cloth 13 cm from the knot) */
+      /* (and the palms DOWN over it, toward him, as hands that pick at a knot and bind: 27 Nov, photographed from above, the
+         palm faced up and away, a hand held open over the packet; clipscan: the fingertips 1 to 2 cm into the packet) */
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
-        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.075, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
-        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.076, pk[2] + 0.056], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
+        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.088, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.1, -0.65, 0.75], work, { out: 0.22, down: 0.25 });
+        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.089, pk[2] + 0.056], [-0.5, -0.7, -0.4], [0.25, -0.6, 0.75], work, { out: 0.22, down: 0.25 }); }
       /* THE POUR (27 Nov: the first build set the bowl back on the cloth untouched and laid his hand on the bottle while the
          pour was heard): his right hand takes the bowl from his student, carries it by its rim over the bottle standing on
          the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;
@@ -1227,13 +1233,18 @@
       const pr = pourAt1(tau, T);
       if (pr.k > 0.001) handTo(P, 'R', pr.hand, [-0.15, -0.35, -0.9], [0.1, 1, 0.15], pr.k, { out: 0.24, down: 0.25 });
       const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
-      if (steady > 0.001) handTo(P, 'L', [CB1.x - 0.035, CLOTH_Y + 0.07, CB1.z + 0.02], [0.4, -0.3, -0.8], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
+      /* (his palm against the bottle's side, his fingers round its front: 27 Nov, clipscan, 3.5 cm off its middle his fingers
+         went through it, 287 crossings) */
+      if (steady > 0.001) handTo(P, 'L', [CB1.x - 0.05, CLOTH_Y + 0.07, CB1.z + 0.02], [0.2, -0.3, -0.9], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
       const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
       if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
       const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
       /* (the bottle held out to him on his palm, his fingers along his forearm's line toward him: measured 27 Nov, the fingers
          turned to his side bent his wrist back 105 degrees, past a real wrist's 70) */
-      if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.75, -0.2, -0.1], [0, 1, 0.2], give, { out: 0.25, down: 0.25 });
+      /* (held out at GIVE1, on the line from his eyes to his teacher's face and below it, so one picture holds the face and
+         the bottle and his hands rise to it there: 27 Nov, held out to 1.04, 0.74, 1.62 it stood 34 degrees off his look, out
+         of a phone's picture) */
+      if (give > 0.001) { const g = smo(c01((tau - T.give) / 0.9)); handTo(P, 'R', [lp(CB1.x, GIVE1[0], g), lp(CLOTH_Y + 0.12, GIVE1[1], g), lp(CB1.z, GIVE1[2], g)], [0.75, -0.2, -0.1], [0, 1, 0.2], give, { out: 0.25, down: 0.25 }); }
       f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 0.7], [T.c3, () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
     }
     function cordGrace1(tau, T, t) {
@@ -1255,11 +1266,15 @@
     const phoneLit1 = glow(0, -50, 0, 0.1, 0xd8e8ff, 0, world, null);
     const herPhone1 = () => things.herPhone || PROPS1.grPhone;
     const GRPHONE1 = { get x() { const g = herPhone1(); return g ? g.position.x : 0.09; }, get z() { const g = herPhone1(); return g ? g.position.z : -0.22; }, get y() { const g = herPhone1(); return g ? g.position.y : 0.51; } };
+    const CORDMK1 = { x: -0.05, z: 0.40, to: [0.36, -0.02], head: [-0.02, 1.0, 0.36] };
     function cordMarcus1(tau, T) {
       const P = cast.marcus; if (!P || !P.ready) return;
-      /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right) */
-      const M = { x: 0.12, z: 0.15, ry: Math.PI * 0.85 };
-      if (P.acts.kneelhold && tau < T.c3 - 0.8) { put(P, M.x, M.z, faceTo(M.x, M.z, 0.42, -0.32), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
+      /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right, in
+         front of the sofa, turned to her knees, his raised hands (the take's, 0.7 m up) by her right knee. 27 Nov, clipscan:
+         at 0.12, 0.15 turned to her middle he knelt into her legs (2,000 to 3,800 crossings), the sofa's front (1,900) and
+         her phone on the cushion) */
+      const M = CORDMK1;
+      if (P.acts.kneelhold && tau < T.c3 - 0.8) { put(P, M.x, M.z, faceTo(M.x, M.z, M.to[0], M.to[1]), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
       else { const K = KEEP1.mkStand; put(P, K.x, K.z, K.ry, 0); f1Speak(P, tau, ['Idle_3', 1.2, 0.3, true], [[T.m1, SECS.mk51c1, 'Stand_and_Chat', 0.55]]); }
       f1Gaze(P, tau, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.c3 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
@@ -1305,6 +1320,7 @@
     /* (the bottle on the cloth before him, at his left of the bowl, between the lit candle and the incense: his right hand
        pours over it from his right, his left hand steadies it without crossing his body) */
     const CB1 = { x: 0.36, z: 1.25 };
+    const GIVE1 = [0.95, 0.80, 1.88];
     const POUR1 = { take: [1.06, 0.76, 1.58], tilt: 0.85 };
     /* where his right hand is in the pour, and how far into it (k): the student's bowl taken (pour - 0.3 to + 0.9), carried
        over the bottle (+0.9 to +1.4), tilted (+1.4 to +2.6), set down at its place on the cloth (+2.6 to +3.0), let go */
@@ -1312,7 +1328,10 @@
       const P0 = T.pour, B = [CB1.x + 0.075, CLOTH_Y + 0.25, CB1.z + 0.035], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
       const k = smo(c01((t - P0 + 0.3) / 0.6)) * (1 - smo(c01((t - P0 - 2.95) / 0.25)));
       const u1 = smo(c01((t - P0 - 0.9) / 0.5)), u2 = smo(c01((t - P0 - 2.6) / 0.4));
-      return { k, hand: lp3(lp3(POUR1.take, B, u1), C, u2), carry: t >= P0 + 0.9 && t < P0 + 3.0, tilt: POUR1.tilt * f1Env(t, P0 + 1.35, P0 + 2.65, 0.35, 0.3), down: t >= P0 + 3.0 };
+      /* (set down along an arc toward the table's middle and up: straight, its rim went through the incense sticks, 27 Nov) */
+      const h = lp3(lp3(POUR1.take, B, u1), C, u2), arc = Math.sin(Math.PI * u2);
+      h[1] += 0.06 * arc + 0.1 * Math.sin(Math.PI * u1) * (1 - u2); h[2] -= 0.14 * arc;   // (and lifted as it is carried over: the sticks stand 0.24 m)
+      return { k, hand: h, carry: t >= P0 + 0.9 && t < P0 + 3.0, tilt: POUR1.tilt * f1Env(t, P0 + 1.35, P0 + 2.65, 0.35, 0.3), down: t >= P0 + 3.0 };
     }
     PROPS1.spool = stand('w51threadreel', 0, -50, 0, 0, { parent: world }); PROPS1.spool.visible = false;
     /* the bowl in his teacher's right hand through the pour: a copy of it (the play's own, things.holyBowl, keeps its place
@@ -1362,17 +1381,23 @@
       const pk = [ON_CLOTH.plate.x, CLOTH_Y + 0.03, ON_CLOTH.plate.z];
       const graceFace = () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED);
       const mkHead = () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6);
+      const phoAt = (dx, dy) => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + dx, f[1] + dy, f[2] - 0.05]; };
+      const UNTIE1 = [eye[0] - 0.14, eye[1] + 0.15, eye[2] - 0.20];
+      const POURAT1 = [CB1.x + 0.03, CLOTH_Y + 0.15, CB1.z + 0.01];
       return [
         /* INSERT from above (his eyes looking down): his hands and the bowl at the picture's foot, the packet in its middle */
-        { t: 0, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.35), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.35)], fp: 38, fd: 32 },
-        { t: T.snap - 0.2, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 38, fd: 32 },
+        /* (kneeling up and leaning in to watch it: 27 Nov, with the plate moved, from where he kneels the incense stood 2 cm
+           off his line to the packet and its sticks 2 cm over it, across the packet in the picture; from here they stand 5 cm
+           aside and 4 cm under it) */
+        { t: 0, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.35), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.35)], fp: 38, fd: 32 },
+        { t: T.snap - 0.2, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.33), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.33)], fp: 38, fd: 32 },
         /* (the lens narrows across the slow: a smooth function of the film's clock) */
-        { t: T.cry - 0.05, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 32, fd: 27 },
+        { t: T.cry - 0.05, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.33), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.33)], fp: 32, fd: 27 },
         /* his eyes across the table: Grace and Marcus kneeling beside her */
         { t: T.cry, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.05, g[1] - 0.5, g[2] + 0.3]; }, fp: 46, fd: 40, cut: true,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [0.13, 0.95, 0.08, 0.18]]; }, back: 0.45, fmax: 58 },
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [CORDMK1.head[0], CORDMK1.head[1], CORDMK1.head[2], 0.18]]; }, back: 0.45, fmax: 58 },
         { t: T.phone - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.03, g[1] - 0.52, g[2] + 0.32]; }, fp: 46, fd: 40,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [0.13, 0.95, 0.08, 0.18]]; }, back: 0.45, fmax: 58 },
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [CORDMK1.head[0], CORDMK1.head[1], CORDMK1.head[2], 0.18]]; }, back: 0.45, fmax: 58 },
         /* INSERT: her phone on the cushion beside her, her right hand turning it face down: from above and behind her right
            shoulder, over the sofa's back (Marcus kneels before the sofa then, so its back is free; the first build stood this
            lens between her face and his, 0.4 m from his head and 0.5 m from hers) */
@@ -1391,12 +1416,17 @@
           hold: () => { const g = graceFace(), m = mkHead(); return [[g[0], g[1] + 0.04, g[2], 0.16], [m[0], m[1] + 0.02, m[2], 0.16]]; }, back: 0.45, fmax: 58 },
         /* his eyes: his teacher looking at him, the bottle; his look drops to his hands, the bottle and his own wrist, for a
            moment, and back (each way over 1.2 s: the first build's 0.6 s drop turned his look 136 degrees a second) */
-        { t: T.pour, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.1, f[1] - 0.15, f[2] - 0.05]; }, fp: 50, fd: 42, cut: true },
-        { t: T.wrist - 0.1, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
+        /* (the pour SEEN: a phone, whose picture is 24 degrees wide, looks at the bowl tilted over the bottle and the cork, his
+           teacher's face 31 degrees off it; a desk holds both. 27 Nov: the look stayed on his face and a phone never saw the
+           pour. Then up to his face as he holds the bottle out below it, GIVE1, and speaks) */
+        { t: T.pour, name: 'pour', eye, at: () => lp3(phoAt(0.1, -0.15), POURAT1, 0.5), atP: POURAT1, fp: 50, fd: 42, cut: true },
+        { t: T.give - 0.1, name: 'pour', eye, at: () => lp3(phoAt(0.1, -0.15), POURAT1, 0.5), atP: POURAT1, fp: 50, fd: 42 },
+        { t: T.give + 0.8, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
+        { t: T.wrist - 0.1, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
         { t: T.wrist + 1.1, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.62, eye[2] - 0.32], fp: 50, fd: 42 },
         { t: T.wrist + 2.1, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.62, eye[2] - 0.32], fp: 50, fd: 42 },
-        { t: T.wrist + 3.3, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
-        { t: T.end, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 }
+        { t: T.wrist + 3.3, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
+        { t: T.end, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 }
       ];
     }
 
