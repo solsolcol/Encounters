@@ -1,0 +1,43 @@
+# v29.0 · the things of episode 5 chapter 1: the record
+
+The plan's §7 in two lists: the things REUSED (each a model the game already has, declared: v17.4) and the things made
+NEW, in the plan's order (a checked GPT Image picture on white, then Meshy at its highest and its remesh, once each). All
+Meshy ids are also in masters/v29.0/src/props/jobs.json (the ledger; ignored by git, never hand-edited). The pictures'
+ids are in refs.tsv; the prompts in PROMPTS.py. Keys for the new things: keys.json (the coordinator writes them into
+keys.py and build.py).
+
+## CP4.1 · The REUSED things (plan §7), each matched to a model the game has
+
+Where the player met it before is the chapter and the place. A reused thing keeps its own key (no new key is made); the
+chapter declares it in `reuse` (another episode's) or `reuseInEpisode` (none: episode 5 has no earlier chapter, so every
+one of these is `reuse`).
+
+| thing (plan §7) | key | file | where the player met it | fit, and what to mind |
+|---|---|---|---|---|
+| the holy-water bowl | `w4bigbowl` | assets/w4bigbowl.glb (0.32 m, embossed silver, lotus band, a pedestal foot; jasmine and marigold petals in its water) | episode 4 chapter 4: Grandmaster Pho's own larger bowl on the floor by Amma's chair, where he dips again; episode 4 chapter 5's rite (declared there) | Pho's own bowl, so it is the right thing in his hands. The plan's §8.1 calls it "brass": it is SILVER (a runtime warm tint makes it read as brass, his file untouched), or the plan's word changes. Its petals float in it: the minigame's look-down at the water (§8.2) sees them. The smaller `w4waterbowl` (0.15 m, silver, the player's own in chapter 4, 2048 sheet) is the alternative if a bowl he holds in two hands should be smaller: 0.32 m is big for a bowl held before him |
+| the candles | `w3candlesmall` | assets/w3candlesmall.glb (0.24 m: a small plain pink wax candle in a tiny brass holder) | episode 4 chapter 3: the Wai Kru's offering tables | the only small candle the game has. Its sheet is 256 px and 1,500 triangles: seen in the INSERT from above (§9.2, lens 36/30) it will be soft. Two on the cloth; the flame is the chapter's own sprite. A white candle would read better at a home rite: one word to make one new (45 credits) |
+| the lighter | NONE | — | episode 3 chapter 5's disposable lighter is BUILT IN CODE (e3c5.js makeLighter: boxes and a cylinder), not a model | no fitting model. By v25.2 a code-built prop is not drawn where a real model can be made: a new thing (45 credits), the coordinator's call (not on plan §7's NEW list) |
+| the incense | NONE as a model | — | episode 3 chapter 5's three joss sticks are BUILT IN CODE (e3c5.js makeSticks); episode 3 chapter 1's urn is a piece of `thaikit` (Chad's temple pack: `thai('incense')`), a temple urn, not sticks for a coffee table | no fitting model: a new thing (sticks in a small holder, 45 credits), the coordinator's call |
+| Grandmaster Pho's fan | `w3fan` | assets/w3fan.glb (the peacock-feather fan) | episode 4 chapter 3 (his photographs 2 and 8) and episode 4 chapter 5's rite (declared there) | his own fan; dipped in the bowl and flicked (§8.2). Note Chad's R88 took it out of his hand in chapter 5's last film: a choice of that film, not a ban |
+| Grandmaster Pho's cloth bag | NONE | — | he has not carried one on screen before. The only shoulder bag of cloth is `e4yaam`, Lersi Chin's striped Thai bag (episode 4 chapter 2): it is HIS, and putting it on Grandmaster Pho would read as Lersi Chin's | no fitting model: a new thing (a plain white or off-white cotton shoulder bag, 45 credits), the coordinator's call |
+| the spool of white thread | `w5threadreel` (chapter 5's) | assets/w5threadreel.glb (0.09 m, 12,231 triangles) | episode 4 chapter 5: the rite of case three | its fault (the loose end hangs down and the ball floats 1.5 cm: v28.0 RECORD) is mended as THIS chapter's own new file, `w51threadreel`, at no credits (below, CP4.4); the old file is untouched |
+| the small white plate | NONE | — | the game's plates are part of other models (`foodwarmer`, Chad's buffet set; `w4altartray`'s camphor plate, brass) | no fitting model: a new thing (45 credits), the coordinator's call |
+| the cushions | `w5cushion` | assets/w5cushion.glb (0.50 m maroon floor cushion, 512 sheet) | episode 4 chapter 5: the receiving room's floor cushions | Pho's cushion and the floor cushions; brighter red than maroon (its v28.0 note). `w3hpillow` (the maroon Thai triangle pillow, episode 4 chapter 3's hall) is the other at hand |
+| the plants | `w4corrpots` (money plant, aloe, pandan in three pots), `w3dracaena` (a dracaena in a brown glazed jar), `w4bougain` | assets/w4corrpots.glb, w3dracaena.glb, w4bougain.glb | episode 4 chapter 4's corridor (a neighbour's pots, a bougainvillea); episode 4 chapter 3's ground | the landing's plant: `w4corrpots` or `w3dracaena`; the bookshelf's own small plants are in the new bookshelf's model. Not `w4tulsi` (a Hindu household's holy basil, Amma's) |
+| the water jug | NONE | — | no jug in the game | no fitting model: a new thing (45 credits), the coordinator's call; it is ORDER 1 of the room (§8.1, a press on the jug), so it is seen close |
+| glasses and cups | `w3glass` only | assets/w3glass.glb (a glass of red soda with a straw, 0.15 m, 256 sheet) | episode 4 chapter 3, by the hermit's sofa | does NOT fit a glass of water on his altar or bedside (it is red soda with a straw). The kopi cups are in the new breakfast's model. Episode 3 chapter 4's teacups were built in code. A plain glass of water: a new thing, the coordinator's call |
+| a Buddha image for his altar | `e4buddha` | assets/e4buddha.glb (Chad's own seated Buddha, "Yoga - Buddha" by T.Koeniger, Sketchfab CC-BY-4.0, 0.32 m; its credit row stands) | episode 4 chapter 1 | the plan's "a small Buddha image the game already has". `e4bucha` (the seated bronze in the earth-touching pose, 0.30 m, episode 4 chapter 2's shop altar) is the other; `buddhahd` (Phra Buddha Chinnarat, episode 3) is far too grand for a flat. Default `e4buddha`: Chad's own (v24.18: his models first) |
+| a frame for his teacher's photograph | `w4framesmall` | assets/w4framesmall.glb (a thin silver standing frame, its picture area white) | episode 4 chapter 4: Amma's flat | stands on the altar; the chapter lays the photograph over its white. `w5frame` (a 0.68 m wall frame, chapter 5's walls) for a hung one |
+| a bedside lamp | `w5tablelamp` | assets/w5tablelamp.glb (0.55 m) | episode 4 chapter 5: Mr Koh's living room | fits; 0.55 m is a tall bedside lamp (a scale where placed) |
+| a bedside clock | NONE | — | the game's clocks are wall clocks (`w4clock`, `w5wallclock`, `w3hclock`) | no fitting model; §9.4's INSERT reads 11:58 and 3:00 on it, so it is seen close: a new thing (a small digital clock, its face the chapter's own painted numbers, 45 credits), the coordinator's call |
+| the air-conditioner | NONE indoors | — | `w3aircon` is an OUTDOOR compressor on brackets (episode 4 chapter 3's stilt house); episode 3 chapter 5's bedroom unit was built in code | no fitting model for the wall unit over his bed (its blue light, §9.4): a new thing, the coordinator's call. `w3aircon` fits the balcony's ledge if one is wanted there |
+| the fridge | `w4fridge` | assets/w4fridge.glb (a two-door white fridge, freezer on top, fruit magnets) | episode 4 chapter 4: Amma's kitchen | a 2000s HDB fridge with magnets in a new condominium's kitchen: it reads older than his flat. Fits Grace's kitchenette better than his |
+| the kettle | NONE | — | `u5kettle` is a SOUND (chapter 5's) | no fitting model: a new thing, the coordinator's call |
+| the balcony chairs | `w3pchair` | assets/w3pchair.glb (a plastic chair; white, the blue a tint) | episode 4 chapter 3's ground | a plastic chair on a condominium balcony: plain but true; there is no other outdoor chair |
+| the laundry rack | `w4clothesrack` | assets/w4clothesrack.glb (a folding clothes rack with a shirt, a towel, a sarong) | episode 4 chapter 4's corridor (a neighbour's) | fits his balcony (the sarong reads as someone else's; a tint or keep) |
+| his phone | `e4phone` | assets/e4phone.glb | episode 4 chapter 2: HIS phone (v25.5's remade one) | his own phone, the same man: fits. Her phone is made new (below) |
+
+**Named, with no fitting model** (the coordinator's call; each 45 Meshy credits and one picture if made): the lighter,
+the incense sticks, Grandmaster Pho's cloth bag, the small white plate, the water jug, a glass of water, the bedside
+clock, the indoor air-conditioner, the kettle (and, from §5.4, the altar's vase of jasmine). The jug, the lighter and
+the plate are pressed or seen close in play and the films (§8.1, §9.2).

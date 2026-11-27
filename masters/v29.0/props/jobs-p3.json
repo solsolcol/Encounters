@@ -1,0 +1,22 @@
+[
+ {
+  "name": "takeaway",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/takeaway.png"
+ },
+ {
+  "name": "hissofa",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/hissofa.png"
+ },
+ {
+  "name": "histable",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/histable.png"
+ },
+ {
+  "name": "hischair",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/hischair.png"
+ }
+]

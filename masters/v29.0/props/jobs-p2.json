@@ -1,0 +1,22 @@
+[
+ {
+  "name": "gracesofa",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/gracesofa.png"
+ },
+ {
+  "name": "rattanchair",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/rattanchair.png"
+ },
+ {
+  "name": "bookshelf",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/bookshelf.png"
+ },
+ {
+  "name": "laptop",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/laptop.png"
+ }
+]

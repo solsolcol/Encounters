@@ -1,0 +1,22 @@
+# v29.0 · the NEW things of episode 5 chapter 1 (plan §7, in its order): name, asset key, size in metres, the dimension it
+# is sized on (h height, w width on x, l length on z), the triangle count asked of Meshy's remesh (nothing is thinned
+# here: v25.5), the sheets' size, the turn in degrees (settled by a photograph). Read by masters/v29.0/props/prop.sh.
+# A sheet of 2048 where the thing is seen close (an INSERT, the table he kneels at); 1024 across the room.
+keepsake      w51keepsake   0.07  w  12000  2048  0
+shoulderbag   w51bag        0.36  w  20000  2048  0
+bottle        w51bottle     0.10  h   8000  2048  0
+coffeetable   w51ctable     1.00  w  16000  2048  0
+gracesofa     w51gsofa      1.50  w  30000  1024  0
+rattanchair   w51rattan     0.68  w  30000  1024  0
+bookshelf     w51shelf      0.80  w  30000  1024  0
+laptop        w51laptop     0.32  w   6000  1024  0
+takeaway      w51takeaway   0.22  w  12000  1024  0
+hissofa       w51sofa       2.10  w  30000  1024  0
+histable      w51dintable   1.60  w  16000  1024  0
+hischair      w51dinchair   0.82  h  12000  1024  0
+hisbed        w51bed        1.70  w  30000  1024  0
+altarcab      w51altarcab   0.90  w  20000  2048  0
+breakfast     w51breakfast  0.30  w  16000  2048  0
+pills         w51pills      0.10  w   6000  1024  0
+keycard       w51keycard    0.15  w   6000  1024  0
+gracephone    w51phone      0.15  l   8000  2048  0
