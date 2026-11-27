@@ -22,10 +22,13 @@ grace)   # her stand, her walk and a listening stand: Mala's (chapter 4's woman,
   R assets/e4hermita.glb $W/g5.glb $W/g6.glb palmover
   R assets/e4hermita.glb $W/g6.glb $W/g7.glb Sitting_Answering_Questions
   node tools/mergetakes.mjs strip $W/g7.glb $S/takes-grace-ret.glb $S/rigged-grace.glb >> $S/$N-retakes.log 2>&1 && rm -f $W/g[1-7].glb ;;
-marcus)  # on his MENDED rig (people/rigmend-marcus.json): the library's stand, listening and chat (Jun's file, raw: brought in
+marcus)  # (second throw, R5/R6: his new rig has every finger, so the takes go on rigged-marcus.glb itself; the first throw's
+         #  MENDED rig, people/rigmend-marcus.json, is src/people/first/first-mended-marcus.glb: MRIG=<that> runs the old way)
+         # the library's stand, listening and chat (Jun's file, raw: brought in
          # at prep), the library's talk (Mr Koh's), a man kneeling on one knee beside a chair (Ravi's), the seated hermit's
          # chair sit and seated talk, and his own rig's walk
-  R masters/v28.0/src/takes-jun-lib.glb $S/mended-marcus.glb $W/m1.glb Idle_3
+  MR=${MRIG:-$S/rigged-marcus.glb}
+  R masters/v28.0/src/takes-jun-lib.glb $MR $W/m1.glb Idle_3
   R masters/v28.0/src/takes-jun-lib.glb $W/m1.glb $W/m2.glb Listening_Gesture
   R masters/v28.0/src/takes-jun-lib.glb $W/m2.glb $W/m3.glb Stand_and_Chat
   node tools/retarget.mjs masters/v28.0/src/takes-koh-lib.glb $W/m3.glb $W/m4.glb Talk_with_Hands_Open same --hips --align --noalign=neck,Head,LeftShoulder,RightShoulder >> $S/$N-retakes.log 2>&1 || exit 1
@@ -33,6 +36,6 @@ marcus)  # on his MENDED rig (people/rigmend-marcus.json): the library's stand, 
   R assets/e4hermita.glb $W/m5.glb $W/m6.glb Chair_Sit_Idle_M
   R assets/e4hermita.glb $W/m6.glb $W/m7.glb Sitting_Answering_Questions
   node tools/retarget.mjs $S/takes-marcus-walking.glb $W/m7.glb $W/m8.glb "Armature|walking_man|baselayer" same --hips >> $S/$N-retakes.log 2>&1 || exit 1
-  node tools/mergetakes.mjs strip $W/m8.glb $S/takes-marcus-ret.glb $S/mended-marcus.glb >> $S/$N-retakes.log 2>&1 && rm -f $W/m[1-8].glb ;;
+  node tools/mergetakes.mjs strip $W/m8.glb $S/takes-marcus-ret.glb $MR >> $S/$N-retakes.log 2>&1 && rm -f $W/m[1-8].glb ;;
 esac
 echo "$N retakes exit $?"

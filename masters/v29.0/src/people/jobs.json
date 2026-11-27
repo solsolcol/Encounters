@@ -54,8 +54,8 @@
    "skeleton_template": "meshyrig"
   },
   "rig_sizes": {
-   "rigged": 72980016,
-   "walk": 73106280
+   "rigged": 72979460,
+   "walk": 73106144
   },
   "second_throw": "R5, 27 Nov 2026",
   "settings": {
@@ -146,12 +146,20 @@
   "expires_at": 1796018018264,
   "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
   "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
+  "remesh": {
+   "40000": "01a21b95-7114-7397-b15b-7c0acf4379c7"
+  },
   "rig": "01a21b92-0378-71b7-a898-6fee5002dfd3",
+  "rig_credits": 5,
   "rig_settings": {
    "height_meters": 1.72,
    "include_fingers": true,
    "input_task_id": "01a21b8c-b892-7308-a894-f062cec450b6",
    "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 54184400,
+   "walk": 54434776
   },
   "second_throw": "R5/R6, 27 Nov 2026",
   "settings": {
@@ -176,6 +184,14 @@
   "sizes": {
    "glb": 50378100,
    "pre": 9173604
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 54840088,
+    "task": "01a21b95-71d2-72cc-ae87-029d943aba82"
+   }
   }
  },
  "marcus_first": {

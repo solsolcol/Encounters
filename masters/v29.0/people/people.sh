@@ -46,7 +46,13 @@ go grace && ( CALM="" one grace $SRC/body-grace-40000.glb $SRC/rigged-grace.glb 
 # MARCUS (1.72 m; his rig came back with 52 joints and no fingers, MENDED here to 26 at no credits: people/rigmend-marcus.json,
 # on his near body and his full body alike). The library's stand, listening, chat (Jun's raw library file: calmed here) and
 # talk (Mr Koh's), Ravi's kneel by a chair, the seated hermit's chair sit and seated talk, his rig's own walk, and mknock.
-go marcus && ( [ -f $SRC/body-marcus-40000m.glb ] || node tools/rigmend.mjs $SRC/body-marcus-40000.glb $SRC/body-marcus-40000m.glb masters/v29.0/people/rigmend-marcus.json > $SRC/marcus-rigmend-near.log 2>&1
+# SECOND THROW (R5/R6, 27 Nov 2026): his new rig came back with every finger (72 joints, six empty stray bones on the
+# forearms holding no skin): no mend; his near body and full body are Meshy's own, and mknock is laid on this rig at Meshy
+# (takes-marcus-mknock.glb). FIRSTTHROW=1 runs the first throw's mended way below (its files are src/people/first/first-*).
+go marcus && [ -z "$FIRSTTHROW" ] && ( CALM="Idle_3=7,0.6 Stand_and_Chat=7 Listening_Gesture=7 Walking=7,0.5,0.7" one marcus $SRC/body-marcus-40000.glb $SRC/rigged-marcus.glb \
+  "$SRC/takes-marcus-ret.glb:Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Hands_Open,kneelhold,Chair_Sit_Idle_M,Sitting_Answering_Questions,Walking" \
+  $SRC/takes-marcus-mknock.glb:mknock )
+go marcus && [ -n "$FIRSTTHROW" ] && ( [ -f $SRC/body-marcus-40000m.glb ] || node tools/rigmend.mjs $SRC/body-marcus-40000.glb $SRC/body-marcus-40000m.glb masters/v29.0/people/rigmend-marcus.json > $SRC/marcus-rigmend-near.log 2>&1
   CALM="Idle_3=7,0.6 Stand_and_Chat=7 Listening_Gesture=7 Walking=7,0.5,0.7" one marcus $SRC/body-marcus-40000m.glb $SRC/mended-marcus.glb \
   "$SRC/takes-marcus-ret.glb:Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Hands_Open,kneelhold,Chair_Sit_Idle_M,Sitting_Answering_Questions,Walking" \
   $SRC/takes-marcus-knock.glb:mknock )
