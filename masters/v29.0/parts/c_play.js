@@ -456,6 +456,35 @@
         (SOFAREST.rep = SOFAREST.rep || {})[name] = { foot: +foot.toFixed(3), top: +top.toFixed(3), moved: +dy.toFixed(3) };
       }
     }
+    /* LEGS AGAINST WHAT THEY SIT ON, MEASURED (Chad's R16, 27 Nov: "Look at how the female legs in sinking into the sofa").
+       Every point of a seated body's skin carried mostly by a thigh or a shin (UpLeg, Leg) is held against the top of the seat
+       under it, read by a ray straight down onto the seat's own mesh (cached on a 1 cm grid): how far under that top it lies.
+       A probe reads it (stage.dbg.legScan('grace', 'gsofa')): per leg, the deepest, where, and how many points are deeper than
+       1 cm, at the front roll (the last 8 cm of the seat before its front face) and over the rest */
+    function legScan(who, thing) {
+      const P = cast[who], T = things[thing]; if (!P || !P.ready || !T || !T.userData.model) return null;
+      P.group.updateWorldMatrix(true, true); T.updateWorldMatrix(true, true);
+      const rc = new THREE.Raycaster(), o = new THREE.Vector3(), dn = new THREE.Vector3(0, -1, 0), v = new THREE.Vector3(), memo = new Map();
+      const top = (x, z) => { const k = Math.round(x * 100) + ',' + Math.round(z * 100); if (memo.has(k)) return memo.get(k);
+        o.set(Math.round(x * 100) / 100, 2.5, Math.round(z * 100) / 100); rc.set(o, dn); const h = rc.intersectObject(T.userData.model, true)[0];
+        const y = h ? h.point.y : null; memo.set(k, y); return y; };
+      let front = -Infinity; { const bb = new THREE.Box3().setFromObject(T.userData.model); front = bb.max.z; }
+      const out = { front: +front.toFixed(3) };
+      for (const lv of P.lv) { if (!lv) continue;
+        for (const q of [].concat(lv)) { if (!q || !q.isSkinnedMesh || !q.visible) continue;
+          const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw) continue;
+          const role = q.skeleton.bones.map(b => { const m = /(Left|Right)(UpLeg|Leg)$/.exec(b.name); return m ? m[1] : ''; });
+          for (let i = 0; i < pos.count; i++) {
+            let side = '', w = 0; for (let c = 0; c < 4; c++) { const r = role[si.getComponent(i, c)]; if (r && sw.getComponent(i, c) > w) { w = sw.getComponent(i, c); side = r; } }
+            if (!side || w < 0.5) continue;
+            q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld);
+            const y0 = top(v.x, v.z); if (y0 == null || y0 < 0.3) continue;
+            const d = y0 - v.y; if (d <= 0) continue;
+            const K = (out[side] = out[side] || { n: 0, deep: 0, at: null, over1: 0, roll1: 0, rollDeep: 0 }); K.n++;
+            if (d > K.deep) { K.deep = +d.toFixed(3); K.at = [+v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)]; }
+            if (d > 0.01) { K.over1++; if (v.z > front - 0.08) { K.roll1++; K.rollDeep = Math.max(K.rollDeep, +d.toFixed(3)); } } } } }
+      return out;
+    }
     /* the red line (and the knot) in Spirit Vision: sixteen short lengths of one curve, each its own glow, so a pulse can run
        along it toward the door */
     const LINE_N = 16;

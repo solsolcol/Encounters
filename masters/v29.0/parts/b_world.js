@@ -867,12 +867,20 @@
     const matteOf = (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && 'roughness' in mt) { mt.roughness = Math.max(mt.roughness, 0.6); mt.metalness = Math.min(mt.metalness, 0.1); } });
 
     /* ---------------------------------------------- HER FRONT ROOM, set for the evening (the plan's 5.3 and 8.1) */
+    /* HER SOFA DRAWN LOWER (PLAY, 27 Nov; Chad's R16: "Look at how the female legs in sinking into the sofa"). MEASURED on her
+       (tools/probes/e5c1lab.mjs, stage.dbg.legScan): her thigh 0.355 m and her shin 0.335 from the joint, her ankle 0.11 over
+       the floor with her foot flat, so her knee can stand at most 0.445 m up with her feet on the floor; the sofa's seat is
+       0.51 m up and its rounded front 0.45 to 0.49, so whatever was laid, the underside of her thighs went into it (1,549
+       points of her right leg and 810 of her left deeper than 1 cm, 0.20 and 0.25 m at the deepest, 321 and 228 at the front
+       roll). A real cushion gives under her; this one cannot. So the sofa (`w51gsofa`, its file untouched) is drawn 0.78 of
+       its height: the seat 0.40 m up, its front roll about 0.37, a low sofa, as many are; its footprint is as it was */
+    const SOFA_LOW = 0.78;
     const HER = {
       table:  { x: 0.5, z: 1.15, w: 1.0, d: 0.54, h: 0.40 },          // the coffee table under the white cloth
       pho:    { x: 0.5, z: 1.87, ry: Math.PI },                       // Grandmaster Pho on his cushion, facing the door across the room
       him:    { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, ry: WORLD_AT.kneel.ry },   // he kneels at Pho's right, by her windows
-      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.51, ry: 0 },   // (seat: its cushions' top, measured)   // her two-seat sofa, its back to the door
-      grace:  { x: 0.42, z: -0.32, ry: 0 },                           // where she sits on it (her right-hand seat, facing him and Pho)
+      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.51 * SOFA_LOW, ry: 0 },   // (seat: its cushions' top, measured 0.51 at the file's height; drawn at SOFA_LOW of it)   // her two-seat sofa, its back to the door
+      grace:  { x: 0.42, z: -0.25, ry: 0 },   // (PLAY, 27 Nov: from z -0.32, with the sofa made lower, R16: her knees past its front face)                           // where she sits on it (her right-hand seat, facing him and Pho)
       rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.42 },   // (seat: its cushion's top, measured)           // the rattan chair by the door, turned to the table: Marcus
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
       shelf:  { x: -1.6, z: 2.78, ry: Math.PI },                      // the bookshelf against the +z wall
@@ -901,7 +909,7 @@
     {
       const T = HER.table;
       place('ctable', 'w51ctable', T.x, 0, T.z, 0, { solid: [T.w, T.d, 0.6] });
-      place('gsofa', 'w51gsofa', HER.sofa.x, 0, HER.sofa.z, HER.sofa.ry, { solid: [HER.sofa.w, HER.sofa.d, 0.9] });
+      place('gsofa', 'w51gsofa', HER.sofa.x, 0, HER.sofa.z, HER.sofa.ry, { solid: [HER.sofa.w, HER.sofa.d, 0.9], done: (m) => { m.scale.y *= SOFA_LOW; } });
       place('rattan', 'w51rattan', HER.rattan.x, 0, HER.rattan.z, HER.rattan.ry, { solid: [0.66, 0.66, 0.9] });
       place('shelf', 'w51shelf', HER.shelf.x, 0, HER.shelf.z, HER.shelf.ry, { solid: [0.82, 0.34, 1.4],
         done: (m, g) => { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m); if (things.herLamp) things.herLamp.position.y = Math.max(0.5, bb.max.y - g.position.y); } });
