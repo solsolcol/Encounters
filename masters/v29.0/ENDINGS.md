@@ -155,6 +155,12 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     feetscan's 3.2 and 2.2 cm under stood the same with him lifted or not, so it does not read him against this floor); at
     the tie the held wrist at (300.73, 0.85, -0.61), and his hands' palms 7 cm to its sides over the back of the held hand,
     their fingers straight (so they are turned in to face across it, 5 cm to its sides).
+  - run 10 (read in the game, every vertex): his teacher standing 2 cm up, his lowest skin 0.03 cm under the floor; seated 1
+    cm up and 12 cm further back, his lowest skin 2.35 cm under it (a few points: every third point read 1.2 cm over it at 2
+    cm up, so the robe's bulk lies on the floor and a few of its points below), the thread rising before his knees clear of
+    his robe (photographed from his side); at the tie his right hand's twelve finger joints found and its first joint bent 38
+    degrees by the films' own curl; his left hand has no finger bones (his standing file carries them in the right hand only:
+    build.py's `p5pho`), so its fingers lie straight along the wrist's side.
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
