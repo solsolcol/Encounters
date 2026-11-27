@@ -224,6 +224,10 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     (17.6 s on a desktop: the room turned and the city still dark beyond the wave; 19.6 s: all of it turned, no edge across
     the blocks). Found and fixed from it: at 8.1 s his hand under the tap and his hands to his mouth shared 0.3 s and the
     reach dropped to nothing in one frame (its share now ends before the mouth's begins).
+    D on a phone (run t16): his sight out over the city at 7.2 s has turned every block, its sky still dark until the wave
+    passes 190 m (the chapter's sky), all of it turned at 8.5 s: no edge across the blocks. The burn's flash at 91.2 and
+    91.4 s is the soft round light at his wrist, the welt left under it; found and fixed from it: the haze ring, warmed for
+    the flash, still stood round the light as a pale hard-edged ring over his hand (now the band's alone).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
