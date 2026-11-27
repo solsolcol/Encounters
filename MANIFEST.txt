@@ -1798,6 +1798,16 @@ c6181ba406e0157730bfe4a15ad595ded24421c3e189d7d8de871462a1a4c17f  masters/v29.0/
 f738653dd4914ad63437aee4ba821aa6b2c24d46b7d75bcf9b035b9cff50a061  masters/v29.0/src/people/first/first-rigged-grace.glb
 af4c19ba5818d1df4a6af483ce68bebc0f035d29668524a762011127b5b35b5c  masters/v29.0/src/people/first/first-rigged-marcus.fbx
 28434ba324e902ec3482ef15c0faab728e7cea5d9b3d5542194bfdc1717f9f20  masters/v29.0/src/people/first/first-rigged-marcus.glb
+00bdc2059ac2756b52b3e2a1e5e526c17c78d26687010e5dd01f4c8d21fb1d45  masters/v29.0/src/people/first/first-take-grace-gcry.fbx
+1b4b3b4831ad135a1642052349da81c4a1898b218d134728a7eeb17237c76f8c  masters/v29.0/src/people/first/first-take-grace-gcry.glb
+4bb87ec94360402a5d831bf90cb92ac6eabe36c4a8da7b067b34f82c3f562f38  masters/v29.0/src/people/first/first-take-grace-gsofa.fbx
+8f4ea0b8e75cb0ae707ecf42bec149a8c5f8ba225a789784942b99bae0d64909  masters/v29.0/src/people/first/first-take-grace-gsofa.glb
+ee9aff0c89d4cb0ed014e646ddb7cd4c85a8bba5b3b17df7d64145109e9d53a4  masters/v29.0/src/people/first/first-take-grace-running.fbx
+227ad4d6fa2800da3d124b206b44c8e724116de5d95319aa3db5636ff5bb0089  masters/v29.0/src/people/first/first-take-grace-running.glb
+b64d6f344449b1ae9da8ae0f82246e94b133c38199b2edb1ead5f3dfafdd2d17  masters/v29.0/src/people/first/first-take-grace-running_armature.glb
+91d5f9d65c691d1b6b4c94465c8c7cf8a8df8f91da9e629aedeb7b562db0ec95  masters/v29.0/src/people/first/first-take-grace-walking.fbx
+502d467d1345afa4ec70acee9c317d30833161096e5985fd12dc1693e762896b  masters/v29.0/src/people/first/first-take-grace-walking.glb
+f1eada826167559940d4971f7a4cf76a218cb011dfc31b0c6b98748acab53725  masters/v29.0/src/people/first/first-take-grace-walking_armature.glb
 7047a445b6d941b41ac539b2f7dc5d0bc0cb78a0a07e5d08fed40ed89a069d86  masters/v29.0/src/people/jobs.json
 d878024fa7adc0e5abd2b0f4cc5bf1762a9b990fb8aa61f94a4d3ebd35efb395  masters/v29.0/src/people/motion-gcry.fbx
 92e1d45fb82d1fb6a0c5a3c193fd755a751a022a391a9c763838248300ef5b12  masters/v29.0/src/people/motion-gsofa.fbx
