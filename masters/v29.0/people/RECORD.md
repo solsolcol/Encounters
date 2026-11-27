@@ -191,3 +191,73 @@ under her left nostril (about the same as the first); the lips dark red-brown an
 (about the same); a colour seam under the jaw. HER HANDS cannot bend: that is the stop. What it costs to go on, for Chad:
 another rig is 5 credits and has come back fingerless twice from this model; another body is about 55 (and may rig the
 same); or a skeleton for her made here (the B and D of §3, which R5 turned away from). The first throw's Grace stays live.
+
+## 9 · The third throw of Marcus (R7, 27 Nov 2026; helper CAST-3)
+Chad, R7: "The glasses on the guy is too problematic, just generate him without glasses". His yes to ONE more generation
+of Marcus: made again at Meshy, once, without glasses, by §8's recipe. The second throw is KEPT, never deleted: its sources
+(moved, the same bytes) and both levels of its asset as they shipped (copied, not linked) are src/people/second/second-*, its
+ledger row is `marcus_second` in src/people/jobs.json. The third throw's photographs are scratch e5c1/cast3/marcus/ (the same
+camera jobs as §8's, the face and hand shots aimed at this body's own head and hands, which stand 5 cm higher in the bind
+pose: the A pose came back more open). Pictures of him are never committed.
+
+### 9.1 · The reference (people/PROMPTS3.txt, word for word)
+Higgsfield 14.16 before; priced 3.5 by estimate_image_cost (gpt_image_2_6, xhigh, 2k, 2:3, ONE image reference: the second
+reference, src/people/refs/marcus-a2-2k.png, uploaded as media 31fceca2-fa91-4f31-a1bb-e9aae38709cd, asking for the same man
+with no glasses); after 10.66.
+| Higgsfield job | file | checked full size (the face, each hand and the open neck enlarged from the 2k picture) |
+|---|---|---|
+| 5f29da16-5077-425e-baef-af197d8a9ed0 | src/people/refs/marcus-a3-2k.png (1360 x 2048) | NO GLASSES: no frames, no lenses, no marks on the nose or by the ears; the same man (face, short black hair, grey shirt with the sleeves rolled, navy trousers, black belt, black lace-ups); eyes level into the lens, clearly seen; brows drawn a little (worried), mouth closed; both palms to the lens, five fingers each, every gap open; arms straight, white between arms and body; the open neck clean. PASS, first picture (no second spent) |
+
+### 9.2 · The Meshy jobs, the balance read before each
+| job | id | balance before | cost | came back |
+|---|---|---|---|---|
+| image-to-3D (latest, 4k geometry, meshy-7 8k PBR, a-pose, remesh 300k, pre-remesh kept: §8.2's settings exactly) | 01a21c08-6b2e-7257-b56a-50e81896ece9 | 695 | 40 | 46.6 MB model, 9.1 MB untouched surface; thumbnails: no glasses, fingers spread |
+| rig, fingers asked, 1.72 m | 01a21c0c-b706-7709-9104-fdaf57e51a6f | 655 | 5 | **70 joints, EVERY FINGER** (thumb, index, middle, ring, little, each hand, and their end bones). Four stray bones under the head (Bone_030 > Bone_029, Bone_032 > Bone_031, children of Head): the most weight on NO point (a share on 15,351 points, which ride the head with them: no take moves them, so they are harmless). No re-rig needed |
+| remesh 40,000 | 01a21c0f-1b28-779d-8707-d64a37294b2d | 650 | 5 | laid on his rig by riglod: 41,486 triangles on 70 joints (fit 0.12 mm average, 4.2 mm worst) |
+| mknock laid on the new rig (§2's clip, not made again) | 01a21c0f-22ec-7656-bb08-17fe06c5c070 | 650 | 3 | src/people/takes-marcus-mknock.glb |
+CAST-3's spend: Meshy **53** (balance read after: **642**); Higgsfield **3.5** (after: 10.66). Nothing failed; nothing made twice.
+
+### 9.3 · Made end to end (assets/p51marcus.glb, assets/p51marcush.glb; the keys unchanged)
+- His library takes retargeted onto the new rig (people/retakes.sh, unchanged): 58 bones each, the fingers included (the
+  four stray head bones and the four `mixamorig:*4` finger ends have no source and stay at rest).
+- The prep (people/people.sh, the second throw's line, unchanged): near **41,471** triangles with 9 takes, full **313,333**,
+  **70 joints**, sheets 2048, height **1.72 m**. Texels a metre, face / head / hands / body: near 2,286 / 1,726 / 1,196 / 851,
+  full 2,329 / 1,168 / 1,285 / 901 (the second: 2,288 / 1,717 / 1,163 / 844 and 2,279 / 1,167 / 1,277 / 892).
+- Headers: both glTF 2, the length field equal to the file's size (2,163,688 and 3,993,312 bytes).
+- MY SLIP, said plainly: the links were checked before the prep (one each), but prepmonk writes IN PLACE, and a working build
+  (another helper's, 08:21) hard-linked the full body while the prep was still on it: that build's dist/ and its snapshot
+  scratch e5c1/play/snap hold `p51marcush.2784812bf2.glb` (the second throw's md5 in its name) with the THIRD throw's bytes in
+  it (written 08:21:57). Nothing live: a working build only, and its near body was already the third throw's, so the pair in
+  it is consistent; only that file's name and bytes disagree until its next build. Both assets' links were broken after
+  (a copy renamed over the name), and people.sh now says to break them first. The class: prep into a new file and rename.
+
+### 9.4 · Measured
+- fingerskin (near and full, both hands): each finger's points carried by its own bones, the tips by the end bone; the
+  bleed onto neighbours the second throw showed (§8.4) is gone, because the fingers now stand apart in the bind pose. The
+  near body's little fingers are thin (few points: 25 / 3 / 5 / 16 on the left), still carried by their own bones.
+- takefk (24 samples, against the second throw): head travel Idle_3 0.49 (0.48), Listening 1.24 (1.23), Stand_and_Chat 0.79
+  (0.74), Talk 0.40 (0.39), kneelhold 0.25 (0.25), Chair_Sit 1.10 (1.13), Sitting_Answering 0.74 (0.76), Walking 0.33 (0.32),
+  mknock 0.33 (0.33). Seated hips at the first moment 0.58 (0.57) in Chair_Sit_Idle_M, 0.69 (0.68) in Sitting_Answering;
+  the feet 3 to 4 cm further back under him; the head 3 to 4 cm further back over the hips. The knock's right hand peaks at
+  1.57 (1.62), 0.66 to 1.98 s.
+- Not measured here (they read a chapter, not a file: the coordinator's CP9.3): jointscan, feetscan, headturn, clipscan.
+
+### 9.5 · What is wrong with the third Marcus, seen at full size, point by point against the second (§8.4)
+| point | second throw | third throw | better / worse |
+|---|---|---|---|
+| glasses | dark frames, the lenses filled pale beige | NONE: no frames, no lenses, no marks on the nose or by the ears | the fault is GONE |
+| his eyes | level, behind the beige lenses | level, brown, clearly seen; the brows raised and drawn (reads worried, a little older) | BETTER |
+| cheeks and mouth | relaxed, lips a little full | relaxed, mouth closed, lips pink; on the NEAR body a colour seam runs down the middle of the chin and a faint one down his right cheek | about the same; the chin seam new (near body only) |
+| hands and fingers | fingers edge to edge in the A pose, a curl may drag a neighbour | five fingers each, spread, every gap open, smooth (no knuckle creases); they curl cleanly in the kneel and the knock's fist | BETTER |
+| the shirt's open neck | a ragged pale grey edge inside the collar | a little pale ragged edge inside the left collar point (torso, close); otherwise clean | slightly better |
+| the hair's front | a comb of separate strips with tan tips | the fringe a thick ragged roll over his right brow (a few short dark teeth); the hair larger than the reference, a quiff that from the side stands off the forehead with a row of dark slits along the parting; a fine pale dotted pattern over the hair at three-quarter and side; a small spiky tuft at the crown's right; a pink-brown patch behind the right ear | different faults: no tan comb, but the volume, the slits and the tuft are new |
+| nose | raw pink edge at both nostrils | a raw red mark on his right nostril's rim, the left plain | about the same |
+| belt buckle | whitish, ragged rim | whitish-silver, ragged rim | the same |
+| shirt's colour | white under the lights (asked light grey) | white under the lights | the same |
+| cuffs | the rolled cuff's open rim shows as a pale ring when a wrist bends | the same (kneelhold 0.7) | the same |
+| in the takes | knock above the head; talk arms out; Chair_Sit fingers into the thighs; Listening hands into the trouser fronts | the same clips, the same faults: the knock above his head with the head tipped (right hand 1.57); the talk's arms out; Chair_Sit's fingers drape over the knee fronts (side: tips show under the knee); Listening's left hand into the trouser front; the shoulders peak boxy when they rise (Listening, Sitting_Answering) | the same takes |
+| at 2.2 m on a phone's frame | reads as made, glasses black | reads as made, no glasses; only the crown's tuft can be seen | BETTER |
+Unsure of: whether the chin seam shows at the distances the films use (it is plain at 1.4 m with a 16 degree lens, not at
+2.2 m); whether the dark slits along the parting show from the player's eye height (they are plain from his side at head height).
+The price of another (NOT asked; Chad's to pick): a body about 53 Meshy (model 40, rig 5, remesh 5, the knock 3) and a
+reference 3.5 Higgsfield; a clip 13 Meshy.
