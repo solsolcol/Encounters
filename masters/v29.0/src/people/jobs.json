@@ -142,6 +142,29 @@
    }
   }
  },
+ "marcus": {
+  "image": "masters/v29.0/src/people/refs/marcus-a3-2k.png",
+  "image_to_3d": "01a21c08-6b2e-7257-b56a-50e81896ece9",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
  "marcus_first": {
   "NOTE": "the FIRST throw (27 Nov 2026), set aside when Marcus was made again at Meshy at Chad's R5/R6; its files are src/people/first/first-*",
   "credits": 40,

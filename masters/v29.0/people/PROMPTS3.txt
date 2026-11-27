@@ -1,0 +1,25 @@
+v29.0 · Marcus's THIRD THROW reference picture (helper CAST-3, 27 Nov 2026; Chad's R7, "The glasses on the guy is too
+problematic, just generate him without glasses"). Higgsfield, model gpt_image_2_6, quality xhigh, resolution 2k, aspect
+2:3, ONE image reference: the second throw's own reference (src/people/refs/marcus-a2-2k.png, uploaded as Higgsfield media
+31fceca2-fa91-4f31-a1bb-e9aae38709cd), so the same man comes back with the glasses taken off. Marcus is MADE UP. Pictures on
+the working machine only (src/people/refs/marcus-a3-2k.png).
+
+marcus  CHANGED from PROMPTS2.txt: the glasses taken off (no frames, no lenses, no marks), the eyes asked clearly seen; the
+        fingers asked spread with the gaps open (the second throw's model laid them edge to edge); everything else the same
+        man, in the same clothes and pose, as the reference picture.
+  The same man as in the reference photograph, exactly: the same face, the same short neat black hair, the same skin, the
+  same build and height, the same clothes and shoes, the same A-pose, but WITHOUT GLASSES: he wears no glasses at all, no
+  frames, no lenses, no nose pads, no marks on the bridge of the nose and no marks beside the eyes or by the ears. His
+  eyes are fully visible and clearly seen, looking straight into the camera, head level, relaxed cheeks and a relaxed
+  closed mouth. Photorealistic full-body studio photograph of a Singaporean Chinese man of about thirty-two, of average
+  build and height, a kind, earnest face, clean-shaven, standing upright in an A-pose: both arms perfectly straight at the
+  elbows and held about 35 degrees away from the body, both hands open with the palms turned to face the camera and all
+  five fingers of each hand spread wide apart, a clear gap of white background visible between every two fingers, feet
+  shoulder-width apart, facing the camera straight on, in plain black leather office shoes. He wears a plain light grey
+  long-sleeved cotton office shirt with a plain collar, the top button open, no tie, the sleeves rolled up once at the
+  wrists, tucked into plain dark navy straight office trousers with a plain black belt with a plain dark buckle. There is
+  clear empty white space between each arm and his sides; nothing hangs between an arm and the body. His hands are empty.
+  The whole figure is in frame from the top of the head to the toes with a clear margin all round. Even soft studio
+  lighting from the front, no cast shadow, pure white seamless background. Sharp focus, a calm, slightly worried neutral
+  expression, natural skin texture, realistic cloth folds. No glasses, no wristwatch, no jewellery, no bag, no lanyard,
+  no text, no logo, no watermark, no props.
