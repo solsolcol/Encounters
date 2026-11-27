@@ -1,0 +1,32 @@
+[
+ {
+  "name": "clock",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/clock.png"
+ },
+ {
+  "name": "aircon",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/aircon.png"
+ },
+ {
+  "name": "phobag",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/phobag.png"
+ },
+ {
+  "name": "incense",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/incense.png"
+ },
+ {
+  "name": "kettle",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/kettle.png"
+ },
+ {
+  "name": "jasmine",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/jasmine.png"
+ }
+]

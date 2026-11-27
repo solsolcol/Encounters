@@ -23,8 +23,9 @@ if (keep.length) { g.setIndices(d.createAccessor().setType('SCALAR').setArray(ne
   p.setIndices(d.createAccessor().setType('SCALAR').setArray(new Uint32Array(keep)).setBuffer(p.getIndices().getBuffer())); }
 const t = TINT.split(',').map(Number);
 const gm = d.createMaterial('glass').setBaseColorFactor([t[0], t[1], t[2], Number(OP)]).setAlphaMode('BLEND')
-  .setMetallicFactor(0).setRoughnessFactor(0.06).setDoubleSided(false);
-if (src.getNormalTexture()) { gm.setNormalTexture(src.getNormalTexture()); gm.setNormalScale(src.getNormalScale()); }
+  .setMetallicFactor(0).setRoughnessFactor(0.06).setDoubleSided(!!process.env.DS);   // DS=1: a thin skin drawn from both sides (the tumbler)
+if (src.getNormalTexture() && !process.env.NONORMAL) {   // NONORMAL=1: the glass drawn smooth (the tumbler's normal sheet carries the torn inner sheets' patches)
+  gm.setNormalTexture(src.getNormalTexture()); gm.setNormalScale(src.getNormalScale()); }
 g.setMaterial(gm); if (g !== p) mesh.addPrimitive(g);
 await d.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 const tmp = OUT + '.tmp.glb'; await io.write(tmp, d); fs.renameSync(tmp, OUT);

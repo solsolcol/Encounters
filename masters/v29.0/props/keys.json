@@ -22,5 +22,29 @@
   "key": "w51threadreel",
   "file": "assets/w51threadreel.glb",
   "note": "the spool of white thread: chapter 5's w5threadreel with its loose end laid along the ground (mend/threadmend.mjs, no credits; the old file untouched)"
+ },
+ {
+  "group": "things",
+  "key": "w51lighter",
+  "file": "assets/w51lighter.glb",
+  "note": "a plain red disposable lighter, 8.1 cm (the ritual set: one Meshy job cut apart by connected components, its own piece)"
+ },
+ {
+  "group": "things",
+  "key": "w51jug",
+  "file": "assets/w51jug.glb",
+  "note": "a clear glass water jug with a handle, 20 cm tall (the ritual set's piece; drawn as clear glass: its own material named glass, alpha-blended; the game draws glass with depthWrite off). ORDER 1 of the room, pressed"
+ },
+ {
+  "group": "things",
+  "key": "w51plate",
+  "file": "assets/w51plate.glb",
+  "note": "a small round white porcelain plate, 16 cm across (the ritual set's piece; Meshy's oval levelled and made round at no credits, mend/plate.mjs). The keepsake is laid on it"
+ },
+ {
+  "group": "things",
+  "key": "w51glass",
+  "file": "assets/w51glass.glb",
+  "note": "a plain drinking glass, 9.5 cm (the ritual set's piece, its outer shell; drawn as clear glass, material named glass, depthWrite off in the game). FAULT: torn inner sheets show through as grey patches (RECORD.md)"
  }
 ]
