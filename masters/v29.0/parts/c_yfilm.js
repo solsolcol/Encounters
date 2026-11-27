@@ -236,6 +236,15 @@
       if (o.hang != null) { if (g.parent !== world) world.attach(g); P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, sd, _f1A); if (!pm) return false;
         g.position.set(pm.x, pm.y - o.hang, pm.z); g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0); g.visible = true; return true; }
       if (g.parent !== hb) { hb.add(g); }
+      /* IN THE PALM (`o.palm`: { along, off } in metres; 27 Nov, photographed: the phones laid by a guessed turn stood out
+         across the hand, their faces outward, like a book held by its spine): a flat thing's long side (its own x) along the
+         fingers' line, its face (its own y) on the palm's normal, both MEASURED on the body's own hand (armsOf: v25.3), its
+         middle `along` past the palm's middle and `off` out of it */
+      if (o.palm) { const A = typeof armsOf === 'function' ? armsOf(P) : null, a = A && A[sd === 'Left' ? 'L' : 'R'];
+        if (a) { const sc = 1 / Math.max(1e-6, hb.getWorldScale(_f1A).x), c = new THREE.Vector3().crossVectors(a.fL, a.nL).normalize();
+          g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(a.fL, a.nL, c));
+          g.position.copy(a.fL).multiplyScalar(a.palm + (o.palm.along || 0) * sc).addScaledVector(a.nL, (o.palm.off != null ? o.palm.off : 0.02) * sc);
+          g.scale.setScalar(sc); g.visible = true; return true; } }
       const p = o.pos || [0, 0.06, 0.03], r = o.rot || [0, 0, 0];
       g.position.set(p[0], p[1], p[2]); g.rotation.set(r[0], r[1], r[2]); g.scale.setScalar(1 / Math.max(1e-6, hb.getWorldScale(_f1A).x)); g.visible = true; return true;
     }
@@ -298,18 +307,23 @@
     function climbPose(P, s, o = {}) {
       if (!P || !P.ready) return;
       const L = climbLegs(P); climbBack(P);
-      const ry = -Math.PI / 2, zc = (o.z != null ? o.z : CLIMB1.z);
+      const ry = o.ry != null ? o.ry : -Math.PI / 2, zc = (o.z != null ? o.z : CLIMB1.z);
       /* (the walk's time: one step a tread, two a cycle, so that the foot the step stands on is at its own middle of stance
          halfway through the step; the left foot stands on the odd treads) */
       const d = L ? L.d : 1.03, ph = L ? L.mid.Left - 0.75 * d : 0;
       const ss = Math.max(0, Math.min(CLIMB1.n, s));
+      /* (THE CLOSING STEP, s from 19 to 20: the foot behind brought up beside the other on the landing's tread and the body
+         over both, so a man who has reached the top stands on it; photographed 27 Nov, Marcus stood 2.6 s at the top in the
+         middle of a stride, one foot a tread down and an arm swung back. `o.settle` (0..1) then eases the walk into his rest,
+         `o.rest` [take, moment]) */
+      const cl = s > CLIMB1.n ? Math.min(1, s - CLIMB1.n) : 0;
       /* (the body over the treads it stands between: its group a third of a tread behind the foot that stands, on the line of
          the nosings, so the hips are never further from either foot than the leg reaches) */
-      const xb = s <= 0 ? CLIMB1.x1 + 0.12 : Math.min(CLIMB1.x1 + 0.12, treadX(ss - 0.15));
-      const yb = GY + Math.max(0, Math.min(CLIMB1.n, ss - 0.35)) * CLIMB1.rise;
+      const xb = s <= 0 ? CLIMB1.x1 + 0.12 : Math.min(CLIMB1.x1 + 0.12, treadX(ss - 0.15 * (1 - cl)));
+      const yb = GY + Math.max(0, Math.min(CLIMB1.n, ss - 0.35 * (1 - cl))) * CLIMB1.rise;
       put(P, xb, zc, ry, s <= 0 ? GY : yb);
-      const moving = o.moving !== false;
-      pose(P, 'Walking', ph + ss * d / 2, true);
+      const moving = o.moving !== false, wph = ph + Math.min(s, CLIMB1.n + 1) * d / 2;
+      if (o.settle > 0.001 && o.rest) pose(P, 'Walking', wph, true, o.rest[0], Math.min(1, o.settle), o.rest[1]); else pose(P, 'Walking', wph, true);
       if (!L || !moving || s <= 0.02) return;
       P.group.updateWorldMatrix(true, true);
       const n = Math.floor(ss), u = ss - n;
@@ -320,11 +334,12 @@
         const odd = S0 === 'Left', stands = ((n % 2) === 1) === odd;          // stands on tread n through step n -> n+1
         let tq, lift = 0;
         if (stands) tq = n;
+        else if (cl > 0) { tq = lp(n - 1, n, smo(cl)); lift = Math.sin(Math.PI * cl) * 0.09; }
         else { const from = n - 1, to = n + 1, w = smo(u); tq = lp(Math.max(0, from), Math.min(CLIMB1.n, to), w); lift = Math.sin(Math.PI * u) * 0.11; }
         const tqc = Math.max(0, Math.min(CLIMB1.n, tq));
         /* (the foot's place across the flight is the walk's own, in the body's frame; along it and up, the tread's) */
         r.hand.getWorldPosition(_cl.a); P.group.worldToLocal(_cl.a); const side = _cl.a.x;
-        const tx = tqc <= 0 ? CLIMB1.x1 + 0.08 : treadX(tqc), ty = (stands ? treadY(Math.round(tqc)) : Math.max(treadY(Math.floor(tqc + 1e-6)), lp(treadY(Math.max(0, n - 1)), treadY(Math.min(CLIMB1.n, n + 1)), smo(u)))) + L.ankle + lift;
+        const tx = tqc <= 0 ? CLIMB1.x1 + 0.08 : treadX(tqc), ty = (stands ? treadY(Math.round(tqc)) : Math.max(treadY(Math.floor(tqc + 1e-6)), lp(treadY(Math.max(0, n - 1)), treadY(Math.min(CLIMB1.n, n + 1)), smo(cl > 0 ? cl : u)))) + L.ankle + lift;
         _cl.b.set(side, 0, 0).applyQuaternion(P.group.quaternion);
         const target = new THREE.Vector3(tx + _cl.b.x, ty, zc + _cl.b.z);
         /* (the foot keeps its own turn in the world as the walk had it) */
@@ -350,9 +365,9 @@
     const STAIR1 = { mk: { s0: 7.0, z: -3.9 }, pho: { s0: 4.0, cad: 0.6, z: -3.55 }, eye: { s0: -2.5, cad: 0.6, wait: 0.6, z: -3.72 } };
     /* how many treads a climber has climbed at film time t: from `t0` at `cad` seconds a tread, starting with `s0` climbed,
        standing still through [p0, p1] (Marcus stops to look back down; those behind him wait), never past the landing */
-    function climbAt(t, t0, cad, s0, p0, p1) {
+    function climbAt(t, t0, cad, s0, p0, p1, top) {
       let tw = Math.max(0, t - t0); if (p1 > p0 && t > p0) tw -= Math.min(t, p1) - Math.max(p0, t0) > 0 ? Math.min(t, p1) - Math.max(p0, t0) : 0;
-      return Math.min(CLIMB1.n, s0 + Math.max(0, tw) / cad);
+      return Math.min(top != null ? top : CLIMB1.n, s0 + Math.max(0, tw) / cad);
     }
 
     /* ================================================================ THE PEOPLE ONLY THE FILMS SHOW
@@ -502,7 +517,7 @@
          side by the wall, clear of the plant; she opens the door and stands on its threshold, before its leaf, then steps
          back into her room to let them in; the lens at the stair's top looking through the lobby's opening. Nobody walks in
          under this shot (the lobby is 1.2 by 1.25 m, her slippers in its middle): the cut inside finds them in) */
-      land:    { eye: [-3.62, EYE, -3.38], marcus: { x: -3.15, z: -2.3, ry: Math.PI / 2 }, pho: { x: -3.6, z: -1.95 }, grace: { x: -2.8, z: -2.3, ry: -Math.PI / 2 } },
+      land:    { eye: [-3.62, EYE, -3.38], marcus: { x: -3.28, z: -2.3, ry: Math.PI / 2 }, pho: { x: -3.6, z: -1.95 }, grace: { x: -2.8, z: -2.3, ry: -Math.PI / 2 } },
       /* inside, along her room's north side behind his teacher's back (half a metre clear of it: the first path passed a
          tenth of a metre from it, the lens over his head), his teacher at the left, to his place by the windows */
       inEye:   [[-1.55, 2.0], [-0.3, 2.55], [1.2, 2.42], [1.45, 1.9]],
@@ -599,7 +614,7 @@
         const st = OPEN1.marcus0;
         if (t < T.mk1 - 1.4) { put(P, st.x, st.z, f1Turn(t, T.taxi - 0.2, T.taxi + 1.2, st.ry, faceTo(st.x, st.z, 4.4, 2.0)), GY); pose(P, MK_REST1[0], MK_REST1[1] + t * MK_REST1[2], true);
           f1Gaze(P, t, [[0, [3.6, GY + 1.5, -1.4]], [3.2, [2.0, GY + 0.95, -2.55], 0.8], [9.0, [4.0, GY + 1.4, 4.0], 0.9], [T.taxi - 0.1, () => [TAXI1.x - 0.6, GY + 1.0, taxiZ1(t, T)], 0.7]], 0.85, 0.75, 0.05);
-          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+          f1Carry(P, 'Right', PROPS1.mkPhone, { palm: { along: 0.02, off: 0.02 } });
         } else if (t < T.turn) {
           /* (to meet them, under the five-foot way, turned to his teacher and a little toward him, so his face is seen) */
           const mRy = faceTo(OPEN1.meet.x, OPEN1.meet.z, OPEN1.phoAt.x + 0.3, OPEN1.phoAt.z + 0.1);
@@ -610,7 +625,7 @@
              windows are over the covered way, so from under it a glance up is toward her rooms, never at the glass), then to
              the stair door */
           f1Gaze(P, t, [[T.mk1 - 1.4, () => f1Head(phoStand, [OPEN1.phoAt.x, GY + 1.6, OPEN1.phoAt.z], 1.6)], [T.look, [2.3, GY + 2.9, -2.15], 1.1], [T.turn - 0.4, [1.15, GY + 1.3, -3.7], 0.6]], 0.9, 0.9, 0.0);
-          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+          f1Carry(P, 'Right', PROPS1.mkPhone, { palm: { along: 0.02, off: 0.02 } });
         } else {
           f1Walk(P, t, T.turn, OPEN1.stairIn, 1.0, MK_REST1, -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
           PROPS1.mkPhone.visible = false;
@@ -620,10 +635,16 @@
       if (t < T.land) {
         /* (the climb: two treads ahead of his teacher at the cut, a tread every half second; at the flicker he stops and looks
            back down at the street door, then climbs on) */
-        const s = climbAt(t, T.stair, 0.5, STAIR1.mk.s0, T.tube, T.tube + 1.4);
-        climbPose(P, s, { z: STAIR1.mk.z });
+        /* (photographed 27 Nov: the street door straight behind him, his look was bowed down and could not pick a side. So
+           at the stop he turns on his tread toward the flight's middle, a third of a right angle, and his head goes on over
+           his left shoulder, down to the door: his face to the lens below) */
+        const s = climbAt(t, T.stair, 0.5, STAIR1.mk.s0, T.tube, T.tube + 1.4, CLIMB1.n + 1);
         const back = f1Env(t, T.tube + 0.1, T.tube + 1.5, 0.35, 0.4);
+        /* (at the top: the closing step onto the landing's tread, then his rest, his look going along the landing to her door) */
+        const tTop = T.stair + (CLIMB1.n + 1 - STAIR1.mk.s0) * 0.5 + 1.4, settle = smo(c01((t - tTop) / 0.7));
+        climbPose(P, s, { z: STAIR1.mk.z, ry: -Math.PI / 2 + 0.6 * back, settle, rest: [MK_REST1[0], MK_REST1[1] + 0.32 * Math.max(0, t - tTop)] });
         if (back > 0.001) lookNow(P, [1.15, GY + 1.2, -3.72], back * 0.95, 1.05, 0.0);
+        else if (settle > 0.001) lookNow(P, [-3.4, 1.5, -2.3], settle * 0.8, 0.9, 0.0);
         PROPS1.mkPhone.visible = false;
         return;
       }
@@ -638,7 +659,12 @@
              leaf at 1.42 m, the knuckles meeting it at the sound's two knocks, 0.29 s apart) */
           const kk = f1Env(t, T.knock - 0.55, T.knock + 0.75, 0.4, 0.4);
           if (kk > 0.001) { const tap = (d) => Math.exp(-((d * d) / 0.0025)), back = 0.06 * (1 - Math.max(tap(t - T.knock), tap(t - T.knock - 0.29)));
-            handTo(P, 'R', [FRONT.x0 - 0.125 - back, 1.42, -2.08], [0.15, 1, 0.05], [1, 0, 0], kk, { out: 0.22, down: 0.3 }); }
+            /* (photographed 27 Nov: an open hand stood up flat before his face, the fingers splayed like a claw, 0.27 m from
+               the door. A knock is a loose fist, its second knuckles to the door, the thumb up and the forearm reaching to it:
+               so he stands 0.4 m back from the leaf, the fist's front (0.055 m past the palm's middle) at the door) */
+            const f = [0.94, 0.34, 0], d = [FRONT.x0 - 0.125 - back, 1.42, -2.1];
+            handTo(P, 'R', [d[0] - 0.055 * f[0], d[1] - 0.055 * f[1], d[2]], f, [0, -0.35, -1], kk, { out: 0.25, down: 0.35, off: 0 });
+            curlFingers(P, 'R', 1.3 * kk); }
           f1Gaze(P, t, [[T.land, [-2.8, 1.5, -2.1]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 0.7]], 0.8, 0.8, 0.0);
         }
         return;
@@ -655,7 +681,9 @@
     function openPho1(t, T) {
       const P = phoStand;
       if (t >= T.inn) { f1Show(P, false); PROPS1.phoBag.visible = false; openPhoSeated1(t, T); return; }
-      f1Show(cast.pho, false);
+      /* (shown again on every frame before the cut inside, so a seek back from past it finds him: a pure function of the
+         film's clock, v6.4; the probe's pictures, taken after its rows had run the film to its end, had him gone) */
+      f1Show(P, true); f1Show(cast.pho, false);
       if (!P.ready) return;
       /* (out of the taxi first, and seen only from the cut to his eyes: nobody gets out under the crane, whose taxi has no
          door that opens) */
@@ -672,7 +700,9 @@
           f1Gaze(P, t, [[T.out - 1.6, [2.4, GY + 1.6, -1.9]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.6, OPEN1.meet.z], 1.58), 0.8], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
         } else f1Walk(P, t, T.ph1 + SECS.ph51o1 + 0.2, OPEN1.phoIn, 0.9, phoRest1(t), -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
       } else if (t < T.land) {
-        climbPose(P, climbAt(t, T.stair, STAIR1.pho.cad, STAIR1.pho.s0, T.tube + 0.2, T.tube + 1.6), { z: STAIR1.pho.z });
+        /* (he stops 0.4 s after Marcus, on a whole tread: at 0.6 s a tread from four, the thirteenth, both feet down; a stop
+           between treads held one foot in the air) */
+        climbPose(P, climbAt(t, T.stair, STAIR1.pho.cad, STAIR1.pho.s0, T.tube + 0.4, T.tube + 1.8), { z: STAIR1.pho.z });
       } else {
         /* (at the lobby's far side, turned to her door, until the cut inside) */
         const L = OPEN1.land.pho, lRy = faceTo(L.x, L.z, -2.8, -2.3);
@@ -715,8 +745,8 @@
         put(P, lp(L.x, G0.x, back), lp(L.z, G0.z, back), L.ry - 0.35 * back, 0);
         f1Speak(P, t, GR_REST1, [[T.gr1, SECS.gr51o1, 'Idle_3']]);
         /* her look: to Marcus, to his teacher, and then past them, down the stairs */
-        f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, [-3.78, 1.55, -2.32], 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
-        f1Carry(P, 'Right', PROPS1.grPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+        f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, () => f1Head(phoStand, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 1.55), 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
+        f1Carry(P, 'Right', PROPS1.grPhone, { palm: { along: 0.02, off: 0.02 } });
         return;
       }
       PROPS1.grPhone.visible = false;
@@ -752,8 +782,10 @@
            the taxi passes behind the lens's right and draws in (a desk sees its front at the right edge; a phone, a third of
            the width, holds Marcus whole). (27 Nov, photographed: the first end stood south of him in the next unit's arcade,
            behind its pillar, seeing his back, and the pull hunted there and back on the way down) */
-        { t: 0, name: 'crane', eye: [9.6, GY + 7.0, 1.6], at: [2.9, GY + 7.95, -0.3], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
-        { t: T.up, name: 'crane', eye: [9.6, GY + 7.0, 1.6], at: [2.9, GY + 7.95, -0.3], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
+        /* (photographed 27 Nov: aimed 0.3 m off the windows' middle and allowed 2.5 m back, a phone cut the nearer window at
+           its edge; now square to their middle, allowed 3.5 m) */
+        { t: 0, name: 'crane', eye: [9.6, GY + 7.0, 0.6], at: [2.9, GY + 7.95, 0.0], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 3.5 },
+        { t: T.up, name: 'crane', eye: [9.6, GY + 7.0, 0.6], at: [2.9, GY + 7.95, 0.0], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 3.5 },
         { t: T.out - 0.05, name: 'crane', eye: [2.25, GY + 1.55, -0.1], at: () => { const m = MK(); return [m[0], GY + 1.2, m[2]]; }, fp: 62, fd: 50,
           hold: () => [[MK()[0], GY + 1.8, MK()[2], 0.18], [MK()[0], GY + 0.45, MK()[2], 0.18]], back: 1.0 },
         /* HIS EYES, for the first time: out of the taxi onto the five-foot way, his teacher ahead in white; Marcus coming to
@@ -774,10 +806,18 @@
         /* THE LANDING: at the top of the stair, level with her; her door, Marcus's knock; Grace, her head, both hands and the
            door's edge held */
         { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.95, 1.38, -2.12], fp: 52, fd: 44, cut: true },
-        { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.32), fp: 52, fd: 44,
-          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
-        { t: T.ph2 + SECS.ph51o2 + 0.2, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.3), fp: 52, fd: 44,
-          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
+        /* (her stand-in place before she is drawn is where she stands, on her floor: 27 Nov, measured, the old stand-in 0.5 m
+           off and 1.4 m up swung the look 13 degrees in a tenth of a second as she came into the light) */
+        { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.32, OPEN1.land.grace.z], 1.32), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
+        /* (photographed 27 Nov: held on her as she stepped back into her room, the lens found the door's jamb and her
+           shoulder. On his word the look goes to his teacher, who says it, across the lobby; she steps back unseen) */
+        { t: T.ph2 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.3, OPEN1.land.grace.z], 1.3), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
+        { t: T.ph2 + 0.35, name: 'pho', eye: [OPEN1.land.eye[0] + 0.03, EYE, OPEN1.land.eye[2] + 0.02], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
+        { t: T.inn - 0.05, name: 'pho', eye: [OPEN1.land.eye[0] + 0.02, EYE, OPEN1.land.eye[2]], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
         /* INSIDE (cut in the black of the doorway): along her room's north side, his teacher at the left spreading his cloth;
            he kneels at his place; his look goes to the black glass by the shutter's edge; the lens narrows on it */
         { t: T.inn, name: 'in', eye: [OPEN1.inEye[0][0], EYE, OPEN1.inEye[0][1]], at: [2.7, 1.25, 2.1], fp: 66, fd: 58, cut: true, flow: true },
