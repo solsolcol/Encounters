@@ -232,7 +232,17 @@
       const aura = ctx.spiritAura ? ctx.spiritAura(m, { color: 0xffffff, fill: 0.5, rim: 1.0, power: 1.6, flicker: 0.05, xray: 1 }) : null;
       return { m, g, curve, aura, per: F2C.R * 6 };
     })();
-    function f2CircleLay(u) { const n = Math.max(0, Math.min(F2C.N, Math.round(F2C.N * c01(u)))); f2Circle.g.setDrawRange(0, n * f2Circle.per); f2Circle.m.visible = n > 0; }
+    /* ITS SHADOW AT DAWN: the white thread on the pale floor in the low sun all but vanished (photographed, the circle a hairline
+       at the picture's foot), and no light casts on a phone (v9.3), so a contact shadow is painted: a flat dark band twice the
+       thread's width laid under it on the side away from his glass, drawn only at dawn; a child of the thread, so it is wound
+       in with it and laid as far round as it is */
+    const f2CircleShade = (() => {
+      const g = new THREE.TubeGeometry(f2Circle.curve, F2C.N, F2C.r * 2.1, F2C.R, false); owned.push(g);
+      const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x4a3c2c, transparent: true, opacity: 0.3, depthWrite: false })); mats.push(m.material);
+      m.name = "the white thread's painted shadow (the dawn)"; m.scale.set(1, 0.12, 1); m.position.set(0, -0.0002, -0.0035); m.frustumCulled = false; m.visible = false;
+      m.renderOrder = -1; f2Circle.m.add(m); return { m, g };
+    })();
+    function f2CircleLay(u) { const n = Math.max(0, Math.min(F2C.N, Math.round(F2C.N * c01(u)))); f2Circle.g.setDrawRange(0, n * f2Circle.per); f2CircleShade.g.setDrawRange(0, n * f2Circle.per); f2Circle.m.visible = n > 0; }
     /* the spark where its ends meet */
     const f2Spark = glow(F2P.circle.x, 0.02, F2P.circle.z + F2P.circle.r, 0.16, 0xffffff, 0.0, hisSideG, null);
 
@@ -381,18 +391,34 @@
        mark it leaves, and the white thread his teacher ties over the same wrist at dawn. Each a ring laid round the left
        hand's wrist bone in the hands' own pass (the left hand is the mirrored copy of the right: buildPrayerArm) */
     const F2W = { band: null, mark: null, thread: null, flash: null, on: false };
+    /* THE WRIST'S OWN THICKNESS where the rings go, MEASURED on the hands' model once (its skin within 1.2 cm of the wrist's
+       joint along the hand, in the hand bone's own frame: the 85th of every hundred distances from the joint's axis, so the
+       thumb's root does not set it): laid at a guessed 3.45 cm, the rings sat inside the wrist and were never seen (the tie
+       photographed at both its knots, the thread nowhere) */
+    function f2WristR(L, wr) {
+      const v = new THREE.Vector3(), d = [];
+      L.updateWorldMatrix(true, true);
+      L.traverse(o => { if (!o.isSkinnedMesh || !o.geometry || !o.geometry.attributes.position) return;
+        if (o.skeleton) o.skeleton.update();
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); wr.worldToLocal(v);
+          if (Math.abs(v.y) < 0.012) { const r = Math.hypot(v.x, v.z); if (r < 0.09) d.push(r); } } });
+      if (d.length < 12) return 0.033;
+      d.sort((a, b) => a - b); return d[Math.floor(d.length * 0.85)];
+    }
     function f2WristDress() {
       if (F2W.band || !F2.api || !F2.api.buildPrayerArm) return !!F2W.band;
       const L = F2.api.buildPrayerArm(); if (!L || !L.userData || !L.userData.model) return false;
       const wr = L.userData.model.getObjectByName('handR'); if (!wr || !wr.parent) return false;
+      const R = F2W.r = f2WristR(L, wr);
       const mk = (r, th, color, add, op) => { const g = new THREE.TorusGeometry(r, th, 6, 40); owned.push(g);
         const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
         m.position.copy(wr.position); m.quaternion.copy(wr.quaternion); m.rotateX(Math.PI / 2); m.visible = false; m.frustumCulled = false; m.renderOrder = 3; wr.parent.add(m); return m; };
-      F2W.band = mk(0.034, 0.006, F2RED, true, 0.9);
-      F2W.band2 = mk(0.036, 0.011, 0xff5040, true, 0.35);
-      F2W.mark = mk(0.0335, 0.0042, 0xb04a46, false, 0.85);
-      F2W.thread = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0);
-      F2W.thread2 = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0); F2W.thread2.translateZ(0.004);
+      F2W.band = mk(R + 0.004, 0.006, F2RED, true, 0.9);
+      F2W.band2 = mk(R + 0.006, 0.011, 0xff5040, true, 0.35);
+      F2W.mark = mk(R + 0.001, 0.0042, 0xb04a46, false, 0.85);
+      F2W.thread = mk(R + 0.0025, 0.0022, 0xf4f2ea, false, 1.0);
+      F2W.thread2 = mk(R + 0.0025, 0.0022, 0xf4f2ea, false, 1.0); F2W.thread2.translateZ(0.005);
       return true;
     }
     function f2WristShow(band, mark, thread, flash) {
@@ -918,6 +944,7 @@
         if (!F2.on) return;
         const E = F2.E, k = F2.k, Bm = E.bar, nar = f2Narrow();
         f2Look(t < E.d0 - 0.02 ? 'NIGHT' : 'DAWN');
+        f2CircleShade.m.visible = t >= E.d0;
         if (t >= Bm.circle - 1e-3 && t < Bm.after) END2.circleTick();
         /* THE LENS */
         const camAt = (q) => (q < E.b0 ? f2Keys(F2.keys, q) : q < E.d0 ? f2BarrierCam(q, Bm, F2.from) : f2Keys(F2.dawnKeys, q - E.d0));
@@ -1018,7 +1045,7 @@
       /* (a probe's) */
       marks: () => F2.E,
       tune: F2TUNE,
-      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice() }; },
+      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wristR: F2W.r || null }; },
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -1198,10 +1225,11 @@
         phoChair: { x: HIS.chair2.x, z: HIS.chair2.z, ry: 0 },
         /* (WORLD's chairs face the table: w51dinchair's back stands at its -z, measured 0.245 m behind its middle, its seat's top
            0.50 m, its seat from 0.23 m behind its middle to 0.30 m before it; so `chair2` at ry 0 faces him. His teacher's hips
-           are set there whatever his take (f2SeatHips): over the seat's middle, 0.15 m before its back, the hip joint 0.14 m
-           over its top (his talk's own hips stand 0.69 m up with his feet on the floor: measured, so a 0.6 hip put its feet
-           through the floor; 0.64 the two met halfway, the seat's top and his feet under the table either way)) */
-        phoHips: [HIS.chair2.x, 0.64, HIS.chair2.z - 0.03],
+           are set there whatever his take (f2SeatHips): over the seat's back half, 0.08 m before its back (0.15 m put his knees
+           at the table's far edge, 0.727 m, and his robe through its top: read and photographed), the hip joint 0.14 m over the
+           seat in his rest and 0.19 m in his talk, as each take stands its own feet on the floor (read: the talk's sat 4.9 cm
+           into the floor at 0.64), eased by how far the talk is on) */
+        phoHips: [HIS.chair2.x, 0.64, HIS.chair2.z - 0.105],
         /* (the breakfast on his teacher's half of the table to his right, clear of the middle where the wrist is held out to be
            tied (at the middle it stood between the lens and the tie, photographed) and of his teacher's right forearm reaching
            it; the spool set down on the other side) */
@@ -1232,11 +1260,13 @@
            his head turns to it over his shoulder */
         { t: 0, e: lieE, a: [C.x + 0.03, 0.42, C.z + 2.4], fp: 64, fd: 56, n: 'dawn:wake', stop: true },
         { t: u(D.sit) - 0.05, e: [lieE[0], lieE[1] + 0.02, lieE[2] + 0.02], a: [C.x + 0.04, 0.38, C.z + 2.3], fp: 64, fd: 56, n: 'dawn:wake2', stop: true },
-        /* (low enough that the thread round him is in the lower third and his glass above it: at 18 degrees down the thread
-           lay along the picture's foot, photographed) */
-        { t: u(D.sit) + 1.3, e: sitE, a: [C.x + 0.05, 0.22, C.z + 1.55], fp: 66, fd: 58, n: 'dawn:sat', stop: true },
-        { t: u(D.knock) + 0.25, e: sitE, a: [C.x + 0.05, 0.26, C.z + 1.55], fp: 66, fd: 58, n: 'dawn:sat2', stop: true },
-        { t: u(D.door) - 0.05, e: [sitE[0], sitE[1] + 0.02, sitE[2]], a: [C.x - 2.0, 0.85, C.z + 0.9], fp: 66, fd: 58, n: 'dawn:toknock', stop: true },
+        /* (low enough that the thread round him is in the lower third and his glass above it: at 18 degrees down, and again at
+           21, the thread lay along the picture's foot, photographed; 32 degrees down now) */
+        { t: u(D.sit) + 1.3, e: sitE, a: [C.x + 0.05, 0.05, C.z + 1.25], fp: 66, fd: 58, n: 'dawn:sat', stop: true },
+        { t: u(D.knock) + 0.25, e: sitE, a: [C.x + 0.05, 0.1, C.z + 1.3], fp: 66, fd: 58, n: 'dawn:sat2', stop: true },
+        /* (over his left shoulder toward his front door, as far round as a head turns: the door is behind him at 155 degrees;
+           aimed 66 degrees round, his look went to his glass's corner, photographed) */
+        { t: u(D.door) - 0.05, e: [sitE[0], sitE[1] + 0.02, sitE[2]], a: [C.x - 2.0, 1.0, C.z - 0.9], fp: 66, fd: 58, n: 'dawn:toknock', stop: true },
         /* DOOR (a cut): the door drawn open on his teacher, framed in its middle */
         { t: u(D.door), e: dE, a: [F2DW.phoDoor.x, 1.36, F2DW.phoDoor.z + 0.2], fp: 58, fd: 50, n: 'dawn:door', cut: true },
         { t: u(D.door) + 1.1, e: dE, a: [phoFace[0], 1.4, phoFace[2]], fp: 56, fd: 48, n: 'dawn:pho', stop: true },
@@ -1338,10 +1368,11 @@
       H.show(PS, standing || atTable); H.show(PC, winding); F2.pcShown = winding;
       if (bag) bag.visible = false;
       if (standing && PS.ready) {
-        if (u < uIn) { put(PS, F2DW.phoDoor.x, F2DW.phoDoor.z, 0, 0);
+        /* (3 cm up: standing on the floor at 0 his feet were 3.2 and 3.4 cm into it, feetscan; walking, 2.1) */
+        if (u < uIn) { put(PS, F2DW.phoDoor.x, F2DW.phoDoor.z, 0, 0.03);
           H.speak(PS, u, rest, [[D.ph51w1 - D.d0, SECS.ph51w1, 'Talk_with_Hands_Open', 0.35]]);
           H.gaze(PS, u, [[uDoor + 0.3, 'lens', 0.6]], 0.8, 0.7, 0.02); }
-        else { H.walk(PS, u, uIn, F2DW.phoIn, 0.85, rest, 0.9, { y: 0, ry0: 0 });
+        else { H.walk(PS, u, uIn, F2DW.phoIn, 0.85, rest, 0.9, { y: 0.03, ry0: 0 });
           H.gaze(PS, u, [[uIn, 'lens', 0.4], [uIn + 0.9, [F2DW.C.x, 0.3, F2DW.C.z + 0.3], 0.8]], 0.7, 0.6, 0.02); }
         f2PhoBag(PS);
       }
@@ -1390,7 +1421,8 @@
       handTo(P, 'R', [S[0] + 0.01, S[1] - 0.004, S[2] + 0.01], [-0.35, 0.05, -0.94], [0, 1, 0], 1, { out: 0.2, down: 0.32 });
       /* his left hand's fingers round the spool's top, a round each turn of the clock's 0.55 a second */
       const Lc = [S[0] - 0.005 + 0.045 * Math.cos(ph), S[1] + 0.085, S[2] + 0.045 * Math.sin(ph)];
-      handTo(P, 'L', Lc, [0.55, -0.35, -0.76], [0.15, -0.98, 0.1], 1, { out: 0.22, down: 0.3 });
+      /* (its fingers nearer the forearm's own line: pointed down over the spool its wrist bent 73.6 degrees, jointscan) */
+      handTo(P, 'L', Lc, [0.62, -0.08, -0.78], [0.08, -0.99, 0.06], 1, { out: 0.24, down: 0.28 });
       const g = F2M.spoolPho;
       if (g) { if (g.parent !== world) world.attach(g); g.position.set(S[0], S[1], S[2]); g.rotation.set(0, -ph, 0); g.scale.setScalar(1); g.visible = true; }
       /* the thread from where it leaves the floor up to his left hand's fingers and round onto the spool's side */
@@ -1421,8 +1453,12 @@
       for (const n of own) if (D[n] != null) talk.push([D[n] - D.d0, SECS[n], 'Sitting_Answering_Questions', 0.5]);
       if (u < uTie - 0.4) H.speak(P, u, ['Sit_to_Stand_Transition_M', sitT, 0, false], talk);
       else pose(P, 'Sit_to_Stand_Transition_M', sitT, false);
+      /* (how far his talk is on, as f1Speak eases it: in over 0.35 s from a line's start, out over the 0.45 s after its end, to
+         its share) */
+      let tk = 0; for (const [t0, secs, , w] of talk) tk = Math.max(tk, f2smo(c01((u - t0) / 0.35)) * (1 - f2smo(c01((u - t0 - secs) / 0.45))) * (w || 1));
+      if (!(u < uTie - 0.4)) tk = 0;
       const hp = F2DW.phoHips, ty = F2TUNE.chairY || 0;
-      f2SeatHips(P, [hp[0], hp[1] + ty, hp[2]]);
+      f2SeatHips(P, [hp[0], hp[1] + 0.05 * c01(tk / 0.55) + ty, hp[2]]);
       /* (his look on his student; in D down to the red mark on his wrist as he names it, and back; to the wrist for the tie,
          and up to him for the last words) */
       const G = [[u0, 'lens', 0.3]];
@@ -1493,8 +1529,9 @@
       for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
       f2FloorPhone.visible = u < D.door - D.d0; f2Spark.q.visible = false;
       f2PhoLevel(1);
-      /* (drawn open in 0.7 s from the cut: over a second its dark leaf filled the picture for half of it, photographed) */
-      WORLD.hisDoor(u >= D.door - D.d0 && u < D.wind - D.d0 ? f2smo(f2win(u, D.door - D.d0, D.door - D.d0 + 0.7)) : 0);
+      /* (the cut lands on his pulling it open, already half way round, and it comes the rest of the way in half a second:
+         opened from shut on the cut, its dark leaf filled the picture for its first half second, photographed twice) */
+      WORLD.hisDoor(u >= D.door - D.d0 && u < D.wind - D.d0 ? lp(0.5, 1, f2smo(f2win(u, D.door - D.d0, D.door - D.d0 + 0.5))) : 0);
       f2DawnPeople(u, D, k);
       f2DawnHands(u, D, k);
     }

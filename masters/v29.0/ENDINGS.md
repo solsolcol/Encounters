@@ -108,7 +108,27 @@ the paper bag, the cups, M8, the morning bed), and the last 2.2 s (the picture a
 Every other stretch in all four is spoken over. (tools/probes/voicescan.mjs's walk over the assembled chapter, 27 Nov, with
 the phone's copies of a line, `*tel`, counted as the voice they are: the tool as it stands leaves them out, a finding.)
 
-## 6 · Measured (filled in as each lands)
+## 6 · Measured
+
+Everything here was read from the game itself (tools/probes/e5c1ends.mjs, a phone at 390 x 844 drawn at two pixels a point,
+each ending reached through the decision's panel by a finger; CLOSE THE CIRCLE laid by a real finger in its own run) or
+from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at its own size and read.
+
+- THE MODELS' OWN MEASURES (their files): the dining chair `w51dinchair` 0.56 x 0.62 m, 0.82 m tall, its back 0.245 m behind
+  its middle, its seat's top 0.50 m from 0.23 m behind its middle to 0.30 m before it; the table 0.693 m; the breakfast set
+  0.30 x 0.33 m, 0.25 m tall; the spool 0.10 x 0.08 m, 0.084 m tall (drawn at 0.62); his teacher's cloth bag 0.32 x 0.18 m,
+  0.50 m with its strap. M8 Dawn 45.09 s, its last chord falling away from its 41.5th second (its loudness, half-second
+  steps). The balcony's rail 1.1 m up, 1.56 m out from his glass (b_world.js BALC).
+- THE STATIC SCAN (5): no voice over another in any of the four; every stretch without a voice listed there with what holds it.
+- READ FROM THE GAME BEFORE A CHANGE, and what the change answered:
+  - his teacher at the table (run 5): in his talk his hips stand 0.69 m up, 0.20 m behind his body's own place; in his rest
+    his shoulders stood behind the chair's back (z -1.30 against the back's -1.295), and clipscan counted 5,110 and 6,083
+    crossings of his body with the chair: so his hips are set on the seat whatever the take (f2SeatHips).
+  - the tie (run 5): the wrist the hands' pass draws stood at xv -0.034, yv -0.128, zv 0.388 m in its camera (the reach at
+    0.92); his teacher's right hand stopped 0.33 m short of it at a straight arm: so the eye leans in over the table, the
+    held hand is the library's place, the wrist set where his hands reach it.
+  - on the floor (run 5, feetscan): his right foot 2.2 cm and his robe's hem 4.8 cm into the floor: he sits 2 cm up.
+  - jointscan at the winding, the table and the tie (run 5): no joint flagged.
 
 ## 7 · What is still open
 
