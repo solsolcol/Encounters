@@ -665,8 +665,10 @@
         K.push({ t: c0 + 0.5, e: eyeSit, a: at(Math.PI - 0.05, 0.62), fp: 66, fd: 58, n: 'bar:gold' });
         K.push({ t: Bm.door0 - 0.01, e: [eyeSit[0], 0.78, eyeSit[2]], a: at(Y0, 0.55), fp: 66, fd: 58, n: 'bar:gold2', stop: true });
         /* the insert: the foot of his front door, the red threads slipping in under it (a cut to a thing: v21.30) */
-        K.push({ t: Bm.door0, e: [F2P.door.x + 0.75, 0.32, F2P.door.z + 1.35], a: [F2P.door.x + 0.05, 0.03, F2P.door.z + 0.02], fp: 40, fd: 34, n: 'bar:door', cut: true });
-        K.push({ t: Bm.door1, e: [F2P.door.x + 0.7, 0.28, F2P.door.z + 1.25], a: [F2P.door.x + 0.1, 0.03, F2P.door.z + 0.2], fp: 38, fd: 32, n: 'bar:door2', stop: true });
+        /* (the insert's eye between his sofa's end and the wall: 0.75 m out from the door's line it stood inside his sofa, 32 cm
+           up, the film's eye against the sofa's footprint, measured) */
+        K.push({ t: Bm.door0, e: [F2P.door.x + 0.25, 0.32, F2P.door.z + 1.25], a: [F2P.door.x + 0.05, 0.03, F2P.door.z + 0.02], fp: 40, fd: 34, n: 'bar:door', cut: true });
+        K.push({ t: Bm.door1, e: [F2P.door.x + 0.22, 0.28, F2P.door.z + 1.15], a: [F2P.door.x + 0.1, 0.03, F2P.door.z + 0.2], fp: 38, fd: 32, n: 'bar:door2', stop: true });
         K.push({ t: Bm.door1 + 0.001, e: [eyeSit[0], 0.76, eyeSit[2]], a: at(Y0, 0.42), fp: 66, fd: 58, n: 'bar:low', cut: true });
         K.push({ t: Bm.touch + 1.6, e: [eyeSit[0], 0.74, eyeSit[2]], a: at(lp(Y0, Y1, 0.45), 0.36), fp: 66, fd: 58, n: 'bar:turn' });
         K.push({ t: Bm.surge, e: [eyeSit[0], 0.73, eyeSit[2]], a: at(Y1, 0.38), fp: 64, fd: 56, n: 'bar:surge', stop: true });
@@ -997,7 +999,9 @@
         K.push({ t: E.sofa0, e: [tp[0] - 0.05, tp[1], tp[2] + 0.05], a: [F2P.tap.x, 0.93, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap2', stop: true });
         /* (at his sofa 0.4 s sooner, so he sits over 0.9 s and lies back over 0.9: in 0.7 s and then 0.7 the eye fell at 1.5 m a
            second, measured as a move) */
-        f2WalkKeys([[tp[0], tp[2]], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie - 0.4, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
+        /* (along the counter first, behind his teacher's chair: straight from the tap his way crossed the chair's back corner,
+           the film's eye against its footprint, measured) */
+        f2WalkKeys([[tp[0], tp[2]], [F2HX + 0.3, -1.55], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie - 0.4, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
         K.push({ t: E.lie + 0.5, e: [lie[0] + 0.35, 1.05, lie[2] + 0.25], a: [lie[0] - 0.3, 1.4, lie[2] + 0.6], fp: 64, fd: 56, n: 'C:sit' });
         /* (his head on the sofa's arm, turned a little toward his glass: under the cushion the picture's lowest fifth is the top of
            his glass doors and the city's night through them; looking straight up, it was his ceiling, as dark as the cushion,
