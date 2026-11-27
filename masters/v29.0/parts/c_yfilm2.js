@@ -214,7 +214,13 @@
     f2Clone('w51pills', (m) => { f2Pills.add(m); F2M.pills = m; });
     /* THE CUSHION over his eyes (ending C): a cushion of the sofa's held against his face, its weave filling the lens */
     const f2Cushion = new THREE.Group(); f2Cushion.name = 'the cushion over his eyes';
-    f2Clone('w5cushion', (m) => { m.scale.set(0.9, 0.9, 0.9); f2Cushion.add(m); F2M.cushion = m; });
+    /* (THINGS' own cushion, faded indigo with cream stripes, once its file is in the build: episode 4 chapter 5's is red, and
+       red is the spell's colour alone in this chapter, the plan's 4.5; until then that one stands in. A little of its own
+       colour given back as light (no lamp), so in his dark room it reads as cloth and not as a grey slab: d7's desktop
+       picture at 14.2 s) */
+    f2Clone(have('w51cushion') ? 'w51cushion' : 'w5cushion', (m) => { m.scale.set(0.9, 0.9, 0.9);
+      m.traverse(q => { if (q.isMesh && q.material && q.material.map && q.material.emissive) { q.material.emissiveMap = q.material.map; q.material.emissive.setScalar(0.14); q.material.needsUpdate = true; } });
+      f2Cushion.add(m); F2M.cushion = m; });
 
     /* ---------------------------------------------------------------- THE WHITE THREAD ROUND HIM (the plan's 9.7, 12)
        A cotton thread on his floor in a circle of 0.75 m round where he sits, laid from in front of him (toward his glass) to
