@@ -966,8 +966,10 @@
       /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
          now on the top of her shoulder, over its joint, a little in from it) */
       if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
-        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); if (nk) { nk.getWorldPosition(_f1S); _f1A.lerp(_f1S, 0.2); }
-          handTo(P, 'L', [_f1A.x, _f1A.y + 0.06, _f1A.z - 0.05], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
+        /* (measured, the third build: his palm reached the place, but by her neck her bowed head and hair hid it from the
+           lens across the table: so it lies on the outer top of her shoulder, over its joint, a little out from it) */
+        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); const gq = g.group.quaternion, out = new THREE.Vector3(-0.03, 0, 0).applyQuaternion(gq);
+          handTo(P, 'L', [_f1A.x + out.x, _f1A.y + 0.06, _f1A.z + out.z - 0.04], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
       f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.give + 0.2, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2]], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
     /* THE PACKET: in her bag; in her left hand from 9.5 s; laid in his palm at 12.5 s; in his hand to the plate; on the plate,
