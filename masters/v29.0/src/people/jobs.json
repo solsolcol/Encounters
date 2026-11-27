@@ -32,8 +32,31 @@
   }
  },
  "grace": {
+  "credits": 40,
+  "expires_at": 1796017859725,
   "image": "masters/v29.0/src/people/refs/grace-a2-2k.png",
   "image_to_3d": "01a21b89-9759-728a-9143-1ac174c9c389",
+  "remesh": {
+   "40000": "01a21b92-03d1-76a6-a828-50f46a76d840"
+  },
+  "rig": "01a21b92-7b06-746c-a47b-3cc287963770",
+  "rig_credits": 5,
+  "rig_r1_nofingers": {
+   "credits": 5,
+   "joints": 36,
+   "rig": "01a21b8f-260a-7316-9162-bccff4a66c5a",
+   "why": "came back with no finger bones (a middle chain each hand and a stray bone) though include_fingers was asked; re-rigged once at the coordinator's word (option A); file src/people/rigged-grace-r1nofingers.glb"
+  },
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a21b89-9759-728a-9143-1ac174c9c389",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72980016,
+   "walk": 73106280
+  },
   "second_throw": "R5, 27 Nov 2026",
   "settings": {
    "ai_model": "latest",
@@ -53,6 +76,10 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68480152,
+   "pre": 14042628
   }
  },
  "grace_first": {
@@ -115,8 +142,17 @@
   }
  },
  "marcus": {
+  "credits": 40,
+  "expires_at": 1796018018264,
   "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
   "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
+  "rig": "01a21b92-0378-71b7-a898-6fee5002dfd3",
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21b8c-b892-7308-a894-f062cec450b6",
+   "skeleton_template": "meshyrig"
+  },
   "second_throw": "R5/R6, 27 Nov 2026",
   "settings": {
    "ai_model": "latest",
@@ -136,6 +172,10 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50378100,
+   "pre": 9173604
   }
  },
  "marcus_first": {
