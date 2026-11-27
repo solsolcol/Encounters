@@ -82,6 +82,8 @@
     /* THE STAIR: the tube's hum, their steps on terrazzo, the flicker */
     sfx(T.stair - 0.1, 'u51bstair', 0.55);
     sfx(T.stair + 0.15, 'u51stair', 0.6); sfx(T.tube + 1.3, 'u51stair', 0.55);   // the climb (6 s each, the second after the stop)
+    sfxFade(T.tube - 0.1, T.tube + 0.3, 'u51stair');                          // (they stop as the tube flickers: the first steps end)
+    sfxFade(T.land - 0.35, T.land + 0.15, 'u51stair');                        // (the steps end as they stand at her door)
     sfx(T.tube, 'u51tube', 0.7);                                               // the tube flickers twice, its hum dropping out
     /* THE LANDING: two knocks, Marcus's line, the lock and the old hinge, Grace's line, his teacher's thanks */
     sfx(T.knock - 0.82, 'u51knock', 0.8);                                      // (its knocks 0.82 and 1.11 s into it)
@@ -194,15 +196,17 @@
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(0, 0.9, 1, 0);                                                        // (from the cord's black)
     sfx(0.0, 'u51bcorr', 0.55);                                                // the corridor's hush, the air vents
-    sfx(0.1, 'u51carpet', 0.6);                                                // his steps on carpet
+    sfx(0.1, 'u51carpet', 0.6); sfx(3.9, 'u51carpet', 0.5); sfxFade(5.3, 5.9, 'u51carpet');   // his steps on carpet, to his door
     sfx(T.m5, 'u51m5city', 0.7);                                               // M5 "Night City": an electric piano, two chords, a pad
     sfx(2.6, 'u51liftfar', 0.3);                                               // a lift's motor far off
     sfx(T.card - 0.36, 'u51keycard', 0.7);                                     // the reader's beep
     sfx(T.lock - 0.49, 'u51clunk', 0.7);                                       // the lock's clunk
     sfx(T.door - 0.31, 'u51door', 0.6);                                        // the door
     sfxFade(T.door + 1.0, T.door + 2.6, 'u51bcorr');
+    for (let i = 0; i < 7; i++) sfx(T.walkIn + 0.2 + i * 0.55, 'u51tile', 0.2);   // his steps in, soft on his floor (shoes left at the door)
     sfx(T.setb - 0.05, 'u51setglass', 0.6);                                    // glass on wood
     sfx(T.palms - 0.38, 'u51palms', 0.55);                                     // his palms meeting
+    sfx(T.table0 + 0.1, 'u51tile', 0.2); sfx(T.table0 + 0.65, 'u51tile', 0.18);   // the last two steps to his table
     sfx(T.charge - 0.18, 'u51charger', 0.55);                                  // the charger's chirp
     sfx(T.keys - 0.05, 'u51keys', 0.5);                                        // the keys in a bowl
     sfx(T.shower, 'u51shower', 0.55); sfxFade(T.showerOff - 0.1, T.showerOff + 0.25, 'u51shower');
