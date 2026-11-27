@@ -122,3 +122,9 @@ masters/v26.0/sound/made/
 # v28.0: a recipe's temporary folder (the voices' chain writes its levelled wavs here and remakes them): never committed
 masters/*/voices/_tmp/
 masters/*/sound/_tmp/
+# v29.0 (episode 5 chapter 1): the model sources made for it stay on this machine (masters/v29.0/src/people and
+# src/props: Meshy's originals, remeshes, logs, downloads; backed up to the sources branch by tools/srcbackup.py at the
+# release); only the two Meshy ledgers are kept in git
+masters/v29.0/src/**
+!masters/v29.0/src/*/
+!masters/v29.0/src/*/jobs.json
