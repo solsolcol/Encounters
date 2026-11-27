@@ -159,6 +159,26 @@
       return g;
     }
     const F2HELD = () => (S && S.plan && S.plan.PHONEHELD) || { pos: [-0.045, 0.06, -0.035], rot: [0.35, 0.25, 0] };
+    /* HIS PHONE HELD UP TO CALL (the endings' own hold: the play's at the decision shows the phone's back to the lens, its
+       screen turned down: measured, its screen's normal (0.31, -0.77, 0.56) in the lens's frame; said in ENDINGS.md). Here
+       the screen faces him, a little up (its normal (0.01, 0.46, 0.89)), in the library's closed grip; `F2TUNE` is a
+       probe's handle on these numbers (tools/probes/e5c1ends.mjs TUNE: many tries photographed from one boot) */
+    const F2TUNE = { phone: { arm: [-0.075, 0.07, 0.02], tilt: 0.42, roll: 0.12 }, chairY: 0, tieArm: [0, 0, 0] };
+    const F2CALL = () => F2TUNE.phone;
+    /* the phone in his right hand turned so its screen faces his eyes, whatever the arm's own turn: its turn in the world of
+       the hands' pass laid from the lens's (the screen's normal toward the lens, tilted up by `tilt`, rolled by `roll`),
+       so his hand carries it and its face is always his (a person holds a phone so that its screen faces him). `k` eases
+       from the play's hold (its turn as kit.hold laid it) to this */
+    const _phQ = new THREE.Quaternion(), _phQ2 = new THREE.Quaternion(), _phE = new THREE.Euler(), _phQ0 = new THREE.Quaternion();
+    function f2PhoneFace(k) {
+      const A = F2.api, g = F2M.phone; if (!A || !A.armR || !A.vmCam || !g || g.parent !== A.armR) return;
+      const H = F2HELD(), C = F2CALL();
+      _phQ0.setFromEuler(_phE.set(H.rot[0], H.rot[1], H.rot[2]));
+      A.vmCam.updateMatrixWorld(); A.armR.updateWorldMatrix(true, false);
+      A.vmCam.getWorldQuaternion(_phQ); _phQ.multiply(_phQ2.setFromEuler(_phE.set(-C.tilt, 0, C.roll)));   // (the screen is the group's +z, the lens's own +z toward the eye: tilted up by `tilt`)
+      A.armR.getWorldQuaternion(_phQ2); _phQ.premultiply(_phQ2.invert());
+      g.quaternion.copy(_phQ0).slerp(_phQ, c01(k));
+    }
     /* the phone on the floor of the circle in front of him, on the speaker: the same phone face up, its call lit */
     const f2FloorPhone = new THREE.Group(); f2FloorPhone.name = 'his phone on the floor (the barrier)'; f2FloorPhone.visible = false; hisSideG.add(f2FloorPhone);
     {
@@ -444,7 +464,9 @@
         /* down to the bag: his right hand into it (the zip, the spool), and up again */
         K.push({ t: Bm.bag + 0.9, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x, 0.15, F2P.bag.z + 0.05], fp: 62, fd: 54, n: 'bar:bag', stop: true });
         K.push({ t: Bm.spool, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x + 0.02, 0.18, F2P.bag.z + 0.08], fp: 62, fd: 54, n: 'bar:spool', stop: true });
-        K.push({ t: Bm.spool + 0.9, e: [F2P.bagAt.x + 0.05, F2EYE.stand, F2P.bagAt.z + 0.1], a: [F2P.bagAt.x + 0.9, 1.3, F2P.bagAt.z + 1.8], fp: 64, fd: 56, n: 'bar:up' });
+        /* (up again facing along the wall, the way he goes round his sofa's end: risen facing the room, the sofa's back stood
+           a hand's breadth before the lens and filled the frame, photographed) */
+        K.push({ t: Bm.spool + 0.9, e: [F2P.bagAt.x - 0.05, F2EYE.stand, F2P.bagAt.z + 0.02], a: [F2PATH.on[1][0] - 0.9, 1.3, F2PATH.on[1][1] + 0.35], fp: 64, fd: 56, n: 'bar:up' });
         const path2 = F2PATH.on;
         f2WalkKeys(path2, Bm.spool + 0.9, Bm.sit0, F2EYE.stand, { a: glassA, fp: 66, fd: 58, n: 'bar:tocircle' }).slice(1).forEach(k => K.push(k));
         /* he sits down, in the middle of the room, facing his glass (a pained sit, eased over 1.6 s) */
@@ -677,7 +699,9 @@
     /* what is held in his hands in the barrier, and how (his phone, then the spool, then nothing: the lens looks out) */
     function f2BarrierHands(t, Bm) {
       const A = F2.api; if (!A) return;
-      if (t < Bm.walk0 + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2MirrorLeft(false); f2Hands(true, null, 0); return; }
+      /* (his phone before him on the speaker through his teacher's two lines; then down out of the frame as he goes to his
+         bag, the call still open: it is on the floor before him once he sits) */
+      if (t < Bm.walk0 + 0.6) { f2PhoneIn(1, 1); if (A.armR) A.armR.position.y -= 0.34 * f2smo(f2win(t, Bm.walk0 - 0.2, Bm.walk0 + 0.6)); return; }
       if (t < Bm.bag + 0.3) { f2Hold(null); f2Hands(false); return; }
       /* at the bag: his right hand reaches into it, and comes back with the spool */
       if (t < Bm.spool + 1.2) {
@@ -723,10 +747,18 @@
       K.push({ t: 0, e: F.e, a: F.a, fp: F.fp, fd: F.fd, n: k + ':decision', stop: true });
       const ph = FILMPLACE.phoneAt, sf = F2P.sofa, kn = F2P.kitchen, bl = F2P.balc;
       if (k === 'A') {
-        /* A · his thumb on his teacher's name; the call; the lens close on the phone and up as he speaks (60 / 52) */
-        K.push({ t: 1.6, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.35, 1.0, tb.z - 1.6], fp: 60, fd: 52, n: 'A:phone' });
-        K.push({ t: E.zv51A1, e: [tb.x + 0.02, EYE - 0.03, tb.z + 0.02], a: [tb.x - 0.6, 1.35, tb.z - 1.9], fp: 60, fd: 52, n: 'A:speak' });
-        K.push({ t: E.b0, e: [tb.x + 0.03, EYE - 0.04, tb.z + 0.03], a: [tb.x - 0.9, 1.25, tb.z - 1.7], fp: 62, fd: 54, n: 'A:listen', stop: true });
+        /* A · he lifts his phone and his thumb finds his teacher's name (its screen to him: "Calling…", two rings, the call);
+           as it connects he turns to his glass, the phone held before him on the speaker, the city's lights beyond it, the
+           pressure on him; "My head... it's like something's crushing it from every side." (60 / 52). The turn goes round
+           by his altar's side, an aim at each quarter, so the look never passes through his own eye (a turn of 160 degrees
+           eased over 2.4 s) */
+        K.push({ t: 1.4, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 0.25, 0.55, tb.z - 1.1], fp: 58, fd: 50, n: 'A:phone' });
+        K.push({ t: E.connect - 0.1, e: [tb.x, EYE - 0.04, tb.z], a: [tb.x - 0.27, 0.53, tb.z - 1.12], fp: 58, fd: 50, n: 'A:ring', stop: true });
+        K.push({ t: E.connect + 0.9, e: [tb.x - 0.02, EYE - 0.04, tb.z + 0.02], a: [tb.x - 2.2, 0.95, tb.z - 0.6], fp: 59, fd: 51, n: 'A:turn' });
+        K.push({ t: E.connect + 1.7, e: [tb.x - 0.04, EYE - 0.04, tb.z + 0.06], a: [tb.x - 2.0, 1.0, tb.z + 1.6], fp: 60, fd: 52, n: 'A:turn2' });
+        K.push({ t: E.connect + 2.5, e: [tb.x - 0.05, EYE - 0.04, tb.z + 0.1], a: [tb.x - 0.9, 1.05, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'A:glass', stop: true });
+        K.push({ t: E.zv51A1 + 0.3, e: [tb.x - 0.05, EYE - 0.06, tb.z + 0.12], a: [tb.x - 0.95, 0.98, LIV.z1 + 3.0], fp: 58, fd: 50, n: 'A:speak' });
+        K.push({ t: E.b0, e: [tb.x - 0.06, EYE - 0.07, tb.z + 0.14], a: [tb.x - 1.0, 0.95, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'A:listen', stop: true });
       } else if (k === 'B') {
         /* B · the phone set face down on his table; to his sofa as he says it; sitting, his palms together; two waves, the lens
            narrowing with them; his sight forced open on the threads at his feet; then the oven's clock (3:41); on the floor
@@ -909,6 +941,7 @@
       },
       /* (a probe's) */
       marks: () => F2.E,
+      tune: F2TUNE,
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -965,14 +998,21 @@
         f2WristShow(t >= E.wrap ? 1 : 0, 0, 0, 0);
       }
     }
+    /* his phone in his right hand: kit.hold once (the play's numbers), the arm raised toward the frame's foot by k
+       (F2TUNE.phone.arm), the screen turned to him by k, lowered before him by `low` (on the speaker) */
+    function f2PhoneIn(k, low = 0) {
+      f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot });
+      f2Hands(true, null, 0); f2MirrorLeft(false);
+      const A = F2.api, C = F2CALL(), kk = c01(k);
+      if (A && A.armR) { A.armR.position.x += C.arm[0] * kk; A.armR.position.y += C.arm[1] * kk - 0.07 * c01(low); A.armR.position.z += C.arm[2] * kk; }
+      f2PhoneFace(kk);
+    }
     function f2EndHands(t, E, k) {
       const A = F2.api;
       if (k === 'A') {
-        /* the phone in his right hand as the play held it: lifted a little to his eyes as he calls, and lowered as he listens */
-        f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot });
-        f2Hands(true, null, 0);
-        if (A && A.armR) { const lift = f2smo(f2win(t, 0.2, 1.2)) * (1 - 0.5 * f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0)));
-          A.armR.position.y += 0.03 * lift; A.armR.position.x -= 0.012 * lift; }
+        /* the phone lifted from the play's hold into his sight, its screen to him, as his thumb finds the name; lowered a
+           little before him on the speaker as he turns to his glass */
+        f2PhoneIn(f2smo(f2win(t, 0.1, 1.3)), f2smo(f2win(t, E.connect + 0.4, E.connect + 2.4)));
         return;
       }
       if (k === 'B') {
@@ -980,8 +1020,9 @@
           f2Hands(true, d > 0.01 ? 'place' : null, d); return; }
         if (t < E.flat + 0.6) { f2Hold(null); f2Hands(true, 'place', 1 - f2smo(f2win(t, E.flat, E.flat + 0.6))); return; }
         if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1)))); return; }
-        if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6)); return; }
-        if (t >= E.reach + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); return; }
+        if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6));
+          if (t >= E.reach + 0.25) f2PhoneFace(1); return; }
+        if (t >= E.reach + 0.6) { f2PhoneIn(f2smo(f2win(t, E.reach + 0.6, E.ring + 0.2)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'C') {
@@ -1002,7 +1043,7 @@
           return;
         }
         f2CushionAt(0, t);
-        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.04 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        if (t >= E.phone) { f2PhoneIn(f2smo(f2win(t, E.phone, E.phone + 0.8)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'D') {
@@ -1020,7 +1061,7 @@
           return;
         }
         f2MirrorLeft(false);
-        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.03 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        if (t >= E.phone) { f2PhoneIn(f2smo(f2win(t, E.phone, E.phone + 0.8)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
     }

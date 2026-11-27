@@ -142,6 +142,13 @@ for (const k of ENDS) {
         await passCircle(t, (nm) => shoot(nm));
         await seekTo(t); await shoot(String(t.toFixed(2)).padStart(6, '0'));
       }
+      /* TUNE='[["name", t, "js"], ...]' (MODE=pics): each try's snippet run in the page with T the films' tuning handle
+         (stage.films.ends2.tune), the film sought to t (twice: the second lays what the first changed), photographed */
+      for (const [nm, t, js] of JSON.parse(process.env.TUNE || '[]')) {
+        await passCircle(t, null);
+        await p.evaluate((js) => { const T = window.__enc.stage.films.ends2.tune, S = window.__enc.stage, E = window.__enc; return String(new Function('T', 'S', 'E', js)(T, S, E)); }, js);
+        await seekTo(t); await seekTo(t); await shoot('tune-' + nm);
+      }
     }
     const e2 = await p.evaluate(() => window.__enc.stage.films.ends2.state());
     log(k, 'state', JSON.stringify(e2));
