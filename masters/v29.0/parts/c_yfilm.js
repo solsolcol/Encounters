@@ -303,13 +303,15 @@
         const target = new THREE.Vector3(tx + _cl.b.x, ty, zc + _cl.b.z);
         /* (the foot keeps its own turn in the world as the walk had it) */
         r.hand.getWorldQuaternion(_cl.q);
-        r.up.getWorldQuaternion(_cl.q2); const upW0 = _cl.q2.clone(); r.fore.getWorldQuaternion(_cl.q3); const foW0 = _cl.q3.clone();
+        const upW0 = r.up.getWorldQuaternion(new THREE.Quaternion()), foW0 = r.fore.getWorldQuaternion(new THREE.Quaternion());
+        /* (a grafted shin's own turn in the world, before the leg moves: it is set after to the leg's change of turn laid on
+           this, so it follows its leg once, whether it hangs from the leg or beside it) */
+        const gUpW0 = r.gUp ? r.gUp.getWorldQuaternion(new THREE.Quaternion()) : null, gLowW0 = r.gLow ? r.gLow.getWorldQuaternion(new THREE.Quaternion()) : null;
         r.fore.getWorldPosition(_cl.a); const pole = _cl.a.clone().add(new THREE.Vector3(-0.6, 0.1, 0));   // the knee forward, up the flight
         armTo(r, target, pole);
         r.hand.parent.getWorldQuaternion(_cl.q2); r.hand.quaternion.copy(_cl.q2.invert().multiply(_cl.q)); r.hand.updateWorldMatrix(false, true);
-        /* a grafted shin follows its leg by the same turn */
-        if (r.gUp) { r.up.getWorldQuaternion(_cl.q2); const dq = _cl.q2.clone().multiply(upW0.invert()); r.gUp.getWorldQuaternion(_cl.q3); _cl.q3.premultiply(dq); r.gUp.parent.getWorldQuaternion(_cl.q2); r.gUp.quaternion.copy(_cl.q2.invert().multiply(_cl.q3)); r.gUp.updateWorldMatrix(false, true); }
-        if (r.gLow) { r.fore.getWorldQuaternion(_cl.q2); const dq = _cl.q2.clone().multiply(foW0.invert()); r.gLow.getWorldQuaternion(_cl.q3); _cl.q3.premultiply(dq); r.gLow.parent.getWorldQuaternion(_cl.q2); r.gLow.quaternion.copy(_cl.q2.invert().multiply(_cl.q3)); r.gLow.updateWorldMatrix(false, true); }
+        if (r.gUp) { const dq = r.up.getWorldQuaternion(new THREE.Quaternion()).multiply(upW0.invert()), w = gUpW0.premultiply(dq); r.gUp.parent.getWorldQuaternion(_cl.q2); r.gUp.quaternion.copy(_cl.q2.invert().multiply(w)); r.gUp.updateWorldMatrix(false, true); }
+        if (r.gLow) { const dq = r.fore.getWorldQuaternion(new THREE.Quaternion()).multiply(foW0.invert()), w = gLowW0.premultiply(dq); r.gLow.parent.getWorldQuaternion(_cl.q2); r.gLow.quaternion.copy(_cl.q2.invert().multiply(w)); r.gLow.updateWorldMatrix(false, true); }
       }
       L.on = true;
     }

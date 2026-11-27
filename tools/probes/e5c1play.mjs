@@ -49,6 +49,8 @@ async function lookAt(x, y, z) {
     E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz)); }, [x, y, z]); await frames(4);
 }
 async function tapMark(id) {
+  /* (offered only when its thing is live: a line handing off, or Grace standing, holds it) */
+  await wait((id) => { const h = window.__enc.stage.hotspots.find(s => s.id === id); return h && h.enabled(); }, id, 240).catch(() => log('  never offered:', id));
   let q = await p.evaluate((id) => window.__enc.hotMarkAt(id), id);
   if (!q || q.z >= 1 || q.x < 20 || q.y < 60 || q.x > W0 - 20 || q.y > H0 - 40) {
     /* off the screen: he turns to it, as a player would (the look clamped as the chapter clamps it) */

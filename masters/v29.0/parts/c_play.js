@@ -918,7 +918,7 @@
       if (R.p === 'room') roomBegin(R.found);
       else if (R.p === 'breaking') breakingBegin();
       else if (R.p === 'night') nightBegin(R.found);
-      else { nightBegin(['u', 'f']); phase = 'ask'; const a = STATION.ask.at; yaw.position.set(a.x, yaw.position.y, a.z); yaw.rotation.y = a.ry; askBegin(); }
+      else { nightBegin(['u', 'f']); phase = 'ask'; if (kit) { kit.objective(null, { complete: false }); kit.waypoint(null); } const a = STATION.ask.at; yaw.position.set(a.x, yaw.position.y, a.z); yaw.rotation.y = a.ry; askBegin(); }
     }
     function storyReset() {
       play.run++; play.busy = false; play.found = new Set(); decOpen = false;
