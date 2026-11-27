@@ -201,9 +201,12 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     and, on a desktop, a fifth of the screen to its side (C 6.6 s; the phone at 7.2 s: 5 % of the picture above it): the
     tap's two shots are lifted and turned for each screen's shape so the water's line crosses his knuckles and meets the
     sink just under their line (`f2TapGeo`: the reach laid whole and read), the water whole from the spout to the sink, his
-    hand drawn over it from his knuckles down. (c) The cushion over his eyes read as a grey slab (C 14.2 s): a little of
-    its own colour given back as light; THINGS' faded indigo cushion (`w51cushion`) used once its file is in the build (the
-    red one of episode 4 chapter 5 stands in: red is the spell's colour alone here, the plan's 4.5). (d) The burn's flash
+    hand drawn over it from his knuckles down. (c) The cushion over his eyes was NEVER DRAWN, in any run (C 14.2 s, every run since 5): laid in the hands' scene beside
+    the hands' own root while his hands were hidden, it fell under the engine's skip of a hands' pass with nothing visible
+    in that root (OPT.vmSkip); the grey I had read as the cushion was his ceiling, and the "sliver" its glass doors' head.
+    Now it hangs on the hands' root, drawn with his arms hidden; the stand-in's red paint is taken off at runtime (red is
+    the spell's colour alone here, the plan's 4.5), THINGS' faded indigo cushion (`w51cushion`) used once its file is in
+    the build, and a little of its own colour given back as light. (d) The burn's flash
     stood as a hard-edged white disc behind his wrist (D 91.3 s): now a soft round light of its own at the band's middle,
     7 cm across and 19 cm as it fades. (e) The strip of pills stood behind his knuckles, a sliver (C 5.3 s): laid every
     frame from the hand as drawn (4). Read and left, for others: past 70 m the vision leaves the city as it is, its edge a
