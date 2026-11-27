@@ -135,8 +135,9 @@
     function f2Screen(mode, secs, clock) {
       const sig = mode + '|' + (mode === 'call' ? Math.floor(secs) : '') + '|' + (clock || '');
       if (sig === F2SCR.sig) return; F2SCR.sig = sig;
-      const x = F2SCR.x; x.fillStyle = '#070b12'; x.fillRect(0, 0, 256, 512); x.textAlign = 'center';
-      if (mode === 'home') {
+      const x = F2SCR.x; x.fillStyle = mode === 'off' ? '#020305' : '#070b12'; x.fillRect(0, 0, 256, 512); x.textAlign = 'center';
+      if (mode === 'off') { /* (its screen gone dark: the call over) */ }
+      else if (mode === 'home') {
         x.fillStyle = '#dfe8f4'; x.font = '300 74px sans-serif'; x.fillText(clock || '3:03', 128, 150);
         x.font = '22px sans-serif'; x.fillStyle = '#9fb0c6'; x.fillText('Grandmaster Pho', 128, 300);
         x.fillStyle = '#2f9e5a'; x.beginPath(); x.arc(128, 420, 34, 0, Math.PI * 2); x.fill();
@@ -975,7 +976,10 @@
            and D the minutes he lost before he picks it up; photographed, B's phone said 3:03 forty minutes on) */
         if (t < E.ring) f2Screen('home', 0, (k === 'B' ? t >= E.cut : E.phone != null && t >= E.phone - 0.6) ? E.clock : '3:03');
         else if (t < E.connect) f2Screen('ring', 0, E.clock);
-        else f2Screen('call', t - E.connect, E.clock);
+        /* (the call ends with his teacher's last words, as he lies down; dark on the floor at dawn: it read 01:36 of a call
+           still going at seven in the morning, photographed) */
+        else if (t < E.bar.lie) f2Screen('call', t - E.connect, E.clock);
+        else f2Screen('off');
         if (t >= E.b0 && t < E.d0) { f2BarrierFx(t, Bm, { push: k === 'B', near: k === 'B' || k === 'C', band: k === 'D' }); f2BarrierHands(t, Bm); }
         else if (t < E.b0) { f2CircleLay(0); f2EndFx(t, E, k); f2EndHands(t, E, k); }
         else { f2DawnFx(t - E.d0, E.dawn, k); }
@@ -1535,9 +1539,10 @@
       for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
       f2FloorPhone.visible = u < D.door - D.d0; f2Spark.q.visible = false;
       f2PhoLevel(1);
-      /* (the cut lands on his pulling it open, already half way round, and it comes the rest of the way in half a second:
-         opened from shut on the cut, its dark leaf filled the picture for its first half second, photographed twice) */
-      WORLD.hisDoor(u >= D.door - D.d0 && u < D.wind - D.d0 ? lp(0.5, 1, f2smo(f2win(u, D.door - D.d0, D.door - D.d0 + 0.5))) : 0);
+      /* (the cut lands on the door all but open, 81 of its 95 degrees, its leaf by the wall at the picture's left, and it
+         comes the last of the way in 0.4 s: opened from shut, and then from half way (45 degrees), its dark leaf stood
+         between his eye and the doorway and filled the picture, photographed three times; the latch and the door are heard) */
+      WORLD.hisDoor(u >= D.door - D.d0 && u < D.wind - D.d0 ? lp(0.85, 1, f2smo(f2win(u, D.door - D.d0, D.door - D.d0 + 0.4))) : 0);
       f2DawnPeople(u, D, k);
       f2DawnHands(u, D, k);
     }
