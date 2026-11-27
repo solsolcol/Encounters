@@ -842,7 +842,12 @@
               'u51gtick1', 'u51gtick2', 'u51bottle', 'u51floor', 'u51knee', 'u51vison', 'u51visoff', 'u51phoneup'],
       ask: ['u51bthree', 'u51m6a', 'u51heart']
     };
-    function warm(p) { if (warmSounds && WARM[p]) warmSounds(WARM[p]); }
+    function warm(p) {
+      if (warmSounds && WARM[p]) warmSounds(WARM[p]);
+      // the barrier's hiss as each thread meets the gold is fired from y_endings.js's shared barrier, not from a scene's
+      // own source, so the decision's warm scan cannot see it: warmed here, literally, with the decision (chaptertest)
+      if (p === 'ask' && warmSounds) warmSounds(['u51burn']);
+    }
     function soundReset() { for (const k of BED_NAMES) BEDS.mix[k] = 0; BEDS.film = null; pullTill = 0; for (const b of DATA.ambience.beds) b[1] = 0; }
 
     /* ---------------------------------------------------------------- the people at rest in the room: Grandmaster Pho's eyes
