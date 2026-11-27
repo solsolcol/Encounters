@@ -949,7 +949,9 @@
            narrowing with them; his sight forced open on the threads at his feet; then the oven's clock (3:41); on the floor
            against the sofa, the picture a slit; he crawls to his table and calls from his knees */
         const seat = [sf.x + 0.05, F2EYE.sofa, sf.z + 0.2], fl = [sf.x + 0.1, 0.86, sf.z + 0.78], knee = [F2HX - 0.3, F2EYE.knees, 0.35];
-        K.push({ t: E.down, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
+        /* (his look down to his phone as his hand lays it on the table, over 0.9 s: by E.down, 0.3 s in, the look fell 42 degrees
+           and the lens closed 12 to 20 in three tenths of a second, measured as a move) */
+        K.push({ t: E.flat - 0.1, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 1.6, 1.15, tb.z - 0.9], fp: 62, fd: 54, n: 'B:turn' });
         /* (to his sofa looking at his altar across the room, its candle, his teacher's photograph: as he says he will not
            wake him; in its last metre to his glass, where he sits facing it) */
