@@ -300,7 +300,10 @@
         if (Nm) { nv.fromBufferAttribute(Nm, i); if (nv.y < 0.8 * nv.length()) continue; }
         rs.push(Math.hypot(v.x - cx, v.z - cz)); }
       rs.sort((a, b) => a - b);
-      const rW = rs.length ? rs[Math.floor(rs.length * 0.98)] : 0.8 * R;
+      /* (and of those, the disc from the middle out to its first gap: the bowl's ledges and its lip face up at that height too,
+         farther out, and taken with the water they made the ring the bowl's whole width and the lip was not drawn, 27 Nov) */
+      let rW = 0.8 * R;
+      if (rs.length) { rW = rs[rs.length - 1]; for (let i = 1; i < rs.length; i++) if (rs[i] > 0.3 * R && rs[i] - rs[i - 1] > 0.025 * R) { rW = rs[i - 1]; break; } }
       return { cx, cz, yW, rW, R, H, y0, eps: 1.2 * band, n: P.count };
     }
     function bowlLook(m, o = {}) {
