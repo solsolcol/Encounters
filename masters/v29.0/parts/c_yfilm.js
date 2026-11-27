@@ -152,6 +152,18 @@
     const f1Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     const _f1S = new THREE.Vector3();
     function f1Palm(P, sd, out) { const hb = f1Bone(P, sd + 'Hand'), kb = f1Bone(P, sd + 'HandMiddle1'); if (!hb) return null; hb.getWorldPosition(out); if (kb) out.lerp(kb.getWorldPosition(_f1S), 0.5); return out; }
+    /* THE PALM'S MIDDLE BY THE HAND'S OWN MEASURE (armsOf: the fingers' line and the palm's facing from the bind pose, a
+       rig with no finger bones measured from its skin), `up` metres out of the palm: his teacher's seated body has no finger
+       bones, and the packet laid at f1Palm sat on his wrist (photographed 27 Nov) */
+    const _f1Pq = new THREE.Quaternion(), _f1Pv = new THREE.Vector3();
+    function f1PalmOn(P, sd, out, up = 0) {
+      const A = typeof armsOf === 'function' ? armsOf(P) : null, a = A && A[sd === 'Left' ? 'L' : 'R'];
+      if (!a) return f1Palm(P, sd, out);
+      a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(out); a.hand.getWorldQuaternion(_f1Pq);
+      const sc = a.hand.getWorldScale(_f1Pv).x;
+      out.addScaledVector(_f1Pv.copy(a.fL).applyQuaternion(_f1Pq), a.palm * sc).addScaledVector(_f1Pv.copy(a.nL).applyQuaternion(_f1Pq), up);
+      return out;
+    }
     /* SPIRIT VISION held by a film's clock (the engine's curve, out from his eyes over `secs` from `t0`, full until `t1`, home
        over `back`), held only round the moments it is open */
     const VR1 = 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
@@ -967,7 +979,7 @@
         /* (under her palm, between her fingers: she holds it out palm down. Photographed 27 Nov: laid 1.5 cm over the palm's
            middle, it sat on the back of her hand) */
         if (pm) f1Drop(g, pm.x, pm.y - 0.03, pm.z, 0.4); } }
-      else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.02, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
+      else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.025); if (pm) f1Drop(g, pm.x, pm.y, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
       else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
       const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
       /* (its dull red breathing slowly, at M3's pulse, 52 a minute: the pull, held still on the plate) */
@@ -1294,7 +1306,7 @@
       if (!g) return;
       g.visible = held && !!g.userData.model && BOWL1.R > 0;
       if (!g.visible || !P || !P.ready) return;
-      P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1pb); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
+      P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1pb, 0); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
       /* (the pour's direction: from his hand toward the bottle's mouth; the bowl's near rim under his fingers, 2 cm below the
          palm's middle, the bowl beyond it, turned about the level line across that direction, so its far rim dips to the
          bottle) */
@@ -1311,7 +1323,7 @@
       cordBowl1(t, T);
       if (b) { const on = t >= T.pour + 0.9 && t < T.take + 0.2;
         if (on) { if (t < T.give) { f1Drop(b, CB1.x, CLOTH_Y, CB1.z, 0); }
-          else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1A); if (pm) f1Drop(b, pm.x, pm.y - 0.05, pm.z, 0); } } }
+          else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1A, 0.012); if (pm) f1Drop(b, pm.x, pm.y, pm.z, 0); } } }   // (stood on his palm held out: his seated body has no finger bones, and at f1Palm it stood 5 cm under his wrist)
         b.visible = on; }
       const sp = PROPS1.spool; if (sp) { const on = t >= T.wrap - 0.3 && t < T.pour; if (on) f1Drop(sp, ON_CLOTH.plate.x + 0.2, CLOTH_Y, ON_CLOTH.plate.z - 0.06, 0.4); sp.visible = on; }
     }
