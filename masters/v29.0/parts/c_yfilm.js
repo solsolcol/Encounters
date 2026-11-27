@@ -719,17 +719,25 @@
         put(P, L.x, L.z, lRy, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
         f1Gaze(P, t, [[T.land, [-2.85, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.8, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02);
       }
-      /* the cloth bag on his left shoulder, hung at his right hip by its strap (it goes where his body goes) */
+      /* the cloth bag on his left shoulder (it goes where his body goes) */
       phoBagOn1(P);
     }
+    /* HIS CLOTH BAG ON HIS LEFT SHOULDER (the plan's 9.1 and 9.6: "his cloth bag on his shoulder"; 27 Nov, photographed: hung
+       at his right hip, its short strap rose to his elbow and the bag hung off his bare arm, through it). Its strap's top on
+       the top of his shoulder, over the robe, and the bag hanging below it outside his arm, its foot pushed out by the arm a
+       little (a tilt of 0.45 rad about his front-to-back line), so a swinging arm passes inside it. w51phobag stands 0.497 m
+       from its foot to the top of its strap, 0.32 wide, 0.18 deep */
+    const PHOBAG1 = { top: 0.497, up: 0.08, out: 0.03, tilt: -0.45 };
     function phoBagOn1(P) {
       const g = PROPS1.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
-      const sh = f1Bone(P, 'Spine2') || f1Bone(P, 'Spine1') || P.hips; if (!sh) return;
+      const sh = f1Bone(P, 'LeftArm') || f1Bone(P, 'LeftShoulder'); if (!sh) return;
       P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A);
-      const ry = P.group.rotation.y, rt = new THREE.Vector3(-Math.cos(ry), 0, Math.sin(ry)), fw = new THREE.Vector3(Math.sin(ry), 0, Math.cos(ry));
+      const ry = P.group.rotation.y, lf = new THREE.Vector3(Math.cos(ry), 0, -Math.sin(ry));
       if (g.parent !== world) world.attach(g);
-      g.position.copy(_f1A).addScaledVector(rt, 0.2).addScaledVector(fw, -0.02); g.position.y -= 0.52;
-      g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
+      g.rotation.set(PHOBAG1.tilt, ry + Math.PI / 2, 0, 'YXZ'); g.scale.setScalar(1); g.updateMatrix();
+      const topOff = new THREE.Vector3(0, PHOBAG1.top, 0).applyEuler(g.rotation);
+      g.position.copy(_f1A).addScaledVector(lf, PHOBAG1.out); g.position.y += PHOBAG1.up; g.position.sub(topOff);
+      g.visible = true;
     }
     /* his teacher seated, from the cut inside: at the low table spreading his white cloth over it as the lens comes in, then
        at rest, his hands in his lap (the play's seat) */
@@ -822,9 +830,9 @@
           hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
         /* (photographed 27 Nov: held on her as she stepped back into her room, the lens found the door's jamb and her
            shoulder. On his word the look goes to his teacher, who says it, across the lobby; she steps back unseen) */
-        { t: T.ph2 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.3, OPEN1.land.grace.z], 1.3), fp: 52, fd: 44,
+        { t: T.ph2 - 0.45, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.3, OPEN1.land.grace.z], 1.3), fp: 52, fd: 44,
           hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
-        { t: T.ph2 + 0.35, name: 'pho', eye: [OPEN1.land.eye[0] + 0.03, EYE, OPEN1.land.eye[2] + 0.02], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
+        { t: T.ph2 + 0.6, name: 'pho', eye: [OPEN1.land.eye[0] + 0.03, EYE, OPEN1.land.eye[2] + 0.02], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
           hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
         { t: T.inn - 0.05, name: 'pho', eye: [OPEN1.land.eye[0] + 0.02, EYE, OPEN1.land.eye[2]], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
           hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
@@ -883,25 +891,38 @@
       const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.32 * f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
       f1Lean(P, lean, -0.55 * turnK);
       if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
-        const tx = lp(lp(0.42, 0.44, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, 0.86, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, 0.6, r), CLOTH_Y + 0.07, u);
+        const tx = lp(lp(0.42, KEEPG1.meet[0] - 0.01, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, KEEPG1.meet[2] + 0.04, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, KEEPG1.meet[1] - 0.02, r), CLOTH_Y + 0.07, u);
         handTo(P, 'L', [tx, ty, tz], [0.0, -0.1, -1], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
       const wax = f1Env(t, T.wax - 1.2, T.chant + 4.5, 0.9, 1.0);
       if (wax > 0.001) handTo(P, 'R', [ON_CLOTH.bowl.x - 0.06, CLOTH_Y + 0.5, ON_CLOTH.bowl.z + 0.12], [0.3, 0.6, -0.4], [0.4, -0.2, 0.5], wax, { out: 0.25, down: 0.25 });
-      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
     }
+    /* SHE STANDS TO GIVE IT (photographed 27 Nov: seated on her sofa and he on his cushion, they sit 2.2 m apart across the
+       table, and two seated arms with all the lean a body has reach 1.6 m: her hand and his palm never met, 0.4 m and more
+       apart, and the packet passed from one to the other through the air). So as the packet comes out of her bag she gets
+       up from the sofa, by her rise (the opening sits her down by the same take played back), comes up 0.72 m forward
+       between the sofa and the table, and bends over the table holding it out to him; he leans to it from his cushion
+       and her hand and his palm meet over the cloth's near half (0.8 m up); she lets it go into his palm at 12.5, straightens
+       and sits down again under the insert that follows (14 s on). Marcus's hand leaves her shoulder as she rises */
+    const KEEPG1 = { stand: { x: 0.42, z: 0.40 }, meet: [0.45, 0.8, 1.0], head: 1.5 };
+    const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 0.8) / 2.4)));
+    const keepGraceH1 = (t, T) => lp(GRACE_HEAD_SEATED, KEEPG1.head, keepGraceUp1(t, T));
     function keepGrace1(t, T) {
       const P = cast.grace; if (!P || !P.ready) return;
       f1LeanBack(P);
-      const st = STATION.room.grace; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
-      const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : P.acts.Sitting_Answering_Questions ? 'Sitting_Answering_Questions' : 'Idle_3';
-      pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false);   // (inside the take's clean window, 0.25 on: c_cast.js; at 0.1 she slid off the seat's edge, her knees in its front)
-      /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out and held across to his
-         teacher's palm, her fingers closed on it, leaning to him (9 to 12.5 s); let go; her hands back to her lap */
-      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull, T.give + 0.9, 0.9, 0.8);
-      f1Lean(P, 0.45 * hold);
+      const st = STATION.room.grace, up = keepGraceUp1(t, T);
+      put(P, lp(st.x, KEEPG1.stand.x, up), lp(st.z, KEEPG1.stand.z, up), st.ry, (P.home && P.home.y) || 0);
+      /* (seated as the opening seats her, at the start of her rise, and stood up by it: photographed 27 Nov, in her restless
+         rest's pose her hips sat at the seat's front edge and her knees went into its front) */
+      if (P.acts.rise) pose(P, 'rise', lp(0.05, 4.9, up), false);
+      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
+      /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out, and held out over the
+         table to his teacher's palm as she stands, her fingers closed on it, bent to him (9.5 to 12.5 s); let go; her hand back */
+      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull + 0.5, T.give + 0.9, 1.6, 0.8);
+      f1Lean(P, 0.55 * hold * up);
       if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
-      if (hold > 0.001) { handTo(P, 'L', [0.46, 0.6, 0.78], [0.05, -0.1, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
-      f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [0.46, 0.6, 0.9], 0.6], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
+      if (hold > 0.001) { const M = KEEPG1.meet; handTo(P, 'L', [M[0] + 0.01, M[1] + 0.02, M[2] - 0.03], [0.05, -0.15, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
+      f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.05], 0.8], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
     }
     function keepMarcus1(t, T) {
       const P = cast.marcus; if (!P || !P.ready) return;
@@ -909,15 +930,16 @@
          from it, behind the sofa at her right shoulder; his left hand on her shoulder from 7 to 13 s) */
       f1LeanBack(P);
       const M = KEEP1.mkStand; put(P, M.x, M.z, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
-      const on = f1Env(t, T.bag + 0.4, T.give + 1.4, 0.8, 0.8);
-      /* (her shoulder is 0.8 m from his across the sofa's back: he leans over it to lay his hand there, as a person does) */
-      f1Lean(P, 0.28 * on);
+      const on = f1Env(t, T.bag + 0.4, T.pull + 0.5, 0.8, 0.6);   // (his hand leaves her shoulder as she gets up)
+      /* (her shoulder is 0.7 m from his across the sofa's back: he leans over it to lay his hand there, as a person does;
+         photographed 27 Nov, leaning 0.28 rad his left hand stopped short of her shoulder, over her bowed head) */
+      f1Lean(P, 0.42 * on);
       /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
          now on the top of her shoulder, over its joint, a little in from it) */
       if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
         if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); if (nk) { nk.getWorldPosition(_f1S); _f1A.lerp(_f1S, 0.2); }
-          handTo(P, 'L', [_f1A.x, _f1A.y + 0.06, _f1A.z], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
-      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.give + 0.2, [0.46, 0.6, 0.86], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
+          handTo(P, 'L', [_f1A.x, _f1A.y + 0.06, _f1A.z - 0.05], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.give + 0.2, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2]], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
     /* THE PACKET: in her bag; in her left hand from 9.5 s; laid in his palm at 12.5 s; in his hand to the plate; on the plate,
        its red knot glowing dully while it is the insert's subject */
@@ -996,26 +1018,31 @@
     function keepKeys1(T) {
       const eye = [HER.him.x, KNEEL_EYE, HER.him.z];
       const phoFace = () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.98);
-      const graceFace = () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED);
+      /* (her head where she is: seated, or standing to give it, a smooth function of the film's clock, never her living head) */
+      const graceFace = () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(F1.t, T));
       const handAt = [0.5, 0.64, 1.1];
       return [
         /* Pho's open hand across the cloth, his face: a slight push toward the hand */
-        /* (a phone holds his face as he asks, his arm reaching out of the picture toward her: 41 degrees part his face and his
-           hand from where he kneels, and a phone sees 25; a desk holds both) */
+        /* (a phone cannot hold his face and his hand from where he kneels: 41 degrees part them, and a phone sees 25 to 30. And
+           from his side, his face as he asks her is a lost profile (photographed 27 Nov: the back of his head and his ear). So
+           a phone holds HER, whom he asks, with his open hand reaching across the cloth into the picture toward her; a desk
+           holds his face and his hand) */
         { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
-          atP: () => { const f = phoFace(); return [f[0] + 0.05, f[1] - 0.1, f[2] - 0.12]; }, holdP: () => { const f = phoFace(); return [[f[0], f[1] + 0.08, f[2], 0.12], [f[0], f[1] - 0.28, f[2] - 0.08, 0.14]]; } },
+          atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.58), lp(handAt[1], g[1] - 0.1, 0.58), lp(handAt[2], g[2], 0.58)]; },
+          holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
         { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
-          atP: () => { const f = phoFace(); return [f[0] + 0.06, f[1] - 0.12, f[2] - 0.16]; }, holdP: () => { const f = phoFace(); return [[f[0], f[1] + 0.08, f[2], 0.12], [f[0], f[1] - 0.28, f[2] - 0.08, 0.14]]; } },
+          atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.6), lp(handAt[1], g[1] - 0.1, 0.6), lp(handAt[2], g[2], 0.6)]; },
+          holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
         /* across the table to her: her face, both hands, the packet */
         { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.52, g[2] + 0.35]; }, fp: 46, fd: 38, cut: true,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
         /* (photographed 27 Nov: on a phone her face and the two hands meeting over the table are 25 degrees apart, and the
            packet passing was out of the picture. So the look goes down to the hands as she holds it out, and stays on them
            as it is laid in his palm: the beat is seen on every screen) */
         { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 38,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
-        { t: T.give - 0.9, name: 'hands', eye, at: [0.47, 0.6, 0.8], fp: 44, fd: 38, hold: [[0.46, 0.62, 0.84, 0.2]], back: 0.3, fmax: 56 },
-        { t: T.place - 0.15, name: 'hands', eye, at: [0.46, 0.62, 0.92], fp: 44, fd: 38, hold: [[0.46, 0.62, 0.9, 0.2]], back: 0.3, fmax: 56 },
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
+        { t: T.give - 0.9, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
+        { t: T.place - 0.15, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.02, KEEPG1.meet[2] + 0.06], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] + 0.05, 0.2]], back: 0.3, fmax: 56 },
         /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
         { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
         { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
@@ -1121,7 +1148,7 @@
       /* her long breath out, then quiet crying, her hands over her face (her written take's EARLY window only: its later fold
          to her knees is far more than the plan's "cries quietly": people/RECORD.md 4); her phone; her small thank you */
       if (P.acts.gcry && tau >= T.cry) { const u = c01((tau - T.cry) / 2.2); pose(P, 'gcry', lp(0.0, 1.6, smo(u)) + 0.05 * Math.sin(tau * 1.7) * u, false); }
-      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false); }
+      else { const tk = P.acts.rise ? 'rise' : P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'rise' ? 0.05 : tk === 'gsofa' ? 0.3 : 0.8, false); }
       const face = f1Env(tau, T.cry + 1.0, T.phone - 0.3, 0.9, 0.6);
       if (face > 0.001) { const h = P.head; if (h) { P.group.updateWorldMatrix(true, true); h.getWorldPosition(_f1A); const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(P.group.quaternion);
         for (const [sd, sx] of [['L', 0.05], ['R', -0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
@@ -1446,7 +1473,7 @@
       state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds, held: F1.held || null }),
       shot: () => F1.shot,
       helpers: { track: f1Track, walk: f1Walk, speak: f1Speak, gaze: f1Gaze, head: f1Head, show: f1Show, vision: f1Vision, look: f1Look, lens: f1Lens,
-                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1 },
+                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1, phoBag: phoBagOn1 },
       /* every person the films can show (a probe's: chapter 5's films probe reads `people()`) */
       people: () => ({ pho: cast.pho, grace: cast.grace, marcus: cast.marcus, phoStand, driver: driver1 })
     };
