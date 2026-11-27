@@ -73,6 +73,9 @@ is about 5 s from T.sofa, her sitting 3 s more: she is seated at about T.inn + 1
 seats her under the film's black, but the film's own last frames should have her on the sofa (v5.25: a film ends with its
 people where play keeps them).
 
+THE BOTTLE ON HIS ALTAR (27 Nov): `things.bottle` is shown by the play whenever the night or the decision is applied (a
+Continue plays no film of home), hidden by a replay; the film of home still shows it at its end as before.
+
 WHAT PLAY LEAVES ON for a film to take over: at the room's end Spirit Vision is closed; at the breaking's end the bowl is
 let go (back on the cloth), the lens and Spirit Vision given back, the chant's last verse coming; at the night's end the
 pressure is HELD on screen under the decision (kit.press k as it was, no waves): FILMS-2's endings begin with `kit.press`
