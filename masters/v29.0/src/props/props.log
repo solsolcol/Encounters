@@ -2,3 +2,94 @@
   remesh fiddlefig 30000 IN_PROGRESS 35%
   remesh fiddlefig 30000 IN_PROGRESS 60%
   remesh fiddlefig 30000 IN_PROGRESS 89%
+  remesh fiddlefig 30000 IN_PROGRESS 90%
+  remesh fiddlefig 30000 SUCCEEDED 100%
+remesh done fiddlefig 30000 102046416
+  CONTRACT: w 0.614  h 1.500  l 0.648 m (x -0.307..0.307, z -0.324..0.324)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w51fig.glb: 31159 -> 31159 triangles; 97.3 MB -> 1379 KB
+{
+ "info": {
+  "size": [
+   0.6136509292886135,
+   1.5,
+   0.6480758079775384
+  ],
+  "min": [
+   -0.30682546464430677,
+   0,
+   -0.3240379039887692
+  ],
+  "max": [
+   0.30682546464430677,
+   1.5,
+   0.3240379039887692
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 31159
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.307,0,-0.324],[0.307,1.5,0.324]],"size":[0.614,1.5,0.648]}
+errs []
+fiddlefig -> assets/w51fig.glb 1412364 bytes
+  remesh snakeplant 20000 IN_PROGRESS 1%
+  remesh snakeplant 20000 IN_PROGRESS 35%
+  remesh snakeplant 20000 IN_PROGRESS 60%
+  remesh snakeplant 20000 IN_PROGRESS 89%
+  remesh snakeplant 20000 IN_PROGRESS 90%
+  remesh snakeplant 20000 SUCCEEDED 100%
+remesh done snakeplant 20000 107733188
+  CONTRACT: w 0.364  h 0.600  l 0.365 m (x -0.182..0.182, z -0.183..0.183)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w51snake.glb: 20571 -> 20571 triangles; 102.7 MB -> 3715 KB
+  remesh arecapalm 40000 IN_PROGRESS 1%
+  remesh arecapalm 40000 IN_PROGRESS 35%
+  remesh arecapalm 40000 IN_PROGRESS 60%
+  remesh arecapalm 40000 IN_PROGRESS 89%
+  remesh arecapalm 40000 IN_PROGRESS 90%
+  remesh arecapalm 40000 SUCCEEDED 100%
+remesh done arecapalm 40000 71791444
+  CONTRACT: w 0.983  h 1.200  l 0.837 m (x -0.492..0.492, z -0.419..0.419)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w51palm.glb: 36743 -> 36743 triangles; 68.5 MB -> 1800 KB
+{
+ "info": {
+  "size": [
+   0.9833430366025409,
+   1.2000000476837158,
+   0.8372570296379013
+  ],
+  "min": [
+   -0.4916715183012704,
+   0,
+   -0.41862851481895064
+  ],
+  "max": [
+   0.4916715183012704,
+   1.2000000476837158,
+   0.41862851481895064
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 36743
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.492,0,-0.419],[0.492,1.2,0.419]],"size":[0.983,1.2,0.837]}
+errs []
+arecapalm -> assets/w51palm.glb 1843504 bytes

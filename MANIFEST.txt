@@ -1891,7 +1891,7 @@ a483da10d67d5aaf8a9213f97bddf3b058c2613128e85de1185b26e7b62047ea  masters/v29.0/
 2f278a35bb7fe6e5aa4f98ae539332d04cadf860574620a225baf8f7ed55f2ef  masters/v29.0/src/people/thumb-marcus-front.png
 ef7c20962677a79a571b9b0a27a94c8f9f0ef86da4354577c37ba80b5eb8630f  masters/v29.0/src/people/thumb-marcus-left.png
 5ad3ad6596a2af7827767e230ff5eb0535a75781d0cca49e6debc7f299f89938  masters/v29.0/src/people/thumb-marcus-right.png
-84fbf3a4751903ca193d3a9ee41447d9fec2d6f22db03c41a6680bd624306d90  masters/v29.0/src/props/jobs.json
+e39d89d56d741982a5db40398930e5bb5436b9c5b64b1dd467175557d4382694  masters/v29.0/src/props/jobs.json
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v29.0/src/props/jobs.json.lock
 85710276a100e54882bf56ee2d520061adca3cea3091624d77db9c433af581da  masters/v29.0/src/props/original-aircon.glb
 2be6172e52fb82f3cae8a8373c6f9aaba11f804fef1913544466492280b4e78a  masters/v29.0/src/props/original-altarcab.glb
@@ -1921,7 +1921,7 @@ edbeefe9bbe2e987ce00077678b39986d3dcf7e5e8f55653eb1a2603428cf252  masters/v29.0/
 2a51407c378b120ff578cc79a3e16c1dd516ae65ee122b98404d44aaeb8c6c42  masters/v29.0/src/props/original-shoulderbag.glb
 c2379d8bb1b43d50d24e329ddb1fbfe78c09cf99352e700bb7761a369cacafa7  masters/v29.0/src/props/original-snakeplant.glb
 8de1d46f31c530962fb8a36085097759d43e6f6de68c38409e58c2d2a1d0c1aa  masters/v29.0/src/props/original-takeaway.glb
-41566083e0e4da5c08fa451e31e8589d395209ae7fd58b5945f72758cfb2a032  masters/v29.0/src/props/props.log
+d7ca33600c46caf55c14d93988e101c2b9f6e6f6eead649f4914cce8e2f96740  masters/v29.0/src/props/props.log
 8631e019d8197e87bb11fa2d40060cfbc054021d256d9d3bc02b3878983d0c45  masters/v29.0/src/props/remeshed-aircon-12000.glb
 f2139fd8493fdc793e552804e7f1a50a0bf620f725b5150d93448f15bf534eab  masters/v29.0/src/props/remeshed-altarcab-20000.glb
 943445f6ec1bc6e450c5cc3da2d60a01d7fe6dafb03c4ed100f290c6efbdce5b  masters/v29.0/src/props/remeshed-bookshelf-30000.glb
