@@ -121,6 +121,9 @@ for (const k of ENDS) {
         const two = await rowsOf(p, i, j); res.rows.push(...two[0]); if (BOTH) res.rowsD.push(...two[1]);
       }
       const f = `${OUT}/${VIEW}-seek-end${k}.json`; fs.writeFileSync(f, JSON.stringify(res)); log(k, res.rows.length, 'rows ->', f);
+      /* (and the PICS of this ending from the same boot, after the rows: every picture a function of the clock, so a seek back
+         lands on its own moment) */
+      for (const t of (PICS[k] || [])) { await seekTo(t); await seekTo(t); await shoot(String(t.toFixed(2)).padStart(6, '0')); }
     } else if (MODE === 'play') {
       /* played: up to the circle on a slowed clock, the circle, then on (a row a drawn frame) */
       await p.evaluate(({ FROM, UNTIL, STEP_MS }) => {

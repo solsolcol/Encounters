@@ -88,7 +88,10 @@
     const T = tl(d0, [[1.2], ['@wake'], [1.3], ['@sit'], [1.3], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.5], ['@inside'], [1.8], ['@wind'], [5.0], ['@table'], [1.8],
                       ['zv51w1', 0.45], ['ph51w2', 0.8]].concat(own, [['@tie'], [0.4], ['ph51w3', 0.5], ['zv51w2', 0.6], ['@black']]));
     T.knot1 = T.tie + 1.5; T.knot2 = T.tie + 3.0;                                  // knotted twice, under the first half of his line
-    T.up = T.tie + 3.6;                                                            // his eyes up to his teacher's face: "From now on, we prepare first."
+    /* his eyes up to his teacher's face for "From now on, we prepare first." (the line's second sentence, about 3.4 s into
+       it): only once his teacher's hands have left the knot and his own hand is down out of the picture, so the look that
+       rises never carries a held hand up with it (the hands' pass is drawn from the lens, not from the world) */
+    T.up = T.tie + 3.9;
     T.d0 = d0; T.end = T.black + 1.6;
     return T;
   }
@@ -237,6 +240,7 @@
       /* the Jinapañjara through the phone, its captions on its breaths (kit.captions, wall time: v21.31) */
       sfx(B.chant, 'ph51jinatel', 1);
       step(B.chant, () => F.chantOn());
+      step(B.chantEnd + 0.4, () => F.chantOff());
       sfx(B.m7, 'u51m7circle', 0.7);                                               // M7 The Circle: low strings and khim under the chant, rising to the break
       sfx(B.vis0, 'u51vison', 0.85);                                               // his sight opened, held by the film
       sfx(B.door0 + 0.2, 'u51gtick1', 0.45); sfx(B.door0 + 1.7, 'u51gtick2', 0.4);  // the glass ticking, pressed from outside
