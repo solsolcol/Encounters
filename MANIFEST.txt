@@ -1799,3 +1799,13 @@ d883c6b3a9ad71737fbbcc5b8408b1c2dfcdcdb6f1dc36644bdd60ff114761b9  masters/v29.0/
 802425bec6a232343ebe62b4691fd43eee376fd28d9f84892bd06b1beb1125ff  masters/v29.0/src/people/preremesh-marcus.glb
 e0bdb58ead674c98463865ccdd20034904b95cbb68642d4ca6d8114fcf421449  masters/v29.0/src/people/remeshed-grace-40000.glb
 e4b97cc07a98d2534a90db3430b9fd406dcf18820892d34fbcfead57d0f36ec2  masters/v29.0/src/people/remeshed-marcus-40000.glb
+b6cff8176f373b129635aad6b5af60058c260a71e163e21de8a9ee9459ad757b  masters/v29.0/src/people/rigged-grace-r1nofingers.fbx
+7ffdc84d671e91691048d3a61aba652897f7934abd56f415f9911612efa8b47c  masters/v29.0/src/people/rigged-grace-r1nofingers.glb
+43c1d0d08af7b3ceda8af857543c5bad78420de9d78331a2cb009ea66b4d5705  masters/v29.0/src/people/rigged-grace.fbx
+ecd611e862a4739a792df4996c63a6032940b4272ad5e73fa97f5314e5680367  masters/v29.0/src/people/rigged-grace.glb
+420d0758e9a278698b9dace5a9faebd6519b0a23f22ef720533f1b53308b64fc  masters/v29.0/src/people/rigged-marcus.fbx
+93d7fcdecc0aac38c67593182259f114c422461578e2e1de328fb8022f5b3b9f  masters/v29.0/src/people/rigged-marcus.glb
+74049903e4b21fda01112af08de4fa54f79919390ee71a1574e79b3439b6b3cf  masters/v29.0/src/people/take-grace-r1nofingers-running.fbx
+5fd541680293ca664b0939fdb72e10eabb497cd37845e9d168089539785f6761  masters/v29.0/src/people/take-grace-r1nofingers-running.glb
+a2736dff49d5a0cbb6d6545bc59da1e31ae92fc1ab4d64a2db73d8f2b9e22f44  masters/v29.0/src/people/take-grace-r1nofingers-running_armature.glb
+54a91236a4a947a3a0bcb768c54e31964e5d3dd7eba959a8587d893d4770dd73  masters/v29.0/src/people/take-grace-r1nofingers-walking.fbx
