@@ -91,6 +91,9 @@ for (const k of ENDS) {
     errs = await reach(p, k);
     if (process.env.NOCAP === '1') await p.addStyleTag({ content: '#caption{display:none !important}' }).catch(() => {});
     await p.evaluate(INSTALL);
+    /* (the film's times are its own once its first frame has run: read the moment the cutscene was active, they were null on
+       a desktop once, d7's B) */
+    await p.waitForFunction(() => { try { return !!window.__enc.stage.films.ends2.marks(); } catch { return false; } }, null, { timeout: 120000, polling: 200 });
     const dur = await p.evaluate(() => window.__enc.cine.dur()), labels = await p.evaluate(() => window.__labels());
     const M = await p.evaluate(() => { const E = window.__enc.stage.films.ends2.marks(), o = {}; for (const q in E) if (typeof E[q] === 'number') o[q] = +E[q].toFixed(2);
       o.bar = {}; for (const q in E.bar) if (typeof E.bar[q] === 'number') o.bar[q] = +E.bar[q].toFixed(2); o.dawn = {}; for (const q in E.dawn) if (typeof E.dawn[q] === 'number') o.dawn[q] = +E.dawn[q].toFixed(2); return o; });

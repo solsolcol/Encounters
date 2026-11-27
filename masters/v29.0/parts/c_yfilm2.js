@@ -541,13 +541,20 @@
        home over `back`), held only round the moments it is open (a held radius of 0 draws every frame through the vision's
        pass for nothing: episode 4 chapter 5's R51) */
     /* (the films open his sight as far as play does: the chapter's own declared reach, the engine's 70 m when it names none.
-       At 70 m the city past it stays as it is, its edge a curve across the blocks out of his glass: d7's desktop pictures
-       at D 7.2 s and A 77.0 s; said to the coordinator, the chapter's to decide, and these films follow it) */
-    const F2VR = (DATA.vision && DATA.vision.rmax) || 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
+       At 70 m the city past it stayed as it was, its edge a curve across the blocks out of his glass: d7's desktop pictures
+       at D 7.2 s and A 77.0 s; PLAY made it 200 m, sky 190, at 75f0be6. The films' times were set at 70 m, so each opening is
+       stretched by the reach against 70 m, as PLAY stretched play's, and the wave crosses his room at the pace it did, going
+       on out over the city after; a close takes the room home at the moment it did, whatever lay past 70 m going in its first
+       0.4 s; a close that comes while the wave is still going out starts from where it has got to) */
+    const F2VR = (DATA.vision && DATA.vision.rmax) || 70, F2VK = F2VR / 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
     function f2VisionR(t, t0, secs, t1, back) {
-      if (t >= t0 && t < t0 + secs) return [F2VR * f2VisCurve((t - t0) / secs), true];
-      if (t >= t0 + secs && t < t1) return [F2VR, false];
-      if (t >= t1 && t < t1 + back) return [F2VR * f2VisCurve(1 - (t - t1) / back), true];
+      if (t < t0) return [0, false];
+      const S = secs * F2VK, rOpen = (q) => F2VR * f2VisCurve(c01((q - t0) / S));
+      if (t < t1) return [rOpen(t), t < t0 + S];
+      if (back > 0 && t < t1 + back) {
+        const r1 = rOpen(t1), u = (t - t1) / back;
+        return [Math.min(r1, 70) * f2VisCurve(1 - u) + Math.max(0, r1 - 70) * (1 - f2smo(c01((t - t1) / 0.4))), true];
+      }
       return [0, false];
     }
     function f2Vision(r, mv, t) {
