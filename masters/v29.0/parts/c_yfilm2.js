@@ -880,13 +880,17 @@
     const f2Tap = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.006, 0.27, 8, 1, true), f2TapMat); owned.push(f2Tap.geometry);
     f2Tap.name = 'the water from his tap (ending C)'; f2Tap.position.set(F2HX + 0.95, 1.2 - 0.135 - 0.01, LIV.z0 + 0.31 - 0.06); f2Tap.visible = false; hisSideG.add(f2Tap);
     /* HIS HAND UNDER THE WATER. The hand is the hands' pass's (the library's reach, placed by shares of the screen), the water
-       the world's: laid at the sink's height alone, the water ended 5 % of a phone's picture above his hand and, on a desktop,
-       a fifth of the screen to its left (run 9's and the shot's own numbers). So the shot is turned, for this screen's shape,
-       about the upright through his eye until the water stands over his knuckles (the reach laid whole, read and left for
-       the frame to lay its own, as the tie's wrist is), and the water falls onto them: it ends on his knuckles' line while
-       his hand is under it and runs on down to the sink as the hand leaves */
+       the world's: laid from the shot alone, the water met the sink 5 % of a phone's picture above his hand and, on a
+       desktop, above it and a fifth of the screen to its right (run 9's phone at 7.2 s, d7's desktop at 6.6 s). So the shot
+       is turned, for this screen's shape, until the water stands over his knuckles and meets the sink just under their line
+       on the screen (the reach laid whole, read and left for the frame to lay its own, as the tie's wrist is): lifted a few
+       degrees, so his hand is between the spout and where the water lands, and turned about the upright so the water's line
+       crosses his knuckles. The water runs whole to the sink; his hand, drawn over the world, covers it from his knuckles
+       down while it is under it, and as it leaves the water is seen on down to the sink */
     const F2TAP = { g: null }, F2TAPX = F2HX + 0.95, F2TAPZ = LIV.z0 + 0.31 - 0.06, F2TAPTOP = 1.19, F2TAPSINK = 0.92;
     const _f2tc = new THREE.PerspectiveCamera(50, 1, 0.08, 160), _f2tv = new THREE.Vector3(), _f2tw = new THREE.Vector3();
+    const f2DirOf = (e, a) => { const dx = a[0] - e[0], dy = a[1] - e[1], dz = a[2] - e[2]; return { yaw: Math.atan2(dx, dz), pitch: Math.atan2(dy, Math.hypot(dx, dz)), L: Math.hypot(dx, dy, dz) }; };
+    const f2AimOf = (e, yaw, pitch, L) => { const c = Math.cos(pitch); return [e[0] + L * c * Math.sin(yaw), e[1] + L * Math.sin(pitch), e[2] + L * c * Math.cos(yaw)]; };
     function f2TapGeo(e, a0) {
       const A = F2.api, asp = camera.aspect, fov = f2Narrow() ? 58 : 50;
       if (F2TAP.g && Math.abs(F2TAP.g.asp - asp) < 1e-4 && F2TAP.g.fov === fov) return F2TAP.g;
@@ -896,28 +900,34 @@
       const k1 = R.getObjectByName('f_index01R'), k2 = R.getObjectByName('f_middle01R'); if (!k1 || !k2) return null;
       k1.getWorldPosition(_f2tv); k2.getWorldPosition(_f2tw); _f2tv.add(_f2tw).multiplyScalar(0.5);
       A.vmCam.updateMatrixWorld(); _f2tv.project(A.vmCam);
-      const kx = _f2tv.x, ky = _f2tv.y;
+      const kx = _f2tv.x, ky = _f2tv.y, land = ky - 0.10;
       _f2tc.fov = fov; _f2tc.aspect = asp; _f2tc.updateProjectionMatrix();
-      const at = (d, y) => { const dx = a0[0] - e[0], dz = a0[2] - e[2], c = Math.cos(d), s = Math.sin(d);
-        _f2tc.position.set(e[0], e[1], e[2]); _f2tc.lookAt(e[0] + dx * c + dz * s, a0[1], e[2] - dx * s + dz * c); _f2tc.updateMatrixWorld();
+      const D0 = f2DirOf(e, a0);
+      const at = (d, p, y) => { const a = f2AimOf(e, D0.yaw + d, D0.pitch + p, D0.L);
+        _f2tc.position.set(e[0], e[1], e[2]); _f2tc.lookAt(a[0], a[1], a[2]); _f2tc.updateMatrixWorld();
         return _f2tv.set(F2TAPX, y, F2TAPZ).project(_f2tc); };
-      let d = 0, yb = 1.0;
-      for (let it = 0; it < 3; it++) {
-        let d0 = d - 0.02, d1 = d + 0.02, f0 = at(d0, yb).x - kx, f1 = at(d1, yb).x - kx;
-        for (let j = 0; j < 8 && Math.abs(f1 - f0) > 1e-9; j++) { const d2 = d1 - f1 * (d1 - d0) / (f1 - f0); d0 = d1; f0 = f1; d1 = d2; f1 = at(d1, yb).x - kx; }
-        d = Math.max(-0.5, Math.min(0.5, d1));
-        let lo = 0.55, hi = F2TAPTOP - 0.04;
-        for (let j = 0; j < 24; j++) { const m = (lo + hi) / 2; if (at(d, m).y > ky) hi = m; else lo = m; }
-        yb = (lo + hi) / 2;
+      const sec = (f, x) => { let x0 = x - 0.02, x1 = x + 0.02, f0 = f(x0), f1 = f(x1);
+        for (let j = 0; j < 10 && Math.abs(f1 - f0) > 1e-9; j++) { const x2 = x1 - f1 * (x1 - x0) / (f1 - f0); x0 = x1; f0 = f1; x1 = x2; f1 = f(x1); }
+        return Math.max(-0.5, Math.min(0.5, x1)); };
+      let d = 0, p = 0, ys = F2TAPTOP;
+      for (let it = 0; it < 4; it++) {
+        /* (lifted until the water meets the sink a tenth of the half-screen under his knuckles' line) */
+        p = sec((q) => at(d, q, F2TAPSINK).y - land, p);
+        /* (the height on the water's line seen at his knuckles' line; turned until that point stands over them) */
+        let lo = F2TAPSINK, hi = F2TAPTOP;
+        if (at(d, p, hi).y <= ky) ys = hi;
+        else { for (let j = 0; j < 24; j++) { const m = (lo + hi) / 2; if (at(d, p, m).y > ky) hi = m; else lo = m; } ys = (lo + hi) / 2; }
+        d = sec((q) => at(q, p, ys).x - kx, d);
       }
-      F2TAP.g = { asp, fov, d, yb: Math.max(0.72, Math.min(F2TAPTOP - 0.05, yb)), kx, ky, wx: at(d, yb).x, wy: at(d, yb).y };
+      const top = at(d, p, F2TAPTOP), lnd = at(d, p, F2TAPSINK);
+      F2TAP.g = { asp, fov, d, p, kx, ky, ys, top: [top.x, top.y], land: [lnd.x, lnd.y] };
       return F2TAP.g;
     }
-    /* a tap shot's aim (a0 from its eye e) turned by the angle solved at the first tap shot's eye and aim (e1, a1) */
+    /* a tap shot's aim (a0 from its eye e) turned and lifted by what was solved at the first tap shot's eye and aim (e1, a1) */
     function f2TapAim(e, a0, e1, a1) {
       const g = f2TapGeo(e1, a1); if (!g) return a0;
-      const dx = a0[0] - e[0], dz = a0[2] - e[2], c = Math.cos(g.d), s = Math.sin(g.d);
-      return [e[0] + dx * c + dz * s, a0[1], e[2] - dx * s + dz * c];
+      const D = f2DirOf(e, a0);
+      return f2AimOf(e, D.yaw + g.d, D.pitch + g.p, D.L);
     }
     /* ending C: the cushion held over his eyes, close before the lens in the hands' own pass (so a wall never cuts it), its
        lower edge leaving a sliver of the room */
@@ -1303,10 +1313,10 @@
       /* (running while its sound runs: u51tap at E.tap + 0.2 opens at 0.3 s and is shut at 2.3 s, measured) */
       f2Tap.visible = k === 'C' && t >= E.tap + 0.45 && t < E.tap + 2.45;
       if (f2Tap.visible) {
-        /* (onto his knuckles while his hand is under it, the hand's own share; on down to the sink as it leaves) */
-        const g = F2TAP.g, under = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1);
-        const bot = F2TAPSINK + ((g ? g.yb : F2TAPSINK) - F2TAPSINK) * under, L = F2TAPTOP - bot;
-        f2Tap.scale.y = (L / 0.27) * (1 + 0.03 * Math.sin(t * 40)); f2Tap.position.y = F2TAPTOP - L / 2;
+        /* (whole from the spout to the sink, its top held at the spout as it shimmers: his hand covers it from his knuckles
+           down while it is under it, f2TapGeo) */
+        const L = (F2TAPTOP - F2TAPSINK) * (1 + 0.03 * Math.sin(t * 40));
+        f2Tap.scale.y = L / 0.27; f2Tap.position.y = F2TAPTOP - L / 2;
         f2TapMat.opacity = 0.5 + 0.1 * Math.sin(t * 23); }
       /* D: his balcony's door, the threads streaming in from the dark, the one that turns and lunges, the band */
       if (k === 'D') {
