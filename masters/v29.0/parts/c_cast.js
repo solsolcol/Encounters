@@ -45,6 +45,36 @@
         seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
         headDamp: { gsofa: [0.5, 'gsofa'] } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
+       0.19 m up and her toes 0.03, against 0.125 and 0.028 standing in her Idle_3. The written take stands her up on tiptoe,
+       and grounded by her toes she was held 7 cm up with her heels in the air for the whole of a stand-up: "floating"). The
+       take's foot and toe turns are laid, in memory (her file untouched: v12.4), toward her own standing feet (Idle_3's first
+       moment) by how far she has risen at each moment (the rise curve's own k: 0 seated, so a seated foot is the take's), and
+       the rise is grounded again from the feet it now has (riseCurve, as her setting-up did). One change to the clip, so the
+       films that stand her up or sit her down wear it too. Done once: a replay never builds again, and the clip is hers */
+    const FEETFLAT = new WeakSet();
+    function riseFeetFlat(P) {
+      const A = P.acts.rise, I = P.acts.Idle_3, R = P.rise && P.rise.rise, skins = P.lv && P.lv[1];
+      if (!A || !I || !R || !skins || !skins[0]) return;
+      const clip = A.getClip(); if (FEETFLAT.has(clip)) return; FEETFLAT.add(clip);
+      const ic = I.getClip(), qa = new THREE.Quaternion(), qb = new THREE.Quaternion(), done = [];
+      for (const tr of clip.tracks) {
+        const m = /(Left|Right)(Foot|ToeBase)\.quaternion$/.exec(tr.name); if (!m) continue;
+        const it = ic.tracks.find(u => u.name.endsWith(m[1] + m[2] + '.quaternion')); if (!it) continue;
+        qb.fromArray(it.values, 0);
+        for (let i = 0; i < tr.times.length; i++) {
+          const k = riseOff(R, tr.times[i], 'k'); if (!(k > 0)) continue;
+          qa.fromArray(tr.values, i * 4); if (qa.dot(qb) < 0) qb.set(-qb.x, -qb.y, -qb.z, -qb.w);
+          qa.slerp(qb, k).toArray(tr.values, i * 4); }
+        done.push(m[1] + m[2]); }
+      if (!done.length) return;
+      const keep = Object.assign({}, P.w), kt = {}; for (const k in P.acts) kt[k] = P.acts[k].time;
+      riseCurve(P, 'rise', skins);
+      for (const k in P.acts) { P.acts[k].setEffectiveWeight(keep[k] || 0); P.acts[k].time = kt[k]; }
+      personSettle(P); P.mixer.update(0);
+      P.feetFlat = done;
+    }
+    whenReady(cast.grace, riseFeetFlat);
     /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
        word, R7, under the same keys, so a new body drops in here unchanged) ON THE RATTAN CHAIR by her door (its cushion's
        top 0.42 m, measured), seated by his own posed skin; his rest the seated talk's upright first second, there and back
