@@ -1919,3 +1919,10 @@ b8d948fcc46f1dc35743c2e2d7e14359dec1aaf8d635fe3fd7cf5fb67c13c98c  masters/v29.0/
 c2ddef9590ace5c56772a6ba6cf8a2fc4f6502aedd8b98127d5c5b9b69accde8  masters/v29.0/src/props/remeshed-clock-8000.glb
 9498255d68896286f45cc6c5c928c2c0a01ea85a82f9bd6882f9a865663d3aaa  masters/v29.0/src/props/remeshed-coffeetable-16000.glb
 6a200aad547266c795ae64f7aff9d55d18a688af40ff4617c552cb587df56ce4  masters/v29.0/src/props/remeshed-gracephone-8000.glb
+65268bf2dca56999425ecb4b737ac92cf3390af64d08a30551a70fd426a249f6  masters/v29.0/src/props/remeshed-gracesofa-30000.glb
+e0eedb9ca904e4e3d0c92ee5817b1470c8ee8e05b33cba1416f708d820e3dff9  masters/v29.0/src/props/remeshed-hisbed-30000.glb
+8eb83628b14aa589b912233647d569fff3009e23a2330ed8e3a22e477005fa21  masters/v29.0/src/props/remeshed-hischair-12000.glb
+5eb40eeefb30e06bddf3c1e503326275eed4099db2f2528cb7497fed52e155ca  masters/v29.0/src/props/remeshed-hissofa-30000.glb
+7715e9346726d99aaa293f27f766b8a39f11c6b9e923d244c5961c0c2eba350e  masters/v29.0/src/props/remeshed-histable-16000.glb
+d1230abe45cb1234d510e77c9411f1303a8ff153cff0f626dfa91ec33eb3e3b6  masters/v29.0/src/props/remeshed-incense-12000.glb
+856d7b1b165468a5fdee9b5eb42a20ec22596e580f21d12784aab4536596fa65  masters/v29.0/src/props/remeshed-jasmine-20000.glb
