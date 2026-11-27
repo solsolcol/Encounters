@@ -27,7 +27,11 @@ await p.waitForFunction(() => { try { return window.__enc.stage.ready() && windo
 if (process.env.PHASE && process.env.PHASE !== 'room') { await p.evaluate((ph) => window.__enc.stage.setPhase(ph), process.env.PHASE); await frames(10); }
 if (process.env.PRE) { const r = await p.evaluate((src) => { const S = window.__enc.stage, E = window.__enc; return String(new Function('S', 'E', src)(S, E)); }, process.env.PRE); console.log('PRE', r); }
 await frames(20);
-for (const [name, x, y, z, lx, ly, lz, fov, hide = 1] of VIEWS) {
+/* (PRE2 and VIEWS2: a second snippet run after the first views, and its own views: a thing before and after a change in
+   one boot) */
+const VIEWS2 = JSON.parse(process.env.VIEWS2 || '[]');
+for (const [name, x, y, z, lx, ly, lz, fov, hide = 1] of VIEWS.concat(process.env.PRE2 ? [['@PRE2']] : [], VIEWS2)) {
+  if (name === '@PRE2') { const r = await p.evaluate((src) => { const S = window.__enc.stage, E = window.__enc; return String(new Function('S', 'E', src)(S, E)); }, process.env.PRE2); console.log('PRE2', r); await frames(20); continue; }
   await p.evaluate(([x, y, z, lx, ly, lz, fov, hide]) => { const E = window.__enc; E.kit.pose('lying', { y, yaw: 0, span: 9, pitchLo: -1.5, pitchHi: 1.5, secs: 0.01 }); E.kit.root(true);
     E.yaw.position.set(x, y, z); const dx = lx - x, dz = lz - z, dy = ly - y; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
     if (fov) E.kit.lens(fov, { secs: 0 }); else E.kit.lens(null, { secs: 0 });

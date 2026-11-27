@@ -93,11 +93,11 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,
-      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE },
+      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE, bowlLook },
       /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
       chant: RATANA, beds: BEDS,
       /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
-      dbg: { cast, people, clocks: {} },
+      dbg: { cast, people, clocks: {}, bowl: BOWLFIT },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen, story: storySnap() }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,

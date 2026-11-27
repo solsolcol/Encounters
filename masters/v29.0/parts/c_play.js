@@ -265,34 +265,88 @@
        stands and fraying with each flick of the fan; the packet's knot a dull red glow; at three o'clock his own footsteps
        and the threads. Red is the spell's alone (the plan's 4.5) */
     const RED = 0xff2233;
-    const fx = { line: [], lineMats: [], knot: null, foot: [], threads: [], fray: 0, taut: 0, phoneLit: 0, water: null, waterK: 0 };
-    /* the water: a disc inside the bowl's lip (the bowl's own measure: its rim's height and radius read off its model when it lands) */
-    {
-      const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0, depthWrite: false }); mats.push(wm);
-      const wg = new THREE.CircleGeometry(1, 40); wg.rotateX(-Math.PI / 2);
-      const w = new THREE.Mesh(wg, wm); w.visible = false; w.renderOrder = 2; world.add(w); fx.water = w;
-      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
-      const sg = new THREE.CircleGeometry(0.16, 20); sg.rotateX(-Math.PI / 2);
-      const sh = new THREE.Mesh(sg, sheen); sh.position.y = 0.002; w.add(sh); fx.sheen = sh;
+    const fx = { line: [], lineMats: [], knot: null, foot: [], threads: [], fray: 0, taut: 0, phoneLit: 0, sheen: null, waterK: 0 };
+    /* THE BOWL'S BRASS AND ITS WATER (27 Nov: the bowl on the cloth showed a flat tan-brown fill with petals in it before the
+       first order, "Pour water into the bowl."). Grandmaster Pho's bowl (`w4bigbowl`, props/RECORD.md) is ONE mesh with its
+       water and its petals in it, and the world's warm tint (the plan's brass) turned the water tan. So the bowl's paint is
+       laid by where each point of it is (`bowlLook`, its file untouched: v12.4): the metal brass, as the world tinted it; the
+       water and the petals floating on it (every point inside the water's ring at or above its level, MEASURED off the
+       model's own points as it lands) in their own colours once the water is poured, and before it the bowl's dark brass
+       inside (`uEmpty`, eased 1 to 0 by the pour: the water rises over the petals laid in it). The held copy in the breaking
+       wears the same, poured. Light on the water: the candle's glint (an additive disc on the water, no lamp: v9.4) */
+    const BOWLLOOK = { empty: { value: 1 }, tint: new THREE.Color(0xffd9a0), dark: new THREE.Color(0x5a3c1c) };
+    function bowlMeasure(q) {
+      const g = q.geometry, P = g.attributes.position; if (!P) return null;
+      g.computeBoundingBox(); const bb = g.boundingBox, cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
+      const R = Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z) / 2, H = bb.max.y - bb.min.y, y0 = bb.min.y;
+      /* the water's level: the height most of the points near the middle (inside half the radius, in the top two thirds)
+         stand at; its ring: how far out the points at that level go */
+      const N = 80, hist = new Float32Array(N), v = new THREE.Vector3();
+      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); const r = Math.hypot(v.x - cx, v.z - cz) / R, u = (v.y - y0) / H;
+        if (r < 0.5 && u > 0.33) hist[Math.min(N - 1, Math.floor(u * N))]++; }
+      let bi = 0; for (let i = 1; i < N; i++) if (hist[i] > hist[bi]) bi = i;
+      const yW = y0 + (bi + 0.5) / N * H, band = 1.5 * H / N, rs = [];
+      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); if (Math.abs(v.y - yW) < band) rs.push(Math.hypot(v.x - cx, v.z - cz)); }
+      rs.sort((a, b) => a - b);
+      const rW = rs.length ? rs[Math.floor(rs.length * 0.97)] : 0.8 * R;
+      return { cx, cz, yW, rW, R, H, y0, eps: 1.2 * band, n: P.count };
     }
-    const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, got: false };
+    function bowlLook(m, o = {}) {
+      let fit = null;
+      m.updateWorldMatrix(true, true);
+      m.traverse(q => {
+        if (!q.isMesh) return;
+        const F = bowlMeasure(q); if (!F) return; if (!fit) fit = Object.assign({ mesh: q }, F);
+        for (const mt of [].concat(q.material)) {
+          if (!mt) continue;
+          if (mt.color) mt.color.setRGB(1, 1, 1);                // (the world's flat tint taken back: the shader lays it on the metal only)
+          const uC = { value: new THREE.Vector4(F.cx, F.yW - F.eps, F.cz, F.rW) }, uEmpty = o.empty || BOWLLOOK.empty;
+          mt.onBeforeCompile = (sh) => {
+            sh.uniforms.uBowlC = uC; sh.uniforms.uBowlEmpty = uEmpty;
+            sh.uniforms.uBowlTint = { value: BOWLLOOK.tint }; sh.uniforms.uBowlDark = { value: BOWLLOOK.dark };
+            sh.vertexShader = 'varying vec3 vBowlP;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vBowlP = vec3(position);');
+            sh.fragmentShader = 'varying vec3 vBowlP;\nuniform vec4 uBowlC;\nuniform float uBowlEmpty;\nuniform vec3 uBowlTint;\nuniform vec3 uBowlDark;\n' +
+              sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+  { float br = length(vBowlP.xz - uBowlC.xz);
+    float inW = (1.0 - smoothstep(uBowlC.w * 0.97, uBowlC.w * 1.03, br)) * step(uBowlC.y, vBowlP.y);
+    vec3 dry = uBowlDark * (0.55 + 0.45 * smoothstep(0.0, uBowlC.w, br));
+    vec3 wet = mix(diffuseColor.rgb, dry, uBowlEmpty);
+    diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, wet, inW); }`);
+          };
+          mt.customProgramCacheKey = () => 'e5c1bowl';
+          mt.needsUpdate = true;
+        }
+      });
+      if (!fit) return null;
+      /* the water's middle in m's parent's frame (for the candle's glint) */
+      const c = new THREE.Vector3(fit.cx, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld), e = new THREE.Vector3(fit.cx + fit.rW, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld);
+      fit.world = { c, r: c.distanceTo(e) };
+      return fit;
+    }
+    /* the candle's glint on the water: a warm additive disc lying on it (the bowl's own measure, read as it lands) */
+    {
+      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
+      const sg = new THREE.CircleGeometry(1, 20); sg.rotateX(-Math.PI / 2);
+      const sh = new THREE.Mesh(sg, sheen); sh.visible = false; sh.renderOrder = 3; world.add(sh); fx.sheen = sh;
+    }
+    const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, x: 0, z: 0, got: false, look: null };
     function bowlFit() {
       const b = things.holyBowl; if (!b || BOWLFIT.got || !b.userData.model) return;
-      b.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(b.userData.model); if (bb.isEmpty()) return;
-      BOWLFIT.got = true; BOWLFIT.r = Math.max(0.05, 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z)); BOWLFIT.y = bb.min.y + 0.72 * (bb.max.y - bb.min.y);
+      const F = bowlLook(b.userData.model); BOWLFIT.got = true; BOWLFIT.look = F;
+      if (F) { BOWLFIT.y = F.world.c.y; BOWLFIT.r = F.world.r; BOWLFIT.x = F.world.c.x; BOWLFIT.z = F.world.c.z; }
     }
     function waterTick(wdt) {
       bowlFit();
-      const w = fx.water, want = play.found.has('w') || phase !== 'room' ? 1 : 0;
+      const want = play.found.has('w') || phase !== 'room' ? 1 : 0;
       fx.waterK += (want * (fx.pourT > 0 ? Math.min(1, 1 - fx.pourT / 2.0) : 1) - fx.waterK) * Math.min(1, wdt * 3);
       if (fx.pourT > 0) fx.pourT = Math.max(0, fx.pourT - wdt);
-      const b = things.holyBowl, onCloth = b && b.visible && b.parent;
-      w.visible = !!onCloth && fx.waterK > 0.01;
-      if (!w.visible) return;
-      w.position.set(b.position.x, BOWLFIT.y - 0.03 * (1 - fx.waterK), b.position.z); w.scale.setScalar(BOWLFIT.r * (0.85 + 0.15 * fx.waterK));
-      w.material.opacity = 0.62 * fx.waterK;
-      const lit = phase === 'room' && !play.found.has('l') ? 0.35 : 1;
-      fx.sheen.material.opacity = 0.22 * fx.waterK * lit; fx.sheen.position.set(-0.25, 0.002, 0.2);
+      BOWLLOOK.empty.value = 1 - smo(c01(fx.waterK));
+      const b = things.holyBowl, onCloth = b && b.visible && b.parent && BOWLFIT.look, sh = fx.sheen;
+      sh.visible = !!onCloth && fx.waterK > 0.01;
+      if (!sh.visible) return;
+      const lit = phase === 'room' && !play.found.has('l') ? 0.3 : 1;
+      sh.position.set(BOWLFIT.x - 0.25 * BOWLFIT.r, BOWLFIT.y + 0.002, BOWLFIT.z + 0.2 * BOWLFIT.r); sh.scale.setScalar(0.28 * BOWLFIT.r);
+      sh.material.opacity = 0.2 * fx.waterK * lit;
     }
     /* her phone, on the sofa's cushion beside her (her hands are on her bag's strap) */
     const herPhone = place('herPhone', 'w51phone', SPOT.herPhone.x, HER.sofa.seat - 0.005, SPOT.herPhone.z, 2.6);
@@ -500,15 +554,16 @@
       if (brk.held || !have('w4bigbowl')) return;
       parseOnce('w4bigbowl').then(({ scene: src }) => {
         if (!alive || phase !== 'breaking' || brk.held) return;
-        const g = new THREE.Group(), m = src.clone(true); m.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); mats.push(q.material); if (q.material.color) q.material.color.multiply(new THREE.Color(0xffd9a0)); q.frustumCulled = false; } });
+        const g = new THREE.Group(), m = src.clone(true); m.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); mats.push(q.material); q.frustumCulled = false; } });
         m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
-        m.position.set(-cx, -bb.min.y, -cz); g.add(m);
-        const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0.62, depthWrite: false }); mats.push(wm);
-        const r = 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z), wg = new THREE.CircleGeometry(r, 40); wg.rotateX(-Math.PI / 2);
-        const w = new THREE.Mesh(wg, wm); w.position.y = 0.72 * (bb.max.y - bb.min.y); g.add(w);
-        const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.32, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
-        const sg = new THREE.CircleGeometry(r * 0.28, 20); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, w.position.y + 0.002, r * 0.2); g.add(sh);
-        g.userData.water = w; g.userData.sheen = sh;
+        m.position.set(-cx, -bb.min.y, -cz); g.add(m); g.updateWorldMatrix(true, true);
+        /* (the same brass and the water poured, as on the cloth: bowlLook, never empty) */
+        const F = bowlLook(m, { empty: { value: 0 } });
+        const r = F ? g.worldToLocal(F.world.c.clone().setX(F.world.c.x + F.world.r)).distanceTo(g.worldToLocal(F.world.c.clone())) : 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z);
+        const wy = F ? g.worldToLocal(F.world.c.clone()).y : 0.72 * (bb.max.y - bb.min.y);
+        const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
+        const sg = new THREE.CircleGeometry(r * 0.28, 20); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, wy + 0.002, r * 0.2); sh.renderOrder = 3; g.add(sh);
+        g.userData.sheen = sh;
         g.scale.setScalar(BOWLHELD.s);
         brk.held = g;
         if (kit.hold) kit.hold(g, { hand: 'left', pos: BOWLHELD.pos, rot: BOWLHELD.rot });
