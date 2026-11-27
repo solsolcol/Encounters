@@ -9,11 +9,12 @@ from lib import *
 OUT = sys.argv[-2] if sys.argv[-1].isdigit() else sys.argv[-1]
 PX = int(sys.argv[-1]) if sys.argv[-1].isdigit() else 1024
 reset(512)
-br = brass('brass', tone='#b8914e', worn=0.45)
+br = brass('brass', tone='#b8914e', worn=0.45, rough=0.4, metal=0.6)
 wax = M('wax'); co = wax.coord('Object')
 n1 = wax.noise(co, 180, detail=4); n2 = wax.noise(co, 22, detail=3)
-wax.col = wax.mix(wax.math('MULTIPLY', n2, 0.5), '#efe9dc', '#ddd3bf')
-wax.rough = wax.math('ADD', 0.42, wax.math('MULTIPLY', n1, 0.12)); wax.height = n1; wax.bump_strength = 0.05
+streak = wax.noise(wax.mapping(co, scale=(30, 30, 1.5)), 9, detail=4)
+wax.col = wax.mix(wax.math('ADD', wax.math('MULTIPLY', n2, 0.35), wax.math('MULTIPLY', streak, 0.35)), '#eee3cb', '#d9cbae')
+wax.rough = wax.math('ADD', 0.34, wax.math('MULTIPLY', n1, 0.12)); wax.height = n1; wax.bump_strength = 0.05
 wax = proc(wax)
 wk = M('wick'); wk.col = wk.ramp(wk.noise(wk.coord('Object'), 400), [(0.0, '#16120e'), (1.0, '#3a322a')]); wk.rough = wk.val(0.9); wk = proc(wk)
 
@@ -31,8 +32,8 @@ bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=12, ra
 for v in bm.verts:
     x, y, z = v.co
     t = (z + 1) / 2                                    # 0 at the bottom of the run, 1 at the rim
-    w = 0.0016 * (0.55 + 0.45 * t) + 0.0006 * math.exp(-((t - 0.05) / 0.06) ** 2)
-    v.co = Vector((x * w, y * 0.0011, -0.025 + t * 0.026))
+    w = 0.0024 * (0.55 + 0.45 * t) + 0.0008 * math.exp(-((t - 0.05) / 0.06) ** 2)
+    v.co = Vector((x * w, y * 0.0016, -0.032 + t * 0.033))
 run = mesh_from_bm('run', bm); run.data.materials.append(wax); smooth(run, 80)
 run.location = (0.0, -(R0 - 0.0006), Z1 - 0.003); parts.append(run)
 # the wick: a charred thread, bent a little at its tip

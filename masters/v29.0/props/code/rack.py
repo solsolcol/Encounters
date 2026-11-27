@@ -40,7 +40,7 @@ for y in rails_y:
 for y in (-0.285, 0.285):
     rack.append(tube_path('side', [(-XE, y, WINGZ), (-XM, y, TOPZ), (XM, y, TOPZ), (XE, y, WINGZ)], 0.0105, n=12, mat=steel))
 for (x, z) in ((-XE, WINGZ), (-XM, TOPZ), (XM, TOPZ), (XE, WINGZ)):
-    rack.append(tube_path('cross', [(x, -0.285, z), (x, 0.285, z)], 0.0105, n=12, mat=steel))
+    rack.append(tube_path('cross', [(x, -0.279, z), (x, 0.279, z)], 0.0095, n=12, mat=steel))   # (its caps inside the side tubes)
 # the hinges: grey plastic sleeves where the wings meet the middle
 for x in (-XM, XM):
     for y in (-0.285, 0.285):
@@ -52,7 +52,8 @@ for x in (-LX, LX):
     rack.append(tube_path('leg', [(x, -0.285, TOPZ), (x, 0.36, 0.012)], 0.0105, n=12, mat=steel))
     rack.append(tube_path('leg', [(x + (0.022 if x > 0 else -0.022), 0.285, TOPZ), (x + (0.022 if x > 0 else -0.022), -0.36, 0.012)], 0.0105, n=12, mat=steel))
     # the pivot bolt where they cross, and a tie bar between the two legs' feet sides
-    b = cyl('bolt', 0.009, 0.04, at=(x - 0.009 if x > 0 else x - 0.031, 0, TOPZ / 2 + 0.0), n=16, mat=hinge, bev=0.001)
+    zc = TOPZ - (0.285 / 0.645) * (TOPZ - 0.012)          # where the two legs cross (y 0)
+    b = cyl('bolt', 0.009, 0.04, at=(min(x, x + (0.022 if x > 0 else -0.022)) - 0.009, 0, zc), n=16, mat=hinge, bev=0.001)
     b.rotation_euler = (0, math.radians(90), 0); rack.append(b)
     dx = 0.022 if x > 0 else -0.022
     for (fx, fy) in ((x, 0.36), (x + dx, -0.36)):
@@ -61,7 +62,7 @@ frame = join(rack, 'rack')
 
 # ---------------------------------------------------------------- the washing, dropped onto it by the cloth simulation
 col = frame.modifiers.new('col', 'COLLISION')
-frame.collision.thickness_outer = 0.004; frame.collision.cloth_friction = 40
+frame.collision.thickness_outer = 0.009; frame.collision.cloth_friction = 60; frame.collision.damping = 0.6
 def sheet(name, sx, sy, at, mat, rot=0.0, res=40):
     bm = bmesh.new()
     bmesh.ops.create_grid(bm, x_segments=res, y_segments=int(res * sy / sx), size=0.5)
@@ -69,17 +70,15 @@ def sheet(name, sx, sy, at, mat, rot=0.0, res=40):
     ob = mesh_from_bm(name, bm); ob.location = at; ob.rotation_euler = (0, 0, rot)
     ob.data.materials.append(mat)
     cl = ob.modifiers.new('cloth', 'CLOTH'); s = cl.settings
-    s.quality = 10; s.mass = 0.25; s.tension_stiffness = 12; s.compression_stiffness = 12; s.shear_stiffness = 8; s.bending_stiffness = 0.6
+    s.quality = 14; s.mass = 0.2; s.tension_stiffness = 12; s.compression_stiffness = 12; s.shear_stiffness = 8; s.bending_stiffness = 0.6
     s.air_damping = 2.0
-    cl.collision_settings.collision_quality = 4; cl.collision_settings.distance_min = 0.004
+    cl.collision_settings.collision_quality = 6; cl.collision_settings.distance_min = 0.006
     cl.collision_settings.use_self_collision = True; cl.collision_settings.self_distance_min = 0.004
     cl.point_cache.frame_start = 1; cl.point_cache.frame_end = 90
     return ob
-towel = sheet('towel', 0.62, 1.12, (0.0, 0.0, TOPZ + 0.03), sage)
-hand = sheet('handtowel', 0.30, 0.50, (-0.52, 0.04, (TOPZ + WINGZ) / 2 + 0.07), white, rot=0.0, res=28)
-hand.rotation_euler = (0, math.radians(-24), 0)
-pill = sheet('pillowcase', 0.46, 0.70, (0.53, -0.03, (TOPZ + WINGZ) / 2 + 0.07), case, res=32)
-pill.rotation_euler = (0, math.radians(24), 0)
+towel = sheet('towel', 0.44, 1.12, (-0.12, 0.0, TOPZ + 0.03), sage)
+pill = sheet('pillowcase', 0.30, 0.72, (0.21, 0.02, TOPZ + 0.03), case, res=30)
+hand = sheet('handtowel', 0.46, 0.32, (-0.655, 0.06, WINGZ + 0.035), white, res=36)    # over the left wing's end bar
 sc.frame_start, sc.frame_end = 1, 90
 for f in range(1, 91):
     sc.frame_set(f)

@@ -172,5 +172,17 @@
   "key": "w51jasmine",
   "file": "assets/w51jasmine.glb",
   "note": "a small white porcelain vase of white jasmine for his altar, 0.22 m tall"
+ },
+ {
+  "group": "things",
+  "key": "w51fig",
+  "file": "assets/w51fig.glb",
+  "note": "her fiddle-leaf fig in its cream ceramic pot, 1.50 m tall: the plant in her front room's corner (in place of w3dracaena there). Made new at Meshy his way (R13: THINGS-3; RECORD.md)"
+ },
+ {
+  "group": "things",
+  "key": "w51snake",
+  "file": "assets/w51snake.glb",
+  "note": "a snake plant in a weathered terracotta pot, 0.60 m tall: the plant on her landing (in place of w4corrpots; no scale). Made new at Meshy his way (R13: THINGS-3; RECORD.md)"
  }
 ]

@@ -12,8 +12,8 @@ PX = int(sys.argv[-1]) if sys.argv[-1].isdigit() else 1024
 reset(514)
 FW, FH, MW, MD = 0.18, 0.23, 0.022, 0.016       # outer width, height, moulding width, its depth
 TILT = math.radians(12)                          # the frame leans back on its strut
-tk = wood('teak', dark='#4a2c16', mid='#6b4223', light='#8a5a32', grain=34, axis='X', gloss=0.3)
-tkv = wood('teakv', dark='#4a2c16', mid='#6b4223', light='#8a5a32', grain=34, axis='Z', gloss=0.3)
+tk = wood('teak', dark='#3e2715', mid='#5a3b22', light='#74512f', grain=34, axis='X', gloss=0.3)
+tkv = wood('teakv', dark='#3e2715', mid='#5a3b22', light='#74512f', grain=34, axis='Z', gloss=0.3)
 br = brass('slip', tone='#b9934f', worn=0.3)
 back = M('backboard'); co = back.coord('Object'); nb = back.noise(co, 260, detail=5)
 back.col = back.mix(back.math('MULTIPLY', nb, 0.6), '#4a3a2a', '#2e241a'); back.rough = back.val(0.85); back.height = nb; back.bump_strength = 0.15
@@ -90,13 +90,20 @@ hy, hz = 0.004, FH * 0.78
 Hy, Hz = hy * math.cos(TILT) + hz * math.sin(TILT), -hy * math.sin(TILT) + hz * math.cos(TILT)
 Gy, Gz = 0.095, 0.0
 L = math.hypot(Gy - Hy, Hz - Gz); phi = math.atan2(Gy - Hy, Hz - Gz)
-st = box('strut', 0.035, 0.004, L, at=(0, 0, 0), bev=0.0008, segs=1, mat=back)
-for v in st.data.vertices:
-    if v.co.z > 0: v.co.x *= 0.7
-st.rotation_euler = (phi, 0, 0); st.location = (0, (Gy + Hy) / 2 + 0.002, (Gz + Hz) / 2)
-bpy.context.view_layer.objects.active = st
-for o in bpy.context.selected_objects: o.select_set(False)
-st.select_set(True); bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+# the strut built point by point between its hinge H (on the back) and its foot G (on the table), so it meets both
+d = Vector((0, Gy - Hy, Gz - Hz)).normalized(); nrm = Vector((0, -d.z, d.y))      # the strut's own thickness direction
+if nrm.y < 0: nrm = -nrm
+bm = bmesh.new(); vs = []
+for (P, hw) in ((Vector((0, Hy, Hz)), 0.012), (Vector((0, Gy, Gz)), 0.0175)):
+    for t in (0.0, 0.004):
+        for sx in (-1, 1):
+            vs.append(bm.verts.new(P + nrm * t + Vector((sx * hw, 0, 0))))
+# vs: top(front-left, front-right, back-left, back-right), bottom(...)
+quads = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
+for q in quads: bm.faces.new([vs[i] for i in q])
+bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+st = mesh_from_bm('strut', bm); st.data.materials.append(back)
+bevel(st, 0.0008, segs=1); apply_mods(st)
 fr = join([fr, st], 'frame')
 zmin = min(v.co.z for v in fr.data.vertices)
 for v in fr.data.vertices: v.co.z -= zmin

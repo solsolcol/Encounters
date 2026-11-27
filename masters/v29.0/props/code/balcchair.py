@@ -15,7 +15,7 @@ sp = alu.noise(co, 700, detail=3); wear = alu.noise(co, 8, detail=4)
 alu.col = alu.mix(alu.math('MULTIPLY', wear, 0.35), '#3b3c3e', '#4a4b4c')
 alu.rough = alu.math('ADD', 0.5, alu.math('MULTIPLY', sp, 0.15)); alu.height = sp; alu.bump_strength = 0.06; alu.bump_dist = 0.0004
 alu = proc(alu)
-teak = wood('teakgrey', dark='#6d6252', mid='#8e826f', light='#ab9f8b', grain=30, axis='X', gloss=0.7)
+teak = wood('teakgrey', dark='#625a4f', mid='#80776a', light='#9c9384', grain=30, axis='X', gloss=0.7, bump=0.08)
 
 T = 0.028                       # the frame's square tube
 W, D = 0.56, 0.54               # outside width and depth
@@ -26,22 +26,22 @@ xs = (-W / 2 + T / 2, W / 2 - T / 2)
 fy, by = -D / 2 + T / 2, D / 2 - T / 2           # front and back leg centres (y)
 for x in xs:
     # the front leg, up to the arm
-    parts.append(beam('fleg', (x, fy, 0), (x, fy, ARM - T / 2), T, mat=alu))
+    parts.append(beam('fleg', (x, fy, 0.005), (x, fy, ARM - T / 2), T, mat=alu))
     # the back leg straight up to the seat, then the back post leaning back to the top
-    parts.append(beam('bleg', (x, by - 0.02, 0), (x, by - 0.02, SEAT), T, mat=alu))
+    parts.append(beam('bleg', (x, by - 0.02, 0.005), (x, by - 0.02, SEAT), T, mat=alu))
     top = (x, by - 0.02 + math.tan(LEAN) * (TOP - SEAT - T / 2), TOP - T / 2)
     parts.append(beam('bpost', (x, by - 0.02, SEAT - T / 2), top, T, mat=alu))
     # the arm: from over the front leg back into the back post
     ay = by - 0.02 + math.tan(LEAN) * (ARM - SEAT)
-    parts.append(beam('arm', (x, fy - T / 2, ARM - T / 2), (x, ay, ARM - T / 2), T, mat=alu))
+    parts.append(beam('arm', (x, fy - T / 2 - 0.002, ARM - T / 2 + 0.002), (x, ay, ARM - T / 2 + 0.002), T + 0.004, mat=alu))   # (a cap a little wider than the tubes: no shared face)
     # the side seat rail
-    parts.append(beam('srail', (x, fy, SEAT - 0.035), (x, by - 0.02, SEAT - 0.035), T, 0.04, mat=alu))
+    parts.append(beam('srail', (x, fy, SEAT - 0.035), (x, by - 0.02, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
 # the front and back seat rails
-parts.append(beam('frail', (xs[0], fy, SEAT - 0.035), (xs[1], fy, SEAT - 0.035), 0.04, T, mat=alu))
-parts.append(beam('brail', (xs[0], by - 0.02, SEAT - 0.035), (xs[1], by - 0.02, SEAT - 0.035), 0.04, T, mat=alu))
+parts.append(beam('frail', (xs[0], fy, SEAT - 0.035), (xs[1], fy, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
+parts.append(beam('brail', (xs[0], by - 0.02, SEAT - 0.035), (xs[1], by - 0.02, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
 # the back's top rail between the posts
 tz = TOP - T / 2; ty = by - 0.02 + math.tan(LEAN) * (TOP - SEAT - T / 2)
-parts.append(beam('trail', (xs[0], ty, tz), (xs[1], ty, tz), T, mat=alu))
+parts.append(beam('trail', (xs[0], ty, tz), (xs[1], ty, tz), T - 0.004, T - 0.006, mat=alu))
 # the seat slats: six across, a gap between, laid on the rails
 n, gap = 6, 0.009
 inner_d = (by - 0.02) - fy + 0.03

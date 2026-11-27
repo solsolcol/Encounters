@@ -1,0 +1,102 @@
+"""v29.0 (E5C1 THINGS-3, coordinator's ask) · w51wrapped: the keepsake WRAPPED in white cloth and bound with white thread
+(the plan's 9.3, 32-44 s: "Pho wraps the packet in white cloth and binds it with white thread"), made in code. Sized to
+the packet it holds (w51keepsake, 0.070 x 0.061, 0.020 tall) as it lies on the white plate: 0.086 x 0.076, 0.030 tall.
+A square of plain white cotton folded over it like an envelope (its four corners brought to the middle, the last flap
+on top, the folds soft and a little creased), then bound twice each way with white cotton thread, crossed on top and
+tied in a small knot whose two short ends lie loose. Its long side along x.
+    $BPY masters/v29.0/props/code/wrapped.py <out.glb> [px]"""
+import sys, os; sys.path.insert(0, os.path.dirname(__file__))
+from lib import *
+
+OUT = sys.argv[-2] if sys.argv[-1].isdigit() else sys.argv[-1]
+PX = int(sys.argv[-1]) if sys.argv[-1].isdigit() else 1024
+reset(521)
+c = M('whitecotton'); co = c.coord('Object')
+a = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='X'); b = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='Y')
+wv = c.math('MULTIPLY', c.math('ADD', a, b), 0.5); soil = c.noise(co, 30, detail=5)
+c.col = c.mix(c.math('MULTIPLY', soil, 0.25), '#f1eee6', '#d8d2c4')
+c.col = c.mix(c.math('MULTIPLY', wv, 0.12), c.col, '#c9c2b2')
+c.rough = c.val(0.85); c.height = c.math('ADD', wv, c.math('MULTIPLY', soil, 0.4)); c.bump_strength = 0.3; c.bump_dist = 0.0004
+cot = proc(c)
+t = M('thread'); co = t.coord('Object')
+tw = t.wave(t.mapping(co, scale=(1, 1, 1)), 900, dist=0.0, detail=0, kind='BANDS', axis='X')
+t.col = t.mix(t.math('MULTIPLY', tw, 0.18), '#f4f1ea', '#cfc9bb'); t.rough = t.val(0.8); t.height = tw; t.bump_strength = 0.3
+thr = proc(t)
+
+L, Wd, Hh = 0.084, 0.074, 0.026        # the wrapped body (before the thread)
+bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+bmesh.ops.scale(bm, vec=(L, Wd, Hh), verts=bm.verts); bmesh.ops.translate(bm, vec=(0, 0, Hh / 2), verts=bm.verts)
+body = mesh_from_bm('wrap', bm)
+bevel(body, 0.007, segs=4); apply_mods(body)
+sub = body.modifiers.new('sub', 'SUBSURF'); sub.levels = 3; sub.subdivision_type = 'SIMPLE'; apply_mods(body)
+# the cloth's softness: the top domed a little, the edges rounded and rumpled, the thread's bands pressed in
+TX, TY = (-0.016, 0.016), (-0.013, 0.013)          # where the thread's two bands run each way
+def pinch(d):                                       # how much a band presses the cloth in, by distance from its line
+    return math.exp(-(d / 0.0016) ** 2)
+for v in body.data.vertices:
+    x, y, z = v.co
+    top = z > Hh * 0.5
+    u, w = x / (L / 2), y / (Wd / 2)
+    if top: v.co.z += 0.003 * (1 - u * u) * (1 - w * w)
+    v.co.z += 0.0007 * math.sin(x * 330 + y * 120) * math.sin(y * 290 - x * 60) * (1 if z > 0.002 else 0)
+    p = max(max(pinch(x - tx) for tx in TX), max(pinch(y - ty) for ty in TY))
+    if z > 0.002:
+        cx, cy = x, y
+        n = Vector((x / (L / 2), y / (Wd / 2), (z - Hh / 2) / (Hh / 2)))
+        n.normalize()
+        v.co -= n * 0.0012 * p
+body.data.materials.append(cot); smooth(body, 180)
+parts = [body]
+# the folds of the envelope on top: three flaps' edges (a raised hem line) running from the corners to the middle
+top_z = lambda x, y: Hh + 0.003 * (1 - (x / (L / 2)) ** 2) * (1 - (y / (Wd / 2)) ** 2)
+for (x0, y0) in ((-L / 2 + 0.006, -Wd / 2 + 0.006), (L / 2 - 0.006, -Wd / 2 + 0.006), (-L / 2 + 0.006, Wd / 2 - 0.006)):
+    pts = []
+    for i in range(9):
+        s_ = i / 8; x = x0 * (1 - s_) + 0.004 * s_; y = y0 * (1 - s_) + 0.002 * s_
+        pts.append((x, y, top_z(x, y) + 0.0002))
+    parts.append(tube_path('fold', pts, 0.0007, n=6, mat=cot))
+# the last flap lying on top: a thin soft triangle from the fourth corner to past the middle, its edge rolled
+bm = bmesh.new()
+tri = [(L / 2 - 0.005, Wd / 2 - 0.005), (-0.006, 0.020), (0.020, -0.008)]
+vs = [bm.verts.new((x, y, top_z(x, y) + 0.0009)) for x, y in tri]
+bm.faces.new(vs)
+flap = mesh_from_bm('flap', bm)
+sol = flap.modifiers.new('sol', 'SOLIDIFY'); sol.thickness = 0.0012; sol.offset = 1; apply_mods(flap)
+bevel(flap, 0.0005, segs=2); apply_mods(flap)
+flap.data.materials.append(cot); parts.append(flap)
+# the thread: two bands each way round the body (on top, down the sides, under), a little proud of the cloth
+def band_x(x0):     # a loop in the y-z plane at x = x0
+    pts = []
+    for i in range(40):
+        a_ = 2 * math.pi * i / 40; cy, cz = math.cos(a_), math.sin(a_)
+        ry, rz = Wd / 2 + 0.0002, Hh / 2 + 0.0018
+        # a rounded rectangle (superellipse) hugging the body
+        e = 0.25
+        y = math.copysign(abs(cy) ** e, cy) * ry; z = Hh / 2 + math.copysign(abs(cz) ** e, cz) * rz
+        pts.append((x0, y, max(0.0004, z)))
+    return tube_path('thread', pts, 0.0006, n=8, mat=thr, closed=True)
+def band_y(y0):
+    pts = []
+    for i in range(40):
+        a_ = 2 * math.pi * i / 40; cx, cz = math.cos(a_), math.sin(a_)
+        rx, rz = L / 2 + 0.0002, Hh / 2 + 0.0024
+        e = 0.25
+        x = math.copysign(abs(cx) ** e, cx) * rx; z = Hh / 2 + math.copysign(abs(cz) ** e, cz) * rz
+        pts.append((x, y0, max(0.0004, z)))
+    return tube_path('thread', pts, 0.0006, n=8, mat=thr, closed=True)
+for tx in TX: parts.append(band_x(tx))
+for ty in TY: parts.append(band_y(ty))
+# the knot where the bands cross nearest the middle-top, and its two loose ends
+kz = Hh + 0.0055
+bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.0)
+for v in bm.verts: v.co = Vector((v.co.x * 0.0026, v.co.y * 0.0022, v.co.z * 0.0016))
+knot = mesh_from_bm('knot', bm); knot.location = (TX[1], TY[0], kz); knot.data.materials.append(thr); smooth(knot, 180)
+parts.append(knot)
+for (dx, dy) in ((0.016, -0.004), (0.010, -0.014)):
+    pts = [(TX[1], TY[0], kz), (TX[1] + dx * 0.4, TY[0] + dy * 0.4, kz + 0.0005), (TX[1] + dx, TY[0] + dy, top_z(TX[1] + dx, TY[0] + dy) + 0.0006)]
+    parts.append(tube_path('end', pts, 0.0006, n=8, mat=thr))
+ob = join(parts, 'wrapped')
+stats(ob)
+uv_all(ob, margin=0.004)
+bake(ob, px=PX, out_dir=os.path.join(os.path.dirname(OUT), 'sheets'), tag='wrapped')
+export([ob], OUT)

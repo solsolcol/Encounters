@@ -294,7 +294,7 @@ def stats(ob):
     print('STATS', ob.name, 'tris', len(me.loop_triangles), 'x', round(hi[0] - lo[0], 4), 'y(depth)', round(hi[1] - lo[1], 4), 'z(h)', round(hi[2] - lo[2], 4), 'zmin', round(lo[2], 5))
 
 # ------------------------------------------------------------------ the common surfaces
-def wood(name, dark='#2a170d', mid='#4a2c18', light='#6b4426', grain=60.0, axis='X', gloss=0.35, ring=False, rot=(0, 0, 0)):
+def wood(name, dark='#2a170d', mid='#4a2c18', light='#6b4426', grain=60.0, axis='X', gloss=0.35, ring=False, rot=(0, 0, 0), bump=0.25, distort=4.0):
     """real wood: long distorted grain bands along `axis` (the board's length), a finer fibre noise over them, darker
        pores, a little colour drift across a board; satin, its roughness following the grain; the grain in the bump"""
     m = M(name); co = m.coord('Object')
@@ -304,7 +304,7 @@ def wood(name, dark='#2a170d', mid='#4a2c18', light='#6b4426', grain=60.0, axis=
     nd = m.n.new('ShaderNodeTexWave'); nd.wave_type = 'RINGS'; nd.rings_direction = axis   # rings round the board's axis:
     # end grain on its ends, long figured lines on its faces (the wave's period at scale 1 is about 0.31 m)
     nd.wave_profile = 'SAW'
-    nd.inputs['Scale'].default_value = grain; nd.inputs['Distortion'].default_value = 4.0
+    nd.inputs['Scale'].default_value = grain; nd.inputs['Distortion'].default_value = distort
     nd.inputs['Detail'].default_value = 4; nd.inputs['Detail Scale'].default_value = 1.4; nd.inputs['Detail Roughness'].default_value = 0.6
     m.l.new(v, nd.inputs['Vector'])
     g = nd.outputs['Fac']
@@ -316,15 +316,15 @@ def wood(name, dark='#2a170d', mid='#4a2c18', light='#6b4426', grain=60.0, axis=
     m.rough = m.math('ADD', gloss, m.math('MULTIPLY', gf, 0.18))
     m.metal = None
     m.height = m.math('ADD', m.math('MULTIPLY', g, 0.3), m.math('MULTIPLY', fib, 0.7))
-    m.bump_strength = 0.25; m.bump_dist = 0.0006
+    m.bump_strength = bump; m.bump_dist = 0.0006
     return proc(m)
 
-def brass(name, tone='#b08a4a', worn=0.35):
+def brass(name, tone='#b08a4a', worn=0.35, rough=0.28, metal=0.75):
     m = M(name); co = m.coord('Object')
     n1 = m.noise(co, 60, detail=8, rough=0.6); n2 = m.noise(co, 6, detail=3)
     m.col = m.mix(m.math('MULTIPLY', n2, worn), tone, '#6e5328')
-    m.rough = m.math('ADD', 0.28, m.math('MULTIPLY', n1, 0.22))
-    m.metal = m.val(0.75)
+    m.rough = m.math('ADD', rough, m.math('MULTIPLY', n1, 0.22))
+    m.metal = m.val(metal)
     m.height = n1; m.bump_strength = 0.08; m.bump_dist = 0.0003
     return proc(m)
 

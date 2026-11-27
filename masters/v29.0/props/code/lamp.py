@@ -11,10 +11,10 @@ reset(515)
 br = brass('brass', tone='#b18c4f', worn=0.35)
 cer = M('celadon'); co = cer.coord('Object')
 crack = cer.voronoi(cer.mapping(co, scale=(1, 1, 1.4)), 70, out='Distance', feature='DISTANCE_TO_EDGE')
-cl = cer.math('LESS_THAN', crack, 0.035)
+cl = cer.math('LESS_THAN', crack, 0.012)
 pool = cer.noise(co, 9, detail=3)
-glaze = cer.mix(cer.math('MULTIPLY', pool, 0.6), '#c9d3bf', '#a9b89f')
-cer.col = cer.mix(cer.math('MULTIPLY', cl, 0.22), glaze, '#7d8673')
+glaze = cer.mix(cer.math('MULTIPLY', pool, 0.6), '#b4c4a6', '#93a88a')
+cer.col = cer.mix(cer.math('MULTIPLY', cl, 0.35), glaze, '#5d6a55')
 cer.rough = cer.math('ADD', 0.16, cer.math('MULTIPLY', cl, 0.25)); cer.height = cer.math('SUBTRACT', 1, cl); cer.bump_strength = 0.06
 cer = proc(cer)
 lin = M('linen'); co = lin.coord('Object')
@@ -26,7 +26,7 @@ lin.col = lin.mix(lin.math('MULTIPLY', slub, 0.2), lin.col, '#c8baa0')
 lin.rough = lin.val(0.88); lin.height = lin.math('ADD', wv, lin.math('MULTIPLY', slub, 0.5)); lin.bump_strength = 0.3; lin.bump_dist = 0.0006
 lin = proc(lin)
 inner = M('shadeinner'); inner.col = inner.mix(inner.math('MULTIPLY', inner.noise(inner.coord('Object'), 60), 0.2), '#e7dfcf', '#d5cab4'); inner.rough = inner.val(0.9); inner = proc(inner)
-flex = M('flex'); flex.col = flex.rgb('#e9e5dc'); flex.rough = flex.val(0.5); flex = proc(flex)
+flex = M('flex'); flex.col = flex.rgb('#3a3936'); flex.rough = flex.val(0.5); flex = proc(flex)
 
 parts = []
 # the base: a turned ginger-jar shape, foot to shoulder to a short neck
@@ -62,7 +62,7 @@ for i in range(3):
 # the shade's one vertical seam, at its back
 parts.append(box('seam', 0.006, 0.0015, SH_T - SH_B - 0.012, at=(0, R - 0.0015, (SH_B + SH_T - 0.012) / 2), bev=0.0005, segs=1, mat=lin))
 # the flex: out of the back of the base, over the shelf's edge
-parts.append(tube_path('flex', [(0, 0.045, 0.012), (0, 0.075, 0.004), (0.01, 0.13, 0.003), (0.02, 0.17, 0.003)], 0.0022, n=8, mat=flex))
+parts.append(tube_path('flex', [(0, 0.046, 0.006), (0, 0.06, 0.0024), (0.006, 0.09, 0.0022), (0.018, 0.12, 0.0022), (0.012, 0.15, 0.0022), (0.0, 0.18, 0.0022)], 0.0022, n=8, mat=flex))
 
 ob = join(parts, 'lamp')
 stats(ob)
