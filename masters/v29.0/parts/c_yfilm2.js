@@ -584,37 +584,36 @@
       if (!show) return;
       if (A.handPose) A.handPose(pose || null, pose ? c01(k) : 0, o || {});
     }
-    /* THE STRIP OF PILLS HELD UP TO HIS EYE (ending C): pinched between his thumb and the side of his first finger, its lower
-       end in the pinch and its length leaning up and toward his eye so it stands in FRONT of his fist, its tablets turned to
-       him. Held at the palm it lay under his hand, never seen (run 7's photographs); stood straight up out of the pinch it
-       went up behind his knuckles, a sliver under the fist on a desktop and half of it on a phone (run 9, d7's photographs).
-       Laid EVERY frame from the hand as this frame's pose draws it (the thumb's tip, the first finger's middle joint, the
-       knuckles), on the right arm so the arm's sway carries it: leaning toward his eye far enough that, at his knuckles'
-       height, it stands 3 cm nearer him than they do */
-    const F2PB = { R: null, th: null, ix: null, k1: null, k2: null };
-    const _f2pq = new THREE.Vector3(), _f2pk = new THREE.Vector3(), _f2pk2 = new THREE.Vector3(), _f2pu = new THREE.Vector3(), _f2pn = new THREE.Vector3(),
-      _f2py = new THREE.Vector3(), _f2pz = new THREE.Vector3(), _f2pc = new THREE.Vector3(), _f2pm = new THREE.Matrix4(), _f2pM = new THREE.Matrix4();
+    /* THE STRIP OF PILLS IN HIS HAND (ending C): held by its top end between his thumb and the side of his first finger, the
+       rest hanging below his fist with its tablets turned to his eye, its foot swung a little to the left, clear of his
+       forearm. Held at the palm it lay under his hand, never seen (run 7); stood up out of the pinch it went up behind the
+       back of his hand, a piece of one tablet under the fist (run 9, d7's desktop at 5.3 s, run p11's phone at 5.1 and 5.4
+       s): from his eye the back of his hand covers everything above the pinch, so it can only be seen hanging below it.
+       Laid EVERY frame from the hand as this frame's pose draws it (the thumb's tip, the first finger's middle joint), on the
+       right arm so the arm's sway carries it */
+    const F2PB = { R: null, th: null, ix: null };
+    const _f2pq = new THREE.Vector3(), _f2pk = new THREE.Vector3(), _f2pu = new THREE.Vector3(), _f2pn = new THREE.Vector3(),
+      _f2py = new THREE.Vector3(), _f2pz = new THREE.Vector3(), _f2pc = new THREE.Vector3(), _f2pr = new THREE.Vector3(), _f2pm = new THREE.Matrix4(), _f2pM = new THREE.Matrix4();
     function f2PillsIn(on) {
       const A = F2.api, R = A && A.armR;
       if (!on || !R || !A.vmCam || !F2M.pills) { f2Pills.visible = false; return; }
-      if (F2PB.R !== R) { F2PB.R = R; F2PB.th = R.getObjectByName('thumb03R'); F2PB.ix = R.getObjectByName('f_index02R');
-        F2PB.k1 = R.getObjectByName('f_index01R'); F2PB.k2 = R.getObjectByName('f_middle01R'); }
-      if (!F2PB.th || !F2PB.ix || !F2PB.k1 || !F2PB.k2) { f2Pills.visible = false; return; }
+      if (F2PB.R !== R) { F2PB.R = R; F2PB.th = R.getObjectByName('thumb03R'); F2PB.ix = R.getObjectByName('f_index02R'); }
+      if (!F2PB.th || !F2PB.ix) { f2Pills.visible = false; return; }
       if (f2Pills.parent !== R) R.add(f2Pills);
       R.updateWorldMatrix(true, true); A.vmCam.updateMatrixWorld();
       F2PB.th.getWorldPosition(_f2pq); F2PB.ix.getWorldPosition(_f2pk); _f2pq.add(_f2pk).multiplyScalar(0.5);
-      F2PB.k1.getWorldPosition(_f2pk); F2PB.k2.getWorldPosition(_f2pk2); _f2pk.add(_f2pk2).multiplyScalar(0.5).sub(_f2pq);
       _f2pn.setFromMatrixPosition(A.vmCam.matrixWorld).sub(_f2pq).normalize();
       _f2pu.setFromMatrixColumn(A.vmCam.matrixWorld, 1).normalize(); _f2pu.addScaledVector(_f2pn, -_f2pu.dot(_f2pn)).normalize();
-      const h = Math.max(0.02, _f2pk.dot(_f2pu)), lean = Math.min(1.5, Math.max(0.35, (_f2pk.dot(_f2pn) + 0.03) / h));
-      _f2pu.addScaledVector(_f2pn, lean).normalize();
+      _f2pr.crossVectors(_f2pu, _f2pn).normalize();
+      /* (its length down from the pinch, its foot 0.2 rad to his left; its tablets to his eye) */
+      _f2pu.multiplyScalar(-Math.cos(0.2)).addScaledVector(_f2pr, -Math.sin(0.2)).normalize();
       _f2py.copy(_f2pn).addScaledVector(_f2pu, -_f2pn.dot(_f2pu)).normalize(); _f2pz.crossVectors(_f2pu, _f2py).normalize();
-      /* (the strip's own frame: its length on x, 0.10 m; its tablets on +y; its width on z, 0.043 m) */
-      _f2pc.copy(_f2pq).addScaledVector(_f2pu, 0.05 - 0.015).addScaledVector(_f2py, -0.004);
+      /* (the strip's own frame: its length on x, 0.10 m; its tablets on +y; its width on z, 0.043 m; its top 1.5 cm into the
+         pinch, a centimetre nearer his eye than the pinch's middle so the thumb lies over its top) */
+      _f2pc.copy(_f2pq).addScaledVector(_f2pu, 0.05 - 0.015).addScaledVector(_f2py, 0.01);
       _f2pm.makeBasis(_f2pu, _f2py, _f2pz).setPosition(_f2pc);
       _f2pM.copy(R.matrixWorld).invert().multiply(_f2pm).decompose(f2Pills.position, f2Pills.quaternion, f2Pills.scale);
       f2Pills.visible = true;
-      F2PB.lean = lean;
     }
     /* the left hand placed as the right one's mirror (the library's poses lay most things in the right; a left hand on a door's
        frame or held out to his teacher is the right one's pose turned over), the right one hidden */
@@ -1273,7 +1272,7 @@
       tune: F2TUNE,
       tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wrist: F2W.fit }; },
       /* (C's tap: the turn solved for this screen and where the water ends; the strip's lean as last laid) */
-      tap: () => ({ geo: F2TAP.g ? Object.assign({}, F2TAP.g) : null, pillsLean: F2PB.lean == null ? null : F2PB.lean }),
+      tap: () => ({ geo: F2TAP.g ? Object.assign({}, F2TAP.g) : null, pills: f2Pills.visible ? f2Pills.getWorldPosition(new THREE.Vector3()).toArray().map(v => +v.toFixed(3)) : null }),
       /* (a probe's handle on the hands' own scene, where his arms and what he holds are drawn: clipscan's measure is run on it
          for the held things against his hands) */
       vm: () => (F2.api && F2.api.handsRoot ? F2.api.handsRoot.parent : null),
