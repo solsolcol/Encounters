@@ -274,7 +274,15 @@
        model's own points as it lands) in their own colours once the water is poured, and before it the bowl's dark brass
        inside (`uEmpty`, eased 1 to 0 by the pour: the water rises over the petals laid in it). The held copy in the breaking
        wears the same, poured. Light on the water: the candle's glint (an additive disc on the water, no lamp: v9.4) */
-    const BOWLLOOK = { empty: { value: 1 }, tint: new THREE.Color(0xffd9a0), dark: new THREE.Color(0x5a3c1c) };
+    /* a soft round glint (a radial fall-off drawn once: a hard-edged disc read as a ring on the water, 27 Nov) */
+    let softDotTex = null;
+    function softDot() {
+      if (softDotTex) return softDotTex;
+      const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); softDotTex = new THREE.CanvasTexture(cv); madeTex.push(softDotTex); return softDotTex;
+    }
+    const BOWLLOOK = { empty: { value: 1 }, tint: new THREE.Color(0xffd9a0) };
     function bowlMeasure(q) {
       const g = q.geometry, P = g.attributes.position; if (!P) return null;
       g.computeBoundingBox(); const bb = g.boundingBox, cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
@@ -307,14 +315,16 @@
           const uC = { value: new THREE.Vector4(F.cx, F.yW - F.eps, F.cz, F.rW) }, uEmpty = o.empty || BOWLLOOK.empty;
           mt.onBeforeCompile = (sh) => {
             sh.uniforms.uBowlC = uC; sh.uniforms.uBowlEmpty = uEmpty;
-            sh.uniforms.uBowlTint = { value: BOWLLOOK.tint }; sh.uniforms.uBowlDark = { value: BOWLLOOK.dark };
+            sh.uniforms.uBowlTint = { value: BOWLLOOK.tint };
             sh.vertexShader = 'varying vec3 vBowlP;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vBowlP = vec3(position);');
-            sh.fragmentShader = 'varying vec3 vBowlP;\nuniform vec4 uBowlC;\nuniform float uBowlEmpty;\nuniform vec3 uBowlTint;\nuniform vec3 uBowlDark;\n' +
+            sh.fragmentShader = 'varying vec3 vBowlP;\nuniform vec4 uBowlC;\nuniform float uBowlEmpty;\nuniform vec3 uBowlTint;\n' +
               sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
   { float br = length(vBowlP.xz - uBowlC.xz);
     float inW = (1.0 - smoothstep(uBowlC.w * 0.97, uBowlC.w * 1.03, br)) * step(uBowlC.y, vBowlP.y);
-    vec3 dry = uBowlDark * (0.55 + 0.45 * smoothstep(0.0, uBowlC.w, br));
-    vec3 wet = mix(diffuseColor.rgb, dry, uBowlEmpty);
+    float mxc = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)), mnc = min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
+    float water = (1.0 - smoothstep(0.16, 0.3, (mxc - mnc) / max(mxc, 1e-3))) * (1.0 - smoothstep(0.42, 0.6, mxc));
+    vec3 dry = diffuseColor.rgb * uBowlTint * (0.62 + 0.3 * smoothstep(0.0, uBowlC.w, br));
+    vec3 wet = mix(diffuseColor.rgb, dry, uBowlEmpty * water);
     diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, wet, inW); }`);
           };
           mt.customProgramCacheKey = () => 'e5c1bowl';
@@ -329,8 +339,8 @@
     }
     /* the candle's glint on the water: a warm additive disc lying on it (the bowl's own measure, read as it lands) */
     {
-      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
-      const sg = new THREE.CircleGeometry(1, 20); sg.rotateX(-Math.PI / 2);
+      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, map: softDot(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
+      const sg = new THREE.PlaneGeometry(2, 2); sg.rotateX(-Math.PI / 2);
       const sh = new THREE.Mesh(sg, sheen); sh.visible = false; sh.renderOrder = 3; world.add(sh); fx.sheen = sh;
     }
     const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, x: 0, z: 0, got: false, look: null };
@@ -608,7 +618,7 @@
         const r = F ? g.worldToLocal(F.world.c.clone().setX(F.world.c.x + F.world.r)).distanceTo(g.worldToLocal(F.world.c.clone())) : 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z);
         const wy = F ? g.worldToLocal(F.world.c.clone()).y : 0.72 * (bb.max.y - bb.min.y);
         const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
-        const sg = new THREE.CircleGeometry(r * 0.28, 20); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, wy + 0.002, r * 0.2); sh.renderOrder = 3; g.add(sh);
+        s2.map = softDot(); const sg = new THREE.PlaneGeometry(r * 0.56, r * 0.56); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, wy + 0.002, r * 0.2); sh.renderOrder = 3; g.add(sh);
         g.userData.sheen = sh;
         g.scale.setScalar(BOWLHELD.s);
         brk.held = g;
