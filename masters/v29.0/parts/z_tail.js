@@ -138,7 +138,7 @@
     T.m1 = Math.max(41.0, T.c3 + SECS.ph51c3 + 0.3);           // "I won't. Thank you, Grandmaster."
     T.g1 = Math.max(43.0, T.m1 + SECS.mk51c1 + 0.25);          // "Thank you."
     T.pour = Math.max(44.0, T.g1 + SECS.gr51c1 + 0.3);         // the bowl to his teacher; the pour; the cork
-    T.give = T.pour + 2.8;                                      // the bottle held out to him
+    T.give = T.pour + 3.5;                                      // the bottle held out to him (after the pour and the cork: c_yfilm.js pourAt1)
     T.c4 = T.give + 0.4;                                        // "For your altar."
     T.take = T.give + 1.3;                                      // his hands take it
     T.c5 = T.c4 + SECS.ph51c4 + 0.45;                           // "You held it well."
@@ -168,8 +168,7 @@
     sfx(T.m1 - 1.6, 'u51knot', 0.45);                                          // the thread wound and knotted
     sfx(T.m1, 'mk51c1', 1);                                                    // "I won't. Thank you, Grandmaster."
     sfx(T.g1, 'gr51c1', 1);                                                    // "Thank you."
-    sfx(T.pour + 0.6 - 0.94, 'u51pour', 0.6);                                  // the pour into the bottle
-    sfx(T.pour + 2.2 - 0.53, 'u51cork', 0.6);                                  // the cork
+    sfx(T.pour + 1.2, 'u51cork', 0.65);                                       // the pour from the bowl into the bottle (its trickle 0.2 to 1.7 s into it), then its cork
     sfx(T.c4, 'ph51c4', 1);                                                    // "For your altar."
     sfx(T.c5, 'ph51c5', 1);                                                    // "You held it well."
     sfx(T.z2, 'zv51c2', 1);                                                    // "My part was small. I only held the water."

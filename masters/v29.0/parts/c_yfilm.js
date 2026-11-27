@@ -1010,7 +1010,7 @@
       end() { f1Lens(PLAYFOV1); f1VisionOff(); F1.beds = null; F1.film = ''; wispG1.visible = false; wristMat1.opacity = 0;
         if (wristRing1.parent) wristRing1.parent.remove(wristRing1);
         f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; if (things.holyBowl) things.holyBowl.visible = true; F1.api = null;
-        PROPS1.clothBottle.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
+        PROPS1.clothBottle.visible = false; if (PROPS1.pourBowl) PROPS1.pourBowl.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
         { const ph = herPhone1(); if (ph && F1.phoneRy != null) ph.rotation.set(0, F1.phoneRy, 0); F1.phoneRy = null; phoneLit1.m.opacity = 0; phoneLit1.q.visible = false; }
         }
     };
@@ -1028,10 +1028,16 @@
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
         handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
         handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
-      const take = f1Env(tau, T.pour - 0.3, T.pour + 1.1, 0.6, 0.5);
-      if (take > 0.001) handTo(P, 'R', [1.06, 0.76, 1.58], [0.7, -0.1, 0.4], [0, 1, 0], take, { out: 0.25, down: 0.25 });
-      const fill = f1Env(tau, T.pour + 1.0, T.give + 0.1, 0.4, 0.4);
-      if (fill > 0.001) handTo(P, 'R', [CB1.x + 0.02, CLOTH_Y + 0.12, CB1.z + 0.03], [-0.2, -0.6, -0.6], [0.3, 0, 0.9], fill, { out: 0.24, down: 0.25 });
+      /* THE POUR (27 Nov: the first build set the bowl back on the cloth untouched and laid his hand on the bottle while the
+         pour was heard): his right hand takes the bowl from his student, carries it by its rim over the bottle standing on
+         the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;
+         then his right hand corks it (POUR1, cordBowl1 carries the bowl where the hand is) */
+      const pr = pourAt1(tau, T);
+      if (pr.k > 0.001) handTo(P, 'R', pr.hand, [-0.15, -0.35, -0.9], [0.1, 1, 0.15], pr.k, { out: 0.24, down: 0.25 });
+      const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
+      if (steady > 0.001) handTo(P, 'L', [CB1.x - 0.035, CLOTH_Y + 0.07, CB1.z + 0.02], [0.4, -0.3, -0.8], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
+      const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
+      if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
       const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
       if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.6, -0.1, 0.3], [0, 1, 0], give, { out: 0.25, down: 0.25 });
       f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 0.7], [T.c3, () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
@@ -1102,11 +1108,52 @@
     /* THE BOTTLE (on the cloth by his teacher's right knee): filled and corked there, held out to him, taken into his hands;
        THE BOWL back on the cloth once his teacher has it; THE SPOOL of white thread out for the binding, the packet's cloth
        wrapped white as the hands work (a white wrap over the red: the knot's red is covered) */
-    const CB1 = { x: 0.74, z: 1.4 };
+    /* (the bottle on the cloth before him, at his left of the bowl, between the lit candle and the incense: his right hand
+       pours over it from his right, his left hand steadies it without crossing his body) */
+    const CB1 = { x: 0.36, z: 1.25 };
+    const POUR1 = { take: [1.06, 0.76, 1.58], tilt: 0.85 };
+    /* where his right hand is in the pour, and how far into it (k): the student's bowl taken (pour - 0.3 to + 0.9), carried
+       over the bottle (+0.9 to +1.4), tilted (+1.4 to +2.6), set down at its place on the cloth (+2.6 to +3.0), let go */
+    function pourAt1(t, T) {
+      const P0 = T.pour, B = [CB1.x + 0.075, CLOTH_Y + 0.25, CB1.z + 0.035], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
+      const k = smo(c01((t - P0 + 0.3) / 0.6)) * (1 - smo(c01((t - P0 - 2.95) / 0.25)));
+      const u1 = smo(c01((t - P0 - 0.9) / 0.5)), u2 = smo(c01((t - P0 - 2.6) / 0.4));
+      return { k, hand: lp3(lp3(POUR1.take, B, u1), C, u2), carry: t >= P0 + 0.9 && t < P0 + 3.0, tilt: POUR1.tilt * f1Env(t, P0 + 1.35, P0 + 2.65, 0.35, 0.3), down: t >= P0 + 3.0 };
+    }
     PROPS1.spool = stand('w51threadreel', 0, -50, 0, 0, { parent: world }); PROPS1.spool.visible = false;
+    /* the bowl in his teacher's right hand through the pour: a copy of it (the play's own, things.holyBowl, keeps its place
+       on the cloth and its glint: PLAY.md 4), painted as the play paints it, hung from his palm by its near rim, turned about
+       that rim to pour toward the bottle, then eased onto the play's bowl's own place and turn, where the play's is shown
+       again and the copy goes */
+    const _f1pb = new THREE.Vector3(), _f1pq = new THREE.Quaternion(), _f1pa = new THREE.Vector3(), _f1pr = new THREE.Vector3(), _f1pw = new THREE.Vector3(), _f1pwq = new THREE.Quaternion();
+    const BOWL1 = { R: 0, H: 0 };
+    PROPS1.pourBowl = stand('w4bigbowl', 0, -50, 0, 0, { parent: world, lift: 3 }); PROPS1.pourBowl.visible = false;
+    whenThing1(PROPS1.pourBowl, (g, m) => { if (S && S.plan && S.plan.bowlLook) S.plan.bowlLook(m, { empty: { value: 0 } });
+      else m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); });
+      g.rotation.set(0, 0, 0); g.position.set(0, -50, 0); g.updateWorldMatrix(true, true);
+      const bb = new THREE.Box3().setFromObject(m); BOWL1.R = Math.max(0.04, (bb.max.x - bb.min.x + bb.max.z - bb.min.z) / 4); BOWL1.H = Math.max(0.02, bb.max.y - bb.min.y); });
+    function cordBowl1(t, T) {
+      const W = things.holyBowl, g = PROPS1.pourBowl, pr = pourAt1(t, T), P = cast.pho;
+      const set = t >= T.pour + 3.0, held = t >= T.pour + 0.9 && !set;
+      if (W) W.visible = set;
+      if (!g) return;
+      g.visible = held && !!g.userData.model && BOWL1.R > 0;
+      if (!g.visible || !P || !P.ready) return;
+      P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1pb); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
+      /* (the pour's direction: from his hand toward the bottle's mouth; the bowl's near rim under his fingers, 2 cm below the
+         palm's middle, the bowl beyond it, turned about the level line across that direction, so its far rim dips to the
+         bottle) */
+      const dx = CB1.x - pm.x, dz = CB1.z - pm.z, L = Math.max(1e-3, Math.hypot(dx, dz)), ux = dx / L, uz = dz / L;
+      _f1pq.setFromAxisAngle(_f1pa.set(uz, 0, -ux), pr.tilt);
+      _f1pr.set(-BOWL1.R * ux, BOWL1.H, -BOWL1.R * uz).applyQuaternion(_f1pq);
+      g.position.set(pm.x - _f1pr.x, pm.y - 0.02 - _f1pr.y, pm.z - _f1pr.z); g.quaternion.copy(_f1pq); g.scale.setScalar(1);
+      /* (set down: eased onto the play's bowl's own place and turn over the last 0.4 s) */
+      const u = smo(c01((t - T.pour - 2.6) / 0.4));
+      if (u > 0 && W) { W.updateWorldMatrix(true, false); W.getWorldPosition(_f1pw); W.getWorldQuaternion(_f1pwq); g.position.lerp(_f1pw, u); g.quaternion.slerp(_f1pwq, u); }
+    }
     function cordBottle1(t, T, api) {
       const b = PROPS1.clothBottle;
-      if (things.holyBowl) { things.holyBowl.visible = t >= T.pour + 0.9; if (t >= T.pour + 0.9) f1Drop(things.holyBowl, ON_CLOTH.bowl.x + 0.02, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z + 0.06, 0); }
+      cordBowl1(t, T);
       if (b) { const on = t >= T.pour + 0.9 && t < T.take + 0.2;
         if (on) { if (t < T.give) { f1Drop(b, CB1.x, CLOTH_Y, CB1.z, 0); }
           else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1A); if (pm) f1Drop(b, pm.x, pm.y - 0.05, pm.z, 0); } } }
