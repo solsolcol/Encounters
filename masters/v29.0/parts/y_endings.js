@@ -77,13 +77,18 @@
   }
   function slow2Inv(e, t0) { let lo = e, hi = e + SLOW2.len * 2; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (slow2(m, t0) < e) lo = m; else hi = m; } return (lo + hi) / 2; }
 
-  /* THE DAWN'S MARKS from d0 (the plan's 9.9): the morning on his floor, the knock; his teacher at the door with breakfast;
-     the thread wound up; at the table his "I only held the water.", his teacher's answer and the ending's own line; the
-     thread tied on his wrist, the last words; the picture and the music fade together (v15.3) */
+  /* THE DAWN'S MARKS from d0 (the plan's 9.9): the morning on his floor (his head to the glass, sitting up), the knock; his
+     teacher at the door with breakfast, and in past him; the thread wound up from the floor; at the table his "I only held
+     the water.", his teacher's answer and the ending's own line; the white thread tied on his wrist and knotted twice, his
+     eyes up to his teacher's face for the last words; his thought; the picture and the music go down together (v15.3).
+     M8 decays from its 41st second, under "Before we help anyone ... we prepare first." as the plan has it (its last chord
+     under the line); his thought is said in the morning's quiet after it, the birds outside */
   function dawn2(d0, k) {
     const own = { A: [['ph51A3', 0.8]], B: [['ph51B4', 0.8]], C: [['ph51C3', 0.8]], D: [['ph51D3', 1.1], ['ph51D4', 0.9]] }[k];
-    const T = tl(d0, [[1.2], ['@wake'], [2.6], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.6], ['@inside'], [2.2], ['@wind'], [5.4], ['@table'], [2.2],
+    const T = tl(d0, [[1.2], ['@wake'], [1.3], ['@sit'], [1.3], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.5], ['@inside'], [1.8], ['@wind'], [5.0], ['@table'], [1.8],
                       ['zv51w1', 0.45], ['ph51w2', 0.8]].concat(own, [['@tie'], [0.4], ['ph51w3', 0.5], ['zv51w2', 0.6], ['@black']]));
+    T.knot1 = T.tie + 1.5; T.knot2 = T.tie + 3.0;                                  // knotted twice, under the first half of his line
+    T.up = T.tie + 3.6;                                                            // his eyes up to his teacher's face: "From now on, we prepare first."
     T.d0 = d0; T.end = T.black + 1.6;
     return T;
   }
@@ -257,7 +262,17 @@
       sfx(D.d0, 'u51bdawn', 0.5); sfx(D.d0 + 28.5, 'u51bdawn', 0.5);               // the morning outside (a koel, mynas, a far train; the AC off)
       sfx(D.d0 + 0.5, 'u51koel', 0.5);
       fade(D.d0 + 0.05, D.d0 + 1.3, 1, 0);
+      sfx(D.sit + 0.15, 'u51floor', 0.25);                                         // he sits up on the floor
+      sfx(D.sit + 0.5, 'u51exhale', 0.4);                                          // a breath out: the night over
       sfx(D.knock - 0.82, 'u51knock', 0.7);                                        // a knock at his door
+      sfx(D.door - 0.1, 'u51unlock', 0.5);                                         // the latch
+      sfx(D.door + 0.15, 'u51door', 0.6);                                          // the door drawn open
+      for (let t = D.inside + 0.2; t < D.wind - 0.1; t += 0.62) sfx(t, 'u51tile', 0.24);   // his teacher's soft steps in past him
+      sfx(D.wind + 0.25, 'u51rewind', 0.6);                                        // the thread drawn in over the floor and wound
+      sfx(D.wind + 2.7, 'u51drag', 0.45);
+      sfx(D.table + 0.25, 'u51paper', 0.55);                                       // the paper bag opened on the table
+      sfx(D.table + 0.95, 'u51cups', 0.55);                                        // the two cups of kopi set down
+      sfx(D.table + 5.2, 'u51mynah', 0.35);                                        // the morning outside his glass
       sfx(D.ph51w1, 'ph51w1', 1);                                                  // "Eat first. You fought all night, even sitting still."
       sfx(D.zv51w1, 'zv51w1', 1);                                                  // "I only held the water."
       sfx(D.ph51w2, 'ph51w2', 1);                                                  // "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it."
@@ -265,7 +280,8 @@
       else if (k === 'B') sfx(D.ph51B4, 'ph51B4', 1);                              // "A student who won't wake his teacher is protecting the wrong person."
       else if (k === 'C') sfx(D.ph51C3, 'ph51C3', 1);                              // "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
       else { sfx(D.ph51D3, 'ph51D3', 1); sfx(D.ph51D4, 'ph51D4', 1); }            // "You went to a stranger's door and knocked. It answered." ... "Curiosity is not courage."
-      sfx(D.tie + 0.3, 'u51knot', 0.6);                                            // the thread drawn and knotted twice
+      sfx(D.tie + 0.3, 'u51knot', 0.6);                                            // the thread drawn round his wrist and knotted
+      sfx(D.knot2 - 1.1, 'u51knot', 0.45);                                         // and knotted again
       sfx(D.ph51w3, 'ph51w3', 1);                                                  // "Before we help anyone, we protect ourselves. From now on, we prepare first."
       sfx(D.zv51w2, 'zv51w2', 1);                                                  // "I had thought I was only there to assist my teacher."
       fade(D.black, D.end - 0.1, 0, 1);
