@@ -980,10 +980,18 @@
        first are one; these numbers are the play's own of 27 Nov, used only if the stage does not hand them) */
     const HOLD1 = { bowl: { prop: 'handBowl', pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62, play: 'BOWLHELD' }, bottle: { prop: 'handBottle', pos: [0.0, 0.03, 0.0], rot: [0, 0, 0], s: 1 } };
     const holdOf1 = (which) => { const H = HOLD1[which], P = H.play && S && S.plan && S.plan[H.play]; return P ? { prop: H.prop, pos: P.pos || H.pos, rot: P.rot || H.rot, s: P.s != null ? P.s : H.s } : H; };
+    /* HOW HIGH HIS HANDS HOLD THE BOWL INTO THE PICTURE, by the shot (the hands' pass is the lens's: the bowl stands where
+       the pose puts it in every shot). 1, the pose whole: the bowl in the picture's lower half, its water seen from above, as
+       he looks down into it; BOWLLOW1, the pose part way (the hands lower, the bowl at the picture's foot) where he looks
+       at something across it: photographed 27 Nov, held at 1 it covered the packet on the plate as the cord was untied and
+       his teacher's mouth as he watched it lifted */
+    const BOWLLOW1 = 0.55;
     function keepBowl1(t, T, api) {
       const lifted = t >= T.lift;
       const wb = things.holyBowl; if (wb) wb.visible = !lifted;
-      f1HandsHold(api, "bowl", lifted ? smo(c01((t - T.lift) / 1.2)) : 0);
+      /* (lifted into the picture's foot as he watches his teacher, raised as his look goes down into it, 26.4 to 33.4 s) */
+      const kUp = lp(BOWLLOW1, 1, smo(c01((t - T.lift - 0.4) / (T.wax - 2.0 - T.lift))));
+      f1HandsHold(api, "bowl", lifted ? kUp * smo(c01((t - T.lift) / 1.2)) : 0);
       f1Water(t, T.wax, lifted ? 1 : 0);
     }
     /* WHAT HIS HANDS HOLD in a film (his left hand under it, drawn in the hands' pass: kit.hold; the engine's own pose for
@@ -1087,7 +1095,9 @@
         { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
         /* his eyes: his teacher turns to him, looking into the lens; the bowl rises into the frame in his hands */
         { t: T.turn, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0], f[1] - 0.1, f[2]]; }, fp: 52, fd: 44, cut: true },
-        { t: T.lift + 0.4, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0] + 0.15, f[1] - 0.22, f[2] - 0.05]; }, fp: 52, fd: 44 },
+        /* (the bowl rises in his hands over the picture's lower half, drawn over the world: photographed 27 Nov, its rim crossed
+           his teacher's mouth. The look goes a little lower, so his face stands above the rim as he watches it lifted) */
+        { t: T.lift + 0.4, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0] + 0.15, f[1] - 0.42, f[2] - 0.05]; }, fp: 52, fd: 44 },
         /* INSERT, his eyes looking down into the bowl in his hands: the candle tilted over it, three drops of wax */
         { t: T.wax - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
         { t: T.end - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
@@ -1134,7 +1144,11 @@
         f1Vision(t, T.snap - 0.05, 0.45, T.snap + 2.6, 1.4);
         cordPho1(t, T); cordGrace1(t, T, t); cordMarcus1(t, T); cordPacket1(t, T, t); cordWisp1(t, tau, T);
         /* the bowl in his hands until he hands it to his teacher to pour (44 s); then nothing; then the bottle */
-        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb); f1Water(t, null, kb, T.snap + 0.55); }
+        /* (at the picture's foot below the packet and the people across the table, BOWLLOW1; his hands hidden in the two
+           inserts that are not his eyes, from behind her shoulder and from above the plate) */
+        const notHim = t >= T.phone && t < T.c3 - 0.3;
+        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb * BOWLLOW1); f1Water(t, null, kb, T.snap + 0.55);
+          if (api && api.handsRoot) api.handsRoot.visible = !notHim; }
         else if (t < T.take) f1HandsHold(api, null, 0);
         else f1HandsHold(api, 'bottle', smo(c01((t - T.take) / 0.7)));
         cordBottle1(t, T, api);
