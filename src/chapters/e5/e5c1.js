@@ -413,7 +413,7 @@
   const HX = 300.0;                                    // his flat's pocket: its living room's middle on x
   const WORLD_AT = {
     kneel: { x: 1.45, z: 1.9, ry: 0.41 },               // his place by her windows, at Grandmaster Pho's right (looking at Grace)
-    phone: { x: HX + 0.15, y: 0.758, z: -0.2 }          // his phone on its charger, on his dining table's near end
+    phone: { x: HX + 0.15, y: 0.698, z: -0.2 }          // his phone on its charger, on his dining table's near end
   };
   Object.assign(DATA.spawn, { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, rot: WORLD_AT.kneel.ry });
   Object.assign(DATA.shrine, { x: WORLD_AT.phone.x, z: WORLD_AT.phone.z });
@@ -430,7 +430,8 @@
     w5slippers: "her shoes by her door on the landing: episode 4 chapter 5's slippers",
     w4corrpots: "the plant on her landing: episode 4 chapter 4's corridor pots",
     w3dracaena: "the plant in her front room's corner and on his balcony: episode 4 chapter 3's dracaena",
-    w5tablelamp: "her table lamp on the bookshelf and his bedside lamp: episode 4 chapter 5's (props/RECORD.md)",
+    w5tablelamp: "her table lamp on the bookshelf: episode 4 chapter 5's (props/RECORD.md)",
+    w4stool: "the stool his bedside clock and glass stand on: episode 4 chapter 4's",
     w5cushion: "Grandmaster Pho's cushion, his own and her floor cushions: episode 4 chapter 5's (props/RECORD.md)",
     w4fridge: "the fridge in her kitchenette: episode 4 chapter 4's (props/RECORD.md: it fits her flat better than his)",
     w4dintable: "her small dining table in the back room: episode 4 chapter 4's",
@@ -3165,11 +3166,15 @@
     }
 
     /* ---------------------------------------------- the ground: her flat and his flat are each one level (the walk test
-       floods them whole); the street below her is 3.85 m down and his city's ground 78 m down (nobody walks there in play:
+       floods them whole); the street below her is 3.85 m down (the five-foot way under her floor reads as her floor: give a
+       body there its y, GY) and his city's ground 78 m down (nobody walks there in play:
        a film's lens and a probe stand there) */
     function flatGround(x, z) {
       if (x > 100) return 0;
-      if (x > STREET.shop && x < STREET.x1) return x > STREET.kerb ? GY - 0.15 : GY;
+      /* (her flat stands over the five-foot way: under her floor's footprint the ground is hers, 0, so the walk test and
+         collision read her flat; a film on the five-foot way gives its people and its lens their height, GY, itself) */
+      if (x > STREET.face && x < STREET.x1) return x > STREET.kerb ? GY - 0.15 : GY;
+      if (x > STREET.shop && x < STREET.x1 && (z > FRONT.z1 + 0.2 || z < STAIR.z0 - 0.2)) return GY;
       if (z < STAIR.z1 && z > STAIR.z0 && x > STAIR.x0 && x < STREET.shop) return GY + Math.max(0, Math.min(STAIR.risers, Math.floor((STAIR.x1 - x) / 0.235) + 1)) * (-GY / STAIR.risers);
       return 0;
     }
@@ -3322,7 +3327,7 @@
     const mLine = B({ color: 0xd8d2a0 });                                            // the road's painted lines
     const mYellow = B({ color: 0xb8902a });
     const mDarkRoom = B({ color: 0x1c1e24 });                                        // a room behind a window, in shadow (R108: nothing painted)
-    const mLitRoom = B({ color: 0xa07a48 });                                         // a lit room behind closed louvres, the light only
+    const mLitRoom = B({ map: wPic(wLouvre([255, 214, 160]), 0.5, 0.55), color: 0xb08050 });   // closed louvres with a room's lamp behind them, the light through the slats
     const mSign = (() => { const [c, x] = wCanvas(512, 96);
       x.fillStyle = '#7a1e18'; x.fillRect(0, 0, 512, 96); x.strokeStyle = '#d8b86a'; x.lineWidth = 4; x.strokeRect(6, 6, 500, 84);
       x.fillStyle = '#f0dca0'; x.font = 'bold 50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('咖 啡 店   KOPI', 256, 50);
@@ -3418,13 +3423,13 @@
       q.position.set(x, y, z);
       if (o.rx != null) q.rotation.x = o.rx; else q.rotation.x = -Math.PI / 2;
       if (o.ry != null) q.rotation.y = o.ry; if (o.rz != null) q.rotation.z = o.rz;
-      q.renderOrder = 2; (o.parent || world).add(q);
+      q.renderOrder = 2; (o.parent || sideOf(x)).add(q);
       const rec = { q, m, o0: opacity, look: o.look || null }; pools.push(rec); return rec;
     }
     /* a glow round a bulb or a flame, always facing the lens */
-    function glow(x, y, z, s, color, opacity, parent = world, look = null) {
+    function glow(x, y, z, s, color, opacity, parent = null, look = null) {
       const m = new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending });
-      mats.push(m); const sp = new THREE.Sprite(m); sp.position.set(x, y, z); sp.scale.set(s, s, 1); parent.add(sp);
+      mats.push(m); const sp = new THREE.Sprite(m); sp.position.set(x, y, z); sp.scale.set(s, s, 1); (parent || sideOf(x)).add(sp);
       const rec = { q: sp, m, o0: opacity, look }; pools.push(rec); return rec;
     }
 
@@ -3436,6 +3441,12 @@
     const streetG = new THREE.Group(); streetG.name = 'the shophouse row'; world.add(streetG);
     const hisG = new THREE.Group(); hisG.name = 'his flat'; world.add(hisG);
     const cityG = new THREE.Group(); cityG.name = 'his city'; world.add(cityG);
+    /* EACH POCKET DRAWN ONLY WHILE THE LENS IS IN IT (the world's tick): a merged piece or an instanced city spans so far
+       that its bounding sphere reaches the other pocket, and the lens's far plane alone would still hand its triangles to
+       the GPU. Every thing stood in the world goes to its own pocket's group by where it stands */
+    const herSideG = new THREE.Group(); herSideG.name = 'her side'; world.add(herSideG);
+    const hisSideG = new THREE.Group(); hisSideG.name = 'his side'; world.add(hisSideG);
+    const sideOf = (x) => (x > 100 ? hisSideG : herSideG);
 
     /* ================================================================ HER FLAT (the plan's 5.3) */
     const FLOOR_T = 0.3;                                   // her floor slab (the five-foot way's ceiling under it at -0.3)
@@ -3470,13 +3481,14 @@
       /* the dado: the lobby's and the stair's old green gloss to 1.2 m, the white above (a band laid over the plain wall) */
       boxW(mStairGreen, LOBBY.x0 + 0.002, 0.6, (LOBBY.z0 + LOBBY.z1) / 2 - 0.6, 0.004, 1.2, LOBBY.z1 - LOBBY.z0 + 1.2, 4);
       boxW(mStairGreen, (LOBBY.x0 + LOBBY.x1) / 2, 0.6, BACKR.z0 - 0.152, LOBBY.x1 - LOBBY.x0, 1.2, 0.004, 2);
-      boxW(mStairGreen, F.x0 - 0.152, 0.6, (LOBBY.z0 + LOBBY.z1) / 2, 0.004, 1.2, LOBBY.z1 - LOBBY.z0, 8);
+      boxW(mStairGreen, F.x0 - 0.152, 0.6, (LOBBY.z0 - 2.88) / 2, 0.004, 1.2, -2.88 - LOBBY.z0, 8);   // (either side of her door)
+      boxW(mStairGreen, F.x0 - 0.152, 0.6, (-1.87 + LOBBY.z1) / 2, 0.004, 1.2, LOBBY.z1 + 1.87, 8);
       /* the skirting round the front room and the back room */
       boxW(mSkirtTimber, (F.x0 + F.x1) / 2, 0.05, F.z1 - 0.006, F.x1 - F.x0, 0.1, 0.012, 2);
       boxW(mSkirtTimber, (F.x0 + F.x1) / 2, 0.05, F.z0 + 0.006, F.x1 - F.x0, 0.1, 0.012, 1);
       /* her kitchenette along the back room's +z wall: base cabinets, a terrazzo worktop with a steel sink and a two-ring
          hob (the cabinet doors' lines drawn as their own thin pieces), wall cabinets over it */
-      const KX0 = -4.8, KX1 = -3.3;
+      const KX0 = -4.74, KX1 = -3.3;
       boxW(mKitchen, (KX0 + KX1) / 2, 0.43, BACKR.z1 - 0.3, KX1 - KX0, 0.86, 0.58, 1 | 4 | 8);
       boxW(mWorktop, (KX0 + KX1) / 2, 0.88, BACKR.z1 - 0.31, KX1 - KX0 + 0.04, 0.04, 0.62, 63);
       for (let x = KX0 + 0.46; x < KX1 - 0.1; x += 0.46) boxW(mTimberDark, x, 0.43, BACKR.z1 - 0.008 - 0.58, 0.008, 0.8, 0.006, 1);
@@ -3884,7 +3896,7 @@
     /* a model at a place, its collision a stand-in box from the floor (w on its own x, d on its own z) that stays whether
        the model has landed or not, so nothing moves when it does */
     function place(name, key, x, y, z, ry, o = {}) {
-      const g = stand(key, x, y, z, ry, Object.assign({ parent: o.parent || world }, o));
+      const g = stand(key, x, y, z, ry, Object.assign({ parent: o.parent || sideOf(x) }, o));
       g.name = name; things[name] = g;
       if (o.solid) { const [w, d, h] = o.solid; solidBox(w, h || 1.2, d, x, (h || 1.2) / 2, z, ry); }
       return g;
@@ -3899,18 +3911,18 @@
       table:  { x: 0.5, z: 1.15, w: 1.0, d: 0.54, h: 0.40 },          // the coffee table under the white cloth
       pho:    { x: 0.5, z: 1.87, ry: Math.PI },                       // Grandmaster Pho on his cushion, facing the door across the room
       him:    { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, ry: WORLD_AT.kneel.ry },   // he kneels at Pho's right, by her windows
-      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.44, ry: 0 },   // her two-seat sofa, its back to the door
+      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.51, ry: 0 },   // (seat: its cushions' top, measured)   // her two-seat sofa, its back to the door
       grace:  { x: 0.42, z: -0.32, ry: 0 },                           // where she sits on it (her right-hand seat, facing him and Pho)
-      rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.45 },           // the rattan chair by the door, turned to the table: Marcus
+      rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.42 },   // (seat: its cushion's top, measured)           // the rattan chair by the door, turned to the table: Marcus
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
       shelf:  { x: -1.6, z: 2.78, ry: Math.PI },                      // the bookshelf against the +z wall
       fan:    { x: 0.45, z: 0.75 },                                   // the ceiling fan over the table
-      bag:    { x: 1.02, y: 0.44, z: -0.33 },                         // her open bag on the sofa beside her, the packet in it
+      bag:    { x: 0.86, y: 0.50, z: -0.36 },                         // her open bag on the sofa beside her, the packet in it
       plant:  { x: 2.25, z: -2.55 }
     };
     /* on the cloth when play begins (the plan's 8.1): the bowl, two candles, the jug and the lighter beside his knee (the
        jug, the lighter, the incense and the small white plate have no model yet: their spots are kept for them) */
-    const CLOTH_Y = HER.table.h + 0.012;
+    const CLOTH_Y = HER.table.h + 0.011;
     const ON_CLOTH = {
       bowl:     { x: 0.78, y: CLOTH_Y, z: 1.22 },
       candle1:  { x: 0.18, y: CLOTH_Y, z: 1.34 },
@@ -3930,7 +3942,7 @@
       things.herLamp = place('herLamp', 'w5tablelamp', 0.18, 1.39, 0, 0, { parent: things.shelf });
       place('phoCushion', 'w5cushion', HER.pho.x, 0, HER.pho.z, 0);
       place('hisCushion', 'w5cushion', HER.him.x, 0, HER.him.z - 0.05, 0.2);
-      place('cushionA', 'w5cushion', -0.75, 0, 2.35, 0.4); place('cushionB', 'w5cushion', -1.05, 0.11, 2.42, 0.9);
+      place('cushionA', 'w5cushion', -0.7, 0, 2.3, 0.4); place('cushionB', 'w5cushion', -0.55, 0.121, 2.42, 0.9);
       place('plant', 'w3dracaena', HER.plant.x, 0, HER.plant.z, 0.6, { solid: [0.6, 0.6, 1.5] });
       place('ceilFan', 'w5ceilfan', HER.fan.x, FRONT.ceil - 0.52, HER.fan.z, 0);
       place('bag', 'w51bag', HER.bag.x, HER.bag.y, HER.bag.z, -0.25);
@@ -3944,10 +3956,10 @@
       place('jug', 'w51jug', ON_CLOTH.jug.x, ON_CLOTH.jug.y, ON_CLOTH.jug.z, -0.4);
       place('incense', 'w51incense', ON_CLOTH.incense.x, ON_CLOTH.incense.y, ON_CLOTH.incense.z, 0.3);
       /* the back room: her small table (its laptop closed on it), two chairs, the fridge, her takeaway boxes on the counter */
-      place('dintable', 'w4dintable', -4.25, 0, 0.75, Math.PI / 2, { solid: [1.2, 0.85, 0.8], h: 0.74, done: matteOf });
-      place('dinchairA', 'w4dinechair', -4.25, 0, 1.45, Math.PI, { solid: [0.48, 0.5, 0.9] });
-      place('dinchairB', 'w4dinechair', -4.6, 0, 0.0, 0.1, { solid: [0.48, 0.5, 0.9] });
-      place('laptop', 'w51laptop', -4.1, 0.745, 0.65, 0.3);
+      place('dintable', 'w4dintable', -4.25, 0, 0.6, Math.PI / 2, { solid: [1.52, 1.08, 0.8], h: 0.72, done: matteOf });   // (her table fitted to a dining table's height: 1.52 x 1.07)
+      place('dinchairA', 'w4dinechair', -3.42, 0, 0.75, -Math.PI / 2, { solid: [0.48, 0.6, 0.9] });
+      place('dinchairB', 'w4dinechair', -5.08, 0, 0.45, Math.PI / 2, { solid: [0.48, 0.6, 0.9] });
+      place('laptop', 'w51laptop', -4.3, 0.722, 0.35, 0.3);
       place('fridge', 'w4fridge', -5.18, 0, 2.6, Math.PI, { solid: [0.76, 0.76, 1.7] });
       place('takeaway', 'w51takeaway', -3.3, 0.9, 2.72, 0.4);
       /* her doors: the front door (open in the opening film, shut in play: `herDoor`), the bedroom's, the street's */
@@ -3961,18 +3973,18 @@
       /* on the landing: the metal gate folded back against the lobby's wall, her shoes by the door, a plant */
       const gp = new THREE.Group(); gp.position.set(FRONT.x0 - 0.2, 0, -1.86); gp.name = 'her gate'; herFlatG.add(gp); things.gatePivot = gp;
       stand('w4gate', -0.48, 0, 0.0, 0, { parent: gp, lift: 1.5 });
-      place('shoes1', 'w5slippers', -3.22, 0, -2.62, 1.4, { parent: herFlatG }); place('shoes2', 'w5slippers', -3.46, 0, -2.56, 1.75, { parent: herFlatG });
+      place('shoes1', 'w5slippers', -3.2, 0, -2.66, 1.4, { parent: herFlatG }); place('shoes2', 'w5slippers', -3.52, 0, -2.46, 1.75, { parent: herFlatG });
       place('landingPlant', 'w4corrpots', -3.94, 0, -2.25, Math.PI / 2, { parent: herFlatG, s: 0.6 });
       /* the stair's one tube, on the bay's far wall over the flight; the coffee shop's, inside its shutter */
       place('stairTube', 'w4tubelight', -1.6, 1.75, STAIR.z0 + 0.11, 0, { lift: 1.5 }); things.stairTube.rotation.x = -Math.PI / 2;
       place('shopTube', 'w4tubelight', -1.2, -0.42, 0.2, Math.PI / 2, { lift: 1.5 });
       /* the coffee shop's chairs, stacked four high in three stacks for the night */
-      const stacks = []; for (const [x, z] of [[-1.6, -1.6], [-1.15, -1.2], [-2.3, 1.4]]) for (let k = 0; k < 4; k++) stacks.push({ x, y: GY + k * 0.09, z, ry: 0.2 * k });
-      many('w3pchair', stacks, world, 0.5);
+      const stacks = []; for (const [x, z] of [[-1.6, -1.6], [-2.3, 1.4]]) for (let k = 0; k < 4; k++) stacks.push({ x, y: GY + k * 0.09, z, ry: 0.2 * k });
+      many('w3pchair', stacks, herSideG, 0.5);
       /* the street: lamps on both kerbs (sodium, painted), the taxi at her kerb (the opening's: `taxi`), a car parked across
          the street and one up it, a motorbike at the kerb */
-      for (const z of [-24, 9.5, 30]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
-      for (const z of [-10, 15]) { place('lampF' + z, 'w4streetlamp', STREET.road[1] - 0.25, GY - 0.03, z, -Math.PI / 2, { lift: 1.5 }); }
+      for (const z of [-24, 9.5, 30]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, -Math.PI / 2, { lift: 1.5 }); }
+      for (const z of [-10, 15]) { place('lampF' + z, 'w4streetlamp', STREET.road[1] - 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
       place('taxi', 'e4sedan', 4.55, GY - 0.15, -1.6, Math.PI, { lift: 2, done: tint(0x6a8cc8, 1.0) });
       place('parkedA', 'e4sedanfar', 12.4, GY - 0.15, 9.5, 0, { lift: 2 });
       place('parkedB', 'e4suvfar', 4.6, GY - 0.15, 16.0, Math.PI, { lift: 2 });
@@ -3982,17 +3994,17 @@
     /* ---------------------------------------------- HIS HOME's things (the plan's 5.4, 9.4, 9.8, 9.9) */
     const HIS = {
       door:    { x: HX - 3.8, z: LIV.z0, w: 0.8, hingeX: HX - 4.2 },     // his front door (the corridor's side at -z)
-      altar:   { x: HX - 4.28, z: 0.35, ry: Math.PI / 2, top: 0.9 },    // the altar cabinet on the living room's left wall
-      sofa:    { x: HX - 2.3, z: -0.95, ry: 0, seat: 0.45 },            // his sofa, facing his glass
+      altar:   { x: HX - 4.29, z: 0.35, ry: Math.PI / 2, top: 1.0 },   // (top: its surface, measured 0.99 to 1.03 along it)    // the altar cabinet on the living room's left wall
+      sofa:    { x: HX - 2.3, z: -0.95, ry: 0, seat: 0.443 },            // his sofa, facing his glass
       circle:  { x: HX - 2.2, z: 1.0, r: 0.75 },                         // the middle of the room's floor: the thread's circle (9.7)
-      dining:  { x: HX + 0.75, z: -0.25, w: 1.6, d: 0.9, h: 0.75, ry: 0 },   // his dining table
-      chair1:  { x: HX + 0.75, z: 0.45, ry: Math.PI },                  // his chair (the +z side, his back to his glass)
-      chair2:  { x: HX + 0.75, z: -0.95, ry: 0 },                       // the other chair (the kitchen's side: Pho's at dawn)
-      bed:     { x: HX + 7.15, z: 0.8, ry: -Math.PI / 2, w: 1.7, l: 2.1, top: 0.55 },   // his bed, its head on the +x wall
+      dining:  { x: HX + 0.75, z: -0.25, w: 1.6, d: 0.98, h: 0.69, ry: 0 },   // his dining table
+      chair1:  { x: HX + 0.75, z: 0.55, ry: Math.PI },                  // his chair (the +z side, his back to his glass)
+      chair2:  { x: HX + 0.75, z: -1.05, ry: 0 },                       // the other chair (the kitchen's side: Pho's at dawn)
+      bed:     { x: HX + 7.265, z: 0.8, ry: -Math.PI / 2, w: 1.7, l: 1.87, top: 0.567 },   // his bed, its head on the +x wall
       bedside: { x: HX + 7.95, z: 2.05 },
       getUp:   { x: HX + 6.7, z: -0.48 },                                // where he stands up from it (the bed's -z side)
       bedDoor: { x: BED.x0, z: 1.2, hingeZ: 1.65 },                      // the bedroom door, ajar
-      clock:   { x: HX + 7.79, y: 0.5, z: 2.16, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside, turned to the bed
+      clock:   { x: HX + 7.9, y: 0.45, z: 2.12, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside stool, turned to the bed
       aircon:  { x: BED.x1 - 0.12, y: 2.25, z: 0.8, ry: -Math.PI / 2 },   // the wall unit over his bed's head, on the +x wall
       kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
       bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
@@ -4001,7 +4013,7 @@
       oven:    { x: HX + 1.75, y: 0.86, z: LIV.z0 + 0.62 }
     };
     {
-      place('altarcab', 'w51altarcab', HIS.altar.x, 0, HIS.altar.z, HIS.altar.ry, { solid: [0.9, 0.42, 1.0] });
+      place('altarcab', 'w51altarcab', HIS.altar.x, 0, HIS.altar.z, HIS.altar.ry, { solid: [0.9, 0.61, 1.1] });
       /* on the altar: the Buddha image, his teacher's photograph, a candle, the flowers, and where the bottle goes */
       place('buddha', 'e4buddha', HIS.altar.x + 0.02, HIS.altar.top, HIS.altar.z, HIS.altar.ry, { lift: 3 });
       place('photo', 'w4framesmall', HIS.altar.x - 0.05, HIS.altar.top, HIS.altar.z + 0.3, HIS.altar.ry + 0.25);
@@ -4010,14 +4022,16 @@
       place('bottle', 'w51bottle', HIS.altar.x + 0.14, HIS.altar.top, HIS.altar.z - 0.08, 0); things.bottle.visible = false;   // set down by the film of home (9.4)
       place('hisSofa', 'w51sofa', HIS.sofa.x, 0, HIS.sofa.z, HIS.sofa.ry, { solid: [2.1, 0.9, 0.9] });
       place('dining', 'w51dintable', HIS.dining.x, 0, HIS.dining.z, HIS.dining.ry, { solid: [HIS.dining.w, HIS.dining.d, 0.9] });
-      place('chair1', 'w51dinchair', HIS.chair1.x, 0, HIS.chair1.z, HIS.chair1.ry, { solid: [0.5, 0.5, 0.9] });
-      place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.5, 0.5, 0.9] });
+      place('chair1', 'w51dinchair', HIS.chair1.x, 0, HIS.chair1.z, HIS.chair1.ry, { solid: [0.56, 0.6, 0.9] });
+      place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.56, 0.6, 0.9] });
       place('hisPhone', 'e4phone', WORLD_AT.phone.x, WORLD_AT.phone.y, WORLD_AT.phone.z, 0.2);
       place('bed', 'w51bed', HIS.bed.x, 0, HIS.bed.z, HIS.bed.ry, { solid: [HIS.bed.w, HIS.bed.l, 0.7] });
-      place('bedLamp', 'w5tablelamp', HIS.bedside.x + 0.09, 0.5, HIS.bedside.z, 0, { s: 0.8 });
-      place('bedGlass', 'w51glass', HIS.bedside.x - 0.14, 0.5, HIS.bedside.z - 0.13, 0);            // the glass of water that trembles (8.3)
+      /* his bedside: a stool for a table (a real model: episode 4 chapter 4's), the alarm clock and a glass of water on it */
+      /* (its red plastic painted a plain white at runtime: red is the spell's colour alone in this chapter, the plan's 4.5) */
+      place('bedside', 'w4stool', HIS.bedside.x, 0, HIS.bedside.z, 0.3, { solid: [0.4, 0.4, 0.6],
+        done: (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) { mt.map = null; mt.color.setHex(0xd6d4cc); mt.roughness = 0.55; mt.needsUpdate = true; } }) });
+      place('bedGlass', 'w51glass', HIS.bedside.x + 0.07, 0.45, HIS.bedside.z - 0.06, 0);           // the glass of water that trembles (8.3)
       place('altarGlass', 'w51glass', HIS.altar.x + 0.1, HIS.altar.top, HIS.altar.z + 0.12, 0);
-      boxW(mVeneer, HIS.bedside.x, 0.25, HIS.bedside.z, 0.45, 0.5, 0.4, 63); solidXZ(HIS.bedside.x - 0.23, HIS.bedside.z - 0.2, HIS.bedside.x + 0.23, HIS.bedside.z + 0.2, 0.6);   // (a bedside cabinet: his bed's own set lands with w51bed if it has one)
       place('bedClock', 'w51clock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);            // the alarm clock on his bedside (9.4's insert: 11:58, 3:00)
       place('aircon', 'w51aircon', HIS.aircon.x, HIS.aircon.y, HIS.aircon.z, HIS.aircon.ry);
       place('kettle', 'w51kettle', HIS.kettle.x, 0.92, HIS.kettle.z, 0.4);
@@ -4054,16 +4068,18 @@
       for (let i = 0; i < 1800; i++) { x.fillStyle = r() < 0.5 ? 'rgba(200,196,184,0.25)' : 'rgba(255,255,255,0.3)'; x.fillRect(r() * 128, r() * 128, 1, 1); } return c; })(), 0.3, 0.3), roughness: 0.95, side: THREE.DoubleSide });
     const clothG = new THREE.Group(); clothG.name = 'the white cloth'; herThingsG.add(clothG);
     {
-      const T = HER.table, W = T.w + 0.34, D = T.d + 0.34, NX = 28, NZ = 18;
+      /* (its top lies 3 cm past the table's edges before it falls, and 9 mm over the top: the table's rounded rim never shows
+         through it, clipscan's find) */
+      const T = HER.table, OV = 0.03, W = T.w + 0.4, D = T.d + 0.4, NX = 32, NZ = 22, hw = T.w / 2 + OV, hd = T.d / 2 + OV;
       const g = new THREE.PlaneGeometry(W, D, NX, NZ); g.rotateX(-Math.PI / 2); const pa = g.attributes.position;
       for (let i = 0; i < pa.count; i++) {
-        const x = pa.getX(i), z = pa.getZ(i), ox = Math.max(0, Math.abs(x) - T.w / 2), oz = Math.max(0, Math.abs(z) - T.d / 2), o = Math.max(ox, oz);
-        const fold = 0.012 * Math.sin(x * 23) * Math.min(1, o / 0.05) + 0.008 * Math.sin(z * 31) * Math.min(1, o / 0.05);
-        pa.setY(i, o > 0 ? -o * 0.96 : 0);
-        if (ox > 0) pa.setX(i, Math.sign(x) * (T.w / 2 + ox * 0.18 + fold)); if (oz > 0) pa.setZ(i, Math.sign(z) * (T.d / 2 + oz * 0.18 + fold));
+        const x = pa.getX(i), z = pa.getZ(i), ox = Math.max(0, Math.abs(x) - hw), oz = Math.max(0, Math.abs(z) - hd), o = Math.max(ox, oz);
+        const fold = 0.01 * Math.sin(x * 23 + z * 17) * Math.min(1, o / 0.06);
+        pa.setY(i, o > 0 ? -o * 0.95 : 0);
+        if (ox > 0) pa.setX(i, Math.sign(x) * (hw + ox * 0.22 + fold)); if (oz > 0) pa.setZ(i, Math.sign(z) * (hd + oz * 0.22 + fold));
       }
       g.computeVertexNormals(); owned.push(g);
-      const cm = new THREE.Mesh(g, mCloth); cm.position.set(T.x, T.h + 0.006, T.z); clothG.add(cm);
+      const cm = new THREE.Mesh(g, mCloth); cm.position.set(T.x, T.h + 0.009, T.z); clothG.add(cm);
     }
     function cloth(k) { clothG.visible = k > 0.001; clothG.scale.set(1, 1, Math.max(0.02, Math.min(1, k))); }
 
@@ -4103,7 +4119,9 @@
       else if (src.isSkinnedMesh) { t = new THREE.SkinnedMesh(src.geometry, Array.isArray(src.material) ? src.material.map(reflMat) : reflMat(src.material));
         t.bindMode = 'detached'; t.bind(src.skeleton, src.bindMatrix); }
       else t = new THREE.Mesh(src.geometry, Array.isArray(src.material) ? src.material.map(reflMat) : reflMat(src.material));
-      t.matrixAutoUpdate = false; t.matrixWorldAutoUpdate = false; t.frustumCulled = false; t.castShadow = t.receiveShadow = false;
+      /* (a still copy is culled by its own sphere like anything else: drawn only while the glass is in the lens; a body's
+         copy rides bones the sphere cannot follow, so it is not) */
+      t.matrixAutoUpdate = false; t.matrixWorldAutoUpdate = false; t.frustumCulled = !src.isSkinnedMesh; t.castShadow = t.receiveShadow = false;
       t.renderOrder = src.renderOrder; t.name = 'refl:' + (src.name || src.type);
       mirrorG.add(t); return t;
     }
@@ -4111,7 +4129,12 @@
     const _rT = new THREE.Matrix4(), _rR = new THREE.Matrix4(), _rM = new THREE.Matrix4(), _rP = new THREE.Vector3();
     const drawnUp = (o) => { for (let a = o; a; a = a.parent) { if (!a.visible) return false; if (a === world) return true; } return true; };
     function reflScan(R) {
-      const list = []; R.root.traverse(q => { if ((q.isMesh || q.isInstancedMesh) && !q.isSprite && !(q.userData && q.userData.noRefl)) list.push(q); });
+      const list = [];
+      /* A BODY IN THE GLASS is its lightest level (it is faint and a few metres off in the glass, and a full body twice
+         would cost a phone its share of triangles: WORLD.md, the budget): the level drawn whenever the body is */
+      const P = R.person, lv = P && P.lv ? (P.lv[3] || P.lv[2] || P.lv[1]) : null;
+      if (P) { if (lv) for (const q of lv) list.push(q); }
+      else R.root.traverse(q => { if ((q.isMesh || q.isInstancedMesh) && !q.isSprite && !(q.userData && q.userData.noRefl)) list.push(q); });
       if (list.length === R.n) return; R.n = list.length;
       for (const q of list) if (!R.twins.has(q)) {
         const mt = [].concat(q.material)[0];
@@ -4131,7 +4154,7 @@
         if (P) { const ry = P.group.rotation.y; turn = o.face != null ? angTo(ry, o.face) : (o.turn || 0); P.group.getWorldPosition(_rP); }
         const kOn = P ? (o.k == null ? 1 : o.k) > 0.02 : true;
         for (const [src, tw] of R.twins) {
-          tw.visible = kOn && drawnUp(src);
+          tw.visible = kOn && (P ? drawnUp(P.group) : drawnUp(src));
           if (!tw.visible) continue;
           if (src.isSkinnedMesh) _rM.copy(src.bindMatrix); else { src.updateWorldMatrix(true, false); _rM.copy(src.matrixWorld); }
           if (turn) { _rT.makeTranslation(_rP.x, 0, _rP.z); _rR.makeRotationY(turn); _rM.premultiply(_rT.clone().invert()).premultiply(_rR).premultiply(_rT); }
@@ -4140,8 +4163,11 @@
       }
     }
     /* what is mirrored from the first frame: her flat's fabric, its things, the cloth and her door's leaf */
-    reflTrack(herFlatG); reflTrack(herThingsG);
-    const herThingNames = ['ctable', 'gsofa', 'rattan', 'shelf', 'phoCushion', 'hisCushion', 'cushionA', 'cushionB', 'plant', 'ceilFan', 'bag', 'keepsake', 'dintable', 'dinchairA', 'dinchairB', 'laptop', 'fridge', 'takeaway'];
+    /* (only what the open glass can show from his place: the room's fabric, her door, the landing behind it, the sofa,
+       the rattan chair, her bag, the back room past the half wall; the cloth, the table, the cushions by the window, the
+       shelf and the fan fall behind the shutter or off the glass: WORLD.md, the measure) */
+    reflTrack(herFlatG);
+    const herThingNames = ['gsofa', 'rattan', 'bag', 'keepsake', 'dintable', 'dinchairA', 'dinchairB', 'laptop', 'fridge', 'takeaway'];
     for (const n of herThingNames) if (things[n]) reflTrack(things[n]);
     let reflStrength = 1;
     const reflPeople = new Map();
@@ -4174,22 +4200,31 @@
       const fs = pool(HER.fan.x + 0.62, FRONT.ceil - 0.012, HER.fan.z - 0.7, 1.85, 1.85, 0xffffff, 0.3, { map: sh, add: false, rx: Math.PI / 2, parent: herThingsG, look: 'lamp' });
       things.fanShadow = fs.q;
       /* the two candles' warmth on the cloth (their flames are the films' and the play's: `candleLit`) */
+      const flameTex = (() => { const [c, x] = wCanvas(32, 64);
+        const g = x.createRadialGradient(16, 44, 1, 16, 40, 22); g.addColorStop(0, 'rgba(255,250,220,1)'); g.addColorStop(0.35, 'rgba(255,190,90,0.95)'); g.addColorStop(1, 'rgba(255,120,30,0)');
+        x.fillStyle = g; x.beginPath(); x.moveTo(16, 2); x.quadraticCurveTo(30, 40, 16, 62); x.quadraticCurveTo(2, 40, 16, 2); x.fill(); return tex(done(THREE, c, false)); })();
       for (const n of ['candle1', 'candle2']) { const c = ON_CLOTH[n];
-        things[n + 'Glow'] = glow(c.x, c.y + 0.27, c.z, 0.28, 0xffb060, 0.9, herThingsG, n);
+        const fm = new THREE.SpriteMaterial({ map: flameTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+        const fl = new THREE.Sprite(fm); fl.position.set(c.x, c.y + 0.255, c.z); fl.scale.set(0.022, 0.045, 1); herThingsG.add(fl);
+        pools.push({ q: fl, m: fm, o0: 1, look: n }); things[n + 'Flame'] = fl;
+        things[n + 'Glow'] = glow(c.x, c.y + 0.255, c.z, 0.28, 0xffb060, 0.9, herThingsG, n);
         things[n + 'Pool'] = pool(c.x, c.y + 0.003, c.z, 0.7, 0.7, 0xffa050, 0.3, { parent: herThingsG, look: n }); }
       /* the stair's tube: its own glow and the light it lays on the treads and the walls (`stairTube(k)` dims it, flickers it) */
-      things.tubeGlow = glow(-1.6, 1.74, STAIR.z0 + 0.12, 1.4, 0xe8f4ff, 0.6, world, 'tube');
+      things.tubeGlow = glow(-1.6, 1.74, STAIR.z0 + 0.12, 1.4, 0xe8f4ff, 0.6, null, 'tube');
       things.tubePool = [pool(-1.6, GY + (STAIR.x1 + 1.6) / STAIR_RUN * STAIR_RISE + 0.03, (STAIR.z0 + STAIR.z1) / 2, 3.2, 1.1, 0xdfeeff, 0.18, { look: 'tube', rx: -Math.PI / 2, ry: Math.atan2(STAIR_RISE, STAIR_RUN) }),
                          pool(-1.6, 1.4, STAIR.z1 - 0.004, 3.2, 2.6, 0xdfeeff, 0.12, { rx: 0, ry: Math.PI, look: 'tube' })];
       /* the coffee shop's tube inside its half-shut shutter, and the light it spills under it onto the five-foot way */
-      glow(-1.2, -0.45, 0.2, 1.6, 0xe8f4ff, 0.45, world, 'street');
+      glow(-1.2, -0.45, 0.2, 1.6, 0xe8f4ff, 0.45, null, 'street');
       pool(0.0, GY + 0.004, 0.0, 4.4, 6.6, 0xd8e8ff, 0.12, { look: 'street' });
       pool(STREET.shop + 0.9, GY + 0.006, 0.0, 1.8, 5.6, 0xd8e8ff, 0.1, { look: 'street' });
       /* the street lamps' sodium on the road and the five-foot way's edge */
-      for (const z of [-24, 9.5, 30]) { glow(STREET.kerb + 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.kerb + 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
-      for (const z of [-10, 15]) { glow(STREET.road[1] - 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.road[1] - 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
+      for (const z of [-24, 9.5, 30]) { glow(STREET.kerb + 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, null, 'street'); pool(STREET.kerb + 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
+      for (const z of [-10, 15]) { glow(STREET.road[1] - 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, null, 'street'); pool(STREET.road[1] - 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
       /* his altar's candle: a small warm point in his dark flat, and its light on the wall behind */
-      things.altarGlow = glow(HIS.altar.x + 0.12, HIS.altar.top + 0.27, HIS.altar.z - 0.24, 0.32, 0xffb060, 0.85, hisG, 'altar');
+      things.altarGlow = glow(HIS.altar.x + 0.12, HIS.altar.top + 0.255, HIS.altar.z - 0.24, 0.32, 0xffb060, 0.85, hisG, 'altar');
+      { const fm = new THREE.SpriteMaterial({ map: things.candle1Flame.material.map, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+        const fl = new THREE.Sprite(fm); fl.position.set(HIS.altar.x + 0.12, HIS.altar.top + 0.255, HIS.altar.z - 0.24); fl.scale.set(0.022, 0.045, 1); hisG.add(fl);
+        pools.push({ q: fl, m: fm, o0: 1, look: 'altar' }); things.altarFlame = fl; }
       things.altarPool = pool(LIV.x0 + 0.01, 1.3, HIS.altar.z, 1.6, 1.4, 0xffa050, 0.16, { rx: 0, ry: Math.PI / 2, parent: hisG, look: 'altar' });
       /* the corridor's lamps */
       for (const x of [HX - 8.2, HX - 5.4, HX - 2.4, HX + 0.6]) { glow(x, 2.0, CORR.z0 + 0.12, 0.5, 0xffd8a0, 0.6, hisG, 'corr'); pool(x, 1.8, CORR.z0 + 0.003, 1.6, 1.8, 0xffd8a0, 0.2, { rx: 0, parent: hisG, look: 'corr' }); }
@@ -4198,6 +4233,18 @@
       /* DAWN's sun through his glass: long warm patches across his floor (their mullions' gaps between) */
       things.sunPatches = [];
       for (let x = LIV.x0 + 0.1; x < LIV.x1 - 0.5; x += 1.25) things.sunPatches.push(pool(x + 0.62, 0.005, 1.0, 1.05, 3.0, 0xffc070, 0.5, { map: rectTex, parent: hisG, look: 'dawn', rz: 0.32 }));
+    }
+    /* CONTACT SHADOWS, painted (CLAUDE.md v9.3: on a phone nothing casts shadows, so where a thing meets what it stands on a
+       soft dark is laid under it): every piece of furniture on its floor and every small thing on its surface */
+    {
+      const sh = (x, y, z, w, d, k = 0.38, ry = 0) => pool(x, y + 0.003, z, w, d, 0x000000, k, { add: false, rz: -ry, look: null });
+      sh(HER.table.x, 0, HER.table.z, 1.25, 0.8); sh(HER.sofa.x, 0, HER.sofa.z, 1.75, 1.05); sh(HER.rattan.x, 0, HER.rattan.z, 0.8, 0.8, 0.34, HER.rattan.ry);
+      sh(HER.shelf.x, 0, HER.shelf.z - 0.02, 1.0, 0.5); sh(HER.plant.x, 0, HER.plant.z, 0.7, 0.7); sh(-4.25, 0, 0.6, 1.3, 1.8, 0.32); sh(-5.18, 0, 2.6, 0.9, 0.9);
+      for (const [c, r] of [[ON_CLOTH.bowl, 0.42], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
+      sh(ON_CLOTH.jug.x, 0, ON_CLOTH.jug.z, 0.22, 0.22, 0.3);
+      sh(HIS.sofa.x, 0, HIS.sofa.z, 2.35, 1.05); sh(HIS.dining.x, 0, HIS.dining.z, 1.85, 1.25, 0.32); sh(HIS.bed.x, 0, HIS.bed.z, 2.1, 1.95, 0.4);
+      sh(HIS.altar.x + 0.03, 0, HIS.altar.z, 0.75, 1.05); sh(HIS.bedside.x, 0, HIS.bedside.z, 0.5, 0.5);
+      for (const [dx, dz, r] of [[0.02, 0, 0.26], [-0.05, 0.3, 0.2], [0.12, -0.24, 0.08], [-0.04, -0.34, 0.2], [0.1, 0.12, 0.1]]) sh(HIS.altar.x + dx, HIS.altar.top, HIS.altar.z + dz, r, r, 0.32);
     }
     /* THE LOOKS of the world (the head's PRESETS, by name): what each shows of the painted light. `worldLook(name)` sets
        it; the world's own tick follows the sky on its own when the scene's background is a preset's (the play and the
@@ -4239,7 +4286,9 @@
       fanAng += dt * 7.2;                                               // (about 1.15 turns a second: her fan on its middle setting)
       if (things.ceilFan) things.ceilFan.rotation.y = fanAng;
       if (things.fanShadow) things.fanShadow.rotation.z = fanAng;
-      if (_camW.x > 100) carsTick(now);
+      const his = _camW.x > 100;
+      hisSideG.visible = hisG.visible = cityG.visible = his; herSideG.visible = streetG.visible = herFlatG.visible = herThingsG.visible = frontWallG.visible = !his;
+      if (his) carsTick(now);
       const bg = scene.background && scene.background.isColor ? scene.background.getHex() : null;
       if (bg != null && BG_OF[bg] && BG_OF[bg] !== lookNameW) worldLook(BG_OF[bg]);
     }
