@@ -976,9 +976,9 @@
       f2Cushion.visible = k > 0.001;
       if (!f2Cushion.visible) return;
       /* (it comes up from under the lens and settles over his eyes, slipping down off them as his sight opens) */
-      /* (its lower edge 4.5 cm under the lens's middle at 17 cm, the picture's lowest fifth left to the room: at 3.5 cm over it
-         the cushion filled the whole picture for nearly four seconds, a blank grey, photographed) */
-      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.09, -0.17);
+      /* (drawn at last, at 9 cm up its lower edge stood at 79 % of a phone's picture, in the vignette's dark: no room under it,
+         run v19's phone at 14.2 s; 1.5 cm higher it stands at about 64 %, the room's sliver under it) */
+      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.105, -0.17);
       f2Cushion.rotation.set(Math.PI / 2 - 0.25, 0, 0.05 * Math.sin(t * 0.7));
       f2Cushion.scale.setScalar(0.62);
     }
