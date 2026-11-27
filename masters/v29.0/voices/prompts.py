@@ -48,6 +48,10 @@ TAG = {
 PHONE = ['ph51x1', 'ph51x2', 'ph51x3', 'ph51x4', 'ph51jina', 'ph51x5', 'ph51x6',
          'ph51A1', 'ph51A2', 'ph51B1', 'ph51B2', 'ph51B3', 'ph51C1', 'ph51C2', 'ph51D1', 'ph51D2']
 CHANT_SAY = {}
+# RE-SAID (27 Nov 2026, the coordinator's check with ElevenLabs Scribe): ph51A3's takes a to c all drop the -ed of
+# "called" ("You call at once", Scribe and faster-whisper alike), so takes d to f are given the one ellipsis his rules
+# allow, after "called", to give the -ed room (the pause it makes measured before a pick)
+RESAY = {'ph51A3': 'You called... at once. That is the first protection: knowing when something is more than you.'}
 
 def plain(s):
     s = s.replace('ṅg', 'ng').replace('ṅ', 'ng').replace('ṁ', 'ng').replace('Ṁ', 'Ng')
@@ -70,7 +74,7 @@ for r in L['lines']:
                         verses=len(verses), prompt='[%s] %s' % (CHANT_TAG, words)))
         continue
     assert k in TAG, k + ': no tag'
-    words = r.get('say', r['text'])
+    words = RESAY.get(k, r.get('say', r['text']))
     assert 'LP' not in words.split() and 'L.P.' not in words, k + ': an abbreviated title'
     out.append(dict(key=k, speaker=r['who'], voice_id=VOICE[r['who']], model='eleven_v3', takes=3,
                     prompt='[%s] %s' % (TAG[k], words)))
