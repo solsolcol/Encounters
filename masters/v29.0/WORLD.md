@@ -9,7 +9,7 @@ on the stage as `stage.plan.ROOMTHINGS` / `stage.plan.FLATTHINGS` (each carries 
 
 Set at file level before build() (b_world.js's top), so the head's DATA is complete when the chapter registers:
 - `DATA.spawn` = his place kneeling by her windows: x 1.45, z 1.9, rot 0.41 (the opening film leaves him there).
-- `DATA.shrine` / `ghostHome` = his phone on his dining table: x 300.15, z -0.2 (the engine's pile; the decision's anchor).
+- `DATA.shrine` / `ghostHome` = his phone on his dining table: x 300.15, z -0.2, on the table's top at y 0.698 (the engine's pile; the decision's anchor).
 - `DATA.bounds` = { minX -6.2, maxX 308.6, minZ -4.6, maxZ 4.4 }: the two flats he walks in (her place at the origin, his 300 m along +x).
 - `DATA.assets` += the models of the game the places stand (`WORLD_REUSE`), each declared in `DATA.reuseInEpisode` with its reason (all episode 4's; none of episodes 1 to 3).
 - The coordinator may move these into a_head.js; nothing else reads them from b_world.js.
@@ -87,7 +87,7 @@ and costs one draw per body part and per piece of her room while drawn.
 | name | value | for |
 |---|---|---|
 | `crane` | from (9.6, GY+7.0, -6.2) to (4.2, GY+1.6, -3.6), looking at (1.6, GY+1.2, -3.3) | 9.1's crane: her lit windows at the start, Marcus at the stair door at the end |
-| `marcus0` | 1.75, -3.0 (ry π/2+0.3) | Marcus waiting by the stair door on the five-foot way |
+| `marcus0` | 1.75, -3.0 (ry π/2+0.3), y GY | Marcus waiting by the stair door on the five-foot way. The ground function (`flatGround`) reads HER floor (0) under her flat's footprint (x ≤ 3.0), so a body or a lens on the five-foot way is given its height, GY, by the film |
 | `taxi` | 4.55, -1.6, facing -z (π); kerbside rear door at 3.7, -1.15 | `things.taxi` (`e4sedan` tinted blue, no name). NEEDS A DRIVER (v24.22): a seated body is CAST/FILMS's |
 | `out` | 3.05, -1.4 | where he steps onto the five-foot way |
 | `stairFoot` / `stairTop` | (1.3, GY, -3.72) / (-3.28, 0, -3.72) | the climb (the lens rides `flatGround`, which follows the treads) |
@@ -111,13 +111,13 @@ and costs one draw per body part and per piece of her room while drawn.
 | name | x, z (ry) | notes |
 |---|---|---|
 | `door` | 296.2, -2.5; hinge x 295.8 | his front door (`w5frontdoor`, dark veneer); `WORLD.hisDoor(k)` 0 shut (solid), 1 open into his flat; keycard reader at 296.68 |
-| `altar` | 295.72, 0.35 (π/2), top 0.9 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, the jasmine (`w51jasmine`), a glass of water (`w51glass`); `things.bottle` (hidden until the film of home sets it down at 295.86, top, 0.27) |
+| `altar` | 295.71, 0.35 (π/2), top 1.03 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, the jasmine (`w51jasmine`), a glass of water (`w51glass`); `things.bottle` (hidden until the film of home sets it down at 295.85, 1.03, 0.27) |
 | `bag` | 297.0, -2.2 (0.2) | his own grey canvas bag on the floor inside his front door (`e4bag`, `things.hisBag`): at three o'clock he takes the white thread out of it (9.7); the spool `w51threadreel` is FILMS' to put in his hand |
-| `phone` | 300.15, y 0.758, -0.2 | his phone on its charger (`things.hisPhone`, `e4phone`); DATA.shrine |
-| `dining` | 300.75, -0.25 (0) | 1.6 x 0.9, top 0.75 (`w51dintable`); `chair1` 300.75, 0.45 (π, his), `chair2` 300.75, -0.95 (0, Pho's at dawn) |
+| `phone` | 300.15, y 0.698, -0.2 | his phone on its charger (`things.hisPhone`, `e4phone`); DATA.shrine |
+| `dining` | 300.75, -0.25 (0) | 1.6 x 0.98, top 0.69 (`w51dintable`); `chair1` 300.75, 0.55 (π, his), `chair2` 300.75, -1.05 (0, Pho's at dawn) |
 | `sofa` | 297.7, -0.95 (0), seat 0.45 | `w51sofa`, facing his glass |
 | `circle` | 297.8, 1.0, r 0.75 | the middle of the floor: the thread's circle |
-| `bed` | 307.15, 0.8 (-π/2), top 0.55 | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
+| `bed` | 307.27, 0.8 (-π/2), 1.7 x 1.87, mattress about 0.5 | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
 | `getUp` | 306.7, -0.48 | where he stands up from it: `STATION.night.at` (yaw 2.17, toward the bedroom door) |
 | `bedDoor` | 304.4, 1.2; hinge z 1.65 | `WORLD.bedDoor(k)` 1 open (play), ~0.15 ajar |
 | `clock` | 307.79, y 0.5, 2.16 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside cabinet 307.95, 2.05, top 0.5, with his lamp and a glass of water (`things.bedGlass`, the one that trembles) |
@@ -126,7 +126,7 @@ and costs one draw per body part and per piece of her room while drawn.
 | `oven` | 301.75, y 0.86, -1.88 | `WORLD.ovenClock('3:41')` (ending B) |
 | `kitchen` | 300.1, -1.55 | at the drawer (its front x 299.8..300.4) and the tap (300.95): ending C |
 | `balconyAt` | 299.85, 2.15 | ending D: the doorway's frame, never past it |
-| `dawnSeat` | him 300.75, 0.45; Pho 300.75, -0.95 | the dawn table |
+| `dawnSeat` | him 300.75, 0.55; Pho 300.75, -1.05 | the dawn table |
 | `steps` | 13 points from his door to his bed (`FILMPLACE.steps`) | the red footsteps (8.3) |
 
 `STATION.ask.at` = (300.4, 0.65, yaw 0.3): standing at his table.

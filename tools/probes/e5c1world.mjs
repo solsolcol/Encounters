@@ -102,8 +102,17 @@ for (const name of pick) {
   const info = await p.evaluate(() => { const S = window.__enc.stage, W = S.plan && S.plan.ROOMTHINGS && S.plan.ROOMTHINGS.api;
     return { st: window.__enc.getState(), world: W ? W.state() : null }; });
   info.gl = await frameGL();
+  /* TRIS=1: what draws them, the visible meshes summed by their place in the world (each instance counted) */
+  if (process.env.TRIS) info.census = await p.evaluate(() => { const E = window.__enc, S = E.stage, out = {};
+    const root = S.world; const cam = E.pitch.children.find(o => o.isCamera); cam.updateMatrixWorld(); const fr = new (root.constructor.prototype.constructor === undefined ? Object : Object)();
+    root.traverse(o => { if (!(o.isMesh) || !o.geometry) return; for (let a = o; a; a = a.parent) if (!a.visible) return; if (o.layers.mask === 0) return;
+      const g = o.geometry, n = (g.index ? g.index.count : g.attributes.position.count) / 3 * (o.isInstancedMesh ? o.count : 1);
+      let k = o.name || o.type; for (let a = o.parent; a && a !== root; a = a.parent) if (a.name) { k = a.name + (o.isSkinnedMesh ? ' (skin)' : ''); break; }
+      if (o.name && o.name.startsWith('refl:')) k = 'REFLECTION ' + (o.isSkinnedMesh ? 'skin' : 'room');
+      out[k] = (out[k] || 0) + n; });
+    return Object.entries(out).sort((a, b) => b[1] - a[1]).slice(0, 18).map(([k, n]) => k + ' ' + Math.round(n)); });
   await p.screenshot({ path: `${OUT}/${name}.png`, timeout: 240000 });
-  console.log(el(), name, 'gl', JSON.stringify(info.gl), 'refl', JSON.stringify(info.world && info.world.refl && { on: info.world.refl.on, twins: info.world.refl.twins }), 'look', info.world && info.world.look);
+  console.log(el(), name, 'gl', JSON.stringify(info.gl), 'refl', JSON.stringify(info.world && info.world.refl && { on: info.world.refl.on, twins: info.world.refl.twins }), 'look', info.world && info.world.look, info.census ? '\n   ' + info.census.join('\n   ') : '');
 }
 await p.evaluate(() => { const S = window.__enc.stage; if (S.__g0) S.groundAt = S.__g0; });
 console.log(el(), 'errs', JSON.stringify(errs.slice(0, 20)));

@@ -15,7 +15,7 @@
   const HX = 300.0;                                    // his flat's pocket: its living room's middle on x
   const WORLD_AT = {
     kneel: { x: 1.45, z: 1.9, ry: 0.41 },               // his place by her windows, at Grandmaster Pho's right (looking at Grace)
-    phone: { x: HX + 0.15, y: 0.758, z: -0.2 }          // his phone on its charger, on his dining table's near end
+    phone: { x: HX + 0.15, y: 0.698, z: -0.2 }          // his phone on its charger, on his dining table's near end
   };
   Object.assign(DATA.spawn, { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, rot: WORLD_AT.kneel.ry });
   Object.assign(DATA.shrine, { x: WORLD_AT.phone.x, z: WORLD_AT.phone.z });
@@ -125,11 +125,15 @@
 //@@COPY 2355-4477 :: /* ================================================================ THE PEOPLE (the plan's §3.3, §6.1; the tracker's §5)
 
     /* ---------------------------------------------- the ground: her flat and his flat are each one level (the walk test
-       floods them whole); the street below her is 3.85 m down and his city's ground 78 m down (nobody walks there in play:
+       floods them whole); the street below her is 3.85 m down (the five-foot way under her floor reads as her floor: give a
+       body there its y, GY) and his city's ground 78 m down (nobody walks there in play:
        a film's lens and a probe stand there) */
     function flatGround(x, z) {
       if (x > 100) return 0;
-      if (x > STREET.shop && x < STREET.x1) return x > STREET.kerb ? GY - 0.15 : GY;
+      /* (her flat stands over the five-foot way: under her floor's footprint the ground is hers, 0, so the walk test and
+         collision read her flat; a film on the five-foot way gives its people and its lens their height, GY, itself) */
+      if (x > STREET.face && x < STREET.x1) return x > STREET.kerb ? GY - 0.15 : GY;
+      if (x > STREET.shop && x < STREET.x1 && (z > FRONT.z1 + 0.2 || z < STAIR.z0 - 0.2)) return GY;
       if (z < STAIR.z1 && z > STAIR.z0 && x > STAIR.x0 && x < STREET.shop) return GY + Math.max(0, Math.min(STAIR.risers, Math.floor((STAIR.x1 - x) / 0.235) + 1)) * (-GY / STAIR.risers);
       return 0;
     }
@@ -282,7 +286,7 @@
     const mLine = B({ color: 0xd8d2a0 });                                            // the road's painted lines
     const mYellow = B({ color: 0xb8902a });
     const mDarkRoom = B({ color: 0x1c1e24 });                                        // a room behind a window, in shadow (R108: nothing painted)
-    const mLitRoom = B({ color: 0xa07a48 });                                         // a lit room behind closed louvres, the light only
+    const mLitRoom = B({ map: wPic(wLouvre([255, 214, 160]), 0.5, 0.55), color: 0xb08050 });   // closed louvres with a room's lamp behind them, the light through the slats
     const mSign = (() => { const [c, x] = wCanvas(512, 96);
       x.fillStyle = '#7a1e18'; x.fillRect(0, 0, 512, 96); x.strokeStyle = '#d8b86a'; x.lineWidth = 4; x.strokeRect(6, 6, 500, 84);
       x.fillStyle = '#f0dca0'; x.font = 'bold 50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('咖 啡 店   KOPI', 256, 50);
@@ -927,12 +931,12 @@
       place('stairTube', 'w4tubelight', -1.6, 1.75, STAIR.z0 + 0.11, 0, { lift: 1.5 }); things.stairTube.rotation.x = -Math.PI / 2;
       place('shopTube', 'w4tubelight', -1.2, -0.42, 0.2, Math.PI / 2, { lift: 1.5 });
       /* the coffee shop's chairs, stacked four high in three stacks for the night */
-      const stacks = []; for (const [x, z] of [[-1.6, -1.6], [-1.15, -1.2], [-2.3, 1.4]]) for (let k = 0; k < 4; k++) stacks.push({ x, y: GY + k * 0.09, z, ry: 0.2 * k });
+      const stacks = []; for (const [x, z] of [[-1.6, -1.6], [-2.3, 1.4]]) for (let k = 0; k < 4; k++) stacks.push({ x, y: GY + k * 0.09, z, ry: 0.2 * k });
       many('w3pchair', stacks, world, 0.5);
       /* the street: lamps on both kerbs (sodium, painted), the taxi at her kerb (the opening's: `taxi`), a car parked across
          the street and one up it, a motorbike at the kerb */
-      for (const z of [-24, 9.5, 30]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
-      for (const z of [-10, 15]) { place('lampF' + z, 'w4streetlamp', STREET.road[1] - 0.25, GY - 0.03, z, -Math.PI / 2, { lift: 1.5 }); }
+      for (const z of [-24, 9.5, 30]) { place('lampN' + z, 'w4streetlamp', STREET.kerb + 0.25, GY - 0.03, z, -Math.PI / 2, { lift: 1.5 }); }
+      for (const z of [-10, 15]) { place('lampF' + z, 'w4streetlamp', STREET.road[1] - 0.25, GY - 0.03, z, Math.PI / 2, { lift: 1.5 }); }
       place('taxi', 'e4sedan', 4.55, GY - 0.15, -1.6, Math.PI, { lift: 2, done: tint(0x6a8cc8, 1.0) });
       place('parkedA', 'e4sedanfar', 12.4, GY - 0.15, 9.5, 0, { lift: 2 });
       place('parkedB', 'e4suvfar', 4.6, GY - 0.15, 16.0, Math.PI, { lift: 2 });
@@ -942,13 +946,13 @@
     /* ---------------------------------------------- HIS HOME's things (the plan's 5.4, 9.4, 9.8, 9.9) */
     const HIS = {
       door:    { x: HX - 3.8, z: LIV.z0, w: 0.8, hingeX: HX - 4.2 },     // his front door (the corridor's side at -z)
-      altar:   { x: HX - 4.28, z: 0.35, ry: Math.PI / 2, top: 0.9 },    // the altar cabinet on the living room's left wall
+      altar:   { x: HX - 4.29, z: 0.35, ry: Math.PI / 2, top: 1.03 },    // the altar cabinet on the living room's left wall
       sofa:    { x: HX - 2.3, z: -0.95, ry: 0, seat: 0.45 },            // his sofa, facing his glass
       circle:  { x: HX - 2.2, z: 1.0, r: 0.75 },                         // the middle of the room's floor: the thread's circle (9.7)
-      dining:  { x: HX + 0.75, z: -0.25, w: 1.6, d: 0.9, h: 0.75, ry: 0 },   // his dining table
-      chair1:  { x: HX + 0.75, z: 0.45, ry: Math.PI },                  // his chair (the +z side, his back to his glass)
-      chair2:  { x: HX + 0.75, z: -0.95, ry: 0 },                       // the other chair (the kitchen's side: Pho's at dawn)
-      bed:     { x: HX + 7.15, z: 0.8, ry: -Math.PI / 2, w: 1.7, l: 2.1, top: 0.55 },   // his bed, its head on the +x wall
+      dining:  { x: HX + 0.75, z: -0.25, w: 1.6, d: 0.98, h: 0.69, ry: 0 },   // his dining table
+      chair1:  { x: HX + 0.75, z: 0.55, ry: Math.PI },                  // his chair (the +z side, his back to his glass)
+      chair2:  { x: HX + 0.75, z: -1.05, ry: 0 },                       // the other chair (the kitchen's side: Pho's at dawn)
+      bed:     { x: HX + 7.265, z: 0.8, ry: -Math.PI / 2, w: 1.7, l: 1.87, top: 0.5 },   // his bed, its head on the +x wall
       bedside: { x: HX + 7.95, z: 2.05 },
       getUp:   { x: HX + 6.7, z: -0.48 },                                // where he stands up from it (the bed's -z side)
       bedDoor: { x: BED.x0, z: 1.2, hingeZ: 1.65 },                      // the bedroom door, ajar
@@ -961,7 +965,7 @@
       oven:    { x: HX + 1.75, y: 0.86, z: LIV.z0 + 0.62 }
     };
     {
-      place('altarcab', 'w51altarcab', HIS.altar.x, 0, HIS.altar.z, HIS.altar.ry, { solid: [0.9, 0.42, 1.0] });
+      place('altarcab', 'w51altarcab', HIS.altar.x, 0, HIS.altar.z, HIS.altar.ry, { solid: [0.9, 0.61, 1.1] });
       /* on the altar: the Buddha image, his teacher's photograph, a candle, the flowers, and where the bottle goes */
       place('buddha', 'e4buddha', HIS.altar.x + 0.02, HIS.altar.top, HIS.altar.z, HIS.altar.ry, { lift: 3 });
       place('photo', 'w4framesmall', HIS.altar.x - 0.05, HIS.altar.top, HIS.altar.z + 0.3, HIS.altar.ry + 0.25);
@@ -970,8 +974,8 @@
       place('bottle', 'w51bottle', HIS.altar.x + 0.14, HIS.altar.top, HIS.altar.z - 0.08, 0); things.bottle.visible = false;   // set down by the film of home (9.4)
       place('hisSofa', 'w51sofa', HIS.sofa.x, 0, HIS.sofa.z, HIS.sofa.ry, { solid: [2.1, 0.9, 0.9] });
       place('dining', 'w51dintable', HIS.dining.x, 0, HIS.dining.z, HIS.dining.ry, { solid: [HIS.dining.w, HIS.dining.d, 0.9] });
-      place('chair1', 'w51dinchair', HIS.chair1.x, 0, HIS.chair1.z, HIS.chair1.ry, { solid: [0.5, 0.5, 0.9] });
-      place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.5, 0.5, 0.9] });
+      place('chair1', 'w51dinchair', HIS.chair1.x, 0, HIS.chair1.z, HIS.chair1.ry, { solid: [0.56, 0.6, 0.9] });
+      place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.56, 0.6, 0.9] });
       place('hisPhone', 'e4phone', WORLD_AT.phone.x, WORLD_AT.phone.y, WORLD_AT.phone.z, 0.2);
       place('bed', 'w51bed', HIS.bed.x, 0, HIS.bed.z, HIS.bed.ry, { solid: [HIS.bed.w, HIS.bed.l, 0.7] });
       place('bedLamp', 'w5tablelamp', HIS.bedside.x + 0.09, 0.5, HIS.bedside.z, 0, { s: 0.8 });
@@ -1063,7 +1067,9 @@
       else if (src.isSkinnedMesh) { t = new THREE.SkinnedMesh(src.geometry, Array.isArray(src.material) ? src.material.map(reflMat) : reflMat(src.material));
         t.bindMode = 'detached'; t.bind(src.skeleton, src.bindMatrix); }
       else t = new THREE.Mesh(src.geometry, Array.isArray(src.material) ? src.material.map(reflMat) : reflMat(src.material));
-      t.matrixAutoUpdate = false; t.matrixWorldAutoUpdate = false; t.frustumCulled = false; t.castShadow = t.receiveShadow = false;
+      /* (a still copy is culled by its own sphere like anything else: drawn only while the glass is in the lens; a body's
+         copy rides bones the sphere cannot follow, so it is not) */
+      t.matrixAutoUpdate = false; t.matrixWorldAutoUpdate = false; t.frustumCulled = !src.isSkinnedMesh; t.castShadow = t.receiveShadow = false;
       t.renderOrder = src.renderOrder; t.name = 'refl:' + (src.name || src.type);
       mirrorG.add(t); return t;
     }
@@ -1071,7 +1077,12 @@
     const _rT = new THREE.Matrix4(), _rR = new THREE.Matrix4(), _rM = new THREE.Matrix4(), _rP = new THREE.Vector3();
     const drawnUp = (o) => { for (let a = o; a; a = a.parent) { if (!a.visible) return false; if (a === world) return true; } return true; };
     function reflScan(R) {
-      const list = []; R.root.traverse(q => { if ((q.isMesh || q.isInstancedMesh) && !q.isSprite && !(q.userData && q.userData.noRefl)) list.push(q); });
+      const list = [];
+      /* A BODY IN THE GLASS is its lightest level (it is faint and a few metres off in the glass, and a full body twice
+         would cost a phone its share of triangles: WORLD.md, the budget): the level drawn whenever the body is */
+      const P = R.person, lv = P && P.lv ? (P.lv[3] || P.lv[2] || P.lv[1]) : null;
+      if (P) { if (lv) for (const q of lv) list.push(q); }
+      else R.root.traverse(q => { if ((q.isMesh || q.isInstancedMesh) && !q.isSprite && !(q.userData && q.userData.noRefl)) list.push(q); });
       if (list.length === R.n) return; R.n = list.length;
       for (const q of list) if (!R.twins.has(q)) {
         const mt = [].concat(q.material)[0];
@@ -1091,7 +1102,7 @@
         if (P) { const ry = P.group.rotation.y; turn = o.face != null ? angTo(ry, o.face) : (o.turn || 0); P.group.getWorldPosition(_rP); }
         const kOn = P ? (o.k == null ? 1 : o.k) > 0.02 : true;
         for (const [src, tw] of R.twins) {
-          tw.visible = kOn && drawnUp(src);
+          tw.visible = kOn && (P ? drawnUp(P.group) : drawnUp(src));
           if (!tw.visible) continue;
           if (src.isSkinnedMesh) _rM.copy(src.bindMatrix); else { src.updateWorldMatrix(true, false); _rM.copy(src.matrixWorld); }
           if (turn) { _rT.makeTranslation(_rP.x, 0, _rP.z); _rR.makeRotationY(turn); _rM.premultiply(_rT.clone().invert()).premultiply(_rR).premultiply(_rT); }
@@ -1100,8 +1111,11 @@
       }
     }
     /* what is mirrored from the first frame: her flat's fabric, its things, the cloth and her door's leaf */
-    reflTrack(herFlatG); reflTrack(herThingsG);
-    const herThingNames = ['ctable', 'gsofa', 'rattan', 'shelf', 'phoCushion', 'hisCushion', 'cushionA', 'cushionB', 'plant', 'ceilFan', 'bag', 'keepsake', 'dintable', 'dinchairA', 'dinchairB', 'laptop', 'fridge', 'takeaway'];
+    /* (only what the open glass can show from his place: the room's fabric, her door, the landing behind it, the sofa,
+       the rattan chair, her bag, the back room past the half wall; the cloth, the table, the cushions by the window, the
+       shelf and the fan fall behind the shutter or off the glass: WORLD.md, the measure) */
+    reflTrack(herFlatG);
+    const herThingNames = ['gsofa', 'rattan', 'bag', 'keepsake', 'dintable', 'dinchairA', 'dinchairB', 'laptop', 'fridge', 'takeaway'];
     for (const n of herThingNames) if (things[n]) reflTrack(things[n]);
     let reflStrength = 1;
     const reflPeople = new Map();
@@ -1134,8 +1148,14 @@
       const fs = pool(HER.fan.x + 0.62, FRONT.ceil - 0.012, HER.fan.z - 0.7, 1.85, 1.85, 0xffffff, 0.3, { map: sh, add: false, rx: Math.PI / 2, parent: herThingsG, look: 'lamp' });
       things.fanShadow = fs.q;
       /* the two candles' warmth on the cloth (their flames are the films' and the play's: `candleLit`) */
+      const flameTex = (() => { const [c, x] = wCanvas(32, 64);
+        const g = x.createRadialGradient(16, 44, 1, 16, 40, 22); g.addColorStop(0, 'rgba(255,250,220,1)'); g.addColorStop(0.35, 'rgba(255,190,90,0.95)'); g.addColorStop(1, 'rgba(255,120,30,0)');
+        x.fillStyle = g; x.beginPath(); x.moveTo(16, 2); x.quadraticCurveTo(30, 40, 16, 62); x.quadraticCurveTo(2, 40, 16, 2); x.fill(); return tex(done(THREE, c, false)); })();
       for (const n of ['candle1', 'candle2']) { const c = ON_CLOTH[n];
-        things[n + 'Glow'] = glow(c.x, c.y + 0.27, c.z, 0.28, 0xffb060, 0.9, herThingsG, n);
+        const fm = new THREE.SpriteMaterial({ map: flameTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+        const fl = new THREE.Sprite(fm); fl.position.set(c.x, c.y + 0.255, c.z); fl.scale.set(0.022, 0.045, 1); herThingsG.add(fl);
+        pools.push({ q: fl, m: fm, o0: 1, look: n }); things[n + 'Flame'] = fl;
+        things[n + 'Glow'] = glow(c.x, c.y + 0.255, c.z, 0.28, 0xffb060, 0.9, herThingsG, n);
         things[n + 'Pool'] = pool(c.x, c.y + 0.003, c.z, 0.7, 0.7, 0xffa050, 0.3, { parent: herThingsG, look: n }); }
       /* the stair's tube: its own glow and the light it lays on the treads and the walls (`stairTube(k)` dims it, flickers it) */
       things.tubeGlow = glow(-1.6, 1.74, STAIR.z0 + 0.12, 1.4, 0xe8f4ff, 0.6, world, 'tube');
@@ -1149,7 +1169,10 @@
       for (const z of [-24, 9.5, 30]) { glow(STREET.kerb + 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.kerb + 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
       for (const z of [-10, 15]) { glow(STREET.road[1] - 1.9, GY + 6.6, z, 1.8, 0xffa040, 0.9, world, 'street'); pool(STREET.road[1] - 2.2, GY - 0.145, z, 9, 9, 0xff9030, 0.32, { look: 'street' }); }
       /* his altar's candle: a small warm point in his dark flat, and its light on the wall behind */
-      things.altarGlow = glow(HIS.altar.x + 0.12, HIS.altar.top + 0.27, HIS.altar.z - 0.24, 0.32, 0xffb060, 0.85, hisG, 'altar');
+      things.altarGlow = glow(HIS.altar.x + 0.12, HIS.altar.top + 0.255, HIS.altar.z - 0.24, 0.32, 0xffb060, 0.85, hisG, 'altar');
+      { const fm = new THREE.SpriteMaterial({ map: things.candle1Flame.material.map, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+        const fl = new THREE.Sprite(fm); fl.position.set(HIS.altar.x + 0.12, HIS.altar.top + 0.255, HIS.altar.z - 0.24); fl.scale.set(0.022, 0.045, 1); hisG.add(fl);
+        pools.push({ q: fl, m: fm, o0: 1, look: 'altar' }); things.altarFlame = fl; }
       things.altarPool = pool(LIV.x0 + 0.01, 1.3, HIS.altar.z, 1.6, 1.4, 0xffa050, 0.16, { rx: 0, ry: Math.PI / 2, parent: hisG, look: 'altar' });
       /* the corridor's lamps */
       for (const x of [HX - 8.2, HX - 5.4, HX - 2.4, HX + 0.6]) { glow(x, 2.0, CORR.z0 + 0.12, 0.5, 0xffd8a0, 0.6, hisG, 'corr'); pool(x, 1.8, CORR.z0 + 0.003, 1.6, 1.8, 0xffd8a0, 0.2, { rx: 0, parent: hisG, look: 'corr' }); }
