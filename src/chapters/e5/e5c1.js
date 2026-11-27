@@ -313,7 +313,11 @@
        from Grace to the door), held open by the breaking and the barrier, forced open at the bedroom door at three
        o'clock (the plan's 8). TODO-SOUND: its own sounds (u51...), never another chapter's: a sound of another chapter
        named here would leave that chapter's pack. Until they land it is silent. */
-    vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
+    /* (PLAY, 27 Nov: its reach 200 m and the sky's 190, FILMS-2's finding: at the engine's 70 the city out of his glass past
+       70 m stayed un-inverted behind a curved edge across the blocks. The wave's pace through a room is rmax / outSecs (its
+       curve, main.js visCurve, starts at 0.30 of it), so both times are scaled by 200 / 70 from 2.2 and 1.6: it crosses the
+       room as it did, reaches 6 m (fully open, vis.k) in the same 0.6 s, and goes on out over the city) */
+    vision: { rmax: 200, sky: 190, outSecs: 6.3, inSecs: 4.6, band: 0.27, line: 0.24,
               front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
               /* (PLAY, M6: its own two sounds, chapter 4's copied under this chapter's names; no bed or music of its own: the
                  room's and the night's play their own under it. The night's heart is the play's: c_play.js) */
@@ -3923,17 +3927,23 @@
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
       shelf:  { x: -1.6, z: 2.78, ry: Math.PI },                      // the bookshelf against the +z wall
       fan:    { x: 0.45, z: 0.75 },                                   // the ceiling fan over the table
-      bag:    { x: 0.86, y: 0.50, z: -0.36 },                         // her open bag on the sofa beside her, the packet in it
+      bag:    { x: 0.86, y: 0.50, z: -0.31 },                         // her open bag on the sofa beside her, the packet in it (PLAY, 27 Nov: z from -0.36, its back was in the back cushion, clipscan; its height is read off the cushion as it lands, c_play.js sofaRest)
       plant:  { x: 2.25, z: -2.55 }
     };
     /* on the cloth when play begins (the plan's 8.1): the bowl, two candles, the jug and the lighter beside his knee (the
        jug, the lighter, the incense and the small white plate have no model yet: their spots are kept for them) */
     const CLOTH_Y = HER.table.h + 0.011;
+    /* THE HOLY-WATER BOWL'S ONE SIZE (PLAY, 27 Nov; CLAUDE.md v25.4, a thing is one size wherever one shot follows another).
+       MEASURED (tools/probes/e5c1lab.mjs, the breaking): in his hands at 0.62 it is 0.198 m across in the hands' pass, which is
+       drawn at the lens's own angle with its rig at scale 1, so 0.198 m is what it reads as; on the cloth at the file's own size
+       it was 0.32 m. A bowl held before him in both hands is the smaller (props/RECORD.md: "0.32 m is big for a bowl held before
+       him"), so it is 0.62 of the file everywhere: on the cloth, in his hands (c_play.js BOWLHELD.s) and in every film */
+    const BOWL_S = 0.62;
     const ON_CLOTH = {
       bowl:     { x: 0.78, y: CLOTH_Y, z: 1.22 },
       candle1:  { x: 0.18, y: CLOTH_Y, z: 1.34 },
       candle2:  { x: 0.30, y: CLOTH_Y, z: 0.98 },
-      plate:    { x: 0.08, y: CLOTH_Y, z: 0.96 },                     // the small white plate's corner, apart from everything (9.2)
+      plate:    { x: 0.22, y: CLOTH_Y, z: 1.18 },                     // the small white plate, apart from the rest (9.2). (PLAY, 27 Nov, from 0.08, 0.96: 1.0 m from Grandmaster Pho's cushion, out of his seated reach, measured by FILMS-1; here 0.75 m, its middle 0.16 m from candle1, 0.21 from candle2, 0.36 from the incense, 0.5 from the cord's bottle spot, which FILMS-1 moved to 0.70, 1.36 at abdc234)
       lighter:  { x: 0.95, y: CLOTH_Y, z: 1.36 },
       incense:  { x: 0.52, y: CLOTH_Y, z: 1.38 },
       jug:      { x: 1.12, y: 0, z: 1.36 }                            // on the floor at his knee, by the table's end (PLAY, M6: from 1.18, 1.58, under his own knees and out of his sight)
@@ -3953,7 +3963,7 @@
       place('ceilFan', 'w5ceilfan', HER.fan.x, FRONT.ceil - 0.52, HER.fan.z, 0);
       place('bag', 'w51bag', HER.bag.x, HER.bag.y, HER.bag.z, -0.25);
       place('keepsake', 'w51keepsake', HER.bag.x + 0.02, HER.bag.y + 0.07, HER.bag.z, 0.4);
-      place('holyBowl', 'w4bigbowl', ON_CLOTH.bowl.x, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z, 0, { lift: 3, done: tint(0xffd9a0, 1.0) });   // (a warm tint: the plan's brass, its silver file untouched)
+      place('holyBowl', 'w4bigbowl', ON_CLOTH.bowl.x, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z, 0, { lift: 3, s: BOWL_S, done: tint(0xffd9a0, 1.0) });   // (a warm tint: the plan's brass, its silver file untouched)
       place('candle1', 'w3candlesmall', ON_CLOTH.candle1.x, ON_CLOTH.candle1.y, ON_CLOTH.candle1.z, 0);
       place('candle2', 'w3candlesmall', ON_CLOTH.candle2.x, ON_CLOTH.candle2.y, ON_CLOTH.candle2.z, 0);
       /* the ritual's small things (props: made by THINGS, drawn when keyed): the white plate, the lighter, the jug */
@@ -4015,7 +4025,7 @@
       kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
       bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
       balcony: { x: HX + 0.05, z: LIV.z1, w: 1.5 },                      // the sliding door (x -0.7..0.8)
-      frames:  [{ x: PASS.x0 + 0.45, y: 1.45, z: PASS.z1 - 0.01 }, { x: PASS.x0 + 1.05, y: 1.55, z: PASS.z1 - 0.01 }],
+      frames:  [{ x: PASS.x0 + 0.45, y: 1.45, z: PASS.z1 - 0.035 }, { x: PASS.x0 + 1.05, y: 1.55, z: PASS.z1 - 0.035 }],   // (PLAY, 27 Nov: off the wall by 0.035 from 0.01: clipscan, their backs 420+ crossings into it, and they tap it with each wave)
       oven:    { x: HX + 1.75, y: 0.86, z: LIV.z0 + 0.62 }
     };
     {
@@ -4246,7 +4256,7 @@
       const sh = (x, y, z, w, d, k = 0.38, ry = 0) => pool(x, y + 0.003, z, w, d, 0x000000, k, { add: false, rz: -ry, look: null });
       sh(HER.table.x, 0, HER.table.z, 1.25, 0.8); sh(HER.sofa.x, 0, HER.sofa.z, 1.75, 1.05); sh(HER.rattan.x, 0, HER.rattan.z, 0.8, 0.8, 0.34, HER.rattan.ry);
       sh(HER.shelf.x, 0, HER.shelf.z - 0.02, 1.0, 0.5); sh(HER.plant.x, 0, HER.plant.z, 0.7, 0.7); sh(-4.25, 0, 0.6, 1.3, 1.8, 0.32); sh(-5.18, 0, 2.6, 0.9, 0.9);
-      for (const [c, r] of [[ON_CLOTH.bowl, 0.42], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
+      for (const [c, r] of [[ON_CLOTH.bowl, 0.42 * BOWL_S], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
       sh(ON_CLOTH.jug.x, 0, ON_CLOTH.jug.z, 0.22, 0.22, 0.3);
       sh(HIS.sofa.x, 0, HIS.sofa.z, 2.35, 1.05); sh(HIS.dining.x, 0, HIS.dining.z, 1.85, 1.25, 0.32); sh(HIS.bed.x, 0, HIS.bed.z, 2.1, 1.95, 0.4);
       sh(HIS.altar.x + 0.03, 0, HIS.altar.z, 0.75, 1.05); sh(HIS.bedside.x, 0, HIS.bedside.z, 0.5, 0.5);
@@ -4339,7 +4349,12 @@
                   gets up on (yaw 0.8: the getting-up spot in view on a phone), a little up (pitch 0.12) */
                bed: { x: HIS.bed.x + 0.2, z: HIS.bed.z, ry: 0.8, y: 0.82, pitch: 0.12 } }
     };
-    STATION.breaking = STATION.room;
+    /* (PLAY, M6) THE BREAKING: the room's places, but Marcus STANDING behind the sofa at her right shoulder, where the
+       keepsake's film leaves him (c_yfilm.js: KEEP1.mkStand + (0.02, 0.17), as of c433770), so a Continue into the breaking
+       lands as play does (PLAY.md 2) */
+    /* (clipscan of the breaking, 27 Nov: at z -0.85 his front stood 5 cm into the sofa's back, 705 crossings from 0.37 to 0.76 m
+       up, z -0.79 to -0.74; so 0.08 m further back) */
+    STATION.breaking = Object.assign({}, STATION.room, { marcus: { x: 0.14, z: -0.93, ry: 0.12, stand: true } });
     STATION.ask = { at: { x: WORLD_AT.phone.x + 0.25, z: WORLD_AT.phone.z + 0.85, ry: 0.3 } };
     /* the opening's and the films' places (WORLD.md, the plan's 9) */
     const FILMPLACE = {
@@ -6197,6 +6212,22 @@
        back slowly. She stands up twice in the room (the plan's 8.1) by `rise` (seat.rise: her height laid from her own
        feet as she comes up) and sits again by the same take played back. She has met the player only here (a new body). */
     const GRACE_SEAT = (STATION.room.grace && STATION.room.grace.y) || 0.51;
+    /* HER FEET IN FRONT OF THE SOFA (PLAY, 27 Nov, MEASURED by tools/probes/e5c1lab.mjs): her gsofa tucks her feet far back,
+       and seated deep on the sofa, as her leaning take needs, her shins stood inside its front: 1,628 of her points under the
+       seat's top, the deepest 0.36 m, her ankles some 0.2 m behind its face (z 0.087) while her hips are at z -0.316. Brought
+       forward whole by seatDown's `edge` until the shins cleared, she sat on the very edge leaning back on nothing, sliding off
+       (photographed). So her body stays where it sits and only her FEET go forward: the ankles her seated legs are laid to
+       (restLegs, the seat's own leg-laying) moved `GRACE_FEET` m ahead, the knees' pole with them, so her shins stand just in
+       front of the sofa's face */
+    const GRACE_FEET = 0.32;   // (0.26 first: clipscan of the room still crossed her calves with the sofa's front, 27 Nov)
+    function feetOut(P, d) {
+      const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
+      for (const S0 in LG.R) { const r = LG.R[S0]; r.ank.z += d; r.pole.z += d; }
+    }
+    const graceFeetOut = (P) => feetOut(P, GRACE_FEET);
+    /* (MARCUS the same, measured by the same clipscan: his calves through the rattan chair's front, 1,046 crossings from
+       0.09 to 0.42 m up; his feet laid `MARCUS_FEET` forward along his own facing, the chair's) */
+    const MARCUS_FEET = 0.2;
     const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
@@ -6204,6 +6235,51 @@
         seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
         headDamp: { gsofa: [0.5, 'gsofa'] } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
+       0.19 m up and her toes 0.03, against 0.125 and 0.028 standing in her Idle_3. The written take stands her up on tiptoe,
+       and grounded by her toes she was held 7 cm up with her heels in the air for the whole of a stand-up: "floating"). The
+       take's foot and toe turns are laid, in memory (her file untouched: v12.4), toward her own standing feet (Idle_3's first
+       moment) by how far she has risen at each moment (the rise curve's own k: 0 seated, so a seated foot is the take's), and
+       the rise is grounded again from the feet it now has (riseCurve, as her setting-up did). One change to the clip, so the
+       films that stand her up or sit her down wear it too. Done once: a replay never builds again, and the clip is hers */
+    const FEETFLAT = new WeakSet();
+    function riseFeetFlat(P) {
+      const A = P.acts.rise, I = P.acts.Idle_3, R = P.rise && P.rise.rise, skins = P.lv && P.lv[1];
+      if (!A || !I || !R || !skins || !skins[0]) return;
+      const clip = A.getClip(); if (FEETFLAT.has(clip)) return; FEETFLAT.add(clip);
+      const keep = Object.assign({}, P.w), kt = {}; for (const k in P.acts) kt[k] = P.acts[k].time;
+      const only = (name) => { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0); };
+      const gq = new THREE.Quaternion(), bq = (b, out) => { P.group.updateMatrixWorld(true); P.group.getWorldQuaternion(gq).invert(); return b.getWorldQuaternion(out).premultiply(gq); };
+      const bone = (n) => P.bone[n] || P.bone['mixamorig' + n] || P.bone['mixamorig:' + n];
+      /* her standing feet, in her body's own frame (a foot's turn in the world, not against its shin: her shins lean
+         otherwise at the rise's end, and the shin's own turn copied put her toes 7 cm in the air, measured) */
+      only('Idle_3'); I.time = 0; P.mixer.update(0);
+      const want = {};
+      for (const sd of ['Left', 'Right']) { const f = bone(sd + 'Foot'), t = bone(sd + 'ToeBase'); if (f) want[sd + 'Foot'] = bq(f, new THREE.Quaternion()); if (t) want[sd + 'ToeBase'] = t.quaternion.clone(); }
+      const tracks = [];
+      for (const tr of clip.tracks) { const m = /(Left|Right)(Foot|ToeBase)\.quaternion$/.exec(tr.name); if (m && want[m[1] + m[2]]) tracks.push({ tr, side: m[1], part: m[2] }); }
+      /* each foot key's shin, read off the take as it stands, before any key is changed */
+      only('rise'); const plan = [];
+      for (const T of tracks) { if (T.part !== 'Foot') continue; const f = bone(T.side + 'Foot'), legs = [];
+        for (let i = 0; i < T.tr.times.length; i++) { A.time = T.tr.times[i]; P.mixer.update(0); legs.push(bq(f.parent, new THREE.Quaternion())); }
+        plan.push({ T, legs }); }
+      const qa = new THREE.Quaternion(), qw = new THREE.Quaternion();
+      for (const { T, legs } of plan) for (let i = 0; i < T.tr.times.length; i++) {
+        const k = riseOff(R, T.tr.times[i], 'k'); if (!(k > 0)) continue;
+        qw.copy(legs[i]).invert().multiply(want[T.side + 'Foot']);
+        qa.fromArray(T.tr.values, i * 4); if (qa.dot(qw) < 0) qw.set(-qw.x, -qw.y, -qw.z, -qw.w);
+        qa.slerp(qw, k).toArray(T.tr.values, i * 4); }
+      for (const T of tracks) { if (T.part !== 'ToeBase') continue; const qb = want[T.side + 'ToeBase'];
+        for (let i = 0; i < T.tr.times.length; i++) { const k = riseOff(R, T.tr.times[i], 'k'); if (!(k > 0)) continue;
+          qa.fromArray(T.tr.values, i * 4); qw.copy(qb); if (qa.dot(qw) < 0) qw.set(-qw.x, -qw.y, -qw.z, -qw.w);
+          qa.slerp(qw, k).toArray(T.tr.values, i * 4); } }
+      riseCurve(P, 'rise', skins);
+      for (const k in P.acts) { P.acts[k].setEffectiveWeight(keep[k] || 0); P.acts[k].time = kt[k]; }
+      personSettle(P); P.mixer.update(0);
+      P.feetFlat = tracks.map(T => T.side + T.part);
+    }
+    whenReady(cast.grace, riseFeetFlat);
+    whenReady(cast.grace, graceFeetOut);
     /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
        word, R7, under the same keys, so a new body drops in here unchanged) ON THE RATTAN CHAIR by her door (its cushion's
        top 0.42 m, measured), seated by his own posed skin; his rest the seated talk's upright first second, there and back
@@ -6216,6 +6292,7 @@
         shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    whenReady(cast.marcus, (P) => feetOut(P, MARCUS_FEET));
 
     /* ================================================================ THE WORLD'S PHASES (the hooks: c_play.js book() and
        applyPhase() call worldPhase, d_play.js's frame calls worldFrame, its reset worldReset). The evening's three stand
@@ -6496,7 +6573,7 @@
       lighter: { x: ON_CLOTH.lighter.x, y: CLOTH_Y + 0.12, z: ON_CLOTH.lighter.z },
       phone:   { x: DATA.shrine.x, y: 0.85, z: DATA.shrine.z },
       grace:   { x: HER.grace.x, y: 1.0, z: HER.grace.z },
-      herPhone: { x: HER.grace.x - 0.33, y: HER.sofa.seat + 0.02, z: HER.grace.z + 0.1 },
+      herPhone: { x: HER.grace.x - 0.39, y: HER.sofa.seat + 0.02, z: HER.grace.z + 0.1 },   // (27 Nov: x from -0.33, its end under her left hand, clipscan)
       glass:   { x: MIRROR_X - 0.03, y: 1.12, z: 1.08 },            // her reflection on window B, as seen from his place (WORLD.md 1)
       packet:  { x: HER.bag.x + 0.02, y: HER.bag.y + 0.1, z: HER.bag.z },
       bowl:    { x: ON_CLOTH.bowl.x, y: CLOTH_Y + 0.1, z: ON_CLOTH.bowl.z },
@@ -6507,7 +6584,7 @@
        the eye low, kit.root keeps him there). The look is free about the room from Grace on his right across the table to
        the glass on his left (82 degrees apart, WORLD.md 1), and down to the jug at his knee. Play begins looking at the cloth
        and Grace (what the play needs first in his line of sight, v12.3): the films that hand to the room end on this look */
-    const KNEEL = { y: KNEEL_EYE, yaw: -0.15, span: 1.2, lo: -1.05, hi: 0.55, startYaw: 0.55, get pitch() { return isNarrow() ? -0.6 : -0.5; } };
+    const KNEEL = { y: KNEEL_EYE, yaw: -0.15, span: 1.2, lo: -1.05, hi: 0.55, startYaw: 0.55, get pitch() { return isNarrow() ? -0.5 : -0.44; } };
     const LIE = { y: STATION.night.bed.y, yaw: 1.15, span: 1.3, lo: -0.35, hi: 1.3, startYaw: STATION.night.bed.ry, pitch: STATION.night.bed.pitch };
     let seated = null;
     function seatHim(at, P) {
@@ -6527,40 +6604,197 @@
        stands and fraying with each flick of the fan; the packet's knot a dull red glow; at three o'clock his own footsteps
        and the threads. Red is the spell's alone (the plan's 4.5) */
     const RED = 0xff2233;
-    const fx = { line: [], lineMats: [], knot: null, foot: [], threads: [], fray: 0, taut: 0, phoneLit: 0, water: null, waterK: 0 };
-    /* the water: a disc inside the bowl's lip (the bowl's own measure: its rim's height and radius read off its model when it lands) */
-    {
-      const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0, depthWrite: false }); mats.push(wm);
-      const wg = new THREE.CircleGeometry(1, 40); wg.rotateX(-Math.PI / 2);
-      const w = new THREE.Mesh(wg, wm); w.visible = false; w.renderOrder = 2; world.add(w); fx.water = w;
-      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
-      const sg = new THREE.CircleGeometry(0.16, 20); sg.rotateX(-Math.PI / 2);
-      const sh = new THREE.Mesh(sg, sheen); sh.position.y = 0.002; w.add(sh); fx.sheen = sh;
+    const fx = { line: [], lineMats: [], knot: null, foot: [], threads: [], fray: 0, taut: 0, phoneLit: 0, sheen: null, waterK: 0 };
+    /* THE BOWL'S BRASS AND ITS WATER (27 Nov: the bowl on the cloth showed a flat tan-brown fill with petals in it before the
+       first order, "Pour water into the bowl."). Grandmaster Pho's bowl (`w4bigbowl`, props/RECORD.md) is ONE mesh with its
+       water and its petals in it, and the world's warm tint (the plan's brass) turned the water tan. So the bowl's paint is
+       laid by where each point of it is (`bowlLook`, its file untouched: v12.4): the metal brass, as the world tinted it; the
+       water and the petals floating on it (every point inside the water's ring at or above its level, MEASURED off the
+       model's own points as it lands) in their own colours once the water is poured, and before it the bowl's dark brass
+       inside (`uEmpty`, eased 1 to 0 by the pour: the water rises over the petals laid in it). The held copy in the breaking
+       wears the same, poured. Light on the water: the candle's glint (an additive disc on the water, no lamp: v9.4) */
+    /* a soft round glint (a radial fall-off drawn once: a hard-edged disc read as a ring on the water, 27 Nov) */
+    let softDotTex = null;
+    function softDot() {
+      if (softDotTex) return softDotTex;
+      const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); softDotTex = new THREE.CanvasTexture(cv); madeTex.push(softDotTex); return softDotTex;
     }
-    const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, got: false };
+    const BOWLLOOK = { empty: { value: 1 }, tint: new THREE.Color(0xffd9a0) };
+    function bowlMeasure(q) {
+      const g = q.geometry, P = g.attributes.position; if (!P) return null;
+      g.computeBoundingBox(); const bb = g.boundingBox, cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
+      const R = Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z) / 2, H = bb.max.y - bb.min.y, y0 = bb.min.y;
+      /* the water's level: the height most of the points near the middle (inside half the radius, in the top two thirds)
+         stand at; its ring: how far out the points at that level go */
+      const N = 80, hist = new Float32Array(N), v = new THREE.Vector3();
+      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); const r = Math.hypot(v.x - cx, v.z - cz) / R, u = (v.y - y0) / H;
+        if (r < 0.5 && u > 0.33) hist[Math.min(N - 1, Math.floor(u * N))]++; }
+      let bi = 0; for (let i = 1; i < N; i++) if (hist[i] > hist[bi]) bi = i;
+      /* (the ring: the points at that level that FACE UP, the water's own face and its petals' tops: the bowl's outer wall
+         passes the same height facing out, and measured with it the ring was the bowl's whole width, 27 Nov) */
+      const yW = y0 + (bi + 0.5) / N * H, band = 1.5 * H / N, rs = [], Nm = g.attributes.normal, nv = new THREE.Vector3();
+      for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); if (Math.abs(v.y - yW) >= band) continue;
+        if (Nm) { nv.fromBufferAttribute(Nm, i); if (nv.y < 0.8 * nv.length()) continue; }
+        rs.push(Math.hypot(v.x - cx, v.z - cz)); }
+      rs.sort((a, b) => a - b);
+      /* (and of those, the disc from the middle out to its first gap: the bowl's ledges and its lip face up at that height too,
+         farther out, and taken with the water they made the ring the bowl's whole width and the lip was not drawn, 27 Nov) */
+      let rW = 0.8 * R;
+      if (rs.length) { rW = rs[rs.length - 1]; for (let i = 1; i < rs.length; i++) if (rs[i] > 0.3 * R && rs[i] - rs[i - 1] > 0.025 * R) { rW = rs[i - 1]; break; } }
+      return { cx, cz, yW, rW, R, H, y0, eps: 1.2 * band, n: P.count };
+    }
+    function bowlLook(m, o = {}) {
+      let fit = null;
+      m.updateWorldMatrix(true, true);
+      m.traverse(q => {
+        if (!q.isMesh) return;
+        const F = bowlMeasure(q); if (!F) return; if (!fit) fit = Object.assign({ mesh: q }, F);
+        for (const mt of [].concat(q.material)) {
+          if (!mt) continue;
+          if (mt.color) mt.color.setRGB(1, 1, 1);                // (the world's flat tint taken back: the shader lays it on the metal only)
+          const uC = { value: new THREE.Vector4(F.cx, F.yW - F.eps, F.cz, F.rW) }, uEmpty = o.empty || BOWLLOOK.empty;
+          mt.onBeforeCompile = (sh) => {
+            sh.uniforms.uBowlC = uC; sh.uniforms.uBowlEmpty = uEmpty;
+            sh.uniforms.uBowlTint = { value: BOWLLOOK.tint };
+            sh.vertexShader = 'varying vec3 vBowlP;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vBowlP = vec3(position);');
+            sh.fragmentShader = 'varying vec3 vBowlP;\nuniform vec4 uBowlC;\nuniform float uBowlEmpty;\nuniform vec3 uBowlTint;\n' +
+              sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+  { float br = length(vBowlP.xz - uBowlC.xz);
+    float inW = (1.0 - smoothstep(uBowlC.w * 0.97, uBowlC.w * 1.03, br)) * step(uBowlC.y, vBowlP.y);
+    if (uBowlEmpty > 0.5 && inW > 0.5) discard;
+    diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, diffuseColor.rgb, inW); }`);
+          };
+          mt.customProgramCacheKey = () => 'e5c1bowl';
+          mt.needsUpdate = true;
+        }
+      });
+      if (!fit) return null;
+      /* THE BOWL EMPTY (o.dish): the model's water and petals are not drawn while `empty` stands (discarded, above), and the
+         bowl's inside below them is made here, in the mesh's own units: a dish from the water's ring down to a third of the
+         bowl's height, brass, and the poured water a disc rising in it (`bowlPour`) to the model's own water, which is drawn
+         again the moment it is reached (its petals floating on it) */
+      if (o.dish) {
+        const q = fit.mesh, yB = fit.y0 + 0.34 * fit.H, pts = [];
+        for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI / 2; pts.push(new THREE.Vector2(Math.max(0.001, fit.rW * 1.01 * Math.cos(a)), fit.yW - fit.eps * 0.5 - (fit.yW - yB) * Math.sin(a))); }
+        pts.reverse();
+        const dm = new THREE.MeshStandardMaterial({ color: 0x9a7440, metalness: 0.25, roughness: 0.55, side: THREE.DoubleSide }); mats.push(dm);
+        const dish = new THREE.Mesh(new THREE.LatheGeometry(pts, 40), dm); dish.position.set(fit.cx, 0, fit.cz); q.add(dish);
+        const wm = new THREE.MeshBasicMaterial({ color: 0x8fa3ac, transparent: true, opacity: 0.6, depthWrite: false }); mats.push(wm);
+        const wg = new THREE.CircleGeometry(1, 40); wg.rotateX(-Math.PI / 2);
+        const disc = new THREE.Mesh(wg, wm); disc.visible = false; disc.renderOrder = 2; q.add(disc);
+        fit.dish = { dish, disc, yB, pts };
+      }
+      /* the water's middle in m's parent's frame (for the candle's glint) */
+      const c = new THREE.Vector3(fit.cx, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld), e = new THREE.Vector3(fit.cx + fit.rW, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld);
+      fit.world = { c, r: c.distanceTo(e) };
+      return fit;
+    }
+    /* the candle's glint on the water: a warm additive disc lying on it (the bowl's own measure, read as it lands) */
+    {
+      const sheen = new THREE.MeshBasicMaterial({ color: 0xffd49a, map: softDot(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(sheen);
+      const sg = new THREE.PlaneGeometry(2, 2); sg.rotateX(-Math.PI / 2);
+      const sh = new THREE.Mesh(sg, sheen); sh.visible = false; sh.renderOrder = 3; world.add(sh); fx.sheen = sh;
+    }
+    const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, x: 0, z: 0, got: false, look: null };
     function bowlFit() {
       const b = things.holyBowl; if (!b || BOWLFIT.got || !b.userData.model) return;
-      b.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(b.userData.model); if (bb.isEmpty()) return;
-      BOWLFIT.got = true; BOWLFIT.r = Math.max(0.05, 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z)); BOWLFIT.y = bb.min.y + 0.72 * (bb.max.y - bb.min.y);
+      const F = bowlLook(b.userData.model, { dish: true }); BOWLFIT.got = true; BOWLFIT.look = F;
+      if (F) { BOWLFIT.y = F.world.c.y; BOWLFIT.r = F.world.r; BOWLFIT.x = F.world.c.x; BOWLFIT.z = F.world.c.z; }
     }
     function waterTick(wdt) {
       bowlFit();
-      const w = fx.water, want = play.found.has('w') || phase !== 'room' ? 1 : 0;
+      const want = play.found.has('w') || fx.pourT > 0 || phase !== 'room' ? 1 : 0;
       fx.waterK += (want * (fx.pourT > 0 ? Math.min(1, 1 - fx.pourT / 2.0) : 1) - fx.waterK) * Math.min(1, wdt * 3);
       if (fx.pourT > 0) fx.pourT = Math.max(0, fx.pourT - wdt);
-      const b = things.holyBowl, onCloth = b && b.visible && b.parent;
-      w.visible = !!onCloth && fx.waterK > 0.01;
-      if (!w.visible) return;
-      w.position.set(b.position.x, BOWLFIT.y - 0.03 * (1 - fx.waterK), b.position.z); w.scale.setScalar(BOWLFIT.r * (0.85 + 0.15 * fx.waterK));
-      w.material.opacity = 0.62 * fx.waterK;
-      const lit = phase === 'room' && !play.found.has('l') ? 0.35 : 1;
-      fx.sheen.material.opacity = 0.22 * fx.waterK * lit; fx.sheen.position.set(-0.25, 0.002, 0.2);
+      /* the pour: the water rising in the dish from its floor to the model's own water, which takes over when it is reached */
+      const D = BOWLFIT.look && BOWLFIT.look.dish, full = fx.waterK > 0.985;
+      BOWLLOOK.empty.value = full ? 0 : 1;
+      if (D) { D.dish.visible = !full; D.disc.visible = !full && fx.waterK > 0.02;
+        if (D.disc.visible) { const F = BOWLFIT.look, u = smo(c01(fx.waterK)), y = D.yB + (F.yW - F.eps * 0.5 - D.yB) * u;
+          let r = F.rW; for (let i = 1; i < D.pts.length; i++) { const a = D.pts[i - 1], b = D.pts[i]; if (y >= a.y && y <= b.y) { r = a.x + (b.x - a.x) * (y - a.y) / Math.max(1e-6, b.y - a.y); break; } }
+          D.disc.position.set(F.cx, y, F.cz); D.disc.scale.setScalar(Math.max(0.001, r * 0.995)); } }
+      const b = things.holyBowl, onCloth = b && b.visible && b.parent && BOWLFIT.look, sh = fx.sheen;
+      sh.visible = !!onCloth && fx.waterK > 0.01;
+      if (!sh.visible) return;
+      const lit = phase === 'room' && !play.found.has('l') ? 0.3 : 1;
+      sh.position.set(BOWLFIT.x - 0.25 * BOWLFIT.r, BOWLFIT.y + 0.002, BOWLFIT.z + 0.2 * BOWLFIT.r); sh.scale.setScalar(0.28 * BOWLFIT.r);
+      sh.material.opacity = 0.2 * fx.waterK * lit;
+    }
+    /* THE WATER IN THE JUG (27 Nov, PLAY): the jug at his knee is one clear shell with nothing in it (props/RECORD.md: "one
+       shell, so no water inside"), and an empty jug is not one to pour from. So the play draws the water in it: a body of
+       water the jug's own shape, read off its points as it lands (each band of its height, the median distance of its points
+       from the axis of its foot, a little inside: the handle is a few points in a band and does not move a median), filled
+       to 0.7 of its height and lowered by the pour to 0.3 (built again as the level moves: a few hundred points). Unlit, a
+       pale clear blue under the glass (no lamp: v9.4) */
+    const JUG = { got: false, prof: null, mesh: null, k: 0.7, built: -1, mat: null };
+    { const jm = new THREE.MeshBasicMaterial({ color: 0x5c7c90, transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide }); mats.push(jm); JUG.mat = jm; }
+    function jugFit() {
+      const j = things.jug; if (!j || JUG.got || !j.userData.model) return;
+      JUG.got = true; j.updateWorldMatrix(true, true);
+      const inv = new THREE.Matrix4().copy(j.matrixWorld).invert(), v = new THREE.Vector3(), P = [];
+      j.userData.model.traverse(q => { if (!q.isMesh || !q.geometry.attributes.position) return; const A = q.geometry.attributes.position;
+        for (let i = 0; i < A.count; i++) { v.fromBufferAttribute(A, i).applyMatrix4(q.matrixWorld).applyMatrix4(inv); P.push([v.x, v.y, v.z]); } });
+      if (P.length < 50) return;
+      let y0 = Infinity, y1 = -Infinity; for (const p of P) { y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+      const H = y1 - y0; if (!(H > 0.02)) return;
+      let cx = 0, cz = 0, n = 0; for (const p of P) if (p[1] < y0 + 0.15 * H) { cx += p[0]; cz += p[2]; n++; } if (!n) return; cx /= n; cz /= n;
+      const NB = 20, bands = Array.from({ length: NB }, () => []);
+      for (const p of P) bands[Math.min(NB - 1, Math.floor((p[1] - y0) / H * NB))].push(Math.hypot(p[0] - cx, p[2] - cz));
+      const prof = bands.map((b, i) => { b.sort((a, c) => a - c); return { y: y0 + (i + 0.5) / NB * H, r: b.length ? 0.88 * b[Math.floor(b.length / 2)] : 0 }; });
+      JUG.prof = { prof, y0, H, cx, cz, wall: 0.004 };
+      const mesh = new THREE.Mesh(new THREE.BufferGeometry(), JUG.mat); mesh.renderOrder = 1; mesh.frustumCulled = false; j.add(mesh); JUG.mesh = mesh;
+    }
+    function jugBuild(k) {
+      const J = JUG.prof; if (!J || !JUG.mesh) return;
+      const top = J.y0 + k * J.H, pts = [new THREE.Vector2(0, J.y0 + J.wall)];
+      let rTop = 0;
+      for (const b of J.prof) { if (b.y >= top) break; const r = Math.max(0, b.r - J.wall); pts.push(new THREE.Vector2(r, Math.max(b.y, J.y0 + J.wall))); rTop = r; }
+      const lo = J.prof.filter(b => b.y < top).pop(), hi = J.prof.find(b => b.y >= top);
+      if (lo && hi) rTop = Math.max(0, lo.r + (hi.r - lo.r) * (top - lo.y) / (hi.y - lo.y) - J.wall);
+      pts.push(new THREE.Vector2(rTop, top), new THREE.Vector2(0, top));
+      const g = new THREE.LatheGeometry(pts, 28); g.translate(J.cx, 0, J.cz);
+      JUG.mesh.geometry.dispose(); JUG.mesh.geometry = g; JUG.built = k;
+    }
+    function jugTick() {
+      jugFit(); if (!JUG.mesh) return;
+      const poured = play.found.has('w') || fx.pourT > 0 || phase !== 'room';
+      const want = poured ? (fx.pourT > 0 ? 0.3 + 0.4 * (fx.pourT / 2.0) : 0.3) : 0.7;
+      if (Math.abs(want - JUG.built) > 0.015) jugBuild(want);
+      JUG.mesh.visible = !!(things.jug && things.jug.visible);
     }
     /* her phone, on the sofa's cushion beside her (her hands are on her bag's strap) */
     const herPhone = place('herPhone', 'w51phone', SPOT.herPhone.x, HER.sofa.seat - 0.005, SPOT.herPhone.z, 2.6);
     { const gm = new THREE.MeshBasicMaterial({ color: 0xbfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(gm);
       const gg = new THREE.PlaneGeometry(0.11, 0.2); gg.rotateX(-Math.PI / 2);
       const g = new THREE.Mesh(gg, gm); g.position.set(SPOT.herPhone.x, HER.sofa.seat + 0.025, SPOT.herPhone.z); g.rotation.y = 2.6; g.renderOrder = 3; world.add(g); fx.phoneGlow = g; }
+    /* WHAT RESTS ON HER SOFA, SET ON ITS CUSHION (27 Nov: clipscan of the cord, FILMS-1's, found her bag through the sofa,
+       about 950 crossings, and her phone sunk into the cushion, 71 to 452: both stood at a height written by hand, 0.50 and
+       0.505, under the cushion's real top). Once the sofa and the thing have landed, the cushion is read under the thing's
+       own footprint (rays straight down onto the sofa's mesh at its corners and middle), and the thing stood on the highest
+       of them, a few millimetres up */
+    const SOFAREST = { done: new Set() };
+    const _srR = new THREE.Raycaster(), _srO = new THREE.Vector3(), _srD = new THREE.Vector3(0, -1, 0), _srB = new THREE.Box3();
+    function sofaRest() {
+      const sofa = things.gsofa; if (!sofa || !sofa.userData.model || SOFAREST.done.size >= 2) return;
+      for (const name of ['herPhone', 'bag']) {
+        const g = things[name]; if (SOFAREST.done.has(name) || !g || !g.userData.model) continue;
+        SOFAREST.done.add(name);
+        g.updateWorldMatrix(true, true); sofa.updateWorldMatrix(true, true);
+        _srB.setFromObject(g.userData.model); if (_srB.isEmpty()) continue;
+        const foot = _srB.min.y; let top = -Infinity;
+        for (const [u, v] of [[0.5, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]]) {
+          _srO.set(_srB.min.x + u * (_srB.max.x - _srB.min.x), 1.5, _srB.min.z + v * (_srB.max.z - _srB.min.z));
+          _srR.set(_srO, _srD); _srR.far = 1.4;
+          /* (the seat's cushions only: a corner over the back cushions, 0.75 m up, is not where it rests) */
+          for (const hit of _srR.intersectObject(sofa.userData.model, true)) if (hit.point.y < HER.sofa.seat + 0.06) { if (hit.point.y > top) top = hit.point.y; break; } }
+        if (!(top > 0.2)) continue;
+        const dy = top + 0.004 - foot; g.position.y += dy;
+        if (name === 'herPhone' && fx.phoneGlow) fx.phoneGlow.position.y += dy;
+        (SOFAREST.rep = SOFAREST.rep || {})[name] = { foot: +foot.toFixed(3), top: +top.toFixed(3), moved: +dy.toFixed(3) };
+      }
+    }
     /* the red line (and the knot) in Spirit Vision: sixteen short lengths of one curve, each its own glow, so a pulse can run
        along it toward the door */
     const LINE_N = 16;
@@ -6614,12 +6848,13 @@
     const grace5 = { up: false, reflK: 0, reflWant: 0 };
     function roomBegin(found) {
       play.found = new Set(found); lookAt0(LOOK_OF.room); seatHim(STATION.room.at, KNEEL);
+      fx.waterK = play.found.has('w') ? 1 : 0; fx.pourT = 0;      // (a Continue lands with the water where it was, never rising)
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
       warm('room');
       room5.t0 = dayClock.t; room5.ups = 0; room5.phoneAt = dayClock.t + 6;
       things.holyBowl && (things.holyBowl.visible = true);
       if (WORLD.candleLit) WORLD.candleLit('candle2', play.found.has('l'));
-      gazeRest(cast.pho); gazeRest(cast.marcus); gazeRest(cast.grace);
+      peopleRest('room', 0);
       objectiveFor({ complete: false });
       if (roomDone()) roomEnd();
     }
@@ -6762,15 +6997,16 @@
       if (brk.held || !have('w4bigbowl')) return;
       parseOnce('w4bigbowl').then(({ scene: src }) => {
         if (!alive || phase !== 'breaking' || brk.held) return;
-        const g = new THREE.Group(), m = src.clone(true); m.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); mats.push(q.material); if (q.material.color) q.material.color.multiply(new THREE.Color(0xffd9a0)); q.frustumCulled = false; } });
+        const g = new THREE.Group(), m = src.clone(true); m.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); mats.push(q.material); q.frustumCulled = false; } });
         m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2;
-        m.position.set(-cx, -bb.min.y, -cz); g.add(m);
-        const wm = new THREE.MeshBasicMaterial({ color: 0x9fb4c2, transparent: true, opacity: 0.62, depthWrite: false }); mats.push(wm);
-        const r = 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z), wg = new THREE.CircleGeometry(r, 40); wg.rotateX(-Math.PI / 2);
-        const w = new THREE.Mesh(wg, wm); w.position.y = 0.72 * (bb.max.y - bb.min.y); g.add(w);
-        const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.32, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
-        const sg = new THREE.CircleGeometry(r * 0.28, 20); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, w.position.y + 0.002, r * 0.2); g.add(sh);
-        g.userData.water = w; g.userData.sheen = sh;
+        m.position.set(-cx, -bb.min.y, -cz); g.add(m); g.updateWorldMatrix(true, true);
+        /* (the same brass and the water poured, as on the cloth: bowlLook, never empty) */
+        const F = bowlLook(m, { empty: { value: 0 } });
+        const r = F ? g.worldToLocal(F.world.c.clone().setX(F.world.c.x + F.world.r)).distanceTo(g.worldToLocal(F.world.c.clone())) : 0.42 * Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z);
+        const wy = F ? g.worldToLocal(F.world.c.clone()).y : 0.72 * (bb.max.y - bb.min.y);
+        const s2 = new THREE.MeshBasicMaterial({ color: 0xffd49a, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(s2);
+        s2.map = softDot(); const sg = new THREE.PlaneGeometry(r * 0.56, r * 0.56); sg.rotateX(-Math.PI / 2); const sh = new THREE.Mesh(sg, s2); sh.position.set(-r * 0.25, wy + 0.002, r * 0.2); sh.renderOrder = 3; g.add(sh);
+        g.userData.sheen = sh;
         g.scale.setScalar(BOWLHELD.s);
         brk.held = g;
         if (kit.hold) kit.hold(g, { hand: 'left', pos: BOWLHELD.pos, rot: BOWLHELD.rot });
@@ -6778,7 +7014,7 @@
       }).catch(() => {});
     }
     /* where the bowl stands in his left hand (the hands' own frame: kit.hold's left), its size in it */
-    const BOWLHELD = { pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62 };
+    const BOWLHELD = { pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: BOWL_S };   // (the bowl's one size: b_world.js BOWL_S)
     function breakingBegin() {
       lookAt0(LOOK_OF.breaking); seatHim(STATION.room.at, Object.assign({}, KNEEL, { startYaw: STATION.room.at.ry, get pitch() { return -0.95; } }));
       warm('breaking');
@@ -6789,7 +7025,8 @@
       if (kit.lens) kit.lens(isNarrow() ? 50 : 44, { secs: 0.6 });
       if (kit.vision) { kit.vision(true); kit.vision({ lock: true, why: W.visionHeld }); }
       if (!RATANA.state().on) RATANA.begin();                  // (a Continue into the breaking: the chant begins at its start)
-      gazeRest(cast.pho); gaze(cast.grace, null, { secs: 0.6 }); gaze(cast.marcus, [HER.grace.x, 1.0, HER.grace.z], { secs: 0.8 });
+      peopleRest('breaking', 0.4);
+      gaze(cast.grace, null, { secs: 0.6 }); gaze(cast.marcus, [HER.grace.x, 1.0, HER.grace.z], { secs: 0.8 });
       objectiveFor({ complete: false });
       const run = play.run; after(0.4, () => { if (live(run)) surge(0, false); });
     }
@@ -6969,7 +7206,7 @@
       if (!up || lineBusy()) return;
       if (!night5.said.has('n1')) { night5.said.add('n1'); say('zv51n1'); }
       else if (!night5.said.has('n2') && x > PASS.x0 - 0.8 && x < PASS.x1 + 0.3) { night5.said.add('n2'); say('zv51n2'); }
-      else if (!night5.said.has('n3') && distTo(HIS.altar.x, HIS.altar.z) < 5.2) { night5.said.add('n3'); say('zv51n3'); }
+      else if (!night5.said.has('n3') && distTo(HIS.altar.x, HIS.altar.z) < 5.2 && things.bottle && things.bottle.visible) { night5.said.add('n3'); say('zv51n3'); }
     }
     /* THE BEAT NEVER LEFT TO CHANCE (v21.17): at the bedroom door, the strongest wave, and Spirit Vision forced open for four
        seconds: his footsteps lit red from the front door in, a few at a time, and the threads coming in after them */
@@ -7057,7 +7294,9 @@
       night5.p = Math.max(0.35, Math.min(0.75, night5.p || 0.5)); night5.waves = [];
       footSet(1);
       night5.handed = false;
-      const run = play.run; after(0.6, () => { if (live(run)) openDecision(); });
+      /* (his phone's screen is seen in his hand, 3:03 and his teacher's name, before the question covers the lower half of
+         the screen: the plan's 8.3, "its screen in his hand") */
+      const run = play.run; after(2.2, () => { if (live(run)) openDecision(); });
     }
 
     /* ================================================================ THE PLAY'S SOUND (the plan's 11; every sound in main.js's
@@ -7120,6 +7359,20 @@
       else if (P === cast.marcus) gaze(P, [HER.grace.x, 0.95, HER.grace.z], { secs: 1.0, reach: 0.6 });
       else gaze(P, null, { secs: 1.0 });
     }
+    /* EACH PHASE BEGINS WITH ITS PEOPLE IN THE PLAY'S OWN REST, whatever a film left them in (a film skipped mid-way leaves
+       a body in whatever take it had reached: the opening skipped before Grace sits left her standing in front of the sofa
+       in its Idle_3, 27 Nov). The room: the three seated at rest. The breaking: Grandmaster Pho and Grace seated, Marcus
+       STANDING behind the sofa at her right shoulder (STATION.breaking.marcus), where the keepsake's film leaves him and the
+       cord's begins, so a Continue into the breaking lands as play does. `fade` 0 is a cut (under the opening's black);
+       the keepsake hands to the event in one picture, so its rests are eased */
+    function peopleRest(p, fade) {
+      if (cast.pho) rest(cast.pho, fade);
+      if (cast.grace) { grace5.up = false; rest(cast.grace, fade); }
+      if (cast.marcus) {
+        const M = STATION[p] && STATION[p].marcus;
+        if (M && M.stand) hold(cast.marcus, 'Idle_3', null, null, fade); else rest(cast.marcus, fade); }
+      gazeRest(cast.pho); gazeRest(cast.marcus); gazeRest(cast.grace);
+    }
 
     /* ---------------------------------------------------------------- the things he can press (each offered only in its
        phase, only while no line is handing off, and never once it is done: derived, so a replay needs nothing put back) */
@@ -7133,7 +7386,8 @@
       lookSpot('glass', 'g', () => SPOT.glass, ['zv51r2', 'ph51r2'], W.hotGlass),
       lookSpot('hands', 'h', () => graceHands, ['zv51r3', 'ph51r3'], W.hotHands),
       lookSpot('packet', 'k', () => SPOT.packet, ['zv51r4', 'ph51r4', 'zv51r5', '|', 'gr51r1', 'mk51r1'], W.hotPacket),
-      { id: 'getup', pos: SPOT.bed, radius: 2.4, prompt: W.hotGetUp, markY: 0,
+      /* (its mark is pressed as the thing itself, as every other here: the probe's tap on the mark did nothing, 27 Nov) */
+      { id: 'getup', pos: SPOT.bed, radius: 2.4, prompt: W.hotGetUp, markY: 0, hits: markHit(() => SPOT.bed, 0.1),
         enabled: () => phase === 'night' && !play.busy && !play.found.has('u'), onInteract() { return getUp(); } },
       { id: 'phone', pos: SPOT.phone, radius: 1.7, prompt: W.hotPhoneHis, markY: 0, hits: markHit(() => FILMPLACE.phoneAt, 0.09),
         enabled: () => phase === 'night' && !play.busy && play.found.has('u') && !(night5.kneeT > 0), onInteract() { return atPhone(); } }
@@ -7150,7 +7404,7 @@
     }
     function fxTick(wdt, st) {
       const t = wallClock.t;
-      waterTick(wdt); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
+      waterTick(wdt); jugTick(); sofaRest(); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
       /* (an ending begins from the decision: once, on its first frame, the play's hold on the sound, the heart and the lens is
          given back, so an ending's film starts clean and lays its own pressure: PLAY.md 2. Never again after, so a film's
          own settings are never overwritten) */
@@ -7181,6 +7435,9 @@
       if (R.p !== 'breaking') RATANA.stop();
       playClear();
       if (things.hisPhone) things.hisPhone.visible = true;
+      /* (the bottle of holy water stands on his altar from the film of home on: a Continue into the night, which plays no
+         film, found the altar without it, and "The water I brought home was shaking." said over nothing, 27 Nov) */
+      if (things.bottle) things.bottle.visible = R.p === 'night' || R.p === 'ask';
       worldPhase(R.p);
       if (R.p === 'room') roomBegin(R.found);
       else if (R.p === 'breaking') breakingBegin();
@@ -7192,10 +7449,10 @@
       if (kit && kit.captions) kit.captions(null);
       RATANA.reset(); playClear(); soundReset();
       Object.assign(room5, { t0: 0, ups: 0, phoneAt: 0 }); Object.assign(grace5, { up: false, reflK: 0, reflWant: 0 });
-      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false });
+      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false, drift: 0, share: undefined });
       Object.assign(night5, { p: 0, waves: [], nextWave: 0, kneeT: 0, tipSaid: false, forced: 0, said: new Set(), getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, handed: false });
       fx.waterK = 0; fx.pourT = 0; fx.phoneLit = 0; fx.footRun = 0; footSet(0); lastPos = null;
-      if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true;
+      if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true; if (things.bottle) things.bottle.visible = false;
       if (WORLD.candleLit) WORLD.candleLit('candle2', null);
       lookAt0('LAMP');
     }
@@ -7260,20 +7517,47 @@
         th = Math.max(th, (Math.abs(x) + r) / (z * 0.86 * camera.aspect), (Math.abs(y) + r) / (z * (h[4] || K.band || 0.88))); }
       return th;
     }
-    function f1Hold(A, B, u) {
-      if (!(A && A.hold) && !(B && B.hold)) return;
-      const d = B ? lp(f1PullOf(A), f1PullOf(B), u) : f1PullOf(A); if (!(d > 1e-4)) return;
-      camera.updateMatrixWorld(true); camera.getWorldPosition(_f1E);
-      const e = camera.matrixWorld.elements; _f1R.origin.copy(_f1E); _f1R.direction.set(e[8], e[9], e[10]).normalize();
-      if (!f1Solids) { f1Solids = []; for (const s of solids) { s.updateWorldMatrix(true, false); f1Solids.push(new THREE.Box3().setFromObject(s)); } }
-      let dd = d;
-      for (const bb of f1Solids) { if (bb.containsPoint(_f1E)) continue; const hit = _f1R.intersectBox(bb, _f1H); if (hit) dd = Math.min(dd, Math.max(0, _f1E.distanceTo(hit) - 0.3)); }
-      yaw.position.addScaledVector(_f1R.direction, dd);
+    /* EACH KEY'S HOLD IS SOLVED AT THE KEY'S OWN POSE (its eye, its aim, its lens, on this screen), and a move between two
+       keys eases from the one solved eye to the other: a pull re-solved from wherever a move has got to went there and back
+       (the crane on a phone, 27 Nov: its eye 9.09 -> 9.31 -> 9.05 m along the street as the pull grew faster than the move,
+       and on a desk 7.07 -> 7.82 -> 6.61 m across it), so the keys' own answers are what is eased (v25.5: a fit is a smooth
+       function of the clock). Answers the world offset of the eye and the lens the key is drawn with */
+    const _f1Sv = { p: new THREE.Vector3(), ry: 0, rx: 0, rz: 0, f: 0 };
+    /* A KEY'S OWN AIM AND HOLD FOR A PHONE (`atP`, `holdP`; 27 Nov, photographed: on a phone, a third of a desk's width, the
+       keepsake's first shot could hold his teacher's face or his open hand, never both, and held neither): a key that names
+       them is aimed and held by them on a narrow screen, and by `at` and `hold` on a wide one */
+    const f1Shape = (K, nar) => (K && nar && (K.atP || K.holdP) ? Object.assign({}, K, { at: K.atP || K.at, hold: K.holdP || K.hold }) : K);
+    function f1Solve(K0, nar) {
+      const K = f1Shape(K0, nar), f0 = nar ? K.fp : K.fd, out = { x: 0, y: 0, z: 0, f: f0 };
+      if (!K.hold) return out;
+      _f1Sv.p.copy(yaw.position); _f1Sv.ry = yaw.rotation.y; _f1Sv.rx = pitch.rotation.x; _f1Sv.rz = camera.rotation.z; _f1Sv.f = camera.fov;
+      f1Lens(f0);
+      if (K.yaw != null || !K.at) { const p = f1v(K.eye), [yw, pt] = f1KeyYP(K); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = K.roll || 0; }
+      else f1Aim(f1v(K.eye), f1v(K.at), K.roll || 0);
       camera.updateMatrixWorld(true);
-      if (dd < d - 1e-3) {
-        const th = B ? lp(f1NeedTh(A), f1NeedTh(B), u) : f1NeedTh(A), fmax = (B ? lp(A.fmax || 76, B.fmax || 76, u) : A.fmax || 76);
-        const f = Math.min(fmax, 2 * Math.atan(th) * 180 / Math.PI); if (f > camera.fov) { f1Lens(f); camera.updateMatrixWorld(true); }
+      const d = f1PullOf(K);
+      if (d > 1e-4) {
+        camera.getWorldPosition(_f1E);
+        const e = camera.matrixWorld.elements; _f1R.origin.copy(_f1E); _f1R.direction.set(e[8], e[9], e[10]).normalize();
+        if (!f1Solids) { f1Solids = []; for (const s of solids) { s.updateWorldMatrix(true, false); f1Solids.push(new THREE.Box3().setFromObject(s)); } }
+        let dd = d;
+        for (const bb of f1Solids) { if (bb.containsPoint(_f1E)) continue; const hit = _f1R.intersectBox(bb, _f1H); if (hit) dd = Math.min(dd, Math.max(0, _f1E.distanceTo(hit) - 0.3)); }
+        out.x = _f1R.direction.x * dd; out.y = _f1R.direction.y * dd; out.z = _f1R.direction.z * dd;
+        if (dd < d - 1e-3) { yaw.position.addScaledVector(_f1R.direction, dd); camera.updateMatrixWorld(true);
+          const f = Math.min(K.fmax || 76, 2 * Math.atan(f1NeedTh(K)) * 180 / Math.PI); if (f > out.f) out.f = f; }
       }
+      yaw.position.copy(_f1Sv.p); yaw.rotation.y = _f1Sv.ry; pitch.rotation.x = _f1Sv.rx; camera.rotation.z = _f1Sv.rz; f1Lens(_f1Sv.f);
+      camera.updateMatrixWorld(true);
+      return out;
+    }
+    /* the eased offset of two keys' solved eyes laid on the eye a move has reached, and the lens drawn at least as wide as
+       the two keys' solved lenses eased (u the move's own share) */
+    function f1Hold(A, B, u, nar) {
+      if (!(A && A.hold) && !(B && B.hold)) return;
+      const sA = f1Solve(A, nar), sB = B ? f1Solve(B, nar) : sA, w = B ? u : 0;
+      yaw.position.x += lp(sA.x, sB.x, w); yaw.position.y += lp(sA.y, sB.y, w); yaw.position.z += lp(sA.z, sB.z, w);
+      const f = lp(sA.f, sB.f, w); if (f > camera.fov + 1e-3) f1Lens(f);
+      camera.updateMatrixWorld(true);
     }
     function f1KeyYP(K) { if (K.yaw != null) return [K.yaw, K.pitch || 0];
       const p = f1v(K.eye), q = f1v(K.at), dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2]; return [Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz))]; }
@@ -7286,16 +7570,16 @@
       for (let j = 1; j < K.length; j++) if (K[j].t < K[j - 1].t) { const w = (K[j - 1].name || '') + '@' + K[j - 1].t.toFixed(2) + ' > ' + (K[j].name || '') + '@' + K[j].t.toFixed(2);
         if (!f1Bad.has(w)) { f1Bad.add(w); console.error('e5c1: a film\'s camera keys run backwards in time: ' + w); } }
       let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
-      const A = K[i], B = K[i + 1], nar = isNarrow();
+      const nar = isNarrow(), A = f1Shape(K[i], nar), B = f1Shape(K[i + 1], nar);
       if (!B || B.cut) {
         f1Lens(nar ? A.fp : A.fd);
         if (A.yaw != null || !A.at) { const p = f1v(A.eye), [yw, pt] = f1KeyYP(A); yaw.position.set(p[0], p[1], p[2]); yaw.rotation.y = yw; pitch.rotation.x = pt; camera.rotation.z = A.roll || 0; }
         else f1Aim(f1v(A.eye), f1v(A.at), A.roll || 0);
-        f1Hold(A, null, 1);
+        f1Hold(A, null, 1, nar);
         F1.shot = A.name || ''; return;
       }
       if (A.flow && B.flow && A.at && B.at && A.yaw == null && B.yaw == null) {
-        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? K[i - 1] : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? K[i + 2] : null;
+        const P0 = !A.cut && K[i - 1] && K[i - 1].flow ? f1Shape(K[i - 1], nar) : null, P3 = K[i + 2] && K[i + 2].flow && !K[i + 2].cut ? f1Shape(K[i + 2], nar) : null;
         const val = (X) => { const e = f1v(X.eye), a = f1v(X.at); return [e[0], e[1], e[2], a[0], a[1], a[2], nar ? X.fp : X.fd, X.roll || 0]; };
         const vA = val(A), vB = val(B), dt = Math.max(1e-3, B.t - A.t), n = vA.length;
         const m0 = new Array(n).fill(0), m1 = new Array(n).fill(0);
@@ -7304,7 +7588,7 @@
         const sx = c01((t - A.t) / dt), s2 = sx * sx, s3 = s2 * sx, h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + sx, h01 = 3 * s2 - 2 * s3, h11 = s3 - s2;
         const v = vA.map((a, j) => h00 * a + h10 * dt * m0[j] + h01 * vB[j] + h11 * dt * m1[j]);
         f1Lens(v[6]); f1Aim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
-        f1Hold(A, B, smo(sx));
+        f1Hold(A, B, smo(sx), nar);
         F1.shot = (A.name || '') + '>' + (B.name || ''); return;
       }
       const x0 = c01((t - A.t) / Math.max(1e-3, B.t - A.t)), u = B.ease === 'in' ? x0 * x0 : B.ease === 'lin' ? x0 : smo(x0);
@@ -7313,7 +7597,7 @@
       if (A.yaw != null || B.yaw != null || !A.at || !B.at) { const [ya, pa] = f1KeyYP(A), [yb, pb] = f1KeyYP(B);
         yaw.position.set(pe[0], pe[1], pe[2]); yaw.rotation.y = ya + angTo(ya, yb) * u; pitch.rotation.x = lp(pa, pb, u); camera.rotation.z = lp(A.roll || 0, B.roll || 0, u); }
       else f1Aim(pe, lp3(f1v(A.at), f1v(B.at), u), lp(A.roll || 0, B.roll || 0, u));
-      f1Hold(A, B, u);
+      f1Hold(A, B, u, nar);
       F1.shot = (A.name || '') + '>' + (B.name || '');
     }
     /* the view a phase begins in (the snapshot the engine restores at a film's end), as a key */
@@ -7329,9 +7613,23 @@
     const f1Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     const _f1S = new THREE.Vector3();
     function f1Palm(P, sd, out) { const hb = f1Bone(P, sd + 'Hand'), kb = f1Bone(P, sd + 'HandMiddle1'); if (!hb) return null; hb.getWorldPosition(out); if (kb) out.lerp(kb.getWorldPosition(_f1S), 0.5); return out; }
+    /* THE PALM'S MIDDLE BY THE HAND'S OWN MEASURE (armsOf: the fingers' line and the palm's facing from the bind pose, a
+       rig with no finger bones measured from its skin), `up` metres out of the palm: his teacher's seated body has no finger
+       bones, and the packet laid at f1Palm sat on his wrist (photographed 27 Nov) */
+    const _f1Pq = new THREE.Quaternion(), _f1Pv = new THREE.Vector3();
+    function f1PalmOn(P, sd, out, up = 0) {
+      const A = typeof armsOf === 'function' ? armsOf(P) : null, a = A && A[sd === 'Left' ? 'L' : 'R'];
+      if (!a) return f1Palm(P, sd, out);
+      a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(out); a.hand.getWorldQuaternion(_f1Pq);
+      const sc = a.hand.getWorldScale(_f1Pv).x;
+      out.addScaledVector(_f1Pv.copy(a.fL).applyQuaternion(_f1Pq), a.palm * sc).addScaledVector(_f1Pv.copy(a.nL).applyQuaternion(_f1Pq), up);
+      return out;
+    }
     /* SPIRIT VISION held by a film's clock (the engine's curve, out from his eyes over `secs` from `t0`, full until `t1`, home
        over `back`), held only round the moments it is open */
-    const VR1 = 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
+    /* (the vision's whole reach, the play's own DATA.vision.rmax (200 m since PLAY's 75f0be6, as FILMS-2's F2VR): opened to it
+       on the film's own clock, so nothing out of her windows past a shorter radius shows an edge) */
+    const VR1 = (DATA && DATA.vision && DATA.vision.rmax) || 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
     function f1Vision(t, t0, secs = 2.2, t1 = Infinity, back = 1.6) {
       if (!kit || !kit.vision) return;
       let r = 0, mv = false;
@@ -7356,7 +7654,7 @@
     function f1Walk(P, t, t0, pts, v, rest, ryEnd, o = {}) {
       if (!P || !P.ready) return false;
       const L = f1PathLen(pts), v1 = Math.max(0.1, v), ease = Math.min(o.ease || 0.45, L / v1), T = L / v1 + ease, tw = t - t0, pace = (P.pace && P.pace.Walking) || 1.29;
-      const Y = (x, z) => (o.y != null ? o.y : flatGround(x, z));
+      const Y = (x, z) => (typeof o.y === 'function' ? o.y(x, z) : o.y != null ? o.y : flatGround(x, z));
       const restT = () => (rest[1] != null ? rest[1] : 0) + (rest[2] ? t * rest[2] : 0);
       if (tw <= 0) { const a = pts[0]; put(P, a[0], a[1], o.ry0 != null ? o.ry0 : f1PathAt(pts, 0)[2], Y(a[0], a[1])); pose(P, rest[0], restT(), !!rest[3]); return false; }
       if (tw >= T) { const b = pts[pts.length - 1]; const turnK = smo(c01((tw - T) / 0.6)), h = f1PathAt(pts, L)[2];
@@ -7369,6 +7667,9 @@
       else pose(P, rest[0], restT(), !!rest[3], 'Walking', 1 - outOf, sc / pace);
       return true;
     }
+    /* the street's heights under a walk (the ground function reads her floor under the five-foot way: WORLD.md 2): the road
+       GY - 0.15 past the kerb, the drain's grating GY - 0.03, the five-foot way GY */
+    const streetY1 = (x) => (x > STREET.kerb ? GY - 0.15 : x > STREET.face ? GY - 0.03 : GY);
     const f1Turn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
     /* A PERSON'S TALKING OVER HIS LINES IN A FILM (chapter 5's fmSpeak, R25): `lines` [[t0, secs, take], ...] each from the
        line's own start, eased in over 0.35 s and out over the half second after it, lines closer than a second one talk;
@@ -7414,6 +7715,15 @@
       if (o.hang != null) { if (g.parent !== world) world.attach(g); P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, sd, _f1A); if (!pm) return false;
         g.position.set(pm.x, pm.y - o.hang, pm.z); g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0); g.visible = true; return true; }
       if (g.parent !== hb) { hb.add(g); }
+      /* IN THE PALM (`o.palm`: { along, off } in metres; 27 Nov, photographed: the phones laid by a guessed turn stood out
+         across the hand, their faces outward, like a book held by its spine): a flat thing's long side (its own x) along the
+         fingers' line, its face (its own y) on the palm's normal, both MEASURED on the body's own hand (armsOf: v25.3), its
+         middle `along` past the palm's middle and `off` out of it */
+      if (o.palm) { const A = typeof armsOf === 'function' ? armsOf(P) : null, a = A && A[sd === 'Left' ? 'L' : 'R'];
+        if (a) { const sc = 1 / Math.max(1e-6, hb.getWorldScale(_f1A).x), c = new THREE.Vector3().crossVectors(a.fL, a.nL).normalize();
+          g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(a.fL, a.nL, c));
+          g.position.copy(a.fL).multiplyScalar(a.palm + (o.palm.along || 0) * sc).addScaledVector(a.nL, (o.palm.off != null ? o.palm.off : 0.02) * sc);
+          g.scale.setScalar(sc); g.visible = true; return true; } }
       const p = o.pos || [0, 0.06, 0.03], r = o.rot || [0, 0, 0];
       g.position.set(p[0], p[1], p[2]); g.rotation.set(r[0], r[1], r[2]); g.scale.setScalar(1 / Math.max(1e-6, hb.getWorldScale(_f1A).x)); g.visible = true; return true;
     }
@@ -7422,15 +7732,18 @@
        left-right line): a seated body reaching across a low table leans into the reach, as a person does; laid after the
        pose, kept off the next (v11.5: taken back before the mixer runs again) */
     function f1LeanBack(P) { const L = P && P.f1lean; if (!L || !L.on) return; for (const r of L.b) r[0].quaternion.copy(r[1]); L.on = false; }
-    function f1Lean(P, ang) {
-      if (!P || !P.ready || !(Math.abs(ang) > 1e-4)) return;
+    /* (and a TWIST, `tw` radians about the body's own up, shared by the same three bones: a seated man turning his shoulders
+       to someone at his side, negative to his right; 27 Nov: his head alone could not turn to his student kneeling at his
+       right, and his lines to him were said in profile) */
+    function f1Lean(P, ang, tw = 0) {
+      if (!P || !P.ready || !(Math.abs(ang) > 1e-4 || Math.abs(tw) > 1e-4)) return;
       if (!P.f1lean) { const b = ['Spine', 'Spine1', 'Spine2'].map(n => f1Bone(P, n)).filter(Boolean); P.f1lean = { b: b.map(x => [x, new THREE.Quaternion()]), on: false }; }
       const L = P.f1lean; if (!L.b.length || L.on) return;
       P.group.updateWorldMatrix(true, true);
-      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(P.group.getWorldQuaternion(_f1Q)), per = ang / L.b.length;
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(P.group.getWorldQuaternion(_f1Q)), up = new THREE.Vector3(0, 1, 0).applyQuaternion(_f1Q), per = ang / L.b.length, tper = tw / L.b.length;
       for (const r of L.b) r[1].copy(r[0].quaternion);
       for (const r of L.b) { const bone = r[0], wq = bone.getWorldQuaternion(new THREE.Quaternion());
-        wq.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, per)); const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion());
+        wq.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, per)); if (tper) wq.premultiply(new THREE.Quaternion().setFromAxisAngle(up, tper)); const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion());
         bone.quaternion.copy(pq.invert().multiply(wq)); bone.updateWorldMatrix(false, true); }
       L.on = true;
     }
@@ -7476,18 +7789,23 @@
     function climbPose(P, s, o = {}) {
       if (!P || !P.ready) return;
       const L = climbLegs(P); climbBack(P);
-      const ry = -Math.PI / 2, zc = (o.z != null ? o.z : CLIMB1.z);
+      const ry = o.ry != null ? o.ry : -Math.PI / 2, zc = (o.z != null ? o.z : CLIMB1.z);
       /* (the walk's time: one step a tread, two a cycle, so that the foot the step stands on is at its own middle of stance
          halfway through the step; the left foot stands on the odd treads) */
       const d = L ? L.d : 1.03, ph = L ? L.mid.Left - 0.75 * d : 0;
       const ss = Math.max(0, Math.min(CLIMB1.n, s));
+      /* (THE CLOSING STEP, s from 19 to 20: the foot behind brought up beside the other on the landing's tread and the body
+         over both, so a man who has reached the top stands on it; photographed 27 Nov, Marcus stood 2.6 s at the top in the
+         middle of a stride, one foot a tread down and an arm swung back. `o.settle` (0..1) then eases the walk into his rest,
+         `o.rest` [take, moment]) */
+      const cl = s > CLIMB1.n ? Math.min(1, s - CLIMB1.n) : 0;
       /* (the body over the treads it stands between: its group a third of a tread behind the foot that stands, on the line of
          the nosings, so the hips are never further from either foot than the leg reaches) */
-      const xb = s <= 0 ? CLIMB1.x1 + 0.12 : Math.min(CLIMB1.x1 + 0.12, treadX(ss - 0.15));
-      const yb = GY + Math.max(0, Math.min(CLIMB1.n, ss - 0.35)) * CLIMB1.rise;
+      const xb = s <= 0 ? CLIMB1.x1 + 0.12 : Math.min(CLIMB1.x1 + 0.12, treadX(ss - 0.15 * (1 - cl)));
+      const yb = GY + Math.max(0, Math.min(CLIMB1.n, ss - 0.35 * (1 - cl))) * CLIMB1.rise;
       put(P, xb, zc, ry, s <= 0 ? GY : yb);
-      const moving = o.moving !== false;
-      pose(P, 'Walking', ph + ss * d / 2, true);
+      const moving = o.moving !== false, wph = ph + Math.min(s, CLIMB1.n + 1) * d / 2;
+      if (o.settle > 0.001 && o.rest) pose(P, 'Walking', wph, true, o.rest[0], Math.min(1, o.settle), o.rest[1]); else pose(P, 'Walking', wph, true);
       if (!L || !moving || s <= 0.02) return;
       P.group.updateWorldMatrix(true, true);
       const n = Math.floor(ss), u = ss - n;
@@ -7498,11 +7816,12 @@
         const odd = S0 === 'Left', stands = ((n % 2) === 1) === odd;          // stands on tread n through step n -> n+1
         let tq, lift = 0;
         if (stands) tq = n;
+        else if (cl > 0) { tq = lp(n - 1, n, smo(cl)); lift = Math.sin(Math.PI * cl) * 0.09; }
         else { const from = n - 1, to = n + 1, w = smo(u); tq = lp(Math.max(0, from), Math.min(CLIMB1.n, to), w); lift = Math.sin(Math.PI * u) * 0.11; }
         const tqc = Math.max(0, Math.min(CLIMB1.n, tq));
         /* (the foot's place across the flight is the walk's own, in the body's frame; along it and up, the tread's) */
         r.hand.getWorldPosition(_cl.a); P.group.worldToLocal(_cl.a); const side = _cl.a.x;
-        const tx = tqc <= 0 ? CLIMB1.x1 + 0.08 : treadX(tqc), ty = (stands ? treadY(Math.round(tqc)) : Math.max(treadY(Math.floor(tqc + 1e-6)), lp(treadY(Math.max(0, n - 1)), treadY(Math.min(CLIMB1.n, n + 1)), smo(u)))) + L.ankle + lift;
+        const tx = tqc <= 0 ? CLIMB1.x1 + 0.08 : treadX(tqc), ty = (stands ? treadY(Math.round(tqc)) : Math.max(treadY(Math.floor(tqc + 1e-6)), lp(treadY(Math.max(0, n - 1)), treadY(Math.min(CLIMB1.n, n + 1)), smo(cl > 0 ? cl : u)))) + L.ankle + lift;
         _cl.b.set(side, 0, 0).applyQuaternion(P.group.quaternion);
         const target = new THREE.Vector3(tx + _cl.b.x, ty, zc + _cl.b.z);
         /* (the foot keeps its own turn in the world as the walk had it) */
@@ -7519,11 +7838,18 @@
       }
       L.on = true;
     }
+    /* THE STAIR'S STAGING (27 Nov, photographed: his teacher's back filled the whole phone picture a metre before the lens,
+       and on a straight narrow flight every head the same height over its tread stands on the line of the stair, so the man
+       further up hides behind the nearer one). So: Marcus a third of the flight ahead and climbing faster, keeping to the
+       flight's left side (seen from below: its south wall), his teacher a tread a little over half a second on its right
+       (the north wall), and the lens behind them in the middle, waiting a moment at the street door and then climbing at
+       his teacher's pace, seven treads and more behind him: both men are in the picture, side by side up the flight */
+    const STAIR1 = { mk: { s0: 7.0, z: -3.9 }, pho: { s0: 4.0, cad: 0.6, z: -3.55 }, eye: { s0: -2.5, cad: 0.6, wait: 0.6, z: -3.72 } };
     /* how many treads a climber has climbed at film time t: from `t0` at `cad` seconds a tread, starting with `s0` climbed,
        standing still through [p0, p1] (Marcus stops to look back down; those behind him wait), never past the landing */
-    function climbAt(t, t0, cad, s0, p0, p1) {
+    function climbAt(t, t0, cad, s0, p0, p1, top) {
       let tw = Math.max(0, t - t0); if (p1 > p0 && t > p0) tw -= Math.min(t, p1) - Math.max(p0, t0) > 0 ? Math.min(t, p1) - Math.max(p0, t0) : 0;
-      return Math.min(CLIMB1.n, s0 + Math.max(0, tw) / cad);
+      return Math.min(top != null ? top : CLIMB1.n, s0 + Math.max(0, tw) / cad);
     }
 
     /* ================================================================ THE PEOPLE ONLY THE FILMS SHOW
@@ -7561,28 +7887,45 @@
       /* the small corked bottle: on the cloth as his teacher fills and corks it (the cord), then in his hands (the hands'
          pass); the one on his altar is the world's (things.bottle) */
       clothBottle: stand('w51bottle', 0, -50, 0, 0, { parent: world, done: (m) => glassOff1(m) }),
-      handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) }),
-      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3, done: (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); }) })
+      handBottle: stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => { glassOff1(m); handsPass1(m); } }),
+      /* (its paint is the play's: the metal brass and the water poured, laid by stage.plan.bowlLook once it has landed, so the
+         film's last picture and the event's first are one bowl: PLAY.md 2) */
+      handBowl: stand('w4bigbowl', 0, 0, 0, 0, { parent: nowhere1, lift: 3, near: true, done: (m) => handsPass1(m) })
     };
     for (const k of ['mkPhone', 'grPhone', 'phoBag', 'keycard', 'clothBottle']) PROPS1[k].visible = false;
+    /* (a thing drawn in the hands' pass is never culled by bounds that mean nothing there: the play's own held bowl is
+       drawn so, c_play.js holdBowl) */
+    function handsPass1(m) { m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); }
     /* (THINGS-2: a material named glass is drawn without writing depth, so what stands behind it is drawn) */
     function glassOff1(m) { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && /glass/i.test(mt.name || '')) { mt.depthWrite = false; mt.transparent = true; } }); }
-    /* THE WATER IN HIS HANDS: a disc at the bowl's water line (drawn in the hands' pass with it), the candle's reflection a
-       warm point on it, and a ring that spreads across it (the cord's one ring): its own picture */
+    /* THE WATER IN HIS HANDS (27 Nov, PLAY.md 2): the bowl's own water and petals, painted by the play's bowlLook (poured),
+       its candle's glint the play's own (a soft warm dot lying on the water, its size and place), and the film's own ring
+       that spreads across it for each drop of wax and for the cord's snap. Only if the play's look is not there does the
+       film paint the brass flat and lay a water disc of its own */
     const ringTex1 = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
       const g = x.createRadialGradient(64, 64, 40, 64, 64, 62); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.55, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = g; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); })();
+    const dotTex1 = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
     const waterMat1 = new THREE.MeshBasicMaterial({ color: 0x1c2630, transparent: true, opacity: 0.72, depthWrite: false }); mats.push(waterMat1);
     const water1 = new THREE.Mesh(new THREE.CircleGeometry(1, 40), waterMat1); water1.rotation.x = -Math.PI / 2; owned.push(water1.geometry);
     const ringMat1 = new THREE.MeshBasicMaterial({ map: ringTex1, color: 0xfff0d8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(ringMat1);
     const ring1 = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), ringMat1); ring1.rotation.x = -Math.PI / 2; owned.push(ring1.geometry);
-    const glintMat1 = new THREE.SpriteMaterial({ map: glowTex, color: 0xffc070, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(glintMat1);
-    const glint1 = new THREE.Sprite(glintMat1);
-    whenThing1(PROPS1.handBowl, (g, m) => { const bb = new THREE.Box3().setFromObject(m), w = Math.max(0.05, Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z));
-      const y = bb.min.y + (bb.max.y - bb.min.y) * 0.62, r = w * 0.4;
-      water1.scale.setScalar(r); water1.position.set((bb.min.x + bb.max.x) / 2 - g.position.x, y - g.position.y, (bb.min.z + bb.max.z) / 2 - g.position.z);
-      ring1.position.copy(water1.position); ring1.position.y += 0.002; glint1.position.copy(water1.position); glint1.position.y += 0.004; glint1.position.x -= r * 0.25; glint1.scale.set(r * 0.5, r * 0.5, 1);
-      PROPS1.bowlR = r; g.add(water1); g.add(ring1); g.add(glint1); });
+    const glintMat1 = new THREE.MeshBasicMaterial({ map: dotTex1, color: 0xffd49a, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(glintMat1);
+    const glint1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), glintMat1); glint1.rotation.x = -Math.PI / 2; glint1.renderOrder = 3; owned.push(glint1.geometry);
+    whenThing1(PROPS1.handBowl, (g, m) => {
+      g.updateWorldMatrix(true, true);
+      const F = S && S.plan && S.plan.bowlLook ? S.plan.bowlLook(m, { empty: { value: 0 } }) : null;
+      let c, r;
+      if (F && F.world) { c = g.worldToLocal(F.world.c.clone()); r = g.worldToLocal(F.world.c.clone().setX(F.world.c.x + F.world.r)).distanceTo(c); }
+      else { m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); });
+        const bb = new THREE.Box3().setFromObject(m), w = Math.max(0.05, Math.min(bb.max.x - bb.min.x, bb.max.z - bb.min.z)), sc = g.getWorldScale(new THREE.Vector3()).x || 1;
+        r = w * 0.4 / sc; c = g.worldToLocal(new THREE.Vector3((bb.min.x + bb.max.x) / 2, bb.min.y + (bb.max.y - bb.min.y) * 0.62, (bb.min.z + bb.max.z) / 2));
+        water1.scale.setScalar(r); water1.position.copy(c); g.add(water1); }
+      ring1.position.copy(c); ring1.position.y += 0.002;
+      glint1.position.set(c.x - r * 0.25, c.y + 0.002, c.z + r * 0.2); glint1.scale.setScalar(r * 0.56);
+      PROPS1.bowlR = r; g.add(ring1); g.add(glint1); });
     /* (a thing stood by stand(): its model once it has landed) */
     function whenThing1(g, fn) { if (!g) return; if (g.userData.model) { fn(g, g.userData.model); return; } const iv = setInterval(() => { if (!alive) { clearInterval(iv); return; } if (g.userData.model) { clearInterval(iv); fn(g, g.userData.model); } }, 250); }
 
@@ -7622,6 +7965,10 @@
     /* ================================================================ THE FILMS */
     const FILMS1 = {};
     const HERDOOR1 = { x: FRONT.x0, z: HER.door.z };
+    /* (her head's height seated on her sofa, her group standing on the floor: seatDown lays her body on the cushion, so a
+       look or a lens at her face is 1.02 m up, never her group's height plus a guess; the first build looked at 0.65 to
+       0.72 m, her chest) */
+    const GRACE_HEAD_SEATED = 1.02;
     const GRACE_FACE_STAIRS = () => { const P = cast.grace; if (!P) return -Math.PI / 2; const g = P.group.position; return Math.atan2(-2.75 - g.x, -2.375 - g.z); };
     /* where a film leaves everyone: the phase's stations (c_cast.js worldPhase), the reflection as the play has it */
     function f1Stations(p) { if (typeof worldPhase === 'function') worldPhase(p, false); }
@@ -7634,20 +7981,34 @@
        climbing behind the two, the tube flickering twice, Marcus looking back down at the street door; the landing, her
        door, Grace with her phone, her eyes going past them down the stairs; inside, his teacher at the low table spreading
        his white cloth, he kneels by her windows, and in the black glass her reflection faces the stairs; black, the card */
+    /* THE FIVE-FOOT WAY (27 Nov, measured): his teacher a step ahead at his LEFT, a metre off, and Marcus a metre and a
+       half before him, so nobody stands in the line from his eyes to the one speaking and the lens is never within 0.9 m of
+       a head (the first staging stood his teacher 0.43 m from the lens, then walked the lens through his head at 23.6 s).
+       On a phone Marcus is the picture as he speaks; on a desk his teacher stands at its left edge */
     const OPEN1 = {
       marcus0: { x: 1.62, z: -2.85, ry: Math.PI / 2 + 0.55 },             // by the stair door, turned toward the road and the taxi's lights
-      meet:    { x: 2.15, z: -2.5 },                                      // where he comes to meet them
-      phoOut:  [[3.5, -1.12], [3.1, -1.42], [2.78, -1.72]],               // his teacher out of the taxi first, a step ahead on the five-foot way
-      eyeOut:  [[3.6, -1.05], [3.4, -1.2], [3.15, -1.45]],                // his own steps out (a metre a second), from beside the taxi's door
-      stairIn: [[2.15, -2.5], [1.55, -3.55], [1.12, -3.72]],              // Marcus to the stair door and in
-      phoIn:   [[2.78, -1.72], [2.05, -2.85], [1.5, -3.62], [1.12, -3.72]],
+      meet:    { x: 2.05, z: -2.5 },                                      // where he comes to meet them: under the five-foot way, before his teacher
+      phoAt:   { x: 2.05, z: -1.5 },                                      // his teacher's stand, facing Marcus a metre away
+      eyeAt:   [2.95, -1.15],                                            // his own, at the five-foot way's edge (the drain's grating behind him)
+      phoOut:  [[3.52, -1.06], [3.0, -1.22], [2.45, -1.38], [2.05, -1.5]],   // his teacher out of the taxi first, ahead of him onto the five-foot way
+      eyeOut:  [[3.62, -1.0], [3.38, -1.08], [2.95, -1.15]],                // his own steps out, from beside the taxi's door
+      stairIn: [[2.05, -2.5], [1.6, -3.4], [1.12, -3.72]],               // Marcus to the stair door and in
+      phoIn:   [[2.05, -1.5], [1.85, -2.45], [1.5, -3.45], [1.12, -3.72]],
       /* (the landing: his eye at the top of the stair; Marcus at the hinge end of her door, at the picture's left on a desk;
          his teacher on the lobby's far side, at its right; Grace in the doorway's middle) */
-      land:    { eye: [-3.66, EYE, -3.34], marcus: { x: -3.14, z: -2.8, ry: Math.PI / 2 }, pho: { x: -3.78, z: -2.12, ry: Math.PI / 2 + 0.35 }, grace: { x: -2.3, z: -2.36, ry: -Math.PI / 2 } },
-      inEye:   [[-1.55, 1.95], [-1.05, 2.32], [0.95, 2.36], [1.45, 2.0]],   // inside, along her room's north side (his teacher at the left), to his place
-      graceIn: { x: -2.22, z: -2.18, ry: Math.PI / 2 },                  // just inside her door, facing the room
-      graceSofa: [[-2.22, -2.18], [-0.75, -1.35], [-0.45, 0.32], [0.38, 0.42]],
-      marcusIn: [[-2.25, -2.1], [-1.75, -1.55], [-1.6, -1.05]]
+      /* (the landing, 27 Nov, photographed: Marcus stood 0.75 m before the lens with his back to it, filling a phone's picture
+         and hiding the door, his teacher stood in the potted plant, and her door's open leaf hid half her face. Now: Marcus
+         before the door, clear of her slippers, knocking with his right hand at the latch side; his teacher at the lobby's far
+         side by the wall, clear of the plant; she opens the door and stands on its threshold, before its leaf, then steps
+         back into her room to let them in; the lens at the stair's top looking through the lobby's opening. Nobody walks in
+         under this shot (the lobby is 1.2 by 1.25 m, her slippers in its middle): the cut inside finds them in) */
+      land:    { eye: [-3.62, EYE, -3.38], marcus: { x: -3.28, z: -2.3, ry: Math.PI / 2 }, pho: { x: -3.6, z: -1.95 }, grace: { x: -2.8, z: -2.3, ry: -Math.PI / 2 } },
+      /* inside, along her room's north side behind his teacher's back (half a metre clear of it: the first path passed a
+         tenth of a metre from it, the lens over his head), his teacher at the left, to his place by the windows */
+      inEye:   [[-1.55, 2.0], [-0.3, 2.55], [1.2, 2.42], [1.45, 1.9]],
+      graceIn: { x: -2.05, z: -2.3, ry: Math.PI / 2 - 0.3 },             // just inside her door, a step back and aside from it (clear of its leaf), facing the room
+      graceSofa: [[-2.05, -2.3], [-0.75, -1.3], [-0.5, 0.3], [0.38, 0.42]],
+      marcusIn: [[-2.3, -1.95], [-1.85, -1.5], [-1.6, -1.05]]
     };
     FILMS1.open = {
       begin(api, s) {
@@ -7667,7 +8028,7 @@
         taxiFrame1(t, T);
         /* HER PLACE AS IT STANDS: the street door shut until Marcus opens it; the tube on the stair, flickering twice; her door
            shut until she opens it; her shutters as the play keeps them; the cloth laid by his teacher inside */
-        WORLD.streetDoor(smo(c01((t - T.turn - 0.25) / 0.7)) * (1 - smo(c01((t - T.climb - 1.6) / 1.2))));
+        WORLD.streetDoor(smo(c01((t - T.turn - 0.25) / 0.7)) * (1 - smo(c01((t - T.stair - 3.5) / 1.2))));   // (shut behind him once he is two treads up)
         { const d = t - T.tube; WORLD.stairTube(d > 0 && d < 0.9 ? (d < 0.12 || (d > 0.3 && d < 0.42) ? 0.08 : 1) : 1); }
         WORLD.herDoor(t < T.lock + 0.15 ? 0 : t < T.inn ? 0.86 * smo(c01((t - T.lock - 0.15) / 1.3)) : 0);
         WORLD.cloth(t < T.inn ? 0 : smo(c01((t - T.cloth + 0.3) / 1.4)));
@@ -7738,14 +8099,18 @@
         const st = OPEN1.marcus0;
         if (t < T.mk1 - 1.4) { put(P, st.x, st.z, f1Turn(t, T.taxi - 0.2, T.taxi + 1.2, st.ry, faceTo(st.x, st.z, 4.4, 2.0)), GY); pose(P, MK_REST1[0], MK_REST1[1] + t * MK_REST1[2], true);
           f1Gaze(P, t, [[0, [3.6, GY + 1.5, -1.4]], [3.2, [2.0, GY + 0.95, -2.55], 0.8], [9.0, [4.0, GY + 1.4, 4.0], 0.9], [T.taxi - 0.1, () => [TAXI1.x - 0.6, GY + 1.0, taxiZ1(t, T)], 0.7]], 0.85, 0.75, 0.05);
-          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+          f1Carry(P, 'Right', PROPS1.mkPhone, { palm: { along: 0.02, off: 0.02 } });
         } else if (t < T.turn) {
-          const walked = f1Walk(P, t, T.mk1 - 1.4, [[st.x, st.z], [OPEN1.meet.x, OPEN1.meet.z]], 0.9, MK_REST1, faceTo(OPEN1.meet.x, OPEN1.meet.z, 2.95, -1.6), { y: GY, ry0: P.group.rotation.y });
-          if (!walked && t > T.mk1 - 0.3) { put(P, OPEN1.meet.x, OPEN1.meet.z, faceTo(OPEN1.meet.x, OPEN1.meet.z, 2.95, -1.6), GY);
+          /* (to meet them, under the five-foot way, turned to his teacher and a little toward him, so his face is seen) */
+          const mRy = faceTo(OPEN1.meet.x, OPEN1.meet.z, OPEN1.phoAt.x + 0.3, OPEN1.phoAt.z + 0.1);
+          const walked = f1Walk(P, t, T.mk1 - 1.4, [[st.x, st.z], [OPEN1.meet.x, OPEN1.meet.z]], 0.9, MK_REST1, mRy, { y: GY, ry0: P.group.rotation.y });
+          if (!walked && t > T.mk1 - 0.3) { put(P, OPEN1.meet.x, OPEN1.meet.z, mRy, GY);
             f1Speak(P, t, MK_REST1, [[T.mk1, SECS.mk51o1, 'Stand_and_Chat', 0.55]]); }
-          /* his look: to his teacher as he speaks, then up at her windows (M3), then to the stair door */
-          f1Gaze(P, t, [[T.mk1 - 1.4, [2.8, GY + 1.55, -1.7]], [T.look, [3.2, GY + 4.6, -1.3], 1.1], [T.turn - 0.4, [1.15, GY + 1.3, -3.7], 0.6]], 0.9, 0.9, 0.0);
-          f1Carry(P, 'Right', PROPS1.mkPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+          /* his look: to his teacher as he speaks, then a glance up toward her flat over the five-foot way's ceiling (M3: the
+             windows are over the covered way, so from under it a glance up is toward her rooms, never at the glass), then to
+             the stair door */
+          f1Gaze(P, t, [[T.mk1 - 1.4, () => f1Head(phoStand, [OPEN1.phoAt.x, GY + 1.6, OPEN1.phoAt.z], 1.6)], [T.look, [2.3, GY + 2.9, -2.15], 1.1], [T.turn - 0.4, [1.15, GY + 1.3, -3.7], 0.6]], 0.9, 0.9, 0.0);
+          f1Carry(P, 'Right', PROPS1.mkPhone, { palm: { along: 0.02, off: 0.02 } });
         } else {
           f1Walk(P, t, T.turn, OPEN1.stairIn, 1.0, MK_REST1, -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
           PROPS1.mkPhone.visible = false;
@@ -7755,28 +8120,40 @@
       if (t < T.land) {
         /* (the climb: two treads ahead of his teacher at the cut, a tread every half second; at the flicker he stops and looks
            back down at the street door, then climbs on) */
-        const s = climbAt(t, T.stair, 0.5, 4.5, T.tube, T.tube + 1.4);
-        climbPose(P, s);
+        /* (photographed 27 Nov: the street door straight behind him, his look was bowed down and could not pick a side. So
+           at the stop he turns on his tread toward the flight's middle, a third of a right angle, and his head goes on over
+           his left shoulder, down to the door: his face to the lens below) */
+        const s = climbAt(t, T.stair, 0.5, STAIR1.mk.s0, T.tube, T.tube + 1.4, CLIMB1.n + 1);
         const back = f1Env(t, T.tube + 0.1, T.tube + 1.5, 0.35, 0.4);
+        /* (at the top: the closing step onto the landing's tread, then his rest, his look going along the landing to her door) */
+        const tTop = T.stair + (CLIMB1.n + 1 - STAIR1.mk.s0) * 0.5 + 1.4, settle = smo(c01((t - tTop) / 0.7));
+        climbPose(P, s, { z: STAIR1.mk.z, ry: -Math.PI / 2 + 0.6 * back, settle, rest: [MK_REST1[0], MK_REST1[1] + 0.32 * Math.max(0, t - tTop)] });
         if (back > 0.001) lookNow(P, [1.15, GY + 1.2, -3.72], back * 0.95, 1.05, 0.0);
+        else if (settle > 0.001) lookNow(P, [-3.4, 1.5, -2.3], settle * 0.8, 0.9, 0.0);
         PROPS1.mkPhone.visible = false;
         return;
       }
       if (t < T.inn) {
         /* AT HER DOOR: the knock (his written take's rising window, where his hand is at the height of a door's knocking),
-           his line to the door, a step aside to let his teacher in first, then in after him */
+           his line to the door; at her door until the cut inside */
         const L = OPEN1.land.marcus;
-        if (t < T.ph2 + 0.6) {
+        {
           put(P, L.x, L.z, L.ry, 0);
           f1Speak(P, t, MK_REST1, [[T.mk2, SECS.mk51o2, 'Stand_and_Chat', 0.55]]);
           /* (his written knock goes above his head: people/RECORD.md 9. So the knock is his hand's own: raised to the door's
              leaf at 1.42 m, the knuckles meeting it at the sound's two knocks, 0.29 s apart) */
           const kk = f1Env(t, T.knock - 0.55, T.knock + 0.75, 0.4, 0.4);
           if (kk > 0.001) { const tap = (d) => Math.exp(-((d * d) / 0.0025)), back = 0.06 * (1 - Math.max(tap(t - T.knock), tap(t - T.knock - 0.29)));
-            handTo(P, 'R', [FRONT.x0 - 0.04 - back, 1.42, HER.door.hingeZ + 0.3], [0.15, 1, 0.05], [1, 0, 0], kk, { out: 0.22, down: 0.3 }); }
-          f1Gaze(P, t, [[T.land, [-2.75, 1.5, -2.3]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [-3.78, 1.5, -2.32], 0.7]], 0.8, 0.8, 0.0);
-        } else {
-          f1Walk(P, t, T.ph2 + 1.9, [[L.x, L.z], [-2.75, -2.32], [-2.1, -1.95]], 0.9, MK_REST1, null, { ry0: L.ry });
+            /* (photographed 27 Nov: an open hand stood up flat before his face, the fingers splayed like a claw, 0.27 m from
+               the door. A knock is a loose fist, its second knuckles to the door, the thumb up and the forearm reaching to it:
+               so he stands 0.4 m back from the leaf, the fist's front (0.055 m past the palm's middle) at the door) */
+            const f = [0.94, 0.34, 0], d = [FRONT.x0 - 0.125 - back, 1.42, -2.1];
+            handTo(P, 'R', [d[0] - 0.055 * f[0], d[1] - 0.055 * f[1], d[2]], f, [0, -0.35, -1], kk, { out: 0.25, down: 0.35, off: 0 });
+            /* (measured 27 Nov, jointscan's ranges: curled by +1.3 his right hand's fingers bent BACKWARD 58 to 69 degrees: the
+               knock's palm is laid facing his midline and his right hand's measured facing turns the curl the other way: so
+               it is turned by the negative, and measured again) */
+            curlFingers(P, 'R', -1.3 * kk); }
+          f1Gaze(P, t, [[T.land, [-2.8, 1.5, -2.1]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 0.7]], 0.8, 0.8, 0.0);
         }
         return;
       }
@@ -7792,7 +8169,9 @@
     function openPho1(t, T) {
       const P = phoStand;
       if (t >= T.inn) { f1Show(P, false); PROPS1.phoBag.visible = false; openPhoSeated1(t, T); return; }
-      f1Show(cast.pho, false);
+      /* (shown again on every frame before the cut inside, so a seek back from past it finds him: a pure function of the
+         film's clock, v6.4; the probe's pictures, taken after its rows had run the film to its end, had him gone) */
+      f1Show(P, true); f1Show(cast.pho, false);
       if (!P.ready) return;
       /* (out of the taxi first, and seen only from the cut to his eyes: nobody gets out under the crane, whose taxi has no
          door that opens) */
@@ -7800,30 +8179,43 @@
       P.group.visible = out && !P.hidden; if (!out) { PROPS1.phoBag.visible = false; return; }
       if (t < T.stair) {
         if (t < T.ph1 + SECS.ph51o1 + 0.2) {
-          f1Walk(P, t, T.out - 0.4, OPEN1.phoOut, 0.95, phoRest1(t), faceTo(2.78, -1.72, OPEN1.meet.x, OPEN1.meet.z), { y: GY });
+          /* (out of the taxi 1.6 s before the cut, so the cut finds him walking ahead of the lens, 1.1 m off and going; at his
+             stand he turns to Marcus) */
+          const pa = OPEN1.phoAt, pEnd = OPEN1.phoOut[OPEN1.phoOut.length - 1];
+          f1Walk(P, t, T.out - 1.6, OPEN1.phoOut, 0.95, phoRest1(t), faceTo(pa.x, pa.z, OPEN1.meet.x, OPEN1.meet.z), { y: (x) => streetY1(x) });
           const g = P.group.position;
-          if (Math.hypot(g.x - OPEN1.phoOut[2][0], g.z - OPEN1.phoOut[2][1]) < 0.02) f1Speak(P, t, phoRest1(t), [[T.ph1, SECS.ph51o1]]);
-          f1Gaze(P, t, [[T.stop, [2.4, GY + 1.6, -2.3]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [2.15, GY + 1.6, -2.5], 1.58), 0.8], [T.look + 0.4, [3.2, GY + 4.6, -1.3], 1.2], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
+          if (Math.hypot(g.x - pEnd[0], g.z - pEnd[1]) < 0.02) f1Speak(P, t, phoRest1(t), [[T.ph1, SECS.ph51o1]]);
+          f1Gaze(P, t, [[T.out - 1.6, [2.4, GY + 1.6, -1.9]], [T.mk1 - 0.6, () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.6, OPEN1.meet.z], 1.58), 0.8], [T.turn, [1.15, GY + 1.4, -3.72], 0.8]], 0.7, 0.6, 0.02);
         } else f1Walk(P, t, T.ph1 + SECS.ph51o1 + 0.2, OPEN1.phoIn, 0.9, phoRest1(t), -Math.PI / 2, { y: GY, ry0: P.group.rotation.y });
       } else if (t < T.land) {
-        climbPose(P, climbAt(t, T.stair, 0.5, 1.2, T.tube + 0.2, T.tube + 1.6));
+        /* (he stops 0.4 s after Marcus, on a whole tread: at 0.6 s a tread from four, the thirteenth, both feet down; a stop
+           between treads held one foot in the air) */
+        climbPose(P, climbAt(t, T.stair, STAIR1.pho.cad, STAIR1.pho.s0, T.tube + 0.4, T.tube + 1.8), { z: STAIR1.pho.z });
       } else {
-        const L = OPEN1.land.pho;
-        if (t < T.ph2 + SECS.ph51o2 + 0.3) { put(P, L.x, L.z, L.ry, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
-          f1Gaze(P, t, [[T.land, [-2.75, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02); }
-        else f1Walk(P, t, T.ph2 + SECS.ph51o2 + 0.3, [[L.x, L.z], [-2.95, -2.3], [-2.3, -1.8]], 0.85, phoRest1(t), null, { ry0: L.ry });
+        /* (at the lobby's far side, turned to her door, until the cut inside) */
+        const L = OPEN1.land.pho, lRy = faceTo(L.x, L.z, -2.8, -2.3);
+        put(P, L.x, L.z, lRy, 0); f1Speak(P, t, phoRest1(t), [[T.ph2, SECS.ph51o2]]);
+        f1Gaze(P, t, [[T.land, [-2.85, 1.55, -2.3]], [T.gr1 - 0.2, () => f1Head(cast.grace, [-2.8, 1.5, -2.3], 1.5), 0.6]], 0.75, 0.65, 0.02);
       }
-      /* the cloth bag on his left shoulder, hung at his right hip by its strap (it goes where his body goes) */
+      /* the cloth bag on his left shoulder (it goes where his body goes) */
       phoBagOn1(P);
     }
+    /* HIS CLOTH BAG ON HIS LEFT SHOULDER (the plan's 9.1 and 9.6: "his cloth bag on his shoulder"; 27 Nov, photographed: hung
+       at his right hip, its short strap rose to his elbow and the bag hung off his bare arm, through it). Its strap's top on
+       the top of his shoulder, over the robe, and the bag hanging below it outside his arm, its foot pushed out by the arm a
+       little (a tilt of 0.45 rad about his front-to-back line), so a swinging arm passes inside it. w51phobag stands 0.497 m
+       from its foot to the top of its strap, 0.32 wide, 0.18 deep */
+    const PHOBAG1 = { top: 0.497, up: 0.08, out: 0.03, tilt: -0.45 };
     function phoBagOn1(P) {
       const g = PROPS1.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
-      const sh = f1Bone(P, 'Spine2') || f1Bone(P, 'Spine1') || P.hips; if (!sh) return;
+      const sh = f1Bone(P, 'LeftArm') || f1Bone(P, 'LeftShoulder'); if (!sh) return;
       P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A);
-      const ry = P.group.rotation.y, rt = new THREE.Vector3(-Math.cos(ry), 0, Math.sin(ry)), fw = new THREE.Vector3(Math.sin(ry), 0, Math.cos(ry));
+      const ry = P.group.rotation.y, lf = new THREE.Vector3(Math.cos(ry), 0, -Math.sin(ry));
       if (g.parent !== world) world.attach(g);
-      g.position.copy(_f1A).addScaledVector(rt, 0.2).addScaledVector(fw, -0.02); g.position.y -= 0.52;
-      g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
+      g.rotation.set(PHOBAG1.tilt, ry + Math.PI / 2, 0, 'YXZ'); g.scale.setScalar(1); g.updateMatrix();
+      const topOff = new THREE.Vector3(0, PHOBAG1.top, 0).applyEuler(g.rotation);
+      g.position.copy(_f1A).addScaledVector(lf, PHOBAG1.out); g.position.y += PHOBAG1.up; g.position.sub(topOff);
+      g.visible = true;
     }
     /* his teacher seated, from the cut inside: at the low table spreading his white cloth over it as the lens comes in, then
        at rest, his hands in his lap (the play's seat) */
@@ -7844,12 +8236,13 @@
       const shown = t > T.lock + 0.2; f1Show(P, shown); if (!shown) { PROPS1.grPhone.visible = false; if (WORLD.reflect) WORLD.reflect.set('grace', { face: null }); return; }
       if (!P.ready) return;
       if (t < T.inn) {
-        const L = OPEN1.land.grace, back = smo(c01((t - T.ph2 - 0.4) / 1.4));
-        put(P, lp(L.x, L.x + 0.55, back), lp(L.z, L.z + 0.4, back), L.ry + 0.25 * back, 0);
+        /* (a step back and aside, clear of her door's leaf, to let them in: OPEN1.graceIn, where the cut inside finds her) */
+        const L = OPEN1.land.grace, G0 = OPEN1.graceIn, back = smo(c01((t - T.ph2 - 0.4) / 1.4));
+        put(P, lp(L.x, G0.x, back), lp(L.z, G0.z, back), L.ry - 0.35 * back, 0);
         f1Speak(P, t, GR_REST1, [[T.gr1, SECS.gr51o1, 'Idle_3']]);
         /* her look: to Marcus, to his teacher, and then past them, down the stairs */
-        f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, [-3.78, 1.55, -2.32], 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
-        f1Carry(P, 'Right', PROPS1.grPhone, { pos: [0.02, 0.09, 0.035], rot: [Math.PI / 2, 0, 0] });
+        f1Gaze(P, t, [[T.lock, () => f1Head(cast.marcus, [-3.22, 1.6, -2.32], 1.6)], [T.ph2 - 0.2, () => f1Head(phoStand, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 1.55), 0.6], [T.ph2 + SECS.ph51o2 - 0.4, [-3.4, -0.6, -3.72], 0.9]], 0.85, 0.8, 0.0);
+        f1Carry(P, 'Right', PROPS1.grPhone, { palm: { along: 0.02, off: 0.02 } });
         return;
       }
       PROPS1.grPhone.visible = false;
@@ -7857,9 +8250,11 @@
       if (t < T.sofa) { put(P, G.x, G.z, G.ry, 0); pose(P, GR_REST1[0], GR_REST1[1] + t * GR_REST1[2], true);
         if (WORLD.reflect) WORLD.reflect.set('grace', { face: GRACE_FACE_STAIRS(), turn: 0 }); return; }
       /* to the sofa: her walk, and at the sofa her turn and her sitting down (her rise played backward: people/RECORD.md) */
-      const pts = OPEN1.graceSofa, wsec = f1WalkSecs(pts, 0.85), arrive = T.sofa + wsec;
-      if (t < arrive + 0.6) f1Walk(P, t, T.sofa, pts, 0.85, GR_REST1, Math.PI, { ry0: G.ry, y: 0 });
-      else { const st = STATION.room.grace, u = c01((t - arrive - 0.6) / 2.4);
+      /* (her pace is her path's own length over the walk's seconds, OP51.sofaWalk, so the sounds and the black that follow
+         her land with her: z_tail.js) */
+      const pts = OPEN1.graceSofa, v = f1PathLen(pts) / Math.max(0.5, T.sofaWalk - 0.45);
+      if (t < T.sofaSit) f1Walk(P, t, T.sofa, pts, v, GR_REST1, Math.PI, { ry0: G.ry, y: 0 });
+      else { const st = STATION.room.grace, u = c01((t - T.sofaSit) / (T.seated - T.sofaSit));
         if (P.acts.rise) { put(P, lp(pts[3][0], st.x, smo(u)), lp(pts[3][1], st.z, smo(u)), st.ry, 0); pose(P, 'rise', lp(4.9, 0.05, smo(u)), false); }
         else put(P, st.x, st.z, st.ry, 0);
         if (u >= 1 && P.acts.gsofa) pose(P, 'gsofa', 0.25, false); }
@@ -7870,42 +8265,60 @@
     function openKeys1(T) {
       const W = [2.75, 1.6, -0.1];                                                    // her two lit windows' middle
       const MK = () => f1Head(cast.marcus, [OPEN1.marcus0.x, GY + 1.0, OPEN1.marcus0.z], 1.0);
-      const glass = [FILMPLACE.glass.x, FILMPLACE.glass.y, FILMPLACE.glass.z + 0.06];
+      /* (the reflected people stand 0.86 to 1.21 m up the glass from his kneeling eye: aimed at their middle, 27 Nov, where
+         the first aim at 1.45 m left them at the picture's foot under a black reflected ceiling) */
+      const glass = [FILMPLACE.glass.x, 1.08, FILMPLACE.glass.z + 0.06];
       const kneelEye = [HER.him.x, KNEEL_EYE, HER.him.z];
-      const eyeClimb = (t) => { const s = climbAt(t, T.stair, 0.5, -2.0, T.tube + 0.4, T.tube + 1.8), sc = Math.max(0, s);
-        return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), CLIMB1.z + 0.1]; };
+      const eyeClimb = (t) => { const s = climbAt(t, T.stair + STAIR1.eye.wait, STAIR1.eye.cad, STAIR1.eye.s0, T.tube + 0.3, T.tube + 1.7), sc = Math.max(0, s);
+        return [s <= 0 ? lp(1.75, CLIMB1.x1 + 0.1, smo(c01((s + 2.0) / 2.0))) : treadX(sc - 0.2), treadY(Math.max(0, sc - 0.35)) + EYE + 0.02 * Math.abs(Math.sin(sc * Math.PI)), STAIR1.eye.z]; };
       return [
         /* THE CRANE (2 to 15.5 s): from 7 m up and over the road, the row's roofline against the deep blue and her lit windows
-           in the lower half, down to Marcus by the stair door at standing height on the five-foot way, the taxi drawing in at
-           the kerb at the right */
-        { t: 0, name: 'crane', eye: [9.6, GY + 7.0, -6.2], at: [2.9, GY + 7.95, -0.4], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
-        { t: T.up, name: 'crane', eye: [9.6, GY + 7.0, -6.2], at: [2.9, GY + 7.95, -0.4], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 2.5 },
-        { t: T.out - 0.05, name: 'crane', eye: [2.85, GY + 1.6, -6.35], at: () => MK(), fp: 62, fd: 50,
-          hold: () => [[MK()[0], GY + 1.75, MK()[2], 0.2], [MK()[0], GY + 0.5, MK()[2], 0.2], [3.7, GY + 0.9, -1.15, 0.35]], back: 1.6 },
+           in the lower half, down and in under the five-foot way's ceiling to Marcus by the stair door, seen from up the
+           five-foot way (north of him), so that as the taxi's lights come down the street he turns his face to them and to us;
+           the taxi passes behind the lens's right and draws in (a desk sees its front at the right edge; a phone, a third of
+           the width, holds Marcus whole). (27 Nov, photographed: the first end stood south of him in the next unit's arcade,
+           behind its pillar, seeing his back, and the pull hunted there and back on the way down) */
+        /* (photographed 27 Nov: aimed 0.3 m off the windows' middle and allowed 2.5 m back, a phone cut the nearer window at
+           its edge; now square to their middle, allowed 3.5 m) */
+        { t: 0, name: 'crane', eye: [9.6, GY + 7.0, 0.6], at: [2.9, GY + 7.95, 0.0], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 3.5 },
+        { t: T.up, name: 'crane', eye: [9.6, GY + 7.0, 0.6], at: [2.9, GY + 7.95, 0.0], fp: 62, fd: 50, hold: [[W[0], W[1], -1.4, 0.8], [W[0], W[1], 1.4, 0.8]], back: 3.5 },
+        { t: T.out - 0.05, name: 'crane', eye: [2.25, GY + 1.55, -0.1], at: () => { const m = MK(); return [m[0], GY + 1.2, m[2]]; }, fp: 62, fd: 50,
+          hold: () => [[MK()[0], GY + 1.8, MK()[2], 0.18], [MK()[0], GY + 0.45, MK()[2], 0.18]], back: 1.0 },
         /* HIS EYES, for the first time: out of the taxi onto the five-foot way, his teacher ahead in white; Marcus coming to
            meet them, his face held in the middle third as he speaks; up at her windows with him; to the stair door */
-        { t: T.out, name: 'out', eye: [OPEN1.eyeOut[0][0], GY - 0.15 + 1.2, OPEN1.eyeOut[0][1]], at: [2.4, GY + 1.45, -2.15], fp: 60, fd: 52, cut: true },
-        { t: T.out + 0.8, name: 'out', eye: [OPEN1.eyeOut[1][0], GY + EYE - 0.02, OPEN1.eyeOut[1][1]], at: [2.3, GY + 1.5, -2.35], fp: 60, fd: 52 },
-        { t: T.mk1 - 0.3, name: 'meet', eye: [OPEN1.eyeOut[2][0], GY + EYE, OPEN1.eyeOut[2][1]], at: () => f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5), fp: 60, fd: 52 },
-        { t: T.ph1 - 0.2, name: 'meet', eye: [OPEN1.eyeOut[2][0], GY + EYE, OPEN1.eyeOut[2][1]], at: () => f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5), fp: 60, fd: 52 },
-        { t: T.look + 0.3, name: 'up', eye: [OPEN1.eyeOut[2][0] - 0.05, GY + EYE, OPEN1.eyeOut[2][1] - 0.05], at: () => { const h = f1Head(cast.marcus, [2.15, GY + 1.5, -2.5], 1.5); return [h[0], h[1] + 0.35, h[2]]; }, fp: 60, fd: 52 },
-        { t: T.turn + 0.3, name: 'door', eye: [OPEN1.eyeOut[2][0] - 0.3, GY + EYE, OPEN1.eyeOut[2][1] - 0.45], at: [1.15, GY + 1.45, -3.72], fp: 60, fd: 52 },
-        { t: T.stair - 0.05, name: 'door', eye: [2.6, GY + EYE, -2.4], at: [1.15, GY + 1.4, -3.72], fp: 60, fd: 52 },
+        /* (his eye rising from the taxi's seat on the road, onto the drain's grating, onto the five-foot way's edge: the
+           heights are the ground's own, GY - 0.15 the road and GY - 0.03 the grating; it looks after his teacher walking
+           ahead, then at Marcus; the lens stays 0.9 m and more from every head) */
+        { t: T.out, name: 'out', eye: [OPEN1.eyeOut[0][0], GY - 0.15 + 1.2, OPEN1.eyeOut[0][1]], at: [2.5, GY + 1.5, -1.38], fp: 60, fd: 52, cut: true },
+        { t: T.out + 0.75, name: 'out', eye: [OPEN1.eyeOut[1][0], GY - 0.03 + EYE - 0.02, OPEN1.eyeOut[1][1]], at: [2.2, GY + 1.52, -1.62], fp: 60, fd: 52 },
+        { t: T.mk1 - 0.1, name: 'meet', eye: [OPEN1.eyeAt[0], GY + EYE, OPEN1.eyeAt[1]], at: () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.5, OPEN1.meet.z], 1.5), fp: 60, fd: 52 },
+        { t: T.ph1 - 0.2, name: 'meet', eye: [OPEN1.eyeAt[0], GY + EYE, OPEN1.eyeAt[1]], at: () => f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.5, OPEN1.meet.z], 1.5), fp: 60, fd: 52 },
+        { t: T.look + 0.3, name: 'up', eye: [OPEN1.eyeAt[0] - 0.02, GY + EYE, OPEN1.eyeAt[1] - 0.03], at: () => { const h = f1Head(cast.marcus, [OPEN1.meet.x, GY + 1.5, OPEN1.meet.z], 1.5); return [h[0], h[1] + 0.3, h[2]]; }, fp: 60, fd: 52 },
+        { t: T.turn + 0.2, name: 'door', eye: [OPEN1.eyeAt[0] - 0.05, GY + EYE, OPEN1.eyeAt[1] - 0.08], at: [1.15, GY + 1.45, -3.72], fp: 60, fd: 52 },
+        { t: T.stair - 0.05, name: 'door', eye: [2.72, GY + EYE, -1.6], at: [1.15, GY + 1.4, -3.72], fp: 60, fd: 52 },
         /* THE STAIR: climbing behind his teacher and Marcus, looking up the flight */
-        { t: T.stair, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.35 - 0.25 * c01((F1.t - T.stair) / 9.5), CLIMB1.z]; }, fp: 64, fd: 56, cut: true },
-        { t: T.land - 0.05, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.1, CLIMB1.z]; }, fp: 64, fd: 56, ease: 'lin' },
+        { t: T.stair, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.75 - 0.3 * c01((F1.t - T.stair) / 9.5), STAIR1.eye.z]; }, fp: 64, fd: 56, cut: true },
+        { t: T.land - 0.05, name: 'stair', eye: () => eyeClimb(F1.t), at: () => { const e = eyeClimb(F1.t); return [e[0] - 3.0, e[1] + 1.45, STAIR1.eye.z]; }, fp: 64, fd: 56, ease: 'lin' },
         /* THE LANDING: at the top of the stair, level with her; her door, Marcus's knock; Grace, her head, both hands and the
            door's edge held */
-        { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.75, 1.5, -2.38], fp: 52, fd: 44, cut: true },
-        { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.32), fp: 52, fd: 44,
-          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
-        { t: T.ph2 + SECS.ph51o2 + 0.2, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [-2.28, 1.4, -2.3], 1.3), fp: 52, fd: 44,
-          hold: () => { const g = f1Head(cast.grace, [-2.28, 1.4, -2.3], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
+        { t: T.land, name: 'land', eye: OPEN1.land.eye, at: [-2.95, 1.38, -2.12], fp: 52, fd: 44, cut: true },
+        /* (her stand-in place before she is drawn is where she stands, on her floor: 27 Nov, measured, the old stand-in 0.5 m
+           off and 1.4 m up swung the look 13 degrees in a tenth of a second as she came into the light) */
+        { t: T.gr1 - 0.3, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.32, OPEN1.land.grace.z], 1.32), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3], [FRONT.x0, 1.2, HER.door.z + 0.45, 0.05]]; }, back: 0.25, fmax: 64 },
+        /* (photographed 27 Nov: held on her as she stepped back into her room, the lens found the door's jamb and her
+           shoulder. On his word the look goes to his teacher, who says it, across the lobby; she steps back unseen) */
+        { t: T.ph2 - 0.45, name: 'grace', eye: [OPEN1.land.eye[0] + 0.05, EYE, OPEN1.land.eye[2] + 0.04], at: () => f1Head(cast.grace, [OPEN1.land.grace.x, 1.3, OPEN1.land.grace.z], 1.3), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(cast.grace, [OPEN1.land.grace.x, 0, OPEN1.land.grace.z], 0); return [[g[0], g[1] + 1.58, g[2], 0.14], [g[0], g[1] + 0.85, g[2], 0.3]]; }, back: 0.25, fmax: 64 },
+        { t: T.ph2 + 0.6, name: 'pho', eye: [OPEN1.land.eye[0] + 0.03, EYE, OPEN1.land.eye[2] + 0.02], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
+        { t: T.inn - 0.05, name: 'pho', eye: [OPEN1.land.eye[0] + 0.02, EYE, OPEN1.land.eye[2]], at: () => f1Head(phoStand, [OPEN1.land.pho.x, 1.5, OPEN1.land.pho.z], 1.5), fp: 52, fd: 44,
+          hold: () => { const g = f1Head(phoStand, [OPEN1.land.pho.x, 0, OPEN1.land.pho.z], 0); return [[g[0], g[1] + 1.72, g[2], 0.14], [g[0], g[1] + 1.05, g[2], 0.28]]; }, back: 0.25, fmax: 64 },
         /* INSIDE (cut in the black of the doorway): along her room's north side, his teacher at the left spreading his cloth;
            he kneels at his place; his look goes to the black glass by the shutter's edge; the lens narrows on it */
         { t: T.inn, name: 'in', eye: [OPEN1.inEye[0][0], EYE, OPEN1.inEye[0][1]], at: [2.7, 1.25, 2.1], fp: 66, fd: 58, cut: true, flow: true },
-        { t: T.inn + 1.6, name: 'in', eye: [OPEN1.inEye[1][0] + 0.5, EYE, OPEN1.inEye[1][1] + 0.02], at: [2.7, 1.15, 1.65], fp: 66, fd: 58, flow: true },
-        { t: T.kneel - 0.35, name: 'in', eye: [OPEN1.inEye[2][0] + 0.25, EYE - 0.02, OPEN1.inEye[2][1] - 0.15], at: [2.4, 1.05, 0.6], fp: 66, fd: 58, flow: true },
+        { t: T.inn + 1.6, name: 'in', eye: [OPEN1.inEye[1][0], EYE, OPEN1.inEye[1][1]], at: [2.7, 1.15, 1.7], fp: 66, fd: 58, flow: true },
+        { t: T.kneel - 0.35, name: 'in', eye: [OPEN1.inEye[2][0], EYE - 0.02, OPEN1.inEye[2][1]], at: [2.4, 1.05, 0.6], fp: 66, fd: 58, flow: true },
         { t: T.kneel + 1.2, name: 'kneel', eye: kneelEye, at: [0.9, 0.95, -0.4], fp: 66, fd: 58, flow: true, stop: true },
         { t: T.turnG, name: 'kneel', eye: kneelEye, at: [0.9, 0.95, -0.4], fp: 66, fd: 58 },
         { t: T.narrow, name: 'glass', eye: kneelEye, at: glass, fp: 66, fd: 58 },
@@ -7937,60 +8350,124 @@
         f1Levels();
       },
       end() { f1Lens(PLAYFOV1); F1.beds = null; F1.film = ''; knotGlow1.m.opacity = 0; knotGlow1.q.visible = false;
-        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); F1.api = null; }
+        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; waxMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); f1LeanBack(cast.marcus); F1.api = null; }
     };
     function keepPho1(t, T) {
       const P = cast.pho; if (!P || !P.ready) return;
       f1LeanBack(P);
-      const st = STATION.room.pho; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
+      /* (TURNED TO HIM from 22 s, as he asks him to hold the water: photographed 27 Nov, his head alone could not turn the
+         right angle to where his student kneels at his right, and he spoke his line in profile. His shoulders turn to him a
+         third of the way (f1Lean's twist) and his look goes the rest; he stays turned to him, over the bowl in his hands, to
+         the film's end, which looks down into the bowl: the play's rest takes the turn back unseen) */
+      const st = STATION.room.pho, turnK = f1Env(t, T.turn - 0.4, T.end + 9, 1.3, 0.5);
+      put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0.12);
       f1Speak(P, t, ['Sit_to_Stand_Transition_M', 0.02, 0, false], [[T.k1, SECS.ph51k1, 'Sitting_Answering_Questions', 0.6], [T.k2, SECS.ph51k2, 'Sitting_Answering_Questions', 0.6]]);
       /* HIS LEFT HAND held out open across the cloth toward her, palm up (0 to 13 s), leaning into the reach as she reaches
          to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
          in it at 12.5 s and set on the small white plate at his left (14 to 18 s); his right hand tilts the lit candle over
          the bowl for the wax (32 to 38 s) */
-      const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.32 * f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
-      f1Lean(P, lean);
-      if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
-        const tx = lp(lp(0.42, 0.44, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, 0.86, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, 0.6, r), CLOTH_Y + 0.07, u);
-        handTo(P, 'L', [tx, ty, tz], [0.0, -0.1, -1], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
+      /* (the set-down, KEEPSET1: his hand brought low beside the plate on his side of it, clear of the lit candle, his fingers
+         to its middle (13.7 to 14.9 s); the fingers dipped and the packet slid off them onto the plate (14.95 to 15.35); his
+         hand back to his knee after (15.4 to 16.2). 27 Nov: the hand went back from 14.3 s and was at his knee by 15.0 with
+         the packet still on it, which then jumped to the plate at 15.2) */
+      const out = f1Env(t, T.hand, T.place + KEEPSET1.back + 0.8, 1.2, 0.8), lean = 0.18 * out + 0.57 * f1Env(t, T.pull + 1.2, T.give + 0.9, 1.4, 0.9) + 0.36 * f1Env(t, T.place - 0.5, T.place + KEEPSET1.back + 0.8, 0.7, 0.8);
+      f1Lean(P, lean, -0.55 * turnK);
+      if (out > 0.001) { const u = smo(c01((t - T.place - KEEPSET1.go) / KEEPSET1.come)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9), sl = keepSlide1(t, T), B = keepBeside1();
+        const tx = lp(lp(0.42, KEEPG1.meet[0] - 0.01, r), B[0], u), tz = lp(lp(1.22, KEEPG1.meet[2] + 0.04, r), B[2], u), ty = lp(lp(0.66, KEEPG1.meet[1] - 0.02, r), B[1], u);
+        const D = KEEPSET1.dir, fx = lp(0.0, -D[0], u), fz = lp(-1, -D[1], u), fy = lp(-0.1, -KEEPSET1.dip0 - (KEEPSET1.dip1 - KEEPSET1.dip0) * sl, u);
+        handTo(P, 'L', [tx, ty, tz], [fx, fy, fz], [0, 1, 0], out, { out: 0.22, down: 0.3 }); }
       const wax = f1Env(t, T.wax - 1.2, T.chant + 4.5, 0.9, 1.0);
       if (wax > 0.001) handTo(P, 'R', [ON_CLOTH.bowl.x - 0.06, CLOTH_Y + 0.5, ON_CLOTH.bowl.z + 0.12], [0.3, 0.6, -0.4], [0.4, -0.2, 0.5], wax, { out: 0.25, down: 0.25 });
-      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.65)], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.place - 0.4, [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], 0.6], [T.turn, 'lens', 0.8], [T.wax - 1.0, [ON_CLOTH.bowl.x + 0.3, 0.72, ON_CLOTH.bowl.z + 0.35], 0.8]], 0.85, 0.75, 0.03);
     }
+    /* SHE STANDS TO GIVE IT (photographed 27 Nov: seated on her sofa and he on his cushion, they sit 2.2 m apart across the
+       table, and two seated arms with all the lean a body has reach 1.6 m: her hand and his palm never met, 0.4 m and more
+       apart, and the packet passed from one to the other through the air). So as the packet comes out of her bag she gets
+       up from the sofa, by her rise (the opening sits her down by the same take played back), comes up 0.72 m forward
+       between the sofa and the table, and bends over the table holding it out to him; he leans to it from his cushion
+       and her hand and his palm meet over the cloth's near half (0.8 m up); she lets it go into his palm at 12.5, straightens
+       and sits down again under the insert that follows (14 s on). Marcus's hand leaves her shoulder as she rises */
+    /* (photographed 27 Nov, the second build: stood up 0.72 m forward her hand met the place, and his palm, 0.83 m out from
+       his cushion, stopped 0.25 m short of it. So she rises a little forward, takes one step to the table's edge and bends
+       to him; they meet 0.75 m out from his cushion; she steps back and sits) */
+    /* (measured, the second build: his palm reached 0.56 m out from his cushion leaning half a radian, hers 0.5 m from where
+       she stood: so both bend further to it, he 0.75 rad, she 0.8, and they meet 0.72 m out from his cushion) */
+    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.78, 1.15], head: 1.5 };
+    /* THE SET-DOWN ON THE PLATE (seconds from T.place; the plate is ON_CLOTH.plate, PLAY's): his left palm comes beside the
+       plate on his side of it, `off` m out from its middle along `dir` (a unit line from the plate toward his cushion that
+       leaves the lit candle at the plate's far side 0.15 m off), `y` over the cloth (his hand's back clear of it), arriving
+       at `go` + `come`; the fingers point back along `dir` to the plate's middle, `dip0` down, dipped to `dip1` as the
+       packet slides off them (the `slideFor` s before KS51.onPlate, when it lies on the plate and its sound is heard:
+       z_tail.js); the hand away from `back` */
+    const KEEPSET1 = { off: 0.12, dir: [0.707, 0.707], y: 0.07, go: -0.3, come: 1.2, dip0: 0.35, dip1: 0.5, slideFor: 0.4, back: 1.4 };
+    const keepBeside1 = () => [ON_CLOTH.plate.x + KEEPSET1.off * KEEPSET1.dir[0], CLOTH_Y + KEEPSET1.y, ON_CLOTH.plate.z + KEEPSET1.off * KEEPSET1.dir[1]];
+    const keepSlide1 = (t, T) => smo(c01((t - T.onPlate + KEEPSET1.slideFor) / KEEPSET1.slideFor));
+    const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 1.0) / 2.4)));
+    const keepGraceStep1 = (t, T) => smo(c01((t - T.pull - 2.3) / 0.6)) * (1 - smo(c01((t - T.give - 0.4) / 0.6)));
+    const keepGraceH1 = (t, T) => lp(GRACE_HEAD_SEATED, KEEPG1.head, keepGraceUp1(t, T));
     function keepGrace1(t, T) {
       const P = cast.grace; if (!P || !P.ready) return;
       f1LeanBack(P);
-      const st = STATION.room.grace; put(P, st.x, st.z, st.ry, (P.home && P.home.y) || 0);
-      const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : P.acts.Sitting_Answering_Questions ? 'Sitting_Answering_Questions' : 'Idle_3';
-      pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false);
-      /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out and held across to his
-         teacher's palm, her fingers closed on it, leaning to him (9 to 12.5 s); let go; her hands back to her lap */
-      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull, T.give + 0.9, 0.9, 0.8);
-      f1Lean(P, 0.45 * hold);
+      const st = STATION.room.grace, up = keepGraceUp1(t, T), step = keepGraceStep1(t, T), R = KEEPG1.rise, S2 = KEEPG1.stand;
+      put(P, lp(lp(st.x, R.x, up), S2.x, step), lp(lp(st.z, R.z, up), S2.z, step), st.ry, (P.home && P.home.y) || 0);
+      /* (seated in her rest as the play seats her, inside its clean window, and stood up by her rise blended in as she gets
+         up: photographed 27 Nov, the rise's own first moment has her slumped back with both hands out on the seat) */
+      /* (her one step forward and back: her walk laid over her standing by the step's own share, its weight greatest at
+         the middle of the step, one step of the walk's cycle along it) */
+      const W = P.acts.Walking, stepping = step > 0.001 && step < 0.999 && up > 0.98;
+      if (stepping && W && P.acts.rise) pose(P, 'rise', 4.9, false, 'Walking', 0.9 * Math.sin(Math.PI * step), step * W.getClip().duration / 2);
+      else if (P.acts.gsofa && P.acts.rise) { if (up > 0.001) pose(P, 'gsofa', 0.3, false, 'rise', up, lp(0.05, 4.9, up)); else pose(P, 'gsofa', 0.3, false); }
+      else if (P.acts.rise) pose(P, 'rise', lp(0.05, 4.9, up), false);
+      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
+      /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out, and held out over the
+         table to his teacher's palm as she stands, her fingers closed on it, bent to him (9.5 to 12.5 s); let go; her hand back */
+      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull + 2.4, T.give + 0.5, 0.6, 0.4);
+      f1Lean(P, 0.8 * hold * up);
       if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
-      if (hold > 0.001) handTo(P, 'L', [0.46, 0.6, 0.78], [0.05, -0.1, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 });
-      f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [0.46, 0.6, 0.9], 0.6], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
+      if (hold > 0.001) { const M = KEEPG1.meet; handTo(P, 'L', [M[0] + 0.01, M[1] + 0.02, M[2] - 0.03], [0.05, -0.15, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
+      f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.05], 0.8], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
     }
     function keepMarcus1(t, T) {
       const P = cast.marcus; if (!P || !P.ready) return;
       /* (he came to stand behind her as his teacher held out his hand: the film's first frame is a cut, and he stands there
          from it, behind the sofa at her right shoulder; his left hand on her shoulder from 7 to 13 s) */
-      const M = KEEP1.mkStand; put(P, M.x, M.z, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
-      const on = f1Env(t, T.bag + 0.4, T.give + 1.4, 0.8, 0.8);
-      if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightShoulder') || f1Bone(g, 'RightArm')) : null;
-        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); handTo(P, 'L', [_f1A.x - 0.03, _f1A.y + 0.07, _f1A.z - 0.02], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
-      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.72)], [T.give + 0.2, [0.46, 0.6, 0.86], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
+      f1LeanBack(P);
+      /* (measured 27 Nov: from the play's station, 0.24 m behind the sofa's back, his hand stopped 0.3 m short of her
+         shoulder: in this film he stands against the back, 0.17 m nearer; the breaking's own station takes him back unseen,
+         the film ending on the bowl) */
+      /* (27 Nov, PLAY's clipscan of the breaking: 0.17 m nearer, at z -0.85, he stood 5 cm into the sofa's back; z -0.93, the
+         breaking's own station since 1187810, clears it, and he leans further over to her shoulder) */
+      const M = KEEP1.mkStand; put(P, M.x + 0.02, -0.93, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
+      const on = f1Env(t, T.bag + 0.4, T.pull + 0.5, 0.8, 0.6);   // (his hand leaves her shoulder as she gets up)
+      /* (her shoulder is 0.7 m from his across the sofa's back: he leans over it to lay his hand there, as a person does;
+         photographed 27 Nov, leaning 0.28 rad his left hand stopped short of her shoulder, over her bowed head) */
+      f1Lean(P, 0.62 * on);
+      /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
+         now on the top of her shoulder, over its joint, a little in from it) */
+      if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
+        /* (measured, the third build: his palm reached the place, but by her neck her bowed head and hair hid it from the
+           lens across the table: so it lies on the outer top of her shoulder, over its joint, a little out from it) */
+        if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); const gq = g.group.quaternion, out = new THREE.Vector3(-0.03, 0, 0).applyQuaternion(gq);
+          handTo(P, 'L', [_f1A.x + out.x, _f1A.y + 0.06, _f1A.z + out.z - 0.04], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
+      f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(t, T))], [T.give + 0.2, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2]], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
     /* THE PACKET: in her bag; in her left hand from 9.5 s; laid in his palm at 12.5 s; in his hand to the plate; on the plate,
        its red knot glowing dully while it is the insert's subject */
     function keepPacket1(t, T) {
       const g = things.keepsake; if (!g) return;
       if (t < T.pull + 0.3) { f1Drop(g, HER.bag.x + 0.02, HER.bag.y + 0.07, HER.bag.z, 0.4); }
-      else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.015, pm.z, 0.4); } }
-      else if (t < T.place + 1.2) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A); if (pm) f1Drop(g, pm.x, pm.y + 0.02, pm.z, 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
+      else if (t < T.give) { const P = cast.grace; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Left', _f1A);
+        /* (under her palm, between her fingers: she holds it out palm down. Photographed 27 Nov: laid 1.5 cm over the palm's
+           middle, it sat on the back of her hand) */
+        if (pm) f1Drop(g, pm.x, pm.y - 0.03, pm.z, 0.4); } }
+      else if (t < T.onPlate) { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Left', _f1A, 0.025);
+        /* (on his palm; then slid off his fingers onto the plate: from where his palm is to its place on the plate, eased) */
+        const s = keepSlide1(t, T);
+        if (pm) f1Drop(g, lp(pm.x, ON_CLOTH.plate.x, s), lp(pm.y, CLOTH_Y + 0.018, s), lp(pm.z, ON_CLOTH.plate.z, s), 0.2 + 0.4 * c01((t - T.give) / 1.0)); } }
       else f1Drop(g, ON_CLOTH.plate.x, CLOTH_Y + 0.018, ON_CLOTH.plate.z, 0.6);
-      const k = f1Env(t, T.place + 0.6, T.turn - 0.4, 0.8, 0.8);
-      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k; knotGlow1.q.visible = k > 0.001;
+      const k = f1Env(t, T.onPlate + 0.15, T.turn - 0.4, 0.8, 0.8);
+      /* (its dull red breathing slowly, at M3's pulse, 52 a minute: the pull, held still on the plate) */
+      knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.35 * k * (0.72 + 0.28 * Math.sin(Math.PI * 2 * t * 52 / 60)); knotGlow1.q.visible = k > 0.001;
     }
     /* the bowl in his hands (from the lift): the engine's own `bowl` pose (episode 4 chapter 4's holy water), the left palm
        under it, the right hand's fingertips at its rim; the bowl drawn in the hands' pass (kit.hold, his left hand), the
@@ -7999,30 +8476,91 @@
        first are one; these numbers are the play's own of 27 Nov, used only if the stage does not hand them) */
     const HOLD1 = { bowl: { prop: 'handBowl', pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62, play: 'BOWLHELD' }, bottle: { prop: 'handBottle', pos: [0.0, 0.03, 0.0], rot: [0, 0, 0], s: 1 } };
     const holdOf1 = (which) => { const H = HOLD1[which], P = H.play && S && S.plan && S.plan[H.play]; return P ? { prop: H.prop, pos: P.pos || H.pos, rot: P.rot || H.rot, s: P.s != null ? P.s : H.s } : H; };
+    /* HOW HIGH HIS HANDS HOLD THE BOWL INTO THE PICTURE, by the shot (the hands' pass is the lens's: the bowl stands where
+       the pose puts it in every shot). 1, the pose whole: the bowl in the picture's lower half, its water seen from above, as
+       he looks down into it; BOWLDROP1, the pose whole lowered (the bowl at the picture's foot) where he looks
+       at something across it: photographed 27 Nov, held at 1 it covered the packet on the plate as the cord was untied and
+       his teacher's mouth as he watched it lifted. MEASURED the same evening (my scratch f1bowlk.mjs: the bowl's every point
+       in a phone's picture by the share): its top edge stands at -0.61 of the picture's half-height at 0.1, -0.43 at 0.25,
+       -0.07 at 0.55 (its brass side then filled the picture's lower half, photographed: a flat brown wall to the middle,
+       the people's knees and the cloth's near half under it), +0.47 at 1; 30 cm across, it is wider than a phone's
+       picture at any share. 0.25 put it there, but drew his hands only a quarter of the way to it: his right hand hung open
+       over it, photographed. So the pose is held whole (both hands on the bowl, the right's fingertips at its rim) and the
+       hands' root is lowered BOWLDROP1 m in the lens's frame (its top edge from +0.47 to about -0.43), the hands and the
+       bowl one thing; raised to 0 as he looks down into it */
+    const BOWLDROP1 = 0.24;
     function keepBowl1(t, T, api) {
       const lifted = t >= T.lift;
       const wb = things.holyBowl; if (wb) wb.visible = !lifted;
-      f1HandsHold(api, "bowl", lifted ? smo(c01((t - T.lift) / 1.2)) : 0);
+      /* (lifted into the picture's foot as he watches his teacher, raised as his look goes down into it, 26.4 to 33.4 s) */
+      const up = smo(c01((t - T.lift - 0.4) / (T.wax - 2.0 - T.lift)));
+      f1HandsHold(api, "bowl", lifted ? smo(c01((t - T.lift) / 1.2)) : 0, BOWLDROP1 * (1 - up));
       f1Water(t, T.wax, lifted ? 1 : 0);
     }
     /* WHAT HIS HANDS HOLD in a film (his left hand under it, drawn in the hands' pass: kit.hold; the engine's own pose for
        it at k: `bowl`, episode 4 chapter 4's holy water, the left palm under it; `bottle`, episode 3 chapter 5's, both hands
        round it). k 0 lets go and hides his hands */
-    function f1HandsHold(api, which, k) {
+    /* THE BOWL IN HIS HANDS, SET IN THE LENS'S OWN FRAME (27 Nov, MEASURED: at the play's BOWLHELD, laid in the left hand's
+       frame, the bowl was drawn, two calls and 33,000 triangles, but below the picture's foot: in the hands' camera its box
+       stood at a phone's x -1.69..0.36 and y -1.45..-0.67, so it was never seen, in the films or in the breaking. The
+       hands' camera stands at its scene's origin looking -z, and kit.handPalm answers where a palm is in that frame). Its
+       foot laid on his left palm (the engine's `bowl` pose holds the palm up, low in the middle of the picture), turned
+       toward the lens by `tilt` about the lens's own across-line, so the water is seen from above as one sees it looking
+       down into a bowl held before one: the hands' pass is the lens's, and a bowl upright in it is seen from its side */
+    const BOWLCAM1 = { tilt: 0.75, lift: 0.01 };
+    const _bwq = new THREE.Quaternion(), _bwq2 = new THREE.Quaternion(), _bwX = new THREE.Vector3(1, 0, 0), _bwU = new THREE.Vector3(), _bwM = new THREE.Matrix4();
+    function bowlInHands1(g) {
+      if (!g || !g.parent || !kit || !kit.handPalm) return false;
+      const pm = kit.handPalm('left', new THREE.Vector3()); if (!pm) return false;
+      _bwq.setFromAxisAngle(_bwX, BOWLCAM1.tilt); _bwU.set(0, 1, 0).applyQuaternion(_bwq);
+      pm.addScaledVector(_bwU, BOWLCAM1.lift);
+      g.parent.updateWorldMatrix(true, false);
+      g.position.copy(pm.applyMatrix4(_bwM.copy(g.parent.matrixWorld).invert()));
+      g.parent.getWorldQuaternion(_bwq2); g.quaternion.copy(_bwq2.invert().multiply(_bwq));
+      return true;
+    }
+    function f1HandsHold(api, which, k, drop = 0) {
       if (!api) return;
+      /* (the hands' root lowered `drop` m in the lens's frame while the bowl is held, else where the engine keeps it: a film
+         from play draws the hands itself, and play's first frame sets the root again) */
+      if (api.handsRoot) api.handsRoot.position.set(0, which === "bowl" && k > 0.001 ? -drop : 0, 0);
       if (k > 0.001 && which) {
         if (F1.held !== which) { if (F1.held && api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' });
           F1.held = which; const H = holdOf1(which); if (api.handsRoot) api.handsRoot.visible = true;
           PROPS1[H.prop].scale.setScalar(H.s || 1);
           if (api.kit && api.kit.hold) api.kit.hold(PROPS1[H.prop], { hand: 'left', pos: H.pos, rot: H.rot }); }
         if (api.handPose) api.handPose(which, k, { p: 0 });
+        if (which === "bowl") bowlInHands1(PROPS1.handBowl);
       } else if (F1.held) { if (api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' }); if (api.handPose) api.handPose(F1.held, 0); F1.held = null; if (api.handsRoot) api.handsRoot.visible = false; }
     }
     /* the water in his bowl: the candle's warm point on it, still; a ring for each drop of wax (from `wax`), and the cord's
        one ring (ringAt) */
+    /* THE WAX (the plan's 9.2, 32 to 42 s: "three drops of wax fall into the water, ripples"): each drop SEEN falling into
+       the water in his hands, from above the picture where his teacher tilts the candle (a pale bead of wax and a short
+       streak behind it, children of the held bowl, so they are drawn in the hands' pass with it), landing on the ring's own
+       moment; the candle's warm glint on the water brightening and moving to the middle while the flame is over it. (27
+       Nov: the first build's ripples came from nothing in the picture) */
+    const waxMat1 = new THREE.MeshBasicMaterial({ color: 0xf6ecd2, transparent: true, opacity: 0, depthWrite: false }); mats.push(waxMat1);
+    const waxDrop1 = new THREE.Mesh(new THREE.SphereGeometry(0.0055, 8, 6), waxMat1); waxDrop1.renderOrder = 4; owned.push(waxDrop1.geometry);
+    const waxTail1 = new THREE.Mesh(new THREE.CylinderGeometry(0.0018, 0.0042, 0.05, 6, 1, true), waxMat1); waxTail1.renderOrder = 4; owned.push(waxTail1.geometry);
+    const WAXFALL1 = 0.21;                                                       // (0.22 m of fall at g)
     function f1Water(t, wax, k, ringAt) {
       if (!PROPS1.bowlR) return;
-      glintMat1.opacity = 0.55 * k;
+      const g = PROPS1.handBowl, r = PROPS1.bowlR, c = ring1.position;
+      /* (the candle over the water: the glint brightened and drawn to the middle while the drops fall) */
+      const over = wax != null ? f1Env(t, wax - 0.9, wax + 3.6, 0.6, 0.7) : 0;
+      glintMat1.opacity = (0.3 + 0.35 * over) * k;
+      glint1.position.set(c.x - r * 0.25 * (1 - over), c.y + 0.002, c.z + r * 0.2 * (1 - over));
+      let drop = -1;
+      if (wax != null) for (const dt of [0, 1.5, 3.0]) { const u = (t - (wax + dt - WAXFALL1)) / WAXFALL1; if (u >= 0 && u < 1) drop = u; }
+      if (drop >= 0 && g && k > 0.001) {
+        if (waxDrop1.parent !== g) { g.add(waxDrop1); g.add(waxTail1); }
+        /* (in the held bowl's own frame, which the hold scales by BOWLHELD.s: the fall and the bead's size in world metres) */
+        const inv = 1 / Math.max(1e-6, g.scale.x), y = c.y + 0.22 * inv * (1 - drop * drop);
+        waxDrop1.position.set(c.x + 0.012 * inv, y, c.z - 0.01 * inv); waxDrop1.scale.setScalar(inv);
+        waxTail1.position.set(c.x + 0.012 * inv, y + 0.027 * inv, c.z - 0.01 * inv); waxTail1.scale.setScalar(inv);
+        waxMat1.opacity = 0.95 * k;
+      } else waxMat1.opacity = 0;
       let rk = 0, rs = 0.2;
       if (wax != null) for (const dt of [0, 1.5, 3.0]) { const d = t - wax - dt; if (d > 0 && d < 1.6) { rk = Math.max(rk, (1 - d / 1.6) * 0.8); rs = 0.15 + d * 0.5; } }
       if (ringAt != null) { const d = t - ringAt; if (d > 0 && d < 2.6) { rk = Math.max(rk, 0.85 * (1 - d / 2.6)); rs = 0.15 + 0.38 * c01(d / 2.6); } }
@@ -8031,23 +8569,43 @@
     function keepKeys1(T) {
       const eye = [HER.him.x, KNEEL_EYE, HER.him.z];
       const phoFace = () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.98);
-      const graceFace = () => f1Head(cast.grace, [0.42, 1.05, -0.32], 0.7);
+      /* (her head where she is: seated, or standing to give it, a smooth function of the film's clock, never her living head) */
+      const graceFace = () => f1Head(cast.grace, [0.42, 1.02, -0.32], keepGraceH1(F1.t, T));
       const handAt = [0.5, 0.64, 1.1];
       return [
         /* Pho's open hand across the cloth, his face: a slight push toward the hand */
-        { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
-        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60 },
+        /* (a phone cannot hold his face and his hand from where he kneels: 41 degrees part them, and a phone sees 25 to 30. And
+           from his side, his face as he asks her is a lost profile (photographed 27 Nov: the back of his head and his ear). So
+           a phone holds HER, whom he asks, with his open hand reaching across the cloth into the picture toward her; a desk
+           holds his face and his hand) */
+        { t: 0, name: 'hand', eye, at: [0.62, 0.91, 1.32], fp: 52, fd: 50, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+          atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.58), lp(handAt[1], g[1] - 0.1, 0.58), lp(handAt[2], g[2], 0.58)]; },
+          holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
+        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.85, 1.22], fp: 50, fd: 48, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+          atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.6), lp(handAt[1], g[1] - 0.1, 0.6), lp(handAt[2], g[2], 0.6)]; },
+          holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
         /* across the table to her: her face, both hands, the packet */
-        { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.2, g[2] + 0.35]; }, fp: 46, fd: 38, cut: true,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.13], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
-        { t: T.give + 0.4, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.05, g[1] - 0.22, g[2] + 0.45]; }, fp: 46, fd: 38,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.13], [0.47, 0.6, 0.85, 0.12]]; }, back: 0.4, fmax: 56 },
+        { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.52, g[2] + 0.35]; }, fp: 46, fd: 44, cut: true,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
+        /* (photographed 27 Nov: on a phone her face and the two hands meeting over the table are 25 degrees apart, and the
+           packet passing was out of the picture. So the look goes down to the hands as she holds it out, and stays on them
+           as it is laid in his palm: the beat is seen on every screen) */
+        { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 44,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
+        { t: T.give - 0.9, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
+        /* (and follows the packet in his palm as he draws it back to him, before the cut to the plate) */
+        { t: T.give + 0.25, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
+        { t: T.place - 0.15, name: 'hands', eye, at: [0.43, 0.7, 1.24], fp: 44, fd: 38, hold: [[0.43, 0.68, 1.24, 0.18]], back: 0.3, fmax: 56 },
         /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
-        { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
-        { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
+        /* (from the side away from his teacher: 27 Nov, the plate was moved within his reach, 0.75 m before his cushion, and
+           an eye on his side of it would stand where his head comes down to it) */
+        { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.25, CLOTH_Y + 0.72, ON_CLOTH.plate.z - 0.3], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
+        { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z - 0.28], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
         /* his eyes: his teacher turns to him, looking into the lens; the bowl rises into the frame in his hands */
         { t: T.turn, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0], f[1] - 0.1, f[2]]; }, fp: 52, fd: 44, cut: true },
-        { t: T.lift + 0.4, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0] + 0.15, f[1] - 0.22, f[2] - 0.05]; }, fp: 52, fd: 44 },
+        /* (the bowl rises in his hands over the picture's lower half, drawn over the world: photographed 27 Nov, its rim crossed
+           his teacher's mouth. The look goes a little lower, so his face stands above the rim as he watches it lifted) */
+        { t: T.lift + 0.4, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0] + 0.15, f[1] - 0.42, f[2] - 0.05]; }, fp: 52, fd: 44 },
         /* INSERT, his eyes looking down into the bowl in his hands: the candle tilted over it, three drops of wax */
         { t: T.wax - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
         { t: T.end - 1.6, name: "bowl", eye, yaw: STATION.room.at.ry, pitch: -0.98, fp: 36, fd: 30 },
@@ -8094,7 +8652,11 @@
         f1Vision(t, T.snap - 0.05, 0.45, T.snap + 2.6, 1.4);
         cordPho1(t, T); cordGrace1(t, T, t); cordMarcus1(t, T); cordPacket1(t, T, t); cordWisp1(t, tau, T);
         /* the bowl in his hands until he hands it to his teacher to pour (44 s); then nothing; then the bottle */
-        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb); f1Water(t, null, kb, T.snap + 0.55); }
+        /* (at the picture's foot below the packet and the people across the table, BOWLDROP1; his hands hidden in the two
+           inserts that are not his eyes, from behind her shoulder and from above the plate) */
+        const notHim = t >= T.phone && t < T.c3 - 0.3;
+        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb, BOWLDROP1); f1Water(t, null, kb, T.snap + 0.55);
+          if (api && api.handsRoot) api.handsRoot.visible = !notHim; }
         else if (t < T.take) f1HandsHold(api, null, 0);
         else f1HandsHold(api, 'bottle', smo(c01((t - T.take) / 0.7)));
         cordBottle1(t, T, api);
@@ -8106,7 +8668,7 @@
       end() { f1Lens(PLAYFOV1); f1VisionOff(); F1.beds = null; F1.film = ''; wispG1.visible = false; wristMat1.opacity = 0;
         if (wristRing1.parent) wristRing1.parent.remove(wristRing1);
         f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; if (things.holyBowl) things.holyBowl.visible = true; F1.api = null;
-        PROPS1.clothBottle.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
+        PROPS1.clothBottle.visible = false; if (PROPS1.pourBowl) PROPS1.pourBowl.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
         { const ph = herPhone1(); if (ph && F1.phoneRy != null) ph.rotation.set(0, F1.phoneRy, 0); F1.phoneRy = null; phoneLit1.m.opacity = 0; phoneLit1.q.visible = false; }
         }
     };
@@ -8120,17 +8682,47 @@
          white and bind it (32 to 44 s); his right hand to take the bowl from him (44 s), the bottle filled and corked on the
          cloth, then held out to him (47 s) */
       const untie = f1Env(tau, 0, T.snap + 0.25, 0.2, 0.25), bind = f1Env(tau, T.wrap - 0.6, T.pour - 0.4, 0.6, 0.6), work = Math.min(1, untie + bind);
-      f1Lean(P, 0.3 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7));
+      /* (his shoulders turned to his student, a third of a right angle, to take the bowl from him and to hold the bottle out to
+         him, square to the cloth for the pour and the cork between: his look to him goes the rest) */
+      const toHim = Math.max(f1Env(tau, T.pour - 0.9, T.pour + 1.0, 0.6, 0.6), f1Env(tau, T.give - 0.5, T.end + 9, 0.9, 0.5));
+      /* (bent over the packet as he works it: measured 27 Nov, seated and leaning half a radian his hands reach about 0.6 m
+         out from his cushion, and the plate stands 1.0 m from it (ON_CLOTH.plate: a layout call put to WORLD, the report); at
+         0.65 rad his hands reach the place it is asked to move to) */
+      /* (and his shoulders turned a little to his left, to it: 27 Nov, photographed, at 0.65 rad square to the cloth his right
+         hand fell short of the packet and hung by the incense) */
+      f1Lean(P, 0.75 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim + 0.3 * work);
+      /* (each palm placed so its fingertips, about 9.5 cm on along the fingers, come to the packet's top at its near corners:
+         27 Nov, with the plate moved within his reach, palms 7 and 17 cm from the packet put his left fingertips 1.7 cm down
+         into the plate and his right ones on the cloth 13 cm from the knot) */
+      /* (and the palms DOWN over it, toward him, as hands that pick at a knot and bind: 27 Nov, photographed from above, the
+         palm faced up and away, a hand held open over the packet; clipscan: the fingertips 1 to 2 cm into the packet) */
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
-        handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
-        handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
-      const take = f1Env(tau, T.pour - 0.3, T.pour + 1.1, 0.6, 0.5);
-      if (take > 0.001) handTo(P, 'R', [1.06, 0.76, 1.58], [0.7, -0.1, 0.4], [0, 1, 0], take, { out: 0.25, down: 0.25 });
-      const fill = f1Env(tau, T.pour + 1.0, T.give + 0.1, 0.4, 0.4);
-      if (fill > 0.001) handTo(P, 'R', [CB1.x + 0.02, CLOTH_Y + 0.12, CB1.z + 0.03], [-0.2, -0.6, -0.6], [0.3, 0, 0.9], fill, { out: 0.24, down: 0.25 });
+        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.088, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.1, -0.65, 0.75], work, { out: 0.22, down: 0.25 });
+        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.089, pk[2] + 0.056], [-0.5, -0.7, -0.4], [0.25, -0.6, 0.75], work, { out: 0.22, down: 0.25 }); }
+      /* THE POUR (27 Nov: the first build set the bowl back on the cloth untouched and laid his hand on the bottle while the
+         pour was heard): his right hand takes the bowl from his student, carries it by its rim over the bottle standing on
+         the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;
+         then his right hand corks it (POUR1, cordBowl1 carries the bowl where the hand is) */
+      const pr = pourAt1(tau, T);
+      /* (his hand on the bowl's near rim: the fingers over it and down inside, the palm to the bowl, turned to the bottle.
+         27 Nov, photographed: palm up, his hand lay flat over the water) */
+      if (pr.k > 0.001) { const dx = CB1.x - pr.hand[0], dz = CB1.z - pr.hand[2], L = Math.max(1e-3, Math.hypot(dx, dz)), ux = dx / L, uz = dz / L;
+        handTo(P, 'R', pr.hand, [0.3 * ux, -0.95, 0.3 * uz], [ux, 0.1, uz], pr.k, { out: 0.24, down: 0.25 }); }
+      const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
+      /* (his palm against the bottle's side, his fingers round its front: 27 Nov, clipscan, 3.5 cm off its middle his fingers
+         went through it, 287 crossings) */
+      /* (his left hand steadies the bottle where it reaches it: a bottle before his right knee is out of its reach) */
+      if (steady > 0.001 && CB1.x < 0.5) handTo(P, 'L', [CB1.x - 0.05, CLOTH_Y + 0.07, CB1.z + 0.02], [0.2, -0.3, -0.9], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
+      const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
+      if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
       const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
-      if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.6, -0.1, 0.3], [0, 1, 0], give, { out: 0.25, down: 0.25 });
-      f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.68), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.68), 0.7], [T.c3, () => f1Head(cast.marcus, [-0.18, 0.75, 0.22], 0.75), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
+      /* (the bottle held out to him on his palm, his fingers along his forearm's line toward him: measured 27 Nov, the fingers
+         turned to his side bent his wrist back 105 degrees, past a real wrist's 70) */
+      /* (held out at GIVE1, on the line from his eyes to his teacher's face and below it, so one picture holds the face and
+         the bottle and his hands rise to it there: 27 Nov, held out to 1.04, 0.74, 1.62 it stood 34 degrees off his look, out
+         of a phone's picture) */
+      if (give > 0.001) { const g = smo(c01((tau - T.give) / 0.9)); handTo(P, 'R', [lp(CB1.x, GIVE1[0], g), lp(CLOTH_Y + 0.12, GIVE1[1], g), lp(CB1.z, GIVE1[2], g)], [0.75, -0.2, -0.1], [0, 1, 0.2], give, { out: 0.25, down: 0.25 }); }
+      f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 0.7], [T.c3, () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
     }
     function cordGrace1(tau, T, t) {
       const P = cast.grace; if (!P || !P.ready) return;
@@ -8138,10 +8730,12 @@
       /* her long breath out, then quiet crying, her hands over her face (her written take's EARLY window only: its later fold
          to her knees is far more than the plan's "cries quietly": people/RECORD.md 4); her phone; her small thank you */
       if (P.acts.gcry && tau >= T.cry) { const u = c01((tau - T.cry) / 2.2); pose(P, 'gcry', lp(0.0, 1.6, smo(u)) + 0.05 * Math.sin(tau * 1.7) * u, false); }
-      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.1 : 0.8, false); }
+      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
       const face = f1Env(tau, T.cry + 1.0, T.phone - 0.3, 0.9, 0.6);
       if (face > 0.001) { const h = P.head; if (h) { P.group.updateWorldMatrix(true, true); h.getWorldPosition(_f1A); const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(P.group.quaternion);
-        for (const [sd, sx] of [['L', 0.05], ['R', -0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
+        /* (rt is her right: her left hand to her left of her face, her right to her right. 27 Nov, photographed: given the
+           other way they crossed at the wrists before her chest, palms out) */
+        for (const [sd, sx] of [['L', -0.05], ['R', 0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
           handTo(P, sd, [at.x, at.y, at.z], [rt.x * -sx * 4, 1, rt.z * -sx * 4], [-fw.x, 0, -fw.z], face, { out: 0.12, down: 0.35 }); } } }
       const ph = f1Env(tau, T.phone + 1.6, T.phone + 4.2, 0.8, 0.8);
       if (ph > 0.001) handTo(P, 'R', [GRPHONE1.x, GRPHONE1.y + 0.04, GRPHONE1.z], [-0.3, -0.6, 0.6], [0, -1, 0], ph, { out: 0.2, down: 0.3 });
@@ -8151,13 +8745,19 @@
     const phoneLit1 = glow(0, -50, 0, 0.1, 0xd8e8ff, 0, world, null);
     const herPhone1 = () => things.herPhone || PROPS1.grPhone;
     const GRPHONE1 = { get x() { const g = herPhone1(); return g ? g.position.x : 0.09; }, get z() { const g = herPhone1(); return g ? g.position.z : -0.22; }, get y() { const g = herPhone1(); return g ? g.position.y : 0.51; } };
+    const CORDMK1 = { x: -0.05, z: 0.40, to: [0.36, -0.02], head: [-0.02, 1.0, 0.36] };
     function cordMarcus1(tau, T) {
       const P = cast.marcus; if (!P || !P.ready) return;
-      /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right) */
-      const M = { x: 0.12, z: 0.15, ry: Math.PI * 0.85 };
-      if (P.acts.kneelhold && tau < T.c3 - 0.8) { put(P, M.x, M.z, faceTo(M.x, M.z, 0.42, -0.32), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
+      /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right, in
+         front of the sofa, turned to her knees, his raised hands (the take's, 0.7 m up) by her right knee. 27 Nov, clipscan:
+         at 0.12, 0.15 turned to her middle he knelt into her legs (2,000 to 3,800 crossings), the sofa's front (1,900) and
+         her phone on the cushion) */
+      const M = CORDMK1;
+      /* (he stands behind the sofa from the cut to the two of them, T.c3 - 0.3: 27 Nov, the rows: risen 0.5 s before it he
+         was seen to jump at the edge of the insert from above, 26 to 42 px tall) */
+      if (P.acts.kneelhold && tau < T.c3 - 0.3) { put(P, M.x, M.z, faceTo(M.x, M.z, M.to[0], M.to[1]), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
       else { const K = KEEP1.mkStand; put(P, K.x, K.z, K.ry, 0); f1Speak(P, tau, ['Idle_3', 1.2, 0.3, true], [[T.m1, SECS.mk51c1, 'Stand_and_Chat', 0.55]]); }
-      f1Gaze(P, tau, [[0, () => f1Head(cast.grace, [0.42, 1.0, -0.32], 0.7)], [T.c3 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
+      f1Gaze(P, tau, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.c3 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
     function cordPacket1(tau, T, t) {
       const g = things.keepsake; if (!g) return;
@@ -8172,14 +8772,27 @@
     }
     /* THE WISP: from the knot, a leap across the table that curls round under the bowl to his left wrist (where the hands'
        pass draws it: its end is a point of his own frame, carried into the world each frame), its tail fading behind it */
-    const _wA = new THREE.Vector3(), _wB = new THREE.Vector3(), _wC = new THREE.Vector3();
+    const _wA = new THREE.Vector3(), _wB = new THREE.Vector3(), _wC = new THREE.Vector3(), _wP = new THREE.Vector3();
+    /* (the wisp's end: his left wrist where the hands' pass DRAWS it (its own lens, 52 degrees at its origin: kit.handPalm,
+       the wrist a little under the palm), carried to the same place on the screen half a metre before the world's lens, and
+       kept above the picture's lower bar so it is seen to reach him. 27 Nov: a point of the lens's frame taken as the
+       world's, (-0.1, -0.24, -0.34), stood below a phone's picture, and his wrist under the bowl at the picture's foot is
+       below it too) */
+    function wispEnd1(out) {
+      const pm = kit && kit.handPalm ? kit.handPalm('left', _wP) : null, asp = camera.aspect, tv = Math.tan(26 * Math.PI / 180);
+      let nx = 0, ny = -0.9;
+      if (pm && pm.z < -0.05) { nx = pm.x / (-pm.z * tv * asp); ny = (pm.y - 0.05) / (-pm.z * tv); }
+      nx = Math.max(-0.85, Math.min(0.85, nx)); ny = Math.max(-0.72, Math.min(0.5, ny));
+      const D = 0.5, tw = Math.tan(camera.fov / 2 * Math.PI / 180);
+      return out.set(nx * tw * asp * D, ny * tw * D, -D).applyMatrix4(camera.matrixWorld);
+    }
     function cordWisp1(t, tau, T) {
       const u0 = tau - (T.snap + 0.05), dur = 0.42;
       const on = u0 > -0.01 && u0 < dur + 0.5;
       wispG1.visible = on;
       if (on) {
         _wA.set(ON_CLOTH.plate.x, CLOTH_Y + 0.05, ON_CLOTH.plate.z);
-        camera.updateMatrixWorld(true); _wB.set(-0.1, -0.24, -0.34).applyMatrix4(camera.matrixWorld);   // his left wrist under the bowl, in the lens's own frame
+        camera.updateMatrixWorld(true); wispEnd1(_wB);   // his left wrist under the bowl, where the hands' pass draws it
         _wC.copy(_wA).lerp(_wB, 0.5); _wC.y += 0.16;
         const head = c01(u0 / dur);
         for (let i = 0; i < wisp1.length; i++) { const s = head - i * 0.035, sp = wisp1[i];
@@ -8198,14 +8811,73 @@
     /* THE BOTTLE (on the cloth by his teacher's right knee): filled and corked there, held out to him, taken into his hands;
        THE BOWL back on the cloth once his teacher has it; THE SPOOL of white thread out for the binding, the packet's cloth
        wrapped white as the hands work (a white wrap over the red: the knot's red is covered) */
-    const CB1 = { x: 0.74, z: 1.4 };
+    /* (the bottle on the cloth before him, at his left of the bowl, between the lit candle and the incense: his right hand
+       pours over it from his right, his left hand steadies it without crossing his body) */
+    /* (27 Nov, photographed: at 0.36, 1.25 with his pouring hand 8 cm off it, the pour stood beyond his right hand's reach
+       and the bowl hung over the incense pot with its sticks up through it. Here, at the cloth's near edge between the plate
+       and the incense, 0.24 m from the plate's middle, 0.14 from the incense pot's, 0.42 from the cloth bowl's; his pouring
+       hand held off it toward him (POURDIR1) by the bowl's width, so the bowl he pours from stands 7 cm clear of the sticks
+       and 11 cm of the lit candle; his left hand steadies it. (0.70, 1.36) stood 0.161 m from the cloth bowl's middle, at
+       its rim: PLAY's measure) */
+    const CB1 = { x: 0.38, z: 1.36 };
+    const POURDIR1 = [-0.2, 0.98];   // (from the bottle toward his teacher, a little to his left, away from the incense)
+    const GIVE1 = [0.95, 0.80, 1.88];
+    const POUR1 = { take: [1.06, 0.76, 1.58], tilt: 0.85 };
+    /* where his right hand is in the pour, and how far into it (k): the student's bowl taken (pour - 0.3 to + 0.9), carried
+       over the bottle (+0.9 to +1.4), tilted (+1.4 to +2.6), set down at its place on the cloth (+2.6 to +3.0), let go */
+    function pourAt1(t, T) {
+      /* (his hand on the bowl's near rim held off from the bottle toward his right knee by the bowl's width less a lip, so its
+         far rim, tilted down, pours into the bottle's mouth: 27 Nov, held 8 cm off the bottle, the bowl hung beyond it) */
+      const Rs = (BOWL1.R || 0.16) * ((S && S.plan && S.plan.BOWL_S) || holdOf1("bowl").s || 1), off = 2 * Rs - 0.02;
+      const P0 = T.pour, B = [CB1.x + POURDIR1[0] * off, CLOTH_Y + 0.25, CB1.z + POURDIR1[1] * off], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
+      const k = smo(c01((t - P0 + 0.3) / 0.6)) * (1 - smo(c01((t - P0 - 2.95) / 0.25)));
+      const u1 = smo(c01((t - P0 - 0.9) / 0.5)), u2 = smo(c01((t - P0 - 2.6) / 0.4));
+      /* (set down along an arc toward the table's middle and up: straight, its rim went through the incense sticks, 27 Nov) */
+      const h = lp3(lp3(POUR1.take, B, u1), C, u2), arc = Math.sin(Math.PI * u2);
+      h[1] += 0.06 * arc + 0.1 * Math.sin(Math.PI * u1) * (1 - u2); h[2] -= 0.14 * arc;   // (and lifted as it is carried over: the sticks stand 0.24 m)
+      return { k, hand: h, carry: t >= P0 + 0.9 && t < P0 + 3.0, tilt: POUR1.tilt * f1Env(t, P0 + 1.35, P0 + 2.65, 0.35, 0.3), down: t >= P0 + 3.0 };
+    }
     PROPS1.spool = stand('w51threadreel', 0, -50, 0, 0, { parent: world }); PROPS1.spool.visible = false;
+    /* the bowl in his teacher's right hand through the pour: a copy of it (the play's own, things.holyBowl, keeps its place
+       on the cloth and its glint: PLAY.md 4), painted as the play paints it, hung from his palm by its near rim, turned about
+       that rim to pour toward the bottle, then eased onto the play's bowl's own place and turn, where the play's is shown
+       again and the copy goes */
+    const _f1pb = new THREE.Vector3(), _f1pq = new THREE.Quaternion(), _f1pa = new THREE.Vector3(), _f1pr = new THREE.Vector3(), _f1pw = new THREE.Vector3(), _f1pwq = new THREE.Quaternion();
+    const BOWL1 = { R: 0, H: 0 };
+    PROPS1.pourBowl = stand('w4bigbowl', 0, -50, 0, 0, { parent: world, lift: 3 }); PROPS1.pourBowl.visible = false;
+    whenThing1(PROPS1.pourBowl, (g, m) => { if (S && S.plan && S.plan.bowlLook) S.plan.bowlLook(m, { empty: { value: 0 } });
+      else m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) mt.color.multiply(new THREE.Color(0xffd9a0)); });
+      g.rotation.set(0, 0, 0); g.position.set(0, -50, 0); g.updateWorldMatrix(true, true);
+      const bb = new THREE.Box3().setFromObject(m); BOWL1.R = Math.max(0.04, (bb.max.x - bb.min.x + bb.max.z - bb.min.z) / 4); BOWL1.H = Math.max(0.02, bb.max.y - bb.min.y); });
+    function cordBowl1(t, T) {
+      const W = things.holyBowl, g = PROPS1.pourBowl, pr = pourAt1(t, T), P = cast.pho;
+      const set = t >= T.pour + 3.0, held = t >= T.pour + 0.9 && !set;
+      /* (the bowl at the one size every bowl is drawn at, PLAY's S.plan.BOWL_S (0.62 of the file, 0.198 m across: PLAY.md 2),
+         from his hands to his teacher's, eased onto the cloth's bowl's own place and turn, and the cloth's own shown again
+         there. 27 Nov, photographed: drawn at the file's size it was 0.45 m across in one of his hands) */
+      const sc = (S && S.plan && S.plan.BOWL_S) || holdOf1("bowl").s || 1;
+      if (W) W.visible = set;
+      if (!g) return;
+      g.visible = held && !!g.userData.model && BOWL1.R > 0;
+      if (!g.visible || !P || !P.ready) return;
+      P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1pb, 0); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
+      /* (the pour's direction: from his hand toward the bottle's mouth; the bowl's near rim under his fingers, 2 cm below the
+         palm's middle, the bowl beyond it, turned about the level line across that direction, so its far rim dips to the
+         bottle) */
+      const dx = CB1.x - pm.x, dz = CB1.z - pm.z, L = Math.max(1e-3, Math.hypot(dx, dz)), ux = dx / L, uz = dz / L;
+      _f1pq.setFromAxisAngle(_f1pa.set(uz, 0, -ux), pr.tilt);
+      _f1pr.set(-BOWL1.R * sc * ux, BOWL1.H * sc, -BOWL1.R * sc * uz).applyQuaternion(_f1pq);
+      g.position.set(pm.x - _f1pr.x, pm.y - 0.02 - _f1pr.y, pm.z - _f1pr.z); g.quaternion.copy(_f1pq); g.scale.setScalar(sc);
+      /* (set down: eased onto the play's bowl's own place and turn over the last 0.4 s) */
+      const u = smo(c01((t - T.pour - 2.6) / 0.4));
+      if (u > 0 && W) { W.updateWorldMatrix(true, false); W.getWorldPosition(_f1pw); W.getWorldQuaternion(_f1pwq); g.position.lerp(_f1pw, u); g.quaternion.slerp(_f1pwq, u); }
+    }
     function cordBottle1(t, T, api) {
       const b = PROPS1.clothBottle;
-      if (things.holyBowl) { things.holyBowl.visible = t >= T.pour + 0.9; if (t >= T.pour + 0.9) f1Drop(things.holyBowl, ON_CLOTH.bowl.x + 0.02, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z + 0.06, 0); }
+      cordBowl1(t, T);
       if (b) { const on = t >= T.pour + 0.9 && t < T.take + 0.2;
         if (on) { if (t < T.give) { f1Drop(b, CB1.x, CLOTH_Y, CB1.z, 0); }
-          else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1Palm(P, 'Right', _f1A); if (pm) f1Drop(b, pm.x, pm.y - 0.05, pm.z, 0); } } }
+          else { const P = cast.pho; if (P && P.ready) { P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1A, 0.012); if (pm) f1Drop(b, pm.x, pm.y, pm.z, 0); } } }   // (stood on his palm held out: his seated body has no finger bones, and at f1Palm it stood 5 cm under his wrist)
         b.visible = on; }
       const sp = PROPS1.spool; if (sp) { const on = t >= T.wrap - 0.3 && t < T.pour; if (on) f1Drop(sp, ON_CLOTH.plate.x + 0.2, CLOTH_Y, ON_CLOTH.plate.z - 0.06, 0.4); sp.visible = on; }
     }
@@ -8215,31 +8887,54 @@
     function cordKeys1(T) {
       const eye = [HER.him.x, KNEEL_EYE, HER.him.z];
       const pk = [ON_CLOTH.plate.x, CLOTH_Y + 0.03, ON_CLOTH.plate.z];
-      const graceFace = () => f1Head(cast.grace, [0.42, 1.05, -0.32], 0.68);
+      const graceFace = () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED);
+      const mkHead = () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6);
+      const phoAt = (dx, dy) => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + dx, f[1] + dy, f[2] - 0.05]; };
+      const UNTIE1 = [eye[0] - 0.14, eye[1] + 0.15, eye[2] - 0.20];
+      const POURAT1 = [CB1.x + POURDIR1[0] * 0.12, CLOTH_Y + 0.16, CB1.z + POURDIR1[1] * 0.12];   // (between the bottle's mouth and the bowl over it)
       return [
         /* INSERT from above (his eyes looking down): his hands and the bowl at the picture's foot, the packet in its middle */
-        { t: 0, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.35), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.35)], fp: 38, fd: 32 },
-        { t: T.snap - 0.2, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 38, fd: 32 },
+        /* (kneeling up and leaning in to watch it: 27 Nov, with the plate moved, from where he kneels the incense stood 2 cm
+           off his line to the packet and its sticks 2 cm over it, across the packet in the picture; from here they stand 5 cm
+           aside and 4 cm under it) */
+        { t: 0, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.35), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.35)], fp: 38, fd: 32 },
+        { t: T.snap - 0.2, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.33), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.33)], fp: 38, fd: 32 },
         /* (the lens narrows across the slow: a smooth function of the film's clock) */
-        { t: T.cry - 0.05, name: 'cord', eye: [eye[0] - 0.08, eye[1] + 0.02, eye[2] - 0.06], at: [lp(pk[0], eye[0] - 0.3, 0.33), pk[1] + 0.02, lp(pk[2], eye[2] - 0.3, 0.33)], fp: 32, fd: 27 },
-        /* his eyes across the table: Grace and Marcus */
-        { t: T.cry, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.05, g[1] - 0.18, g[2] + 0.3]; }, fp: 46, fd: 40, cut: true,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.14], [0.12, 1.15, 0.15, 0.16]]; }, back: 0.45, fmax: 58 },
-        { t: T.phone - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.03, g[1] - 0.2, g[2] + 0.32]; }, fp: 46, fd: 40,
-          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.1, g[2], 0.14], [0.12, 1.15, 0.15, 0.16]]; }, back: 0.45, fmax: 58 },
-        /* INSERT: her phone on the cloth, her hand */
-        { t: T.phone, name: 'phone', eye: () => [GRPHONE1.x + 0.42, GRPHONE1.y + 0.55, GRPHONE1.z + 0.4], at: () => [GRPHONE1.x - 0.02, GRPHONE1.y, GRPHONE1.z], fp: 40, fd: 34, cut: true },
-        { t: T.wrap - 0.05, name: 'phone', eye: () => [GRPHONE1.x + 0.39, GRPHONE1.y + 0.52, GRPHONE1.z + 0.37], at: () => [GRPHONE1.x - 0.02, GRPHONE1.y, GRPHONE1.z], fp: 40, fd: 34 },
-        /* INSERT from above: his teacher's hands wrapping the packet in white and binding it */
-        { t: T.wrap, name: 'wrap', eye: [pk[0] + 0.3, CLOTH_Y + 0.7, pk[2] + 0.26], at: pk, fp: 40, fd: 34, cut: true },
-        { t: T.pour - 0.05, name: 'wrap', eye: [pk[0] + 0.28, CLOTH_Y + 0.66, pk[2] + 0.24], at: pk, fp: 40, fd: 34 },
-        /* his eyes: his teacher looking at him, the bottle; his look drops to his own wrist for a moment, and back */
-        { t: T.pour, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.1, f[1] - 0.15, f[2] - 0.05]; }, fp: 50, fd: 42, cut: true },
-        { t: T.wrist - 0.1, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
-        { t: T.wrist + 0.5, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.85, eye[2] - 0.32], fp: 50, fd: 42 },
-        { t: T.wrist + 1.6, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.85, eye[2] - 0.32], fp: 50, fd: 42 },
-        { t: T.wrist + 2.4, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 },
-        { t: T.end, name: 'pho', eye, at: () => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + 0.12, f[1] - 0.18, f[2] - 0.05]; }, fp: 50, fd: 42 }
+        { t: T.cry - 0.05, name: 'cord', eye: UNTIE1, at: [lp(pk[0], UNTIE1[0] - 0.24, 0.33), pk[1] + 0.02, lp(pk[2], UNTIE1[2] - 0.16, 0.33)], fp: 32, fd: 27 },
+        /* his eyes across the table: Grace and Marcus kneeling beside her */
+        { t: T.cry, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.05, g[1] - 0.5, g[2] + 0.3]; }, fp: 46, fd: 40, cut: true,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [CORDMK1.head[0], CORDMK1.head[1], CORDMK1.head[2], 0.18]]; }, back: 0.45, fmax: 58 },
+        { t: T.phone - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] - 0.03, g[1] - 0.52, g[2] + 0.32]; }, fp: 46, fd: 40,
+          hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [CORDMK1.head[0], CORDMK1.head[1], CORDMK1.head[2], 0.18]]; }, back: 0.45, fmax: 58 },
+        /* INSERT: her phone on the cushion beside her, her right hand turning it face down: from above and behind her right
+           shoulder, over the sofa's back (Marcus kneels before the sofa then, so its back is free; the first build stood this
+           lens between her face and his, 0.4 m from his head and 0.5 m from hers) */
+        { t: T.phone, name: 'phone', eye: () => [GRPHONE1.x - 0.12, GRPHONE1.y + 0.86, GRPHONE1.z - 0.56], at: () => [GRPHONE1.x + 0.02, GRPHONE1.y, GRPHONE1.z + 0.02], fp: 40, fd: 34, cut: true },
+        { t: T.wrap - 0.05, name: 'phone', eye: () => [GRPHONE1.x - 0.11, GRPHONE1.y + 0.82, GRPHONE1.z - 0.53], at: () => [GRPHONE1.x + 0.02, GRPHONE1.y, GRPHONE1.z + 0.02], fp: 38, fd: 32 },
+        /* INSERT from above: his teacher's hands binding the packet with the white thread, as he speaks to her */
+        /* (from the side away from his teacher, his hands coming to it from beyond: the plate is within his reach now, and
+           he bends over it) */
+        { t: T.wrap, name: 'wrap', eye: [pk[0] + 0.25, CLOTH_Y + 0.7, pk[2] - 0.3], at: pk, fp: 40, fd: 34, cut: true },
+        { t: T.c3 - 0.35, name: 'wrap', eye: [pk[0] + 0.24, CLOTH_Y + 0.66, pk[2] - 0.28], at: pk, fp: 40, fd: 34 },
+        /* his eyes: his teacher's words to Marcus, Marcus's answer and her own small thank you, the two of them (Marcus standing
+           behind the sofa at her shoulder: he rose while the insert was on); the camera on what the words are about (v21.30) */
+        { t: T.c3 - 0.3, name: 'thanks', eye, at: () => { const g = graceFace(), m = mkHead(); return [lp(g[0], m[0], 0.4), lp(g[1], m[1], 0.45) - 0.06, lp(g[2], m[2], 0.4)]; }, fp: 46, fd: 40, cut: true,
+          hold: () => { const g = graceFace(), m = mkHead(); return [[g[0], g[1] + 0.04, g[2], 0.16], [m[0], m[1] + 0.02, m[2], 0.16]]; }, back: 0.45, fmax: 58 },
+        { t: T.pour - 0.05, name: 'thanks', eye, at: () => { const g = graceFace(), m = mkHead(); return [lp(g[0], m[0], 0.4), lp(g[1], m[1], 0.45) - 0.06, lp(g[2], m[2], 0.4)]; }, fp: 46, fd: 40,
+          hold: () => { const g = graceFace(), m = mkHead(); return [[g[0], g[1] + 0.04, g[2], 0.16], [m[0], m[1] + 0.02, m[2], 0.16]]; }, back: 0.45, fmax: 58 },
+        /* his eyes: his teacher looking at him, the bottle; his look drops to his hands, the bottle and his own wrist, for a
+           moment, and back (each way over 1.2 s: the first build's 0.6 s drop turned his look 136 degrees a second) */
+        /* (the pour SEEN: a phone, whose picture is 24 degrees wide, looks at the bowl tilted over the bottle and the cork, his
+           teacher's face 31 degrees off it; a desk holds both. 27 Nov: the look stayed on his face and a phone never saw the
+           pour. Then up to his face as he holds the bottle out below it, GIVE1, and speaks) */
+        { t: T.pour, name: 'pour', eye, at: () => lp3(phoAt(0.1, -0.15), POURAT1, 0.5), atP: POURAT1, fp: 50, fd: 42, cut: true },
+        { t: T.give - 0.1, name: 'pour', eye, at: () => lp3(phoAt(0.1, -0.15), POURAT1, 0.5), atP: POURAT1, fp: 50, fd: 42 },
+        { t: T.give + 0.8, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
+        { t: T.wrist - 0.1, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
+        { t: T.wrist + 1.1, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.62, eye[2] - 0.32], fp: 50, fd: 42 },
+        { t: T.wrist + 2.1, name: 'wrist', eye, at: [eye[0] - 0.25, eye[1] - 0.62, eye[2] - 0.32], fp: 50, fd: 42 },
+        { t: T.wrist + 3.3, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 },
+        { t: T.end, name: 'pho', eye, at: () => phoAt(0.12, -0.22), fp: 50, fd: 42 }
       ];
     }
 
@@ -8272,7 +8967,7 @@
         homeHands1(t, T, api);
         f1Track(t, homeKeys1(T));
         /* his walk's small bob down the corridor and across his flat */
-        const walking = (t > 0.3 && t < T.card - 1.2) || (t > T.door + 0.8 && t < T.altar - 0.2) || (t > T.palms + 1.6 && t < T.phone - 0.3);
+        const walking = (t > 0.3 && t < 5.2) || (t > T.walkIn + 0.1 && t < T.altar - 0.25) || (t > T.table0 && t < T.phone - 0.1);
         if (walking) yaw.position.y += -0.015 * Math.abs(Math.sin(t * Math.PI / 0.55));
         /* HIS EYES CLOSING (never to full black: the lids' warm glow) and opening on 3:00: the picture narrowed to a sliver
            from top and bottom, and dimmed (the engine's pressure seam is not this; this is the film's own fade in a warm
@@ -8287,9 +8982,9 @@
     /* his hands: the keycard to the reader (his right, the engine's `reach`), the bottle set down on his altar (`place`, the
        bottle in his hand), his palms together a moment (the clasp: `pray`), his phone set on its charger (`place`); each a
        thing in his right hand (kit.hold) and its pose eased in and out, drawn only while they are in the frame */
-    PROPS1.handPhone = stand('e4phone', 0, 0, 0, 0, { parent: nowhere1 });
-    PROPS1.handCard = stand('w51keycard', 0, 0, 0, 0, { parent: nowhere1 });
-    PROPS1.handBottleR = stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, done: (m) => glassOff1(m) });
+    PROPS1.handPhone = stand('e4phone', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => handsPass1(m) });
+    PROPS1.handCard = stand('w51keycard', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => handsPass1(m) });
+    PROPS1.handBottleR = stand('w51bottle', 0, 0, 0, 0, { parent: nowhere1, near: true, done: (m) => { glassOff1(m); handsPass1(m); } });
     function f1HandR(api, pose, prop, k) {
       if (!api) return;
       if (k > 0.001 && pose) {
@@ -8302,9 +8997,10 @@
       if (!api) return;
       const card = f1Env(t, T.card - 0.9, T.card + 0.45, 0.55, 0.45), bottle = f1Env(t, T.setb - 1.5, T.setb + 0.25, 0.7, 0.45),
             pray = f1Env(t, T.palms - 0.55, T.palms + 1.5, 0.55, 0.6), phone = f1Env(t, T.charge - 1.3, T.charge + 0.25, 0.6, 0.45);
+      /* (the bottle and the phone leave his hand on the moment they are shown where he sets them, never both at once) */
       if (card > 0.001) f1HandR(api, 'reach', 'handCard', card);
-      else if (bottle > 0.001) f1HandR(api, 'place', 'handBottleR', bottle);
-      else if (phone > 0.001) f1HandR(api, 'place', 'handPhone', phone);
+      else if (bottle > 0.001) f1HandR(api, 'place', t < T.setb ? 'handBottleR' : null, bottle);
+      else if (phone > 0.001) f1HandR(api, 'place', t < T.charge ? 'handPhone' : null, phone);
       else if (pray > 0.001) { f1HandR(api, null, null, 0); if (api.handsRoot) api.handsRoot.visible = true; if (api.handPose) api.handPose('pray', pray, {}); }
       else { f1HandR(api, null, null, 0); if (api.handPose) api.handPose('pray', 0); if (api.handsRoot) api.handsRoot.visible = false; }
     }
@@ -8342,20 +9038,35 @@
       const ceil = [LB.x - 1.2, FLAT.ceil, LB.z + 0.05];
       const clk = [HIS.clock.x, HIS.clock.y + 0.04, HIS.clock.z];
       const bath = [(BATH.x0 + 0.7 + BATH.x0 + 1.4) / 2, 1.1, BATH.z1];
+      /* (27 Nov, measured: every walk at a walk's pace, a metre a second, and every turn of his head inside 90 degrees a
+         second; the first build ran the eye 2.1 m through a 107 degree turn in 0.6 s into the room, 3.4 m from the altar to
+         the table in 2 s looking at the floor, and whipped his look 225 degrees a second as he woke) */
+      const clkAt = [clk[0], clk[1] + 0.03, clk[2]];
+      const playAt = [lieEye[0] - 2 * Math.sin(LB.ry) * Math.cos(LB.pitch), lieEye[1] + 2 * Math.sin(LB.pitch), lieEye[2] - 2 * Math.cos(LB.ry) * Math.cos(LB.pitch)];
+      const reader = [HIS.door.x + 0.42, 1.12, LIV.z0];
       return [
-        /* the corridor: his eyes at a walk toward the window at its end, the city in it */
-        { t: 0, name: 'corr', eye: [c0[0], EYE, c0[1]], at: [CORR.x0, 1.45, c0[1] + 0.1], fp: 60, fd: 52 },
-        { t: T.card - 1.1, name: 'corr', eye: [c1[0], EYE, c1[1]], at: [CORR.x0 + 1.0, 1.4, c1[1] + 0.2], fp: 60, fd: 52 },
-        { t: T.card - 0.35, name: 'door', eye: doorEye, at: [HIS.door.x + 0.42, 1.12, LIV.z0], fp: 60, fd: 52 },
-        { t: T.door + 0.8, name: 'door', eye: doorEye, at: [HIS.door.x + 0.6, 1.3, LIV.z1], fp: 60, fd: 52 },
-        /* in: the city glowing through the glass across the room; to his altar on the left wall */
-        { t: T.door + 2.4, name: 'in', eye: inEye, at: [HIS.door.x + 1.8, 1.25, LIV.z1], fp: 60, fd: 52 },
-        { t: T.altar, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.15, HIS.altar.z - 0.05], fp: 50, fd: 42 },
-        { t: T.altar + 3.0, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.12, HIS.altar.top + 0.1, HIS.altar.z - 0.08], fp: 50, fd: 42 },
+        /* the corridor: his eyes at a walk toward the window at its end, the city in it; turning left to his door as he
+           comes to it, to the keycard's reader beside it */
+        { t: 0, name: 'corr', eye: [c0[0], EYE, c0[1]], at: [CORR.x0, 1.45, c0[1] + 0.1], fp: 60, fd: 52, flow: true },
+        { t: 1.6, name: 'corr', eye: [HX + 0.05, EYE, -3.42], at: [CORR.x0, 1.45, -3.32], fp: 60, fd: 52, flow: true },
+        { t: 3.2, name: 'corr', eye: [HX - 1.6, EYE, -3.36], at: [CORR.x0, 1.43, -3.26], fp: 60, fd: 52, flow: true },
+        { t: 4.6, name: 'corr', eye: [HX - 3.0, EYE, -3.3], at: [HIS.door.x, 1.45, LIV.z0], fp: 60, fd: 52, flow: true },
+        { t: 5.6, name: 'door', eye: [HIS.door.x + 0.22, EYE, -3.25], at: reader, fp: 60, fd: 52, flow: true, stop: true },
+        { t: T.card + 0.3, name: 'door', eye: [HIS.door.x + 0.22, EYE, -3.25], at: reader, fp: 60, fd: 52 },
+        /* the door opens on his dark flat, the city glowing through the glass across the room */
+        { t: T.door + 0.6, name: 'door', eye: [HIS.door.x + 0.15, EYE, -3.2], at: [HIS.door.x + 0.6, 1.3, LIV.z1], fp: 60, fd: 52 },
+        /* in, at a walk, and to his altar on the left wall (the turn to it laid along the last metre and a half) */
+        { t: T.walkIn, name: 'in', eye: [HIS.door.x + 0.15, EYE, -3.2], at: [HIS.door.x + 0.6, 1.3, LIV.z1], fp: 60, fd: 52, flow: true },
+        { t: T.walkIn + 1.4, name: 'in', eye: [HIS.door.x + 0.13, EYE, LIV.z0 + 0.65], at: [HIS.door.x - 0.1, 1.3, 1.6], fp: 58, fd: 50, flow: true },
+        { t: T.walkIn + 2.5, name: 'in', eye: [HIS.door.x + 0.2, EYE, -0.6], at: [HIS.altar.x - 0.1, 1.2, 0.45], fp: 54, fd: 46, flow: true },
+        { t: T.altar, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.15, HIS.altar.z - 0.05], fp: 50, fd: 42, flow: true, stop: true },
+        { t: T.setb + 0.5, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.12, HIS.altar.top + 0.1, HIS.altar.z - 0.08], fp: 50, fd: 42 },
         { t: T.palms + 1.6, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.2, HIS.altar.z], fp: 50, fd: 42 },
-        /* to the dining table: the phone on its charger */
-        { t: T.phone - 0.3, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x, FILMPLACE.phoneAt.y, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
-        { t: T.phone + 2.4, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x + 0.1, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
+        { t: T.table0 - 0.05, name: 'altar', eye: altarEye, at: [HIS.altar.x + 0.1, HIS.altar.top + 0.22, HIS.altar.z + 0.02], fp: 50, fd: 42 },
+        /* (cut) the last steps to the dining table: the phone on its charger */
+        { t: T.table0, name: 'table', eye: [HIS.dining.x - 1.45, EYE, HIS.dining.z + 0.55], at: [FILMPLACE.phoneAt.x, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48, cut: true },
+        { t: T.phone, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x, FILMPLACE.phoneAt.y, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
+        { t: T.charge + 1.4, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x + 0.1, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
         { t: T.bed - 0.05, name: 'table', eye: tableEye, at: [FILMPLACE.phoneAt.x + 0.1, FILMPLACE.phoneAt.y + 0.05, FILMPLACE.phoneAt.z], fp: 56, fd: 48 },
         /* the bedroom: the bathroom door open on its light, the shower; then the bed's edge, looking out at the city's glow */
         { t: T.bed, name: 'bath', eye: [BED.x0 + 0.85, EYE, 0.7], at: bath, fp: 66, fd: 58, cut: true },
@@ -8368,15 +9079,15 @@
         /* INSERT: the bedside clock, 11:58 */
         { t: T.clock, name: 'clockface', eye: [clk[0] - 0.55, clk[1] + 0.32, clk[2] - 0.45], at: clk, fp: 34, fd: 28, cut: true },
         { t: T.clock + 5.95, name: 'clockface', eye: [clk[0] - 0.52, clk[1] + 0.3, clk[2] - 0.42], at: clk, fp: 32, fd: 27 },
-        /* the ceiling in the dark; his eyes close; they open: the ceiling */
+        /* the ceiling in the dark; his eyes close; they open: the ceiling, held in the silence */
         { t: T.clock + 6.0, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58, cut: true },
-        { t: T.open + 0.45, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58 },
-        /* the bedside clock: 3:00; the ceiling again; and down along the bed to the room, where the play begins (its own
-           lying view: the lens through the zenith, so the turn from one side of him to the other is a roll of the view) */
-        { t: T.open + 1.5, name: 'wake', eye: lieEye, at: [clk[0], clk[1] + 0.03, clk[2]], fp: 66, fd: 58 },
-        { t: T.open + 2.4, name: 'wake', eye: lieEye, at: [clk[0], clk[1] + 0.03, clk[2]], fp: 66, fd: 58 },
-        { t: T.open + 3.3, name: 'wake', eye: lieEye, at: [lieEye[0] - 0.2, FLAT.ceil, lieEye[2] + 0.1], fp: 68, fd: 62 },
-        { t: T.end - 0.05, name: 'play', eye: lieEye, yaw: LB.ry, pitch: LB.pitch, fp: PLAYFOV1, fd: PLAYFOV1 }
+        { t: T.open + 0.6, name: 'lie', eye: lieEye, at: ceil, fp: 66, fd: 58 },
+        /* his head turned slowly on the pillow to the bedside clock: 3:00; then back across the ceiling over him and down the
+           far side, to the room where the play begins (its own lying view: PLAY.md 2), one unbroken roll of his head */
+        { t: T.open + 2.6, name: 'wake', eye: lieEye, at: clkAt, fp: 66, fd: 58 },
+        { t: T.open + 3.7, name: 'wake', eye: lieEye, at: clkAt, fp: 66, fd: 58, flow: true },
+        { t: T.open + 5.3, name: 'wake', eye: lieEye, at: [lieEye[0] + 0.05, FLAT.ceil, lieEye[2] - 0.05], fp: 68, fd: 64, flow: true },
+        { t: T.end - 0.05, name: 'play', eye: lieEye, at: playAt, fp: PLAYFOV1, fd: PLAYFOV1, flow: true }
       ];
     }
 
@@ -8393,10 +9104,10 @@
       props: PROPS1,
       films: FILMS1,
       beds: () => (F1.film ? F1.beds : null),
-      state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds }),
+      state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds, held: F1.held || null }),
       shot: () => F1.shot,
       helpers: { track: f1Track, walk: f1Walk, speak: f1Speak, gaze: f1Gaze, head: f1Head, show: f1Show, vision: f1Vision, look: f1Look, lens: f1Lens,
-                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1 },
+                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1, phoBag: phoBagOn1, bowlInHands: bowlInHands1 },
       /* every person the films can show (a probe's: chapter 5's films probe reads `people()`) */
       people: () => ({ pho: cast.pho, grace: cast.grace, marcus: cast.marcus, phoStand, driver: driver1 })
     };
@@ -8466,7 +9177,10 @@
       camera.rotation.z = roll || 0;
     }
     function f2Lens(fov) { if (Math.abs(camera.fov - fov) > 1e-4) { camera.fov = fov; camera.updateProjectionMatrix(); } }
-    const f2Val = (K, nar) => [K.e[0], K.e[1], K.e[2], K.a[0], K.a[1], K.a[2], nar ? K.fp : K.fd, K.roll || 0];
+    /* (a key's eye or aim may be a function of nothing, read each frame: a look that follows a person who walks, read from
+       where the film stands him, never from his living head: v25.5) */
+    const f2Val = (K, nar) => { const e = typeof K.e === 'function' ? K.e() : K.e, a = typeof K.a === 'function' ? K.a() : K.a;
+      return [e[0], e[1], e[2], a[0], a[1], a[2], nar ? K.fp : K.fd, K.roll || 0]; };
     function f2Keys(K, t) {
       const nar = f2Narrow();
       if (!K.length) return null;
@@ -8506,6 +9220,9 @@
         const u = i / n, s = L * u, p = f2PathAt(P, s), q = f2PathAt(P, Math.min(L, s + ahead)), qq = (q[0] === p[0] && q[1] === p[1]) ? f2PathAt(P, L) : q;
         let dx = qq[0] - p[0], dz = qq[1] - p[1]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
         let a = [p[0] + dx * 2.5, aY, p[1] + dz * 2.5];
+        /* (o.look(s, L): a thing to look at while he walks, by how far along he is, eased in over his first metre (o.lookIn): a
+           man crossing his room looks where he is going TO, not 2.5 m along his own feet's line, which met his bare walls) */
+        if (o.look) { const q = o.look(s, L); if (q) { const w = f2smo(c01(s / (o.lookIn || 1.0))); a = [lp(a[0], q[0], w), lp(a[1], q[1], w), lp(a[2], q[2], w)]; } }
         if (o.a && s > L - 1.0) { const w = f2smo((s - (L - 1.0)) / 1.0); a = [lp(a[0], o.a[0], w), lp(a[1], o.a[1], w), lp(a[2], o.a[2], w)]; }
         /* (the time at each key: eased away from his first step and into his last, a constant pace between) */
         const ease = Math.min(0.3, 0.5 * 1.0 / Math.max(1, L));
@@ -8531,8 +9248,9 @@
     function f2Screen(mode, secs, clock) {
       const sig = mode + '|' + (mode === 'call' ? Math.floor(secs) : '') + '|' + (clock || '');
       if (sig === F2SCR.sig) return; F2SCR.sig = sig;
-      const x = F2SCR.x; x.fillStyle = '#070b12'; x.fillRect(0, 0, 256, 512); x.textAlign = 'center';
-      if (mode === 'home') {
+      const x = F2SCR.x; x.fillStyle = mode === 'off' ? '#020305' : '#070b12'; x.fillRect(0, 0, 256, 512); x.textAlign = 'center';
+      if (mode === 'off') { /* (its screen gone dark: the call over) */ }
+      else if (mode === 'home') {
         x.fillStyle = '#dfe8f4'; x.font = '300 74px sans-serif'; x.fillText(clock || '3:03', 128, 150);
         x.font = '22px sans-serif'; x.fillStyle = '#9fb0c6'; x.fillText('Grandmaster Pho', 128, 300);
         x.fillStyle = '#2f9e5a'; x.beginPath(); x.arc(128, 420, 34, 0, Math.PI * 2); x.fill();
@@ -8555,12 +9273,36 @@
        over its glass), so the first frame of every ending is the decision's own */
     function f2PhoneGroup() {
       const g = new THREE.Group(); g.name = 'his phone (the endings)';
-      const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.136), F2SCRMAT); owned.push(scr.geometry); g.add(scr);
+      /* (the screen laid ON the phone's glass: the model, turned up, stands from -6 to +5 mm about the group's middle, and a
+         screen at its middle was drawn under the model's own black glass: photographed, build 2) */
+      const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.136), F2SCRMAT); owned.push(scr.geometry); scr.position.z = 0.0062; g.add(scr);
       const src = things.hisPhone && things.hisPhone.userData.model;
       if (src) { const m = src.clone(true); m.traverse(q => { if (q.isMesh) q.frustumCulled = false; }); m.rotation.x = Math.PI / 2; m.position.z = -0.006; g.add(m); }
       return g;
     }
     const F2HELD = () => (S && S.plan && S.plan.PHONEHELD) || { pos: [-0.045, 0.06, -0.035], rot: [0.35, 0.25, 0] };
+    /* HIS PHONE HELD UP TO CALL (the endings' own hold: the play's at the decision, the hand at rest, shows the phone's back
+       to the lens, its screen turned down: measured, its screen's normal (0.31, -0.77, 0.56) in the lens's frame; said in
+       ENDINGS.md). The library's `place` grip at 0.4 turns the same hold's screen up to his eyes, low before him, the table
+       or the floor beyond it (photographed, build 2: "3:03" and his teacher's name read on a phone); `face` can turn the
+       screen to the lens whatever the arm (f2PhoneFace), unused by default. `F2TUNE` is a probe's handle on these numbers
+       (tools/probes/e5c1ends.mjs TUNE: many tries photographed from one boot) */
+    const F2TUNE = { phone: { arm: [0, 0, 0], tilt: 0.42, roll: 0.12, pose: 'place', k: 0.4, face: 0, pos: null }, chairY: 0, tieArm: [0, 0, 0], cam: null };
+    const F2CALL = () => F2TUNE.phone;
+    /* the phone in his right hand turned so its screen faces his eyes, whatever the arm's own turn: its turn in the world of
+       the hands' pass laid from the lens's (the screen's normal toward the lens, tilted up by `tilt`, rolled by `roll`),
+       so his hand carries it and its face is always his (a person holds a phone so that its screen faces him). `k` eases
+       from the play's hold (its turn as kit.hold laid it) to this */
+    const _phQ = new THREE.Quaternion(), _phQ2 = new THREE.Quaternion(), _phE = new THREE.Euler(), _phQ0 = new THREE.Quaternion();
+    function f2PhoneFace(k) {
+      const A = F2.api, g = F2M.phone; if (!A || !A.armR || !A.vmCam || !g || g.parent !== A.armR) return;
+      const H = F2HELD(), C = F2CALL();
+      _phQ0.setFromEuler(_phE.set(H.rot[0], H.rot[1], H.rot[2]));
+      A.vmCam.updateMatrixWorld(); A.armR.updateWorldMatrix(true, false);
+      A.vmCam.getWorldQuaternion(_phQ); _phQ.multiply(_phQ2.setFromEuler(_phE.set(-C.tilt, 0, C.roll)));   // (the screen is the group's +z, the lens's own +z toward the eye: tilted up by `tilt`)
+      A.armR.getWorldQuaternion(_phQ2); _phQ.premultiply(_phQ2.invert());
+      g.quaternion.copy(_phQ0).slerp(_phQ, c01(k));
+    }
     /* the phone on the floor of the circle in front of him, on the speaker: the same phone face up, its call lit */
     const f2FloorPhone = new THREE.Group(); f2FloorPhone.name = 'his phone on the floor (the barrier)'; f2FloorPhone.visible = false; hisSideG.add(f2FloorPhone);
     {
@@ -8585,7 +9327,18 @@
     f2Clone('w51pills', (m) => { f2Pills.add(m); F2M.pills = m; });
     /* THE CUSHION over his eyes (ending C): a cushion of the sofa's held against his face, its weave filling the lens */
     const f2Cushion = new THREE.Group(); f2Cushion.name = 'the cushion over his eyes';
-    f2Clone('w5cushion', (m) => { m.scale.set(0.9, 0.9, 0.9); f2Cushion.add(m); F2M.cushion = m; });
+    /* (THINGS' own cushion, faded indigo with cream stripes, once its file is in the build: episode 4 chapter 5's is red, and
+       red is the spell's colour alone in this chapter, the plan's 4.5; until then that one stands in. A little of its own
+       colour given back as light (no lamp), so in his dark room it reads as cloth and not as a grey slab: d7's desktop
+       picture at 14.2 s) */
+    const F2CUSH = have('w51cushion') ? 'w51cushion' : 'w5cushion';
+    f2Clone(F2CUSH, (m) => { m.scale.set(0.9, 0.9, 0.9);
+      m.traverse(q => { if (!q.isMesh || !q.material || !q.material.emissive) return;
+        /* (the stand-in's red paint taken off here, at runtime, its file untouched: a plain faded indigo with its own shape) */
+        if (F2CUSH === 'w5cushion') { q.material.map = null; q.material.color.setHex(0x4a5677); q.material.emissive.setHex(0x4a5677).multiplyScalar(0.14); }
+        else if (q.material.map) { q.material.emissiveMap = q.material.map; q.material.emissive.setScalar(0.14); }
+        q.material.needsUpdate = true; });
+      f2Cushion.add(m); F2M.cushion = m; });
 
     /* ---------------------------------------------------------------- THE WHITE THREAD ROUND HIM (the plan's 9.7, 12)
        A cotton thread on his floor in a circle of 0.75 m round where he sits, laid from in front of him (toward his glass) to
@@ -8604,7 +9357,17 @@
       const aura = ctx.spiritAura ? ctx.spiritAura(m, { color: 0xffffff, fill: 0.5, rim: 1.0, power: 1.6, flicker: 0.05, xray: 1 }) : null;
       return { m, g, curve, aura, per: F2C.R * 6 };
     })();
-    function f2CircleLay(u) { const n = Math.max(0, Math.min(F2C.N, Math.round(F2C.N * c01(u)))); f2Circle.g.setDrawRange(0, n * f2Circle.per); f2Circle.m.visible = n > 0; }
+    /* ITS SHADOW AT DAWN: the white thread on the pale floor in the low sun all but vanished (photographed, the circle a hairline
+       at the picture's foot), and no light casts on a phone (v9.3), so a contact shadow is painted: a flat dark band twice the
+       thread's width laid under it on the side away from his glass, drawn only at dawn; a child of the thread, so it is wound
+       in with it and laid as far round as it is */
+    const f2CircleShade = (() => {
+      const g = new THREE.TubeGeometry(f2Circle.curve, F2C.N, F2C.r * 2.1, F2C.R, false); owned.push(g);
+      const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x4a3c2c, transparent: true, opacity: 0.3, depthWrite: false })); mats.push(m.material);
+      m.name = "the white thread's painted shadow (the dawn)"; m.scale.set(1, 0.12, 1); m.position.set(0, -0.0002, -0.0035); m.frustumCulled = false; m.visible = false;
+      m.renderOrder = -1; f2Circle.m.add(m); return { m, g };
+    })();
+    function f2CircleLay(u) { const n = Math.max(0, Math.min(F2C.N, Math.round(F2C.N * c01(u)))); f2Circle.g.setDrawRange(0, n * f2Circle.per); f2CircleShade.g.setDrawRange(0, n * f2Circle.per); f2Circle.m.visible = n > 0; }
     /* the spark where its ends meet */
     const f2Spark = glow(F2P.circle.x, 0.02, F2P.circle.z + F2P.circle.r, 0.16, 0xffffff, 0.0, hisSideG, null);
 
@@ -8639,7 +9402,10 @@
     const f2GoldCeil = pool(F2P.circle.x, FLAT.ceil - 0.01, F2P.circle.z, 3.4, 3.4, 0xffb850, 0.0, { rx: Math.PI / 2, parent: hisSideG, look: null });
     /* in the vision: the rings and the dome's skin as glows of the vision's own (Grandmaster Pho's gold in it, as chapter 5
        lays his) */
-    const f2GoldAura = ctx.spiritAura ? ctx.spiritAura(f2Gold, { color: F2GOLD, fill: 0.08, rim: 1.25, power: 2.0, flicker: 0.12, xray: 1 }) : null;
+    /* (the dome's skin faint, as it is out of the vision; each ring a gold band of its own, filled: with the group's one faint
+       glow alone the rings stood as pale peach lines on the vision's white, run p11's phone at D 88.8 s) */
+    const f2GoldAura = ctx.spiritAura ? ctx.spiritAura(f2Dome, { color: F2GOLD, fill: 0.08, rim: 1.25, power: 2.0, flicker: 0.12, xray: 1 }) : null;
+    const f2RingAuras = ctx.spiritAura ? f2Rings.map(m => ctx.spiritAura(m, { color: F2GOLD, fill: 0.7, rim: 1.2, power: 2.0, flicker: 0.12, xray: 1 })) : [];
 
     /* ---------------------------------------------------------------- THE RED THREADS (the plan's 12): fine filaments of
        red that come in under his front door and through his glass, feeling along the floor, following his footsteps toward
@@ -8685,6 +9451,18 @@
       const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
       return { curve, L: curve.getLength(), seed };
     }
+    /* THE THREADS AT HIS FEET (endings B and C, before the barrier: the plan's "the threads are already at his feet"): the same
+       threads from the same places (under his front door, through his glass) to his sofa, where he sits (B) or lies (C):
+       ended a stride in front of it, spread along it; those from his door come round his sofa's far end, never under it */
+    function f2WayNear(from, x0, i, seed) {
+      const pts = [], S = HIS.sofa, ex = S.x - 0.55 + 0.18 * i, ez = S.z + 0.62 + 0.06 * Math.sin(i * 2.1);
+      if (from === 'door') pts.push([x0, 0.006, LIV.z0 - 0.6], [x0, 0.006, LIV.z0 + 0.05], [S.x - 1.2, 0.007, S.z - 0.62], [S.x - 1.25, 0.008, S.z + 0.45]);
+      else pts.push([x0, 1.5, LIV.z1 + 1.4], [x0, 0.6, LIV.z1 + 0.25], [x0 + 0.05, 0.03, LIV.z1 - 0.15],
+                    [lp(x0, ex, 0.5) + Math.sin(seed * 3.1) * 0.3, 0.008, lp(LIV.z1 - 0.15, ez, 0.5) + Math.cos(seed * 2.3) * 0.25]);
+      pts.push([ex, 0.01, ez]);
+      const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
+      return { curve, L: curve.getLength(), seed };
+    }
     function f2WayAt(W, s, t, out) {
       const u = c01(s / W.L); W.curve.getPointAt(u, out);
       /* (the search: a sideways wave along it, travelling with the head, smaller near where it came in and at the gold) */
@@ -8702,15 +9480,15 @@
       { from: 'glass', x: F2P.balc.x - 0.2, aim: 1.0, t0: 0.2, v: 0.6 },
       { from: 'glass', x: F2P.circle.x + 2.9, aim: 1.6, t0: 1.8, v: 0.62 }
     ].map((T, i) => {
-      const W = f2Way(T.from, T.x, 0, T.aim, i + 1), g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial());
+      const W = f2Way(T.from, T.x, 0, T.aim, i + 1), Wn = f2WayNear(T.from, T.x, i, i + 1), g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial());
       m.name = 'a red thread (the barrier)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
       const sp = ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null;
-      return Object.assign({}, T, { W, g, m, sp, i });
+      return Object.assign({}, T, { W, Wn, g, m, sp, i });
     });
     /* THE SPARKS where a thread burns on the gold, and its ash: small motes in the vision (ctx.spirit on an instanced mote),
        each a pure function of the clock (born at a moment, flying out and falling, fading) */
     const F2S = { n: 160 };
-    const f2SparkGeo = new THREE.OctahedronGeometry(0.0055, 0); owned.push(f2SparkGeo);
+    const f2SparkGeo = new THREE.OctahedronGeometry(0.011, 0);   // (twice the first build's: at 0.0055 a spark was a pixel on a phone, photographed) owned.push(f2SparkGeo);
     const f2Sparks = new THREE.InstancedMesh(f2SparkGeo, new THREE.MeshBasicMaterial(), F2S.n); f2Sparks.name = 'the sparks (the barrier)';
     f2Sparks.frustumCulled = false; f2Sparks.visible = false; owned.push(f2Sparks); hisSideG.add(f2Sparks); f2Sparks.position.set(F2P.circle.x, 0, F2P.circle.z);
     const f2SparksSp = ctx.spirit ? ctx.spirit(f2Sparks, { color: 0xffb04a, fill: 1.4, rim: 0.6, flicker: 0.6, xray: 1 }) : null;
@@ -8732,33 +9510,140 @@
       for (let i = 0; i <= n; i++) { const s = L * i / n, p = f2PathAt(W, s), q = f2PathAt(W, Math.min(L, s + 0.2)), ang = Math.atan2(q[0] - p[0], q[1] - p[1]), side = (i % 2 ? 1 : -1) * 0.1;
         const m = new THREE.Mesh(fg, new THREE.MeshBasicMaterial()); m.scale.set(0.05, 1, 0.12); m.name = 'his footstep (ending C)';
         m.position.set(p[0] + Math.cos(ang) * side, 0.012, p[1] - Math.sin(ang) * side); m.rotation.y = ang; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
-        f2Feet.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0.8 }) : null }); } }
+        /* (not seen through things: drawn through his sofa's seat as he lay on it, the steps walked across its cushions,
+           photographed) */
+        f2Feet.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0 }) : null }); } }
 
     /* ---------------------------------------------------------------- HIS WRIST (the plan's 9.8 D, 9.9): the band of red light
        a thread wraps round his left wrist at the balcony's door (ending D), burned off by the gold in a white flash, the red
        mark it leaves, and the white thread his teacher ties over the same wrist at dawn. Each a ring laid round the left
        hand's wrist bone in the hands' own pass (the left hand is the mirrored copy of the right: buildPrayerArm) */
-    const F2W = { band: null, mark: null, thread: null, flash: null, on: false };
+    const F2W = { band: null, mark: null, thread: null, flash: null, on: false, knot: null, fit: null };
+    /* THE WAY ROUND HIS WRIST, laid on his own skin (the hands' model, measured once). The hand bone hangs from the model's
+       armature, whose own units are not metres (the file's armature carries a hundred times, and the model is sized to a
+       real hand by a scale of its own), so the rings sized in metres inside that frame stood far out round his wrist, off
+       every picture, never seen in any ending, and the measure taken in the hand bone's frame read the whole arm (0.0042 of
+       its units: run 8's reading). Measured in the hands' own world instead: the forearm's line from the skin itself (its
+       middle 3 to 9 cm behind the wrist's joint), a slice of the skin across that line `back` metres up the arm, and round
+       the slice, every 7.5 degrees, the furthest skin from its middle (so the loop never sinks into it), smoothed, then `gap`
+       metres out; a tube `th` thick, carried by the armature in that frame's own units (the forearm's skin moves with it:
+       the hand turns on its own bone) */
+    function f2WristLoop(L, wr, back, gap, th) {
+      const fa = wr.parent; L.updateWorldMatrix(true, true);
+      const O = new THREE.Vector3(), Yh = new THREE.Vector3(), v = new THREE.Vector3(), Cf = new THREE.Vector3(), ax = new THREE.Vector3();
+      wr.getWorldPosition(O); Yh.setFromMatrixColumn(wr.matrixWorld, 1).normalize();
+      const near = [];
+      L.traverse(o => { if (!o.isSkinnedMesh || !o.geometry || !o.geometry.attributes.position) return;
+        if (o.skeleton) o.skeleton.update();
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); if (v.distanceToSquared(O) < 0.0144) near.push(v.clone()); } });
+      let nf = 0; for (const p of near) { const a = v.copy(p).sub(O).dot(Yh); if (a < -0.03 && a > -0.09) { Cf.add(p); nf++; } }
+      if (nf > 20) ax.copy(O).sub(Cf.multiplyScalar(1 / nf)).normalize(); else ax.copy(Yh);
+      const c0 = O.clone().addScaledVector(ax, -back);
+      const e1 = new THREE.Vector3(0, 1, 0).addScaledVector(ax, -ax.y); if (e1.lengthSq() < 1e-6) e1.set(1, 0, 0).addScaledVector(ax, -ax.x); e1.normalize();
+      const e2 = new THREE.Vector3().crossVectors(ax, e1).normalize();
+      const sl = []; for (const p of near) { v.copy(p).sub(c0); const a = v.dot(ax); if (Math.abs(a) < 0.005) sl.push([v.dot(e1), v.dot(e2)]); }
+      const N = 48, rb = new Array(N).fill(0);
+      let cx = 0, cy = 0;
+      if (sl.length >= 16) { let x0 = 9, x1 = -9, y0 = 9, y1 = -9; for (const [x, y] of sl) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+        cx = (x0 + x1) / 2; cy = (y0 + y1) / 2;
+        for (const [x, y] of sl) { const r = Math.hypot(x - cx, y - cy), b = ((Math.floor((Math.atan2(y - cy, x - cx) + Math.PI) / (2 * Math.PI) * N) % N) + N) % N; if (r > rb[b]) rb[b] = r; }
+        for (let pass = 0; pass < N && rb.some(r => !r); pass++) { const c = rb.slice(); for (let i = 0; i < N; i++) if (!c[i]) rb[i] = Math.max(c[(i + N - 1) % N], c[(i + 1) % N]); } }
+      else rb.fill(0.032);
+      const dl = rb.map((r, i) => Math.max(r, rb[(i + N - 1) % N], rb[(i + 1) % N]));
+      const R = dl.map((r, i) => (dl[(i + N - 1) % N] + 2 * r + dl[(i + 1) % N]) / 4 + gap);
+      const sp = new THREE.Vector3().setFromMatrixColumn(fa.matrixWorld, 1).length() || 1;
+      const pts = R.map((r, i) => { const a = (i + 0.5) / N * 2 * Math.PI - Math.PI;
+        return fa.worldToLocal(c0.clone().addScaledVector(e1, cx + r * Math.cos(a)).addScaledVector(e2, cy + r * Math.sin(a))); });
+      const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true, 'centripetal'), 96, th / sp, 8, true); owned.push(g);
+      return { g, pts, sp, n: sl.length, rx: (Math.max(...R) - gap), rn: (Math.min(...R) - gap), axLocal: fa.worldToLocal(O.clone()).sub(fa.worldToLocal(O.clone().addScaledVector(ax, -0.05))).normalize() };
+    }
     function f2WristDress() {
       if (F2W.band || !F2.api || !F2.api.buildPrayerArm) return !!F2W.band;
       const L = F2.api.buildPrayerArm(); if (!L || !L.userData || !L.userData.model) return false;
       const wr = L.userData.model.getObjectByName('handR'); if (!wr || !wr.parent) return false;
-      const mk = (r, th, color, add, op) => { const g = new THREE.TorusGeometry(r, th, 6, 40); owned.push(g);
-        const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
-        m.position.copy(wr.position); m.quaternion.copy(wr.quaternion); m.rotateX(Math.PI / 2); m.visible = false; m.frustumCulled = false; m.renderOrder = 3; wr.parent.add(m); return m; };
-      F2W.band = mk(0.034, 0.006, F2RED, true, 0.9);
-      F2W.band2 = mk(0.036, 0.011, 0xff5040, true, 0.35);
-      F2W.mark = mk(0.0335, 0.0042, 0xb04a46, false, 0.85);
-      F2W.thread = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0);
-      F2W.thread2 = mk(0.0345, 0.0016, 0xf4f2ea, false, 1.0); F2W.thread2.translateZ(0.004);
+      const mk = (back, gap, th, color, add, op) => { const fit = f2WristLoop(L, wr, back, gap, th);
+        const m = new THREE.Mesh(fit.g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
+        m.visible = false; m.frustumCulled = false; m.renderOrder = 3; m.userData.fit = fit; wr.parent.add(m); return m; };
+      /* (metres: the red band of ending D standing off the skin and glowing, its haze, the mark it leaves as a welt, and the
+         white thread's two turns side by side a little up from the wrist's crease, 2.4 mm thick, a cotton cord's) */
+      F2W.band = mk(0.018, 0.005, 0.0045, F2RED, true, 0.9);
+      F2W.band2 = mk(0.018, 0.008, 0.009, 0xff5040, true, 0.35);
+      F2W.mark = mk(0.018, -0.0011, 0.0026, 0xb04a46, false, 0.85);
+      F2W.thread = mk(0.016, 0.0016, 0.0012, 0xf4f2ea, false, 1.0);
+      F2W.thread2 = mk(0.021, 0.0016, 0.0012, 0xf4f2ea, false, 1.0);
+      const f = F2W.thread.userData.fit; F2W.fit = { slice: f.n, rMax: +f.rx.toFixed(4), rMin: +f.rn.toFixed(4), unit: +f.sp.toFixed(3) };
+      /* the knot: a small knot and its two cut ends, laid each frame on the turn's side his eye sees */
+      const sp = f.sp, kg = new THREE.IcosahedronGeometry(0.0026 / sp, 1), tg = new THREE.CylinderGeometry(0.0008 / sp, 0.0007 / sp, 0.014 / sp, 6, 1); tg.translate(0, 0.007 / sp, 0); owned.push(kg, tg);
+      const km = new THREE.MeshBasicMaterial({ color: 0xeeebe2, toneMapped: false }); mats.push(km);
+      const K = new THREE.Group(); K.add(new THREE.Mesh(kg, km)); const t1 = new THREE.Mesh(tg, km), t2 = new THREE.Mesh(tg, km); K.add(t1, t2);
+      K.traverse(o => { o.frustumCulled = false; o.renderOrder = 3; }); K.visible = false; wr.parent.add(K);
+      F2W.knot = { K, t1, t2, wr };
+      /* the burn's flash (ending D): a soft round light at the band's middle, its own radial falloff (the band's haze ring,
+         opened out to be the flash, stood as a hard-edged white disc behind his wrist: d7's desktop picture at 91.3 s) */
+      { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gr.addColorStop(0, 'rgba(255,250,240,1)'); gr.addColorStop(0.22, 'rgba(255,238,214,0.72)'); gr.addColorStop(0.55, 'rgba(255,214,184,0.22)'); gr.addColorStop(1, 'rgba(255,196,170,0)');
+        x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+        const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; owned.push(tx);
+        const fm = new THREE.SpriteMaterial({ map: tx, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }); mats.push(fm);
+        F2W.flashSp = new THREE.Sprite(fm); F2W.flashSp.name = "the burn's flash at his wrist (ending D)"; F2W.flashSp.frustumCulled = false; F2W.flashSp.renderOrder = 4; F2W.flashSp.visible = false; wr.parent.add(F2W.flashSp); }
+      /* IN SPIRIT VISION THE BAND IS A SPIRIT: the vision draws his hands black and white with the world (everything but the
+         entities: its rule since episode 4 chapter 4), so the red band in the hands' pass read there as a grey ring (run 7's
+         photograph at the barrier). Its twin in the world's vision layer is laid each frame exactly where the hands' pass
+         draws the band (every point of the hands' camera at depth z stands on this lens at z / s, s = tan(f/2) / tan(26), as
+         f2WristAt), and glows red with the threads round the wrist's edge (the hands are laid over the spirits) */
+      const fitS = f2WristLoop(L, wr, 0.018, 0.009, 0.007), bm = new THREE.MeshBasicMaterial(); mats.push(bm);
+      const sm = new THREE.Mesh(fitS.g, bm); sm.matrixAutoUpdate = false; sm.visible = false; sm.frustumCulled = false; world.add(sm);
+      F2W.bandSp = { m: sm, fa: wr.parent, h: ctx.spirit ? ctx.spirit(sm, { color: F2RED, fill: 1.3, rim: 0.9, flicker: 0.25, xray: 1 }) : null };
       return true;
+    }
+    const _bsS = new THREE.Matrix4(), _bsM = new THREE.Matrix4(), _bsP = new THREE.Matrix4(), _bsRed = new THREE.Color(F2RED), _bsWhite = new THREE.Color(0xffffff);
+    function f2BandSpirit(on, alpha, white) {
+      const B = F2W.bandSp, A = F2.api; if (!B) return;
+      /* (only while his left hand is drawn: in the world it stood alone over the chant, a red ring in the middle of the picture
+         with no hand under it, photographed) */
+      let shown = true; for (let o = B.fa; o; o = o.parent) if (!o.visible) { shown = false; break; }
+      B.m.visible = !!(on && shown && B.h && A && A.vmCam); if (!B.m.visible) return;
+      const s = Math.tan(camera.fov * Math.PI / 360) / Math.tan(A.vmCam.fov * Math.PI / 360);
+      camera.updateMatrixWorld(); A.vmCam.updateMatrixWorld(); B.fa.updateWorldMatrix(true, false);
+      _bsM.copy(camera.matrixWorld).multiply(_bsS.makeScale(1, 1, 1 / s)).multiply(A.vmCam.matrixWorldInverse).multiply(B.fa.matrixWorld);
+      B.m.parent.updateWorldMatrix(true, false); B.m.matrix.copy(_bsP.copy(B.m.parent.matrixWorld).invert().multiply(_bsM)); B.m.matrixWorldNeedsUpdate = true;
+      B.h.set('uAlpha', c01(alpha)); B.h.set('uColor', white ? _bsWhite : _bsRed);
+    }
+    /* the knot on the side of the first turn nearest his eye (the hands' lens: the wrist turns with the arm), its two ends
+       out from it, a little apart, toward the hand */
+    const _kc = new THREE.Vector3(), _kn = new THREE.Vector3(), _kt = new THREE.Vector3(), _kd = new THREE.Vector3(), _kup = new THREE.Vector3(0, 1, 0);
+    function f2KnotLay(on) {
+      const Kn = F2W.knot; if (!Kn) return; Kn.K.visible = !!on; if (!on) return;
+      const A = F2.api, fit = F2W.thread.userData.fit, fa = Kn.wr.parent; if (!A || !A.vmCam) return;
+      A.vmCam.updateMatrixWorld(); A.vmCam.getWorldPosition(_kc); fa.updateWorldMatrix(true, false); fa.worldToLocal(_kc);
+      let best = 0, bd = Infinity; for (let i = 0; i < fit.pts.length; i++) { const d = fit.pts[i].distanceToSquared(_kc); if (d < bd) { bd = d; best = i; } }
+      const p = fit.pts[best], c = _kd.set(0, 0, 0); for (const q of fit.pts) c.add(q); c.multiplyScalar(1 / fit.pts.length);
+      const ax = fit.axLocal; _kn.copy(p).sub(c); _kn.addScaledVector(ax, -_kn.dot(ax)).normalize();
+      Kn.K.position.copy(p).addScaledVector(_kn, 0.0012 / fit.sp);
+      _kt.crossVectors(ax, _kn).normalize();
+      const lay = (m, s) => { _kd.copy(_kn).multiplyScalar(0.55).addScaledVector(_kt, 0.6 * s).addScaledVector(ax, 0.55).normalize(); m.quaternion.setFromUnitVectors(_kup, _kd); };
+      lay(Kn.t1, 1); lay(Kn.t2, -1);
     }
     function f2WristShow(band, mark, thread, flash) {
       if (!f2WristDress()) return;
-      F2W.band.visible = band > 0.001; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = band > 0.001 || flash > 0.001;
-      F2W.band2.material.opacity = 0.35 * band + 0.9 * flash; F2W.band2.material.color.setHex(flash > band ? 0xffffff : 0xff5040);
+      /* (in Spirit Vision the band is its spirit twin's, red: the hands' pass would draw it grey) */
+      const sp = !!F2.vis && (band > 0.001 || flash > 0.001);
+      F2W.band.visible = band > 0.001 && !sp; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = (band > 0.001 || flash > 0.001) && !sp;
+      f2BandSpirit(sp, Math.max(band, flash), flash > band);
+      /* (the burn's flash a soft warm light that opens out from the wrist as it fades, about the ring's own middle: drawn
+         white at 0.9 it stood as a solid white bangle, photographed; the haze ring opened out for it stood as a hard white
+         disc, photographed: so the ring only warms, and the light is a soft round glow of its own, 7 cm across at its height
+         and 19 cm as it fades) */
+      F2W.band2.material.opacity = 0.35 * band + 0.3 * flash; F2W.band2.material.color.setHex(flash > band ? 0xfff0d6 : 0xff5040);
+      { const f = F2W.band2.userData.fit;
+        if (!f.mid) { f.mid = new THREE.Vector3(); for (const q of f.pts) f.mid.add(q); f.mid.multiplyScalar(1 / f.pts.length); }
+        F2W.band2.scale.setScalar(1); F2W.band2.position.set(0, 0, 0);
+        const fs = F2W.flashSp; if (fs) { fs.visible = flash > 0.001 && !sp; fs.material.opacity = 0.95 * c01(flash);
+          fs.position.copy(f.mid); fs.scale.setScalar((0.07 + 0.12 * (1 - c01(flash))) / f.sp); } }
       F2W.mark.visible = mark > 0.001; F2W.mark.material.opacity = 0.85 * mark;
       F2W.thread.visible = thread > 0.5; F2W.thread2.visible = thread > 1.5;
+      f2KnotLay(thread > 0.5);
     }
 
     /* ---------------------------------------------------------------- THE FILMS' FRAME, AND WHAT EACH ONE OWNS
@@ -8776,19 +9661,32 @@
     /* SPIRIT VISION held by the film's clock (the engine's own curve out from his eyes over `secs` from `t0`, full until `t1`,
        home over `back`), held only round the moments it is open (a held radius of 0 draws every frame through the vision's
        pass for nothing: episode 4 chapter 5's R51) */
-    const F2VR = 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
+    /* (the films open his sight as far as play does: the chapter's own declared reach, the engine's 70 m when it names none.
+       At 70 m the city past it stayed as it was, its edge a curve across the blocks out of his glass: d7's desktop pictures
+       at D 7.2 s and A 77.0 s; PLAY made it 200 m, sky 190, at 75f0be6. The films' times were set at 70 m, so each opening is
+       stretched by the reach against 70 m, as PLAY stretched play's, and the wave crosses his room at the pace it did, going
+       on out over the city after; a close takes the room home at the moment it did, whatever lay past 70 m going in its first
+       0.4 s; a close that comes while the wave is still going out starts from where it has got to) */
+    const F2VR = (DATA.vision && DATA.vision.rmax) || 70, F2VK = F2VR / 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
     function f2VisionR(t, t0, secs, t1, back) {
-      if (t >= t0 && t < t0 + secs) return [F2VR * f2VisCurve((t - t0) / secs), true];
-      if (t >= t0 + secs && t < t1) return [F2VR, false];
-      if (t >= t1 && t < t1 + back) return [F2VR * f2VisCurve(1 - (t - t1) / back), true];
+      if (t < t0) return [0, false];
+      const S = secs * F2VK, rOpen = (q) => F2VR * f2VisCurve(c01((q - t0) / S));
+      if (t < t1) return [rOpen(t), t < t0 + S];
+      if (back > 0 && t < t1 + back) {
+        const r1 = rOpen(t1), u = (t - t1) / back;
+        return [Math.min(r1, 70) * f2VisCurve(1 - u) + Math.max(0, r1 - 70) * (1 - f2smo(c01((t - t1) / 0.4))), true];
+      }
       return [0, false];
     }
     function f2Vision(r, mv, t) {
+      F2.visR = r > 0.001 ? r : 0;
       if (!kit || !kit.vision) return;
-      if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; }
-      /* (shut: held at nothing for a third of a second, so the vision's own radius is nothing when it is let go; let go while
-         it stood open, it would run home by itself over its own 1.6 s, across a cut) */
-      else if (F2.vis) { if (t != null && t - (F2.visT || 0) < 0.3 && t >= (F2.visT || 0)) kit.vision({ r: 0, moving: false }); else { kit.vision({ r: 0, moving: false }); kit.vision(null); F2.vis = false; } }
+      if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; F2.visZero = 0; }
+      /* (shut: held at nothing for three drawn frames and a third of a second, so the vision's own radius is nothing when it
+         is let go; let go while it stood open, it runs home by itself over its own 1.6 s, across a cut: the oven's clock was
+         photographed inverted a second after B's cut, where a seek had jumped the third of a second) */
+      else if (F2.vis) { kit.vision({ r: 0, moving: false }); F2.visZero = (F2.visZero || 0) + 1;
+        if (F2.visZero > 3 && !(t != null && t - (F2.visT || 0) < 0.3 && t >= (F2.visT || 0))) { kit.vision(null); F2.vis = false; } }
     }
     function f2Look(name) { if (F2.look === name) return; F2.look = name; if (kit && kit.daylight && PRESETS[name]) kit.daylight(PRESETS[name], 0); }
     function f2Press(k) { if (kit && kit.press) kit.press(c01(k), { secs: 0, cine: true }); F2.press = k; }
@@ -8806,6 +9704,37 @@
       if (A.handsRoot) A.handsRoot.visible = !!show;
       if (!show) return;
       if (A.handPose) A.handPose(pose || null, pose ? c01(k) : 0, o || {});
+    }
+    /* THE STRIP OF PILLS IN HIS HAND (ending C): held by its top end between his thumb and the side of his first finger, the
+       rest hanging below his fist with its tablets turned to his eye, its foot swung a little to the left, clear of his
+       forearm. Held at the palm it lay under his hand, never seen (run 7); stood up out of the pinch it went up behind the
+       back of his hand, a piece of one tablet under the fist (run 9, d7's desktop at 5.3 s, run p11's phone at 5.1 and 5.4
+       s): from his eye the back of his hand covers everything above the pinch, so it can only be seen hanging below it.
+       Laid EVERY frame from the hand as this frame's pose draws it (the thumb's tip, the first finger's middle joint), on the
+       right arm so the arm's sway carries it */
+    const F2PB = { R: null, th: null, ix: null };
+    const _f2pq = new THREE.Vector3(), _f2pk = new THREE.Vector3(), _f2pu = new THREE.Vector3(), _f2pn = new THREE.Vector3(),
+      _f2py = new THREE.Vector3(), _f2pz = new THREE.Vector3(), _f2pc = new THREE.Vector3(), _f2pr = new THREE.Vector3(), _f2pm = new THREE.Matrix4(), _f2pM = new THREE.Matrix4();
+    function f2PillsIn(on) {
+      const A = F2.api, R = A && A.armR;
+      if (!on || !R || !A.vmCam || !F2M.pills) { f2Pills.visible = false; return; }
+      if (F2PB.R !== R) { F2PB.R = R; F2PB.th = R.getObjectByName('thumb03R'); F2PB.ix = R.getObjectByName('f_index02R'); }
+      if (!F2PB.th || !F2PB.ix) { f2Pills.visible = false; return; }
+      if (f2Pills.parent !== R) R.add(f2Pills);
+      R.updateWorldMatrix(true, true); A.vmCam.updateMatrixWorld();
+      F2PB.th.getWorldPosition(_f2pq); F2PB.ix.getWorldPosition(_f2pk); _f2pq.add(_f2pk).multiplyScalar(0.5);
+      _f2pn.setFromMatrixPosition(A.vmCam.matrixWorld).sub(_f2pq).normalize();
+      _f2pu.setFromMatrixColumn(A.vmCam.matrixWorld, 1).normalize(); _f2pu.addScaledVector(_f2pn, -_f2pu.dot(_f2pn)).normalize();
+      _f2pr.crossVectors(_f2pu, _f2pn).normalize();
+      /* (its length down from the pinch, its foot 0.2 rad to his left; its tablets to his eye) */
+      _f2pu.multiplyScalar(-Math.cos(0.2)).addScaledVector(_f2pr, -Math.sin(0.2)).normalize();
+      _f2py.copy(_f2pn).addScaledVector(_f2pu, -_f2pn.dot(_f2pu)).normalize(); _f2pz.crossVectors(_f2pu, _f2py).normalize();
+      /* (the strip's own frame: its length on x, 0.10 m; its tablets on +y; its width on z, 0.043 m; its top 1.5 cm into the
+         pinch, a centimetre nearer his eye than the pinch's middle so the thumb lies over its top) */
+      _f2pc.copy(_f2pq).addScaledVector(_f2pu, 0.05 - 0.015).addScaledVector(_f2py, 0.01);
+      _f2pm.makeBasis(_f2pu, _f2py, _f2pz).setPosition(_f2pc);
+      _f2pM.copy(R.matrixWorld).invert().multiply(_f2pm).decompose(f2Pills.position, f2Pills.quaternion, f2Pills.scale);
+      f2Pills.visible = true;
     }
     /* the left hand placed as the right one's mirror (the library's poses lay most things in the right; a left hand on a door's
        frame or held out to his teacher is the right one's pose turned over), the right one hidden */
@@ -8842,20 +9771,33 @@
         /* to the bag, around his sofa's near end: up from where the ending left him first if he was down */
         const path1 = F2PATH[F2.k] || F2PATH.A, rise = Bm.rise1 || 0;
         if (rise > 0) K.push({ t: Bm.walk0 + rise, e: [path1[0][0], F2EYE.stand, path1[0][1]], a: [path1[1][0], 1.3, path1[1][1]], fp: 64, fd: 56, n: 'bar:rise' });
-        f2WalkKeys(path1, Bm.walk0 + rise, Bm.bag, F2EYE.stand, { a: [F2P.bag.x, 0.2, F2P.bag.z], fp: 64, fd: 56, n: 'bar:tobag' }).slice(1).forEach(k => K.push(k));
+        /* (to his front door and the bag on the floor beside it: what he goes for, the whole way) */
+        const doorAim = [HIS.door.x + 0.3, 1.0, LIV.z0 + 0.05];
+        f2WalkKeys(path1, Bm.walk0 + rise, Bm.bag, F2EYE.stand, { a: [F2P.bag.x, 0.2, F2P.bag.z], look: () => doorAim, fp: 64, fd: 56, n: 'bar:tobag' }).slice(1).forEach(k => K.push(k));
         /* down to the bag: his right hand into it (the zip, the spool), and up again */
         K.push({ t: Bm.bag + 0.9, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x, 0.15, F2P.bag.z + 0.05], fp: 62, fd: 54, n: 'bar:bag', stop: true });
         K.push({ t: Bm.spool, e: [F2P.bagAt.x, F2EYE.crouch, F2P.bagAt.z], a: [F2P.bag.x + 0.02, 0.18, F2P.bag.z + 0.08], fp: 62, fd: 54, n: 'bar:spool', stop: true });
-        K.push({ t: Bm.spool + 0.9, e: [F2P.bagAt.x + 0.05, F2EYE.stand, F2P.bagAt.z + 0.1], a: [F2P.bagAt.x + 0.9, 1.3, F2P.bagAt.z + 1.8], fp: 64, fd: 56, n: 'bar:up' });
+        /* (up again facing along the wall, the way he goes round his sofa's end: risen facing the room, the sofa's back stood
+           a hand's breadth before the lens and filled the frame, photographed) */
+        K.push({ t: Bm.spool + 0.9, e: [F2P.bagAt.x - 0.05, F2EYE.stand, F2P.bagAt.z + 0.02], a: [F2PATH.on[1][0] - 0.9, 1.3, F2PATH.on[1][1] + 0.35], fp: 64, fd: 56, n: 'bar:up' });
         const path2 = F2PATH.on;
-        f2WalkKeys(path2, Bm.spool + 0.9, Bm.sit0, F2EYE.stand, { a: glassA, fp: 66, fd: 58, n: 'bar:tocircle' }).slice(1).forEach(k => K.push(k));
+        /* (round his sofa's end past his altar, its candle, his teacher's photograph and the bottle on it trembling, then out to
+           the middle of the room and his glass) */
+        const altarAim = [HIS.altar.x + 0.05, 1.12, HIS.altar.z - 0.05];
+        const altarThen = (s, L) => { const w = f2smo(c01((s - (L - 2.6)) / 1.8)); return [lp(altarAim[0], glassA[0], w), lp(altarAim[1], glassA[1], w), lp(altarAim[2], glassA[2], w)]; };
+        f2WalkKeys(path2, Bm.spool + 0.9, Bm.sit0, F2EYE.stand, { a: glassA, look: altarThen, fp: 66, fd: 58, n: 'bar:tocircle' }).slice(1).forEach(k => K.push(k));
         /* he sits down, in the middle of the room, facing his glass (a pained sit, eased over 1.6 s) */
-        K.push({ t: Bm.sit0 + 0.8, e: [F2SIT.x, 1.2, F2SIT.z - 0.06], a: [C.x, 0.95, C.z + 3.0], fp: 68, fd: 60, n: 'bar:sit' });
-        K.push({ t: Bm.circle - 0.7, e: eyeSit, a: [C.x, 0.62, C.z + 3.0], fp: 70, fd: 62, n: 'bar:seated', stop: true });
+        /* (his sitting down 1.45 s from his last step: at 0.8 s and 0.1 s before the circle, the eye dropped its last 0.38 m in a
+           tenth of a second, measured as a move) */
+        K.push({ t: Bm.sit0 + 0.55, e: [F2SIT.x, 1.2, F2SIT.z - 0.06], a: [C.x, 0.95, C.z + 3.0], fp: 68, fd: 60, n: 'bar:sit' });
+        K.push({ t: Bm.circle - 0.15, e: eyeSit, a: [C.x, 0.62, C.z + 3.0], fp: 70, fd: 62, n: 'bar:seated', stop: true });
         K.push({ t: Bm.circle, e: eyeSit, a: [C.x, 0.02, C.z + 1.5], fp: 70, fd: 62, n: 'bar:down', stop: true });
         F2.barKeys = K; F2.barKeysFor = Bm;
       }
-      if (t < Bm.circle + 0.001) return f2Keys(F2.barKeys, t);
+      /* (the keys run up to the circle's moment and not onto it: while the event is open the film's clock stands EXACTLY on
+         Bm.circle (the engine's wall, eventWait), and a test that took that moment as the keys' kept his head still while
+         the thread went round him) */
+      if (t < Bm.circle - 1e-3) return f2Keys(F2.barKeys, t);
       /* CLOSE THE CIRCLE (the film's clock stands at Bm.circle while it is open): his head follows the thread as it is laid,
          within a neck's reach (to his right as it goes round to his right, back to the front while it passes behind him, to his
          left as it comes round, and to the front where its ends meet), looking at the floor beyond his knees */
@@ -8863,9 +9805,10 @@
         const u = F2.cirShow, turn = 1.05 * Math.sin(Math.PI * c01(u / 0.5)) * (u < 0.5 ? -1 : 0) + 1.05 * Math.sin(Math.PI * c01((u - 0.5) / 0.5)) * (u >= 0.5 ? 1 : 0);
         const yw = Math.PI + turn, d = 1.5, nar = f2Narrow();
         const a = [C.x - Math.sin(yw) * d, 0.02 + 0.08 * Math.abs(Math.sin(turn)), C.z - Math.cos(yw) * d];
-        const v = [eyeSit[0], eyeSit[1], eyeSit[2], a[0], a[1], a[2], nar ? 70 : 62, 0];
-        /* after it closes, the eye lifts to level for his teacher's words */
+        /* after it closes, the eye lifts to level for his teacher's words, the lens easing to the chant's (it stepped from 70 to
+           66 degrees in one frame there, measured as a move) */
         const lift = f2smo(f2win(t, Bm.circle + 0.05, Bm.after));
+        const v = [eyeSit[0], eyeSit[1], eyeSit[2], a[0], a[1], a[2], nar ? lp(70, 66, lift) : lp(62, 58, lift), 0];
         return v.map((q, j) => (j === 4 ? lp(q, 0.75, lift) : q));
       }
       /* THE CHANT (the plan's 9.7, 26-40 s, the measured take): low, from the floor inside the circle, looking out to his glass
@@ -8878,8 +9821,10 @@
         K.push({ t: c0 + 0.5, e: eyeSit, a: at(Math.PI - 0.05, 0.62), fp: 66, fd: 58, n: 'bar:gold' });
         K.push({ t: Bm.door0 - 0.01, e: [eyeSit[0], 0.78, eyeSit[2]], a: at(Y0, 0.55), fp: 66, fd: 58, n: 'bar:gold2', stop: true });
         /* the insert: the foot of his front door, the red threads slipping in under it (a cut to a thing: v21.30) */
-        K.push({ t: Bm.door0, e: [F2P.door.x + 0.75, 0.32, F2P.door.z + 1.35], a: [F2P.door.x + 0.05, 0.03, F2P.door.z + 0.02], fp: 40, fd: 34, n: 'bar:door', cut: true });
-        K.push({ t: Bm.door1, e: [F2P.door.x + 0.7, 0.28, F2P.door.z + 1.25], a: [F2P.door.x + 0.1, 0.03, F2P.door.z + 0.2], fp: 38, fd: 32, n: 'bar:door2', stop: true });
+        /* (the insert's eye between his sofa's end and the wall: 0.75 m out from the door's line it stood inside his sofa, 32 cm
+           up, the film's eye against the sofa's footprint, measured) */
+        K.push({ t: Bm.door0, e: [F2P.door.x + 0.25, 0.32, F2P.door.z + 1.25], a: [F2P.door.x + 0.05, 0.03, F2P.door.z + 0.02], fp: 40, fd: 34, n: 'bar:door', cut: true });
+        K.push({ t: Bm.door1, e: [F2P.door.x + 0.22, 0.28, F2P.door.z + 1.15], a: [F2P.door.x + 0.1, 0.03, F2P.door.z + 0.2], fp: 38, fd: 32, n: 'bar:door2', stop: true });
         K.push({ t: Bm.door1 + 0.001, e: [eyeSit[0], 0.76, eyeSit[2]], a: at(Y0, 0.42), fp: 66, fd: 58, n: 'bar:low', cut: true });
         K.push({ t: Bm.touch + 1.6, e: [eyeSit[0], 0.74, eyeSit[2]], a: at(lp(Y0, Y1, 0.45), 0.36), fp: 66, fd: 58, n: 'bar:turn' });
         K.push({ t: Bm.surge, e: [eyeSit[0], 0.73, eyeSit[2]], a: at(Y1, 0.38), fp: 64, fd: 56, n: 'bar:surge', stop: true });
@@ -8932,7 +9877,12 @@
       const c0 = Bm.chant, up = f2smo(f2win(t, c0 + 0.3, c0 + 6.5)), fadeG = 1 - f2smo(f2win(t, Bm.brk + 1.5, Bm.calm + 1.2)), push = (o.push ? 0.45 : 0) + 0.55 * f2bell(t, Bm.touch - 0.5, Bm.touch + 1.0, Bm.surge, Bm.brk + 0.4);
       const gk = up * fadeG;
       f2Gold.visible = gk > 0.002;
-      f2DomeMat.uniforms.uK.value = gk * (0.85 + 0.4 * push) * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.brk + 1.0)));
+      /* (while his sight is open the gold is the vision's own glow alone: its light laid on the world was turned with the
+         world into the negative, a dark band wherever a ring crossed something pale, the balcony's chairs, the glass's
+         frame, as if the rings stood behind them: d7's desktop photograph at 58.6 s. So the light on the world goes as his
+         sight opens over its first metre and a half, and comes back as it shuts) */
+      const onWorld = 1 - c01((F2.visR || 0) / 1.5);
+      f2DomeMat.uniforms.uK.value = onWorld * gk * (0.85 + 0.4 * push) * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.brk + 1.0)));
       f2DomeMat.uniforms.uT.value = t; f2DomeMat.uniforms.uPush.value = push;
       for (let i = 0; i < f2Rings.length; i++) {
         /* each ring climbs from the floor to the crown over 4.4 s, one every 0.9 s from the chant's start, then round again */
@@ -8940,11 +9890,13 @@
         const h = F2G.H * Math.pow(cyc, 0.85), rr = F2G.R0 * Math.sqrt(Math.max(0, 1 - Math.pow(h / F2G.H, 2)));
         const m = f2Rings[i]; m.position.y = Math.max(0.004, h); m.scale.set(Math.max(0.02, rr), 1, Math.max(0.02, rr));
         const fadeTop = 1 - f2smo(c01((cyc - 0.78) / 0.22)), fadeBot = f2smo(c01(cyc / 0.06));
-        m.material.opacity = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0; m.visible = m.material.opacity > 0.002;
+        const op = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0;
+        m.visible = op > 0.002; m.material.opacity = op * onWorld;
+        if (f2RingAuras[i]) f2RingAuras[i].set('uAlpha', Math.min(1, op * 1.15));
       }
       if (f2GoldAura) f2GoldAura.set('uAlpha', gk * (0.8 + 0.4 * push));
-      f2GoldPool.m.opacity = 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;
-      f2GoldCeil.m.opacity = 0.07 * gk; f2GoldCeil.q.visible = f2GoldCeil.m.opacity > 0.002;
+      f2GoldPool.m.opacity = onWorld * 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;
+      f2GoldCeil.m.opacity = onWorld * 0.07 * gk; f2GoldCeil.q.visible = f2GoldCeil.m.opacity > 0.002;
       /* THE RED THREADS: in from the door and the glass from the vision's opening, to the gold; each meets it and burns back */
       const tv = Bm.vis0 + 0.4, burnK = 0.9, te = (F2.E && F2.E.slow) ? F2.E.slow(t) : t;
       let sparkN = 0, ashN = 0;
@@ -8998,10 +9950,10 @@
        held off the gold's edge (there is no gold yet), searching */
     function f2ThreadsAt(t, te, o) {
       for (const T of F2THREADS) {
-        const L = T.W.L, start = L * 0.6, grow = Math.max(0, te - o.t0 - T.t0 * 0.4);
+        const W = T.Wn, L = W.L, start = L * 0.55, grow = Math.max(0, te - o.t0 - T.t0 * 0.4);
         const head = Math.min(L - 0.04 - 0.05 * Math.sin(te * 1.7 + T.i), start + grow * T.v);
         T.m.visible = head > 0.05;
-        if (T.m.visible) { f2TubeLay(T.g, (s2, out) => f2WayAt(T.W, s2, te, out), 0, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
+        if (T.m.visible) { f2TubeLay(T.g, (s2, out) => f2WayAt(W, s2, te, out), 0, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
       }
     }
     /* ENDING D'S THREADS: streaming in from the dark beyond the city's lights, all from one direction, across his balcony and
@@ -9012,27 +9964,43 @@
     for (let i = 0; i < F2D.n; i++) { const g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial()); m.name = 'a red thread (ending D)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
       f2DT.push({ g, m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null, i }); }
     const _dA = new THREE.Vector3(), _dB = new THREE.Vector3(), _dW = new THREE.Vector3();
+    /* the outdoor way of ending D's red threads, at q (0 out in the dark over the city, 1 at the end it is given, d0 metres out
+       from his glass on his balcony's floor): from 9 m up 70 m out, down over the city to his balcony's rail and OVER it (the
+       rail 1.1 m up, 1.56 m out: b_world.js BALC; the first way passed it 0.14 m up, through its glass, read from its own
+       numbers), then down onto the balcony's floor; sampled thickest near his door (the distance out goes as (1 - q) cubed,
+       so the few metres he sees are drawn smooth) */
+    function f2DOut(q, x0, z0, d0, i, t, out) {
+      const d = d0 + (70 - d0) * Math.pow(1 - q, 3), k = (d - d0) / (70 - d0), rail = 1.56;
+      const y = d < rail ? 0.01 + 1.21 * f2smo(c01((d - 0.6) / (rail - 0.6))) : 1.22 + 7.78 * Math.pow((d - rail) / (70 - rail), 0.7);
+      return out.set(x0 + 22 * k + Math.sin(k * 9 + t * 0.9 + i) * 0.25 * k, y, z0 + d);
+    }
     function f2DThreads(t, E) {
-      const bl = F2P.balc, door = [bl.x - 0.08, LIV.z1], src = [bl.x + 22, 9.0, LIV.z1 + 70];
+      const bl = F2P.balc, door = [bl.x - 0.08, LIV.z1];
       for (const D of f2DT) {
-        const show = F2.vis && t >= E.vis + 0.6 && t < E.wrap + 0.05;
+        /* (already there when his sight opens: he follows them; grown in over four seconds from the city, they reached his
+           door only as he got there, and his first look down met a bare floor, photographed) */
+        const show = F2.vis && t >= E.vis && t < E.wrap + 0.05;
         D.m.visible = show; if (!show) continue;
         const i = D.i, lunge = i === 2, sp = (i - (F2D.n - 1) / 2) * 0.07;
-        /* each from far away out in the dark, low over the city, in at the door and onto his floor toward where he stands */
-        const grow = c01((t - E.vis - 0.6 - i * 0.25) / 4.0);
+        /* each from far away out in the dark, low over the city, in at the door and over his floor to his feet at the table
+           (the one that will turn ends just inside the door, where he will stand) */
+        const grow = 1, feet = [F2P.table.x - 0.2 + sp * 2.5, F2P.table.z - 0.1 + Math.abs(sp)];
         const at = (s, out) => {
           const u = s;
-          if (lunge && t >= E.turn) {
-            /* the one that turns: its head lifts off the floor like a head turning, then lunges at the wrist */
-            const tu = f2smo(f2win(t, E.turn, E.lunge)), lu = f2s5(f2win(t, E.lunge, E.wrap));
-            camera.updateMatrixWorld(); const W2 = f2WristWorld(_dW);
-            const base = _dA.set(lp(src[0], door[0], u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] + 0.3, u));
+          if (lunge) {
+            /* the one that turns, its own way the whole time (from the city to the balcony's floor just outside his door, where
+               he will look along it): its head lifts off the floor like a head turning, then lunges at the wrist */
+            const tu = t >= E.turn ? f2smo(f2win(t, E.turn, E.lunge)) : 0, lu = t >= E.lunge ? f2s5(f2win(t, E.lunge, E.wrap)) : 0;
+            const base = f2DOut(u, door[0], door[1], 0.3, i, t, _dA);
             const lift = Math.sin(Math.PI * c01((u - 0.82) / 0.18)) * 0.45 * tu;
             base.y += lift;
-            if (W2 && u > 0.7) { const w = f2smo((u - 0.7) / 0.3) * lu; base.lerp(W2, w); }
+            if (lu > 0 && u > 0.7) { camera.updateMatrixWorld(); const W2 = f2WristAt(_dW) || f2WristWorld(_dW);
+              if (W2) { const w = f2smo((u - 0.7) / 0.3) * lu; base.lerp(W2, w); } }
             return out.copy(base);
           }
-          return out.set(lp(src[0], door[0] + sp, u) + Math.sin(u * 9 + t * 0.9 + i) * 0.25 * (1 - u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] - 0.6 * u * u, u) + sp * 0.5);
+          if (u <= 0.8) return f2DOut(u / 0.8, door[0] + sp, door[1], 0, i, t, out);
+          const r = (u - 0.8) / 0.2;
+          return out.set(lp(door[0] + sp, feet[0], r) + Math.sin(r * 5 + t * 1.1 + i) * 0.06 * Math.sin(Math.PI * r), lp(0.01, 0.03, r), lp(door[1], feet[1], r));
         };
         f2TubeLay(D.g, at, 0.0, Math.max(0.02, grow), F2T.r * 1.3, 0.02);
         if (D.sp) D.sp.set('uAlpha', 0.9);
@@ -9060,15 +10028,69 @@
     const f2TapMat = B({ color: 0xc8d8e8, transparent: true, opacity: 0.5, depthWrite: false });
     const f2Tap = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.006, 0.27, 8, 1, true), f2TapMat); owned.push(f2Tap.geometry);
     f2Tap.name = 'the water from his tap (ending C)'; f2Tap.position.set(F2HX + 0.95, 1.2 - 0.135 - 0.01, LIV.z0 + 0.31 - 0.06); f2Tap.visible = false; hisSideG.add(f2Tap);
+    /* HIS HAND UNDER THE WATER. The hand is the hands' pass's (the library's reach, placed by shares of the screen), the water
+       the world's: laid from the shot alone, the water met the sink 5 % of a phone's picture above his hand and, on a
+       desktop, above it and a fifth of the screen to its right (run 9's phone at 7.2 s, d7's desktop at 6.6 s). So the shot
+       is turned, for this screen's shape, until the water stands over his knuckles and meets the sink just under their line
+       on the screen (the reach laid whole, read and left for the frame to lay its own, as the tie's wrist is): lifted a few
+       degrees, so his hand is between the spout and where the water lands, and turned about the upright so the water's line
+       crosses his knuckles. The water runs whole to the sink; his hand, drawn over the world, covers it from his knuckles
+       down while it is under it, and as it leaves the water is seen on down to the sink */
+    const F2TAP = { g: null }, F2TAPX = F2HX + 0.95, F2TAPZ = LIV.z0 + 0.31 - 0.06, F2TAPTOP = 1.19, F2TAPSINK = 0.92;
+    const _f2tc = new THREE.PerspectiveCamera(50, 1, 0.08, 160), _f2tv = new THREE.Vector3(), _f2tw = new THREE.Vector3();
+    const f2DirOf = (e, a) => { const dx = a[0] - e[0], dy = a[1] - e[1], dz = a[2] - e[2]; return { yaw: Math.atan2(dx, dz), pitch: Math.atan2(dy, Math.hypot(dx, dz)), L: Math.hypot(dx, dy, dz) }; };
+    const f2AimOf = (e, yaw, pitch, L) => { const c = Math.cos(pitch); return [e[0] + L * c * Math.sin(yaw), e[1] + L * Math.sin(pitch), e[2] + L * c * Math.cos(yaw)]; };
+    function f2TapGeo(e, a0) {
+      const A = F2.api, asp = camera.aspect, fov = f2Narrow() ? 58 : 50;
+      if (F2TAP.g && Math.abs(F2TAP.g.asp - asp) < 1e-4 && F2TAP.g.fov === fov) return F2TAP.g;
+      if (!A || !A.armR || !A.vmCam || !A.handPose) return null;
+      f2Hands(true, 'reach', 1);
+      const R = A.armR; R.updateWorldMatrix(true, true);
+      const k1 = R.getObjectByName('f_index01R'), k2 = R.getObjectByName('f_middle01R'); if (!k1 || !k2) return null;
+      k1.getWorldPosition(_f2tv); k2.getWorldPosition(_f2tw); _f2tv.add(_f2tw).multiplyScalar(0.5);
+      A.vmCam.updateMatrixWorld(); _f2tv.project(A.vmCam);
+      const kx = _f2tv.x, ky = _f2tv.y, land = ky - 0.10;
+      _f2tc.fov = fov; _f2tc.aspect = asp; _f2tc.updateProjectionMatrix();
+      const D0 = f2DirOf(e, a0);
+      const at = (d, p, y) => { const a = f2AimOf(e, D0.yaw + d, D0.pitch + p, D0.L);
+        _f2tc.position.set(e[0], e[1], e[2]); _f2tc.lookAt(a[0], a[1], a[2]); _f2tc.updateMatrixWorld();
+        return _f2tv.set(F2TAPX, y, F2TAPZ).project(_f2tc); };
+      const sec = (f, x) => { let x0 = x - 0.02, x1 = x + 0.02, f0 = f(x0), f1 = f(x1);
+        for (let j = 0; j < 10 && Math.abs(f1 - f0) > 1e-9; j++) { const x2 = x1 - f1 * (x1 - x0) / (f1 - f0); x0 = x1; f0 = f1; x1 = x2; f1 = f(x1); }
+        return Math.max(-0.5, Math.min(0.5, x1)); };
+      let d = 0, p = 0, ys = F2TAPTOP;
+      for (let it = 0; it < 4; it++) {
+        /* (lifted until the water meets the sink a tenth of the half-screen under his knuckles' line) */
+        p = sec((q) => at(d, q, F2TAPSINK).y - land, p);
+        /* (the height on the water's line seen at his knuckles' line; turned until that point stands over them) */
+        let lo = F2TAPSINK, hi = F2TAPTOP;
+        if (at(d, p, hi).y <= ky) ys = hi;
+        else { for (let j = 0; j < 24; j++) { const m = (lo + hi) / 2; if (at(d, p, m).y > ky) hi = m; else lo = m; } ys = (lo + hi) / 2; }
+        d = sec((q) => at(q, p, ys).x - kx, d);
+      }
+      const top = at(d, p, F2TAPTOP), lnd = at(d, p, F2TAPSINK);
+      F2TAP.g = { asp, fov, d, p, kx, ky, ys, top: [top.x, top.y], land: [lnd.x, lnd.y] };
+      return F2TAP.g;
+    }
+    /* a tap shot's aim (a0 from its eye e) turned and lifted by what was solved at the first tap shot's eye and aim (e1, a1) */
+    function f2TapAim(e, a0, e1, a1) {
+      const g = f2TapGeo(e1, a1); if (!g) return a0;
+      const D = f2DirOf(e, a0);
+      return f2AimOf(e, D.yaw + g.d, D.pitch + g.p, D.L);
+    }
     /* ending C: the cushion held over his eyes, close before the lens in the hands' own pass (so a wall never cuts it), its
-       lower edge leaving a sliver of the room */
+       lower edge leaving a sliver of the room. ON THE HANDS' OWN ROOT, which is drawn while it is held (his arms hidden):
+       the engine draws the hands' pass only when that root has something visible in it (OPT.vmSkip), so laid beside the
+       root, with his hands hidden, the cushion was never drawn in any run, and what the pictures showed was his ceiling */
     function f2CushionAt(k, t) {
       const A = F2.api; if (!A || !A.handsRoot) return;
-      if (k > 0.001 && f2Cushion.parent !== A.handsRoot.parent) { A.handsRoot.parent.add(f2Cushion); }
+      if (k > 0.001 && f2Cushion.parent !== A.handsRoot) { A.handsRoot.add(f2Cushion); }
       f2Cushion.visible = k > 0.001;
       if (!f2Cushion.visible) return;
       /* (it comes up from under the lens and settles over his eyes, slipping down off them as his sight opens) */
-      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.035, -0.17);
+      /* (its lower edge 4.5 cm under the lens's middle at 17 cm, the picture's lowest fifth left to the room: at 3.5 cm over it
+         the cushion filled the whole picture for nearly four seconds, a blank grey, photographed) */
+      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.09, -0.17);
       f2Cushion.rotation.set(Math.PI / 2 - 0.25, 0, 0.05 * Math.sin(t * 0.7));
       f2Cushion.scale.setScalar(0.62);
     }
@@ -9076,7 +10098,9 @@
     /* what is held in his hands in the barrier, and how (his phone, then the spool, then nothing: the lens looks out) */
     function f2BarrierHands(t, Bm) {
       const A = F2.api; if (!A) return;
-      if (t < Bm.walk0 + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2MirrorLeft(false); f2Hands(true, null, 0); return; }
+      /* (his phone before him on the speaker through his teacher's two lines; then down out of the frame as he goes to his
+         bag, the call still open: it is on the floor before him once he sits) */
+      if (t < Bm.walk0 + 0.6) { f2PhoneIn(1, 1); if (A.armR) A.armR.position.y -= 0.34 * f2smo(f2win(t, Bm.walk0 - 0.2, Bm.walk0 + 0.6)); return; }
       if (t < Bm.bag + 0.3) { f2Hold(null); f2Hands(false); return; }
       /* at the bag: his right hand reaches into it, and comes back with the spool */
       if (t < Bm.spool + 1.2) {
@@ -9098,11 +10122,14 @@
         return;
       }
       /* D: once his sight has gone, he lifts his left hand: the band still round its wrist; the gold burns it off */
-      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm) {
-        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm - 0.7, Bm.calm)));
-        f2Hold(null); f2Hands(up > 0.01, 'reach', up * 0.8, { p: 0 });
-        if (up > 0.01 && A.armR) { A.armR.position.y += 0.1 * up; A.armR.position.x -= 0.02 * up; A.armR.position.z += 0.03 * up;
-          A.armR.rotateZ(-0.5 * up); }
+      /* (held up until the barrier is calm and let down after, so the red mark the band leaves is seen for a second and a half
+         after the flash: let down before it, the wrist left the picture 0.9 s after the flash, photographed) */
+      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm + 0.7) {
+        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm, Bm.calm + 0.7)));
+        /* (held up in the library's place, turned over, its wrist and the band inside the picture: lifted in the reach and
+           turned, the forearm crossed the picture and the wrist, the band and its burning stood off its edge, photographed) */
+        f2Hold(null); f2Hands(up > 0.01, 'place', up, { p: 0 });
+        if (up > 0.01 && A.armR) { A.armR.position.y += 0.03 * up; A.armR.position.z += 0.02 * up; }
         if (up > 0.01) f2MirrorLeft(true); else f2MirrorLeft(false);
         return;
       }
@@ -9122,18 +10149,30 @@
       K.push({ t: 0, e: F.e, a: F.a, fp: F.fp, fd: F.fd, n: k + ':decision', stop: true });
       const ph = FILMPLACE.phoneAt, sf = F2P.sofa, kn = F2P.kitchen, bl = F2P.balc;
       if (k === 'A') {
-        /* A · his thumb on his teacher's name; the call; the lens close on the phone and up as he speaks (60 / 52) */
-        K.push({ t: 1.6, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.35, 1.0, tb.z - 1.6], fp: 60, fd: 52, n: 'A:phone' });
-        K.push({ t: E.zv51A1, e: [tb.x + 0.02, EYE - 0.03, tb.z + 0.02], a: [tb.x - 0.6, 1.35, tb.z - 1.9], fp: 60, fd: 52, n: 'A:speak' });
-        K.push({ t: E.b0, e: [tb.x + 0.03, EYE - 0.04, tb.z + 0.03], a: [tb.x - 0.9, 1.25, tb.z - 1.7], fp: 62, fd: 54, n: 'A:listen', stop: true });
+        /* A · he lifts his phone and his thumb finds his teacher's name (its screen to him: "Calling…", two rings, the call);
+           as it connects he turns to his glass, the phone held before him on the speaker, the city's lights beyond it, the
+           pressure on him; "My head... it's like something's crushing it from every side." (60 / 52). The turn goes round
+           by his altar's side, an aim at each quarter, so the look never passes through his own eye (a turn of 160 degrees
+           eased over 2.4 s) */
+        K.push({ t: 1.4, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 0.25, 0.55, tb.z - 1.1], fp: 58, fd: 50, n: 'A:phone' });
+        K.push({ t: E.connect - 0.1, e: [tb.x, EYE - 0.04, tb.z], a: [tb.x - 0.27, 0.53, tb.z - 1.12], fp: 58, fd: 50, n: 'A:ring', stop: true });
+        K.push({ t: E.connect + 0.9, e: [tb.x - 0.02, EYE - 0.04, tb.z + 0.02], a: [tb.x - 2.2, 0.95, tb.z - 0.6], fp: 59, fd: 51, n: 'A:turn' });
+        K.push({ t: E.connect + 1.7, e: [tb.x - 0.04, EYE - 0.04, tb.z + 0.06], a: [tb.x - 2.0, 1.0, tb.z + 1.6], fp: 60, fd: 52, n: 'A:turn2' });
+        K.push({ t: E.connect + 2.5, e: [tb.x - 0.05, EYE - 0.04, tb.z + 0.1], a: [tb.x - 0.9, 1.05, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'A:glass', stop: true });
+        K.push({ t: E.zv51A1 + 0.3, e: [tb.x - 0.05, EYE - 0.06, tb.z + 0.12], a: [tb.x - 0.95, 0.98, LIV.z1 + 3.0], fp: 58, fd: 50, n: 'A:speak' });
+        K.push({ t: E.b0, e: [tb.x - 0.06, EYE - 0.07, tb.z + 0.14], a: [tb.x - 1.0, 0.95, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'A:listen', stop: true });
       } else if (k === 'B') {
         /* B · the phone set face down on his table; to his sofa as he says it; sitting, his palms together; two waves, the lens
            narrowing with them; his sight forced open on the threads at his feet; then the oven's clock (3:41); on the floor
            against the sofa, the picture a slit; he crawls to his table and calls from his knees */
         const seat = [sf.x + 0.05, F2EYE.sofa, sf.z + 0.2], fl = [sf.x + 0.1, 0.86, sf.z + 0.78], knee = [F2HX - 0.3, F2EYE.knees, 0.35];
-        K.push({ t: E.down, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
+        /* (his look down to his phone as his hand lays it on the table, over 0.9 s: by E.down, 0.3 s in, the look fell 42 degrees
+           and the lens closed 12 to 20 in three tenths of a second, measured as a move) */
+        K.push({ t: E.flat - 0.1, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 1.6, 1.15, tb.z - 0.9], fp: 62, fd: 54, n: 'B:turn' });
-        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
+        /* (to his sofa looking at his altar across the room, its candle, his teacher's photograph: as he says he will not
+           wake him; in its last metre to his glass, where he sits facing it) */
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], look: () => [HIS.altar.x, 1.12, HIS.altar.z], lookIn: 0.5, fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
         K.push({ t: E.sit + 1.1, e: seat, a: [seat[0], 1.0, 2.6], fp: 64, fd: 56, n: 'B:sit', stop: true });
         K.push({ t: E.wave1, e: seat, a: [seat[0] + 0.05, 0.98, 2.6], fp: 64, fd: 56, n: 'B:pray', stop: true });
         K.push({ t: E.wave2, e: [seat[0], seat[1] - 0.02, seat[2] + 0.02], a: [seat[0] + 0.1, 0.92, 2.6], fp: 56, fd: 50, n: 'B:wave' });
@@ -9142,47 +10181,78 @@
         K.push({ t: E.cut - 0.01, e: [seat[0], seat[1] - 0.09, seat[2] + 0.11], a: [seat[0] + 0.2, 0.0, seat[2] + 1.2], fp: 52, fd: 46, n: 'B:feet2', stop: true });
         /* the oven's clock: an insert of a thing (v21.30), its digits 3:41 */
         const ov = F2P.oven;
-        K.push({ t: E.cut, e: [ov.x - 0.12, ov.y + 0.1, ov.z + 0.55], a: [ov.x, ov.y, ov.z], fp: 26, fd: 22, n: 'B:oven', cut: true });
-        K.push({ t: E.floor - 0.01, e: [ov.x - 0.11, ov.y + 0.09, ov.z + 0.5], a: [ov.x, ov.y, ov.z], fp: 25, fd: 21, n: 'B:oven2', stop: true });
+        /* (a little wider, and turned onto the clock's last figure's side: on a phone the 1 of 3:41 touched the picture's edge,
+           photographed) */
+        K.push({ t: E.cut, e: [ov.x - 0.12, ov.y + 0.1, ov.z + 0.55], a: [ov.x + 0.008, ov.y, ov.z], fp: 29, fd: 22, n: 'B:oven', cut: true });
+        K.push({ t: E.floor - 0.01, e: [ov.x - 0.11, ov.y + 0.09, ov.z + 0.5], a: [ov.x + 0.008, ov.y, ov.z], fp: 28, fd: 21, n: 'B:oven2', stop: true });
         K.push({ t: E.floor, e: fl, a: [fl[0] + 2.4, 0.72, fl[2] + 0.1], fp: 52, fd: 46, n: 'B:floor', cut: true });
         K.push({ t: E.crawl, e: [fl[0] + 0.05, fl[1] - 0.04, fl[2]], a: [ph.x, 0.7, ph.z + 0.3], fp: 52, fd: 46, n: 'B:floor2', stop: true });
         K.push({ t: E.crawl + 1.0, e: [fl[0] + 0.5, F2EYE.crawl, fl[2] + 0.2], a: [ph.x, 0.5, ph.z + 0.4], fp: 56, fd: 50, n: 'B:crawl' });
         K.push({ t: E.reach - 0.6, e: [knee[0] - 0.3, F2EYE.crawl + 0.05, knee[2] + 0.05], a: [ph.x, 0.62, ph.z], fp: 56, fd: 50, n: 'B:crawl2' });
         K.push({ t: E.reach + 0.2, e: knee, a: [ph.x, 0.7, ph.z], fp: 56, fd: 50, n: 'B:table', stop: true });
-        K.push({ t: E.connect, e: [knee[0], knee[1] - 0.02, knee[2]], a: [knee[0] - 0.4, 0.75, knee[2] - 1.6], fp: 58, fd: 52, n: 'B:call' });
-        K.push({ t: E.b0, e: [knee[0], knee[1] - 0.04, knee[2]], a: [knee[0] - 0.9, 0.8, knee[2] - 1.4], fp: 60, fd: 52, n: 'B:listen', stop: true });
+        /* (on his knees at the table with the call open, he turns his back to it and to the kitchen's wall, toward his glass:
+           the city's lights over the phone held before him, as his teacher talks) */
+        K.push({ t: E.connect, e: [knee[0], knee[1] - 0.02, knee[2]], a: [knee[0] - 0.4, 0.72, knee[2] - 1.5], fp: 58, fd: 52, n: 'B:call' });
+        K.push({ t: E.connect + 1.0, e: [knee[0] - 0.02, knee[1] - 0.03, knee[2] + 0.02], a: [knee[0] - 2.1, 0.85, knee[2] + 0.2], fp: 59, fd: 52, n: 'B:turn2' });
+        K.push({ t: E.connect + 2.0, e: [knee[0] - 0.03, knee[1] - 0.04, knee[2] + 0.05], a: [knee[0] - 0.7, 0.9, LIV.z1 + 2.8], fp: 60, fd: 52, n: 'B:glass', stop: true });
+        K.push({ t: E.b0, e: [knee[0] - 0.03, knee[1] - 0.05, knee[2] + 0.06], a: [knee[0] - 0.75, 0.85, LIV.z1 + 2.8], fp: 60, fd: 52, n: 'B:listen', stop: true });
       } else if (k === 'C') {
         /* C · to the kitchen as he says it: the drawer, the pills, the tap; to his sofa; he lies back with a cushion over his
            eyes; a wave, the glass doors ticking; his sight opens on its own as the cushion slides off: his red footsteps end
            at the sofa, the threads at his feet; he calls */
         const dr = [kn.x, EYE - 0.04, kn.z], tp = [F2P.tap.x - 0.05, EYE - 0.04, kn.z + 0.05], lie = [sf.x - 0.75, 0.66, sf.z + 0.02];
         K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.9, 1.25, tb.z - 1.8], fp: 62, fd: 54, n: 'C:turn' });
-        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.45, 0.35], [F2HX - 0.4, -0.95], [kn.x, kn.z]], E.walk + 0.3, E.drawer, EYE, { a: [kn.x, 0.72, LIV.z0 + 0.3], fp: 62, fd: 54, n: 'C:tokitchen' }).slice(1).forEach(q => K.push(q));
-        K.push({ t: E.drawer + 0.5, e: dr, a: [kn.x, 0.66, LIV.z0 + 0.36], fp: 60, fd: 52, n: 'C:drawer', stop: true });
-        K.push({ t: E.tap - 0.1, e: [dr[0] + 0.05, dr[1], dr[2]], a: [kn.x + 0.1, 0.78, LIV.z0 + 0.5], fp: 60, fd: 52, n: 'C:pills', stop: true });
-        K.push({ t: E.tap + 0.9, e: tp, a: [F2P.tap.x, 0.95, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap', stop: true });
-        K.push({ t: E.sofa0, e: [tp[0] - 0.05, tp[1], tp[2] + 0.05], a: [F2P.tap.x, 0.93, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap2', stop: true });
-        f2WalkKeys([[tp[0], tp[2]], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
-        K.push({ t: E.lie + 0.7, e: [lie[0] + 0.35, 1.05, lie[2] + 0.25], a: [lie[0] - 0.3, 1.4, lie[2] + 0.6], fp: 64, fd: 56, n: 'C:sit' });
-        K.push({ t: E.cushion, e: lie, a: [lie[0] + 0.25, FLAT.ceil, lie[2] + 0.15], fp: 64, fd: 56, n: 'C:lie', stop: true });
-        K.push({ t: E.forced, e: lie, a: [lie[0] + 0.28, FLAT.ceil, lie[2] + 0.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
+        /* (his look on the counter's top at the drawer as he comes to it, where it stays: dipped to 0.72 m it fell at 112 degrees
+           a second as he arrived and rose again, measured as a move) */
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.45, 0.35], [F2HX - 0.4, -0.95], [kn.x, kn.z]], E.walk + 0.3, E.drawer, EYE, { a: [kn.x, 0.92, LIV.z0 + 0.4], fp: 62, fd: 54, n: 'C:tokitchen' }).slice(1).forEach(q => K.push(q));
+        /* (at his counter looking along its top and the wall over it, his hand going down to the drawer under the picture's
+           foot and coming up with the strip: looking down at the drawer's front, the picture was the cupboards' black, with a
+           fist, photographed) */
+        K.push({ t: E.drawer + 0.5, e: dr, a: [kn.x, 0.92, LIV.z0 + 0.4], fp: 60, fd: 52, n: 'C:drawer', stop: true });
+        K.push({ t: E.tap - 0.1, e: [dr[0] + 0.05, dr[1], dr[2]], a: [kn.x + 0.1, 0.95, LIV.z0 + 0.3], fp: 60, fd: 52, n: 'C:pills', stop: true });
+        /* (turned for this screen's shape so the water stands over his knuckles: f2TapGeo) */
+        const aT = [F2P.tap.x, 0.95, F2P.tap.z], eT2 = [tp[0] - 0.05, tp[1], tp[2] + 0.05], aT2 = [F2P.tap.x, 0.93, F2P.tap.z];
+        K.push({ t: E.tap + 0.9, e: tp, a: () => f2TapAim(tp, aT, tp, aT), fp: 58, fd: 50, n: 'C:tap', stop: true });
+        K.push({ t: E.sofa0, e: eT2, a: () => f2TapAim(eT2, aT2, tp, aT), fp: 58, fd: 50, n: 'C:tap2', stop: true });
+        /* (at his sofa 0.4 s sooner, so he sits over 0.9 s and lies back over 0.9: in 0.7 s and then 0.7 the eye fell at 1.5 m a
+           second, measured as a move) */
+        /* (along the counter first, behind his teacher's chair: straight from the tap his way crossed the chair's back corner,
+           the film's eye against its footprint, measured) */
+        f2WalkKeys([[tp[0], tp[2]], [F2HX + 0.3, -1.55], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie - 0.4, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
+        K.push({ t: E.lie + 0.5, e: [lie[0] + 0.35, 1.05, lie[2] + 0.25], a: [lie[0] - 0.3, 1.4, lie[2] + 0.6], fp: 64, fd: 56, n: 'C:sit' });
+        /* (his head on the sofa's arm, turned a little toward his glass: under the cushion the picture's lowest fifth is the top of
+           his glass doors and the city's night through them; looking straight up, it was his ceiling, as dark as the cushion,
+           and the whole picture one grey for four seconds, photographed) */
+        K.push({ t: E.cushion, e: lie, a: [lie[0] + 0.1, lie[1] + 2.0, lie[2] + 2.07], fp: 64, fd: 56, n: 'C:lie', stop: true });
+        K.push({ t: E.forced, e: lie, a: [lie[0] + 0.12, lie[1] + 1.96, lie[2] + 2.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
         K.push({ t: E.forced + 1.4, e: [lie[0] + 0.05, lie[1] + 0.14, lie[2]], a: [sf.x + 1.4, 0.25, sf.z + 0.9], fp: 60, fd: 52, n: 'C:feet' });
         K.push({ t: E.phone, e: [lie[0] + 0.06, lie[1] + 0.16, lie[2]], a: [sf.x + 2.6, 0.1, sf.z + 0.6], fp: 60, fd: 52, n: 'C:steps', stop: true });
-        K.push({ t: E.connect, e: [lie[0] + 0.08, lie[1] + 0.12, lie[2]], a: [lie[0] + 0.6, FLAT.ceil * 0.75, lie[2] + 0.9], fp: 62, fd: 54, n: 'C:call' });
-        K.push({ t: E.b0, e: [lie[0] + 0.08, lie[1] + 0.1, lie[2]], a: [lie[0] + 0.5, FLAT.ceil * 0.8, lie[2] + 1.1], fp: 62, fd: 54, n: 'C:listen', stop: true });
+        /* (he sits up as the call connects, the phone before him, and listens facing his glass, the city's lights over the
+           phone, as in A and B: lying, he had the ceiling for ten seconds, a dark grey picture, photographed) */
+        const up = [lie[0] + 0.35, F2EYE.sofa - 0.02, lie[2] + 0.14];
+        K.push({ t: E.connect + 0.9, e: up, a: [lie[0] + 0.6, 1.0, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:up' });
+        K.push({ t: E.connect + 1.6, e: [up[0], up[1] - 0.01, up[2] + 0.01], a: [lie[0] + 0.62, 0.98, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:call', stop: true });
+        K.push({ t: E.b0, e: [up[0], up[1] - 0.03, up[2] + 0.03], a: [lie[0] + 0.66, 0.95, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:listen', stop: true });
       } else if (k === 'D') {
         /* D · his sight opened on purpose; he follows the threads to his balcony's door and slides it open; the night's air;
            in the doorway, his left hand on its frame (never past it; the rail never near), he looks along them out over the
            city; one turns like a head and lunges: a band of red light round his wrist, the pressure doubled, the picture
            crushed to a slit and the lens narrowing (64 to 48 / 56 to 42), pulled half a step; he tears himself back inside,
            the door slides shut in the wind; on his knees, he calls */
-        const dr = [bl.x, EYE - 0.02, bl.z - 0.15], out = [bl.x - 0.1, 1.5, LIV.z1 + 40], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
-        K.push({ t: E.vis, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.5, 0.2, tb.z - 0.4], fp: 64, fd: 56, n: 'D:look' });
+        /* (his look out over the city 6 m out, not 40: the keys' curve through so far a point threw the look between the door and
+           the doorway back under his eye and up again, 80 degrees down and round in half a second, measured as a move) */
+        const out = [bl.x - 0.1, 1.5, LIV.z1 + 6], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
+        /* (his sight opened, his eyes go down to his feet: the threads end there, come in over his floor from his glass) */
+        /* (down by the moment his sight opens, so there is a second to look up along them to his glass: down at it, the look rose
+           40 degrees in 0.4 s, measured as a move) */
+        K.push({ t: E.vis - 0.55, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.25, 0.0, tb.z + 0.15], fp: 64, fd: 56, n: 'D:look' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.6, 0.35, tb.z + 1.6], fp: 64, fd: 56, n: 'D:turn' });
-        K.push({ t: E.door, e: dr, a: [bl.x - 0.05, 0.6, LIV.z1 + 1.2], fp: 64, fd: 56, n: 'D:door', stop: true });
-        K.push({ t: E.slide + 1.2, e: [dr[0] - 0.02, dr[1], dr[2] + 0.02], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
+        /* (a step back from the glass, its sliding leaf's edge and handle before him as he draws it aside: from half a metre,
+           looking down through it, the picture was the floor and his hand, the door never in it, photographed) */
+        K.push({ t: E.door, e: [bl.x - 0.2, EYE - 0.02, LIV.z1 - 0.95], a: [bl.x + 0.2, 1.0, LIV.z1], fp: 64, fd: 56, n: 'D:door', stop: true });
+        K.push({ t: E.slide + 1.2, e: [bl.x - 0.06, EYE - 0.02, LIV.z1 - 0.45], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
         K.push({ t: E.step + 0.9, e: [bl.x - 0.08, EYE - 0.02, LIV.z1 - 0.12], a: out, fp: 64, fd: 56, n: 'D:doorway' });
-        K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 1.2, 1.0, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
+        K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 0.18, 1.5, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
         K.push({ t: E.lunge, e: [bl.x - 0.08, EYE - 0.04, LIV.z1 - 0.12], a: [bl.x + 0.4, 1.1, LIV.z1 + 2.0], fp: 62, fd: 54, n: 'D:turns' });
         K.push({ t: E.wrap + 0.45, e: [bl.x - 0.05, EYE - 0.08, LIV.z1 - 0.04], a: [bl.x + 0.5, 0.95, LIV.z1 + 1.6], fp: 48, fd: 42, n: 'D:pulled' });
         K.push({ t: E.tear - 0.1, e: [bl.x - 0.05, EYE - 0.1, LIV.z1 - 0.05], a: [bl.x + 0.45, 0.9, LIV.z1 + 1.8], fp: 48, fd: 42, n: 'D:held', stop: true });
@@ -9202,8 +10272,10 @@
         F2.closeSaid = false; F2.held = null; F2.barKeys = null; F2.chantKeys = null; F2.said = new Set(); f2BottleRest = null;
         F2.p0 = (S && S.info && S.info().story && Number.isFinite(S.info().story.pressure)) ? S.info().story.pressure : 0.55;
         if (!(F2.p0 > 0.2)) F2.p0 = 0.55;
-        F2.keys = f2EndKeys(k, E, s); F2.from = f2EndFrom(F2.keys);
+        F2.keys = f2EndKeys(k, E, s); F2.from = f2EndFrom(F2.keys); F2.dawnKeys = f2DawnKeys(E.dawn, k);
         F2.pB = f2EndPress(E.b0 - 1e-3, E, k);
+        F2.phoLv = (typeof phoLook === 'object' && phoLook && phoLook.level) ? phoLook.level.value : null;
+        f2CircleWound(0); f2CircleLay(0);
         if (!F2M.phone) F2M.phone = f2PhoneGroup();
         f2TablePhoneDress(); f2PhoneFloorDress(); F2.oven = null;
         if (things.hisPhone) things.hisPhone.visible = false;
@@ -9214,11 +10286,14 @@
         if (!F2.on) return;
         const E = F2.E, k = F2.k, Bm = E.bar, nar = f2Narrow();
         f2Look(t < E.d0 - 0.02 ? 'NIGHT' : 'DAWN');
+        f2CircleShade.m.visible = t >= E.d0;
         if (t >= Bm.circle - 1e-3 && t < Bm.after) END2.circleTick();
         /* THE LENS */
-        const camAt = (q) => (q < E.b0 ? f2Keys(F2.keys, q) : q < E.d0 ? f2BarrierCam(q, Bm, F2.from) : f2DawnCam(q - E.d0, E));
-        const v = camAt(t);
+        const camAt = (q) => (q < E.b0 ? f2Keys(F2.keys, q) : q < E.d0 ? f2BarrierCam(q, Bm, F2.from) : f2Keys(F2.dawnKeys, q - E.d0));
+        let v = camAt(t);
         if (!v) return;
+        /* (a probe's lens laid over the film's, to see a moment from beside it: F2TUNE.cam { e, a, f }, null in the game) */
+        if (F2TUNE.cam) { const Cm = F2TUNE.cam; v = [Cm.e[0], Cm.e[1], Cm.e[2], Cm.a[0], Cm.a[1], Cm.a[2], Cm.f || 50, 0]; }
         /* (how fast his eye goes over the floor, for the head's bob: the same lens a twentieth of a second either side) */
         let speed = 0;
         if (t < E.d0 && !(t >= Bm.circle - 0.05 && t < Bm.after)) { const a = camAt(Math.max(0, t - 0.05)), b = camAt(t + 0.05); if (a && b) speed = Math.hypot(b[0] - a[0], b[2] - a[2]) / 0.1; camAt(t); }
@@ -9227,6 +10302,8 @@
         f2Drift(v, t, amp);
         if (speed > 0.05) f2Bob(v, t, speed);
         f2Lens(v[6]); f2Aim([v[0], v[1], v[2]], [v[3], v[4], v[5]], v[7]);
+        /* (the levels of the people and the things for THIS frame's lens: a film's frame is its own, v24.22) */
+        camera.updateMatrixWorld(true); lodTick(); peopleLevels();
         /* THE PRESSURE, the vision, the beds, the things */
         let p = 0, vr = [0, false];
         if (t < E.b0) { p = f2EndPress(t, E, k); vr = f2EndVision(t, E, k); }
@@ -9236,12 +10313,22 @@
         if (t < E.d0) f2Beds(f2NightBeds(t < E.b0 ? p : Math.min(p, t < Bm.chant ? 1 : 0.4), vr[0] > 0.5, t >= Bm.chant ? { m6a: 0, m6b: 0, m6c: 0, tin: 0, brth: t < Bm.brk ? 0.22 : 0.1, night: t >= Bm.brk ? 0.32 : 0.05 } : null));
         else f2Beds({ night: 0, three: 0 });
         /* the screen of his phone: the decision's, the call ringing, the call with its seconds */
-        if (t < E.ring) f2Screen('home', 0, '3:03');
+        /* (its home screen at the decision's 3:03 until the ending's own time has come: in B the oven's 3:41 after the cut, in C
+           and D the minutes he lost before he picks it up; photographed, B's phone said 3:03 forty minutes on) */
+        if (t < E.ring) f2Screen('home', 0, (k === 'B' ? t >= E.cut : E.phone != null && t >= E.phone - 0.6) ? E.clock : '3:03');
         else if (t < E.connect) f2Screen('ring', 0, E.clock);
-        else f2Screen('call', t - E.connect, E.clock);
+        /* (the call ends with his teacher's last words, as he lies down; dark on the floor at dawn: it read 01:36 of a call
+           still going at seven in the morning, photographed) */
+        else if (t < E.bar.lie) f2Screen('call', t - E.connect, E.clock);
+        else f2Screen('off');
+        /* (his oven's clock at the ending's own time, in every ending and at dawn: only B's was set, and A's desk picture showed
+           11:52 by his phone's 3:03, the world's own setting) */
+        worldOven(t >= E.d0 ? '7:10' : k === 'B' ? (t >= E.cut ? '3:41' : '3:03') : k === 'C' ? (t >= E.forced ? E.clock : '3:03') : k === 'D' ? (t >= E.phone ? E.clock : '3:03') : (E.clock || '3:03'));
         if (t >= E.b0 && t < E.d0) { f2BarrierFx(t, Bm, { push: k === 'B', near: k === 'B' || k === 'C', band: k === 'D' }); f2BarrierHands(t, Bm); }
-        else if (t < E.b0) { f2EndFx(t, E, k); f2EndHands(t, E, k); }
-        else { f2DawnFx(t - E.d0, E); }
+        else if (t < E.b0) { f2CircleLay(0); f2EndFx(t, E, k); f2EndHands(t, E, k); }
+        else { f2DawnFx(t - E.d0, E.dawn, k); }
+        /* (the circle scaled only by the dawn's winding: before it, whole) */
+        if (t < E.d0) { f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0); f2DustAt(0, 0); f2DawnOff(); }
       },
       end() {
         if (!F2.on) return;
@@ -9250,6 +10337,7 @@
         if (F2.vis && kit && kit.vision) kit.vision(null); F2.vis = false;
         if (kit && kit.captions) kit.captions(null);
         f2Hold(null); f2MirrorLeft(false);
+        f2PillsIn(false); if (f2Pills.parent) f2Pills.parent.remove(f2Pills);
         if (F2.api && F2.api.handsRoot) { F2.api.handsRoot.visible = true; F2.api.handsRoot.position.set(0, 0, 0); }
         if (F2.api && F2.api.handPose) F2.api.handPose(null, 0);
         f2Beds(null);
@@ -9262,6 +10350,15 @@
         f2TablePhone.visible = false; f2Tap.visible = false; f2CushionAt(0, 0); for (const D of f2DT) D.m.visible = false;
         if (F2.k === 'D') WORLD.balconyDoor(0);
         if (things.hisPhone) things.hisPhone.visible = true;
+        /* the dawn's: his teacher standing and seated put away (the play's own frame stands the seated one again where a
+           phase asks), his bag dropped where the films keep it, the breakfast and the spools gone, his door shut as play
+           keeps it, the circle whole again, the look's level as it was */
+        { const H = FILMSAPI.helpers, PS = FILMSAPI.phoStand, PC = cast.pho, bag = FILMSAPI.props.phoBag;
+          H.show(PS, false); H.show(PC, false); if (PC && PC.home) put(PC, PC.home.x, PC.home.z, PC.home.ry, PC.home.y);
+          if (bag) { bag.visible = false; H.drop(bag, 0, -50, 0); } }
+        F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false; F2DUST.pts.visible = false;
+        WORLD.hisDoor(0); f2CircleWound(0); f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0);
+        if (F2.phoLv != null) f2PhoLevel(F2.phoLv);
         camera.rotation.z = 0;
       },
       /* CLOSE THE CIRCLE's event (the plan's 9.7: the hands-on kind's circling step, its own picture `circle`, briefed with
@@ -9282,6 +10379,9 @@
         const C = CHANTS.ph51jina || [];
         kit.captions(E.jina.map((v, i) => ({ at: v[0], end: v[1] + 0.35, text: C[i] ? C[i][0] : '', sub: C[i] ? C[i][1] : '' })).filter(q => q.text));
       },
+      /* the chant's captions taken down when it ends (they run on the wall from its start: a film sought or held must never
+         carry them on into the quiet and the morning, photographed at the dawn's first second) */
+      chantOff() { if (kit && kit.captions) kit.captions(null); },
       /* the laid thread follows the event's progress, eased on the wall (a finger's stop and start never jerk the picture),
          and "Close it." is said as it nears its end (once) */
       circleTick() {
@@ -9293,6 +10393,27 @@
       },
       /* (a probe's) */
       marks: () => F2.E,
+      tune: F2TUNE,
+      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wrist: F2W.fit }; },
+      /* (C's tap: the turn solved for this screen and where the water ends; the strip's lean as last laid) */
+      tap: () => ({ geo: F2TAP.g ? Object.assign({}, F2TAP.g) : null, pills: f2Pills.visible ? f2Pills.getWorldPosition(new THREE.Vector3()).toArray().map(v => +v.toFixed(3)) : null }),
+      /* (a probe's handle on the hands' own scene, where his arms and what he holds are drawn: clipscan's measure is run on it
+         for the held things against his hands) */
+      vm: () => (F2.api && F2.api.handsRoot ? F2.api.handsRoot.parent : null),
+      /* (and its parts named as things of their own for that measure: both arms, what he holds, the rings and the cushion;
+         `on` false takes the names back) */
+      vmParts: (on) => { const A = F2.api, L = A && A.buildPrayerArm ? A.buildPrayerArm() : null, list = [A && A.armR, L, F2M.phone, f2Pills, f2SpoolHand, f2Cushion,
+        F2W.band, F2W.band2, F2W.mark, F2W.thread, F2W.thread2, F2W.knot && F2W.knot.K].filter(Boolean);
+        for (const o of list) { if (on) { o.userData.__f2was = o.userData.model; o.userData.model = true; } else { o.userData.model = o.userData.__f2was; delete o.userData.__f2was; } }
+        return list.length; },
+      /* (a probe's reading of his teacher's fingers at the tie: how many joints the curl found on each hand and how far each
+         first joint is bent from the hand's own line, degrees) */
+      curl: () => { const P = FILMSAPI.phoStand, As = P && P.ready ? armsOf(P) : null, o = { arms: !!As }; if (!As) return o;
+        for (const sd of ['L', 'R']) { const a = As[sd]; if (!a) continue; const L = a.f2fing || [], F = L[0];
+          o[sd] = { n: L.length, fingers: a.fingers };
+          if (F) { const h = a.hand.getWorldQuaternion(new THREE.Quaternion()), f = a.fL.clone().applyQuaternion(h), p0 = F.b.getWorldPosition(new THREE.Vector3()), c = F.b.children.find(x => x.isBone);
+            if (c) { const d = c.getWorldPosition(new THREE.Vector3()).sub(p0).normalize(); o[sd].bend = +(Math.acos(Math.max(-1, Math.min(1, d.dot(f)))) * 180 / Math.PI).toFixed(1); } } }
+        return o; },
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -9337,11 +10458,17 @@
       if (near && visOpen) f2ThreadsAt(t, t, { near: true, t0: k === 'B' ? E.forced - 1.0 : E.forced - 1.0, hold: true });
       else if (k !== 'D') for (const T of F2THREADS) T.m.visible = false;
       /* B: the phone face down on his table from when he lays it there until he takes it again */
-      f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.55;
-      if (k === 'B') worldOven(t >= E.cut ? '3:41' : '3:03');
+      /* (taken from the table as his hand closes on it: one phone, never two) */
+      f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.22;
       /* C: the tap's water */
-      f2Tap.visible = k === 'C' && t >= E.tap + 0.25 && t < E.sofa0 + 0.2;
-      if (f2Tap.visible) { f2Tap.scale.y = 1 + 0.03 * Math.sin(t * 40); f2TapMat.opacity = 0.5 + 0.1 * Math.sin(t * 23); }
+      /* (running while its sound runs: u51tap at E.tap + 0.2 opens at 0.3 s and is shut at 2.3 s, measured) */
+      f2Tap.visible = k === 'C' && t >= E.tap + 0.45 && t < E.tap + 2.45;
+      if (f2Tap.visible) {
+        /* (whole from the spout to the sink, its top held at the spout as it shimmers: his hand covers it from his knuckles
+           down while it is under it, f2TapGeo) */
+        const L = (F2TAPTOP - F2TAPSINK) * (1 + 0.03 * Math.sin(t * 40));
+        f2Tap.scale.y = L / 0.27; f2Tap.position.y = F2TAPTOP - L / 2;
+        f2TapMat.opacity = 0.5 + 0.1 * Math.sin(t * 23); }
       /* D: his balcony's door, the threads streaming in from the dark, the one that turns and lunges, the band */
       if (k === 'D') {
         WORLD.balconyDoor(f2smo(f2win(t, E.slide, E.slide + 1.2)) * (1 - f2smo(f2win(t, E.slam - 0.25, E.slam + 0.2))));
@@ -9349,44 +10476,69 @@
         f2WristShow(t >= E.wrap ? 1 : 0, 0, 0, 0);
       }
     }
+    /* his phone in his right hand: kit.hold once (the play's numbers), the arm raised toward the frame's foot by k
+       (F2TUNE.phone.arm), the screen turned to him by k, lowered before him by `low` (on the speaker) */
+    function f2PhoneIn(k, low = 0) {
+      f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot });
+      const A = F2.api, C = F2CALL(), kk = c01(k);
+      /* (his hand closed round it in the library's grip as it comes up: C.pose at C.k) */
+      f2Hands(true, C.pose && kk > 0.01 ? C.pose : null, (C.k || 0) * kk); f2MirrorLeft(false);
+      if (A && A.armR) { A.armR.position.x += C.arm[0] * kk; A.armR.position.y += C.arm[1] * kk - 0.07 * c01(low); A.armR.position.z += C.arm[2] * kk; }
+      const g = F2M.phone; if (g && C.pos) { const H = F2HELD().pos; g.position.set(lp(H[0], C.pos[0], kk), lp(H[1], C.pos[1], kk), lp(H[2], C.pos[2], kk)); }
+      f2PhoneFace(kk * (C.face || 0));
+    }
     function f2EndHands(t, E, k) {
       const A = F2.api;
       if (k === 'A') {
-        /* the phone in his right hand as the play held it: lifted a little to his eyes as he calls, and lowered as he listens */
-        f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot });
-        f2Hands(true, null, 0);
-        if (A && A.armR) { const lift = f2smo(f2win(t, 0.2, 1.2)) * (1 - 0.5 * f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0)));
-          A.armR.position.y += 0.03 * lift; A.armR.position.x -= 0.012 * lift; }
+        /* the phone lifted from the play's hold into his sight, its screen to him, as his thumb finds the name; lowered a
+           little before him on the speaker as he turns to his glass */
+        f2PhoneIn(f2smo(f2win(t, 0.1, 1.3)), f2smo(f2win(t, E.connect + 0.4, E.connect + 2.4)));
         return;
       }
       if (k === 'B') {
         if (t < E.flat) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); const d = f2smo(f2win(t, E.down, E.flat));
           f2Hands(true, d > 0.01 ? 'place' : null, d); return; }
         if (t < E.flat + 0.6) { f2Hold(null); f2Hands(true, 'place', 1 - f2smo(f2win(t, E.flat, E.flat + 0.6))); return; }
-        if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1)))); return; }
-        if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6)); return; }
-        if (t >= E.reach + 0.6) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); return; }
+        /* (his palms together at the height that keeps the thumbs out of the picture: the engine's own default, chapter 1's
+           -0.235, shows them, as e3c2 found at v16.5 and v18.4; -0.33 is that chapter's, photographed with his thumbs at the
+           middle of a phone's picture at -0.235) */
+        if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1))), { y: -0.33 }); return; }
+        if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6));
+          if (t >= E.reach + 0.25) f2PhoneFace(1); return; }
+        if (t >= E.reach + 0.6) { f2PhoneIn(f2smo(f2win(t, E.reach + 0.6, E.ring + 0.2)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'C') {
+        f2PillsIn(false); if (A && A.armR) A.armR.visible = true;
         if (t < E.walk + 0.5) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk, E.walk + 0.5)); return; }
         if (t >= E.drawer - 0.2 && t < E.sofa0 + 0.3) {
-          /* the drawer, the strip of pills in his hand, one to his mouth, his hand under the tap */
-          const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.4, E.pills + 0.5, E.pills + 0.9), m = f2bell(t, E.pills + 0.6, E.pills + 1.0, E.tap - 0.2, E.tap + 0.1);
-          const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
-          f2Hold(t >= E.pills && t < E.tap ? f2Pills : null, { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
-          if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp); else f2Hands(r > 0.01, 'reach', r);
+          /* the drawer (his hand down to it, out of the picture's foot), the strip of pills brought up before him where he can
+             see it (the library's place: its hand a third of the way down the picture; in the reach the strip rode the
+             picture's foot, never seen, photographed), one to his mouth, his hand under the tap; one pose at a time, each
+             let back to rest before the next (two poses' shares never meet) */
+          const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.3, E.pills - 0.45, E.pills - 0.2), pl = f2bell(t, E.pills - 0.2, E.pills + 0.15, E.pills + 0.55, E.pills + 0.8);
+          const m = f2bell(t, E.pills + 0.8, E.pills + 1.05, E.tap - 0.2, E.tap + 0.1);
+          /* (his hand out from under the water before it goes to his mouth: the two shares met from 7.9 to 8.2 s and the mouth
+             took over the frame its share began, the reach dropped from 0.84 to nothing: run t16's phone at 8.1 s) */
+          const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.8, E.sofa0 - 0.4), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
+          f2Hold(null);
+          if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp);
+          else if (pl > 0.01) f2Hands(true, 'place', pl); else f2Hands(r > 0.01, 'reach', r);
+          /* (laid after the pose this frame draws, from the hand as drawn) */
+          f2PillsIn(t >= E.pills - 0.2 && t < E.tap - 0.15);
           return;
         }
         if (t >= E.cushion - 0.6 && t < E.forced + 0.9) {
-          /* the cushion over his eyes, its lower edge a sliver of the room; it slides off as his sight opens */
-          f2Hold(null); f2Hands(false);
+          /* the cushion over his eyes, its lower edge a sliver of the room; it slides off as his sight opens (the hands' root
+             drawn for it, his arms hidden: his hands hold it at its sides, out of the picture) */
+          f2Hold(null);
           const on = f2smo(f2win(t, E.cushion - 0.6, E.cushion)) * (1 - f2smo(f2win(t, E.forced + 0.1, E.forced + 0.9)));
+          f2Hands(on > 0.001, null, 0); if (A && A.armR) A.armR.visible = false;
           f2CushionAt(on, t);
           return;
         }
         f2CushionAt(0, t);
-        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.04 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        if (t >= E.phone) { f2PhoneIn(f2smo(f2win(t, E.phone, E.phone + 0.8)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'D') {
@@ -9394,30 +10546,418 @@
         /* his left hand: on the door's handle as he slides it, then on its frame; the band round its wrist */
         if (t >= E.slide - 0.3 && t < E.tear + 0.2) {
           const k2 = f2smo(f2win(t, E.slide - 0.3, E.slide + 0.1)) * (1 - f2smo(f2win(t, E.tear - 0.1, E.tear + 0.2)));
-          f2Hold(null); f2Hands(k2 > 0.01, 'reach', k2 * 0.85, { p: 0 });
+          /* (held up in the library's place, turned over, as at the dawn's tie: its wrist inside the picture, where the band of
+             red light goes; in the reach the wrist stood at the picture's foot and the band was never seen, photographed) */
+          f2Hold(null); f2Hands(k2 > 0.01, 'place', k2, { p: 0 });
           if (k2 > 0.01 && A && A.armR) {
-            /* (on the frame at his left: the hand a little higher than the reach lays it, nearer the frame's edge on screen) */
+            /* (on the frame at his left: nearer the frame's edge on screen; drawn out away from him as the band pulls, and in
+               toward the picture's middle, where the band is seen: drawn out to the left too, its wrist and the band stood
+               at a phone's left edge, half cut off, photographed) */
             const onFrame = f2smo(f2win(t, E.step, E.step + 0.8)), pull = f2bell(t, E.wrap, E.wrap + 0.2, E.tear - 0.4, E.tear);
-            A.armR.position.x += 0.02 * onFrame + 0.03 * pull; A.armR.position.y += 0.07 * onFrame - 0.02 * pull; A.armR.position.z -= 0.04 * pull;
+            A.armR.position.x += 0.02 * onFrame - 0.035 * pull; A.armR.position.y += 0.02 * onFrame - 0.01 * pull; A.armR.position.z -= 0.04 * pull;
           }
           if (k2 > 0.01) f2MirrorLeft(true);
           return;
         }
         f2MirrorLeft(false);
-        if (t >= E.phone) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y += 0.03 - 0.14 * (1 - f2smo(f2win(t, E.phone, E.phone + 0.7))); return; }
+        if (t >= E.phone) { f2PhoneIn(f2smo(f2win(t, E.phone, E.phone + 0.8)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
         f2Hold(null); f2Hands(false); return;
       }
     }
-    /* ================================================================ THE DAWN (the plan's 9.9) */
-    function f2DawnCam(t, E) {
-      const C = F2P.circle;
-      return [C.x, 0.82, C.z - 0.05, C.x, 0.9, C.z + 2.0, 66, 58].concat([]).slice(0, 7).concat([0]);
+    /* ================================================================ THE DAWN (the plan's 9.9; its marks are y_endings.js
+       dawn2's, D, from d0 on the ending's clock; here `u` is seconds from d0). 7:10 AM in his flat, the low sun in through
+       his glass. Five shots, all his eyes (v24.56), each change of where his teacher is made on a CUT (v24.12: the
+       standing body and the seated one are never both drawn: FILMSAPI.phoStand standing and at the table, the seated
+       cast.pho on the floor):
+         WAKE   on his back inside the circle where he lay down; the ceiling in the warm light; his head to the glass; he
+                sits up, the thread still round him on the floor in the sun; the knock, and his head turns to it
+         DOOR   (a cut: he has crossed to his door) the door drawn open on Grandmaster Pho in white in the corridor, his
+                cloth bag on his shoulder, the breakfast in his hand: "Eat first. You fought all night, even sitting
+                still."; he comes in past him
+         WIND   (a cut) his teacher sitting on the floor at the circle's edge, cross-legged as he always sits, winding the
+                white thread back onto its spool: the loop drawn in across the floor to his hands
+         TABLE  (a cut) the dining table, his teacher across it, the kopi and the toast between them, the spool by his
+                hand; "I only held the water.", his teacher's answer and the ending's own line; a slow push on him
+         TIE    his own left wrist held out across the table, his teacher's hands tying the white thread round it and
+                knotting it twice (the narrow lens of an insert: v6.12, his eyes looking down), then his eyes up to his
+                teacher's face for the last words; his thought; the picture and the music go down together (v15.3).
+       (The plan's "kneels" to wind the thread: Grandmaster Pho has no kneel in his file, and on the floor he always sits
+       cross-legged (chapters 3 to 5, and here at her table): so he sits to it. ENDINGS.md says so.) */
+    const F2DW = (() => {
+      const C = F2P.circle, dn = HIS.dining, TOP = 0.693;
+      return {
+        C, TOP,
+        /* inside his door, in the middle of its opening (his teacher framed in it: from the side its jamb hid half of him,
+           photographed), clear of its leaf's swing (0.8 m round its hinge at the door's -x side: 0.9 m off); and where he steps
+           back and aside to let him in, behind the middle of his sofa: 1.7 m off his teacher's way in, so he is seen whole as
+           he comes through the door (0.65 m off, and then 1.2, he passed the lens close enough to fill the picture and cut
+           off his head: photographed both times) */
+        doorEye: [HIS.door.x + 0.05, EYE, LIV.z0 + 0.78],
+        asideEye: [HIS.door.x + 1.7, EYE, LIV.z0 + 0.55],
+        phoDoor: { x: HIS.door.x + 0.05, z: LIV.z0 - 0.74 },
+        /* (in past him on the door's side, between his altar and his sofa's end toward the circle: his student stands 0.5 m
+           to his right) */
+        phoIn: [[HIS.door.x + 0.05, LIV.z0 - 0.74], [HIS.door.x + 0.02, LIV.z0 + 0.3], [HIS.door.x + 0.1, LIV.z0 + 1.3], [HIS.door.x + 0.15, LIV.z0 + 2.2]],
+        /* on the floor at the circle's front, where its two ends met, facing in across it */
+        /* (0.46 m behind the point where the thread leaves the floor: at 0.34 that point lay under his crossed knees and the
+           thread came up out of his lap, photographed) */
+        wind: { x: C.x + 0.03, z: C.z + C.r + 0.46, ry: Math.PI },
+        windEye: [C.x - 0.28, EYE - 0.03, C.z - 0.62],
+        pick: [C.x, F2C.y, C.z + C.r],
+        /* his chair (WORLD's dawn seat: FILMPLACE.dawnSeat), his teacher's across the table */
+        tableEye: [HIS.chair1.x, 1.17, HIS.chair1.z + 0.06],
+        phoChair: { x: HIS.chair2.x, z: HIS.chair2.z, ry: 0 },
+        /* (WORLD's chairs face the table: w51dinchair's back stands at its -z, measured 0.245 m behind its middle, its seat's top
+           0.50 m, its seat from 0.23 m behind its middle to 0.30 m before it; so `chair2` at ry 0 faces him. His teacher's hips
+           are set there whatever his take (f2SeatHips): over the seat's back half, 0.08 m before its back (0.15 m put his knees
+           at the table's far edge, 0.727 m, and his robe through its top: read and photographed), the hip joint 0.14 m over the
+           seat in his rest and 0.19 m in his talk, as each take stands its own feet on the floor (read: the talk's sat 4.9 cm
+           into the floor at 0.64), eased by how far the talk is on) */
+        phoHips: [HIS.chair2.x, 0.64, HIS.chair2.z - 0.105],
+        /* (the breakfast at the table's end on his teacher's right, clear of the middle where the wrist is held out to be tied
+           (at the middle it stood between the lens and the tie, photographed) and of his teacher's right hand as he talks (0.4
+           m in, it went through the bag: clipscan, 291 crossings); the spool set down on the other side) */
+        food: [dn.x - 0.60, TOP + 0.003, dn.z - 0.05, 0.5],
+        spoolT: [dn.x + 0.22, TOP + 0.002, dn.z - 0.25]
+      };
+    })();
+    /* the dawn's own things: the breakfast set (w51breakfast: the paper bag, two cups of kopi, the wrapped toast), the spool
+       in his teacher's hand as he winds (a clone of w51threadreel) and set on the table after, the short length of thread
+       from the floor up to it */
+    F2M.food = stand('w51breakfast', F2DW.food[0], F2DW.food[1], F2DW.food[2], F2DW.food[3], { parent: hisSideG }); F2M.food.visible = false;
+    F2M.spoolPho = stand('w51threadreel', 0, -50, 0, 0, { parent: world, s: 0.62 }); F2M.spoolPho.visible = false;
+    F2M.spoolTable = stand('w51threadreel', F2DW.spoolT[0], F2DW.spoolT[1], F2DW.spoolT[2], 0.6, { parent: hisSideG, s: 0.62 }); F2M.spoolTable.visible = false;
+    const f2Lift = (() => { const g = f2TubeGeo(), m = new THREE.Mesh(g, M({ color: 0xf2f0e8, roughness: 0.85, emissive: 0x34342e })); m.name = 'the thread drawn up to his hands (the dawn)';
+      m.frustumCulled = false; m.visible = false; hisSideG.add(m); return { g, m }; })();
+    const _dwA = new THREE.Vector3();
+    function f2PhoLevel(v) { if (typeof phoLook === 'object' && phoLook && phoLook.level) phoLook.level.value = v; }
+    /* THE DAWN'S LENS, a shot of keys a dawn (u from d0) */
+    function f2DawnKeys(D, k) {
+      const C = F2DW.C, lieE = [C.x, F2EYE.lie, C.z - 0.5], sitE = [F2SIT.x, F2SIT.y, F2SIT.z], dE = F2DW.doorEye, wE = F2DW.windEye, tE = F2DW.tableEye;
+      const u = (q) => q - D.d0, phoFace = [F2DW.phoDoor.x, 1.58, F2DW.phoDoor.z], wFace = [F2DW.wind.x, 0.86, F2DW.wind.z - 0.05];
+      const across = [F2DW.phoChair.x, 1.12, F2DW.phoChair.z - 0.05];
+      /* (where his teacher's head is as he walks in: the film's own place for him (his group), never his living head: v25.5) */
+      const phoAt = (h) => () => { const P = FILMSAPI.phoStand; if (P && P.ready && P.group.visible) { const g = P.group.position; return [g.x, g.y + h, g.z]; } return [F2DW.phoIn[1][0], h, F2DW.phoIn[1][1]]; };
+      const K = [
+        /* WAKE: on his back where he lay down in the circle, his eyes down along himself to his glass: the white thread on
+           the floor round him in the low sun, the city outside washed clean; he sits up, the thread round him; the knock, and
+           his head turns to it over his shoulder */
+        { t: 0, e: lieE, a: [C.x + 0.03, 0.42, C.z + 2.4], fp: 64, fd: 56, n: 'dawn:wake', stop: true },
+        { t: u(D.sit) - 0.05, e: [lieE[0], lieE[1] + 0.02, lieE[2] + 0.02], a: [C.x + 0.04, 0.38, C.z + 2.3], fp: 64, fd: 56, n: 'dawn:wake2', stop: true },
+        /* (low enough that the thread round him is in the lower third and his glass above it: at 18 degrees down, and again at
+           21, the thread lay along the picture's foot, photographed; 32 degrees down now) */
+        { t: u(D.sit) + 1.3, e: sitE, a: [C.x + 0.05, 0.05, C.z + 1.25], fp: 66, fd: 58, n: 'dawn:sat', stop: true },
+        { t: u(D.knock) + 0.25, e: sitE, a: [C.x + 0.05, 0.1, C.z + 1.3], fp: 66, fd: 58, n: 'dawn:sat2', stop: true },
+        /* (over his left shoulder toward his front door, as far round as a head turns: the door is behind him at 155 degrees;
+           aimed 66 degrees round, his look went to his glass's corner, photographed) */
+        { t: u(D.door) - 0.05, e: [sitE[0], sitE[1] + 0.02, sitE[2]], a: [C.x - 2.0, 1.0, C.z - 0.9], fp: 66, fd: 58, n: 'dawn:toknock', stop: true },
+        /* DOOR (a cut): the door drawn open on his teacher, framed in its middle */
+        { t: u(D.door), e: dE, a: [F2DW.phoDoor.x, 1.36, F2DW.phoDoor.z + 0.2], fp: 58, fd: 50, n: 'dawn:door', cut: true },
+        { t: u(D.door) + 1.1, e: dE, a: [phoFace[0], 1.4, phoFace[2]], fp: 56, fd: 48, n: 'dawn:pho', stop: true },
+        { t: u(D.inside) - 0.35, e: [dE[0], dE[1], dE[2] - 0.04], a: [phoFace[0], 1.38, phoFace[2] + 0.05], fp: 54, fd: 46, n: 'dawn:pho2', stop: true },
+        /* he comes in past him: his look goes with him (the place the film walks him), into the room */
+        { t: u(D.inside) + 1.1, e: F2DW.asideEye, a: phoAt(1.15), fp: 62, fd: 54, n: 'dawn:in' },
+        { t: u(D.wind) - 0.05, e: F2DW.asideEye, a: phoAt(1.1), fp: 62, fd: 54, n: 'dawn:in2', stop: true },
+        /* WIND (a cut): his teacher on the floor at the circle's edge, the loop drawn in to his hands; the sun behind him */
+        { t: u(D.wind), e: wE, a: [wFace[0], 0.62, wFace[2] - 0.15], fp: 58, fd: 50, n: 'dawn:wind', cut: true },
+        { t: u(D.table) - 0.05, e: [wE[0] + 0.03, wE[1] - 0.04, wE[2] + 0.12], a: [wFace[0], 0.6, wFace[2] - 0.2], fp: 54, fd: 46, n: 'dawn:wind2', stop: true },
+        /* TABLE (a cut): across the table, a slow push on him over the talk (0.3 m) */
+        { t: u(D.table), e: tE, a: across, fp: 50, fd: 42, n: 'dawn:table', cut: true },
+        { t: u(D.tie) - 0.05, e: [tE[0], tE[1] - 0.06, tE[2] - 0.3], a: [across[0], across[1] - 0.02, across[2]], fp: 48, fd: 40, n: 'dawn:table2', stop: true },
+        /* TIE (a cut, an insert from his eyes): his wrist held out across the table, his teacher's hands; then his eyes up */
+        /* (turned so his held wrist, which the hands' pass draws low on the left, stands where his teacher's hands reach it:
+           f2TieCam; held still through the two knots) */
+        { t: u(D.tie), e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie', cut: true },
+        { t: u(D.up) - 0.05, e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie2', stop: true },
+        /* (a cut up to his teacher's face: drawn as a move, the insert's 20 degrees opened to 50 in a second and a half as the
+           look rose, a zoom no eye makes) */
+        { t: u(D.up), e: [tE[0], tE[1] - 0.05, tE[2] - 0.2], a: [across[0], across[1] + 0.02, across[2]], fp: 50, fd: 42, n: 'dawn:face', cut: true },
+        { t: u(D.black) + 1.6, e: [tE[0], tE[1] - 0.05, tE[2] - 0.24], a: [across[0], across[1] + 0.02, across[2]], fp: 48, fd: 40, n: 'dawn:face2', stop: true }
+      ];
+      return K;
     }
-    function f2DawnFx(t, E) {
-      f2CircleLay(1); f2Gold.visible = false; f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false;
+    /* THE TIE'S INSERT (ENDINGS.md 3). His own hand is drawn in the hands' pass: a lens of its own (52 degrees) and a place
+       fixed on the screen (the library's place, turned over for the left: a third of the way down, on the left). On the
+       world's lens f the same picture is a
+       hand whose depth along the lens is zv / s, s = tan(f/2) / tan(vm/2), at the same sideways and upward metres (xv, yv)
+       as in the hands' camera: so on a narrow lens (an insert's, v6.12) his hand is as big as a hand twice as far off, and
+       his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens is TURNED (no roll) so that point lies
+       where his teacher can reach across the table, the direction from his eye given by `tieWant` (over the table's middle,
+       a hand's breadth and more over its top, in front of his teacher's chest); his teacher's hands go to it (f2TieW). The
+       lens's angle stays the insert's own, so how far off the wrist stands is the hand's own depth's (read: ENDINGS.md 6) */
+    /* (20 degrees on both screens: at 22 the wrist the lens's depth sets lay 0.88 m from his eye, 0.55 and 0.60 m from his
+       teacher's shoulders, past an arm of about 0.50 m: his hands stopped 10 cm short of it, over the back of the held hand,
+       run 8's reading and photographs; at 21 on a desk it lay 4 cm nearer him than on a phone, 0.49 m from the left shoulder) */
+    F2DW.tieFov = [20, 20];
+    /* (his left hand held out in the library's `place`, turned over: its hand stands a third of the way down the picture, so
+       its wrist, where the thread goes, is inside it; the reach's hand stood two thirds down, its wrist at the picture's
+       foot and the back of the hand filling the bottom of a phone's picture, photographed) */
+    F2DW.tiePose = 'place';
+    /* (his eye for it leaning in over the table's near edge, as a man holding his wrist out across a table leans: 0.28 m on and
+       0.09 m down from where he sits, 9 cm behind the edge; and the wrist held lower, 15 cm over the table's top, past its
+       middle toward his teacher, so it lies 0.41 and 0.45 m from his teacher's shoulders with his hands at its two sides,
+       his arms bent at the elbow) */
+    F2DW.tieEye = [F2DW.tableEye[0], F2DW.tableEye[1] - 0.09, F2DW.tableEye[2] - 0.28];
+    F2DW.tieWant = [HIS.chair1.x - 0.02, F2DW.TOP + 0.15, HIS.dining.z - 0.37];
+    const F2TIE = { geo: null }, _wa = new THREE.Vector3();
+    /* his held left wrist in the hands' camera at the reach the tie holds it at (metres; the place the hands' pass draws it,
+       measured once for this screen's shape: the pose is laid, read and left for the frame to lay its own) */
+    function f2TieGeo() {
+      const A = F2.api, asp = A && A.vmCam ? A.vmCam.aspect : camera.aspect;
+      if (F2TIE.geo && Math.abs(F2TIE.geo.asp - asp) < 1e-4) return F2TIE.geo;
+      let g = null;
+      if (A && A.buildPrayerArm && A.vmCam && A.handPose && A.armR) {
+        f2Hands(true, F2DW.tiePose, 1, { p: 0 });
+        const T = F2TUNE.tieArm; if (T) { A.armR.position.x += T[0]; A.armR.position.y += T[1]; A.armR.position.z += T[2]; }
+        f2MirrorLeft(true);
+        const L = A.buildPrayerArm(), wr = L && L.userData.model ? L.userData.model.getObjectByName('handR') : null;
+        if (wr) { L.updateWorldMatrix(true, true); wr.getWorldPosition(_wa); A.vmCam.updateMatrixWorld(); _wa.applyMatrix4(A.vmCam.matrixWorldInverse);
+          if (-_wa.z > 0.05) g = { asp, xv: _wa.x, yv: _wa.y, zv: -_wa.z, vm: A.vmCam.fov, measured: true }; }
+      }
+      /* (before the hands have landed: the pose's own numbers, HPOSE.place turned over) */
+      if (!g) { const zv = 0.348, h = zv * Math.tan(26 * Math.PI / 180); g = { asp, xv: -0.296 * h * asp, yv: -0.319 * h, zv, vm: 52, measured: false }; }
+      if (g.measured) F2TIE.geo = g;
+      return g;
+    }
+    /* the insert's turn: pitch phi and yaw psi taking (xv, yv, -zv/s) onto the wanted direction at its own length */
+    const _tc = { aim: [0, 0, 0], W: [0, 0, 0] };
+    function f2TieCam() {
+      const g = f2TieGeo(), E = F2DW.tieEye, f = f2Narrow() ? F2DW.tieFov[0] : F2DW.tieFov[1];
+      const s = Math.tan(f * Math.PI / 360) / Math.tan(g.vm * Math.PI / 360), vz = g.zv / s, D = Math.hypot(g.xv, g.yv, vz);
+      const want = F2DW.tieWant, dx = want[0] - E[0], dy = want[1] - E[1], dz = want[2] - E[2], L = Math.hypot(dx, dy, dz) || 1;
+      const w = [dx / L * D, dy / L * D, dz / L * D];
+      const rho = Math.hypot(g.yv, vz), del = Math.atan2(vz, g.yv), phi = del - Math.acos(Math.max(-1, Math.min(1, w[1] / rho)));
+      const z1 = g.yv * Math.sin(phi) - vz * Math.cos(phi), psi = Math.atan2(w[0], w[2]) - Math.atan2(g.xv, z1);
+      _tc.aim[0] = E[0] - Math.cos(phi) * Math.sin(psi); _tc.aim[1] = E[1] + Math.sin(phi); _tc.aim[2] = E[2] - Math.cos(phi) * Math.cos(psi);
+      _tc.W[0] = E[0] + w[0]; _tc.W[1] = E[1] + w[1]; _tc.W[2] = E[2] + w[2];
+      return _tc;
+    }
+    /* where his held wrist is for his teacher's hands (the insert's, whatever lens the frame has: before the cut his teacher
+       is already reaching to where it will be) */
+    const f2TieW = () => f2TieCam().W.slice();
+    /* WHERE HIS HELD LEFT WRIST IS IN THE WORLD under THIS frame's lens (ending D's band reaches it): the wrist bone as the
+       hands' pass draws it, at its sideways and upward metres in the hands' camera and at the depth zv / s along this lens */
+    function f2WristAt(out) {
+      const A = F2.api; if (!A || !A.buildPrayerArm || !A.vmCam) return null;
+      const L = A.buildPrayerArm(); if (!L || !L.visible || !L.userData.model) return null;
+      const wr = L.userData.model.getObjectByName('handR'); if (!wr) return null;
+      wr.updateWorldMatrix(true, false); wr.getWorldPosition(_wa);
+      A.vmCam.updateMatrixWorld(); _wa.applyMatrix4(A.vmCam.matrixWorldInverse);
+      const zv = Math.max(0.05, -_wa.z), s = Math.tan(camera.fov * Math.PI / 360) / Math.tan(A.vmCam.fov * Math.PI / 360);
+      camera.updateMatrixWorld();
+      return out.set(_wa.x, _wa.y, -zv / s).applyMatrix4(camera.matrixWorld);
+    }
+
+    /* the people of the dawn (his teacher standing, sitting on the floor, at the table) and their things, at u */
+    function f2DawnPeople(u, D, k) {
+      const PS = FILMSAPI.phoStand, PC = cast.pho, H = FILMSAPI.helpers, bag = FILMSAPI.props.phoBag;
+      const uDoor = D.door - D.d0, uIn = D.inside - D.d0, uWind = D.wind - D.d0, uTable = D.table - D.d0, uTie = D.tie - D.d0;
+      const rest = H.phoRest(u);
+      /* (nobody before the door opens: he is alone until the knock) */
+      const standing = u >= uDoor && u < uWind, winding = u >= uWind && u < uTable, atTable = u >= uTable;
+      H.show(PS, standing || atTable); H.show(PC, winding); F2.pcShown = winding;
+      if (bag) bag.visible = false;
+      if (standing && PS.ready) {
+        /* (2 cm up: at 3 cm up his lowest skin stood 1.1 cm over the floor, run 9's reading, so at 0 it was 1.9 cm under it;
+           feetscan's 3.2 cm under stood the same with him lifted 3 cm or not, so it does not read him against this floor) */
+        if (u < uIn) { put(PS, F2DW.phoDoor.x, F2DW.phoDoor.z, 0, 0.02);
+          H.speak(PS, u, rest, [[D.ph51w1 - D.d0, SECS.ph51w1, 'Talk_with_Hands_Open', 0.35]]);
+          H.gaze(PS, u, [[uDoor + 0.3, 'lens', 0.6]], 0.8, 0.7, 0.02); }
+        else { H.walk(PS, u, uIn, F2DW.phoIn, 0.85, rest, 0.9, { y: 0.02, ry0: 0 });
+          H.gaze(PS, u, [[uIn, 'lens', 0.4], [uIn + 0.9, [F2DW.C.x, 0.3, F2DW.C.z + 0.3], 0.8]], 0.7, 0.6, 0.02); }
+        f2PhoBag(PS);
+      }
+      if (!winding) F2M.spoolPho.visible = false;
+      if (winding && PC.ready) f2Wind(u, uWind, uTable, PC);
+      if (atTable && PS.ready) f2AtTable(u, uTable, uTie, D, k, PS);
+      /* the thread and the spool: round him on the floor until his teacher winds it in; on the table after */
+      const w = winding ? f2s5(f2win(u, uWind - 1.6, uTable + 0.4)) : (atTable ? 1 : 0);
+      f2CircleWound(w); f2CircleLay(w < 0.999 ? 1 : 0);
+      f2SpoolFloor.visible = u < uWind; F2M.spoolTable.visible = atTable; F2M.food.visible = atTable;
+      f2Lift.m.visible = winding && w < 0.995;
+    }
+    /* the loop drawn in to his hands: the circle scaled about the point where it leaves the floor, so what is left of it
+       lies where it lay, slides in toward him and is gone (a pure function of how much is wound, w 0..1) */
+    function f2CircleWound(w) {
+      const m = f2Circle.m, P = F2DW.pick, s = Math.max(0.0001, 1 - w);
+      m.scale.set(s, 1, s); m.position.set(P[0] * (1 - s), 0, P[2] * (1 - s));
+    }
+    /* (a bone by its name, the rig's prefix with or without its colon: glTF strips it, mixamorigSpine2: v3.8) */
+    const f2Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+    /* HIS FINGERS CLOSED A LITTLE ON THE THREAD: the library's curlFingers asks for RightHandIndex1 or mixamorig:RightHandIndex1,
+       and his standing body's bones are named mixamorigRightHandIndex1 (glTF takes the colon out), so it found none and his
+       fingers stood straight and spread at the tie (photographed). The same turn about the hand's across line, the bones found
+       either way; the turn is laid on what the take wrote this frame, and where the take writes no finger it is laid on the
+       fingers as they stood before it, so it never gathers frame on frame (th 0: the fingers given back) */
+    const _f2cq = new THREE.Quaternion(), _f2cq2 = new THREE.Quaternion(), _f2cf = new THREE.Vector3(), _f2cn = new THREE.Vector3(), _f2ca = new THREE.Vector3();
+    function f2Curl(P, sd, th) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a || !a.hand || !a.fL || !a.nL) return;
+      if (!a.f2fing) { a.f2fing = []; const S0 = sd === 'L' ? 'Left' : 'Right';
+        for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (let i = 1; i <= 3; i++) { const b = f2Bone(P, S0 + 'Hand' + f + i); if (b) a.f2fing.push({ b, i, base: new THREE.Quaternion(), last: null }); } }
+      for (const F of a.f2fing) { if (F.last && F.b.quaternion.equals(F.last)) F.b.quaternion.copy(F.base); else F.base.copy(F.b.quaternion); }
+      if (th > 0.001) {
+        a.hand.getWorldQuaternion(_f2cq); _f2cf.copy(a.fL).applyQuaternion(_f2cq); _f2cn.copy(a.nL).applyQuaternion(_f2cq); _f2ca.crossVectors(_f2cf, _f2cn).normalize();
+        for (const F of a.f2fing) { _f2cq.setFromAxisAngle(_f2ca, th * (F.i === 3 ? 0.7 : 1)); F.b.parent.getWorldQuaternion(_f2cq2);
+          F.b.quaternion.premultiply(_f2cq2).premultiply(_f2cq).premultiply(_f2cq2.invert()); } }
+      for (const F of a.f2fing) (F.last || (F.last = new THREE.Quaternion())).copy(F.b.quaternion);
+      return a.f2fing.length;
+    }
+    /* his cloth bag hung at his right hip by its strap (FILMS-1 hangs it 0.2 m out from his spine, 0.52 m under his chest's
+       bone: c_yfilm.js phoBagOn1); here 0.25 m out, 0.08 m behind his hip's line and 0.55 m down, so his right arm hangs and
+       swings before it: at FILMS-1's place its strap and side went through his arm and side, clipscan 1,639 crossings at the
+       door and 2,234 coming in */
+    function f2PhoBag(P) {
+      const g = FILMSAPI.props.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
+      const sh = f2Bone(P, 'Spine2') || f2Bone(P, 'Spine1') || P.hips; if (!sh) return;
+      P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_dwA);
+      const ry = P.group.rotation.y;
+      if (g.parent !== world) world.attach(g);
+      g.position.set(_dwA.x - Math.cos(ry) * 0.25 - Math.sin(ry) * 0.08, _dwA.y - 0.55, _dwA.z + Math.sin(ry) * 0.25 - Math.cos(ry) * 0.08);
+      g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
+    }
+    /* WIND: on the floor at the circle's edge, seated as he sits at her table (cast.pho, CROSS). His seated body has no finger
+       bones (his standing copy, p5pho, has them: c_cast.js), so nothing is gripped: the spool stands on his open right palm,
+       held up before his belly, and his left hand, palm down, circles over it winding the thread round it, the thread coming
+       up from the floor to his left hand's fingers and onto the spool, the spool turning with each round (both hands laid by
+       handTo after his seated rest, as FILMS-1 lays his at her table; measured: jointscan). Facing -z here: before him is -z,
+       his right +x. (The first build closed his fingers round the spool by curlFingers, which a body with no finger bones
+       leaves flat: the spool stood beside a flat hand, photographed) */
+    function f2Wind(u, u0, u1, P) {
+      const W = F2DW.wind;
+      /* (1 cm up: at 2 cm up his lowest skin stood 1.2 cm over the floor, run 9's reading, so at 0 it was 0.8 cm under it;
+         feetscan's 2.2 cm under stood the same with him lifted 2 cm or not, so it does not read him against this floor) */
+      put(P, W.x, W.z, W.ry, 0.01);
+      pose(P, 'Sit_to_Stand_Transition_M', 0.02 + 0.008 * Math.sin(u * 0.9), false);
+      const ph = (u - u0) * 2 * Math.PI * 0.55;
+      /* the spool's foot on his right palm (w51threadreel 0.084 m tall at 0.62: 0.052), before his belly */
+      const S = [W.x + 0.03, 0.40, W.z - 0.27];
+      handTo(P, 'R', [S[0] + 0.01, S[1] - 0.004, S[2] + 0.01], [-0.35, 0.05, -0.94], [0, 1, 0], 1, { out: 0.2, down: 0.32 });
+      /* his left hand's fingers round the spool's top, a round each turn of the clock's 0.55 a second */
+      const Lc = [S[0] - 0.005 + 0.045 * Math.cos(ph), S[1] + 0.085, S[2] + 0.045 * Math.sin(ph)];
+      /* (its fingers nearer the forearm's own line: pointed down over the spool its wrist bent 73.6 degrees, jointscan) */
+      handTo(P, 'L', Lc, [0.62, -0.08, -0.78], [0.08, -0.99, 0.06], 1, { out: 0.24, down: 0.28 });
+      const g = F2M.spoolPho;
+      if (g) { if (g.parent !== world) world.attach(g); g.position.set(S[0], S[1], S[2]); g.rotation.set(0, -ph, 0); g.scale.setScalar(1); g.visible = true; }
+      /* the thread from where it leaves the floor STRAIGHT UP before his knees to above his lap, then in over it to his left
+         hand's fingers and round onto the spool's side (drawn straight from the floor to his hand it went through his knees
+         and robe: clipscan, 45 crossings) */
+      const pk = F2DW.pick, Sx = [S[0] + 0.03 * Math.cos(ph + 0.6), S[1] + 0.03, S[2] + 0.03 * Math.sin(ph + 0.6)], up = [pk[0], 0.33, pk[2] - 0.03];
+      f2TubeLay(f2Lift.g, (s, out) => {
+        if (s < 0.45) { const q = s / 0.45; return out.set(lp(pk[0], up[0], q), lp(pk[1], up[1], q), lp(pk[2], up[2], q * q)); }
+        if (s < 0.88) { const q = (s - 0.45) / 0.43; return out.set(lp(up[0], Lc[0], q), lp(up[1], Lc[1] - 0.02, Math.sqrt(q)), lp(up[2], Lc[2], q)); }
+        const q = (s - 0.88) / 0.12; return out.set(lp(Lc[0], Sx[0], q), lp(Lc[1] - 0.02, Sx[1], q), lp(Lc[2], Sx[2], q)); }, 0, 1, F2C.r * 1.1, 0.001);
+    }
+    /* HIS HIPS ON THE SEAT, whatever the take: his rest (the first moment of his rise) and his talk carry their hips at
+       different places from the body's own, so in the rest he sat behind the chair's back and in the talk before it
+       (photographed); after each pose the body is moved under its hips to the seat's own place (the take's root laid off,
+       v16.8), before his look and his hands are laid */
+    const _sh = new THREE.Vector3();
+    function f2SeatHips(P, at) {
+      if (!P || !P.ready || !P.hips) return;
+      P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_sh);
+      P.group.position.x += at[0] - _sh.x; P.group.position.y += at[1] - _sh.y; P.group.position.z += at[2] - _sh.z;
+      P.group.updateWorldMatrix(true, true);
+    }
+    /* TABLE: seated across from him on the other chair (the end of his rise played back to its start: a man on a chair),
+       his forearms laid on the table's edge, his look on his student; then, for the tie, both hands to the held wrist */
+    function f2AtTable(u, u0, uTie, D, k, P) {
+      const ch = F2DW.phoChair, H = FILMSAPI.helpers;
+      put(P, ch.x, ch.z, ch.ry, 0);
+      const sitT = 0.05 + 0.02 * Math.sin(u * 0.7);
+      const talk = [[D.ph51w2 - D.d0, SECS.ph51w2, 'Sitting_Answering_Questions', 0.55]];
+      const own = { A: ['ph51A3'], B: ['ph51B4'], C: ['ph51C3'], D: ['ph51D3', 'ph51D4'] }[k] || [];
+      for (const n of own) if (D[n] != null) talk.push([D[n] - D.d0, SECS[n], 'Sitting_Answering_Questions', 0.5]);
+      if (u < uTie - 0.4) H.speak(P, u, ['Sit_to_Stand_Transition_M', sitT, 0, false], talk);
+      else pose(P, 'Sit_to_Stand_Transition_M', sitT, false);
+      /* (how far his talk is on, as f1Speak eases it: in over 0.35 s from a line's start, out over the 0.45 s after its end, to
+         its share) */
+      let tk = 0; for (const [t0, secs, , w] of talk) tk = Math.max(tk, f2smo(c01((u - t0) / 0.35)) * (1 - f2smo(c01((u - t0 - secs) / 0.45))) * (w || 1));
+      if (!(u < uTie - 0.4)) tk = 0;
+      const hp = F2DW.phoHips, ty = F2TUNE.chairY || 0;
+      f2SeatHips(P, [hp[0], hp[1] + 0.05 * c01(tk / 0.55) + ty, hp[2]]);
+      /* (his look on his student; in D down to the red mark on his wrist as he names it, and back; to the wrist for the tie,
+         and up to him for the last words) */
+      const G = [[u0, 'lens', 0.3]];
+      if (k === 'D' && D.ph51D3 != null) G.push([D.ph51D3 - D.d0 - 0.4, f2TieW, 0.7], [D.ph51D4 - D.d0 - 0.2, 'lens', 0.7]);
+      G.push([uTie - 0.2, f2TieW, 0.6], [D.up - D.d0, 'lens', 0.8]);
+      H.gaze(P, u, G, 0.75, 0.65, 0.02);
+      /* the tie: both hands to his wrist (f2TieW: where the insert draws it), the thread drawn round and knotted twice */
+      const uK2 = D.knot2 - D.d0, kT = f2smo(f2win(u, uTie - 0.5, uTie + 0.5)) * (1 - f2smo(f2win(u, uK2 + 0.4, uK2 + 1.1)));
+      if (kT > 0.001) {
+        /* (facing +z here, his right hand at -x of the wrist and his left at +x, a little over it and toward himself, the
+           palms turned in to face each other across the wrist, the fingers forward along it and a little in, holding the
+           thread's two ends at its sides; drawn apart at each knot. Palms down with the fingers in across it, they lay over
+           the back of his hand, photographed) */
+        const w = f2TieW();
+        const pull = f2bell(u, D.knot1 - D.d0 - 0.35, D.knot1 - D.d0, D.knot1 - D.d0 + 0.05, D.knot1 - D.d0 + 0.4) + f2bell(u, D.knot2 - D.d0 - 0.35, D.knot2 - D.d0, D.knot2 - D.d0 + 0.05, D.knot2 - D.d0 + 0.4);
+        /* (5 cm to each side of the wrist's middle: at 7 cm, on a phone's insert, 16 cm wide where the wrist is, his palms stood
+           at the picture's two edges, photographed) */
+        const sx = 0.05 + 0.02 * pull;
+        handTo(P, 'R', [w[0] - sx, w[1] + 0.01, w[2] - 0.03], [0.3, -0.25, 0.92], [0.94, -0.3, -0.1], kT, { out: 0.24, down: 0.3 });
+        handTo(P, 'L', [w[0] + sx, w[1] + 0.01, w[2] - 0.03], [-0.3, -0.25, 0.92], [-0.94, -0.3, -0.1], kT, { out: 0.24, down: 0.3 });
+      }
+      f2Curl(P, 'R', 0.6 * kT); f2Curl(P, 'L', 0.6 * kT);
+    }
+    /* the hands' pass at dawn: none until the tie, then his left hand held out, palm down, across the table (the right one's
+       reach turned over: f2MirrorLeft), the white thread laid round its wrist and knotted twice, over the red mark in D */
+    function f2DawnHands(u, D, k) {
+      const A = F2.api; if (!A) return;
+      const uTie = D.tie - D.d0, uK2 = D.knot2 - D.d0;
+      /* (held out for the tie; drawn down out of the picture once it is knotted, before his eyes rise to his teacher's face) */
+      /* (drawn back out of the insert after the second knot, gone by the cut up to his teacher's face) */
+      /* (it comes up into the insert from the cut, into his teacher's waiting hands: brought up in the table's wide shot, it
+         stood near him while his teacher reached for the table's middle) */
+      const uUp = D.up - D.d0, inK = f2smo(f2win(u, uTie, uTie + 0.45)), outK = f2smo(f2win(u, uK2 + 0.3, uUp - 0.05)), out = inK * (1 - outK);
+      f2Hold(null);
+      if (inK > 0.01 && outK < 0.995) { f2Hands(true, F2DW.tiePose, inK, { p: 0 });
+        /* (the held hand placed for the insert before the left is laid as its mirror: F2TUNE.tieArm, metres in the hands' pass) */
+        const T = F2TUNE.tieArm; if (A.armR && T) { A.armR.position.x += T[0] * inK; A.armR.position.y += T[1] * inK - 0.36 * outK; A.armR.position.z += T[2] * inK; }
+        f2MirrorLeft(true); }
+      else { f2Hands(false); f2MirrorLeft(false); }
+      const thread = u >= D.knot1 - D.d0 ? (u >= D.knot2 - D.d0 ? 2 : 1) : 0;
+      /* (in D the red mark the band left stays on his wrist, the white thread tied over it) */
+      f2WristShow(0, k === 'D' && out > 0.01 ? 1 : 0, out > 0.01 ? thread : 0, 0);
+      if (F2W.thread) { F2W.thread.visible = out > 0.01 && u >= uTie + 0.6; }
+    }
+    /* DUST IN THE MORNING LIGHT (the plan's 12: "Dawn: long light through the glass, dust in it"): motes in the low sun inside
+       his glass, each drifting slowly up and aside and twinkling as it turns in the light, a pure function of the clock;
+       drawn as light (additive, no lamp: v9.4) */
+    const F2DUST = (() => {
+      const n = 120, pos = new Float32Array(n * 3), base = [];
+      for (let i = 0; i < n; i++) { const h1 = f2Hash(i * 3.1 + 1), h2 = f2Hash(i * 7.7 + 2), h3 = f2Hash(i * 1.3 + 3);
+        base.push([HIS.circle.x - 2.2 + 6.4 * h1, 0.25 + 2.1 * h2, LIV.z1 - 0.15 - 1.7 * h3, f2Hash(i * 5.9 + 4) * 6.28]); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(HIS.circle.x, 1, 1.5), 6); owned.push(g);
+      const m = new THREE.PointsMaterial({ map: glowTex, color: 0xffe0b0, size: 0.016, sizeAttenuation: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+      mats.push(m); const pts = new THREE.Points(g, m); pts.name = 'dust in the morning light'; pts.frustumCulled = false; pts.visible = false; hisSideG.add(pts);
+      return { n, pos, base, g, m, pts };
+    })();
+    function f2DustAt(u, k) {
+      const Dd = F2DUST; Dd.pts.visible = k > 0.001; if (!Dd.pts.visible) return;
+      Dd.m.opacity = 0.55 * k;
+      for (let i = 0; i < Dd.n; i++) { const b = Dd.base[i], ph = b[3];
+        Dd.pos[i * 3] = b[0] + 0.05 * Math.sin(0.21 * u + ph); Dd.pos[i * 3 + 1] = b[1] + 0.06 * Math.sin(0.17 * u + ph * 1.7) + 0.004 * u; Dd.pos[i * 3 + 2] = b[2] + 0.04 * Math.sin(0.13 * u + ph * 0.6); }
+      Dd.g.attributes.position.needsUpdate = true;
+    }
+    /* (before the dawn nothing of it stands: a pure function of the clock, so a film sought back from the morning to the
+       night draws the night) */
+    function f2DawnOff() {
+      const H = FILMSAPI.helpers, PS = FILMSAPI.phoStand, bag = FILMSAPI.props.phoBag;
+      if (PS && !PS.hidden) H.show(PS, false); if (F2.pcShown) { H.show(cast.pho, false); F2.pcShown = false; }
+      if (bag && bag.visible && F2.on) bag.visible = false;
+      F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false;
+    }
+    function f2DawnFx(u, D, k) {
+      f2DustAt(u, f2smo(f2win(u, 0.0, 1.5)));
+      f2Gold.visible = false; f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false;
       for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
-      f2FloorPhone.visible = false; f2SpoolFloor.visible = true;
-      f2Hold(null); f2Hands(false);
+      f2FloorPhone.visible = u < D.door - D.d0; f2Spark.q.visible = false;
+      f2PhoLevel(1);
+      /* (the cut lands on the door all but open, 81 of its 95 degrees, its leaf by the wall at the picture's left, and it
+         comes the last of the way in 0.4 s: opened from shut, and then from half way (45 degrees), its dark leaf stood
+         between his eye and the doorway and filled the picture, photographed three times; the latch and the door are heard) */
+      WORLD.hisDoor(u >= D.door - D.d0 && u < D.wind - D.d0 ? lp(0.85, 1, f2smo(f2win(u, D.door - D.d0, D.door - D.d0 + 0.4))) : 0);
+      f2DawnPeople(u, D, k);
+      f2DawnHands(u, D, k);
     }
 
     Object.assign(FILMSAPI, { ends2: END2 });
@@ -9449,6 +10989,9 @@
       wallClock.t += wdt;
       worldFrame(wdt, st);                                     // (the world's hook: its people and their levels)
       fxTick(wdt, st);                                         // (the play's drawn things, the chant, the beds: c_play.js)
+      /* the bowl in his hands laid on his left palm, turned to the lens, by the films' own helper (FILMS-1's bowlInHands, the
+         keepsake's last picture and the event's first one bowl from one function): BOWLHELD alone stood it below the picture */
+      if (brk.held && FILMSAPI.helpers && FILMSAPI.helpers.bowlInHands) FILMSAPI.helpers.bowlInHands(brk.held);
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
@@ -9516,11 +11059,11 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,
-      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE },
+      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, BOWL_S, PHONEHELD, SURGE, bowlLook },
       /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
       chant: RATANA, beds: BEDS,
       /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
-      dbg: { cast, people, clocks: {} },
+      dbg: { cast, people, clocks: {}, bowl: BOWLFIT, sofaRest: SOFAREST, held: () => ({ bowl: brk.held, phone: phone5.g }), fn: { span, rest, take, pose, hold, put, gaze } },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen, story: storySnap() }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
@@ -9556,7 +11099,7 @@
   const WALK2 = {
     A: { rise: 0, bag: 5.6, circle: 4.6 },
     B: { rise: 1.6, bag: 5.2, circle: 4.6 },
-    C: { rise: 2.0, bag: 3.6, circle: 4.6 },
+    C: { rise: 1.4, bag: 3.6, circle: 4.6 },                                    // (up from sitting on his sofa, the call in his hand)
     D: { rise: 1.4, bag: 6.0, circle: 4.6 }
   };
   /* THE BARRIER'S MARKS from b0 (the plan's 9.7, its measured lines): his teacher's two lines on the speaker; the walk to the
@@ -9611,14 +11154,26 @@
   }
   function slow2Inv(e, t0) { let lo = e, hi = e + SLOW2.len * 2; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (slow2(m, t0) < e) lo = m; else hi = m; } return (lo + hi) / 2; }
 
-  /* THE DAWN'S MARKS from d0 (the plan's 9.9): the morning on his floor, the knock; his teacher at the door with breakfast;
-     the thread wound up; at the table his "I only held the water.", his teacher's answer and the ending's own line; the
-     thread tied on his wrist, the last words; the picture and the music fade together (v15.3) */
+  /* THE DAWN'S MARKS from d0 (the plan's 9.9): the morning on his floor (his head to the glass, sitting up), the knock; his
+     teacher at the door with breakfast, and in past him; the thread wound up from the floor; at the table his "I only held
+     the water.", his teacher's answer and the ending's own line; the white thread tied on his wrist and knotted twice, his
+     eyes up to his teacher's face for the last words; his thought; the picture and the music go down together (v15.3).
+     M8 decays from its 41st second, under "Before we help anyone ... we prepare first." as the plan has it (its last chord
+     under the line); his thought is said in the morning's quiet after it, the birds outside */
   function dawn2(d0, k) {
     const own = { A: [['ph51A3', 0.8]], B: [['ph51B4', 0.8]], C: [['ph51C3', 0.8]], D: [['ph51D3', 1.1], ['ph51D4', 0.9]] }[k];
-    const T = tl(d0, [[1.2], ['@wake'], [2.6], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.6], ['@inside'], [2.2], ['@wind'], [5.4], ['@table'], [2.2],
+    const T = tl(d0, [[1.2], ['@wake'], [1.3], ['@sit'], [1.3], ['@knock'], [1.9], ['@door'], [0.9], ['ph51w1', 0.5], ['@inside'], [1.8], ['@wind'], [5.0], ['@table'], [1.8],
                       ['zv51w1', 0.45], ['ph51w2', 0.8]].concat(own, [['@tie'], [0.4], ['ph51w3', 0.5], ['zv51w2', 0.6], ['@black']]));
+    T.knot1 = T.tie + 1.5; T.knot2 = T.tie + 3.0;                                  // knotted twice, under the first half of his line
+    /* his eyes up to his teacher's face for "From now on, we prepare first." (the line's second sentence, about 3.4 s into
+       it): only once his teacher's hands have left the knot and his own hand is down out of the picture, so the look that
+       rises never carries a held hand up with it (the hands' pass is drawn from the lens, not from the world) */
+    T.up = T.tie + 3.9;
     T.d0 = d0; T.end = T.black + 1.6;
+    /* M8 "Dawn" (45.09 s, its last chord ringing out over its last 3.6 s) begins where it ENDS with the picture: the dawn runs
+       48 to 51 s on its measured lines, so begun at 0 (the plan's 9.9) it fell silent before his last thought and left the
+       black with no music; begun here its last chord sounds under the thought and fades with the picture (v15.3) */
+    T.m8 = T.end - 45.1;
     return T;
   }
 
@@ -9766,6 +11321,7 @@
       /* the Jinapañjara through the phone, its captions on its breaths (kit.captions, wall time: v21.31) */
       sfx(B.chant, 'ph51jinatel', 1);
       step(B.chant, () => F.chantOn());
+      step(B.chantEnd + 0.4, () => F.chantOff());
       sfx(B.m7, 'u51m7circle', 0.7);                                               // M7 The Circle: low strings and khim under the chant, rising to the break
       sfx(B.vis0, 'u51vison', 0.85);                                               // his sight opened, held by the film
       sfx(B.door0 + 0.2, 'u51gtick1', 0.45); sfx(B.door0 + 1.7, 'u51gtick2', 0.4);  // the glass ticking, pressed from outside
@@ -9784,14 +11340,24 @@
       sfx(B.lie + 0.5, 'u51floor', 0.3);                                           // he lies down inside the circle
       fade(B.black, B.end - 0.05, 0, 1);
       /* ================================ THE DAWN (the plan's 9.9) */
-      if (k === 'A') sfx(D.d0 + 0.05, 'u51m8dawnA', 0.7);                         // M8 Dawn, warm and full
-      else if (k === 'B') sfx(D.d0 + 0.05, 'u51m8dawnB', 0.7);                    // tender, a solo piano
-      else if (k === 'C') sfx(D.d0 + 0.05, 'u51m8dawnC', 0.7);                    // light
-      else sfx(D.d0 + 0.05, 'u51m8dawnD', 0.7);                                   // low strings, warming at the thread
+      if (k === 'A') sfx(D.m8, 'u51m8dawnA', 0.7);                                // M8 Dawn, warm and full
+      else if (k === 'B') sfx(D.m8, 'u51m8dawnB', 0.7);                           // tender, a solo piano
+      else if (k === 'C') sfx(D.m8, 'u51m8dawnC', 0.7);                           // light
+      else sfx(D.m8, 'u51m8dawnD', 0.7);                                          // low strings, warming at the thread
       sfx(D.d0, 'u51bdawn', 0.5); sfx(D.d0 + 28.5, 'u51bdawn', 0.5);               // the morning outside (a koel, mynas, a far train; the AC off)
       sfx(D.d0 + 0.5, 'u51koel', 0.5);
       fade(D.d0 + 0.05, D.d0 + 1.3, 1, 0);
+      sfx(D.sit + 0.15, 'u51floor', 0.25);                                         // he sits up on the floor
+      sfx(D.sit + 0.5, 'u51exhale', 0.4);                                          // a breath out: the night over
       sfx(D.knock - 0.82, 'u51knock', 0.7);                                        // a knock at his door
+      sfx(D.door - 0.1, 'u51unlock', 0.5);                                         // the latch
+      sfx(D.door + 0.15, 'u51door', 0.6);                                          // the door drawn open
+      for (let t = D.inside + 0.2; t < D.wind - 0.1; t += 0.62) sfx(t, 'u51tile', 0.24);   // his teacher's soft steps in past him
+      sfx(D.wind + 0.25, 'u51rewind', 0.6);                                        // the thread drawn in over the floor and wound
+      sfx(D.wind + 2.7, 'u51drag', 0.45);
+      sfx(D.table + 0.25, 'u51paper', 0.55);                                       // the paper bag opened on the table
+      sfx(D.table + 0.95, 'u51cups', 0.55);                                        // the two cups of kopi set down
+      sfx(D.table + 5.2, 'u51mynah', 0.35);                                        // the morning outside his glass
       sfx(D.ph51w1, 'ph51w1', 1);                                                  // "Eat first. You fought all night, even sitting still."
       sfx(D.zv51w1, 'zv51w1', 1);                                                  // "I only held the water."
       sfx(D.ph51w2, 'ph51w2', 1);                                                  // "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it."
@@ -9799,7 +11365,8 @@
       else if (k === 'B') sfx(D.ph51B4, 'ph51B4', 1);                              // "A student who won't wake his teacher is protecting the wrong person."
       else if (k === 'C') sfx(D.ph51C3, 'ph51C3', 1);                              // "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
       else { sfx(D.ph51D3, 'ph51D3', 1); sfx(D.ph51D4, 'ph51D4', 1); }            // "You went to a stranger's door and knocked. It answered." ... "Curiosity is not courage."
-      sfx(D.tie + 0.3, 'u51knot', 0.6);                                            // the thread drawn and knotted twice
+      sfx(D.tie + 0.3, 'u51knot', 0.6);                                            // the thread drawn round his wrist and knotted
+      sfx(D.knot2 - 1.1, 'u51knot', 0.45);                                         // and knotted again
       sfx(D.ph51w3, 'ph51w3', 1);                                                  // "Before we help anyone, we protect ourselves. From now on, we prepare first."
       sfx(D.zv51w2, 'zv51w2', 1);                                                  // "I had thought I was only there to assist my teacher."
       fade(D.black, D.end - 0.1, 0, 1);
@@ -9868,9 +11435,15 @@
     T.m3b = T.inn + 4.0;                                        // M3: a low cello note bending down
     T.turnG = T.kneel + 1.2;                                    // his look to the glass, over 1.8 s
     T.narrow = T.turnG + 1.8;                                   // the lens narrows on the glass over 7 s
-    T.sofa = T.inn + 10.0;                                      // she comes to the sofa; her reflection follows a beat late
-    T.black = T.inn + 14.0;                                     // black: the title over it
+    T.sofa = T.inn + 9.3;                                       // she comes to the sofa; her reflection follows a beat late
+    /* (her walk from the door round the sofa's end, 4.15 m at a metre a second with its easing, and her sitting by her rise
+       played backward: she is seated on the sofa, as the play keeps her, before the picture goes: PLAY.md 2, v5.25) */
+    T.sofaWalk = 4.6; T.sofaSit = T.sofa + T.sofaWalk + 0.4; T.seated = T.sofaSit + 2.0;
+    T.black = Math.max(T.inn + 14.0, T.seated + 0.7);          // black: the title over it
     T.end = T.black + 1.7;
+    /* (M1's last sound is 57.9 s into it, its held unresolved chord: it comes in a little later than the plan's 3.5 s so the
+       chord is still sounding as the picture goes, and goes down with it: v15.3) */
+    T.m1 = Math.max(T.m1, T.black - 58.2);
     return T;
   })();
   function intro(c, s, api) {
@@ -9899,6 +11472,8 @@
     /* THE STAIR: the tube's hum, their steps on terrazzo, the flicker */
     sfx(T.stair - 0.1, 'u51bstair', 0.55);
     sfx(T.stair + 0.15, 'u51stair', 0.6); sfx(T.tube + 1.3, 'u51stair', 0.55);   // the climb (6 s each, the second after the stop)
+    sfxFade(T.tube - 0.1, T.tube + 0.3, 'u51stair');                          // (they stop as the tube flickers: the first steps end)
+    sfxFade(T.land - 0.35, T.land + 0.15, 'u51stair');                        // (the steps end as they stand at her door)
     sfx(T.tube, 'u51tube', 0.7);                                               // the tube flickers twice, its hum dropping out
     /* THE LANDING: two knocks, Marcus's line, the lock and the old hinge, Grace's line, his teacher's thanks */
     sfx(T.knock - 0.82, 'u51knock', 0.8);                                      // (its knocks 0.82 and 1.11 s into it)
@@ -9912,8 +11487,8 @@
     sfx(T.cloth - 0.61, 'u51cloth', 0.7);                                      // the cloth shaken out over the table
     sfx(T.o3, 'zv51o3', 1);                                                    // "She had let us in. But something kept turning her back to the door."
     sfx(T.gecko, 'u51gecko', 0.45);                                            // a gecko's chirp
-    sfx(T.sofa + 0.5, 'u51tile', 0.22); sfx(T.sofa + 1.1, 'u51tile', 0.2); sfx(T.sofa + 1.7, 'u51tile', 0.2); sfx(T.sofa + 2.3, 'u51tile', 0.18);   // her steps, soft
-    sfx(T.sofa + 3.6 - 0.43, 'u51sofa', 0.55);                                 // the sofa's give as she sits
+    for (let i = 0; i < 7; i++) sfx(T.sofa + 0.45 + i * 0.6, 'u51tile', i ? 0.2 : 0.22);   // her steps, soft, to the sofa
+    sfx(T.sofaSit + 1.25 - 0.43, 'u51sofa', 0.55);                            // the sofa's give as her weight lands
     fade(T.black, T.end - 0.25, 0, 1);
     sfxFade(T.black, T.end - 0.2, 'u51m1blue');                                // (the music goes down with the picture: v15.3)
     step(T.end, () => F.end());
@@ -9924,6 +11499,7 @@
   const KS51 = (() => {
     const T = { hand: 0.0, k1: 0.8, bag: 6.0, pull: 9.0, give: 12.5, place: 14.0, turn: 22.0, k2: 23.0, lift: 26.0, chant: 32.0, wax: 35.0, m4: 38.0 };
     T.k2 = Math.max(T.k2, T.k1 + SECS.ph51k1 + 0.4);
+    T.onPlate = T.place + 1.35;                                 // the packet lies on the plate, slid off his fingers (c_yfilm.js KEEPSET1)
     T.end = 42.0;
     return T;
   })();
@@ -9933,7 +11509,7 @@
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     sfx(T.k1, 'ph51k1', 1);                                                    // "May I hold it? Only for a while."
     sfx(T.pull - 0.1, 'u51zip', 0.6);                                          // her bag's zip
-    sfx(T.place + 0.5 - 0.04, 'u51plate', 0.6);                                // porcelain on cloth
+    sfx(T.onPlate - 0.04, 'u51plate', 0.6);                                    // the packet on the porcelain, as it lands (27 Nov: heard 0.74 s before it did)
     sfx(T.k2, 'ph51k2', 1);                                                    // "Hold the water. Whatever happens, keep it still."
     sfx(T.lift - 0.18, 'u51bowlup', 0.7);                                      // brass lifted off the cloth, the water's small slap
     /* THE CHANT begins (the play's own world sound: it carries on under the event and into the cord, PLAY.md 1) */
@@ -9953,13 +11529,13 @@
     T.m1 = Math.max(41.0, T.c3 + SECS.ph51c3 + 0.3);           // "I won't. Thank you, Grandmaster."
     T.g1 = Math.max(43.0, T.m1 + SECS.mk51c1 + 0.25);          // "Thank you."
     T.pour = Math.max(44.0, T.g1 + SECS.gr51c1 + 0.3);         // the bowl to his teacher; the pour; the cork
-    T.give = T.pour + 2.8;                                      // the bottle held out to him
+    T.give = T.pour + 3.5;                                      // the bottle held out to him (after the pour and the cork: c_yfilm.js pourAt1)
     T.c4 = T.give + 0.4;                                        // "For your altar."
     T.take = T.give + 1.3;                                      // his hands take it
     T.c5 = T.c4 + SECS.ph51c4 + 0.45;                           // "You held it well."
     T.wrist = T.c5 + SECS.ph51c5 + 0.3;                         // his look drops to his wrist for 1.5 s
     T.z2 = T.wrist;                                             // "My part was small. I only held the water."
-    T.black = T.z2 + SECS.zv51c2 + 0.5;
+    T.black = Math.max(T.z2 + SECS.zv51c2 + 0.5, T.wrist + 3.45);   // (after his look is back on his teacher: 1.2 s down, 1.0 held, 1.2 back)
     T.end = T.black + 1.1;
     return T;
   })();
@@ -9983,8 +11559,7 @@
     sfx(T.m1 - 1.6, 'u51knot', 0.45);                                          // the thread wound and knotted
     sfx(T.m1, 'mk51c1', 1);                                                    // "I won't. Thank you, Grandmaster."
     sfx(T.g1, 'gr51c1', 1);                                                    // "Thank you."
-    sfx(T.pour + 0.6 - 0.94, 'u51pour', 0.6);                                  // the pour into the bottle
-    sfx(T.pour + 2.2 - 0.53, 'u51cork', 0.6);                                  // the cork
+    sfx(T.pour + 1.2, 'u51cork', 0.65);                                       // the pour from the bowl into the bottle (its trickle 0.2 to 1.7 s into it), then its cork
     sfx(T.c4, 'ph51c4', 1);                                                    // "For your altar."
     sfx(T.c5, 'ph51c5', 1);                                                    // "You held it well."
     sfx(T.z2, 'zv51c2', 1);                                                    // "My part was small. I only held the water."
@@ -9995,11 +11570,14 @@
 
   /* HOME (the plan's 9.4; 11:52 PM): from the cord's black, into three o'clock in bed */
   const HM51 = (() => {
-    const T = { m5: 0.5, card: 6.2, lock: 6.6, door: 7.0, altar: 10.0, setb: 12.5, palms: 14.0, phone: 18.0, charge: 19.0, keys: 21.0, bed: 24.0,
-                shower: 24.0, showerOff: 28.0, sit: 28.4, lie: 31.0, clock: 34.0, close: 40.0, h1: 41.0, tick: 45.0, press: 46.0, open: 49.5 };
+    /* (27 Nov, measured: the walk in from his door to his altar takes 3.9 s at a walk, so the altar's moments are a little
+       after the plan's; the altar to the table is a cut, and waking a slow roll of his head on the pillow: the clock, then
+       the room where he will get up) */
+    const T = { m5: 0.5, card: 6.2, lock: 6.6, door: 7.0, walkIn: 7.9, altar: 11.8, setb: 12.9, palms: 14.5, table0: 17.2, phone: 18.1, charge: 19.2, keys: 21.0,
+                bed: 24.0, shower: 24.0, showerOff: 28.0, sit: 28.4, lie: 31.0, clock: 34.0, close: 40.0, h1: 41.0, tick: 45.0, press: 46.0, open: 49.5 };
     T.h1 = Math.max(T.h1, T.close + 0.8);
     T.cut = T.open;
-    T.end = T.open + 4.6;                                       // the clock read (3:00), the ceiling again, and the room: where play begins
+    T.end = T.open + 6.9;                                       // the ceiling held, the clock read (3:00), the ceiling again, and the room: where play begins
     return T;
   })();
   function filmHome(c, s, api) {
@@ -10008,15 +11586,17 @@
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(0, 0.9, 1, 0);                                                        // (from the cord's black)
     sfx(0.0, 'u51bcorr', 0.55);                                                // the corridor's hush, the air vents
-    sfx(0.1, 'u51carpet', 0.6);                                                // his steps on carpet
+    sfx(0.1, 'u51carpet', 0.6); sfx(3.9, 'u51carpet', 0.5); sfxFade(5.3, 5.9, 'u51carpet');   // his steps on carpet, to his door
     sfx(T.m5, 'u51m5city', 0.7);                                               // M5 "Night City": an electric piano, two chords, a pad
     sfx(2.6, 'u51liftfar', 0.3);                                               // a lift's motor far off
     sfx(T.card - 0.36, 'u51keycard', 0.7);                                     // the reader's beep
     sfx(T.lock - 0.49, 'u51clunk', 0.7);                                       // the lock's clunk
     sfx(T.door - 0.31, 'u51door', 0.6);                                        // the door
     sfxFade(T.door + 1.0, T.door + 2.6, 'u51bcorr');
+    for (let i = 0; i < 7; i++) sfx(T.walkIn + 0.2 + i * 0.55, 'u51tile', 0.2);   // his steps in, soft on his floor (shoes left at the door)
     sfx(T.setb - 0.05, 'u51setglass', 0.6);                                    // glass on wood
     sfx(T.palms - 0.38, 'u51palms', 0.55);                                     // his palms meeting
+    sfx(T.table0 + 0.1, 'u51tile', 0.2); sfx(T.table0 + 0.65, 'u51tile', 0.18);   // the last two steps to his table
     sfx(T.charge - 0.18, 'u51charger', 0.55);                                  // the charger's chirp
     sfx(T.keys - 0.05, 'u51keys', 0.5);                                        // the keys in a bowl
     sfx(T.shower, 'u51shower', 0.55); sfxFade(T.showerOff - 0.1, T.showerOff + 0.25, 'u51shower');
