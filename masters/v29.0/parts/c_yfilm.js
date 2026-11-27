@@ -166,7 +166,9 @@
     }
     /* SPIRIT VISION held by a film's clock (the engine's curve, out from his eyes over `secs` from `t0`, full until `t1`, home
        over `back`), held only round the moments it is open */
-    const VR1 = 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
+    /* (the vision's whole reach, the play's own DATA.vision.rmax (200 m since PLAY's 75f0be6, as FILMS-2's F2VR): opened to it
+       on the film's own clock, so nothing out of her windows past a shorter radius shows an edge) */
+    const VR1 = (DATA && DATA.vision && DATA.vision.rmax) || 70, visCurve1 = (u) => 0.30 * u + 0.70 * u * u * u;
     function f1Vision(t, t0, secs = 2.2, t1 = Infinity, back = 1.6) {
       if (!kit || !kit.vision) return;
       let r = 0, mv = false;
