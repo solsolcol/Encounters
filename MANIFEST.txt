@@ -1833,6 +1833,11 @@ d883c6b3a9ad71737fbbcc5b8408b1c2dfcdcdb6f1dc36644bdd60ff114761b9  masters/v29.0/
 2cee3e68cfb6eae583fc3e81c2b2bfba244de04084c2826353b06d8aeb584b8a  masters/v29.0/src/people/original-marcus.glb
 01a1d4be2c76fe399c308d63a6ae140590e7c9ba7a10ca1919370120fe308c14  masters/v29.0/src/people/preremesh-grace.glb
 802425bec6a232343ebe62b4691fd43eee376fd28d9f84892bd06b1beb1125ff  masters/v29.0/src/people/preremesh-marcus.glb
+db24e397b69aab1e6df111af4ff5a0bae87fb7796c519d3dd490b0d2c591ba33  masters/v29.0/src/people/refs/grace-a-2k.png
+c273cad9e9d1346dbff2ca409a237bd1c0a120675b05103e845f8289496b75e6  masters/v29.0/src/people/refs/grace-a2-2k.png
+e69a3685c10506a5c2f0d9e9012770b0db685dd10a418a6e1f3e52bc12ef8a15  masters/v29.0/src/people/refs/marcus-a-2k.png
+5a9453ad8d05fb3ff8945587786d39a4d56349ce369094b189709e3bbfb95252  masters/v29.0/src/people/refs/marcus-a2-2k.png
+87ceae1baa3ad52877df92a24ab80fcc19e60fd0f77c8c2ea0bee1c1e08dbda7  masters/v29.0/src/people/refs/marcus-a3-2k.png
 e0bdb58ead674c98463865ccdd20034904b95cbb68642d4ca6d8114fcf421449  masters/v29.0/src/people/remeshed-grace-40000.glb
 e4b97cc07a98d2534a90db3430b9fd406dcf18820892d34fbcfead57d0f36ec2  masters/v29.0/src/people/remeshed-marcus-40000.glb
 b6cff8176f373b129635aad6b5af60058c260a71e163e21de8a9ee9459ad757b  masters/v29.0/src/people/rigged-grace-r1nofingers.fbx
