@@ -430,6 +430,32 @@
     { const gm = new THREE.MeshBasicMaterial({ color: 0xbfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(gm);
       const gg = new THREE.PlaneGeometry(0.11, 0.2); gg.rotateX(-Math.PI / 2);
       const g = new THREE.Mesh(gg, gm); g.position.set(SPOT.herPhone.x, HER.sofa.seat + 0.025, SPOT.herPhone.z); g.rotation.y = 2.6; g.renderOrder = 3; world.add(g); fx.phoneGlow = g; }
+    /* WHAT RESTS ON HER SOFA, SET ON ITS CUSHION (27 Nov: clipscan of the cord, FILMS-1's, found her bag through the sofa,
+       about 950 crossings, and her phone sunk into the cushion, 71 to 452: both stood at a height written by hand, 0.50 and
+       0.505, under the cushion's real top). Once the sofa and the thing have landed, the cushion is read under the thing's
+       own footprint (rays straight down onto the sofa's mesh at its corners and middle), and the thing stood on the highest
+       of them, a few millimetres up */
+    const SOFAREST = { done: new Set() };
+    const _srR = new THREE.Raycaster(), _srO = new THREE.Vector3(), _srD = new THREE.Vector3(0, -1, 0), _srB = new THREE.Box3();
+    function sofaRest() {
+      const sofa = things.gsofa; if (!sofa || !sofa.userData.model || SOFAREST.done.size >= 2) return;
+      for (const name of ['herPhone', 'bag']) {
+        const g = things[name]; if (SOFAREST.done.has(name) || !g || !g.userData.model) continue;
+        SOFAREST.done.add(name);
+        g.updateWorldMatrix(true, true); sofa.updateWorldMatrix(true, true);
+        _srB.setFromObject(g.userData.model); if (_srB.isEmpty()) continue;
+        const foot = _srB.min.y; let top = -Infinity;
+        for (const [u, v] of [[0.5, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8]]) {
+          _srO.set(_srB.min.x + u * (_srB.max.x - _srB.min.x), 1.5, _srB.min.z + v * (_srB.max.z - _srB.min.z));
+          _srR.set(_srO, _srD); _srR.far = 1.4;
+          /* (the seat's cushions only: a corner over the back cushions, 0.75 m up, is not where it rests) */
+          for (const hit of _srR.intersectObject(sofa.userData.model, true)) if (hit.point.y < HER.sofa.seat + 0.06) { if (hit.point.y > top) top = hit.point.y; break; } }
+        if (!(top > 0.2)) continue;
+        const dy = top + 0.004 - foot; g.position.y += dy;
+        if (name === 'herPhone' && fx.phoneGlow) fx.phoneGlow.position.y += dy;
+        (SOFAREST.rep = SOFAREST.rep || {})[name] = { foot: +foot.toFixed(3), top: +top.toFixed(3), moved: +dy.toFixed(3) };
+      }
+    }
     /* the red line (and the knot) in Spirit Vision: sixteen short lengths of one curve, each its own glow, so a pulse can run
        along it toward the door */
     const LINE_N = 16;
@@ -1039,7 +1065,7 @@
     }
     function fxTick(wdt, st) {
       const t = wallClock.t;
-      waterTick(wdt); jugTick(); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
+      waterTick(wdt); jugTick(); sofaRest(); lineTick(t); graceReflTick(wdt); footTick(wdt, t); shakeTick(wdt, t); RATANA.tick(); bedsTick(wdt, st);
       /* (an ending begins from the decision: once, on its first frame, the play's hold on the sound, the heart and the lens is
          given back, so an ending's film starts clean and lays its own pressure: PLAY.md 2. Never again after, so a film's
          own settings are never overwritten) */
