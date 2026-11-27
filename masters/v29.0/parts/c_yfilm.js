@@ -1191,7 +1191,10 @@
       /* (his shoulders turned to his student, a third of a right angle, to take the bowl from him and to hold the bottle out to
          him, square to the cloth for the pour and the cork between: his look to him goes the rest) */
       const toHim = Math.max(f1Env(tau, T.pour - 0.9, T.pour + 1.0, 0.6, 0.6), f1Env(tau, T.give - 0.5, T.end + 9, 0.9, 0.5));
-      f1Lean(P, 0.3 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim);
+      /* (bent over the packet as he works it: measured 27 Nov, seated and leaning half a radian his hands reach about 0.6 m
+         out from his cushion, and the plate stands 1.0 m from it (ON_CLOTH.plate: a layout call put to WORLD, the report); at
+         0.65 rad his hands reach the place it is asked to move to) */
+      f1Lean(P, 0.65 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim);
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
         handTo(P, 'L', [pk[0] + 0.07 + w, pk[1] + 0.025, pk[2] + 0.07], [-0.2, -0.7, -0.6], [0.2, 1, 0.3], work, { out: 0.22, down: 0.25 });
         handTo(P, 'R', [pk[0] + 0.17 - w, pk[1] + 0.025, pk[2] + 0.09], [-0.5, -0.7, -0.4], [-0.2, 1, 0.3], work, { out: 0.22, down: 0.25 }); }
