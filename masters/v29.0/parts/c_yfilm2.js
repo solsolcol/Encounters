@@ -452,7 +452,25 @@
       const K = new THREE.Group(); K.add(new THREE.Mesh(kg, km)); const t1 = new THREE.Mesh(tg, km), t2 = new THREE.Mesh(tg, km); K.add(t1, t2);
       K.traverse(o => { o.frustumCulled = false; o.renderOrder = 3; }); K.visible = false; wr.parent.add(K);
       F2W.knot = { K, t1, t2, wr };
+      /* IN SPIRIT VISION THE BAND IS A SPIRIT: the vision draws his hands black and white with the world (everything but the
+         entities: its rule since episode 4 chapter 4), so the red band in the hands' pass read there as a grey ring (run 7's
+         photograph at the barrier). Its twin in the world's vision layer is laid each frame exactly where the hands' pass
+         draws the band (every point of the hands' camera at depth z stands on this lens at z / s, s = tan(f/2) / tan(26), as
+         f2WristAt), and glows red with the threads round the wrist's edge (the hands are laid over the spirits) */
+      const fitS = f2WristLoop(L, wr, 0.018, 0.009, 0.007), bm = new THREE.MeshBasicMaterial(); mats.push(bm);
+      const sm = new THREE.Mesh(fitS.g, bm); sm.matrixAutoUpdate = false; sm.visible = false; sm.frustumCulled = false; world.add(sm);
+      F2W.bandSp = { m: sm, fa: wr.parent, h: ctx.spirit ? ctx.spirit(sm, { color: F2RED, fill: 1.3, rim: 0.9, flicker: 0.25, xray: 1 }) : null };
       return true;
+    }
+    const _bsS = new THREE.Matrix4(), _bsM = new THREE.Matrix4(), _bsP = new THREE.Matrix4(), _bsRed = new THREE.Color(F2RED), _bsWhite = new THREE.Color(0xffffff);
+    function f2BandSpirit(on, alpha, white) {
+      const B = F2W.bandSp, A = F2.api; if (!B) return;
+      B.m.visible = !!(on && B.h && A && A.vmCam); if (!B.m.visible) return;
+      const s = Math.tan(camera.fov * Math.PI / 360) / Math.tan(A.vmCam.fov * Math.PI / 360);
+      camera.updateMatrixWorld(); A.vmCam.updateMatrixWorld(); B.fa.updateWorldMatrix(true, false);
+      _bsM.copy(camera.matrixWorld).multiply(_bsS.makeScale(1, 1, 1 / s)).multiply(A.vmCam.matrixWorldInverse).multiply(B.fa.matrixWorld);
+      B.m.parent.updateWorldMatrix(true, false); B.m.matrix.copy(_bsP.copy(B.m.parent.matrixWorld).invert().multiply(_bsM)); B.m.matrixWorldNeedsUpdate = true;
+      B.h.set('uAlpha', c01(alpha)); B.h.set('uColor', white ? _bsWhite : _bsRed);
     }
     /* the knot on the side of the first turn nearest his eye (the hands' lens: the wrist turns with the arm), its two ends
        out from it, a little apart, toward the hand */
@@ -471,8 +489,16 @@
     }
     function f2WristShow(band, mark, thread, flash) {
       if (!f2WristDress()) return;
-      F2W.band.visible = band > 0.001; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = band > 0.001 || flash > 0.001;
-      F2W.band2.material.opacity = 0.35 * band + 0.9 * flash; F2W.band2.material.color.setHex(flash > band ? 0xffffff : 0xff5040);
+      /* (in Spirit Vision the band is its spirit twin's, red: the hands' pass would draw it grey) */
+      const sp = !!F2.vis && (band > 0.001 || flash > 0.001);
+      F2W.band.visible = band > 0.001 && !sp; F2W.band.material.opacity = 0.9 * band; F2W.band2.visible = (band > 0.001 || flash > 0.001) && !sp;
+      f2BandSpirit(sp, Math.max(band, flash), flash > band);
+      /* (the burn's flash a soft warm light that opens out from the wrist as it fades, about the ring's own middle: drawn
+         white at 0.9 it stood as a solid white bangle, photographed) */
+      F2W.band2.material.opacity = 0.35 * band + 0.5 * flash; F2W.band2.material.color.setHex(flash > band ? 0xfff0d6 : 0xff5040);
+      { const f = F2W.band2.userData.fit, kx = flash > 0.001 && band < 0.5 ? 1 + 0.6 * (1 - flash) : 1;
+        if (!f.mid) { f.mid = new THREE.Vector3(); for (const q of f.pts) f.mid.add(q); f.mid.multiplyScalar(1 / f.pts.length); }
+        F2W.band2.scale.setScalar(kx); F2W.band2.position.copy(f.mid).multiplyScalar(1 - kx); }
       F2W.mark.visible = mark > 0.001; F2W.mark.material.opacity = 0.85 * mark;
       F2W.thread.visible = thread > 0.5; F2W.thread2.visible = thread > 1.5;
       f2KnotLay(thread > 0.5);
@@ -870,8 +896,10 @@
         return;
       }
       /* D: once his sight has gone, he lifts his left hand: the band still round its wrist; the gold burns it off */
-      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm) {
-        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm - 0.7, Bm.calm)));
+      /* (held up until the barrier is calm and let down after, so the red mark the band leaves is seen for a second and a half
+         after the flash: let down before it, the wrist left the picture 0.9 s after the flash, photographed) */
+      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm + 0.7) {
+        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm, Bm.calm + 0.7)));
         /* (held up in the library's place, turned over, its wrist and the band inside the picture: lifted in the reach and
            turned, the forearm crossed the picture and the wrist, the band and its burning stood off its edge, photographed) */
         f2Hold(null); f2Hands(up > 0.01, 'place', up, { p: 0 });
@@ -1256,9 +1284,11 @@
              red light goes; in the reach the wrist stood at the picture's foot and the band was never seen, photographed) */
           f2Hold(null); f2Hands(k2 > 0.01, 'place', k2, { p: 0 });
           if (k2 > 0.01 && A && A.armR) {
-            /* (on the frame at his left: nearer the frame's edge on screen; drawn out toward the door as the band pulls) */
+            /* (on the frame at his left: nearer the frame's edge on screen; drawn out away from him as the band pulls, and in
+               toward the picture's middle, where the band is seen: drawn out to the left too, its wrist and the band stood
+               at a phone's left edge, half cut off, photographed) */
             const onFrame = f2smo(f2win(t, E.step, E.step + 0.8)), pull = f2bell(t, E.wrap, E.wrap + 0.2, E.tear - 0.4, E.tear);
-            A.armR.position.x += 0.02 * onFrame + 0.03 * pull; A.armR.position.y += 0.02 * onFrame - 0.02 * pull; A.armR.position.z -= 0.04 * pull;
+            A.armR.position.x += 0.02 * onFrame - 0.035 * pull; A.armR.position.y += 0.02 * onFrame - 0.01 * pull; A.armR.position.z -= 0.04 * pull;
           }
           if (k2 > 0.01) f2MirrorLeft(true);
           return;
