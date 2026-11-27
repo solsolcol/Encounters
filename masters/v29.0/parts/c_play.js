@@ -321,17 +321,29 @@
               sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
   { float br = length(vBowlP.xz - uBowlC.xz);
     float inW = (1.0 - smoothstep(uBowlC.w * 0.97, uBowlC.w * 1.03, br)) * step(uBowlC.y, vBowlP.y);
-    float mxc = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)), mnc = min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
-    float water = (1.0 - smoothstep(0.22, 0.36, (mxc - mnc) / max(mxc, 1e-3))) * (1.0 - smoothstep(0.8, 0.92, mxc));
-    vec3 dry = diffuseColor.rgb * uBowlTint * (0.62 + 0.3 * smoothstep(0.0, uBowlC.w, br));
-    vec3 wet = mix(diffuseColor.rgb, dry, uBowlEmpty * water);
-    diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, wet, inW); }`);
+    if (uBowlEmpty > 0.5 && inW > 0.5) discard;
+    diffuseColor.rgb = mix(diffuseColor.rgb * uBowlTint, diffuseColor.rgb, inW); }`);
           };
           mt.customProgramCacheKey = () => 'e5c1bowl';
           mt.needsUpdate = true;
         }
       });
       if (!fit) return null;
+      /* THE BOWL EMPTY (o.dish): the model's water and petals are not drawn while `empty` stands (discarded, above), and the
+         bowl's inside below them is made here, in the mesh's own units: a dish from the water's ring down to a third of the
+         bowl's height, brass, and the poured water a disc rising in it (`bowlPour`) to the model's own water, which is drawn
+         again the moment it is reached (its petals floating on it) */
+      if (o.dish) {
+        const q = fit.mesh, yB = fit.y0 + 0.34 * fit.H, pts = [];
+        for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI / 2; pts.push(new THREE.Vector2(Math.max(0.001, fit.rW * 1.01 * Math.cos(a)), fit.yW - fit.eps * 0.5 - (fit.yW - yB) * Math.sin(a))); }
+        pts.reverse();
+        const dm = new THREE.MeshStandardMaterial({ color: 0x9a7440, metalness: 0.25, roughness: 0.55, side: THREE.DoubleSide }); mats.push(dm);
+        const dish = new THREE.Mesh(new THREE.LatheGeometry(pts, 40), dm); dish.position.set(fit.cx, 0, fit.cz); q.add(dish);
+        const wm = new THREE.MeshBasicMaterial({ color: 0x8fa3ac, transparent: true, opacity: 0.6, depthWrite: false }); mats.push(wm);
+        const wg = new THREE.CircleGeometry(1, 40); wg.rotateX(-Math.PI / 2);
+        const disc = new THREE.Mesh(wg, wm); disc.visible = false; disc.renderOrder = 2; q.add(disc);
+        fit.dish = { dish, disc, yB, pts };
+      }
       /* the water's middle in m's parent's frame (for the candle's glint) */
       const c = new THREE.Vector3(fit.cx, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld), e = new THREE.Vector3(fit.cx + fit.rW, fit.yW, fit.cz).applyMatrix4(fit.mesh.matrixWorld);
       fit.world = { c, r: c.distanceTo(e) };
@@ -346,7 +358,7 @@
     const BOWLFIT = { r: 0.12, y: CLOTH_Y + 0.07, x: 0, z: 0, got: false, look: null };
     function bowlFit() {
       const b = things.holyBowl; if (!b || BOWLFIT.got || !b.userData.model) return;
-      const F = bowlLook(b.userData.model); BOWLFIT.got = true; BOWLFIT.look = F;
+      const F = bowlLook(b.userData.model, { dish: true }); BOWLFIT.got = true; BOWLFIT.look = F;
       if (F) { BOWLFIT.y = F.world.c.y; BOWLFIT.r = F.world.r; BOWLFIT.x = F.world.c.x; BOWLFIT.z = F.world.c.z; }
     }
     function waterTick(wdt) {
@@ -354,7 +366,13 @@
       const want = play.found.has('w') || phase !== 'room' ? 1 : 0;
       fx.waterK += (want * (fx.pourT > 0 ? Math.min(1, 1 - fx.pourT / 2.0) : 1) - fx.waterK) * Math.min(1, wdt * 3);
       if (fx.pourT > 0) fx.pourT = Math.max(0, fx.pourT - wdt);
-      BOWLLOOK.empty.value = 1 - smo(c01(fx.waterK));
+      /* the pour: the water rising in the dish from its floor to the model's own water, which takes over when it is reached */
+      const D = BOWLFIT.look && BOWLFIT.look.dish, full = fx.waterK > 0.985;
+      BOWLLOOK.empty.value = full ? 0 : 1;
+      if (D) { D.dish.visible = !full; D.disc.visible = !full && fx.waterK > 0.02;
+        if (D.disc.visible) { const F = BOWLFIT.look, u = smo(c01(fx.waterK)), y = D.yB + (F.yW - F.eps * 0.5 - D.yB) * u;
+          let r = F.rW; for (let i = 1; i < D.pts.length; i++) { const a = D.pts[i - 1], b = D.pts[i]; if (y >= a.y && y <= b.y) { r = a.x + (b.x - a.x) * (y - a.y) / Math.max(1e-6, b.y - a.y); break; } }
+          D.disc.position.set(F.cx, y, F.cz); D.disc.scale.setScalar(Math.max(0.001, r * 0.995)); } }
       const b = things.holyBowl, onCloth = b && b.visible && b.parent && BOWLFIT.look, sh = fx.sheen;
       sh.visible = !!onCloth && fx.waterK > 0.01;
       if (!sh.visible) return;
@@ -462,6 +480,7 @@
     const grace5 = { up: false, reflK: 0, reflWant: 0 };
     function roomBegin(found) {
       play.found = new Set(found); lookAt0(LOOK_OF.room); seatHim(STATION.room.at, KNEEL);
+      fx.waterK = play.found.has('w') ? 1 : 0; fx.pourT = 0;      // (a Continue lands with the water where it was, never rising)
       if (kit && kit.vision) { kit.vision(null); kit.vision(false); }
       warm('room');
       room5.t0 = dayClock.t; room5.ups = 0; room5.phoneAt = dayClock.t + 6;
