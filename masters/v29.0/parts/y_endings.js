@@ -22,7 +22,7 @@
   const WALK2 = {
     A: { rise: 0, bag: 5.6, circle: 4.6 },
     B: { rise: 1.6, bag: 5.2, circle: 4.6 },
-    C: { rise: 2.0, bag: 3.6, circle: 4.6 },
+    C: { rise: 1.4, bag: 3.6, circle: 4.6 },                                    // (up from sitting on his sofa, the call in his hand)
     D: { rise: 1.4, bag: 6.0, circle: 4.6 }
   };
   /* THE BARRIER'S MARKS from b0 (the plan's 9.7, its measured lines): his teacher's two lines on the speaker; the walk to the

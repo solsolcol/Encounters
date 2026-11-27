@@ -372,7 +372,9 @@
       for (let i = 0; i <= n; i++) { const s = L * i / n, p = f2PathAt(W, s), q = f2PathAt(W, Math.min(L, s + 0.2)), ang = Math.atan2(q[0] - p[0], q[1] - p[1]), side = (i % 2 ? 1 : -1) * 0.1;
         const m = new THREE.Mesh(fg, new THREE.MeshBasicMaterial()); m.scale.set(0.05, 1, 0.12); m.name = 'his footstep (ending C)';
         m.position.set(p[0] + Math.cos(ang) * side, 0.012, p[1] - Math.sin(ang) * side); m.rotation.y = ang; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
-        f2Feet.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0.8 }) : null }); } }
+        /* (not seen through things: drawn through his sofa's seat as he lay on it, the steps walked across its cushions,
+           photographed) */
+        f2Feet.push({ m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 1.1, rim: 0.4, flicker: 0.2, xray: 0 }) : null }); } }
 
     /* ---------------------------------------------------------------- HIS WRIST (the plan's 9.8 D, 9.9): the band of red light
        a thread wraps round his left wrist at the balcony's door (ending D), burned off by the gold in a white flash, the red
@@ -721,7 +723,9 @@
       f2Cushion.visible = k > 0.001;
       if (!f2Cushion.visible) return;
       /* (it comes up from under the lens and settles over his eyes, slipping down off them as his sight opens) */
-      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.035, -0.17);
+      /* (its lower edge 4.5 cm under the lens's middle at 17 cm, the picture's lowest fifth left to the room: at 3.5 cm over it
+         the cushion filled the whole picture for nearly four seconds, a blank grey, photographed) */
+      f2Cushion.position.set(0.0, -0.32 * (1 - k) + 0.09, -0.17);
       f2Cushion.rotation.set(Math.PI / 2 - 0.25, 0, 0.05 * Math.sin(t * 0.7));
       f2Cushion.scale.setScalar(0.62);
     }
@@ -827,8 +831,11 @@
         const dr = [kn.x, EYE - 0.04, kn.z], tp = [F2P.tap.x - 0.05, EYE - 0.04, kn.z + 0.05], lie = [sf.x - 0.75, 0.66, sf.z + 0.02];
         K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.9, 1.25, tb.z - 1.8], fp: 62, fd: 54, n: 'C:turn' });
         f2WalkKeys([[tb.x, tb.z], [F2HX - 0.45, 0.35], [F2HX - 0.4, -0.95], [kn.x, kn.z]], E.walk + 0.3, E.drawer, EYE, { a: [kn.x, 0.72, LIV.z0 + 0.3], fp: 62, fd: 54, n: 'C:tokitchen' }).slice(1).forEach(q => K.push(q));
-        K.push({ t: E.drawer + 0.5, e: dr, a: [kn.x, 0.66, LIV.z0 + 0.36], fp: 60, fd: 52, n: 'C:drawer', stop: true });
-        K.push({ t: E.tap - 0.1, e: [dr[0] + 0.05, dr[1], dr[2]], a: [kn.x + 0.1, 0.78, LIV.z0 + 0.5], fp: 60, fd: 52, n: 'C:pills', stop: true });
+        /* (at his counter looking along its top and the wall over it, his hand going down to the drawer under the picture's
+           foot and coming up with the strip: looking down at the drawer's front, the picture was the cupboards' black, with a
+           fist, photographed) */
+        K.push({ t: E.drawer + 0.5, e: dr, a: [kn.x, 0.92, LIV.z0 + 0.4], fp: 60, fd: 52, n: 'C:drawer', stop: true });
+        K.push({ t: E.tap - 0.1, e: [dr[0] + 0.05, dr[1], dr[2]], a: [kn.x + 0.1, 0.95, LIV.z0 + 0.3], fp: 60, fd: 52, n: 'C:pills', stop: true });
         K.push({ t: E.tap + 0.9, e: tp, a: [F2P.tap.x, 0.95, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap', stop: true });
         K.push({ t: E.sofa0, e: [tp[0] - 0.05, tp[1], tp[2] + 0.05], a: [F2P.tap.x, 0.93, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap2', stop: true });
         f2WalkKeys([[tp[0], tp[2]], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
@@ -837,8 +844,12 @@
         K.push({ t: E.forced, e: lie, a: [lie[0] + 0.28, FLAT.ceil, lie[2] + 0.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
         K.push({ t: E.forced + 1.4, e: [lie[0] + 0.05, lie[1] + 0.14, lie[2]], a: [sf.x + 1.4, 0.25, sf.z + 0.9], fp: 60, fd: 52, n: 'C:feet' });
         K.push({ t: E.phone, e: [lie[0] + 0.06, lie[1] + 0.16, lie[2]], a: [sf.x + 2.6, 0.1, sf.z + 0.6], fp: 60, fd: 52, n: 'C:steps', stop: true });
-        K.push({ t: E.connect, e: [lie[0] + 0.08, lie[1] + 0.12, lie[2]], a: [lie[0] + 0.6, FLAT.ceil * 0.75, lie[2] + 0.9], fp: 62, fd: 54, n: 'C:call' });
-        K.push({ t: E.b0, e: [lie[0] + 0.08, lie[1] + 0.1, lie[2]], a: [lie[0] + 0.5, FLAT.ceil * 0.8, lie[2] + 1.1], fp: 62, fd: 54, n: 'C:listen', stop: true });
+        /* (he sits up as the call connects, the phone before him, and listens facing his glass, the city's lights over the
+           phone, as in A and B: lying, he had the ceiling for ten seconds, a dark grey picture, photographed) */
+        const up = [lie[0] + 0.35, F2EYE.sofa - 0.02, lie[2] + 0.14];
+        K.push({ t: E.connect + 0.9, e: up, a: [lie[0] + 0.6, 1.0, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:up' });
+        K.push({ t: E.connect + 1.6, e: [up[0], up[1] - 0.01, up[2] + 0.01], a: [lie[0] + 0.62, 0.98, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:call', stop: true });
+        K.push({ t: E.b0, e: [up[0], up[1] - 0.03, up[2] + 0.03], a: [lie[0] + 0.66, 0.95, LIV.z1 + 3.0], fp: 60, fd: 52, n: 'C:listen', stop: true });
       } else if (k === 'D') {
         /* D · his sight opened on purpose; he follows the threads to his balcony's door and slides it open; the night's air;
            in the doorway, his left hand on its frame (never past it; the rail never near), he looks along them out over the
@@ -1078,11 +1089,16 @@
       if (k === 'C') {
         if (t < E.walk + 0.5) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk, E.walk + 0.5)); return; }
         if (t >= E.drawer - 0.2 && t < E.sofa0 + 0.3) {
-          /* the drawer, the strip of pills in his hand, one to his mouth, his hand under the tap */
-          const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.4, E.pills + 0.5, E.pills + 0.9), m = f2bell(t, E.pills + 0.6, E.pills + 1.0, E.tap - 0.2, E.tap + 0.1);
+          /* the drawer (his hand down to it, out of the picture's foot), the strip of pills brought up before him where he can
+             see it (the library's place: its hand a third of the way down the picture; in the reach the strip rode the
+             picture's foot, never seen, photographed), one to his mouth, his hand under the tap; one pose at a time, each
+             let back to rest before the next (two poses' shares never meet) */
+          const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.3, E.pills - 0.45, E.pills - 0.2), pl = f2bell(t, E.pills - 0.2, E.pills + 0.15, E.pills + 0.55, E.pills + 0.8);
+          const m = f2bell(t, E.pills + 0.8, E.pills + 1.05, E.tap - 0.2, E.tap + 0.1);
           const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
-          f2Hold(t >= E.pills && t < E.tap ? f2Pills : null, { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
-          if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp); else f2Hands(r > 0.01, 'reach', r);
+          f2Hold(t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2Pills : null, { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
+          if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp);
+          else if (pl > 0.01) f2Hands(true, 'place', pl); else f2Hands(r > 0.01, 'reach', r);
           return;
         }
         if (t >= E.cushion - 0.6 && t < E.forced + 0.9) {
