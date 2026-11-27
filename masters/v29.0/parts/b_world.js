@@ -975,7 +975,7 @@
       kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
       bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
       balcony: { x: HX + 0.05, z: LIV.z1, w: 1.5 },                      // the sliding door (x -0.7..0.8)
-      frames:  [{ x: PASS.x0 + 0.45, y: 1.45, z: PASS.z1 - 0.01 }, { x: PASS.x0 + 1.05, y: 1.55, z: PASS.z1 - 0.01 }],
+      frames:  [{ x: PASS.x0 + 0.45, y: 1.45, z: PASS.z1 - 0.035 }, { x: PASS.x0 + 1.05, y: 1.55, z: PASS.z1 - 0.035 }],   // (PLAY, 27 Nov: off the wall by 0.035 from 0.01: clipscan, their backs 420+ crossings into it, and they tap it with each wave)
       oven:    { x: HX + 1.75, y: 0.86, z: LIV.z0 + 0.62 }
     };
     {
