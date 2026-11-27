@@ -891,7 +891,7 @@
          to him (the table is wider than two seated arms: he leans 0.5 rad and she 0.45 as the packet passes); the packet laid
          in it at 12.5 s and set on the small white plate at his left (14 to 18 s); his right hand tilts the lit candle over
          the bowl for the wax (32 to 38 s) */
-      const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.32 * f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
+      const out = f1Env(t, T.hand, T.place + 1.0, 1.2, 0.7), lean = 0.18 * out + 0.57 * f1Env(t, T.pull + 1.2, T.give + 0.9, 1.4, 0.9) + 0.22 * f1Env(t, T.place - 0.2, T.place + 1.6, 0.6, 0.6);
       f1Lean(P, lean, -0.55 * turnK);
       if (out > 0.001) { const u = smo(c01((t - T.place) / 1.6)), r = f1Env(t, T.pull - 0.4, T.give + 0.9, 1.0, 0.9);
         const tx = lp(lp(0.42, KEEPG1.meet[0] - 0.01, r), ON_CLOTH.plate.x + 0.03, u), tz = lp(lp(1.22, KEEPG1.meet[2] + 0.04, r), ON_CLOTH.plate.z + 0.03, u), ty = lp(lp(0.66, KEEPG1.meet[1] - 0.02, r), CLOTH_Y + 0.07, u);
@@ -910,7 +910,9 @@
     /* (photographed 27 Nov, the second build: stood up 0.72 m forward her hand met the place, and his palm, 0.83 m out from
        his cushion, stopped 0.25 m short of it. So she rises a little forward, takes one step to the table's edge and bends
        to him; they meet 0.75 m out from his cushion; she steps back and sits) */
-    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.8, 1.12], head: 1.5 };
+    /* (measured, the second build: his palm reached 0.56 m out from his cushion leaning half a radian, hers 0.5 m from where
+       she stood: so both bend further to it, he 0.75 rad, she 0.8, and they meet 0.72 m out from his cushion) */
+    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.78, 1.15], head: 1.5 };
     const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 1.0) / 2.4)));
     const keepGraceStep1 = (t, T) => smo(c01((t - T.pull - 2.3) / 0.6)) * (1 - smo(c01((t - T.give - 0.4) / 0.6)));
     const keepGraceH1 = (t, T) => lp(GRACE_HEAD_SEATED, KEEPG1.head, keepGraceUp1(t, T));
@@ -931,7 +933,7 @@
       /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out, and held out over the
          table to his teacher's palm as she stands, her fingers closed on it, bent to him (9.5 to 12.5 s); let go; her hand back */
       const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull + 2.4, T.give + 0.5, 0.6, 0.4);
-      f1Lean(P, 0.6 * hold * up);
+      f1Lean(P, 0.8 * hold * up);
       if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
       if (hold > 0.001) { const M = KEEPG1.meet; handTo(P, 'L', [M[0] + 0.01, M[1] + 0.02, M[2] - 0.03], [0.05, -0.15, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
       f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.05], 0.8], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
@@ -941,11 +943,14 @@
       /* (he came to stand behind her as his teacher held out his hand: the film's first frame is a cut, and he stands there
          from it, behind the sofa at her right shoulder; his left hand on her shoulder from 7 to 13 s) */
       f1LeanBack(P);
-      const M = KEEP1.mkStand; put(P, M.x, M.z, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
+      /* (measured 27 Nov: from the play's station, 0.24 m behind the sofa's back, his hand stopped 0.3 m short of her
+         shoulder: in this film he stands against the back, 0.17 m nearer; the breaking's own station takes him back unseen,
+         the film ending on the bowl) */
+      const M = KEEP1.mkStand; put(P, M.x + 0.02, M.z + 0.17, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
       const on = f1Env(t, T.bag + 0.4, T.pull + 0.5, 0.8, 0.6);   // (his hand leaves her shoulder as she gets up)
       /* (her shoulder is 0.7 m from his across the sofa's back: he leans over it to lay his hand there, as a person does;
          photographed 27 Nov, leaning 0.28 rad his left hand stopped short of her shoulder, over her bowed head) */
-      f1Lean(P, 0.42 * on);
+      f1Lean(P, 0.5 * on);
       /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
          now on the top of her shoulder, over its joint, a little in from it) */
       if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
@@ -984,6 +989,25 @@
     /* WHAT HIS HANDS HOLD in a film (his left hand under it, drawn in the hands' pass: kit.hold; the engine's own pose for
        it at k: `bowl`, episode 4 chapter 4's holy water, the left palm under it; `bottle`, episode 3 chapter 5's, both hands
        round it). k 0 lets go and hides his hands */
+    /* THE BOWL IN HIS HANDS, SET IN THE LENS'S OWN FRAME (27 Nov, MEASURED: at the play's BOWLHELD, laid in the left hand's
+       frame, the bowl was drawn, two calls and 33,000 triangles, but below the picture's foot: in the hands' camera its box
+       stood at a phone's x -1.69..0.36 and y -1.45..-0.67, so it was never seen, in the films or in the breaking. The
+       hands' camera stands at its scene's origin looking -z, and kit.handPalm answers where a palm is in that frame). Its
+       foot laid on his left palm (the engine's `bowl` pose holds the palm up, low in the middle of the picture), turned
+       toward the lens by `tilt` about the lens's own across-line, so the water is seen from above as one sees it looking
+       down into a bowl held before one: the hands' pass is the lens's, and a bowl upright in it is seen from its side */
+    const BOWLCAM1 = { tilt: 0.75, lift: 0.01 };
+    const _bwq = new THREE.Quaternion(), _bwq2 = new THREE.Quaternion(), _bwX = new THREE.Vector3(1, 0, 0), _bwU = new THREE.Vector3(), _bwM = new THREE.Matrix4();
+    function bowlInHands1(g) {
+      if (!g || !g.parent || !kit || !kit.handPalm) return false;
+      const pm = kit.handPalm('left', new THREE.Vector3()); if (!pm) return false;
+      _bwq.setFromAxisAngle(_bwX, BOWLCAM1.tilt); _bwU.set(0, 1, 0).applyQuaternion(_bwq);
+      pm.addScaledVector(_bwU, BOWLCAM1.lift);
+      g.parent.updateWorldMatrix(true, false);
+      g.position.copy(pm.applyMatrix4(_bwM.copy(g.parent.matrixWorld).invert()));
+      g.parent.getWorldQuaternion(_bwq2); g.quaternion.copy(_bwq2.invert().multiply(_bwq));
+      return true;
+    }
     function f1HandsHold(api, which, k) {
       if (!api) return;
       if (k > 0.001 && which) {
@@ -992,6 +1016,7 @@
           PROPS1[H.prop].scale.setScalar(H.s || 1);
           if (api.kit && api.kit.hold) api.kit.hold(PROPS1[H.prop], { hand: 'left', pos: H.pos, rot: H.rot }); }
         if (api.handPose) api.handPose(which, k, { p: 0 });
+        if (which === "bowl") bowlInHands1(PROPS1.handBowl);
       } else if (F1.held) { if (api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' }); if (api.handPose) api.handPose(F1.held, 0); F1.held = null; if (api.handsRoot) api.handsRoot.visible = false; }
     }
     /* the water in his bowl: the candle's warm point on it, still; a ring for each drop of wax (from `wax`), and the cord's
@@ -1054,7 +1079,9 @@
         { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 44,
           hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
         { t: T.give - 0.9, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
-        { t: T.place - 0.15, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.02, KEEPG1.meet[2] + 0.06], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] + 0.05, 0.2]], back: 0.3, fmax: 56 },
+        /* (and follows the packet in his palm as he draws it back to him, before the cut to the plate) */
+        { t: T.give + 0.25, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
+        { t: T.place - 0.15, name: 'hands', eye, at: [0.43, 0.7, 1.24], fp: 44, fd: 38, hold: [[0.43, 0.68, 1.24, 0.18]], back: 0.3, fmax: 56 },
         /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
         { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
         { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
@@ -1487,7 +1514,7 @@
       state: () => ({ film: F1.film, shot: F1.shot, lit: F1.lit, vis: F1.vis, beds: F1.beds, held: F1.held || null }),
       shot: () => F1.shot,
       helpers: { track: f1Track, walk: f1Walk, speak: f1Speak, gaze: f1Gaze, head: f1Head, show: f1Show, vision: f1Vision, look: f1Look, lens: f1Lens,
-                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1, phoBag: phoBagOn1 },
+                 env: f1Env, carry: f1Carry, drop: f1Drop, climb: climbPose, phoRest: phoRest1, phoBag: phoBagOn1, bowlInHands: bowlInHands1 },
       /* every person the films can show (a probe's: chapter 5's films probe reads `people()`) */
       people: () => ({ pho: cast.pho, grace: cast.grace, marcus: cast.marcus, phoStand, driver: driver1 })
     };
