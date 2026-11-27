@@ -1123,6 +1123,14 @@
       marks: () => F2.E,
       tune: F2TUNE,
       tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wrist: F2W.fit }; },
+      /* (a probe's reading of his teacher's fingers at the tie: how many joints the curl found on each hand and how far each
+         first joint is bent from the hand's own line, degrees) */
+      curl: () => { const P = FILMSAPI.phoStand, As = P && P.ready ? armsOf(P) : null, o = { arms: !!As }; if (!As) return o;
+        for (const sd of ['L', 'R']) { const a = As[sd]; if (!a) continue; const L = a.f2fing || [], F = L[0];
+          o[sd] = { n: L.length, fingers: a.fingers };
+          if (F) { const h = a.hand.getWorldQuaternion(new THREE.Quaternion()), f = a.fL.clone().applyQuaternion(h), p0 = F.b.getWorldPosition(new THREE.Vector3()), c = F.b.children.find(x => x.isBone);
+            if (c) { const d = c.getWorldPosition(new THREE.Vector3()).sub(p0).normalize(); o[sd].bend = +(Math.acos(Math.max(-1, Math.min(1, d.dot(f)))) * 180 / Math.PI).toFixed(1); } } }
+        return o; },
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -1295,7 +1303,9 @@
            to his right) */
         phoIn: [[HIS.door.x + 0.05, LIV.z0 - 0.74], [HIS.door.x + 0.02, LIV.z0 + 0.3], [HIS.door.x + 0.1, LIV.z0 + 1.3], [HIS.door.x + 0.15, LIV.z0 + 2.2]],
         /* on the floor at the circle's front, where its two ends met, facing in across it */
-        wind: { x: C.x + 0.03, z: C.z + C.r + 0.34, ry: Math.PI },
+        /* (0.46 m behind the point where the thread leaves the floor: at 0.34 that point lay under his crossed knees and the
+           thread came up out of his lap, photographed) */
+        wind: { x: C.x + 0.03, z: C.z + C.r + 0.46, ry: Math.PI },
         windEye: [C.x - 0.28, EYE - 0.03, C.z - 0.62],
         pick: [C.x, F2C.y, C.z + C.r],
         /* his chair (WORLD's dawn seat: FILMPLACE.dawnSeat), his teacher's across the table */
@@ -1452,11 +1462,12 @@
       H.show(PS, standing || atTable); H.show(PC, winding); F2.pcShown = winding;
       if (bag) bag.visible = false;
       if (standing && PS.ready) {
-        /* (3 cm up: standing on the floor at 0 his feet were 3.2 and 3.4 cm into it, feetscan; walking, 2.1) */
-        if (u < uIn) { put(PS, F2DW.phoDoor.x, F2DW.phoDoor.z, 0, 0.03);
+        /* (2 cm up: at 3 cm up his lowest skin stood 1.1 cm over the floor, run 9's reading, so at 0 it was 1.9 cm under it;
+           feetscan's 3.2 cm under stood the same with him lifted 3 cm or not, so it does not read him against this floor) */
+        if (u < uIn) { put(PS, F2DW.phoDoor.x, F2DW.phoDoor.z, 0, 0.02);
           H.speak(PS, u, rest, [[D.ph51w1 - D.d0, SECS.ph51w1, 'Talk_with_Hands_Open', 0.35]]);
           H.gaze(PS, u, [[uDoor + 0.3, 'lens', 0.6]], 0.8, 0.7, 0.02); }
-        else { H.walk(PS, u, uIn, F2DW.phoIn, 0.85, rest, 0.9, { y: 0.03, ry0: 0 });
+        else { H.walk(PS, u, uIn, F2DW.phoIn, 0.85, rest, 0.9, { y: 0.02, ry0: 0 });
           H.gaze(PS, u, [[uIn, 'lens', 0.4], [uIn + 0.9, [F2DW.C.x, 0.3, F2DW.C.z + 0.3], 0.8]], 0.7, 0.6, 0.02); }
         f2PhoBag(PS);
       }
@@ -1517,8 +1528,9 @@
        leaves flat: the spool stood beside a flat hand, photographed) */
     function f2Wind(u, u0, u1, P) {
       const W = F2DW.wind;
-      /* (2 cm up from the floor: on it, his right foot stood 2.2 cm and his robe's hem 4.8 cm into it, feetscan) */
-      put(P, W.x, W.z, W.ry, 0.02);
+      /* (1 cm up: at 2 cm up his lowest skin stood 1.2 cm over the floor, run 9's reading, so at 0 it was 0.8 cm under it;
+         feetscan's 2.2 cm under stood the same with him lifted 2 cm or not, so it does not read him against this floor) */
+      put(P, W.x, W.z, W.ry, 0.01);
       pose(P, 'Sit_to_Stand_Transition_M', 0.02 + 0.008 * Math.sin(u * 0.9), false);
       const ph = (u - u0) * 2 * Math.PI * 0.55;
       /* the spool's foot on his right palm (w51threadreel 0.084 m tall at 0.62: 0.052), before his belly */
@@ -1580,7 +1592,9 @@
            fingers in toward it and the palms down and in, pinching the thread's two ends; drawn apart at each knot) */
         const w = f2TieW();
         const pull = f2bell(u, D.knot1 - D.d0 - 0.35, D.knot1 - D.d0, D.knot1 - D.d0 + 0.05, D.knot1 - D.d0 + 0.4) + f2bell(u, D.knot2 - D.d0 - 0.35, D.knot2 - D.d0, D.knot2 - D.d0 + 0.05, D.knot2 - D.d0 + 0.4);
-        const sx = 0.07 + 0.025 * pull;
+        /* (5 cm to each side of the wrist's middle: at 7 cm, on a phone's insert, 16 cm wide where the wrist is, his palms stood
+           at the picture's two edges, photographed) */
+        const sx = 0.05 + 0.02 * pull;
         handTo(P, 'R', [w[0] - sx, w[1] + 0.025, w[2] - 0.03], [0.6, -0.15, 0.75], [0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
         handTo(P, 'L', [w[0] + sx, w[1] + 0.025, w[2] - 0.03], [-0.6, -0.15, 0.75], [-0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
       }
