@@ -144,6 +144,21 @@ export const LIB = () => {
     const nx = e1y * e2z - e1z * e2y, ny = e1z * e2x - e1x * e2z, nz = e1x * e2y - e1y * e2x;
     return [t, nx * d[0] + ny * d[1] + nz * d[2]];
   };
+  /* the distance from a point to a triangle (Ericson's closest point) */
+  const ptTri = (p, W, i0, i1, i2) => {
+    const a = [W[i0 * 3], W[i0 * 3 + 1], W[i0 * 3 + 2]], b = [W[i1 * 3], W[i1 * 3 + 1], W[i1 * 3 + 2]], c = [W[i2 * 3], W[i2 * 3 + 1], W[i2 * 3 + 2]];
+    const sub = (u, v) => [u[0] - v[0], u[1] - v[1], u[2] - v[2]], dot = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+    const ab = sub(b, a), ac = sub(c, a), ap = sub(p, a), d1 = dot(ab, ap), d2 = dot(ac, ap); let q;
+    if (d1 <= 0 && d2 <= 0) q = a; else { const bp = sub(p, b), d3 = dot(ab, bp), d4 = dot(ac, bp);
+      if (d3 >= 0 && d4 <= d3) q = b; else { const vc = d1 * d4 - d3 * d2;
+        if (vc <= 0 && d1 >= 0 && d3 <= 0) { const v = d1 / (d1 - d3); q = [a[0] + ab[0] * v, a[1] + ab[1] * v, a[2] + ab[2] * v]; }
+        else { const cp = sub(p, c), d5 = dot(ab, cp), d6 = dot(ac, cp);
+          if (d6 >= 0 && d5 <= d6) q = c; else { const vb = d5 * d2 - d1 * d6;
+            if (vb <= 0 && d2 >= 0 && d6 <= 0) { const w = d2 / (d2 - d6); q = [a[0] + ac[0] * w, a[1] + ac[1] * w, a[2] + ac[2] * w]; }
+            else { const va = d3 * d6 - d5 * d4;
+              if (va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) { const w = (d4 - d3) / ((d4 - d3) + (d5 - d6)); q = [b[0] + (c[0] - b[0]) * w, b[1] + (c[1] - b[1]) * w, b[2] + (c[2] - b[2]) * w]; }
+              else { const den = 1 / (va + vb + vc), v = vb * den, w = vc * den; q = [a[0] + ab[0] * v + ac[0] * w, a[1] + ab[1] * v + ac[1] * w, a[2] + ab[2] * v + ac[2] * w]; } } } } } }
+    return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
   /* clip a polygon (camera space: x right, y up, d forward) by a plane f(p) >= 0, f linear */
   const clipBy = (P, f) => { const out = []; for (let i = 0; i < P.length; i++) { const a = P[i], c = P[(i + 1) % P.length], fa = f(a), fc = f(c);
       if (fa >= 0) out.push(a); if ((fa >= 0) !== (fc >= 0)) { const s = fa / (fa - fc); out.push([a[0] + (c[0] - a[0]) * s, a[1] + (c[1] - a[1]) * s, a[2] + (c[2] - a[2]) * s]); } }
@@ -153,7 +168,8 @@ export const LIB = () => {
     const eye = new V3(); cam.getWorldPosition(eye);
     const n = cam.near, hh = n * Math.tan(cam.fov * Math.PI / 360) / (cam.zoom || 1), hw = hh * cam.aspect;
     const reach = Math.hypot(n, hh, hw) + 0.002;
-    const EN = lib.near(eye, reach + 0.05, o), inv = cam.matrixWorldInverse;
+    const CLR = 0.4, EN = lib.near(eye, CLR, o), inv = cam.matrixWorldInverse;
+    let clear = Infinity, clearWho = null;
     const e = inv.elements, eo = [eye.x, eye.y, eye.z];
     const hits = new Map();
     const hit = (en, i0, kind, val, extra) => { const ok = lib.objKey(en, i0); let H = hits.get(ok);
@@ -171,6 +187,10 @@ export const LIB = () => {
         let far = false;
         for (const c of [0, 1, 2]) { const a = W[i0 * 3 + c], b = W[i1 * 3 + c], d = W[i2 * 3 + c];
           if (Math.min(a, b, d) > eo[c] + reach || Math.max(a, b, d) < eo[c] - reach) { far = true; break; } }
+        /* THE CLEARANCE: how near any surface comes to the eye (a lead's measure, and the proof something was measured) */
+        { let out = false; for (const c of [0, 1, 2]) { const a = W[i0 * 3 + c], b = W[i1 * 3 + c], d = W[i2 * 3 + c];
+            if (Math.min(a, b, d) > eo[c] + CLR || Math.max(a, b, d) < eo[c] - CLR) { out = true; break; } }
+          if (!out) { const dd = ptTri(eo, W, i0, i1, i2); if (dd < clear) { clear = dd; clearWho = en.label + (en.pc ? ' piece' : ''); } } }
         if (!far) {
           let P = [toCam(W, i0), toCam(W, i1), toCam(W, i2)];
           const dmax = Math.max(P[0][2], P[1][2], P[2][2]);
@@ -208,6 +228,7 @@ export const LIB = () => {
         H.kind.inside = +nearest.toFixed(4); H.rays = odd + '/7 odd, ' + back + '/7 back' + (dbl ? ', double-sided' : ''); H.box = L.B.map(v => +v.toFixed(2)); }
     }
     return { eye: eo.map(v => +v.toFixed(3)), fov: +cam.fov.toFixed(2), asp: +cam.aspect.toFixed(3), near: n, objs: EN.length,
+             clear: clear === Infinity ? null : +clear.toFixed(4), clearWho: clearWho ? clearWho.slice(0, 90) : null,
              hits: [...hits.values()] };
   };
   /* CHECK=1: the proof on throwaway things laid into the page's world and taken away again */
@@ -356,8 +377,13 @@ if (MAIN) {
       if (process.env.CHECK === '1') { log(job, 'CHECK', JSON.stringify(await p.evaluate(() => window.__clip.check()))); }
       const { dur, rows } = await sweepFilm(p, { fn: 'lensAt', STEP, FROM, UNTIL, BOTH, log, job });
       const S = spans(rows);
-      report.films[job] = { dur, moments: rows.length, spans: S, errs };
+      /* the nearest any surface came to the lens over the film (each shape), and how many moments had something within 0.4 m */
+      const near = {}; for (const v of ['p', 'd']) { const R = rows.filter(r => r.v === v); if (!R.length) continue; let m = null;
+        for (const r of R) if (r.r.clear != null && (!m || r.r.clear < m.clear)) m = { clear: r.r.clear, t: r.t, who: r.r.clearWho, eye: r.r.eye };
+        near[v] = { moments: R.length, withNear: R.filter(r => r.r.clear != null).length, closest: m }; }
+      report.films[job] = { dur, moments: rows.length, near, spans: S, errs };
       log(job, 'dur', dur.toFixed(2), rows.length, 'moments,', S.length, 'spans', errs.length ? 'errs ' + JSON.stringify(errs.slice(0, 3)) : '');
+      for (const v in near) log('  ', v, 'surfaces within 0.4 m at', near[v].withNear, 'of', near[v].moments, 'moments; the closest', JSON.stringify(near[v].closest));
       for (const s of S) log('  ', s.v, s.from.toFixed(2) + '..' + s.to.toFixed(2), s.kinds.join('+'), 'worst', s.worst, '@', s.worstAt, s.label.slice(0, 90));
       for (const t of (PICS[job] || [])) { await p.evaluate((t) => window.__enc.cine.seek(t), t);
         const f = `${OUT}/${job.replace(/[:@!,]/g, '_')}-${VIEW}-${t.toFixed(2)}.png`; await picture(p, f, SETTLE); log(job, 'picture', f); }
@@ -387,7 +413,8 @@ if (MAIN) {
             out.push({ t: +y.toFixed(3), q: +q.toFixed(3), at, v: 'p', r: window.__clip.lensAt() }); }
           Y.rotation.y = y0; P.rotation.x = p0; Y.position.x = x0; Y.position.z = z0; Y.updateMatrixWorld(true); return out; }, [looks, at]);
         const rows = await meas(looks, null);
-        const R = { yaw: [+(y0 + lo).toFixed(3), +(y0 + hi).toFixed(3)], held, pitch: pr, looks: rows.length, hits: rows.filter(r => r.r.hits.length).map(r => ({ yaw: r.t, pitch: r.q, eye: r.r.eye, hits: r.r.hits })) };
+        let cm = null; for (const r of rows) if (r.r.clear != null && (!cm || r.r.clear < cm.clear)) cm = { clear: r.r.clear, yaw: r.t, pitch: r.q, who: r.r.clearWho };
+        const R = { yaw: [+(y0 + lo).toFixed(3), +(y0 + hi).toFixed(3)], held, pitch: pr, looks: rows.length, closest: cm, eye: rows[0] && rows[0].r.eye, hits: rows.filter(r => r.r.hits.length).map(r => ({ yaw: r.t, pitch: r.q, eye: r.r.eye, hits: r.r.hits })) };
         if (WALK.includes(ph)) {
           /* the ground he can reach, flooded by the engine's own collision, and every edge of it pressed to the blocker */
           const stands = await p.evaluate(() => { const E = window.__enc, Y = E.yaw, sx = Y.position.x, sz = Y.position.z, G = 0.1, key = (i, j) => i + ',' + j;
@@ -411,7 +438,7 @@ if (MAIN) {
           R.walk = { cells: stands.cells, stands: stands.stands.length, hits: wh };
         }
         report.play[ph] = R;
-        log('play', ph, 'yaw', R.yaw.join('..'), held ? '(held)' : '(free)', 'pitch', pr.join('..'), rows.length, 'looks,', R.hits.length, 'with hits', R.walk ? '; walk ' + R.walk.stands + ' stands, ' + R.walk.hits.length + ' with hits' : '');
+        log('play', ph, 'yaw', R.yaw.join('..'), held ? '(held)' : '(free)', 'pitch', pr.join('..'), rows.length, 'looks,', R.hits.length, 'with hits; the eye', JSON.stringify(R.eye), 'the closest', JSON.stringify(cm), R.walk ? '; walk ' + R.walk.stands + ' stands, ' + R.walk.hits.length + ' with hits' : '');
         const tally = new Map(); for (const h of [...R.hits, ...(R.walk ? R.walk.hits : [])]) for (const x of h.hits) { const k = x.label; const T = tally.get(k) || { n: 0, worst: 0, at: null }; T.n++; const d = Math.max(...Object.values(x.kind)); if (d > T.worst) { T.worst = d; T.at = h; } tally.set(k, T); }
         for (const [k, T] of tally) log('  ', T.n, 'looks', 'worst', T.worst, Object.keys(T.at.hits.find(x => x.label === k).kind).join('+'), 'yaw', T.at.yaw, 'pitch', T.at.pitch, T.at.at ? 'at ' + T.at.at : '', k.slice(0, 90));
         for (const pk of Object.keys(PICS).filter(k => k === 'play:' + ph)) { const [y, q, x, z] = PICS[pk];

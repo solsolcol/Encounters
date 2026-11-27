@@ -97,14 +97,17 @@ const COP = () => {
     G.area += r.ar; G.tris++; G.gap = Math.max(G.gap, r.gap); G.gmin = Math.min(G.gmin, r.gmin);
     for (const q of r.P) for (let c = 0; c < 3; c++) { G.box[c] = Math.min(G.box[c], q[c]); G.box[c + 3] = Math.max(G.box[c + 3], q[c]); }
   };
-  const meet = (R1, list, o, M) => { for (const B of list) { const r = pairTest(R1, B, o); if (r) agg(M, R1, B, r, R1.guard || B.guard); } };
-  const query = (R1, cells, o, M, seen, insertTo) => {
-    const cs = triCells(R1.v, o.VOX), done = new Set();
-    for (const c of cs) { const L = cells.get(c); if (L) for (const B of L) { if (done.has(B)) continue; done.add(B); const r = pairTest(R1, B, o); if (r) agg(M, R1, B, r, R1.guard || B.guard); }
-      if (insertTo) { let L2 = insertTo.get(c); if (!L2) insertTo.set(c, L2 = []); L2.push(R1); } }
+  /* a cell holds its triangles by OWNER (object and material), so the triangles of the asker's own owner are passed over
+     whole (a body of one material against itself costs nothing), and a pair's two triangles are met once */
+  const put = (cells, R1, cs) => { const ow = R1.ok + '|' + R1.mk; for (const c of cs) { let C = cells.get(c); if (!C) cells.set(c, C = new Map()); let L = C.get(ow); if (!L) C.set(ow, L = []); L.push(R1); } };
+  const query = (R1, cells, o, M, cs) => {
+    const ow = R1.ok + '|' + R1.mk, done = new Set();
+    for (const c of cs) { const C = cells.get(c); if (!C) continue;
+      for (const [k, L] of C) { if (k === ow) continue;
+        for (const B of L) { if (done.has(B)) continue; done.add(B); const r = pairTest(R1, B, o); if (r) agg(M, R1, B, r, R1.guard || B.guard); } } }
   };
   lib.copAt = (o = {}) => {
-    o = { R: 14, VOX: 0.25, ANG: 1, DIST: 0.002, MINAREA: 1e-5, ...o }; o.cosA = Math.cos(o.ANG * Math.PI / 180);
+    o = { R: 14, VOX: 0.25, ANG: 1, DIST: 0.002, MINAREA: 1e-5, BODYMIN: 4e-4, ...o }; const t0 = performance.now(); o.cosA = Math.cos(o.ANG * Math.PI / 180);
     cam.updateMatrixWorld(true); const eye = new V3(); cam.getWorldPosition(eye);
     const EN = lib.near(eye, o.R, { fx: true }), present = new Set(), dyn = [];
     for (const en of EN) {
@@ -115,15 +118,16 @@ const COP = () => {
       /* a still thing new to the index: met against everything already in it, then put in */
       const rr = recs(en, sig); S.idx.set(sig, rr.length);
       const M = new Map();
-      for (const R1 of rr) query(R1, S.cells, o, M, null, null);
-      /* (and against its own other objects and materials, which the index does not hold yet) */
-      const own = new Map(); for (const R1 of rr) query(R1, own, o, M, null, own);
-      for (const R1 of rr) for (const c of triCells(R1.v, o.VOX)) { let L = S.cells.get(c); if (!L) S.cells.set(c, L = []); L.push(R1); }
+      /* (met against the index, and against its own other objects and materials as they go in: each pair once) */
+      for (const R1 of rr) { const cs = triCells(R1.v, o.VOX); query(R1, S.cells, o, M, cs); put(S.cells, R1, cs); }
       for (const [k, G] of M) { const P = S.pairs.get(k); if (!P) S.pairs.set(k, G); else if (P.ea === G.ea && P.eb === G.eb) { /* the same two, met again: kept as first found */ } else S.pairs.set(k + '~' + G.ea + G.eb, G); }
     }
     /* the people (and anything posed by bones): met against the index and one another, every moment */
     const MD = new Map(), tmp = new Map();
-    for (const en of dyn) { const rr = recs(en, en.mesh.uuid); for (const R1 of rr) query(R1, S.cells, o, MD, null, null); for (const R1 of rr) query(R1, tmp, o, MD, null, tmp); }
+    /* (against the still things only a body's triangles of BODYMIN m² and more, 4 cm²: a hundred-thousand-triangle body's
+       own are about 0.2 cm² and are curved; its clothes against its skin, and one body against another, every triangle) */
+    for (const en of dyn) { const rr = recs(en, en.mesh.uuid);
+      for (const R1 of rr) { const cs = triCells(R1.v, o.VOX); if (R1.area >= o.BODYMIN) query(R1, S.cells, o, MD, cs); query(R1, tmp, o, MD, cs); put(tmp, R1, cs); } }
     const out = [], guarded = { n: 0 };
     /* WHETHER IT FIGHTS FROM HERE: a 24-bit depth buffer tells apart, at d m from the lens, surfaces about
        d * d / (near * 2^24) m apart (0.8 um at 1 m, 0.02 mm at 5 m, 0.7 mm at 30 m with the game's near 0.08). A pair whose
@@ -141,7 +145,7 @@ const COP = () => {
     for (const G of S.pairs.values()) if (present.has(G.ea) && present.has(G.eb) && Math.max(...[0, 2].map(c => Math.abs((G.box[c] + G.box[c + 3]) / 2 - [eye.x, 0, eye.z][c]))) <= o.R) take(G);
     for (const G of MD.values()) take(G);
     out.sort((x, y) => (y.fights - x.fights) || (x.order - y.order) || (y.area - x.area));
-    return { eye: [eye.x, eye.y, eye.z].map(v => +v.toFixed(3)), objs: EN.length, indexed: S.idx.size, pairs: out, guarded: guarded.n };
+    return { eye: [eye.x, eye.y, eye.z].map(v => +v.toFixed(3)), objs: EN.length, people: dyn.length, indexed: S.idx.size, pairs: out, guarded: guarded.n, ms: Math.round(performance.now() - t0) };
   };
   lib.copCheck = (o = {}) => {
     cam.updateMatrixWorld(true); const eye = new V3(); cam.getWorldPosition(eye);
@@ -167,7 +171,7 @@ const COP = () => {
 const CH = process.env.CH || 'e5c1', VIEW = process.env.VIEW || 'both', PHONE = VIEW !== 'desktop', BOTH = VIEW === 'both';
 const STEP = +(process.env.STEP || 0.25), FROM = +(process.env.FROM || 0), UNTIL = +(process.env.UNTIL || 1e9);
 const FILMS = (process.env.FILMS || '').split(',').filter(Boolean), PHASES = (process.env.PHASES || '').split(',').filter(Boolean), ASK = process.env.ASK || 'ask';
-const ARGS = { R: +(process.env.R || 14), VOX: +(process.env.VOX || 0.25), ANG: +(process.env.ANG || 1), DIST: +(process.env.DIST || 0.002), MINAREA: +(process.env.MINAREA || 1e-5) };
+const ARGS = { R: +(process.env.R || 14), VOX: +(process.env.VOX || 0.25), ANG: +(process.env.ANG || 1), DIST: +(process.env.DIST || 0.002), MINAREA: +(process.env.MINAREA || 1e-5), BODYMIN: +(process.env.BODYMIN || 4e-4) };
 const OUT = process.env.OUT || '/tmp/coplanar'; fs.mkdirSync(OUT, { recursive: true });
 const T0 = Date.now(), log = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);
 const b = await chromium.launch(LAUNCH);
@@ -186,7 +190,7 @@ for (const job of FILMS) {
     if (process.env.CHECK === '1') log(job, 'CHECK', JSON.stringify(await p.evaluate((a) => window.__clip.copCheck(a), ARGS)));
     const { dur, rows } = await sweepFilm(p, { fn: 'copAt', STEP, FROM, UNTIL, BOTH, args: ARGS, log, job });
     const P = pairsOf(rows); report.films[job] = { dur, moments: rows.length, pairs: P, guarded: Math.max(0, ...rows.map(r => r.r.guarded)), errs };
-    log(job, 'dur', dur.toFixed(2), rows.length, 'moments,', P.length, 'pairs', errs.length ? 'errs ' + JSON.stringify(errs.slice(0, 3)) : '');
+    const ms = rows.map(r => r.r.ms); log(job, 'dur', dur.toFixed(2), rows.length, 'moments (' + Math.max(...ms) + ' ms the slowest, ' + Math.round(ms.reduce((a, b) => a + b, 0) / ms.length) + ' the mean; ' + Math.max(...rows.map(r => r.r.people)) + ' posed bodies at most),', P.length, 'pairs', errs.length ? 'errs ' + JSON.stringify(errs.slice(0, 3)) : '');
     for (const q of P) log('  ', q.from.toFixed(2) + '..' + q.to.toFixed(2), q.fightMoments ? 'FIGHTS ' + q.fightMoments + '/' + q.moments : (q.order ? 'order' : (q.away ? 'away' : 'safe')), 'area', q.area, 'gap', q.gmin + '..' + q.gap, 'safe to', q.safeTo, 'm, nearest', q.nearest, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
   } catch (e) { log(job, 'FAILED', String(e).slice(0, 300), JSON.stringify(errs.slice(0, 4))); report.films[job] = { failed: String(e).slice(0, 300), errs }; }
   fs.writeFileSync(`${OUT}/coplanar-${CH}-${VIEW}.json`, JSON.stringify(report, null, 1));
@@ -201,7 +205,7 @@ if (PHASES.length) {
       if (process.env.CHECK === '1') log(ph, 'CHECK', JSON.stringify(await p.evaluate((a) => window.__clip.copCheck(a), ARGS)));
       const r = await p.evaluate((a) => window.__clip.copAt(a), ARGS);
       report.play[ph] = r;
-      log('play', ph, r.objs, 'meshes,', r.indexed, 'indexed,', r.pairs.length, 'pairs (' + r.pairs.filter(q => q.fights).length + ' fight from the lens),', r.guarded, 'guarded');
+      log('play', ph, r.objs, 'meshes (' + r.people + ' posed),', r.ms, 'ms,', r.indexed, 'indexed,', r.pairs.length, 'pairs (' + r.pairs.filter(q => q.fights).length + ' fight from the lens),', r.guarded, 'guarded');
       for (const q of r.pairs) log('  ', q.fights ? 'FIGHTS' : (q.order ? 'order' : (q.away ? 'away' : 'safe')), 'area', q.area, 'gap', q.gmin + '..' + q.gap, 'safe to', q.safeTo, 'm, at', q.dist, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
       fs.writeFileSync(`${OUT}/coplanar-${CH}-${VIEW}.json`, JSON.stringify(report, null, 1));
     }
