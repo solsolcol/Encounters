@@ -1,0 +1,5 @@
+[
+ {"name": "fiddlefig", "kind": "prop", "image": "masters/v29.0/props/refs/fiddlefig.png"},
+ {"name": "snakeplant", "kind": "prop", "image": "masters/v29.0/props/refs/snakeplant.png"},
+ {"name": "arecapalm", "kind": "prop", "image": "masters/v29.0/props/refs/arecapalm.png", "geo": "standard", "sym": "off"}
+]

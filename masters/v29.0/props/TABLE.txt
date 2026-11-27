@@ -27,3 +27,7 @@ phobag        w51phobag     0.32  w  16000  2048  0
 incense       w51incense    0.24  h  12000  2048  0
 kettle        w51kettle     0.24  h  12000  1024  0
 jasmine       w51jasmine    0.22  h  20000  2048  0
+# (27 Nov, R13, THINGS-3: the plants made new, at Meshy his way; the other reused things were made in code: props/code)
+fiddlefig     w51fig        1.50  h  30000  1024  0
+snakeplant    w51snake      0.60  h  20000  2048  0
+arecapalm     w51palm       1.20  h  40000  1024  0
