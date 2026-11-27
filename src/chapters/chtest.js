@@ -672,7 +672,15 @@
       shootables, onShot, shots,                 // v12.0: rifle mode
       /* v28.0: the fixture's fight (seams 60 to 65), for fixturetest */
       fight: F, fightOpen, fightEnd, fightBrief, fightLose, fightBodies: { a: bodyA, b: bodyB }, fightTargets: fTargets,
-      fightHome: F_HOME, pillar
+      fightHome: F_HOME, pillar,
+      /* v29.0: the two briefing pictures episode 5 chapter 1 names (`demo:`), declared here so chaptertest checks they are
+         drawn and fixturetest opens each: the steady kind as KEEP THE WATER STILL ('bowl'), the hands-on kind's circling
+         step as CLOSE THE CIRCLE ('circle') */
+      eventDemos: {
+        bowl: { kind: 'steady', label: 'THE BOWL', brief: 'Keep the light inside the ring.', demo: 'bowl', secs: 2, lead: 0.2, grace: 5 },
+        circle: { kind: 'craft', label: 'THE CIRCLE', brief: 'Lay the thread all the way round you.', demo: 'circle',
+                  at: { sx: 0.5, sy: 0.5 }, steps: [{ g: 'twist', turns: 1 }] }
+      }
     });
   }
 
@@ -759,6 +767,16 @@
     c.endFade = 1;
   };
 
+  /* v29.0 · the eighty-first seam: a film that ASKS for the pressure (`cine: true`), so it is painted under the film; and
+     gives it back before it ends, so play finds the picture as it was */
+  const fiPress = (c, s, api) => {
+    const { step, fade, kit } = api;
+    step(0.1, () => { kit.press(0.9, { secs: 0, cine: true }); });
+    step(3.2, () => { kit.press(0, { secs: 0, cine: false }); });
+    fade(3.3, 3.6, 0, 0);
+    step(3.7, () => {});
+  };
+
   /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
      film goes on, and hands back to play, once it resolves */
   const fiClimb = (c, s, api) => {
@@ -772,7 +790,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash, keepView: fiKeepView, lay: fiLay },
+    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash, keepView: fiKeepView, lay: fiLay, press: fiPress },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();

@@ -915,6 +915,11 @@ ASSETS = {
     'w5gardenlamp': ('assets/w5gardenlamp.glb', True, False),     # the garden lamps along its paths, 3.2 m, their globes lit
     'w5shrub':      ('assets/w5shrub.glb', True, False),     # the ixora in its beds, 1.1 m
     # <<< e4c5 keys: the rows end <<<
+    # >>> e5c1 keys: written by masters/v29.0/keys.py from its table (edit the table, not these rows) >>>
+    # e5c1 (props): things
+    'w51keepsake':  ('assets/w51keepsake.glb', True, False),     # the keepsake: a palm-sized packet of faded cloth tied with reddish cord (in Grace's bag; on the white plate)
+    'w51threadreel':('assets/w51threadreel.glb', True, False),     # the spool of white thread: chapter 5's w5threadreel with its loose end laid along the ground (mend/threadmend.mjs, no credits; the old file untouched)
+    # <<< e5c1 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -1087,6 +1092,9 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'p5praiheavy', 'p5naga', 'w5wuathanu', 'w5rakyom', 'w5hunphayon', 'w5playground', 'w5gardenlamp',
            'w5shrub',
            # <<< e4c5 keys <<<
+           # >>> e5c1 keys (masters/v29.0/keys.py) >>>
+           'w51keepsake', 'w51threadreel',
+           # <<< e5c1 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 

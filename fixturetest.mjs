@@ -996,6 +996,115 @@ K.coldSeam = await p.evaluate(async () => {
 }).catch(e => { console.log('coldSeam threw', e.message); return false; });
 await settle();
 
+/* v29.0 · THE PRESSURE (the eighty-first seam: kit.press) — ABSENT, nothing built, copied or drawn, and the picture is the
+   picture (two pictures taken apart are its own noise); WARMED (kit.press(0)), its program built and still nothing copied
+   or drawn, the picture the same; ON, the frame copied and drawn back every frame with no GL error, the screen's edges
+   darkened and changed while its middle is left as it is (read off the picture itself); eased back to 0 on wall time, its
+   texture let go and nothing drawn again, the picture the same as before it was ever called. A film that has not asked
+   paints none of it; a film that asks (`cine: true`) paints it, and gives it back. (kitReset's clear: at the end, with
+   the others.) And the two briefing pictures the chapter names, 'bowl' and 'circle', open with their own pieces drawn */
+await lbl('press');
+{
+  const vp = p.viewportSize();
+  const grab = async (x, y, w, h) => (await sharp(await p.screenshot({ clip: { x, y, width: w, height: h } })).removeAlpha().raw().toBuffer());
+  const regions = () => [[0, 0, vp.width, 36], [0, vp.height - 36, vp.width, 36], [0, 0, 36, vp.height], [vp.width - 36, 0, 36, vp.height]];
+  const edges = async () => Buffer.concat(await Promise.all(regions().map(r => grab(...r))));
+  const mid = () => grab(Math.round(vp.width / 2 - 60), Math.round(vp.height / 2 - 25), 120, 50);
+  const pics = async () => ({ e: await edges(), m: await mid() });
+  const diff = (a, b) => { let t = 0; for (let i = 0; i < a.length; i++) t += Math.abs(a[i] - b[i]); return t / a.length; };
+  const mean = (a) => { let t = 0; for (let i = 0; i < a.length; i++) t += a[i]; return t / a.length; };
+  const fr = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
+  const st = () => p.evaluate(() => window.__enc.press());
+  const R = {};
+  /* (the pictures are of the world alone: every layer over the canvas hidden while they are taken, since the HUD's own
+     moving parts were as large a change in the middle as anything the pass does) */
+  const bare = (on) => p.evaluate((on) => { let el = document.getElementById('__pressBare');
+    if (on && !el) { el = document.createElement('style'); el.id = '__pressBare';
+      el.textContent = 'body *{visibility:hidden!important}#scene{visibility:visible!important}'; document.head.appendChild(el); }
+    if (!on && el) el.remove(); }, on);
+  await bare(true);
+  await fr(3);
+  const s0 = await st();
+  R.absent = s0.built === false && s0.calls === 0 && s0.drawn === 0 && s0.copied === 0 && s0.tex === false && s0.k === 0;
+  const A = await pics(); await fr(3); const A2 = await pics();
+  await p.evaluate(() => window.__enc.kit.press(0)); await fr(4);
+  const s1 = await st();
+  R.warmNothingDrawn = s1.built === true && s1.drawn === 0 && s1.copied === 0 && s1.tex === false && s1.k === 0;
+  const W = await pics();
+  await p.evaluate(() => window.__enc.kit.press(1, { secs: 0 }));
+  await p.waitForFunction(() => window.__enc.press().drawn >= 3, null, { timeout: 120000, polling: 50 });
+  await fr(2);
+  const s2 = await st();
+  R.drawsWhenOn = s2.ok === true && s2.err === 0 && s2.drawn >= 3 && s2.copied >= 3 && s2.tex === true && s2.k === 1 && s2.live === true;
+  const B = await pics();
+  R.readable = await p.evaluate(() => window.__enc.kit.pressState().k === 1 && window.__enc.kit.pressState().to === 1);
+  /* eased on wall time: the first k read under 1 after the call is still over 0 (2 s to go, and no frame steps more than
+     a quarter of a second) */
+  await p.evaluate(() => window.__enc.kit.press(0, { secs: 2 }));
+  await p.waitForFunction(() => window.__enc.press().k < 1, null, { timeout: 120000, polling: 20 });
+  const kMid = (await st()).k;
+  R.eases = kMid > 0 && kMid < 1;
+  await p.waitForFunction(() => { const s = window.__enc.press(); return s.k === 0 && s.tex === false; }, null, { timeout: 120000, polling: 50 });
+  const d0 = (await st()).drawn; await fr(4);
+  const s3 = await st();
+  R.offNothingDrawn = s3.drawn === d0 && s3.tex === false && s3.beat === 0;
+  const C = await pics();
+  const nE = diff(A.e, A2.e), nM = diff(A.m, A2.m);
+  const lim = (n) => Math.max(1.5, 3 * n);
+  R.absentSame = diff(A.e, W.e) <= lim(nE) && diff(A.m, W.m) <= lim(nM);          // warmed at 0: the picture is the picture
+  R.offSame = diff(A.e, C.e) <= lim(nE) && diff(A.m, C.m) <= lim(nM);             // and back at 0, the same again
+  const dE = diff(A.e, B.e), dM = diff(A.m, B.m), mA = mean(A.e), mB = mean(B.e);
+  R.edgesPressed = dE > Math.max(6, 4 * nE) && (mA < 10 || mB < 0.5 * mA);         // the edges change, and go dark
+  R.middleKept = dM <= Math.max(lim(nM), 0.25 * dE);                              // the middle is left as it is
+  console.log('press: edges pressed', dE.toFixed(2), '(mean', mA.toFixed(1), '->', mB.toFixed(1) + ') | middle', dM.toFixed(2),
+              '| noise edges', nE.toFixed(2), 'middle', nM.toFixed(2), '| warmed', diff(A.e, W.e).toFixed(2), '| off again', diff(A.e, C.e).toFixed(2), '| eased k', kMid);
+  await bare(false);
+  /* a film that has not asked: nothing painted while it plays; a film that asks: painted, and given back at its end */
+  const filmRun = (key, before) => p.evaluate(async ([key, before]) => {
+    const E = window.__enc;
+    const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+    if (before) E.kit.press(before, { secs: 0 });
+    await frames(2);
+    const o = { first: null, last: null, liveSeen: false, cineSeen: false };
+    let done = false;
+    const f = () => { if (E.getState() === 'cine') { const s = E.press(); if (o.first === null) o.first = s.drawn; o.last = s.drawn; o.cineSeen = true; if (s.live) o.liveSeen = true; }
+                      if (!done) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+    o.started = E.kit.film(key, { onDone: () => { done = true; } }) === true;
+    const t0 = performance.now();
+    while (!done && performance.now() - t0 < 120000) await frames(1);
+    await frames(3);
+    o.after = E.press();
+    return o;
+  }, [key, before]);
+  const fNo = await filmRun('phone', 0.8);
+  R.filmNotAsked = fNo.started && fNo.cineSeen && fNo.liveSeen === false && fNo.last === fNo.first && fNo.after.live === true && fNo.after.drawn > fNo.last;
+  await p.evaluate(() => window.__enc.kit.press(0, { secs: 0 }));
+  await p.waitForFunction(() => window.__enc.press().tex === false, null, { timeout: 60000, polling: 50 });
+  const fYes = await filmRun('press', 0);
+  R.filmAsks = fYes.started && fYes.liveSeen === true && fYes.last > fYes.first && fYes.after.k === 0 && fYes.after.cine === false && fYes.after.tex === false;
+  await p.evaluate(() => window.__enc.kit.fade(0, 0.2));
+  await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+  if (!Object.values(R).every(v => v === true)) console.log('pressSeam parts:', JSON.stringify({ R, s0, s1, s2, s3, fNo, fYes }));
+  K.pressSeam = Object.values(R).every(v => v === true);
+  /* the two pictures: the briefing opens with its class, and that picture's own pieces shown (and another's not) */
+  const demo = async (name, own, other) => {
+    await p.evaluate((n) => { const E = window.__enc; E.kit.event(E.stage.eventDemos[n]); }, name);
+    const ok = await until(() => { const d = window.__enc.kitDebug(); return !!(d.event && d.event.briefing); }, 30000)
+      .then(() => p.evaluate(([name, own, other]) => {
+        const dm = document.getElementById('evDemo'), vis = (s) => { const el = dm.querySelector(s); return !!el && getComputedStyle(el).display !== 'none'; };
+        const anim = (s) => { const el = dm.querySelector(s); return !!el && getComputedStyle(el).animationName !== 'none'; };
+        return dm.className === name && getComputedStyle(dm).display !== 'none' && own.every(vis) && anim(own[own.length - 1]) && !vis(other);
+      }, [name, own, other]), () => false);
+    await p.evaluate(() => window.__enc.kit.abortEvent());
+    await settle();
+    return ok;
+  };
+  K.bowlDemo = await demo('bowl', ['.dbo', '.dbor', '.dbol', '.dbof'], '.dqr');
+  K.circleDemo = await demo('circle', ['.dcib', '.dcit', '.dcis', '.dcif'], '.dtc');
+}
+await settle();
+
 /* v21.0: A THING IN HIS HAND (the twenty-seventh seam) — kit.hold puts an
    object on the right arm (so it is drawn in the hands' pass), at the clasp's
    middle when asked, lets go on hold(null), and a new hold replaces the old */
@@ -3470,7 +3579,8 @@ out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
 /* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
 await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); window.__enc.kit.lens(44, { secs: 0 }); window.__enc.kit.hush(1, { secs: 0 }); });   // (v24.0: and rain, for the reset to clear; v26.0: a borrowed lens and a hush)
-await p.evaluate(() => { const k = window.__enc.kit; k.health({ label: 'x', k: 0.5, at: () => [0, 1, 0] }); k.edge({ k: 1, secs: 0.01 }); k.sprayColor(0xff0000); k.visionUrge('open'); k.weaponGlow(true); });   // (v27.0: the stakes, for the reset to clear; seam 67: and the fire button's glow)
+await p.evaluate(() => { const k = window.__enc.kit; k.health({ label: 'x', k: 0.5, at: () => [0, 1, 0] }); k.edge({ k: 1, secs: 0.01 }); k.sprayColor(0xff0000); k.visionUrge('open'); k.weaponGlow(true); });
+await p.evaluate(() => window.__enc.kit.press(0.6, { secs: 0, cine: true }));   // (v29.0, seam 81: the pressure, for the reset to clear)   // (v27.0: the stakes, for the reset to clear; seam 67: and the fire button's glow)
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
 await p.evaluate(() => window.__enc.kitReset());
 await p.waitForTimeout(400);
@@ -3480,6 +3590,7 @@ K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); r
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
 K.barClearedByReset = await p.evaluate(() => window.__enc.kitBar() === null);                                                       // v27.0 (S52)
 K.stakesClearedByReset = await p.evaluate(() => { const q = window.__enc.stakes(); return q.life.on === false && q.edge.to === 0 && q.edge.k === 0 && q.spray.col === null && q.spray.scale === 1 && q.urge === false && q.wave.on === false && q.show === null; });   // v27.0 (S54, S56, S55, S57)
+K.pressClearedByReset = await p.evaluate(() => { const q = window.__enc.press(); return q.k === 0 && q.to === 0 && q.cine === false && q.tex === false && q.beat === 0; });   // v29.0 (seam 81)
 K.glowClearedByReset = await p.evaluate(() => !document.body.classList.contains('wpnGlow') && window.__enc.weaponGlowOn() === false);   // v27.0 (seam 67)
 /* v27.0 (S50): a chapter that declares no vision takes the seam down (no eye, no state, no class): what setChapter's
    kitReset does on a real change of chapter. The swap above is rebuildStage alone, which builds the next stage and keeps

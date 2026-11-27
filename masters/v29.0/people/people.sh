@@ -19,15 +19,19 @@ cd "$(dirname "$0")/../../.."
 SRC=masters/v29.0/src/people
 prep() { # prep <in> <out> <sheet px> <log>
   env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 FINS=1 WSMOOTH=0 XSCALE=1000 REPAINT=1 MENDOUT=${MENDOUT:-12} BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
-      FACE=3 HEADK=2 HANDK=1.5 PAD=3 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
+      FACE=${PFACE:-3} HEADK=${PHEADK:-2} HANDK=1.5 PAD=3 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
 one() {  # one <name> <near body> <full rigged body> <take args...>
   n=$1; body=$2; full=$3; shift 3; log=$SRC/$n-people.log; : > $log
   [ -f $body ] || { echo "$n: no near body yet ($body)"; return; }
+  if [ -n "$ONLYFULL" ]; then PHEADK=${HHEADK:-1} prep $full assets/p51${n}h.glb 2048 $log && echo "$n -> assets/p51${n}h.glb ($(node tools/tricount.mjs --n assets/p51${n}h.glb))"; return; fi
   node tools/mergetakes.mjs merge $body $SRC/merged-$n.glb "$@" >> $log 2>&1 || { echo "$n: merge failed (see $log)"; return; }
   [ -z "$CALM" ] || node tools/calmarms.mjs $SRC/merged-$n.glb $SRC/merged-$n.glb $CALM >> $log 2>&1 || { echo "$n: calmarms failed (see $log)"; return; }
   if prep $SRC/merged-$n.glb assets/p51$n.glb 2048 $log; then rm $SRC/merged-$n.glb; else echo "$n: prep failed (see $log)"; return; fi
-  prep $full assets/p51${n}h.glb 2048 $log || { echo "$n: full prep failed (see $log)"; return; }
+  # (the full body's hair is half its triangles: with the head given twice its share there, the face drew at 1,398 texels a
+  #  metre on Grace's full body against 2,240 on her near one. The full level is laid out with the head at its own share,
+  #  PHEADK=1 by default: RECORD.md §5)
+  PHEADK=${HHEADK:-1} prep $full assets/p51${n}h.glb 2048 $log || { echo "$n: full prep failed (see $log)"; return; }
   echo "$n -> assets/p51$n.glb ($(node tools/tricount.mjs --n assets/p51$n.glb)), assets/p51${n}h.glb ($(node tools/tricount.mjs --n assets/p51${n}h.glb))"
 }
 WANT="$*"; all=0; [ -z "$WANT" ] && all=1

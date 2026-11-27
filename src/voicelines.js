@@ -237,6 +237,13 @@
     collector5: { name: "The collector (episode 4, chapter 5)", voice: "eWKcOFrcmRNtJMcUZYOm", model: "eleven_v3",
               note: "Shawn Ng: a younger Malaysian Chinese man, plain and tired; the measured pick of three, until Chad's ear. RMS -16." },
         /* E4C5 SPEAKERS END */
+    /* E5C1 SPEAKERS BEGIN: episode 5 chapter 1's two new people (the plan's 6 and 11.5: each auditioned three ways, loudness-matched,
+       Chad picks by ear: v5.18). PLACEHOLDERS until SOUND casts them (masters/v29.0/sound): the voice id is written here then */
+    grace51: { name: "Grace, the colleague Marcus brings them to see (episode 5, chapter 1)", voice: "TO BE CAST", model: "eleven_v3",
+              note: "Late twenties, Singaporean Chinese, polite, restless and exhausted. Placeholder until SOUND auditions three and picks by measure, until Chad's ear. RMS -16." },
+    marcus51: { name: "Marcus, her colleague (episode 5, chapter 1)", voice: "TO BE CAST", model: "eleven_v3",
+              note: "Early thirties, Singaporean Chinese, respectful, a little out of place, persistent. Placeholder until SOUND auditions three, as Grace's. RMS -16." },
+        /* E5C1 SPEAKERS END */
     /* E4C1 SPEAKERS END */
   };
 
@@ -2706,6 +2713,9 @@
     { id: "q5D", who: "jamesAdult", ch: "e4c5", where: "under the outcome card, ending D",
       text: "[regretful] I gave him a rule about kinds. It was never the kind.", secs: 4.33 },
         /* E4C5 LINES END */
+        /* E5C1 LINES BEGIN: episode 5 chapter 1's lines, written by masters/v29.0/script/registry.py from masters/v29.0/script/lines.json
+           (a row only once its take is on disk: chaptertest) */
+        /* E5C1 LINES END */
   ];
 
   // What a chapter key means on the sheet.
@@ -2727,7 +2737,8 @@
     e4c2: "Episode 4 · Chapter 2 · Not Every Master Should Be Trusted",
     e4c3: "Episode 4 · Chapter 3 · I Finally Found My Answers",
     e4c4: "Episode 4 · Chapter 4 · The Woman Who Rose From Her Wheelchair",
-    e4c5: "Episode 4 · Chapter 5 · The House With Nine Prai"
+    e4c5: "Episode 4 · Chapter 5 · The House With Nine Prai",
+    e5c1: "Episode 5 · Chapter 1 · The Love Spell That Followed Me Home"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };
