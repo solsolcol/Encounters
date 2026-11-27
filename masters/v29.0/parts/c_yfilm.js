@@ -1246,7 +1246,7 @@
       const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
       /* (his palm against the bottle's side, his fingers round its front: 27 Nov, clipscan, 3.5 cm off its middle his fingers
          went through it, 287 crossings) */
-      /* (the bottle before his right knee is out of his left hand's reach: that hand stays on his knee) */
+      /* (his left hand steadies the bottle where it reaches it: a bottle before his right knee is out of its reach) */
       if (steady > 0.001 && CB1.x < 0.5) handTo(P, 'L', [CB1.x - 0.05, CLOTH_Y + 0.07, CB1.z + 0.02], [0.2, -0.3, -0.9], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
       const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
       if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
@@ -1348,10 +1348,14 @@
        wrapped white as the hands work (a white wrap over the red: the knot's red is covered) */
     /* (the bottle on the cloth before him, at his left of the bowl, between the lit candle and the incense: his right hand
        pours over it from his right, his left hand steadies it without crossing his body) */
-    /* (27 Nov, photographed: at 0.36, 1.25 the pour stood beyond his right hand's reach, and the bowl he poured from hung over
-       the incense pot with its sticks up through it; here, before his right knee, the bowl over the bottle clears the pot) */
-    const CB1 = { x: 0.70, z: 1.36 };
-    const POURDIR1 = [0.707, 0.707];   // (from the bottle toward his right knee, where his pouring hand stands)
+    /* (27 Nov, photographed: at 0.36, 1.25 with his pouring hand 8 cm off it, the pour stood beyond his right hand's reach
+       and the bowl hung over the incense pot with its sticks up through it. Here, at the cloth's near edge between the plate
+       and the incense, 0.24 m from the plate's middle, 0.14 from the incense pot's, 0.42 from the cloth bowl's; his pouring
+       hand held off it toward him (POURDIR1) by the bowl's width, so the bowl he pours from stands 7 cm clear of the sticks
+       and 11 cm of the lit candle; his left hand steadies it. (0.70, 1.36) stood 0.161 m from the cloth bowl's middle, at
+       its rim: PLAY's measure) */
+    const CB1 = { x: 0.38, z: 1.36 };
+    const POURDIR1 = [-0.2, 0.98];   // (from the bottle toward his teacher, a little to his left, away from the incense)
     const GIVE1 = [0.95, 0.80, 1.88];
     const POUR1 = { take: [1.06, 0.76, 1.58], tilt: 0.85 };
     /* where his right hand is in the pour, and how far into it (k): the student's bowl taken (pour - 0.3 to + 0.9), carried
