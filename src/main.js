@@ -17358,6 +17358,124 @@ const STING_SAMPLE = {
   u5pwgather: ['u5pwgather', 1], u5pwcharge: ['u5pwcharge', 1], u5pwsurge: ['u5pwsurge', 1],
   u5pweyes: ['u5pweyes', 1], u5nagaburst: ['u5nagaburst', 1],
   /* E4C5 FX END */
+  /* E5C1 FX BEGIN: v29.0, episode 5 chapter 1's effects, beds and music (masters/v29.0/sound/STING_ROWS.txt; every pick and
+     why in masters/v29.0/sound/make.sh and picks.json). Each row's gain is 1: a cue's volume is set where it is cued */
+  u51band: ['u51band', 1],        // fx, 2.04 s, cue ~0.8: ending D; its hit at 1.23 s
+  u51bbalc: ['u51bbalc', 1],      // bed, 18.12 s, cue ~0.55: BALCONY bed: ending D, the door open
+  u51bcorr: ['u51bcorr', 1],      // bed, 18.12 s, cue ~0.55: CORRIDOR bed: home, the walk to his door
+  u51bdawn: ['u51bdawn', 1],      // copy, 28.62 s, cue ~0.55: DAWN bed (the AC off)
+  u51bflat: ['u51bflat', 1],      // bed, 20.12 s, cue ~0.55: HER FLAT bed: the room's play and its films
+  u51bloom: ['u51bloom', 1],      // fx, 2.16 s, cue ~0.8: barrier 40.0 s: the cut to quiet; its hit at 0.96 s
+  u51bnight: ['u51bnight', 1],    // bed, 20.12 s, cue ~0.55: FLAT AT NIGHT bed: home and three o'clock
+  u51bottle: ['u51bottle', 1],    // fx, 1.36 s, cue ~0.8: three o'clock: the altar's bottle; its hit at 0.36 s
+  u51bowlup: ['u51bowlup', 1],    // fx, 1.48 s, cue ~0.8: keepsake 26.0 s; its hit at 0.18 s
+  u51brass: ['u51brass', 1],      // copy, 1.00 s, cue ~0.8: the room: brass set on cloth
+  u51breath: ['u51breath', 1],    // loop, 3.62 s, cue ~0.7: three o'clock: his breath (a loop)
+  u51bstair: ['u51bstair', 1],    // bed, 10.12 s, cue ~0.55: STAIR bed: the climb
+  u51bstreet: ['u51bstreet', 1],  // bed, 20.12 s, cue ~0.55: STREET bed: the opening, the five-foot way
+  u51bthree: ['u51bthree', 1],    // bed, 20.12 s, cue ~0.55: THREE bed: the night thinned to almost nothing under the pressure
+  u51burn: ['u51burn', 1],        // fx, 1.52 s, cue ~0.8: barrier from 32.0 s: each thread meeting the gold; its hit at 0.46 s
+  u51busaway: ['u51busaway', 1],  // copy, 7.00 s, cue ~0.8: opening 8.0 s: a bus pulls away (diesel, the air-brake's hiss)
+  u51buzz: ['u51buzz', 1],        // copy, 0.45 s, cue ~0.8: the room: her phone's vibration every 20 s; cord 24.0 s
+  u51carpet: ['u51carpet', 1],    // fx, 4.04 s, cue ~0.8: home 0-6 s; its hit at 2.95 s
+  u51charger: ['u51charger', 1],  // fx, 0.64 s, cue ~0.8: home 19.0 s; its hit at 0.18 s
+  u51clock: ['u51clock', 1],      // copy, 8.12 s, cue ~0.8: home 34 and 45 s: the clock's tick (a loop)
+  u51closed: ['u51closed', 1],    // fx, 1.48 s, cue ~0.8: barrier: the circle closing; its hit at 0.02 s
+  u51cloth: ['u51cloth', 1],      // fx, 1.31 s, cue ~0.8: opening 46.5 s; its hit at 0.61 s
+  u51clunk: ['u51clunk', 1],      // fx, 1.00 s, cue ~0.8: home 6.6 s; its hit at 0.49 s
+  u51connect: ['u51connect', 1],  // fx, 0.60 s, cue ~0.8: the endings: a call connecting; its hit at 0.18 s
+  u51cork: ['u51cork', 1],        // fx, 2.88 s, cue ~0.8: cord 44.5 s; its hit at 0.53 s
+  u51cups: ['u51cups', 1],        // fx, 1.20 s, cue ~0.8: dawn: the kopi set down; its hit at 0.15 s
+  u51cushion: ['u51cushion', 1],  // fx, 1.00 s, cue ~0.8: ending C; its hit at 0.35 s
+  u51dip: ['u51dip', 1],          // fx, 0.92 s, cue ~0.8: the breaking: the fan dipped; its hit at 0.12 s
+  u51door: ['u51door', 1],        // fx, 2.00 s, cue ~0.8: home 7.0 s; its hit at 0.31 s
+  u51drag: ['u51drag', 1],        // loop, 2.62 s, cue ~0.7: barrier 12-22 s: the thread's drag (a loop)
+  u51drawer: ['u51drawer', 1],    // fx, 1.20 s, cue ~0.8: ending C; its hit at 0.47 s
+  u51exhale: ['u51exhale', 1],    // fx, 2.16 s, cue ~0.8: barrier 41.0 s; its hit at 0.53 s
+  u51facedown: ['u51facedown', 1],// fx, 0.60 s, cue ~0.8: ending B; its hit at 0.07 s
+  u51fantick: ['u51fantick', 1],  // fx, 1.00 s, cue ~0.8: opening 12.5 s; its hit at 0.76 s
+  u51flick: ['u51flick', 1],      // fx, 1.24 s, cue ~0.8: the breaking: the fan flicked; its hit at 0.01 s
+  u51floor: ['u51floor', 1],      // fx, 1.00 s, cue ~0.8: three o'clock: floor creaks under his feet; its hit at 0.46 s
+  u51foil: ['u51foil', 1],        // fx, 1.24 s, cue ~0.8: ending C; its hit at 0.54 s
+  u51fold: ['u51fold', 1],        // fx, 2.83 s, cue ~0.8: cord 32-44 s; its hit at 2.39 s
+  u51frames: ['u51frames', 1],    // fx, 2.00 s, cue ~0.8: three o'clock: the passage's frames; its hit at 0.95 s
+  u51fray: ['u51fray', 1],        // fx, 2.48 s, cue ~0.8: the breaking: the red line fraying in Spirit Vision; its hit at 1.24 s
+  u51gecko: ['u51gecko', 1],      // copy, 2.00 s, cue ~0.8: opening 48.5 s; her flat now and then
+  u51glass: ['u51glass', 1],      // fx, 2.00 s, cue ~0.8: three o'clock: the bedside glass; its hit at 0.9 s
+  u51gtick1: ['u51gtick1', 1],    // fx, 1.00 s, cue ~0.8: three o'clock: the glass doors (1); its hit at 0.2 s
+  u51gtick2: ['u51gtick2', 1],    // fx, 1.48 s, cue ~0.8: three o'clock: the glass doors (2); its hit at 0.14 s
+  u51heart: ['u51heart', 1],      // copy, 1.00 s, cue ~0.8: three o'clock: his heartbeat (with the HUD)
+  u51hinge: ['u51hinge', 1],      // copy, 3.48 s, cue ~0.8: opening 36.5 s: the door's old hinge (with u51unlock)
+  u51keycard: ['u51keycard', 1],  // fx, 0.80 s, cue ~0.8: home 6.2 s; its hit at 0.36 s
+  u51keys: ['u51keys', 1],        // fx, 1.08 s, cue ~0.8: home 21.0 s; its hit at 0.05 s
+  u51knee: ['u51knee', 1],        // fx, 1.20 s, cue ~0.8: three o'clock: to one knee at full pressure; its hit at 0.23 s
+  u51knock: ['u51knock', 1],      // copy, 2.00 s, cue ~0.8: opening 34.5 s: two knocks (cue it 0.82 s early: its knocks at 0.82 and 1.11 s)
+  u51knot: ['u51knot', 1],        // copy, 2.88 s, cue ~0.8: cord 32-44 s (bound with white thread); dawn 36 s (tied and knotted twice)
+  u51koel: ['u51koel', 1],        // copy, 3.00 s, cue ~0.8: dawn 0.5 s and 24-36 s: a koel
+  u51lap: ['u51lap', 1],          // loop, 5.62 s, cue ~0.7: the breaking: the water's lap, following the mark
+  u51liedown: ['u51liedown', 1],  // fx, 1.78 s, cue ~0.8: home 31.0 s; its hit at 0.17 s
+  u51liftfar: ['u51liftfar', 1],  // copy, 4.00 s, cue ~0.8: corridor: a lift far off
+  u51lighter: ['u51lighter', 1],  // fx, 0.56 s, cue ~0.8: the room: the lighter; its hit at 0.1 s
+  u51m1blue: ['u51m1blue', 1],    // music, 62.04 s, cue ~0.7: M1 Blue Hour: the opening, from 3.5 s
+  u51m2room: ['u51m2room', 1],    // mbed, 45.12 s, cue ~0.6: M2 The Room: the room's play, the keepsake, after the cord (a loop)
+  u51m3pull: ['u51m3pull', 1],    // mbed, 28.97 s, cue ~0.6: M3 The Pull: the 52-a-minute pulse and its violin slides, laid over M2 (a loop)
+  u51m4break: ['u51m4break', 1],  // music, 102.93 s, cue ~0.7: M4 The Breaking: under the event and the cord
+  u51m5city: ['u51m5city', 1],    // music, 40.05 s, cue ~0.7: M5 Night City: home
+  u51m6a: ['u51m6a', 1],          // mbed, 30.07 s, cue ~0.45: M6 Three O'Clock, layer 1 (from pressure 0.2; a loop)
+  u51m6b: ['u51m6b', 1],          // mbed, 29.54 s, cue ~0.45: M6 Three O'Clock, layer 2 (from pressure 0.5; a loop)
+  u51m6c: ['u51m6c', 1],          // mbed, 31.15 s, cue ~0.45: M6 Three O'Clock, layer 3, the vice (from pressure 0.8; a loop)
+  u51m7circle: ['u51m7circle', 1],// music, 30.04 s, cue ~0.7: M7 The Circle: the barrier, from 26 s under the chant
+  u51m8dawnA: ['u51m8dawnA', 1],  // music, 45.04 s, cue ~0.7: M8 Dawn, ending A
+  u51m8dawnB: ['u51m8dawnB', 1],  // music, 45.04 s, cue ~0.7: M8 Dawn, ending B
+  u51m8dawnC: ['u51m8dawnC', 1],  // music, 45.04 s, cue ~0.7: M8 Dawn, ending C
+  u51m8dawnD: ['u51m8dawnD', 1],  // music, 45.04 s, cue ~0.7: M8 Dawn, ending D
+  u51moto: ['u51moto', 1],        // fx, 3.31 s, cue ~0.8: opening 0.4 s; its hit at 1.4 s
+  u51mynah: ['u51mynah', 1],      // copy, 4.00 s, cue ~0.8: dawn: mynas
+  u51palms: ['u51palms', 1],      // fx, 0.64 s, cue ~0.8: home 14.0 s; its hit at 0.38 s
+  u51paper: ['u51paper', 1],      // fx, 1.36 s, cue ~0.8: dawn: a paper bag; its hit at 0.27 s
+  u51phoneup: ['u51phoneup', 1],  // fx, 0.80 s, cue ~0.8: three o'clock: picking up the phone; its hit at 0.12 s
+  u51plate: ['u51plate', 1],      // fx, 1.00 s, cue ~0.8: keepsake 14.5 s; its hit at 0.04 s
+  u51pop: ['u51pop', 1],          // fx, 0.60 s, cue ~0.8: barrier 40.3 s; its hit at 0.05 s
+  u51pour: ['u51pour', 1],        // fx, 3.04 s, cue ~0.8: the room: the jug's pour (ASKED AGAIN: the first take refused, the transcriber wrote "Thank you."); its hit at 0.94 s
+  u51press: ['u51press', 1],      // fx, 4.04 s, cue ~0.8: home 46.0 s, cut at 49.5; three o'clock's first tone; its hit at 0.79 s
+  u51rewind: ['u51rewind', 1],    // fx, 2.88 s, cue ~0.8: dawn: the thread wound up; its hit at 0.72 s
+  u51ring: ['u51ring', 1],        // copy, 1.00 s, cue ~0.8: the endings: the call ringing (a Singapore ring)
+  u51setglass: ['u51setglass', 1],// fx, 0.80 s, cue ~0.8: home 12.5 s; its hit at 0.05 s
+  u51shoe: ['u51shoe', 1],        // copy, 0.60 s, cue ~0.8: a man's single step in leather shoes (the five-foot way, dealt in turn)
+  u51shower: ['u51shower', 1],    // copy, 16.00 s, cue ~0.8: home 24.0 s: the shower running (a loop)
+  u51showeroff: ['u51showeroff', 1],// copy, 4.00 s, cue ~0.8: home 28.0 s: the shower off
+  u51slam: ['u51slam', 1],        // fx, 1.52 s, cue ~0.8: ending D; its hit at 1.03 s
+  u51slide: ['u51slide', 1],      // fx, 2.48 s, cue ~0.8: ending D; its hit at 1.95 s
+  u51snap: ['u51snap', 1],        // fx, 1.28 s, cue ~0.8: cord 8.6 s (the snap: its crack near the end); its hit at 0.86 s
+  u51sofa: ['u51sofa', 1],        // fx, 1.36 s, cue ~0.8: opening 56.0 s; its hit at 0.43 s
+  u51spill: ['u51spill', 1],      // fx, 1.48 s, cue ~0.8: the breaking: a spill; its hit at 0.37 s
+  u51spool: ['u51spool', 1],      // copy, 2.48 s, cue ~0.8: barrier 6-12 s: the spool
+  u51stair: ['u51stair', 1],      // fx, 6.00 s, cue ~0.8: opening 24-34 s: the climb; its hit at 2.44 s
+  u51stand: ['u51stand', 1],      // fx, 1.83 s, cue ~0.8: the room: her standing, 40 s and 110 s; its hit at 0.54 s
+  u51strap: ['u51strap', 1],      // fx, 1.48 s, cue ~0.8: the room: her bag's strap, every 4-6 s; its hit at 0.2 s
+  u51swell: ['u51swell', 1],      // fx, 3.00 s, cue ~0.8: barrier 33.5 s; its hit at 0.87 s
+  u51tap: ['u51tap', 1],          // fx, 2.48 s, cue ~0.8: ending C; its hit at 0.37 s
+  u51taxiin: ['u51taxiin', 1],    // fx, 4.52 s, cue ~0.8: opening 13.0 s; its hit at 0.29 s
+  u51taxiout: ['u51taxiout', 1],  // fx, 3.43 s, cue ~0.8: opening 15.6 s; its hit at 0.58 s
+  u51threads: ['u51threads', 1],  // copy, 6.12 s, cue ~0.8: three o'clock: the threads in Spirit Vision (a loop)
+  u51ticklast: ['u51ticklast', 1],// fx, 0.48 s, cue ~0.8: barrier 41.5 s; its hit at 0.0 s
+  u51tile: ['u51tile', 1],        // copy, 0.60 s, cue ~0.8: a bare step on tile (his flat at night, dealt in turn)
+  u51tinnitus: ['u51tinnitus', 1],// loop, 5.62 s, cue ~0.7: three o'clock: tinnitus over pressure 0.6 (a loop)
+  u51tremor: ['u51tremor', 1],    // fx, 2.73 s, cue ~0.8: the breaking: each surge; its hit at 0.97 s
+  u51tube: ['u51tube', 1],        // copy, 2.00 s, cue ~0.8: opening 29.0 s: the tube flickers twice
+  u51unlock: ['u51unlock', 1],    // fx, 2.26 s, cue ~0.8: opening 36.5 s; its hit at 1.31 s
+  u51vice: ['u51vice', 1],        // fx, 4.00 s, cue ~0.8: barrier 37.0 s: the last surge; its hit at 1.81 s
+  u51visoff: ['u51visoff', 1],    // copy, 2.00 s, cue ~0.8: Spirit Vision closed
+  u51vison: ['u51vison', 1],      // copy, 2.00 s, cue ~0.8: Spirit Vision opened (the room, three o'clock, the barrier)
+  u51walk: ['u51walk', 1],        // fx, 4.04 s, cue ~0.8: opening 15.5-24 s: his steps on the five-foot way; its hit at 1.28 s
+  u51wave: ['u51wave', 1],        // fx, 3.88 s, cue ~0.8: three o'clock: each pressure wave; its hit at 1.24 s
+  u51wax: ['u51wax', 1],          // fx, 0.84 s, cue ~0.8: keepsake 35.0, 36.5, 38.0 s; its hit at 0.03 s
+  u51wburn: ['u51wburn', 1],      // fx, 1.48 s, cue ~0.8: ending D: the burn at the wrist; its hit at 0.2 s
+  u51whoosh: ['u51whoosh', 1],    // fx, 1.48 s, cue ~0.8: cord 8.7 s; its hit at 0.25 s
+  u51wick: ['u51wick', 1],        // copy, 1.00 s, cue ~0.8: the room: the candle catching from the lighter
+  u51wrist: ['u51wrist', 1],      // fx, 2.00 s, cue ~0.8: cord 9.0 s: it touches his wrist; its hit at 0.15 s
+  u51zip: ['u51zip', 1],          // copy, 1.76 s, cue ~0.8: keepsake 9.0 s (her bag); barrier 6-12 s (his bag)
+  /* E5C1 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

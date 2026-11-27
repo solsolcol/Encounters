@@ -916,8 +916,15 @@ ASSETS = {
     'w5shrub':      ('assets/w5shrub.glb', True, False),     # the ixora in its beds, 1.1 m
     # <<< e4c5 keys: the rows end <<<
     # >>> e5c1 keys: written by masters/v29.0/keys.py from its table (edit the table, not these rows) >>>
+    # e5c1 (people): people
+    'p51grace':     ('assets/p51grace.glb', True, False),     # Grace, the near body (40,759 triangles, Meshy's own remesh at 40,000 on her 66-joint rig, every finger), with every take she wears: Idle_3, Walking, Listening_Gesture (Mala's), wsit, rise (Amma's), palmover, Sitting_Answering_Questions (the seated hermit's), gsofa, gcry (written for her); 1.60 m, feet at 0, facing +z (people/RECORD.md)
+    'p51graceh':    ('assets/p51graceh.glb', True, False),     # Grace, her full body (every triangle the generator made), drawn within 2.2 m and in the films' close shots; no takes of its own: bound at run time to p51grace's bones by name (v26.5)
+    'p51marcus':    ('assets/p51marcus.glb', True, False),     # Marcus, the near body (41,415 triangles) on his MENDED rig (26 joints, no finger bones: each hand one rigid piece; people/rigmend-marcus.json), with Idle_3, Listening_Gesture, Stand_and_Chat, Talk_with_Hands_Open, kneelhold, Chair_Sit_Idle_M, Sitting_Answering_Questions, Walking, mknock; 1.72 m, feet at 0, facing +z
+    'p51marcush':   ('assets/p51marcush.glb', True, False),     # Marcus, his full body (every triangle), within 2.2 m and in close shots; bound at run time to p51marcus's bones by name
     # e5c1 (props): things
     'w51keepsake':  ('assets/w51keepsake.glb', True, False),     # the keepsake: a palm-sized packet of faded cloth tied with reddish cord (in Grace's bag; on the white plate)
+    'w51bag':       ('assets/w51bag.glb', True, False),     # Grace's taupe leather shoulder bag, its zip open
+    'w51bottle':    ('assets/w51bottle.glb', True, False),     # the small corked bottle of the water he held (Pho's gift; his altar)
     'w51threadreel':('assets/w51threadreel.glb', True, False),     # the spool of white thread: chapter 5's w5threadreel with its loose end laid along the ground (mend/threadmend.mjs, no credits; the old file untouched)
     # <<< e5c1 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
@@ -1093,7 +1100,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w5shrub',
            # <<< e4c5 keys <<<
            # >>> e5c1 keys (masters/v29.0/keys.py) >>>
-           'w51keepsake', 'w51threadreel',
+           'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
            # <<< e5c1 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
