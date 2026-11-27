@@ -1,0 +1,5 @@
+# (v29.0, 27 Nov 2026, Chad's R13: "Yes, keep it updated") tools/gitsave.sh brings every branch named here up to each
+# commit it saves, fast-forward only, so a NEW session (made from the repository's default branch, which is the first
+# one here) always starts from the latest work. Never delete a branch a session was made from (docs/LEARNINGS.md,
+# "A session is made FROM A BRANCH").
+claude/new-session-bampns
