@@ -430,6 +430,36 @@
    "glb": 62777444
   }
  },
+ "gardenlamp": {
+  "credits": 40,
+  "expires_at": 1795792030853,
+  "image": "masters/v28.0/props/refs/gardenlamp-a-1024.png",
+  "image_to_3d": "01a20e16-4715-76e1-979c-5e888ad25f9e",
+  "remesh": {
+   "2500": "01a20e1e-9d14-71aa-9d00-9178b361ba76"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 60000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 30506848
+  }
+ },
  "gate": {
   "credits": 40,
   "expires_at": 1795497748166,
@@ -937,6 +967,36 @@
    "glb": 99723424
   }
  },
+ "playground": {
+  "credits": 40,
+  "expires_at": 1795791530528,
+  "image": "masters/v28.0/props/refs/playground-b-1024.png",
+  "image_to_3d": "01a20e0c-719a-77e4-ae49-d1a90250777e",
+  "remesh": {
+   "50000": "01a20e12-51ab-738d-9c05-2b1078e1d8fd"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 120000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 52052096
+  }
+ },
  "praicome": {
   "credits": 40,
   "expires_at": 1795497862016,
@@ -981,6 +1041,17 @@
    "pre": 5956980
   },
   "takes": {
+   "acts": {
+    "actions": [
+     178,
+     179,
+     172,
+     123
+    ],
+    "credits": 12,
+    "size": 32840856,
+    "task": "01a20850-170e-7129-b37b-54aec883bee1"
+   },
    "lib": {
     "actions": [
      243
@@ -1035,6 +1106,17 @@
    "pre": 4385984
   },
   "takes": {
+   "acts": {
+    "actions": [
+     178,
+     179,
+     172,
+     123
+    ],
+    "credits": 12,
+    "size": 31249356,
+    "task": "01a20850-1729-723a-a301-9888e24f47cc"
+   },
    "lib": {
     "actions": [
      243
@@ -1089,6 +1171,17 @@
    "pre": 6234228
   },
   "takes": {
+   "acts": {
+    "actions": [
+     178,
+     179,
+     172,
+     123
+    ],
+    "credits": 12,
+    "size": 33442016,
+    "task": "01a20850-17de-75f7-abac-2d448d01c90c"
+   },
    "lib": {
     "actions": [
      243
@@ -1187,6 +1280,43 @@
   },
   "sizes": {
    "glb": 69824984
+  }
+ },
+ "shrub": {
+  "hunyuan3d": {
+   "credits": 15,
+   "face_count": 40000,
+   "file": "original-shrub.glb (40,000 triangles, one 4096 PNG sheet)",
+   "image": "masters/v28.0/props/refs/shrub-c-1024.jpg",
+   "job": "cf0ca79c-c200-4ad6-a28c-3ed19a83b850",
+   "model": "hunyuan3d_v3_image_to_3d (Higgsfield)"
+  },
+  "image": "masters/v28.0/props/refs/shrub-c-1024.jpg",
+  "image_to_3d": null,
+  "meshy_refused": {
+   "image_to_3d": "01a20e2e-b4d1-708d-b94b-b2b64c486a6f",
+   "why": "image_too_complex (and invalid_input on six earlier pictures): Meshy would not make the ixora"
+  },
+  "remesh": {
+   "3000": "01a20e39-6f0b-70d7-b82e-923b154f7349"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 60000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
   }
  },
  "sideboard": {

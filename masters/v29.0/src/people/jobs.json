@@ -1,0 +1,304 @@
+{
+ "_motions": {
+  "gcry": {
+   "credits": 10,
+   "duration": 10.0,
+   "expires_at": 1796013082625,
+   "prompt": "A young woman sitting on a sofa lets out a long slow breath, her shoulders dropping, then she bows her head and covers her face with both hands, crying quietly, her shoulders shaking gently, and stays like that.",
+   "size": 16931856,
+   "task": "01a21b45-804a-7581-83c4-c7b31364d7fa"
+  },
+  "gsofa": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1796013087303,
+   "prompt": "A tired young woman sits on a low sofa, restless, her hands in her lap twisting the strap of a small shoulder bag round her fingers, her knee bouncing a little; she glances toward a door on her left and back again, shifts her weight, then is still for a moment.",
+   "size": 16954704,
+   "task": "01a21b45-8035-75a3-b710-bbe6a8c4f361"
+  },
+  "kept": {
+   "ERROR": "NOT A MOTION: sent by my own parsing slip (a line of MOTIONS.txt's header read as a row), 27 Nov 2026; its prompt is header text. 10 credits lost; never laid on a rig, never used.",
+   "duration": 3.0,
+   "prompt": "laid on a rig for 3 credits). Each prompt under 400 characters. A clip is judged on the body that wears it,",
+   "task": "01a21b45-8195-733f-bd6b-73fd5a230efc"
+  },
+  "mknock": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1796013078070,
+   "prompt": "A man standing in front of a closed door raises his right hand and knocks twice on the door with his knuckles, then lowers his hand to his side and waits, standing still.",
+   "size": 16825904,
+   "task": "01a21b45-80e1-7056-a6cf-76fbd90fc14c"
+  }
+ },
+ "grace": {
+  "STOPPED": "second throw stopped at the rig (27 Nov 2026): both rigs came back with 36 joints and no finger bones (r1 01a21b8f-260a-7316-9162-bccff4a66c5a, kept as rigged-grace-r1nofingers.glb; r2 = rig, rigged-grace.glb); the coordinator: one re-rig only, then to Chad. Remesh 40000 done and laid (body-grace-40000.glb, 36 joints); no clip laid, no prep, assets untouched",
+  "credits": 40,
+  "expires_at": 1796017859725,
+  "image": "masters/v29.0/src/people/refs/grace-a2-2k.png",
+  "image_to_3d": "01a21b89-9759-728a-9143-1ac174c9c389",
+  "remesh": {
+   "40000": "01a21b92-03d1-76a6-a828-50f46a76d840"
+  },
+  "rig": "01a21b92-7b06-746c-a47b-3cc287963770",
+  "rig_credits": 5,
+  "rig_r1_nofingers": {
+   "credits": 5,
+   "joints": 36,
+   "rig": "01a21b8f-260a-7316-9162-bccff4a66c5a",
+   "why": "came back with no finger bones (a middle chain each hand and a stray bone) though include_fingers was asked; re-rigged once at the coordinator's word (option A); file src/people/rigged-grace-r1nofingers.glb"
+  },
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a21b89-9759-728a-9143-1ac174c9c389",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72979460,
+   "walk": 73106144
+  },
+  "second_throw": "R5, 27 Nov 2026",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68480152,
+   "pre": 14042628
+  }
+ },
+ "grace_first": {
+  "NOTE": "the FIRST throw (27 Nov 2026), set aside when Grace was made again at Meshy at Chad's R5 (\"Just use meshy\"); its files are src/people/first/first-*",
+  "credits": 40,
+  "expires_at": 1796013125447,
+  "image": "masters/v29.0/src/people/refs/grace-a-2k.png",
+  "image_to_3d": "01a21b41-9f9c-741d-95c7-2efb1f87b269",
+  "remesh": {
+   "40000": "01a21b4a-20a8-7790-99be-b48788fc825f"
+  },
+  "rig": "01a21b46-ee2e-75d2-9e10-bf6fa8c4df05",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a21b41-9f9c-741d-95c7-2efb1f87b269",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 73107044,
+   "walk": 73348696
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 66828572,
+   "pre": 17564484
+  },
+  "takes": {
+   "gcry": {
+    "credits": 3,
+    "motion": "01a21b45-804a-7581-83c4-c7b31364d7fa",
+    "size": 74536436,
+    "task": "01a21b4a-7df3-775d-861e-ed75020eff75"
+   },
+   "gsofa": {
+    "credits": 3,
+    "motion": "01a21b45-8035-75a3-b710-bbe6a8c4f361",
+    "size": 74270632,
+    "task": "01a21b4a-7f17-7336-bcf9-f063e8033321"
+   }
+  }
+ },
+ "marcus": {
+  "credits": 40,
+  "expires_at": 1796026107559,
+  "image": "masters/v29.0/src/people/refs/marcus-a3-2k.png",
+  "image_to_3d": "01a21c08-6b2e-7257-b56a-50e81896ece9",
+  "remesh": {
+   "40000": "01a21c0f-1b28-779d-8707-d64a37294b2d"
+  },
+  "rig": "01a21c0c-b706-7709-9104-fdaf57e51a6f",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21c08-6b2e-7257-b56a-50e81896ece9",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 50369688,
+   "walk": 50617440
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 46584312,
+   "pre": 9127380
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 51017628,
+    "task": "01a21c0f-22ec-7656-bb08-17fe06c5c070"
+   }
+  }
+ },
+ "marcus_first": {
+  "NOTE": "the FIRST throw (27 Nov 2026), set aside when Marcus was made again at Meshy at Chad's R5/R6; its files are src/people/first/first-*",
+  "credits": 40,
+  "expires_at": 1796013109190,
+  "image": "masters/v29.0/src/people/refs/marcus-a-2k.png",
+  "image_to_3d": "01a21b41-aa59-70ea-8027-fd7e692f4a45",
+  "remesh": {
+   "40000": "01a21b4f-062a-75d0-8076-dcaa83088d0b"
+  },
+  "rig": "01a21b46-ee2e-71e3-a7cb-fc5484eeecc8",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21b41-aa59-70ea-8027-fd7e692f4a45",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 45421288,
+   "walk": 45573744
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 41730720,
+   "pre": 8977428
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 45816776,
+    "task": "01a21b4a-7de7-7687-957d-e7d9664894db"
+   }
+  }
+ },
+ "marcus_second": {
+  "NOTE": "the SECOND throw (27 Nov 2026, R5/R6), set aside when Marcus was made a third time without glasses at Chad's R7; its files are src/people/second/second-*",
+  "credits": 40,
+  "expires_at": 1796018018264,
+  "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
+  "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
+  "remesh": {
+   "40000": "01a21b95-7114-7397-b15b-7c0acf4379c7"
+  },
+  "rig": "01a21b92-0378-71b7-a898-6fee5002dfd3",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21b8c-b892-7308-a894-f062cec450b6",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 54184400,
+   "walk": 54434776
+  },
+  "second_throw": "R5/R6, 27 Nov 2026",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50378100,
+   "pre": 9173604
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 54840088,
+    "task": "01a21b95-71d2-72cc-ae87-029d943aba82"
+   }
+  }
+ }
+}

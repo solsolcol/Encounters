@@ -1455,7 +1455,7 @@ f889497ef3c8a52048c2bbbcff961c886206f21cde442b5d91e403dd086282e1  masters/v28.0/
 39826baef75303c72e48302ca03b47af9e585efccc864583636d229e0dbc02b2  masters/v28.0/src/cast-c3-model.log
 b0f30bc4543500602ad8584bf1f65d2b56bc5070bd16c5b526b5ce43d8fdc560  masters/v28.0/src/collector-people.log
 15fb2e00ae3cb295284ee104deff240e3dbf8abd7433c1a89cfdf2c5de58a8b0  masters/v28.0/src/collector-rig.log
-1a9a36123acee40560ad1fa6de5c14642015dcdc6752d5800160533f6fa81163  masters/v28.0/src/jobs.json
+b5447bd00eab812a8a885fa57c494eec12d49edc12b8752144764f154993ed52  masters/v28.0/src/jobs.json
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v28.0/src/jobs.json.lock
 6f142bb65e5031d69a2cad6167aa6f8a12254de8136c5fce3cfa70dcaa4429ed  masters/v28.0/src/jun-bodies.log
 a5cb97bc3d56db77d8f9746648aa45f7bdb19d52a0a2f14e0af7232208cf8ce9  masters/v28.0/src/jun-people.log
@@ -1485,6 +1485,7 @@ ec7cdd944a6589962e554373e6aa2b4386a20b94c0f4ed06d0f2765cef1b17a4  masters/v28.0/
 3d33e4fa627866e286bc3c712ff2028fa2e68daff1ade19827c48c481ae50f3b  masters/v28.0/src/original-floorlamp.glb
 35e9452c08bd138bf8ddbdd3e902c8973f473dd3967d94002cd8cbef6bbb0d05  masters/v28.0/src/original-frame.glb
 771c88887967be9e89e42da3c651ccaad8bd81c14bbe5db73a820e1475bc65f1  masters/v28.0/src/original-frontdoor.glb
+dbbd30b0754284ead914f35ed6778512fe19c174038c2d37be349b78ec17c8ba  masters/v28.0/src/original-gardenlamp.glb
 c964c76c13116033e19a6db16055e10f605f062e7f23ba53f4d8264e6614ef94  masters/v28.0/src/original-gate.glb
 f97cbc085517e6ec319ce0f3e2c48fbd22bca7e9076cfd6108ea95ce0c0cbf47  masters/v28.0/src/original-gatepost.glb
 1bf598bb9b21ed0c9978a3237a6de391351a520052aa0690eaee4165b3119280  masters/v28.0/src/original-grating.glb
@@ -1500,12 +1501,14 @@ a7425f4b02fc51996fba5b0b0a8e51f91fe050a8924b8989717d89cb5d00f526  masters/v28.0/
 0bbb770e254790360d0eaae51d0347eab11a51bec7616710183a6cc3775c7113  masters/v28.0/src/original-pendant.glb
 23bd33fa63a8a512ba4dc111f6d9b8eced8cde02e7d3448571a5d761fac9ed57  masters/v28.0/src/original-planter.glb
 0c40464d5c320445de767df23e9bf7c0a8ef3906c0ee8b6a2bc078a7f76ee8c6  masters/v28.0/src/original-planter2.glb
+151eeba1374024c94c79df9c0c5c8750d1823425ca7cbb95db0e9ff8c0ee9aca  masters/v28.0/src/original-playground.glb
 03dbc9d293d5bd3647212486e77859a5f37a6bdf1daf89fdac6453bf1afe4d63  masters/v28.0/src/original-praicome.glb
 27c6021119ddc5fe2ce0098a787e0419b1be0a0a44b2014d8da26b87c3f00e18  masters/v28.0/src/original-praiheavy.glb
 7b402ac1e99a6cae59016267f54a5e5f7920b2d3a3039003b1bf55652cc6b358  masters/v28.0/src/original-praihide.glb
 90b6b1d2a526fbfa50582500df76c74556c75f0e1d613c8d78199dd8c841363b  masters/v28.0/src/original-rail.glb
 ae7ad1abf54e5f52a294b8cf2e73920d8b1208323b5e27bb523479b395475184  masters/v28.0/src/original-rakyom.glb
 cc29e8b498d8abf2d7ab4099cf781682efaec7f5d4e35f161be56f3016faabef  masters/v28.0/src/original-shoecab.glb
+a61937fb4d9bf1b237855731b461f1b3cf229e7d964a6b599302ab7ec6958d7f  masters/v28.0/src/original-shrub.glb
 a8df9f91dd86e25dbfe70f2fa78ec12e7f6680f3f57efcf25c7a180b84448b98  masters/v28.0/src/original-sideboard.glb
 bef3583cb3df9ce6cc35f99342142a61cf7e9e6359eaee203322d6cf20939bef  masters/v28.0/src/original-slippers.glb
 1701d885a6e6e8adc5eded953532d06ffc10d39484cfbf65e1bd4f170a0f3a65  masters/v28.0/src/original-sofa.glb
@@ -1542,6 +1545,9 @@ f1bea9e8f3d253026f85b127676480816759b8483577d820d0e7ec44a49521be  masters/v28.0/
 1047915f3740de26778949faaedc209be48304d15a2b981f188b46b137c95672  masters/v28.0/src/preremesh-zavier.glb
 553953a9a668b520f8155d2d51fb88264a2b41881f476abd9eb69752bbd18961  masters/v28.0/src/preremesh-zavier4.glb
 dc5e6c3c312eb9a418b8055a8a77162acc84c9bbc3b2feaa3932d8a88d59be66  masters/v28.0/src/props.log
+f21b602d0396d6a201e3d484d902436bffedd02a180bd2fa215972637f8e7f9c  masters/v28.0/src/remeshed-gardenlamp-2500.glb
+d567bc33190c57ba049dc27d7c5b64a7b396d8215eebf632853b0ecdcecb62dc  masters/v28.0/src/remeshed-playground-50000.glb
+9d3601c1a660fa6de345491a9b241ec541561276ae4e7b06bf820d2536ee36a3  masters/v28.0/src/remeshed-shrub-3000.glb
 04addce429c1b21364bd2dcca0b16e18e557ca72292e354c9ba9ac592dd097d6  masters/v28.0/src/rigged-collector.glb
 7d41a04399b2857a26275fe69acc7b7763e9f9ebc1184a2fa2dd3454e33d7ba5  masters/v28.0/src/rigged-jun.glb
 44314ee9b09280966b5d1dac8e32051a5a29b93a2f17813910df116732d42289  masters/v28.0/src/rigged-koh.glb
@@ -1781,3 +1787,15 @@ f1be85bc9ee806e3c8ad275dad538abf288edbf17fac6452b8e1508ce65dd5be  masters/v28.0/
 96cae4e9cc80448788b8cf65d2d4e638425e84f363d9ce2d72207c9500359774  masters/v28.0/src/zavier4-model.log
 7dde78813452d2248f8a45cdc2c119f6cab9cea1b3875531681352af2fb15218  masters/v28.0/src/zavier4-people.log
 f61599e3f3356c4326fe6cc81bd1effe6743649da0d314992bacfec325804ec7  masters/v28.0/src/zavier4-rig.log
+05bf8b8649197c68020fff0386ac623030fbf90de59cf46306ee17cf41757485  masters/v29.0/src/RESTORED.txt
+7047a445b6d941b41ac539b2f7dc5d0bc0cb78a0a07e5d08fed40ed89a069d86  masters/v29.0/src/people/jobs.json
+d878024fa7adc0e5abd2b0f4cc5bf1762a9b990fb8aa61f94a4d3ebd35efb395  masters/v29.0/src/people/motion-gcry.fbx
+92e1d45fb82d1fb6a0c5a3c193fd755a751a022a391a9c763838248300ef5b12  masters/v29.0/src/people/motion-gsofa.fbx
+4b6d49ab540f5d814f51e60d2063ac06a2507467f2f767d7dd845948967d6cb4  masters/v29.0/src/people/motion-kept.fbx
+1c0bca75848f1f5f71a70a465147e8006b1264e9739b4d6b6dc9a7c4054dbe48  masters/v29.0/src/people/motion-mknock.fbx
+d883c6b3a9ad71737fbbcc5b8408b1c2dfcdcdb6f1dc36644bdd60ff114761b9  masters/v29.0/src/people/original-grace.glb
+2cee3e68cfb6eae583fc3e81c2b2bfba244de04084c2826353b06d8aeb584b8a  masters/v29.0/src/people/original-marcus.glb
+01a1d4be2c76fe399c308d63a6ae140590e7c9ba7a10ca1919370120fe308c14  masters/v29.0/src/people/preremesh-grace.glb
+802425bec6a232343ebe62b4691fd43eee376fd28d9f84892bd06b1beb1125ff  masters/v29.0/src/people/preremesh-marcus.glb
+e0bdb58ead674c98463865ccdd20034904b95cbb68642d4ca6d8114fcf421449  masters/v29.0/src/people/remeshed-grace-40000.glb
+e4b97cc07a98d2534a90db3430b9fd406dcf18820892d34fbcfead57d0f36ec2  masters/v29.0/src/people/remeshed-marcus-40000.glb
