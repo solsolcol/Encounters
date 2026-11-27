@@ -1901,3 +1901,13 @@ c5b25ebd9d0f77ea84e2e9b98d465cae98cbbbdebfca733ed6800769d45949a7  masters/v29.0/
 7c163e565d3a0b5a65a50dc580211c327802971e59422b3c94784093cf43b073  masters/v29.0/src/props/original-histable.glb
 a01856873e5fe358cf04209685f64f94a8a9ddb78ed5e1cfbe849ff78198a88f  masters/v29.0/src/props/original-incense.glb
 6c3963eed6a490703af6b15c15507cfb58c5fc556b72d9b22203bd4429a25865  masters/v29.0/src/props/original-jasmine.glb
+ece146ca1c1097f6e7991aeb0fac38e2865cd67aa85a7ccf04379dfb00fa7e90  masters/v29.0/src/props/original-keepsake.glb
+05125fe8d3e4e224fe081fd00553ddcf9f3d115831a3fb88c854eece9d184709  masters/v29.0/src/props/original-kettle.glb
+769dcff2c2967abbcb1c302707ac605a1fc2577914d084c4d0275d749440eff7  masters/v29.0/src/props/original-keycard.glb
+996f23f5d8906b3159099100b4b0e7cdd0a76283b08b275bb03652cbaacc4150  masters/v29.0/src/props/original-laptop.glb
+f94c0e9a9da472fc218bbb09a7150fb1bdf6c1b28eb7ea0a8300afdab18ff7c2  masters/v29.0/src/props/original-phobag.glb
+22167dbf89c47e3c76278d9527bc30519559c79230f2a8fe851482623728ee66  masters/v29.0/src/props/original-pills.glb
+d9408ecbfb4a4494deea91ca0fd046654b556dcd28888e85ac0a66630da868da  masters/v29.0/src/props/original-rattanchair.glb
+edbeefe9bbe2e987ce00077678b39986d3dcf7e5e8f55653eb1a2603428cf252  masters/v29.0/src/props/original-ritualset.glb
+2a51407c378b120ff578cc79a3e16c1dd516ae65ee122b98404d44aaeb8c6c42  masters/v29.0/src/props/original-shoulderbag.glb
+8de1d46f31c530962fb8a36085097759d43e6f6de68c38409e58c2d2a1d0c1aa  masters/v29.0/src/props/original-takeaway.glb
