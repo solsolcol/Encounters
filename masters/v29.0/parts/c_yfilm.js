@@ -814,7 +814,7 @@
         f1Levels();
       },
       end() { f1Lens(PLAYFOV1); F1.beds = null; F1.film = ''; knotGlow1.m.opacity = 0; knotGlow1.q.visible = false;
-        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; waxMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); F1.api = null; }
+        f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; waxMat1.opacity = 0; f1LeanBack(cast.pho); f1LeanBack(cast.grace); f1LeanBack(cast.marcus); F1.api = null; }
     };
     function keepPho1(t, T) {
       const P = cast.pho; if (!P || !P.ready) return;
@@ -852,8 +852,11 @@
       const P = cast.marcus; if (!P || !P.ready) return;
       /* (he came to stand behind her as his teacher held out his hand: the film's first frame is a cut, and he stands there
          from it, behind the sofa at her right shoulder; his left hand on her shoulder from 7 to 13 s) */
+      f1LeanBack(P);
       const M = KEEP1.mkStand; put(P, M.x, M.z, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
       const on = f1Env(t, T.bag + 0.4, T.give + 1.4, 0.8, 0.8);
+      /* (her shoulder is 0.8 m from his across the sofa's back: he leans over it to lay his hand there, as a person does) */
+      f1Lean(P, 0.28 * on);
       if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightShoulder') || f1Bone(g, 'RightArm')) : null;
         if (sh) { g.group.updateWorldMatrix(true, true); sh.getWorldPosition(_f1A); handTo(P, 'L', [_f1A.x - 0.03, _f1A.y + 0.07, _f1A.z - 0.02], [0.2, -0.45, 0.85], [0, -1, 0], on, { out: 0.18, down: 0.32 }); } }
       f1Gaze(P, t, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.give + 0.2, [0.46, 0.6, 0.86], 0.6], [T.turn + 0.5, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
