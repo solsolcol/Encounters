@@ -414,12 +414,15 @@
       const RISE = (G.acts.rise && G.acts.rise.getClip().duration) || 4.97;
       after(0.9, () => { if (!live(run)) return; sfx5('u51stand', 0.55, panTo(HER.grace.x, HER.grace.z)); pullFor(9);
         gaze(G, [HER.door.x, 1.2, HER.door.z], { secs: 1.0, reach: 0.85 });
-        span(G, 'rise', 0, RISE - 0.05, 2.4, { hold: 0, fade: 0.35 }); });
+        span(G, 'rise', 0, RISE - 0.05, 2.0, { hold: 0, fade: 0.35 }); });
       after(2.6, () => { if (!live(run)) return;
         say(n ? 'gr51r3' : 'gr51r2'); say('mk51r2'); say('ph51r5');
         andThen(() => { grace5.reflWant = 0; gaze(G, null, { secs: 1.0 });
-          span(G, 'rise', RISE - 0.05, 0, 2.4, { fade: 0.3, then: (P) => { if (P === cast.grace) { rest(P, 0.5); } } });
-          after(2.6, () => { if (!live(run)) return; grace5.up = false; play.busy = false; sfx5('u51sofa', 0.4, panTo(HER.grace.x, HER.grace.z)); objectiveFor({ complete: false }); }); }); });
+          sfx5('u51sofa', 0.4, panTo(HER.grace.x, HER.grace.z));
+          /* (she is back on her seat when the take says so: the span runs on the wall clock, the chapter's clock is another,
+             and on a slow phone the two part: the room is given back by the take's own end) */
+          span(G, 'rise', RISE - 0.05, 0, 2.0, { fade: 0.3, then: (P) => { if (P !== cast.grace) return; rest(P, 0.5);
+            if (!live(run)) return; grace5.up = false; play.busy = false; objectiveFor({ complete: false }); } }); }); });
     }
     /* her reflection, a beat ahead of her: the hook WORLD gives (WORLD.reflect.set 'grace' { face }: the turn her mirrored
        body faces in the room), eased on the wall clock */
