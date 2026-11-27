@@ -10,7 +10,11 @@ Q=/tmp/encounters-browser-queue
 mkdir -p "$Q"
 exec 6>"$Q/.lock"
 flock 6; n=$(cat "$Q/.next" 2>/dev/null || echo 0); echo $((n + 1)) > "$Q/.next"; flock -u 6
-t=$(printf '%09d' "$n"); echo $$ > "$Q/$t"
+t=$(printf '%09d' "$n")
+# (v29.0: ENC_SLOT_FIRST=1, the coordinator's only, for one of Chad's own asks in progress: the ticket goes ahead of every
+# numbered one, still behind any probe already running; never for a helper's own work)
+[ "$ENC_SLOT_FIRST" = 1 ] && t="000000000-$$"
+echo $$ > "$Q/$t"
 trap 'rm -f "$Q/$t"' EXIT
 trap 'rm -f "$Q/$t"; exit 130' INT TERM
 while :; do
