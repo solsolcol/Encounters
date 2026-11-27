@@ -1,0 +1,43 @@
+v29.0 · the people of episode 5 chapter 1: the SECOND THROW's reference pictures (helper CAST-2, 27 Nov 2026; Chad's R5,
+"Just use meshy"). Each prompt is people/PROMPTS.txt's first prompt word for word EXCEPT where the first throw failed
+(people/RECORD.md §5), so the generator is not asked for what it cannot make: those changes are marked below.
+Higgsfield, model gpt_image_2_6, quality xhigh, resolution 2k, aspect 2:3, no image reference (3.5 credits each, quoted
+by estimate_image_cost before the spend). Both people are MADE UP. Pictures on the working machine only.
+
+grace   CHANGED: the hair (the "messy low bun" came back as shredded ribbons), the nose (raw red nostrils), the mouth (pursed,
+        sulky): asked for a smooth neat low bun with no loose strands and a matte finish, even skin round the nose, and a
+        relaxed, softly closed mouth (still tired eyes).
+  Photorealistic full-body studio photograph of a Singaporean Chinese woman of about twenty-eight, slim, of average
+  height, an oval face with tired eyes and faint dark circles under them, no make-up, natural even skin tone round the
+  nose, black hair pulled back smoothly into a neat low bun at the nape, close to the head, with no loose strands and no
+  flyaway hair, a soft matte finish to the hair, standing upright in an A-pose: both arms straight and held about 35
+  degrees away from the body, both hands open with the palms turned to face the camera and all five fingers of each hand
+  spread wide apart, a clear gap of white background visible between every two fingers, feet shoulder-width apart,
+  facing the camera straight on, head level, looking at the camera, in plain black flat shoes. She wears a plain pale
+  blue long-sleeved button-front office blouse, a day old and a little creased, tucked into plain charcoal grey straight
+  office slacks to the ankle, and over it a thin plain oatmeal knit cardigan, open, fitting close to the body, its
+  sleeves to the wrists, its two front edges hanging straight down and ending at the hip. There is clear empty white
+  space between each arm and her sides; nothing hangs between an arm and the body. Her hands are empty. The whole
+  figure is in frame from the top of the head to the toes with a clear margin all round. Even soft studio lighting
+  from the front, no cast shadow, pure white seamless background. Sharp focus, a tired, worn neutral expression, a
+  relaxed, softly closed mouth, natural skin texture, realistic cloth folds. No wristwatch, no jewellery, no bag, no
+  lanyard, no text, no logo, no watermark, no props.
+
+marcus  CHANGED: the glasses ("thin plain black rectangular glasses" came back thick, pale beige and fused, a white streak on a
+        lens), the eyes (a little up), the cheeks and lips (puffed), and the hands held exactly as Grace's (his first rig
+        came back with no finger bones; his reference had the elbows a little bent): asked for solid matte black frames of
+        medium thickness, clear lenses with no glare, eyes straight into the camera, relaxed cheeks and mouth, arms straight.
+  Photorealistic full-body studio photograph of a Singaporean Chinese man of about thirty-two, of average build and
+  height, a kind, earnest face, clean-shaven, short neat black hair, wearing glasses with solid matte black rectangular
+  frames of medium thickness, clearly black against the skin, with clear lenses showing no reflection or glare, the
+  glasses sitting on the nose, his eyes looking straight into the camera, head level, relaxed cheeks and a relaxed closed
+  mouth, standing upright in an A-pose: both arms perfectly straight at the elbows and held about 35 degrees away from
+  the body, both hands open with the palms turned to face the camera and all five fingers of each hand spread wide
+  apart, a clear gap of white background visible between every two fingers, feet shoulder-width apart, facing the
+  camera straight on, in plain black leather office shoes. He wears a plain light grey long-sleeved cotton office shirt
+  with a plain collar, the top button open, no tie, the sleeves rolled up once at the wrists, tucked into plain dark navy
+  straight office trousers with a plain black belt. There is clear empty white space between each arm and his sides;
+  nothing hangs between an arm and the body. His hands are empty. The whole figure is in frame from the top of the head
+  to the toes with a clear margin all round. Even soft studio lighting from the front, no cast shadow, pure white
+  seamless background. Sharp focus, a calm, slightly worried neutral expression, natural skin texture, realistic cloth
+  folds. No wristwatch, no jewellery, no bag, no lanyard, no text, no logo, no watermark, no props.
