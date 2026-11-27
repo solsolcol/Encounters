@@ -168,6 +168,43 @@ for (const k of ENDS) {
         }
         fs.writeFileSync(`${OUT}/bodies-end${k}.json`, JSON.stringify(out, null, 1));
       }
+      /* CLIPS='2' (MODE=pics; R15, "Also check for all kinds of clipping"): every CLIPS s of the ending from CFROM to CUNTIL
+         and at every CLIPAT moment ('t1,t2,...': the touches), the film sought there and measured three ways: clipscan's own
+         measure (its ANALYSE, read from clipscan.mjs) over the world within R m of the lens; the limbs' own check
+         (tools/probes/limbclip.js: a standing body's limb in a solid or in another body); and clipscan's measure over the
+         HANDS' scene (stage.films.ends2.vm(): his arms and what he holds, the phone, the strip of pills, the spool, the rings,
+         the cushion), its cells 2 cm and nothing left out for being flat. Every moment gets a row, pairs or none, written to
+         <OUT>/clips-end<K>.json; a line a moment is printed */
+      if (process.env.CLIPS || process.env.CLIPAT) {
+        const rd2 = (f, a, b) => { const s = fs.readFileSync(new URL('./' + f, import.meta.url), 'utf8'), i0 = s.indexOf(a), i1 = s.indexOf(b, i0); return (0, eval)('(' + s.slice(i0 + a.length, i1 + 2) + ')'); };
+        const CA2 = rd2('clipscan.mjs', 'const ANALYSE = ', '\n};\n');
+        await p.evaluate(fs.readFileSync(new URL('./limbclip.js', import.meta.url), 'utf8'));
+        const step = +(process.env.CLIPS || 0), c0 = +(process.env.CFROM || 0), c1 = Math.min(dur - 0.05, +(process.env.CUNTIL || 1e9));
+        const ts = new Set((process.env.CLIPAT || '').split(',').filter(Boolean).map(Number).filter(t => t >= 0 && t < dur - 0.05));
+        if (step > 0) for (let t = c0; t <= c1 + 1e-6; t += step) ts.add(+t.toFixed(2));
+        const out = [];
+        for (const t of [...ts].sort((a, b) => a - b)) {
+          await passCircle(t, null); await seekTo(t); await seekTo(t);
+          await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+          const c = await p.evaluate(() => { const E = window.__enc, v = E.camera.position.clone(); E.camera.getWorldPosition(v); return [v.x, v.z]; });
+          const W = await p.evaluate(CA2, [0.1, +(process.env.R || 4), 0.05, c[0], c[1]]).catch(e => ({ err: String(e).slice(0, 200) }));
+          const L = await p.evaluate(() => { try { return window.__limbs(); } catch (e) { return { err: String(e).slice(0, 200) }; } });
+          const H = await p.evaluate((CAsrc) => {
+            const E = window.__enc, vm = E.stage.films.ends2.vm && E.stage.films.ends2.vm(); if (!vm) return { err: 'no hands scene' };
+            const CA = (0, eval)('(' + CAsrc + ')'), save = window.__enc, F = E.stage.films.ends2;
+            /* (his arms and each thing in his hands named as a thing of its own: else the whole hands' rig is one object) */
+            if (F.vmParts) F.vmParts(true);
+            window.__enc = Object.assign(Object.create(save), { scene: vm });
+            try { return CA([0.02, 1.5, -1, 0, 0]); } catch (e) { return { err: String(e).slice(0, 200) }; } finally { window.__enc = save; if (F.vmParts) F.vmParts(false); }
+          }, CA2.toString()).catch(e => ({ err: String(e).slice(0, 200) }));
+          const shot = await p.evaluate(() => window.__enc.stage.films.ends2.state().shot);
+          const top = (X) => X && X.pairs ? X.pairs.slice(0, 12) : X;
+          out.push({ t, shot, world: top(W), limbs: L, hands: top(H) });
+          const brief = (X) => X && X.pairs ? X.pairs.length + (X.pairs.length ? ' (' + X.pairs.slice(0, 3).map(q => q.hits + ' ' + String(q.a && q.a.label).slice(0, 28) + ' x ' + String(q.b && q.b.label).slice(0, 28)).join('; ') + ')' : '') : JSON.stringify(X).slice(0, 100);
+          log(k, 'clips at', t, shot, '| world:', brief(W), '| limbs:', Array.isArray(L) ? L.length : JSON.stringify(L).slice(0, 80), '| hands:', brief(H));
+        }
+        fs.writeFileSync(`${OUT}/clips-end${k}.json`, JSON.stringify(out, null, 1));
+      }
       /* TUNE='[["name", t, "js"], ...]' (MODE=pics): each try's snippet run in the page with T the films' tuning handle
          (stage.films.ends2.tune), the film sought to t (twice: the second lays what the first changed), photographed (a try
          named read-... is only read: T.read's answer printed, no picture) */

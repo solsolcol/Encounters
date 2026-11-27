@@ -1173,6 +1173,15 @@
       marks: () => F2.E,
       tune: F2TUNE,
       tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wrist: F2W.fit }; },
+      /* (a probe's handle on the hands' own scene, where his arms and what he holds are drawn: clipscan's measure is run on it
+         for the held things against his hands) */
+      vm: () => (F2.api && F2.api.handsRoot ? F2.api.handsRoot.parent : null),
+      /* (and its parts named as things of their own for that measure: both arms, what he holds, the rings and the cushion;
+         `on` false takes the names back) */
+      vmParts: (on) => { const A = F2.api, L = A && A.buildPrayerArm ? A.buildPrayerArm() : null, list = [A && A.armR, L, F2M.phone, f2Pills, f2SpoolHand, f2Cushion,
+        F2W.band, F2W.band2, F2W.mark, F2W.thread, F2W.thread2, F2W.knot && F2W.knot.K].filter(Boolean);
+        for (const o of list) { if (on) { o.userData.__f2was = o.userData.model; o.userData.model = true; } else { o.userData.model = o.userData.__f2was; delete o.userData.__f2was; } }
+        return list.length; },
       /* (a probe's reading of his teacher's fingers at the tie: how many joints the curl found on each hand and how far each
          first joint is bent from the hand's own line, degrees) */
       curl: () => { const P = FILMSAPI.phoStand, As = P && P.ready ? armsOf(P) : null, o = { arms: !!As }; if (!As) return o;
