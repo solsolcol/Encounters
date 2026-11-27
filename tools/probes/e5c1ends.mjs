@@ -142,6 +142,29 @@ for (const k of ENDS) {
         await passCircle(t, (nm) => shoot(nm));
         await seekTo(t); await shoot(String(t.toFixed(2)).padStart(6, '0'));
       }
+      /* BODIES='t1,t2,...' (MODE=pics): at each moment, every shown body MEASURED with the probes' own measures, read from their
+         files so they never differ: jointscan's (every joint against a real body's ranges; WHO a regex, 'pho|grace|marcus'
+         unless said), feetscan's (each foot against the floor under it, the near skin: LV 1), clipscan's (the pairs whose
+         surfaces cross, R m round the lens). Written to <OUT>/bodies-end<K>.json and the flags printed */
+      if (process.env.BODIES) {
+        const rd = (f, a, b) => { const s = fs.readFileSync(new URL('./' + f, import.meta.url), 'utf8'), i0 = s.indexOf(a), i1 = s.indexOf(b, i0); return (0, eval)('(' + s.slice(i0 + a.length, i1 + 2) + ')'); };
+        const JM = rd('jointscan.mjs', 'const MEASURE = ', '\n};\n'), FM = rd('feetscan.mjs', 'const MEASURE = ', '\n};\n'), CA = rd('clipscan.mjs', 'const ANALYSE = ', '\n};\n');
+        const out = [];
+        for (const t of process.env.BODIES.split(',').map(Number)) {
+          await passCircle(t, null); await seekTo(t); await seekTo(t);
+          await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+          const J = await p.evaluate(JM, [process.env.WHO || 'pho|grace|marcus', null]).catch(e => ({ err: String(e).slice(0, 200) }));
+          const F = await p.evaluate(FM, 1).catch(e => ({ err: String(e).slice(0, 200) }));
+          const c = await p.evaluate(() => { const E = window.__enc, v = E.camera.position.clone(); E.camera.getWorldPosition(v); return [v.x, v.z]; });
+          const C = await p.evaluate(CA, [0.1, +(process.env.R || 4), 0.05, c[0], c[1]]).catch(e => ({ err: String(e).slice(0, 200) }));
+          const shot = await p.evaluate(() => window.__enc.stage.films.ends2.state().shot);
+          out.push({ t, shot, joints: J, feet: F, clips: C && C.pairs ? C.pairs.slice(0, 40) : C });
+          const jf = Array.isArray(J) ? J.filter(r => r.flags && r.flags.length).map(r => r.who + ' ' + r.flags.join(' ')) : [J];
+          const ff = Array.isArray(F) ? F.filter(r => Math.min(r.Left ?? 9, r.Right ?? 9) < -0.01 || (r.Left ?? 0) > 0.03 || (r.Right ?? 0) > 0.03).map(r => r.who + ' L ' + r.Left + ' R ' + r.Right + ' hem ' + r.hem) : [F];
+          log(k, 'bodies at', t, shot, '| joints:', jf.length ? jf.join(' ; ') : 'none flagged', '| feet:', ff.length ? ff.join(' ; ') : 'on their floors', '| clips:', C && C.pairs ? C.pairs.length + ' pairs' : JSON.stringify(C).slice(0, 120));
+        }
+        fs.writeFileSync(`${OUT}/bodies-end${k}.json`, JSON.stringify(out, null, 1));
+      }
       /* TUNE='[["name", t, "js"], ...]' (MODE=pics): each try's snippet run in the page with T the films' tuning handle
          (stage.films.ends2.tune), the film sought to t (twice: the second lays what the first changed), photographed */
       for (const [nm, t, js] of JSON.parse(process.env.TUNE || '[]')) {

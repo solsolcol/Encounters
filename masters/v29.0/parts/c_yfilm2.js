@@ -648,7 +648,7 @@
           if (lunge && t >= E.turn) {
             /* the one that turns: its head lifts off the floor like a head turning, then lunges at the wrist */
             const tu = f2smo(f2win(t, E.turn, E.lunge)), lu = f2s5(f2win(t, E.lunge, E.wrap));
-            camera.updateMatrixWorld(); const W2 = f2WristWorld(_dW);
+            camera.updateMatrixWorld(); const W2 = f2WristAt(_dW) || f2WristWorld(_dW);
             const base = _dA.set(lp(src[0], door[0], u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] + 0.3, u));
             const lift = Math.sin(Math.PI * c01((u - 0.82) / 0.18)) * 0.45 * tu;
             base.y += lift;
@@ -782,8 +782,12 @@
         K.push({ t: E.crawl + 1.0, e: [fl[0] + 0.5, F2EYE.crawl, fl[2] + 0.2], a: [ph.x, 0.5, ph.z + 0.4], fp: 56, fd: 50, n: 'B:crawl' });
         K.push({ t: E.reach - 0.6, e: [knee[0] - 0.3, F2EYE.crawl + 0.05, knee[2] + 0.05], a: [ph.x, 0.62, ph.z], fp: 56, fd: 50, n: 'B:crawl2' });
         K.push({ t: E.reach + 0.2, e: knee, a: [ph.x, 0.7, ph.z], fp: 56, fd: 50, n: 'B:table', stop: true });
-        K.push({ t: E.connect, e: [knee[0], knee[1] - 0.02, knee[2]], a: [knee[0] - 0.4, 0.75, knee[2] - 1.6], fp: 58, fd: 52, n: 'B:call' });
-        K.push({ t: E.b0, e: [knee[0], knee[1] - 0.04, knee[2]], a: [knee[0] - 0.9, 0.8, knee[2] - 1.4], fp: 60, fd: 52, n: 'B:listen', stop: true });
+        /* (on his knees at the table with the call open, he turns his back to it and to the kitchen's wall, toward his glass:
+           the city's lights over the phone held before him, as his teacher talks) */
+        K.push({ t: E.connect, e: [knee[0], knee[1] - 0.02, knee[2]], a: [knee[0] - 0.4, 0.72, knee[2] - 1.5], fp: 58, fd: 52, n: 'B:call' });
+        K.push({ t: E.connect + 1.0, e: [knee[0] - 0.02, knee[1] - 0.03, knee[2] + 0.02], a: [knee[0] - 2.1, 0.85, knee[2] + 0.2], fp: 59, fd: 52, n: 'B:turn2' });
+        K.push({ t: E.connect + 2.0, e: [knee[0] - 0.03, knee[1] - 0.04, knee[2] + 0.05], a: [knee[0] - 0.7, 0.9, LIV.z1 + 2.8], fp: 60, fd: 52, n: 'B:glass', stop: true });
+        K.push({ t: E.b0, e: [knee[0] - 0.03, knee[1] - 0.05, knee[2] + 0.06], a: [knee[0] - 0.75, 0.85, LIV.z1 + 2.8], fp: 60, fd: 52, n: 'B:listen', stop: true });
       } else if (k === 'C') {
         /* C · to the kitchen as he says it: the drawer, the pills, the tap; to his sofa; he lies back with a cushion over his
            eyes; a wave, the glass doors ticking; his sight opens on its own as the cushion slides off: his red footsteps end
@@ -880,7 +884,7 @@
         else if (t < E.b0) { f2EndFx(t, E, k); f2EndHands(t, E, k); }
         else { f2DawnFx(t - E.d0, E.dawn, k); }
         /* (the circle scaled only by the dawn's winding: before it, whole) */
-        if (t < E.d0) { f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0); }
+        if (t < E.d0) { f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0); f2DustAt(0, 0); }
       },
       end() {
         if (!F2.on) return;
@@ -907,7 +911,7 @@
         { const H = FILMSAPI.helpers, PS = FILMSAPI.phoStand, PC = cast.pho, bag = FILMSAPI.props.phoBag;
           H.show(PS, false); H.show(PC, false); if (PC && PC.home) put(PC, PC.home.x, PC.home.z, PC.home.ry, PC.home.y);
           if (bag) { bag.visible = false; H.drop(bag, 0, -50, 0); } }
-        F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false;
+        F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false; F2DUST.pts.visible = false;
         WORLD.hisDoor(0); f2CircleWound(0); f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0);
         if (F2.phoLv != null) f2PhoLevel(F2.phoLv);
         camera.rotation.z = 0;
@@ -1091,7 +1095,9 @@
         /* inside beside his door, clear of its leaf's swing (0.8 m round its hinge at the door's -x side) */
         doorEye: [HIS.door.x + 0.62, EYE, LIV.z0 + 0.74],
         phoDoor: { x: HIS.door.x + 0.05, z: LIV.z0 - 0.74 },
-        phoIn: [[HIS.door.x + 0.05, LIV.z0 - 0.74], [HIS.door.x + 0.02, LIV.z0 + 0.25], [HIS.door.x + 0.42, LIV.z0 + 1.02]],
+        /* (in past him on the door's side, between his altar and his sofa's end toward the circle: his student stands 0.5 m
+           to his right) */
+        phoIn: [[HIS.door.x + 0.05, LIV.z0 - 0.74], [HIS.door.x + 0.02, LIV.z0 + 0.3], [HIS.door.x + 0.1, LIV.z0 + 1.3], [HIS.door.x + 0.15, LIV.z0 + 2.2]],
         /* on the floor at the circle's front, where its two ends met, facing in across it */
         wind: { x: C.x + 0.03, z: C.z + C.r + 0.34, ry: Math.PI },
         windEye: [C.x - 0.28, EYE - 0.03, C.z - 0.62],
@@ -1249,7 +1255,12 @@
       for (const n of own) if (D[n] != null) talk.push([D[n] - D.d0, SECS[n], 'Sitting_Answering_Questions', 0.5]);
       if (u < uTie - 0.4) H.speak(P, u, ['Sit_to_Stand_Transition_M', sitT, 0, false], talk);
       else pose(P, 'Sit_to_Stand_Transition_M', sitT, false);
-      H.gaze(P, u, [[u0, 'lens', 0.3], [uTie - 0.2, F2DW.tieAt, 0.6], [D.up - D.d0, 'lens', 0.8]], 0.75, 0.65, 0.02);
+      /* (his look on his student; in D down to the red mark on his wrist as he names it, and back; to the wrist for the tie,
+         and up to him for the last words) */
+      const G = [[u0, 'lens', 0.3]];
+      if (k === 'D' && D.ph51D3 != null) G.push([D.ph51D3 - D.d0 - 0.4, F2DW.tieAt, 0.7], [D.ph51D4 - D.d0 - 0.2, 'lens', 0.7]);
+      G.push([uTie - 0.2, F2DW.tieAt, 0.6], [D.up - D.d0, 'lens', 0.8]);
+      H.gaze(P, u, G, 0.75, 0.65, 0.02);
       /* the tie: both hands to his wrist (where the narrow lens draws it), the thread drawn round and knotted twice */
       const kT = f2smo(f2win(u, uTie - 0.5, uTie + 0.5)) * (1 - f2smo(f2win(u, D.up - D.d0 + 0.2, D.up - D.d0 + 1.2)));
       if (kT > 0.001) {
@@ -1270,13 +1281,36 @@
       const uTie = D.tie - D.d0, uUp = D.up - D.d0;
       const out = f2smo(f2win(u, uTie - 0.3, uTie + 0.4)) * (1 - f2smo(f2win(u, uUp + 1.6, uUp + 2.6)));
       f2Hold(null);
-      if (out > 0.01) { f2Hands(true, 'reach', out * 0.92, { p: 0 }); f2MirrorLeft(true); }
+      if (out > 0.01) { f2Hands(true, 'reach', out * 0.92, { p: 0 });
+        /* (the held hand placed for the insert before the left is laid as its mirror: F2TUNE.tieArm, metres in the hands' pass) */
+        const T = F2TUNE.tieArm; if (A.armR && T) { A.armR.position.x += T[0] * out; A.armR.position.y += T[1] * out; A.armR.position.z += T[2] * out; }
+        f2MirrorLeft(true); }
       else { f2Hands(false); f2MirrorLeft(false); }
       const thread = u >= D.knot1 - D.d0 ? (u >= D.knot2 - D.d0 ? 2 : 1) : 0;
       f2WristShow(0, k === 'D' && u < D.knot1 - D.d0 + 0.3 ? 1 : 0, out > 0.01 ? thread : 0, 0);
       if (F2W.thread) { F2W.thread.visible = out > 0.01 && u >= uTie + 0.3; }
     }
+    /* DUST IN THE MORNING LIGHT (the plan's 12: "Dawn: long light through the glass, dust in it"): motes in the low sun inside
+       his glass, each drifting slowly up and aside and twinkling as it turns in the light, a pure function of the clock;
+       drawn as light (additive, no lamp: v9.4) */
+    const F2DUST = (() => {
+      const n = 120, pos = new Float32Array(n * 3), base = [];
+      for (let i = 0; i < n; i++) { const h1 = f2Hash(i * 3.1 + 1), h2 = f2Hash(i * 7.7 + 2), h3 = f2Hash(i * 1.3 + 3);
+        base.push([HIS.circle.x - 2.2 + 6.4 * h1, 0.25 + 2.1 * h2, LIV.z1 - 0.15 - 1.7 * h3, f2Hash(i * 5.9 + 4) * 6.28]); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(HIS.circle.x, 1, 1.5), 6); owned.push(g);
+      const m = new THREE.PointsMaterial({ map: glowTex, color: 0xffe0b0, size: 0.016, sizeAttenuation: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+      mats.push(m); const pts = new THREE.Points(g, m); pts.name = 'dust in the morning light'; pts.frustumCulled = false; pts.visible = false; hisSideG.add(pts);
+      return { n, pos, base, g, m, pts };
+    })();
+    function f2DustAt(u, k) {
+      const Dd = F2DUST; Dd.pts.visible = k > 0.001; if (!Dd.pts.visible) return;
+      Dd.m.opacity = 0.55 * k;
+      for (let i = 0; i < Dd.n; i++) { const b = Dd.base[i], ph = b[3];
+        Dd.pos[i * 3] = b[0] + 0.05 * Math.sin(0.21 * u + ph); Dd.pos[i * 3 + 1] = b[1] + 0.06 * Math.sin(0.17 * u + ph * 1.7) + 0.004 * u; Dd.pos[i * 3 + 2] = b[2] + 0.04 * Math.sin(0.13 * u + ph * 0.6); }
+      Dd.g.attributes.position.needsUpdate = true;
+    }
     function f2DawnFx(u, D, k) {
+      f2DustAt(u, f2smo(f2win(u, 0.0, 1.5)));
       f2Gold.visible = false; f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false;
       for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;
       f2FloorPhone.visible = u < D.door - D.d0; f2Spark.q.visible = false;
