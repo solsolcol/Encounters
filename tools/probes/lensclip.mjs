@@ -239,7 +239,16 @@ export const LIB = () => {
     const wall2 = mk(T.PlaneGeometry(2, 2), 0); wall2.position.copy(eye).addScaledVector(dir, 0.5); wall2.lookAt(eye); scene.add(wall2);
     res.wallFar = lib.lensAt().hits.filter(h => /col:ff0000/.test(h.label)).map(h => h.kind); scene.remove(wall2);
     for (const m of [wall, box, room, wall2]) { m.geometry.dispose(); m.material.dispose(); }
-    res.pass = res.wall.length === 1 && res.wall[0].past > 0.04 && res.box.length === 1 && res.box[0].kind.inside > 0 && res.room.length === 0 && res.wallFar.length === 0;
+    /* and on the chapter's OWN surfaces, the world untouched: the lens carried along its own look to 3 cm short of the first
+       real surface it meets (a ray from the eye), where that surface must read NEAR; then put back where it was */
+    { const EN = lib.near(eye, 6, {}), d = [dir.x, dir.y, dir.z], eo = [eye.x, eye.y, eye.z]; let best = Infinity, who = null;
+      for (const en of EN) for (let t = 0; t < en.nT; t++) { const [i0, i1, i2] = lib.tri(en, t); const h = rayTri(eo, d, en.W, i0, i1, i2); if (h && h[0] < best) { best = h[0]; who = en.label; } }
+      res.realSurface = who ? { label: who.slice(0, 80), at: +best.toFixed(3) } : null;
+      if (who && best > 0.05) { const P = cam.parent, keep = cam.position.clone(), wp = eye.clone().addScaledVector(dir, best - 0.03);
+        cam.position.copy(P.worldToLocal(wp)); cam.updateMatrixWorld(true);
+        const r = lib.lensAt(); res.realHit = r.hits.filter(h => h.label === who || h.label.startsWith(who)).map(h => h.kind);
+        cam.position.copy(keep); cam.updateMatrixWorld(true); res.realBack = lib.lensAt().hits.length === clean.hits.length; } }
+    res.pass = res.wall.length === 1 && res.wall[0].past > 0.04 && res.box.length === 1 && res.box[0].kind.inside > 0 && res.room.length === 0 && res.wallFar.length === 0 && (!res.realSurface || res.realSurface.at <= 0.05 || (res.realHit && res.realHit.length >= 1 && res.realBack));
     return res;
   };
 };
