@@ -12,11 +12,11 @@ OUT = sys.argv[-2] if sys.argv[-1].isdigit() else sys.argv[-1]
 PX = int(sys.argv[-1]) if sys.argv[-1].isdigit() else 1024
 reset(521)
 c = M('whitecotton'); co = c.coord('Object')
-a = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='X'); b = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='Y')
-wv = c.math('MULTIPLY', c.math('ADD', a, b), 0.5); soil = c.noise(co, 30, detail=5)
+a = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='X'); b = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='Y'); z3 = c.wave(co, 420, dist=0.0, detail=0, kind='BANDS', axis='Z')
+wv = c.math('MULTIPLY', c.math('ADD', c.math('ADD', a, b), z3), 0.3333); soil = c.noise(co, 30, detail=5)
 c.col = c.mix(c.math('MULTIPLY', soil, 0.25), '#f1eee6', '#d8d2c4')
-c.col = c.mix(c.math('MULTIPLY', wv, 0.12), c.col, '#c9c2b2')
-c.rough = c.val(0.85); c.height = c.math('ADD', wv, c.math('MULTIPLY', soil, 0.4)); c.bump_strength = 0.3; c.bump_dist = 0.0004
+c.col = c.mix(c.math('MULTIPLY', wv, 0.05), c.col, '#c9c2b2')
+c.rough = c.val(0.85); c.height = c.math('ADD', c.math('MULTIPLY', wv, 0.5), c.math('MULTIPLY', soil, 0.5)); c.bump_strength = 0.15; c.bump_dist = 0.0004
 cot = proc(c)
 t = M('thread'); co = t.coord('Object')
 tw = t.wave(t.mapping(co, scale=(1, 1, 1)), 900, dist=0.0, detail=0, kind='BANDS', axis='X')
@@ -49,12 +49,6 @@ body.data.materials.append(cot); smooth(body, 180)
 parts = [body]
 # the folds of the envelope on top: three flaps' edges (a raised hem line) running from the corners to the middle
 top_z = lambda x, y: Hh + 0.003 * (1 - (x / (L / 2)) ** 2) * (1 - (y / (Wd / 2)) ** 2)
-for (x0, y0) in ((-L / 2 + 0.006, -Wd / 2 + 0.006), (L / 2 - 0.006, -Wd / 2 + 0.006), (-L / 2 + 0.006, Wd / 2 - 0.006)):
-    pts = []
-    for i in range(9):
-        s_ = i / 8; x = x0 * (1 - s_) + 0.004 * s_; y = y0 * (1 - s_) + 0.002 * s_
-        pts.append((x, y, top_z(x, y) + 0.0002))
-    parts.append(tube_path('fold', pts, 0.0007, n=6, mat=cot))
 # the last flap lying on top: a thin soft triangle from the fourth corner to past the middle, its edge rolled
 bm = bmesh.new()
 tri = [(L / 2 - 0.005, Wd / 2 - 0.005), (-0.006, 0.020), (0.020, -0.008)]
@@ -65,35 +59,33 @@ sol = flap.modifiers.new('sol', 'SOLIDIFY'); sol.thickness = 0.0012; sol.offset 
 bevel(flap, 0.0005, segs=2); apply_mods(flap)
 flap.data.materials.append(cot); parts.append(flap)
 # the thread: two bands each way round the body (on top, down the sides, under), a little proud of the cloth
-def band_x(x0):     # a loop in the y-z plane at x = x0
+from mathutils.bvhtree import BVHTree
+bvh = BVHTree.FromObject(body, bpy.context.evaluated_depsgraph_get())
+def hug(dirs, origin, r=0.0007):
+    """the body's surface along each direction from origin, lifted by the thread's radius"""
     pts = []
-    for i in range(40):
-        a_ = 2 * math.pi * i / 40; cy, cz = math.cos(a_), math.sin(a_)
-        ry, rz = Wd / 2 + 0.0002, Hh / 2 + 0.0018
-        # a rounded rectangle (superellipse) hugging the body
-        e = 0.25
-        y = math.copysign(abs(cy) ** e, cy) * ry; z = Hh / 2 + math.copysign(abs(cz) ** e, cz) * rz
-        pts.append((x0, y, max(0.0004, z)))
-    return tube_path('thread', pts, 0.0006, n=8, mat=thr, closed=True)
+    for d in dirs:
+        d = Vector(d).normalized(); far = Vector(origin) + d * 0.2
+        hit = bvh.ray_cast(far, -d, 0.25)
+        loc = hit[0] if hit[0] is not None else Vector(origin) + d * 0.04
+        pts.append(tuple(loc + d * (r + 0.0002)))
+    return pts
+def band_x(x0):     # a loop in the y-z plane at x = x0, round the body's own surface
+    dirs = [(0, math.cos(2 * math.pi * i / 72), math.sin(2 * math.pi * i / 72)) for i in range(72)]
+    return tube_path('thread', hug(dirs, (x0, 0, Hh / 2)), 0.0006, n=8, mat=thr, closed=True)
 def band_y(y0):
-    pts = []
-    for i in range(40):
-        a_ = 2 * math.pi * i / 40; cx, cz = math.cos(a_), math.sin(a_)
-        rx, rz = L / 2 + 0.0002, Hh / 2 + 0.0024
-        e = 0.25
-        x = math.copysign(abs(cx) ** e, cx) * rx; z = Hh / 2 + math.copysign(abs(cz) ** e, cz) * rz
-        pts.append((x, y0, max(0.0004, z)))
-    return tube_path('thread', pts, 0.0006, n=8, mat=thr, closed=True)
+    dirs = [(math.cos(2 * math.pi * i / 72), 0, math.sin(2 * math.pi * i / 72)) for i in range(72)]
+    return tube_path('thread', hug(dirs, (0, y0, Hh / 2), 0.0013), 0.0006, n=8, mat=thr, closed=True)
 for tx in TX: parts.append(band_x(tx))
 for ty in TY: parts.append(band_y(ty))
 # the knot where the bands cross nearest the middle-top, and its two loose ends
-kz = Hh + 0.0055
+kz = hug([(0, 0, 1)], (TX[1], TY[0], Hh / 2), 0.0013)[0][2] + 0.0008
 bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.0)
 for v in bm.verts: v.co = Vector((v.co.x * 0.0026, v.co.y * 0.0022, v.co.z * 0.0016))
 knot = mesh_from_bm('knot', bm); knot.location = (TX[1], TY[0], kz); knot.data.materials.append(thr); smooth(knot, 180)
 parts.append(knot)
 for (dx, dy) in ((0.016, -0.004), (0.010, -0.014)):
-    pts = [(TX[1], TY[0], kz), (TX[1] + dx * 0.4, TY[0] + dy * 0.4, kz + 0.0005), (TX[1] + dx, TY[0] + dy, top_z(TX[1] + dx, TY[0] + dy) + 0.0006)]
+    pts = [(TX[1], TY[0], kz), (TX[1] + dx * 0.4, TY[0] + dy * 0.4, kz + 0.0005), hug([(0, 0, 1)], (TX[1] + dx, TY[0] + dy, Hh / 2))[0]]
     parts.append(tube_path('end', pts, 0.0006, n=8, mat=thr))
 ob = join(parts, 'wrapped')
 stats(ob)

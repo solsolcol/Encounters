@@ -30,18 +30,20 @@ flex = M('flex'); flex.col = flex.rgb('#3a3936'); flex.rough = flex.val(0.5); fl
 
 parts = []
 # the base: a turned ginger-jar shape, foot to shoulder to a short neck
-parts.append(lathe('base', [(0.0, 0.0), (0.050, 0.0), (0.054, 0.004), (0.052, 0.012), (0.066, 0.040), (0.078, 0.080),
-                            (0.080, 0.110), (0.074, 0.150), (0.060, 0.180), (0.040, 0.198), (0.026, 0.206), (0.024, 0.214),
-                            (0.0, 0.214)], n=72, mat=cer))
+wd = wood('lampfoot', dark='#2a1a10', mid='#3a2618', light='#4f3622', grain=40, axis='Z', gloss=0.3, bump=0.1)
+parts.append(lathe('foot', [(0.0, 0.0), (0.072, 0.0), (0.076, 0.004), (0.076, 0.014), (0.071, 0.019), (0.066, 0.022), (0.0, 0.022)], n=72, mat=wd))
+parts.append(lathe('base', [(0.0, 0.0215), (0.052, 0.0215), (0.058, 0.026), (0.074, 0.050), (0.088, 0.090), (0.092, 0.125),
+                            (0.087, 0.165), (0.072, 0.198), (0.050, 0.218), (0.030, 0.226), (0.026, 0.232), (0.024, 0.238),
+                            (0.0, 0.238)], n=96, mat=cer))
 # the brass: a collar on the neck, a short stem, the lamp holder, the harp's two arms to the shade's spider
-parts.append(lathe('collar', [(0.0, 0.212), (0.030, 0.212), (0.031, 0.218), (0.022, 0.224), (0.011, 0.228), (0.0, 0.228)], n=48, mat=br))
-parts.append(cyl('stem', 0.0065, 0.08, at=(0, 0, 0.226), n=24, mat=br, bev=0.0008))
-parts.append(lathe('switchbox', [(0.0, 0.300), (0.016, 0.300), (0.017, 0.306), (0.016, 0.330), (0.013, 0.334), (0.0, 0.334)], n=40, mat=br))
-k = box('switch', 0.008, 0.012, 0.006, at=(0.019, 0, 0.318), bev=0.001, mat=br); parts.append(k)
-parts.append(lathe('holder', [(0.0, 0.334), (0.014, 0.334), (0.014, 0.380), (0.012, 0.384), (0.0, 0.384)], n=40, mat=br))
-SH_B, SH_T, R = 0.31, 0.55, 0.19
+parts.append(lathe('collar', [(0.0, 0.236), (0.030, 0.236), (0.031, 0.242), (0.022, 0.248), (0.011, 0.252), (0.0, 0.252)], n=48, mat=br))
+parts.append(cyl('stem', 0.0065, 0.08, at=(0, 0, 0.250), n=24, mat=br, bev=0.0008))
+parts.append(lathe('switchbox', [(0.0, 0.318), (0.016, 0.318), (0.017, 0.324), (0.016, 0.346), (0.013, 0.350), (0.0, 0.350)], n=40, mat=br))
+k = box('switch', 0.008, 0.012, 0.006, at=(0.019, 0, 0.334), bev=0.001, mat=br); parts.append(k)
+parts.append(lathe('holder', [(0.0, 0.350), (0.014, 0.350), (0.014, 0.392), (0.012, 0.396), (0.0, 0.396)], n=40, mat=br))
+SH_B, SH_T, R = 0.33, 0.55, 0.168
 for sx in (-1, 1):
-    parts.append(tube_path('harp', [(0, 0, 0.334), (sx * 0.05, 0, 0.345), (sx * 0.055, 0, 0.46), (sx * 0.01, 0, 0.53), (0, 0, 0.535)], 0.0018, n=8, mat=br))
+    parts.append(tube_path('harp', [(0, 0, 0.350), (sx * 0.05, 0, 0.36), (sx * 0.055, 0, 0.46), (sx * 0.01, 0, 0.53), (0, 0, 0.535)], 0.0018, n=8, mat=br))
 parts.append(lathe('finial', [(0.0, 0.531), (0.008, 0.531), (0.010, 0.537), (0.007, 0.546), (0.0, 0.549)], n=32, mat=br))
 # the drum shade: an open linen tube with a rolled edge top and bottom, a slight taper, its inside paler
 shade = lathe('shade', [(R, SH_B), (R - 0.004, SH_T - 0.012)], n=96, mat=lin)
@@ -62,7 +64,7 @@ for i in range(3):
 # the shade's one vertical seam, at its back
 parts.append(box('seam', 0.006, 0.0015, SH_T - SH_B - 0.012, at=(0, R - 0.0015, (SH_B + SH_T - 0.012) / 2), bev=0.0005, segs=1, mat=lin))
 # the flex: out of the back of the base, over the shelf's edge
-parts.append(tube_path('flex', [(0, 0.046, 0.006), (0, 0.06, 0.0024), (0.006, 0.09, 0.0022), (0.018, 0.12, 0.0022), (0.012, 0.15, 0.0022), (0.0, 0.18, 0.0022)], 0.0022, n=8, mat=flex))
+parts.append(tube_path('flex', [(0, 0.07, 0.008), (0, 0.084, 0.0024), (0.006, 0.11, 0.0022), (0.018, 0.13, 0.0022), (0.012, 0.15, 0.0022), (0.0, 0.165, 0.0022)], 0.0022, n=8, mat=flex))
 
 ob = join(parts, 'lamp')
 stats(ob)

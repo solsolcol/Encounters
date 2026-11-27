@@ -29,15 +29,16 @@ def striped(name):
     """a faded indigo cotton woven with thin cream stripes (a stripe every 3.5 cm along y), its weave in the normal"""
     m = M(name); co = m.coord('Object')
     sep = m.n.new('ShaderNodeSeparateXYZ'); m.l.new(co, sep.inputs[0])
-    ph = m.math('FRACT', m.math('MULTIPLY', sep.outputs['Y'], 1 / 0.035))
-    stripe = m.math('MULTIPLY', m.math('GREATER_THAN', ph, 0.80), m.math('LESS_THAN', ph, 0.86))
+    # the stripes run round the cover (along x): their phase in y on the top and the underside, in z down the walls
+    ph = m.math('FRACT', m.math('MULTIPLY', m.math('SUBTRACT', sep.outputs['Y'], sep.outputs['Z']), 1 / 0.035))
+    stripe = m.math('MULTIPLY', m.math('GREATER_THAN', ph, 0.82), m.math('LESS_THAN', ph, 0.86))
     stripe2 = m.math('MULTIPLY', m.math('GREATER_THAN', ph, 0.89), m.math('LESS_THAN', ph, 0.905))
     a = m.wave(co, 125, dist=0.0, detail=0, kind='BANDS', axis='X'); b = m.wave(co, 125, dist=0.0, detail=0, kind='BANDS', axis='Y')
     weave = m.math('MULTIPLY', m.math('ADD', a, b), 0.5)
     fade = m.noise(co, 4.0, detail=3); slub = m.noise(m.mapping(co, scale=(3, 1, 3)), 40, detail=6, rough=0.7)
     base = m.mix(m.math('MULTIPLY', fade, 0.6), '#34415a', '#4f5d74')
     base = m.mix(m.math('MULTIPLY', slub, 0.2), base, '#5b6880')
-    base = m.mix(m.math('ADD', stripe, m.math('MULTIPLY', stripe2, 0.8)), base, '#d8cdb4')
+    base = m.mix(m.math('MULTIPLY', m.math('ADD', stripe, m.math('MULTIPLY', stripe2, 0.8)), 0.8), base, '#cfc3a8')
     m.col = m.mix(m.math('MULTIPLY', weave, 0.14), base, '#1e2533', 'MULTIPLY')
     m.rough = m.math('ADD', 0.84, m.math('MULTIPLY', weave, 0.08))
     m.height = m.math('ADD', m.math('MULTIPLY', weave, 0.7), m.math('MULTIPLY', slub, 0.3)); m.bump_strength = 0.3; m.bump_dist = 0.0007

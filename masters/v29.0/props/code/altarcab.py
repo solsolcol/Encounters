@@ -12,9 +12,9 @@ OUT = sys.argv[-2] if sys.argv[-1].isdigit() else sys.argv[-1]
 PX = int(sys.argv[-1]) if sys.argv[-1].isdigit() else 2048
 reset(511)
 W, D, TOP = 0.90, 0.61, 1.00
-wh = wood('walnut_h', dark='#2a1d13', mid='#3f2e1f', light='#59412d', grain=18, distort=7.0, axis='X', gloss=0.32)
-wv = wood('walnut_v', dark='#2a1d13', mid='#3f2e1f', light='#59412d', grain=18, distort=7.0, axis='Z', gloss=0.32)
-wd = wood('walnut_d', dark='#2a1d13', mid='#3f2e1f', light='#59412d', grain=18, distort=7.0, axis='Y', gloss=0.34)
+wh = wood('walnut_h', dark='#281a11', mid='#35251a', light='#4a3424', grain=22, distort=5.0, axis='X', gloss=0.32)
+wv = wood('walnut_v', dark='#281a11', mid='#35251a', light='#4a3424', grain=22, distort=5.0, axis='Z', gloss=0.32)
+wd = wood('walnut_d', dark='#281a11', mid='#35251a', light='#4a3424', grain=22, distort=5.0, axis='Y', gloss=0.34)
 br = brass('brass', tone='#b38d4c', worn=0.4)
 # the inside of a drawer gap / door gap: a dark shadow wood, unbaked detail is not seen
 dark = M('gapdark'); dark.col = dark.rgb('#0c0805'); dark.rough = dark.val(0.9); dark = proc(dark)

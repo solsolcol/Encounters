@@ -87,6 +87,8 @@ def lathe(name, prof, n=64, at=(0, 0, 0), mat=None, closed=False):
     for a, b in zip(vs, vs[1:]): bm.edges.new((a, b))
     bmesh.ops.spin(bm, geom=bm.verts[:] + bm.edges[:], cent=(0, 0, 0), axis=(0, 0, 1), angle=2 * math.pi, steps=n, use_duplicate=False)
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+    if prof[0][0] == 0 and prof[-1][0] == 0:          # a closed solid: its faces turned outward
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     ob = mesh_from_bm(name, bm)
     ob.location = at
     if mat: ob.data.materials.append(mat)
