@@ -70,18 +70,18 @@ def sheet(name, sx, sy, at, mat, rot=0.0, res=40):
     ob = mesh_from_bm(name, bm); ob.location = at; ob.rotation_euler = (0, 0, rot)
     ob.data.materials.append(mat)
     cl = ob.modifiers.new('cloth', 'CLOTH'); s = cl.settings
-    s.quality = 16; s.mass = 0.3; s.tension_stiffness = 12; s.compression_stiffness = 12; s.shear_stiffness = 8; s.bending_stiffness = 0.6
+    s.quality = 10; s.mass = 0.3; s.tension_stiffness = 12; s.compression_stiffness = 12; s.shear_stiffness = 8; s.bending_stiffness = 0.6
     s.air_damping = 2.0
-    cl.collision_settings.collision_quality = 8; cl.collision_settings.distance_min = 0.007; cl.collision_settings.friction = 20
-    cl.collision_settings.use_self_collision = True; cl.collision_settings.self_distance_min = 0.004
-    cl.point_cache.frame_start = 1; cl.point_cache.frame_end = 140
+    cl.collision_settings.collision_quality = 5; cl.collision_settings.distance_min = 0.007; cl.collision_settings.friction = 20
+    cl.collision_settings.use_self_collision = False
+    cl.point_cache.frame_start = 1; cl.point_cache.frame_end = 110
     return ob
 towel = sheet('towel', 0.44, 1.12, (-0.12, 0.0, TOPZ + 0.022), sage)
 pill = sheet('pillowcase', 0.24, 0.74, (0.235, 0.01, TOPZ + 0.022), case, res=24)
 hand = sheet('handtowel', 0.30, 0.34, (0.60, -0.02, WINGZ + 0.05), white, res=30)    # over the right wing's end bar
 hand.rotation_euler = (0, math.radians(24), 0)
-sc.frame_start, sc.frame_end = 1, 140
-for f in range(1, 141):
+sc.frame_start, sc.frame_end = 1, 110
+for f in range(1, 111):
     sc.frame_set(f)
 cloths = []
 for ob in (towel, hand, pill):

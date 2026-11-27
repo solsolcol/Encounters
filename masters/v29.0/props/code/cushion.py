@@ -55,7 +55,7 @@ bmesh.ops.scale(bm, vec=(S, S, H0), verts=bm.verts)
 bmesh.ops.translate(bm, vec=(0, 0, H0 / 2), verts=bm.verts)
 ob = mesh_from_bm('cushion', bm)
 bevel(ob, 0.006, segs=2); apply_mods(ob)
-sub = ob.modifiers.new('sub', 'SUBSURF'); sub.levels = 4; sub.subdivision_type = 'SIMPLE'; apply_mods(ob)
+sub = ob.modifiers.new('sub', 'SUBSURF'); sub.levels = 3; sub.subdivision_type = 'SIMPLE'; apply_mods(ob)
 cl = ob.modifiers.new('cloth', 'CLOTH'); st = cl.settings
 st.quality = 8; st.mass = 0.3; st.air_damping = 3
 st.tension_stiffness = 25; st.compression_stiffness = 25; st.shear_stiffness = 10; st.bending_stiffness = 0.3

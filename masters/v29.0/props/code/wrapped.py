@@ -28,7 +28,7 @@ bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
 bmesh.ops.scale(bm, vec=(L, Wd, Hh), verts=bm.verts); bmesh.ops.translate(bm, vec=(0, 0, Hh / 2), verts=bm.verts)
 body = mesh_from_bm('wrap', bm)
 bevel(body, 0.007, segs=4); apply_mods(body)
-sub = body.modifiers.new('sub', 'SUBSURF'); sub.levels = 3; sub.subdivision_type = 'SIMPLE'; apply_mods(body)
+sub = body.modifiers.new('sub', 'SUBSURF'); sub.levels = 2; sub.subdivision_type = 'SIMPLE'; apply_mods(body)
 # the cloth's softness: the top domed a little, the edges rounded and rumpled, the thread's bands pressed in
 TX, TY = (-0.016, 0.016), (-0.013, 0.013)          # where the thread's two bands run each way
 def pinch(d):                                       # how much a band presses the cloth in, by distance from its line
