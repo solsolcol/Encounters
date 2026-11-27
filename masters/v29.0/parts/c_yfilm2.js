@@ -631,8 +631,10 @@
         const altarThen = (s, L) => { const w = f2smo(c01((s - (L - 2.6)) / 1.8)); return [lp(altarAim[0], glassA[0], w), lp(altarAim[1], glassA[1], w), lp(altarAim[2], glassA[2], w)]; };
         f2WalkKeys(path2, Bm.spool + 0.9, Bm.sit0, F2EYE.stand, { a: glassA, look: altarThen, fp: 66, fd: 58, n: 'bar:tocircle' }).slice(1).forEach(k => K.push(k));
         /* he sits down, in the middle of the room, facing his glass (a pained sit, eased over 1.6 s) */
-        K.push({ t: Bm.sit0 + 0.8, e: [F2SIT.x, 1.2, F2SIT.z - 0.06], a: [C.x, 0.95, C.z + 3.0], fp: 68, fd: 60, n: 'bar:sit' });
-        K.push({ t: Bm.circle - 0.7, e: eyeSit, a: [C.x, 0.62, C.z + 3.0], fp: 70, fd: 62, n: 'bar:seated', stop: true });
+        /* (his sitting down 1.45 s from his last step: at 0.8 s and 0.1 s before the circle, the eye dropped its last 0.38 m in a
+           tenth of a second, measured as a move) */
+        K.push({ t: Bm.sit0 + 0.55, e: [F2SIT.x, 1.2, F2SIT.z - 0.06], a: [C.x, 0.95, C.z + 3.0], fp: 68, fd: 60, n: 'bar:sit' });
+        K.push({ t: Bm.circle - 0.15, e: eyeSit, a: [C.x, 0.62, C.z + 3.0], fp: 70, fd: 62, n: 'bar:seated', stop: true });
         K.push({ t: Bm.circle, e: eyeSit, a: [C.x, 0.02, C.z + 1.5], fp: 70, fd: 62, n: 'bar:down', stop: true });
         F2.barKeys = K; F2.barKeysFor = Bm;
       }
@@ -647,9 +649,10 @@
         const u = F2.cirShow, turn = 1.05 * Math.sin(Math.PI * c01(u / 0.5)) * (u < 0.5 ? -1 : 0) + 1.05 * Math.sin(Math.PI * c01((u - 0.5) / 0.5)) * (u >= 0.5 ? 1 : 0);
         const yw = Math.PI + turn, d = 1.5, nar = f2Narrow();
         const a = [C.x - Math.sin(yw) * d, 0.02 + 0.08 * Math.abs(Math.sin(turn)), C.z - Math.cos(yw) * d];
-        const v = [eyeSit[0], eyeSit[1], eyeSit[2], a[0], a[1], a[2], nar ? 70 : 62, 0];
-        /* after it closes, the eye lifts to level for his teacher's words */
+        /* after it closes, the eye lifts to level for his teacher's words, the lens easing to the chant's (it stepped from 70 to
+           66 degrees in one frame there, measured as a move) */
         const lift = f2smo(f2win(t, Bm.circle + 0.05, Bm.after));
+        const v = [eyeSit[0], eyeSit[1], eyeSit[2], a[0], a[1], a[2], nar ? lp(70, 66, lift) : lp(62, 58, lift), 0];
         return v.map((q, j) => (j === 4 ? lp(q, 0.75, lift) : q));
       }
       /* THE CHANT (the plan's 9.7, 26-40 s, the measured take): low, from the floor inside the circle, looking out to his glass
