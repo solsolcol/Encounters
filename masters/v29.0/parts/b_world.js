@@ -887,7 +887,7 @@
       bowl:     { x: 0.78, y: CLOTH_Y, z: 1.22 },
       candle1:  { x: 0.18, y: CLOTH_Y, z: 1.34 },
       candle2:  { x: 0.30, y: CLOTH_Y, z: 0.98 },
-      plate:    { x: 0.22, y: CLOTH_Y, z: 1.18 },                     // the small white plate, apart from the rest (9.2). (PLAY, 27 Nov, from 0.08, 0.96: 1.0 m from Grandmaster Pho's cushion, out of his seated reach, measured by FILMS-1; here 0.75 m, its middle 0.16 m from candle1, 0.21 from candle2, 0.16 from the cord's bottle spot, 0.36 from the incense)
+      plate:    { x: 0.22, y: CLOTH_Y, z: 1.18 },                     // the small white plate, apart from the rest (9.2). (PLAY, 27 Nov, from 0.08, 0.96: 1.0 m from Grandmaster Pho's cushion, out of his seated reach, measured by FILMS-1; here 0.75 m, its middle 0.16 m from candle1, 0.21 from candle2, 0.36 from the incense, 0.5 from the cord's bottle spot, which FILMS-1 moved to 0.70, 1.36 at abdc234)
       lighter:  { x: 0.95, y: CLOTH_Y, z: 1.36 },
       incense:  { x: 0.52, y: CLOTH_Y, z: 1.38 },
       jug:      { x: 1.12, y: 0, z: 1.36 }                            // on the floor at his knee, by the table's end (PLAY, M6: from 1.18, 1.58, under his own knees and out of his sight)
