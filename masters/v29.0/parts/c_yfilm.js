@@ -972,11 +972,13 @@
       /* (measured 27 Nov: from the play's station, 0.24 m behind the sofa's back, his hand stopped 0.3 m short of her
          shoulder: in this film he stands against the back, 0.17 m nearer; the breaking's own station takes him back unseen,
          the film ending on the bowl) */
-      const M = KEEP1.mkStand; put(P, M.x + 0.02, M.z + 0.17, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
+      /* (27 Nov, PLAY's clipscan of the breaking: 0.17 m nearer, at z -0.85, he stood 5 cm into the sofa's back; z -0.93, the
+         breaking's own station since 1187810, clears it, and he leans further over to her shoulder) */
+      const M = KEEP1.mkStand; put(P, M.x + 0.02, -0.93, M.ry, 0); pose(P, 'Idle_3', 1.2 + t * 0.3, true);
       const on = f1Env(t, T.bag + 0.4, T.pull + 0.5, 0.8, 0.6);   // (his hand leaves her shoulder as she gets up)
       /* (her shoulder is 0.7 m from his across the sofa's back: he leans over it to lay his hand there, as a person does;
          photographed 27 Nov, leaning 0.28 rad his left hand stopped short of her shoulder, over her bowed head) */
-      f1Lean(P, 0.5 * on);
+      f1Lean(P, 0.62 * on);
       /* (photographed 27 Nov: laid by the collar bone's root, by her neck, his hand came down on her hair as she bowed her head:
          now on the top of her shoulder, over its joint, a little in from it) */
       if (on > 0.001) { const g = cast.grace; const sh = g && g.ready ? (f1Bone(g, 'RightArm') || f1Bone(g, 'RightShoulder')) : null, nk = g && g.ready ? f1Bone(g, 'Neck') : null;
