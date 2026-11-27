@@ -37,20 +37,20 @@ His pocket moved from x 200 to **x 300** (`HX`): at 200 his city's towers stood 
 
 | name | x, z (ry) | notes |
 |---|---|---|
-| `table` | 0.5, 1.15 | coffee table 1.0 x 0.55, top 0.42; `w51ctable` |
-| `CLOTH_Y` | 0.432 | the cloth's top; `WORLD.cloth(k)` lays it (0 away, 1 laid) |
+| `table` | 0.5, 1.15 | coffee table 1.0 x 0.54, top 0.397 (`w51ctable`, measured) |
+| `CLOTH_Y` | 0.411 | the cloth's top; `WORLD.cloth(k)` lays it (0 away, 1 laid) |
 | `pho` | 0.5, 1.87 (π) | on his cushion (`w5cushion`, top 0.12), facing the door across the room |
 | `him` | 1.45, 1.9 (yaw 0.41) | he kneels at Pho's right by her windows; `KNEEL_EYE` 1.12 (the reflection's measure) |
-| `sofa` | 0.5, -0.35 (0) | 1.5 x 0.82, seat 0.44 (`w51gsofa`), its back to the door |
-| `grace` | 0.42, -0.32 (0), y 0.44 | where she sits |
-| `rattan` | -1.55, -0.95 (0.77), seat 0.45 | Marcus, by the door, turned to the table (`w51rattan`) |
+| `sofa` | 0.5, -0.35 (0) | 1.5 x 0.87, its cushions' top 0.51 (`w51gsofa`, measured), its back to the door |
+| `grace` | 0.42, -0.32 (0), y 0.51 | where she sits (her bag on the cushion beside her at 0.86, 0.50, -0.36) |
+| `rattan` | -1.55, -0.95 (0.77), seat 0.42 | Marcus, by the door, turned to the table (`w51rattan`; its cushion's top measured 0.418: c_cast seats him at 0.45 today, 3 cm over it) |
 | `door` | -2.75, -2.375 | her front door (above) |
 | `shelf` | -1.6, 2.78 (π) | bookshelf (`w51shelf`); her table lamp on its top (`w5tablelamp`) |
 | `fan` | 0.45, 0.75 | ceiling fan (`w5ceilfan`), turning; its shadow turning on the ceiling |
 | `bag` | 1.02, y 0.44, -0.33 | her open bag on the sofa (`w51bag`), the packet in it (`w51keepsake`, things.keepsake) |
 | `plant` | 2.25, -2.55 | dracaena in the window corner |
 
-**On the cloth (`ON_CLOTH`, y = CLOTH_Y 0.412 unless said):** bowl 0.78, 1.22 (`w4bigbowl`, warm-tinted: the plan's brass) ·
+**On the cloth (`ON_CLOTH`, y = CLOTH_Y 0.411 unless said):** bowl 0.78, 1.22 (`w4bigbowl`, warm-tinted: the plan's brass) ·
 candle1 0.18, 1.34 (lit in LAMP) · candle2 0.30, 0.98 (unlit) · plate 0.08, 0.96 (`w51plate`) · lighter 0.95, 1.36
 (`w51lighter`) · incense 0.52, 1.38 (`w51incense`) · jug 1.18, y 0, 1.58 at his knee (`w51jug`). Each is `things.<name>`.
 `WORLD.candleLit('candle1'|'candle2', on)` (null gives it back to the look).
@@ -111,16 +111,16 @@ and costs one draw per body part and per piece of her room while drawn.
 | name | x, z (ry) | notes |
 |---|---|---|
 | `door` | 296.2, -2.5; hinge x 295.8 | his front door (`w5frontdoor`, dark veneer); `WORLD.hisDoor(k)` 0 shut (solid), 1 open into his flat; keycard reader at 296.68 |
-| `altar` | 295.71, 0.35 (π/2), top 1.03 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, the jasmine (`w51jasmine`), a glass of water (`w51glass`); `things.bottle` (hidden until the film of home sets it down at 295.85, 1.03, 0.27) |
+| `altar` | 295.71, 0.35 (π/2), top 1.0 | `w51altarcab` on the living room's left wall: Buddha (`e4buddha`), his teacher's photograph (`w4framesmall`), a candle, the jasmine (`w51jasmine`), a glass of water (`w51glass`); `things.bottle` (hidden until the film of home sets it down at 295.85, 1.0, 0.27) |
 | `bag` | 297.0, -2.2 (0.2) | his own grey canvas bag on the floor inside his front door (`e4bag`, `things.hisBag`): at three o'clock he takes the white thread out of it (9.7); the spool `w51threadreel` is FILMS' to put in his hand |
 | `phone` | 300.15, y 0.698, -0.2 | his phone on its charger (`things.hisPhone`, `e4phone`); DATA.shrine |
 | `dining` | 300.75, -0.25 (0) | 1.6 x 0.98, top 0.69 (`w51dintable`); `chair1` 300.75, 0.55 (π, his), `chair2` 300.75, -1.05 (0, Pho's at dawn) |
-| `sofa` | 297.7, -0.95 (0), seat 0.45 | `w51sofa`, facing his glass |
+| `sofa` | 297.7, -0.95 (0), seat 0.443 | `w51sofa` (measured), facing his glass |
 | `circle` | 297.8, 1.0, r 0.75 | the middle of the floor: the thread's circle |
-| `bed` | 307.27, 0.8 (-π/2), 1.7 x 1.87, mattress about 0.5 | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
+| `bed` | 307.27, 0.8 (-π/2), 1.7 x 1.87, mattress top 0.567 (measured) | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
 | `getUp` | 306.7, -0.48 | where he stands up from it: `STATION.night.at` (yaw 2.17, toward the bedroom door) |
 | `bedDoor` | 304.4, 1.2; hinge z 1.65 | `WORLD.bedDoor(k)` 1 open (play), ~0.15 ajar |
-| `clock` | 307.98, y 0.45, 2.1 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside is a stool (`w4stool`, `things.bedside`) at 307.95, 2.05, top 0.45, a glass of water on it (`things.bedGlass`, the one that trembles) |
+| `clock` | 307.9, y 0.45, 2.12 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside is a stool (`w4stool`, painted plain white: red is the spell's alone; `things.bedside`) at 307.95, 2.05, top 0.45, a glass of water on it at 308.02, 1.99 (`things.bedGlass`, the one that trembles) |
 | `aircon` | 308.08, y 2.25, 0.8 | the wall unit over his bed's head (`w51aircon`) |
 | `kettle` | 302.0, -2.2, y 0.92 | on his kitchen counter (`w51kettle`) |
 | `oven` | 301.75, y 0.86, -1.88 | `WORLD.ovenClock('3:41')` (ending B) |

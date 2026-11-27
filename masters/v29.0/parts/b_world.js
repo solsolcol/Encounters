@@ -873,7 +873,7 @@
       him:    { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, ry: WORLD_AT.kneel.ry },   // he kneels at Pho's right, by her windows
       sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.51, ry: 0 },   // (seat: its cushions' top, measured)   // her two-seat sofa, its back to the door
       grace:  { x: 0.42, z: -0.32, ry: 0 },                           // where she sits on it (her right-hand seat, facing him and Pho)
-      rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.45 },           // the rattan chair by the door, turned to the table: Marcus
+      rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.42 },   // (seat: its cushion's top, measured)           // the rattan chair by the door, turned to the table: Marcus
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
       shelf:  { x: -1.6, z: 2.78, ry: Math.PI },                      // the bookshelf against the +z wall
       fan:    { x: 0.45, z: 0.75 },                                   // the ceiling fan over the table
@@ -964,7 +964,7 @@
       bedside: { x: HX + 7.95, z: 2.05 },
       getUp:   { x: HX + 6.7, z: -0.48 },                                // where he stands up from it (the bed's -z side)
       bedDoor: { x: BED.x0, z: 1.2, hingeZ: 1.65 },                      // the bedroom door, ajar
-      clock:   { x: HX + 7.98, y: 0.45, z: 2.1, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside stool, turned to the bed
+      clock:   { x: HX + 7.9, y: 0.45, z: 2.12, ry: -Math.PI / 2 - 0.5 },   // the alarm clock on his bedside stool, turned to the bed
       aircon:  { x: BED.x1 - 0.12, y: 2.25, z: 0.8, ry: -Math.PI / 2 },   // the wall unit over his bed's head, on the +x wall
       kettle:  { x: HX + 2.0, z: LIV.z0 + 0.3 },                       // on the kitchen counter
       bag:     { x: HX - 3.0, z: LIV.z0 + 0.3, ry: 0.2 },              // his bag on the floor inside his front door
@@ -987,8 +987,10 @@
       place('hisPhone', 'e4phone', WORLD_AT.phone.x, WORLD_AT.phone.y, WORLD_AT.phone.z, 0.2);
       place('bed', 'w51bed', HIS.bed.x, 0, HIS.bed.z, HIS.bed.ry, { solid: [HIS.bed.w, HIS.bed.l, 0.7] });
       /* his bedside: a stool for a table (a real model: episode 4 chapter 4's), the alarm clock and a glass of water on it */
-      place('bedside', 'w4stool', HIS.bedside.x, 0, HIS.bedside.z, 0.3, { solid: [0.4, 0.4, 0.6] });
-      place('bedGlass', 'w51glass', HIS.bedside.x - 0.09, 0.45, HIS.bedside.z - 0.06, 0);           // the glass of water that trembles (8.3)
+      /* (its red plastic painted a plain white at runtime: red is the spell's colour alone in this chapter, the plan's 4.5) */
+      place('bedside', 'w4stool', HIS.bedside.x, 0, HIS.bedside.z, 0.3, { solid: [0.4, 0.4, 0.6],
+        done: (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) if (mt && mt.color) { mt.map = null; mt.color.setHex(0xd6d4cc); mt.roughness = 0.55; mt.needsUpdate = true; } }) });
+      place('bedGlass', 'w51glass', HIS.bedside.x + 0.07, 0.45, HIS.bedside.z - 0.06, 0);           // the glass of water that trembles (8.3)
       place('altarGlass', 'w51glass', HIS.altar.x + 0.1, HIS.altar.top, HIS.altar.z + 0.12, 0);
       place('bedClock', 'w51clock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);            // the alarm clock on his bedside (9.4's insert: 11:58, 3:00)
       place('aircon', 'w51aircon', HIS.aircon.x, HIS.aircon.y, HIS.aircon.z, HIS.aircon.ry);
@@ -1198,7 +1200,7 @@
       const sh = (x, y, z, w, d, k = 0.38, ry = 0) => pool(x, y + 0.003, z, w, d, 0x000000, k, { add: false, rz: -ry, look: null });
       sh(HER.table.x, 0, HER.table.z, 1.25, 0.8); sh(HER.sofa.x, 0, HER.sofa.z, 1.75, 1.05); sh(HER.rattan.x, 0, HER.rattan.z, 0.8, 0.8, 0.34, HER.rattan.ry);
       sh(HER.shelf.x, 0, HER.shelf.z - 0.02, 1.0, 0.5); sh(HER.plant.x, 0, HER.plant.z, 0.7, 0.7); sh(-4.25, 0, 0.6, 1.3, 1.8, 0.32); sh(-5.18, 0, 2.6, 0.9, 0.9);
-      for (const k of ['bowl', 'candle1', 'candle2', 'incense', 'plate']) { const c = ON_CLOTH[k]; const r = k === 'bowl' ? 0.42 : k === 'plate' ? 0.2 : 0.11; sh(c.x, c.y, c.z, r, r, 0.3); }
+      for (const [c, r] of [[ON_CLOTH.bowl, 0.42], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
       sh(ON_CLOTH.jug.x, 0, ON_CLOTH.jug.z, 0.22, 0.22, 0.3);
       sh(HIS.sofa.x, 0, HIS.sofa.z, 2.35, 1.05); sh(HIS.dining.x, 0, HIS.dining.z, 1.85, 1.25, 0.32); sh(HIS.bed.x, 0, HIS.bed.z, 2.1, 1.95, 0.4);
       sh(HIS.altar.x + 0.03, 0, HIS.altar.z, 0.75, 1.05); sh(HIS.bedside.x, 0, HIS.bedside.z, 0.5, 0.5);
