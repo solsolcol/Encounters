@@ -9346,3 +9346,10 @@ masters/v24.*/src, his old Pho experiment files, Blender, and its helpers' last 
 - After a restart, the old session's own record is read for his messages (mcp list_events on the dead session, every
   page back to the last message on record, each page read by tools/evhuman.py: only events with no helper's
   agent_id and no tool result), and held against the plan's §0 before any work.
+
+**A lock that waiters poll is not a queue (27 Nov 2026).** Five helpers shared the machine's two browser slots through
+`flock -n` in a polling loop: tools/bslot.sh slept 3 s between tries, a helper's private waiter 0.25 s, so the fast
+poller took every slot that came free and a probe behind it waited 28 minutes and more. Serve in turn: each caller takes
+a numbered ticket, only the oldest ticket whose caller is alive may take a free slot, and a dead caller's ticket is
+dropped by the next waiter (tools/bslot.sh since 16cd771, proved on a throwaway copy: five callers served in order, two
+at a time, a killed waiter skipped). And nobody waits on the locks by any other road.
