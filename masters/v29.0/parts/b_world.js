@@ -898,6 +898,7 @@
       stand('w4doorleaf', 0, 0, 0.47, Math.PI / 2, { parent: hp, done: matteOf });
       things.herDoorSolid = solidBox(0.1, 2.1, 0.95, FRONT.x0 - 0.075, 1.05, HER.door.z);
       stand('w4doorleaf', BACKR.x0 - 0.075, 0, -0.83, Math.PI / 2, { parent: herFlatG, done: matteOf });       // the bedroom door, shut
+      solidBox(0.1, 2.1, 0.94, BACKR.x0 - 0.075, 1.05, -0.83);
       const sp = new THREE.Group(); sp.position.set(STREET.shop, GY, STAIR.z1); sp.name = 'the street door'; streetG.add(sp); things.streetDoorPivot = sp;
       stand('w4doorleaf', 0, 0, -0.5, Math.PI / 2, { parent: sp, done: matteOf });
       /* on the landing: the metal gate folded back against the lobby's wall, her shoes by the door, a plant */
