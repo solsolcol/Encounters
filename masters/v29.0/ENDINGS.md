@@ -174,6 +174,20 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     the dawn's first frame (a change in the black); head turns of 90 to 100 degrees a second as he turns to walk or to the
     knock; and his teacher's "drawn height" steps, which are parts of him outside the picture (their extent past the
     screen's edge) or a reading taken before he is in it. The fixed moves are measured again (runs s12, s13).
+  - EVERY KIND OF CLIPPING (R15, the tracker's CP9.3a), my films' part of it. (6, 7) THE FILM'S EYE AND HIS WAY against the
+    place's solids, every tenth of a second of all four (run s7's rows against the stage's blockers, their 0.14 m of growth
+    taken back): the door's insert looked from inside his sofa (32 cm up, 0.75 m out from the door's line: moved to between
+    the sofa's end and the wall) and C's way from the tap to his sofa crossed his teacher's chair's back corner (now along
+    the counter behind it); read and left: his eye over the sofa's front edge as he sits on it (B, C), over his own chair at
+    the table, and in the balcony's open doorway (D: the closed door's footprint, the door slid open). (9) LIGHT OVER WHAT
+    STANDS BEFORE IT, read in the full-size pictures: the gold's rings and dome drawn inside the room before his glass and
+    the balcony's chairs; the threads through the glass and under the door (spirits); the band, its flash and the white
+    thread in the hands' pass, nearest of all; the band's spirit twin under his hand in Spirit Vision; the dawn's dust in
+    the light. One found and fixed: the band's twin drawn over the chant with no hand under it (run 10, 88.8 s). (1, 2, 3, 4)
+    THE SWEEP by measure (run c14): each ending's own part every 2 s and at every touch, the barrier and the dawn every 2 s
+    in A, clipscan over the world within 4 m of the lens, the limbs' own check (tools/probes/limbclip.js, the shared file at
+    5b212b7: his teacher standing and seated), clipscan over the hands' own scene (his arms, the phone, the strip, the
+    spool, the rings, the cushion), and his teacher's bodies at their moments (jointscan, feetscan): its findings below.
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
