@@ -841,7 +841,7 @@
       if (!up || lineBusy()) return;
       if (!night5.said.has('n1')) { night5.said.add('n1'); say('zv51n1'); }
       else if (!night5.said.has('n2') && x > PASS.x0 - 0.8 && x < PASS.x1 + 0.3) { night5.said.add('n2'); say('zv51n2'); }
-      else if (!night5.said.has('n3') && distTo(HIS.altar.x, HIS.altar.z) < 5.2) { night5.said.add('n3'); say('zv51n3'); }
+      else if (!night5.said.has('n3') && distTo(HIS.altar.x, HIS.altar.z) < 5.2 && things.bottle && things.bottle.visible) { night5.said.add('n3'); say('zv51n3'); }
     }
     /* THE BEAT NEVER LEFT TO CHANCE (v21.17): at the bedroom door, the strongest wave, and Spirit Vision forced open for four
        seconds: his footsteps lit red from the front door in, a few at a time, and the threads coming in after them */
@@ -1070,6 +1070,9 @@
       if (R.p !== 'breaking') RATANA.stop();
       playClear();
       if (things.hisPhone) things.hisPhone.visible = true;
+      /* (the bottle of holy water stands on his altar from the film of home on: a Continue into the night, which plays no
+         film, found the altar without it, and "The water I brought home was shaking." said over nothing, 27 Nov) */
+      if (things.bottle) things.bottle.visible = R.p === 'night' || R.p === 'ask';
       worldPhase(R.p);
       if (R.p === 'room') roomBegin(R.found);
       else if (R.p === 'breaking') breakingBegin();
@@ -1084,7 +1087,7 @@
       Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false, drift: 0, share: undefined });
       Object.assign(night5, { p: 0, waves: [], nextWave: 0, kneeT: 0, tipSaid: false, forced: 0, said: new Set(), getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, handed: false });
       fx.waterK = 0; fx.pourT = 0; fx.phoneLit = 0; fx.footRun = 0; footSet(0); lastPos = null;
-      if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true;
+      if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true; if (things.bottle) things.bottle.visible = false;
       if (WORLD.candleLit) WORLD.candleLit('candle2', null);
       lookAt0('LAMP');
     }
