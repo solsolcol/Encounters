@@ -83,7 +83,7 @@ under his thought and fades with the picture.
 His phone (`e4phone`, the play's model: `f2PhoneGroup`, its screen drawn: 3:03 and his teacher's name, "Calling…", the
 call's seconds), held with its screen to him (`f2PhoneFace`: the play's hold at the decision shows the phone's back to the
 lens, its screen's normal (0.31, -0.77, 0.56) in the lens's frame, measured: a finding for PLAY, said in the report);
-the spool (`w51threadreel`), the pills (`w51pills`), a cushion (`w5cushion`, reused), the breakfast (`w51breakfast`), his
+his oven's clock (WORLD's `ovenClock`: each ending's own time, 3:03, then B's 3:41, C's 3:22, D's 3:05, and 7:10 at dawn), the spool (`w51threadreel`), the pills (`w51pills`), a cushion (`w5cushion`, reused), the breakfast (`w51breakfast`), his
 bag (`e4bag`, WORLD's), the bottle on his altar (WORLD's, trembling with each wave, still at the break), the dining table and
 its two chairs (WORLD's, as WORLD stands them: build 2 of these films turned the chairs about for the dawn, read from a
 picture where his teacher sat back through the backrest; measured, they face the table, and the turn is gone). Grandmaster
@@ -208,4 +208,5 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
    (it asks for `RightHandIndex1` or `mixamorig:RightHandIndex1`), so it does nothing on his teacher's standing body, where
    FILMS-1's films call it too (c_yfilm.js, her table and the gift); WORLD's two picture frames on the wall by the passage
    stand into the wall (clipscan, 428 and 422 crossings at x 303.3 to 304.2, 1.45 to 1.8 m up), and the clothes rack on his
-   balcony through the plant beside it (244).
+   balcony through the plant beside it (244); his oven's clock reads the world's own 11:52 through the play at three in the
+   morning (b_world.js sets it once; nothing in the play sets it again: the endings now set it to their own time, 4).
