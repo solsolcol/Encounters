@@ -1,0 +1,704 @@
+{
+  "_about": [
+    "v29.0 · episode 5 chapter 1 (e5c1), THE LOVE SPELL THAT FOLLOWED ME HOME: EVERY LINE IT SPEAKS, one row a line.",
+    "The source is docs/V29.0-E5C1-PLAN.md: its 10 (every line), its 8 and 9 (where each is said, and when), its 9.10 (the four lines under the cards) and its 11.6 (the two chants). Every line of Grandmaster Pho's goes to Chad before it is voiced (v26.0); until his word they stand as the plan drafts them (R3: build it all now, on the plan's defaults).",
+    "THIS FILE IS THE ONE COPY OF THE WORDS. masters/v29.0/assemble.py writes the chapter's SECS, LINES, SAID, CHANTS and WHO tables from it (src/chapters/e5/e5c1.js is generated: never edited by hand).",
+    "WHY IT IS HERE AND NOT YET IN src/voicelines.js: the registry takes a row only when its take is on disk (chaptertest: a planned row, `est`, is allowed only for a preview chapter, and Chad's rule of v27.0 is that no chapter is ever a preview). When a line is voiced: its take goes to assets/audio and assets/audio-opus under its key; `python3 -I masters/v29.0/script/registry.py --write` writes its row into src/voicelines.js (who: the `registry` name of its speaker below); its key goes into main.js's sound tables (and ADULT_TAKES for `zv`); and its MEASURED length goes here as `secs` (assemble.py then writes that instead of the provisional one).",
+    "A row: key (<speaker>51<id>: ph51 Grandmaster Pho, zv51 Master Zavier, gr51 Grace, mk51 Marcus); who (a speaker below); at (where in the chapter: open, room, keepsake, breaking, cord, home, night, barrier, endA to endD, dawn, card); where (the moment, in words); text (the words exactly as the plan has them). Optional: thought (his thought, heard as the man telling the story); same (another key with the same words); say (what the voice is given where it differs from the text); note; secs (its measured length, once voiced); chant with captions (a chant: its lines as [the Pali as chanted, its meaning], each a caption) and pace (its own provisional words a second).",
+    "PROVISIONAL LENGTHS: until `secs` is given, a line's length is its words / 2.3 seconds (the game's median pace; a chant at its own `pace`). Nothing is timed to these for good: a film built on them moves when the take is measured (v5.15).",
+    "HIS NAME IS WRITTEN Pho AND SAID Puu (Chad, R49 of episode 4 chapter 5): no line here says it aloud ('Grandmaster' is said in full), so none carries `say`; a line added that does must. A MASTER'S TITLE IS SPOKEN IN FULL (never 'LP'). ANUMODANA is said only by a monk: everyone here says thank you (v24.25).",
+    "THE TWO CHANTS (the plan's 11.6): their Pali and meaning VERBATIM from Thanissaro Bhikkhu's A Chanting Guide (dhammatalks.org), the page's own spelling and punctuation, its bold stress marks dropped. THE BREAKING: the guide carries the Discourse on Treasures as the Cha Ratana Paritta Gatha, 'The Six Protective Verses from the Discourse on Treasures' (Section0052), not the sutta's opening verses the plan names, so its first three verses are given here (the Buddha, the Dhamma, the concentration) and the change is said to the coordinator. THE BARRIER: the Jinapanjara's first four verses as docs/research/V29.0-LOVESPELL.md 3 has them (Section0093). Both go to Chad before they are voiced."
+  ],
+  "pace": 2.3,
+  "speakers": {
+    "zv": {
+      "name": "Master Zavier (the player)",
+      "registry": "jamesAdult",
+      "voice": "Brian, his voice since episode 3"
+    },
+    "ph": {
+      "name": "Grandmaster Pho",
+      "registry": "pho",
+      "voice": "his own, as episode 4 chapters 3 to 5 (Songkran)"
+    },
+    "gr": {
+      "name": "Grace",
+      "registry": "grace51",
+      "voice": "TO BE CAST (three auditioned, loudness-matched, Chad's ear: v5.18; SOUND sets it)"
+    },
+    "mk": {
+      "name": "Marcus",
+      "registry": "marcus51",
+      "voice": "TO BE CAST (as Grace's)"
+    }
+  },
+  "lines": [
+    {
+      "key": "zv51o1",
+      "who": "zv",
+      "at": "open",
+      "where": "the opening, over black (1.0 s)",
+      "thought": true,
+      "text": "Case four."
+    },
+    {
+      "key": "zv51o2",
+      "who": "zv",
+      "at": "open",
+      "where": "the opening, the crane down the shophouse row at blue hour (2.6 s)",
+      "thought": true,
+      "text": "A man asked us to come and see his colleague. He said she was not herself."
+    },
+    {
+      "key": "mk51o1",
+      "who": "mk",
+      "at": "open",
+      "where": "the opening, the five-foot way: Marcus comes to meet them (17.0 s)",
+      "text": "Thank you for coming, Grandmaster. She said you can come up."
+    },
+    {
+      "key": "ph51o1",
+      "who": "ph",
+      "at": "open",
+      "where": "the opening, the five-foot way: to Marcus (20.0 s)",
+      "text": "Thank you. Show us the way."
+    },
+    {
+      "key": "mk51o2",
+      "who": "mk",
+      "at": "open",
+      "where": "the opening, the landing: Marcus knocks (35.5 s)",
+      "text": "Grace? They're here."
+    },
+    {
+      "key": "gr51o1",
+      "who": "gr",
+      "at": "open",
+      "where": "the opening, the landing: Grace opens her door (38.0 s)",
+      "text": "Come in. Sorry about the mess."
+    },
+    {
+      "key": "ph51o2",
+      "who": "ph",
+      "at": "open",
+      "where": "the opening, the landing: to Grace (40.5 s)",
+      "text": "Thank you for letting us in."
+    },
+    {
+      "key": "zv51o3",
+      "who": "zv",
+      "at": "open",
+      "where": "the opening, her front room: he kneels and looks at the window's glass (47.0 s)",
+      "thought": true,
+      "text": "She had let us in. But something kept turning her back to the door."
+    },
+    {
+      "key": "zv51r1",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: he looks at her phone",
+      "thought": true,
+      "text": "Every time it lit up, she leaned toward the door."
+    },
+    {
+      "key": "ph51r1",
+      "who": "ph",
+      "at": "room",
+      "where": "play, the room: after he looks at her phone",
+      "text": "Don't look at what it says. Look at what it does to her."
+    },
+    {
+      "key": "zv51r2",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: he looks at her reflection in the window",
+      "thought": true,
+      "text": "In the glass, she was facing the stairs."
+    },
+    {
+      "key": "ph51r2",
+      "who": "ph",
+      "at": "room",
+      "where": "play, the room: after he looks at her reflection",
+      "text": "The glass shows where she is being pulled."
+    },
+    {
+      "key": "zv51r3",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: he looks at her hands on her bag strap",
+      "thought": true,
+      "text": "Her hands never stopped. Like she was already leaving."
+    },
+    {
+      "key": "ph51r3",
+      "who": "ph",
+      "at": "room",
+      "where": "play, the room: after he looks at her hands",
+      "text": "She is not weak. She is tired of being pulled."
+    },
+    {
+      "key": "zv51r4",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: he looks at the packet in her open bag",
+      "thought": true,
+      "text": "Something in her bag. Wrapped in cloth, tied with red cord."
+    },
+    {
+      "key": "ph51r4",
+      "who": "ph",
+      "at": "room",
+      "where": "play, the room: after he looks at the packet",
+      "text": "Ask her where she got it."
+    },
+    {
+      "key": "zv51r5",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: he asks Grace",
+      "text": "Grace, the little packet in your bag. Where is it from?"
+    },
+    {
+      "key": "gr51r1",
+      "who": "gr",
+      "at": "room",
+      "where": "play, the room: Grace answers, after a long pause",
+      "text": "He gave it to me. He said it would keep me safe."
+    },
+    {
+      "key": "mk51r1",
+      "who": "mk",
+      "at": "room",
+      "where": "play, the room: Marcus, quietly",
+      "text": "That was around when she changed."
+    },
+    {
+      "key": "zv51r6",
+      "who": "zv",
+      "at": "room",
+      "where": "play, the room: Spirit Vision open on Grace, the red line seen",
+      "thought": true,
+      "text": "A thread. From her chest to the door."
+    },
+    {
+      "key": "gr51r2",
+      "who": "gr",
+      "at": "room",
+      "where": "play, the room: Grace stands up the first time (40 s)",
+      "text": "I should go.",
+      "note": "the first of two takes (the plan: two takes)"
+    },
+    {
+      "key": "gr51r3",
+      "who": "gr",
+      "at": "room",
+      "where": "play, the room: Grace stands up the second time (110 s)",
+      "text": "I should go.",
+      "same": "gr51r2",
+      "note": "the second take, so the two times do not sound the same"
+    },
+    {
+      "key": "mk51r2",
+      "who": "mk",
+      "at": "room",
+      "where": "play, the room: each time Grace stands up",
+      "text": "Grace, please."
+    },
+    {
+      "key": "ph51r5",
+      "who": "ph",
+      "at": "room",
+      "where": "play, the room: each time Grace stands up, after Marcus",
+      "text": "Sit. A little longer."
+    },
+    {
+      "key": "ph51k1",
+      "who": "ph",
+      "at": "keepsake",
+      "where": "film, the keepsake: his open hand held out to Grace (0.8 s)",
+      "text": "May I hold it? Only for a while."
+    },
+    {
+      "key": "ph51k2",
+      "who": "ph",
+      "at": "keepsake",
+      "where": "film, the keepsake: to his student, the bowl lifted (23.0 s)",
+      "text": "Hold the water. Whatever happens, keep it still."
+    },
+    {
+      "key": "ph51ratana",
+      "who": "ph",
+      "at": "keepsake",
+      "where": "film, the keepsake (32.0 s), and on under the breaking and the cord: the chant of the water, three drops of wax in it",
+      "text": "Yaṅ-kiñci vittaṁ idha vā huraṁ vā Saggesu vā yaṁ ratanaṁ paṇītaṁ Na no samaṁ atthi Tathāgatena. Idam-pi Buddhe ratanaṁ paṇītaṁ Etena saccena suvatthi hotu. Khayaṁ virāgaṁ amataṁ paṇītaṁ Yad-ajjhagā Sakyamunī samāhito Na tena dhammena sam’atthi kiñci. Idam-pi dhamme ratanaṁ paṇītaṁ Etena saccena suvatthi hotu. Yam-buddha-seṭṭho parivaṇṇayī suciṁ Samādhim-ānantarik’aññam-āhu Samādhinā tena samo na vijjati. Idam-pi dhamme ratanaṁ paṇītaṁ Etena saccena suvatthi hotu.",
+      "chant": true,
+      "pace": 1.4,
+      "captions": [
+        [
+          "Yaṅ-kiñci vittaṁ idha vā huraṁ vā / Saggesu vā yaṁ ratanaṁ paṇītaṁ / Na no samaṁ atthi Tathāgatena.",
+          "Whatever wealth in this world or the next, whatever exquisite treasure in the heavens, is not, for us, equal to the Tathāgata."
+        ],
+        [
+          "Idam-pi Buddhe ratanaṁ paṇītaṁ / Etena saccena suvatthi hotu.",
+          "This, too, is an exquisite treasure in the Buddha. By this truth may there be well-being."
+        ],
+        [
+          "Khayaṁ virāgaṁ amataṁ paṇītaṁ / Yad-ajjhagā Sakyamunī samāhito / Na tena dhammena sam’atthi kiñci.",
+          "The exquisite deathless—dispassion, ending—discovered by the Sakyan Sage while in concentration: There is nothing equal to that Dhamma."
+        ],
+        [
+          "Idam-pi dhamme ratanaṁ paṇītaṁ / Etena saccena suvatthi hotu.",
+          "This, too, is an exquisite treasure in the Dhamma. By this truth may there be well-being."
+        ],
+        [
+          "Yam-buddha-seṭṭho parivaṇṇayī suciṁ / Samādhim-ānantarik’aññam-āhu / Samādhinā tena samo na vijjati.",
+          "What the excellent Awakened One extolled as pure and called the concentration of unmediated knowing: No equal to that concentration can be found."
+        ],
+        [
+          "Idam-pi dhamme ratanaṁ paṇītaṁ / Etena saccena suvatthi hotu.",
+          "This, too, is an exquisite treasure in the Dhamma. By this truth may there be well-being."
+        ]
+      ],
+      "source": "Thanissaro Bhikkhu, A Chanting Guide: Cha Ratana Paritta Gatha, The Six Protective Verses from the Discourse on Treasures, its first three verses (https://www.dhammatalks.org/books/ChantingGuide/Section0052.html, read 27 Nov 2026)",
+      "note": "the plan names the Ratana Sutta's opening verses; the guide carries only these six protective verses of it, so the first three are taken (said to the coordinator). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced."
+    },
+    {
+      "key": "ph51s1",
+      "who": "ph",
+      "at": "breaking",
+      "where": "play, the breaking: the light stayed out of the ring too long; his hand comes under the bowl (that surge taken once more)",
+      "text": "Slowly. Again."
+    },
+    {
+      "key": "ph51c1",
+      "who": "ph",
+      "at": "cord",
+      "where": "film, the cord: Grace breathes out and cries; gently (15.0 s)",
+      "text": "It's alright. It's finished."
+    },
+    {
+      "key": "zv51c1",
+      "who": "zv",
+      "at": "cord",
+      "where": "film, the cord: her phone lights up; she turns it face down (29.0 s)",
+      "thought": true,
+      "text": "For the first time all evening, she let it ring."
+    },
+    {
+      "key": "ph51c2",
+      "who": "ph",
+      "at": "cord",
+      "where": "film, the cord: to Grace, the packet bound in white thread (33.0 s)",
+      "text": "Rest tonight. Tomorrow, stay close to people who listen to you."
+    },
+    {
+      "key": "ph51c3",
+      "who": "ph",
+      "at": "cord",
+      "where": "film, the cord: to Marcus (37.5 s)",
+      "text": "Don't let her meet him alone. A friend is medicine too."
+    },
+    {
+      "key": "mk51c1",
+      "who": "mk",
+      "at": "cord",
+      "where": "film, the cord: Marcus (41.0 s)",
+      "text": "I won't. Thank you, Grandmaster."
+    },
+    {
+      "key": "gr51c1",
+      "who": "gr",
+      "at": "cord",
+      "where": "film, the cord: Grace, small (43.0 s)",
+      "text": "Thank you."
+    },
+    {
+      "key": "ph51c4",
+      "who": "ph",
+      "at": "cord",
+      "where": "film, the cord: the corked bottle given to him (48.0 s)",
+      "text": "For your altar."
+    },
+    {
+      "key": "ph51c5",
+      "who": "ph",
+      "at": "cord",
+      "where": "film, the cord: to him (50.0 s)",
+      "text": "You held it well."
+    },
+    {
+      "key": "zv51c2",
+      "who": "zv",
+      "at": "cord",
+      "where": "film, the cord: his look drops to his wrist (52.0 s)",
+      "thought": true,
+      "text": "My part was small. I only held the water.",
+      "note": "the case file's own words"
+    },
+    {
+      "key": "zv51h1",
+      "who": "zv",
+      "at": "home",
+      "where": "film, home: in bed, his eyes closing (41.0 s)",
+      "thought": true,
+      "text": "Everyone thought that was the end of it.",
+      "note": "the case file's own words"
+    },
+    {
+      "key": "zv51n1",
+      "who": "zv",
+      "at": "night",
+      "where": "play, three o'clock: the first wave after he gets up (once)",
+      "thought": true,
+      "text": "Like my head was in a vice."
+    },
+    {
+      "key": "zv51n2",
+      "who": "zv",
+      "at": "night",
+      "where": "play, three o'clock: a later wave, in the passage (once)",
+      "thought": true,
+      "text": "Not a headache. Something was pressing in from every side."
+    },
+    {
+      "key": "zv51n3",
+      "who": "zv",
+      "at": "night",
+      "where": "play, three o'clock: the bottle of holy water on his altar trembling (once)",
+      "thought": true,
+      "text": "The water I brought home was shaking."
+    },
+    {
+      "key": "zv51n4",
+      "who": "zv",
+      "at": "night",
+      "where": "play, three o'clock: at the bedroom door, Spirit Vision forced open, his footsteps glowing red",
+      "thought": true,
+      "text": "My own footsteps. Something was following them."
+    },
+    {
+      "key": "ph51x1",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: on the phone speaker (0 s)",
+      "text": "The one who made the spell felt it break. He is sending it back, to find out who helped her.",
+      "note": "what the case file says his teacher told him that night: his words, never said as a belief (plan 3)"
+    },
+    {
+      "key": "ph51x2",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: on the phone speaker (6 s)",
+      "text": "Get the white thread from your bag. Sit on the floor, in the middle of the room."
+    },
+    {
+      "key": "ph51x3",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: on the phone speaker, as the circle nears closing",
+      "text": "Close it."
+    },
+    {
+      "key": "ph51x4",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: on the phone speaker, the circle closed (22 s)",
+      "text": "Good. Now stay inside. Whatever you hear, stay inside."
+    },
+    {
+      "key": "ph51jina",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: through the phone, the gold rising from the thread (26 s)",
+      "text": "Jay'āsan'āgatā Buddhā Jetvā Māraṁ savāhanaṁ Catu-saccāsabhaṁ rasaṁ Ye piviṅsu narāsabhā Taṇhaṅkar'ādayo Buddhā Aṭṭha-vīsati nāyakā Sabbe patiṭṭhitā mayhaṁ Matthake te munissarā. Sīse patiṭṭhito mayhaṁ Buddho dhammo dvilocane Saṅgho patiṭṭhito mayhaṁ Ure sabba-guṇākaro. Hadaye me Anuruddho Sāriputto ca dakkhiṇe Koṇḍañño piṭṭhi-bhāgasmiṁ Moggallāno ca vāmake.",
+      "chant": true,
+      "pace": 1.4,
+      "captions": [
+        [
+          "Jay'āsan'āgatā Buddhā / Jetvā Māraṁ savāhanaṁ / Catu-saccāsabhaṁ rasaṁ / Ye piviṅsu narāsabhā",
+          "The Buddhas, noble men who drank the nectar of the four noble truths, having come to the victory seat, having defeated Māra together with his mount:"
+        ],
+        [
+          "Taṇhaṅkar'ādayo Buddhā / Aṭṭha-vīsati nāyakā / Sabbe patiṭṭhitā mayhaṁ / Matthake te munissarā.",
+          "These Buddhas—28 leaders, sovereign sages beginning with Taṇhaṅkara—are all established on the crown of my head."
+        ],
+        [
+          "Sīse patiṭṭhito mayhaṁ / Buddho dhammo dvilocane / Saṅgho patiṭṭhito mayhaṁ / Ure sabba-guṇākaro.",
+          "The Buddha is established in my head, the Dhamma in my two eyes, the Saṅgha—the mine of all virtues—is established in my chest."
+        ],
+        [
+          "Hadaye me Anuruddho / Sāriputto ca dakkhiṇe / Koṇḍañño piṭṭhi-bhāgasmiṁ / Moggallāno ca vāmake.",
+          "Anuruddha is in my heart, and Sārīputta on my right. Koṇḍañña is behind me, and Moggallāna on my left."
+        ]
+      ],
+      "source": "Thanissaro Bhikkhu, A Chanting Guide: Jinapanjara Gatha, The Victor's Cage, its first four verses, as docs/research/V29.0-LOVESPELL.md 3 has them (https://www.dhammatalks.org/books/ChantingGuide/Section0093.html)",
+      "note": "heard through the phone (band-limited). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced."
+    },
+    {
+      "key": "ph51x5",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: the pressure gone (46 s)",
+      "text": "It's gone. Breathe."
+    },
+    {
+      "key": "zv51x1",
+      "who": "zv",
+      "at": "barrier",
+      "where": "film, the barrier: he asks",
+      "text": "Who was it?"
+    },
+    {
+      "key": "ph51x6",
+      "who": "ph",
+      "at": "barrier",
+      "where": "film, the barrier: on the phone speaker, the last words of the night",
+      "text": "Who it was does not matter tonight. Rest. I will come in the morning."
+    },
+    {
+      "key": "ph51A1",
+      "who": "ph",
+      "at": "endA",
+      "where": "ending A: he answers on the second ring",
+      "text": "I'm here. Tell me what you feel."
+    },
+    {
+      "key": "zv51A1",
+      "who": "zv",
+      "at": "endA",
+      "where": "ending A: on the phone",
+      "text": "My head... it's like something's crushing it from every side."
+    },
+    {
+      "key": "ph51A2",
+      "who": "ph",
+      "at": "endA",
+      "where": "ending A: on the phone",
+      "text": "Listen to me, and do exactly what I say."
+    },
+    {
+      "key": "ph51A3",
+      "who": "ph",
+      "at": "endA",
+      "where": "ending A: at dawn, at the table (the ending's own line)",
+      "text": "You called at once. That is the first protection: knowing when something is more than you."
+    },
+    {
+      "key": "zv51B1",
+      "who": "zv",
+      "at": "endB",
+      "where": "ending B: the phone set face down",
+      "text": "It's three in the morning. He worked all evening. Let him sleep."
+    },
+    {
+      "key": "zv51B2",
+      "who": "zv",
+      "at": "endB",
+      "where": "ending B: on the sofa, the threads at his feet",
+      "thought": true,
+      "text": "I told myself I could carry it till morning."
+    },
+    {
+      "key": "ph51B1",
+      "who": "ph",
+      "at": "endB",
+      "where": "ending B: 3:41, he answers at once",
+      "text": "How long has it been like this?"
+    },
+    {
+      "key": "zv51B3",
+      "who": "zv",
+      "at": "endB",
+      "where": "ending B: on the phone",
+      "text": "Since three."
+    },
+    {
+      "key": "ph51B2",
+      "who": "ph",
+      "at": "endB",
+      "where": "ending B: on the phone",
+      "text": "Forty minutes. Why did you wait?"
+    },
+    {
+      "key": "zv51B4",
+      "who": "zv",
+      "at": "endB",
+      "where": "ending B: on the phone",
+      "text": "I didn't want to wake you."
+    },
+    {
+      "key": "ph51B3",
+      "who": "ph",
+      "at": "endB",
+      "where": "ending B: on the phone",
+      "text": "You held the water for her. Now let me hold it for you."
+    },
+    {
+      "key": "ph51B4",
+      "who": "ph",
+      "at": "endB",
+      "where": "ending B: at dawn, at the table (the ending's own line)",
+      "text": "A student who won't wake his teacher is protecting the wrong person."
+    },
+    {
+      "key": "zv51C1",
+      "who": "zv",
+      "at": "endC",
+      "where": "ending C: he gets up for a pill",
+      "text": "It's a migraine. That's all it is."
+    },
+    {
+      "key": "zv51C2",
+      "who": "zv",
+      "at": "endC",
+      "where": "ending C: on the sofa, the cushion over his eyes",
+      "thought": true,
+      "text": "The pills did nothing. It was still pressing."
+    },
+    {
+      "key": "ph51C1",
+      "who": "ph",
+      "at": "endC",
+      "where": "ending C: 3:22, he answers",
+      "text": "Tell me."
+    },
+    {
+      "key": "zv51C3",
+      "who": "zv",
+      "at": "endC",
+      "where": "ending C: on the phone",
+      "text": "It's just a migraine, I think. It won't stop."
+    },
+    {
+      "key": "ph51C2",
+      "who": "ph",
+      "at": "endC",
+      "where": "ending C: on the phone",
+      "text": "This is not a headache. A headache does not follow you home."
+    },
+    {
+      "key": "ph51C3",
+      "who": "ph",
+      "at": "endC",
+      "where": "ending C: at dawn, at the table (the ending's own line)",
+      "text": "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
+    },
+    {
+      "key": "zv51D1",
+      "who": "zv",
+      "at": "endD",
+      "where": "ending D: he opens Spirit Vision on purpose",
+      "text": "Who's doing this?"
+    },
+    {
+      "key": "ph51D1",
+      "who": "ph",
+      "at": "endD",
+      "where": "ending D: he answers",
+      "text": "I'm here."
+    },
+    {
+      "key": "zv51D2",
+      "who": "zv",
+      "at": "endD",
+      "where": "ending D: on the phone, on his knees inside the balcony door",
+      "text": "It's outside. It's looking for me."
+    },
+    {
+      "key": "ph51D2",
+      "who": "ph",
+      "at": "endD",
+      "where": "ending D: on the phone",
+      "text": "Then stop looking for it. Sit down. Now."
+    },
+    {
+      "key": "ph51D3",
+      "who": "ph",
+      "at": "endD",
+      "where": "ending D: at dawn, the red mark round his wrist (the ending's own line)",
+      "text": "You went to a stranger's door and knocked. It answered."
+    },
+    {
+      "key": "ph51D4",
+      "who": "ph",
+      "at": "endD",
+      "where": "ending D: at dawn, after a pause; he ties the white thread over the mark",
+      "text": "Curiosity is not courage."
+    },
+    {
+      "key": "ph51w1",
+      "who": "ph",
+      "at": "dawn",
+      "where": "the dawn: at his door with breakfast (8.0 s)",
+      "text": "Eat first. You fought all night, even sitting still."
+    },
+    {
+      "key": "zv51w1",
+      "who": "zv",
+      "at": "dawn",
+      "where": "the dawn: at the table",
+      "text": "I only held the water."
+    },
+    {
+      "key": "ph51w2",
+      "who": "ph",
+      "at": "dawn",
+      "where": "the dawn: at the table, before the ending's own line",
+      "text": "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it.",
+      "note": "his words, never said as a belief (plan 3 and 10)"
+    },
+    {
+      "key": "ph51w3",
+      "who": "ph",
+      "at": "dawn",
+      "where": "the dawn: he ties a white thread round his wrist",
+      "text": "Before we help anyone, we protect ourselves. From now on, we prepare first."
+    },
+    {
+      "key": "zv51w2",
+      "who": "zv",
+      "at": "dawn",
+      "where": "the dawn: the last line, his eyes up to his teacher's face",
+      "thought": true,
+      "text": "I had thought I was only there to assist my teacher.",
+      "note": "the case file's own last sentence"
+    },
+    {
+      "key": "zv51A",
+      "who": "zv",
+      "at": "card",
+      "where": "under the outcome card, ending A",
+      "thought": true,
+      "text": "I called. He was already awake.",
+      "note": "the chapter's choices[A].say must be these words (assemble.py holds them together)"
+    },
+    {
+      "key": "zv51B",
+      "who": "zv",
+      "at": "card",
+      "where": "under the outcome card, ending B",
+      "thought": true,
+      "text": "I waited. It cost me an hour.",
+      "note": "as zv51A"
+    },
+    {
+      "key": "zv51C",
+      "who": "zv",
+      "at": "card",
+      "where": "under the outcome card, ending C",
+      "thought": true,
+      "text": "I called it a headache. It wasn't.",
+      "note": "as zv51A"
+    },
+    {
+      "key": "zv51D",
+      "who": "zv",
+      "at": "card",
+      "where": "under the outcome card, ending D",
+      "thought": true,
+      "text": "I went looking. It found me first.",
+      "note": "as zv51A"
+    }
+  ]
+}
