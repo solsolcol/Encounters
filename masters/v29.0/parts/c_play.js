@@ -675,7 +675,7 @@
       }).catch(() => {});
     }
     /* where the bowl stands in his left hand (the hands' own frame: kit.hold's left), its size in it */
-    const BOWLHELD = { pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: 0.62 };
+    const BOWLHELD = { pos: [0.075, 0.035, -0.02], rot: [0, 0, 0], s: BOWL_S };   // (the bowl's one size: b_world.js BOWL_S)
     function breakingBegin() {
       lookAt0(LOOK_OF.breaking); seatHim(STATION.room.at, Object.assign({}, KNEEL, { startYaw: STATION.room.at.ry, get pitch() { return -0.95; } }));
       warm('breaking');

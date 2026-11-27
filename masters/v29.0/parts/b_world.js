@@ -883,6 +883,12 @@
     /* on the cloth when play begins (the plan's 8.1): the bowl, two candles, the jug and the lighter beside his knee (the
        jug, the lighter, the incense and the small white plate have no model yet: their spots are kept for them) */
     const CLOTH_Y = HER.table.h + 0.011;
+    /* THE HOLY-WATER BOWL'S ONE SIZE (PLAY, 27 Nov; CLAUDE.md v25.4, a thing is one size wherever one shot follows another).
+       MEASURED (tools/probes/e5c1lab.mjs, the breaking): in his hands at 0.62 it is 0.198 m across in the hands' pass, which is
+       drawn at the lens's own angle with its rig at scale 1, so 0.198 m is what it reads as; on the cloth at the file's own size
+       it was 0.32 m. A bowl held before him in both hands is the smaller (props/RECORD.md: "0.32 m is big for a bowl held before
+       him"), so it is 0.62 of the file everywhere: on the cloth, in his hands (c_play.js BOWLHELD.s) and in every film */
+    const BOWL_S = 0.62;
     const ON_CLOTH = {
       bowl:     { x: 0.78, y: CLOTH_Y, z: 1.22 },
       candle1:  { x: 0.18, y: CLOTH_Y, z: 1.34 },
@@ -907,7 +913,7 @@
       place('ceilFan', 'w5ceilfan', HER.fan.x, FRONT.ceil - 0.52, HER.fan.z, 0);
       place('bag', 'w51bag', HER.bag.x, HER.bag.y, HER.bag.z, -0.25);
       place('keepsake', 'w51keepsake', HER.bag.x + 0.02, HER.bag.y + 0.07, HER.bag.z, 0.4);
-      place('holyBowl', 'w4bigbowl', ON_CLOTH.bowl.x, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z, 0, { lift: 3, done: tint(0xffd9a0, 1.0) });   // (a warm tint: the plan's brass, its silver file untouched)
+      place('holyBowl', 'w4bigbowl', ON_CLOTH.bowl.x, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z, 0, { lift: 3, s: BOWL_S, done: tint(0xffd9a0, 1.0) });   // (a warm tint: the plan's brass, its silver file untouched)
       place('candle1', 'w3candlesmall', ON_CLOTH.candle1.x, ON_CLOTH.candle1.y, ON_CLOTH.candle1.z, 0);
       place('candle2', 'w3candlesmall', ON_CLOTH.candle2.x, ON_CLOTH.candle2.y, ON_CLOTH.candle2.z, 0);
       /* the ritual's small things (props: made by THINGS, drawn when keyed): the white plate, the lighter, the jug */
@@ -1200,7 +1206,7 @@
       const sh = (x, y, z, w, d, k = 0.38, ry = 0) => pool(x, y + 0.003, z, w, d, 0x000000, k, { add: false, rz: -ry, look: null });
       sh(HER.table.x, 0, HER.table.z, 1.25, 0.8); sh(HER.sofa.x, 0, HER.sofa.z, 1.75, 1.05); sh(HER.rattan.x, 0, HER.rattan.z, 0.8, 0.8, 0.34, HER.rattan.ry);
       sh(HER.shelf.x, 0, HER.shelf.z - 0.02, 1.0, 0.5); sh(HER.plant.x, 0, HER.plant.z, 0.7, 0.7); sh(-4.25, 0, 0.6, 1.3, 1.8, 0.32); sh(-5.18, 0, 2.6, 0.9, 0.9);
-      for (const [c, r] of [[ON_CLOTH.bowl, 0.42], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
+      for (const [c, r] of [[ON_CLOTH.bowl, 0.42 * BOWL_S], [ON_CLOTH.candle1, 0.11], [ON_CLOTH.candle2, 0.11], [ON_CLOTH.incense, 0.13], [ON_CLOTH.plate, 0.2]]) sh(c.x, c.y, c.z, r, r, 0.3);
       sh(ON_CLOTH.jug.x, 0, ON_CLOTH.jug.z, 0.22, 0.22, 0.3);
       sh(HIS.sofa.x, 0, HIS.sofa.z, 2.35, 1.05); sh(HIS.dining.x, 0, HIS.dining.z, 1.85, 1.25, 0.32); sh(HIS.bed.x, 0, HIS.bed.z, 2.1, 1.95, 0.4);
       sh(HIS.altar.x + 0.03, 0, HIS.altar.z, 0.75, 1.05); sh(HIS.bedside.x, 0, HIS.bedside.z, 0.5, 0.5);

@@ -54,6 +54,12 @@ the scale `BOWLHELD.s`, and laid every frame on his left palm, turned toward the
 is hidden while it is held and shown again when it is let go (the event's end). A film draws its own bowl (a film lets
 go of what play holds): `stage.plan.BOWLHELD`.
 
+THE BOWL'S ONE SIZE (27 Nov, MEASURED in the breaking): 0.62 of `w4bigbowl`'s own size everywhere, `stage.plan.BOWL_S`
+(b_world.js): **0.198 m across**. In his hands at 0.62 it measured 0.198 m in the hands' pass (drawn at the lens's own angle,
+its rig at scale 1, 0.42 m from the eye), and on the cloth it was the file's 0.32 m: two sizes. The cloth's bowl is now
+`BOWL_S` too, and BOWLHELD.s reads it. **FILMS-1 and FILMS-2: every bowl a film draws, on the cloth, in his hands or set back
+after the pour, at `S.plan.BOWL_S`.**
+
 THE BOWL'S LOOK (27 Nov, PLAY: the bowl on the cloth showed tan water and petals before "Pour water into the bowl."):
 `w4bigbowl` is one mesh with its water and petals in it, and a flat warm tint turned the water tan. The play lays its paint
 by place instead: `stage.plan.bowlLook(model, { empty })` measures the model's own water level and ring as it lands and gives

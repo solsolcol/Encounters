@@ -96,7 +96,7 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,
-      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE, bowlLook },
+      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, BOWL_S, PHONEHELD, SURGE, bowlLook },
       /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
       chant: RATANA, beds: BEDS,
       /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
