@@ -216,7 +216,8 @@ def assemble(skip):
         if text.count(want) != 1: die('the card line %s and its choice\'s `say` differ: the chapter must carry %s' % (r['key'], want))
 
     # a quoted name that is some OTHER chapter's sound: build.py would count this chapter as asking for it (v27.0)
-    own = {r['key'] for r in rows}
+    # (27 Nov 2026: a line's phone copy, `phone` in the script, is the chapter's own sound too: Pho on the speaker)
+    own = {r['key'] for r in rows} | {r['phone'] for r in rows if r.get('phone')}
     if os.path.isdir(AUDIO):
         theirs = sorted(s[:-4] for s in os.listdir(AUDIO) if s.endswith('.mp3') and s[:-4] not in own and not s.startswith(OWN_FX)
                         and ("'%s'" % s[:-4]) in text)
