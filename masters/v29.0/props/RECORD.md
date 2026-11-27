@@ -41,3 +41,55 @@ one of these is `reuse`).
 the incense sticks, Grandmaster Pho's cloth bag, the small white plate, the water jug, a glass of water, the bedside
 clock, the indoor air-conditioner, the kettle (and, from §5.4, the altar's vase of jasmine). The jug, the lighter and
 the plate are pressed or seen close in play and the films (§8.1, §9.2).
+
+## CP4.2 to CP4.4 · The NEW things (27 Nov 2026)
+
+Each: its picture (refs.tsv; GPT Image 2.6 "sunburst" through ElevenLabs, 1280 x 720, one generation, 191 credits, looked
+at full size: refs/<name>-1024.jpg is the record copy), Meshy image-to-3D at its highest (jobs-p1.json to jobs-p4.json:
+meshy-latest, ultra geometry, 8k PBR, should_remesh; 40 credits each; the original in masters/v29.0/src/props/), then
+`sh masters/v29.0/props/drive.sh <names>` (the room and the credits read before each), which runs prop.sh: Meshy's
+remesh to TABLE.txt's count (5 credits), tools/prepmeshy.mjs (real metres on TABLE.txt's dimension, the base centre on
+the origin, every triangle kept), photographed alone at 1100 px (front, side, back, three-quarter), each opened full size.
+All eighteen pictures were made and all eighteen image-to-3D jobs ran ONCE; none failed; none was made twice.
+
+| thing | key | image-to-3D job | remesh job | size m | tris | sheet | state, and what is wrong |
+|---|---|---|---|---|---|---|---|
+| keepsake | w51keepsake | 01a21b42-f6fc-76f7-bcf5-dde4ed975102 | 01a21b48-e447-74ea-acb7-5f7cf1ce6221 (12000) | 0.070* wide | 12,450 | 2048 | MADE. A folded cloth packet tied twice with a knotted cord, its ends frayed: reads as the thing. Its cloth came back a saturated red with pale worn folds where the picture was a faded rust-pink (shots/keepsake-q.jpg); a runtime darkening of its colour mends it at no credits |
+| shoulderbag | w51bag | 01a21b42-fd2a-7379-9a62-27db0a1319e0 | 01a21b4d-d655-73c2-bb79-98f4a865cf61 (20000) | 0.360* wide | 20,421 | 2048 | MADE. Taupe-brown leather tote, zip open, the mouth showing its dark lining (the packet can be laid in it). The straps' edges and the zip's line are speckled and a little ragged close up (shots/shoulderbag-q.jpg); browner than the picture's taupe-grey |
+| bottle | w51bottle | 01a21b43-0359-75bc-813b-fcdfb4f4e112 | 01a21b52-9270-743b-97cc-bbd26b43c4ac (8000) | 0.100* tall | 8,338 | 2048 | MADE, **FAULT**: the glass came back OPAQUE, a glossy grey-white like a ceramic jar (no water seen in it), with a few lines of invented faint print near its foot, and the cork's colour runs down over the neck (shots/bottle-q.jpg). As v28.0's Rak Yom found, Meshy does not make clear glass. Mend here at no credits: the body's material drawn as glass at runtime (transparent, a low opacity, the water a separate inner shape made in code is NOT allowed by v25.2, so the mend is the material alone; the print stays faint at 10 cm). Another job: 45 credits and very likely opaque again |
+| threadreel (mend) | w51threadreel | (chapter 5's w5threadreel, no job) | — | 0.100 x 0.084 x 0.080 | 12,231 | 1024 | MADE at no credits (mend/threadmend.mjs): the 278 points of the strand that hung under the ball are laid out along the ground away from it, and the whole set down on its lowest point; the ball now sits 1.6 mm over the strand on the ground (shots/threadreel51-front.jpg, -side.jpg). The old file `w5threadreel` is untouched (measured by mend/measure.mjs before: the ball's foot 7.5 mm up, on the strand's tip) |
+
+**NOT YET PREPARED (STOPPED FOR ROOM, 27 Nov 2026 04:50).** `df -h /` fell to 366 to 419 MB free during the bottle's prep
+(the rule: under 700 MB, stop and report). The cause is not these things alone: my eighteen originals are 1.1 GB, the
+cast's sources 0.4 GB, and the scratchpad holds 7.1 GB, 1.2 GB of it ENGINE's build snapshot (scratchpad/e5c1/snap-engine)
+and other helpers' and older work (b56 is Chad's and stays). Nothing was cleared by me. The fifteen below have their
+image-to-3D done and their ORIGINAL downloaded (the source is safe; Meshy keeps each task three days, to about 30 Nov):
+each needs only its remesh (5 credits) and prep. To finish once there is room (about 100 MB free at a time is used per
+thing, then released):
+`sh masters/v29.0/props/drive.sh coffeetable gracesofa rattanchair bookshelf laptop takeaway hissofa histable hischair hisbed altarcab breakfast pills keycard gracephone`
+
+| thing | key (to be) | image-to-3D job | original |
+|---|---|---|---|
+| coffeetable | w51ctable | 01a21b43-0959-72ad-ab54-3a4efc19e1d4 | 68 MB |
+| gracesofa | w51gsofa | 01a21b44-73ac-70f1-9061-ac9fc8a8a2f3 | 87 MB |
+| rattanchair | w51rattan | 01a21b44-7a07-74cc-b862-2ea7cf0e74c9 | 137 MB |
+| bookshelf | w51shelf | 01a21b44-8083-7717-9182-5b0edae69d24 | 76 MB |
+| laptop | w51laptop | 01a21b44-8620-75e0-a432-cc04d11f9fb0 | 21 MB |
+| takeaway | w51takeaway | 01a21b45-d9d9-755c-a4ee-72b9deebfa15 | 38 MB |
+| hissofa | w51sofa | 01a21b45-df46-704b-b349-5b33020751e6 | 84 MB |
+| histable | w51dintable | 01a21b45-e4d0-70ed-b2d4-6091311869c5 | 51 MB |
+| hischair | w51dinchair | 01a21b45-e9a4-71ab-8c88-99c6bd8c3cf2 | 85 MB |
+| hisbed | w51bed | 01a21b47-1060-74b8-9409-74228a6fdcc9 | 55 MB |
+| altarcab | w51altarcab | 01a21b47-15e6-73bf-a07a-3c2ec4a5c2ce | 50 MB |
+| breakfast | w51breakfast | 01a21b47-1b19-747e-a120-f4b27549e5a0 | 53 MB |
+| pills | w51pills | 01a21b47-2072-74cf-b68e-e6feb140ffc4 | 54 MB |
+| keycard | w51keycard | 01a21b47-2910-778b-a01e-476ccc9ccf97 | 48 MB |
+| gracephone | w51phone | 01a21b47-2e7e-703a-9406-bbf3d4f3e7f6 | 46 MB |
+
+## What it cost (27 Nov 2026)
+| service | spent | balance |
+|---|---|---|
+| ElevenLabs (pictures) | 18 x 191 = 3,438 | (about 72,300 before) |
+| Meshy | 18 x 40 (image-to-3D) + 3 x 5 (remesh) = 735 | 1,077 at the start, 193 after (the cast's spend beside it: about 149) |
+The fifteen remeshes still owed: 75 credits. At 193 with the cast near its 150, the reserve (60 + what the cast has not
+spent) leaves room for all fifteen.

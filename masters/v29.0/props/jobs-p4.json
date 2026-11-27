@@ -1,0 +1,32 @@
+[
+ {
+  "name": "hisbed",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/hisbed.png"
+ },
+ {
+  "name": "altarcab",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/altarcab.png"
+ },
+ {
+  "name": "breakfast",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/breakfast.png"
+ },
+ {
+  "name": "pills",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/pills.png"
+ },
+ {
+  "name": "keycard",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/keycard.png"
+ },
+ {
+  "name": "gracephone",
+  "kind": "prop",
+  "image": "masters/v29.0/props/refs/gracephone.png"
+ }
+]

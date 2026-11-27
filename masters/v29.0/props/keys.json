@@ -1,0 +1,26 @@
+[
+ {
+  "group": "things",
+  "key": "w51keepsake",
+  "file": "assets/w51keepsake.glb",
+  "note": "the keepsake: a palm-sized packet of faded cloth tied with reddish cord (in Grace's bag; on the white plate)"
+ },
+ {
+  "group": "things",
+  "key": "w51bag",
+  "file": "assets/w51bag.glb",
+  "note": "Grace's taupe leather shoulder bag, its zip open"
+ },
+ {
+  "group": "things",
+  "key": "w51bottle",
+  "file": "assets/w51bottle.glb",
+  "note": "the small corked bottle of the water he held (Pho's gift; his altar)"
+ },
+ {
+  "group": "things",
+  "key": "w51threadreel",
+  "file": "assets/w51threadreel.glb",
+  "note": "the spool of white thread: chapter 5's w5threadreel with its loose end laid along the ground (mend/threadmend.mjs, no credits; the old file untouched)"
+ }
+]
