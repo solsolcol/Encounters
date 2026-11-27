@@ -53,6 +53,24 @@ water in it) held in his LEFT hand by `kit.hold(.., { hand: 'left', pos: BOWLHEL
 is hidden while it is held and shown again when it is let go (the event's end). A film draws its own bowl (a film lets
 go of what play holds): `stage.plan.BOWLHELD`.
 
+THE BOWL'S LOOK (27 Nov, PLAY: the bowl on the cloth showed tan water and petals before "Pour water into the bowl."):
+`w4bigbowl` is one mesh with its water and petals in it, and a flat warm tint turned the water tan. The play lays its paint
+by place instead: `stage.plan.bowlLook(model, { empty })` measures the model's own water level and ring as it lands and gives
+its materials a shader that tints only the METAL brass (the world's 0xffd9a0) and leaves the water and petals their own
+colours; `empty` (a uniform `{ value }`, 1 empty, 0 poured; the cloth's bowl shares the play's, eased by the pour) paints the
+inside dark brass instead. The held copy in the breaking is poured (`{ empty: { value: 0 } }`). **FILMS-1: the keepsake's
+`handBowl` (and any bowl a film draws) should call `S.plan.bowlLook(m, { empty: { value: 0 } })` in its `done` in place of its
+colour multiply, so the film's last picture and the event's first are one bowl** (call it on a material not yet multiplied:
+it sets the colour back to white and lays the tint in the shader).
+
+THE PEOPLE AT EACH PHASE'S START (27 Nov): every phase begins with its people in the play's own rest whatever a film left
+(`peopleRest`): the room, the three seated; the breaking, Grandmaster Pho and Grace seated and MARCUS STANDING behind the sofa
+at her right shoulder (`STATION.breaking.marcus` = the keepsake's `KEEP1.mkStand`, x 0.12, z -1.02, ry 0.12, his `Idle_3`), so a
+Continue into the breaking lands as play does. **FILMS-1: the opening ends with Grace still walking to the sofa** (her walk
+is about 5 s from T.sofa, her sitting 3 s more: she is seated at about T.inn + 18, the film ends at T.inn + 15.7); the play now
+seats her under the film's black, but the film's own last frames should have her on the sofa (v5.25: a film ends with its
+people where play keeps them).
+
 WHAT PLAY LEAVES ON for a film to take over: at the room's end Spirit Vision is closed; at the breaking's end the bowl is
 let go (back on the cloth), the lens and Spirit Vision given back, the chant's last verse coming; at the night's end the
 pressure is HELD on screen under the decision (kit.press k as it was, no waves): FILMS-2's endings begin with `kit.press`
@@ -89,3 +107,10 @@ a film cues its own music. M4 (u51m4break) is not played by the play: the chant 
 
 `room:<w,l,p,g,h,k,v>`, `breaking:`, `night:<u,f>`, `ask:`. A Continue lands at its phase's start (the breaking's brief
 again; the night in bed, or standing if `u`).
+
+## 7 · The probes' handles
+
+`stage.dbg`: `cast`, `people`, `bowl` (the bowl's measured water: `look` { cx, cz, yW, rW in the model's own units }, x, y, z,
+r in the world), `fn` (the cast machinery: `span`, `rest`, `take`, `pose`, `hold`, `put`, `gaze`, for a lab to pose a body).
+tools/probes/e5c1play.mjs (play by real input), e5c1lab.mjs (views; PRE, PRE2 and VIEWS2), e5c1save.mjs (Continue from every
+phase, a same-sitting Continue, a replay by reset and one by the chapter selector).
