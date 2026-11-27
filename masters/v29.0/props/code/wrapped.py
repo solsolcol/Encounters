@@ -28,7 +28,7 @@ bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
 bmesh.ops.scale(bm, vec=(L, Wd, Hh), verts=bm.verts); bmesh.ops.translate(bm, vec=(0, 0, Hh / 2), verts=bm.verts)
 body = mesh_from_bm('wrap', bm)
 bevel(body, 0.007, segs=4); apply_mods(body)
-sub = body.modifiers.new('sub', 'SUBSURF'); sub.levels = 2; sub.subdivision_type = 'SIMPLE'; apply_mods(body)
+sub = body.modifiers.new('sub', 'SUBSURF'); sub.levels = 3; sub.subdivision_type = 'SIMPLE'; apply_mods(body)
 # the cloth's softness: the top domed a little, the edges rounded and rumpled, the thread's bands pressed in
 TX, TY = (-0.016, 0.016), (-0.013, 0.013)          # where the thread's two bands run each way
 def pinch(d):                                       # how much a band presses the cloth in, by distance from its line
@@ -45,18 +45,37 @@ for v in body.data.vertices:
         n = Vector((x / (L / 2), y / (Wd / 2), (z - Hh / 2) / (Hh / 2)))
         n.normalize()
         v.co -= n * 0.0012 * p
+    # the envelope's folds pressed into the top: from each corner toward the middle, and soft wrinkles round the walls
+    if top:
+        for (cx_, cy_) in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+            ax_, ay_ = cx_ * L / 2, cy_ * Wd / 2; dl = math.hypot(ax_, ay_)
+            t_ = (x * ax_ + y * ay_) / (dl * dl); dd = abs(x * ay_ - y * ax_) / dl
+            if 0.15 < t_ < 1.0: v.co.z -= 0.0007 * math.exp(-(dd / 0.0012) ** 2) * min(1.0, (t_ - 0.15) * 4)
+    else:
+        v.co.z += 0.0005 * math.sin(x * 520 + 1.0) * math.sin(y * 410 + 2.0)
+    if abs(x) > L / 2 - 0.004 or abs(y) > Wd / 2 - 0.004:
+        k_ = 0.0006 * math.sin((x + y) * 380 + z * 900)
+        v.co.x += math.copysign(k_, x) * (abs(x) > L / 2 - 0.004); v.co.y += math.copysign(k_, y) * (abs(y) > Wd / 2 - 0.004)
 body.data.materials.append(cot); smooth(body, 180)
 parts = [body]
 # the folds of the envelope on top: three flaps' edges (a raised hem line) running from the corners to the middle
 top_z = lambda x, y: Hh + 0.003 * (1 - (x / (L / 2)) ** 2) * (1 - (y / (Wd / 2)) ** 2)
 # the last flap lying on top: a thin soft triangle from the fourth corner to past the middle, its edge rolled
 bm = bmesh.new()
-tri = [(L / 2 - 0.005, Wd / 2 - 0.005), (-0.006, 0.020), (0.020, -0.008)]
-vs = [bm.verts.new((x, y, top_z(x, y) + 0.0009)) for x, y in tri]
+tri = [(L / 2 - 0.006, Wd / 2 - 0.006), (-0.006, 0.019), (0.019, -0.007)]
+vs = [bm.verts.new((x, y, Hh + 0.01)) for x, y in tri]
 bm.faces.new(vs)
+bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=8, use_grid_fill=True)
 flap = mesh_from_bm('flap', bm)
-sol = flap.modifiers.new('sol', 'SOLIDIFY'); sol.thickness = 0.0012; sol.offset = 1; apply_mods(flap)
-bevel(flap, 0.0005, segs=2); apply_mods(flap)
+# laid onto the cloth beneath it (the body's own surface, found by a ray straight down) and 0.6 mm over it
+from mathutils.bvhtree import BVHTree
+_bvh = BVHTree.FromObject(body, bpy.context.evaluated_depsgraph_get())
+for v in flap.data.vertices:
+    h = _bvh.ray_cast(Vector((v.co.x, v.co.y, 0.2)), Vector((0, 0, -1)), 0.3)
+    if h[0] is not None: v.co.z = h[0].z + 0.0006
+flap.data.update()
+sol = flap.modifiers.new('sol', 'SOLIDIFY'); sol.thickness = 0.0009; sol.offset = 1; apply_mods(flap)
+smooth(flap, 60)
 flap.data.materials.append(cot); parts.append(flap)
 # the thread: two bands each way round the body (on top, down the sides, under), a little proud of the cloth
 from mathutils.bvhtree import BVHTree
