@@ -366,7 +366,7 @@
     }
     function waterTick(wdt) {
       bowlFit();
-      const want = play.found.has('w') || phase !== 'room' ? 1 : 0;
+      const want = play.found.has('w') || fx.pourT > 0 || phase !== 'room' ? 1 : 0;
       fx.waterK += (want * (fx.pourT > 0 ? Math.min(1, 1 - fx.pourT / 2.0) : 1) - fx.waterK) * Math.min(1, wdt * 3);
       if (fx.pourT > 0) fx.pourT = Math.max(0, fx.pourT - wdt);
       /* the pour: the water rising in the dish from its floor to the model's own water, which takes over when it is reached */
@@ -420,7 +420,7 @@
     }
     function jugTick() {
       jugFit(); if (!JUG.mesh) return;
-      const poured = play.found.has('w') || phase !== 'room';
+      const poured = play.found.has('w') || fx.pourT > 0 || phase !== 'room';
       const want = poured ? (fx.pourT > 0 ? 0.3 + 0.4 * (fx.pourT / 2.0) : 0.3) : 0.7;
       if (Math.abs(want - JUG.built) > 0.015) jugBuild(want);
       JUG.mesh.visible = !!(things.jug && things.jug.visible);

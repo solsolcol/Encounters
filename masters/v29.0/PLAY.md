@@ -47,9 +47,10 @@ steps), and the chant begins as the event opens. A Continue into the breaking be
 | `night` (home's end) | LYING in bed at `STATION.night.bed` = (HX + 7.465, 0.8), eye y **0.82**, yaw **0.8**, pitch **0.12** | he presses "Get up", rises over 1.4 s to `STATION.night.at` = (306.7, -0.48), yaw 2.17 |
 | `ask` (the decision; every ending begins here) | standing at `STATION.ask.at` = (300.4, 0.65), yaw 0.3, his phone in his RIGHT hand (`kit.hold`, `stage.plan.PHONEHELD`), its screen 3:03 and "Grandmaster Pho", seen 2.2 s before the decision opens over the lower half | the pressure stands at what it was (0.35 to 0.75), no waves |
 
-THE BOWL IN HIS HANDS (the event; the keepsake ends on it, the cord begins on it): a copy of `w4bigbowl` (warm-tinted, its
-water in it) held in his LEFT hand by `kit.hold(.., { hand: 'left', pos: BOWLHELD.pos, rot: BOWLHELD.rot })` at the scale
-`BOWLHELD.s`, the hands in the library's `bowl` pose (`kit.handPose("bowl", 1)`); the bowl on the cloth (`things.holyBowl`)
+THE BOWL IN HIS HANDS (the event; the keepsake ends on it, the cord begins on it): a copy of `w4bigbowl` (its brass and its
+poured water by `bowlLook`) held in his LEFT hand by `kit.hold(.., { hand: 'left', pos: BOWLHELD.pos, rot: BOWLHELD.rot })` at
+the scale `BOWLHELD.s`, and laid every frame on his left palm, turned toward the lens, by the films' own
+`FILMSAPI.helpers.bowlInHands` (d_play.js, after the play's frame: one function for the keepsake's bowl and the event's), the hands in the library's `bowl` pose (`kit.handPose("bowl", 1)`); the bowl on the cloth (`things.holyBowl`)
 is hidden while it is held and shown again when it is let go (the event's end). A film draws its own bowl (a film lets
 go of what play holds): `stage.plan.BOWLHELD`.
 
@@ -65,8 +66,9 @@ it sets the colour back to white and lays the tint in the shader).
 
 THE PEOPLE AT EACH PHASE'S START (27 Nov): every phase begins with its people in the play's own rest whatever a film left
 (`peopleRest`): the room, the three seated; the breaking, Grandmaster Pho and Grace seated and MARCUS STANDING behind the sofa
-at her right shoulder (`STATION.breaking.marcus` = the keepsake's `KEEP1.mkStand`, x 0.12, z -1.02, ry 0.12, his `Idle_3`), so a
-Continue into the breaking lands as play does. **FILMS-1: the opening ends with Grace still walking to the sofa** (her walk
+at her right shoulder (`STATION.breaking.marcus`, x 0.14, z -0.85, ry 0.12, his `Idle_3`: where the keepsake leaves him as of
+c433770, `KEEP1.mkStand` + (0.02, 0.17)), so a Continue into the breaking lands as play does. **FILMS-1: the cord puts him
+at `KEEP1.mkStand` itself (0.12, -1.02), 0.17 m behind where the keepsake left him: a jump at the cord's first frame.** **FILMS-1: the opening ends with Grace still walking to the sofa** (her walk
 is about 5 s from T.sofa, her sitting 3 s more: she is seated at about T.inn + 18, the film ends at T.inn + 15.7); the play now
 seats her under the film's black, but the film's own last frames should have her on the sofa (v5.25: a film ends with its
 people where play keeps them).
