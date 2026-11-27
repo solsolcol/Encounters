@@ -1105,8 +1105,10 @@
         { t: T.give + 0.25, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
         { t: T.place - 0.15, name: 'hands', eye, at: [0.43, 0.7, 1.24], fp: 44, fd: 38, hold: [[0.43, 0.68, 1.24, 0.18]], back: 0.3, fmax: 56 },
         /* INSERT from above: the small white plate at the cloth's far corner, the packet and its red knot */
-        { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.26, CLOTH_Y + 0.72, ON_CLOTH.plate.z + 0.22], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
-        { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z + 0.2], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
+        /* (from the side away from his teacher: 27 Nov, the plate was moved within his reach, 0.75 m before his cushion, and
+           an eye on his side of it would stand where his head comes down to it) */
+        { t: T.place - 0.1, name: 'plate', eye: [ON_CLOTH.plate.x + 0.25, CLOTH_Y + 0.72, ON_CLOTH.plate.z - 0.3], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 40, fd: 34, cut: true },
+        { t: T.turn - 0.05, name: 'plate', eye: [ON_CLOTH.plate.x + 0.24, CLOTH_Y + 0.66, ON_CLOTH.plate.z - 0.28], at: [ON_CLOTH.plate.x, CLOTH_Y, ON_CLOTH.plate.z], fp: 38, fd: 32 },
         /* his eyes: his teacher turns to him, looking into the lens; the bowl rises into the frame in his hands */
         { t: T.turn, name: 'pho', eye, at: () => { const f = phoFace(); return [f[0], f[1] - 0.1, f[2]]; }, fp: 52, fd: 44, cut: true },
         /* (the bowl rises in his hands over the picture's lower half, drawn over the world: photographed 27 Nov, its rim crossed
@@ -1357,8 +1359,10 @@
         { t: T.phone, name: 'phone', eye: () => [GRPHONE1.x - 0.12, GRPHONE1.y + 0.86, GRPHONE1.z - 0.56], at: () => [GRPHONE1.x + 0.02, GRPHONE1.y, GRPHONE1.z + 0.02], fp: 40, fd: 34, cut: true },
         { t: T.wrap - 0.05, name: 'phone', eye: () => [GRPHONE1.x - 0.11, GRPHONE1.y + 0.82, GRPHONE1.z - 0.53], at: () => [GRPHONE1.x + 0.02, GRPHONE1.y, GRPHONE1.z + 0.02], fp: 38, fd: 32 },
         /* INSERT from above: his teacher's hands binding the packet with the white thread, as he speaks to her */
-        { t: T.wrap, name: 'wrap', eye: [pk[0] + 0.3, CLOTH_Y + 0.7, pk[2] + 0.26], at: pk, fp: 40, fd: 34, cut: true },
-        { t: T.c3 - 0.35, name: 'wrap', eye: [pk[0] + 0.28, CLOTH_Y + 0.66, pk[2] + 0.24], at: pk, fp: 40, fd: 34 },
+        /* (from the side away from his teacher, his hands coming to it from beyond: the plate is within his reach now, and
+           he bends over it) */
+        { t: T.wrap, name: 'wrap', eye: [pk[0] + 0.25, CLOTH_Y + 0.7, pk[2] - 0.3], at: pk, fp: 40, fd: 34, cut: true },
+        { t: T.c3 - 0.35, name: 'wrap', eye: [pk[0] + 0.24, CLOTH_Y + 0.66, pk[2] - 0.28], at: pk, fp: 40, fd: 34 },
         /* his eyes: his teacher's words to Marcus, Marcus's answer and her own small thank you, the two of them (Marcus standing
            behind the sofa at her shoulder: he rose while the insert was on); the camera on what the words are about (v21.30) */
         { t: T.c3 - 0.3, name: 'thanks', eye, at: () => { const g = graceFace(), m = mkHead(); return [lp(g[0], m[0], 0.4), lp(g[1], m[1], 0.45) - 0.06, lp(g[2], m[2], 0.4)]; }, fp: 46, fd: 40, cut: true,
