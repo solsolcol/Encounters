@@ -142,59 +142,6 @@
    }
   }
  },
- "marcus": {
-  "credits": 40,
-  "expires_at": 1796018018264,
-  "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
-  "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
-  "remesh": {
-   "40000": "01a21b95-7114-7397-b15b-7c0acf4379c7"
-  },
-  "rig": "01a21b92-0378-71b7-a898-6fee5002dfd3",
-  "rig_credits": 5,
-  "rig_settings": {
-   "height_meters": 1.72,
-   "include_fingers": true,
-   "input_task_id": "01a21b8c-b892-7308-a894-f062cec450b6",
-   "skeleton_template": "meshyrig"
-  },
-  "rig_sizes": {
-   "rigged": 54184400,
-   "walk": 54434776
-  },
-  "second_throw": "R5/R6, 27 Nov 2026",
-  "settings": {
-   "ai_model": "latest",
-   "enable_pbr": true,
-   "geometry_resolution": "4k",
-   "image_enhancement": true,
-   "model_type": "standard",
-   "multi_view_thumbnails": true,
-   "pose_mode": "a-pose",
-   "save_pre_remeshed_model": true,
-   "should_remesh": true,
-   "should_texture": true,
-   "target_formats": [
-    "glb"
-   ],
-   "target_polycount": 300000,
-   "texture_model": "meshy-7",
-   "texture_resolution": "8k",
-   "topology": "triangle"
-  },
-  "sizes": {
-   "glb": 50378100,
-   "pre": 9173604
-  },
-  "takes": {
-   "mknock": {
-    "credits": 3,
-    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
-    "size": 54840088,
-    "task": "01a21b95-71d2-72cc-ae87-029d943aba82"
-   }
-  }
- },
  "marcus_first": {
   "NOTE": "the FIRST throw (27 Nov 2026), set aside when Marcus was made again at Meshy at Chad's R5/R6; its files are src/people/first/first-*",
   "credits": 40,
@@ -245,6 +192,60 @@
     "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
     "size": 45816776,
     "task": "01a21b4a-7de7-7687-957d-e7d9664894db"
+   }
+  }
+ },
+ "marcus_second": {
+  "NOTE": "the SECOND throw (27 Nov 2026, R5/R6), set aside when Marcus was made a third time without glasses at Chad's R7; its files are src/people/second/second-*",
+  "credits": 40,
+  "expires_at": 1796018018264,
+  "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
+  "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
+  "remesh": {
+   "40000": "01a21b95-7114-7397-b15b-7c0acf4379c7"
+  },
+  "rig": "01a21b92-0378-71b7-a898-6fee5002dfd3",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21b8c-b892-7308-a894-f062cec450b6",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 54184400,
+   "walk": 54434776
+  },
+  "second_throw": "R5/R6, 27 Nov 2026",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50378100,
+   "pre": 9173604
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 54840088,
+    "task": "01a21b95-71d2-72cc-ae87-029d943aba82"
    }
   }
  }
