@@ -1893,3 +1893,11 @@ b5b8ec3649c53385261a0d721785102090542c13c607081f07d78fc9fae3633d  masters/v29.0/
 44b96e777a673f97f838eeec60080d97aee4e863272f31ada2316fbe7a710443  masters/v29.0/src/props/original-breakfast.glb
 e651165d014fc99b8bbf4e632de38fd46a5e96ed69ea2fea26bf7d80d664cace  masters/v29.0/src/props/original-clock.glb
 0d37a6bfee801ccf86a26c0bb6fa372acd73af700ad2b653cb246e661b0a7d57  masters/v29.0/src/props/original-coffeetable.glb
+31500eb58e2dc04247e0d533d0a9e4c498f17a868f86fbd30a17b7a48dcaec33  masters/v29.0/src/props/original-gracephone.glb
+c5b25ebd9d0f77ea84e2e9b98d465cae98cbbbdebfca733ed6800769d45949a7  masters/v29.0/src/props/original-gracesofa.glb
+14b3f70184b22fd4074ff832e30506545b8039aedf86bc69594b6998444524fa  masters/v29.0/src/props/original-hisbed.glb
+63c4018d9f545f97f6acd50b5fed0e4da99aab9538ac83f652d13ad6aa70fce7  masters/v29.0/src/props/original-hischair.glb
+2898c4dc4b0df47bba9b6856b828e9b511c5e22f7f6f98b1f9d851cf2ddac4c1  masters/v29.0/src/props/original-hissofa.glb
+7c163e565d3a0b5a65a50dc580211c327802971e59422b3c94784093cf43b073  masters/v29.0/src/props/original-histable.glb
+a01856873e5fe358cf04209685f64f94a8a9ddb78ed5e1cfbe849ff78198a88f  masters/v29.0/src/props/original-incense.glb
+6c3963eed6a490703af6b15c15507cfb58c5fc556b72d9b22203bd4429a25865  masters/v29.0/src/props/original-jasmine.glb
