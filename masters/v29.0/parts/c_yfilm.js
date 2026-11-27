@@ -674,7 +674,10 @@
                so he stands 0.4 m back from the leaf, the fist's front (0.055 m past the palm's middle) at the door) */
             const f = [0.94, 0.34, 0], d = [FRONT.x0 - 0.125 - back, 1.42, -2.1];
             handTo(P, 'R', [d[0] - 0.055 * f[0], d[1] - 0.055 * f[1], d[2]], f, [0, -0.35, -1], kk, { out: 0.25, down: 0.35, off: 0 });
-            curlFingers(P, 'R', 1.3 * kk); }
+            /* (measured 27 Nov, jointscan's ranges: curled by +1.3 his right hand's fingers bent BACKWARD 58 to 69 degrees: the
+               knock's palm is laid facing his midline and his right hand's measured facing turns the curl the other way: so
+               it is turned by the negative, and measured again) */
+            curlFingers(P, 'R', -1.3 * kk); }
           f1Gaze(P, t, [[T.land, [-2.8, 1.5, -2.1]], [T.gr1 - 0.3, () => f1Head(cast.grace, [-2.28, 1.5, -2.3], 1.5), 0.5], [T.ph2, [OPEN1.land.pho.x, 1.55, OPEN1.land.pho.z], 0.7]], 0.8, 0.8, 0.0);
         }
         return;
@@ -1027,19 +1030,19 @@
            from his side, his face as he asks her is a lost profile (photographed 27 Nov: the back of his head and his ear). So
            a phone holds HER, whom he asks, with his open hand reaching across the cloth into the picture toward her; a desk
            holds his face and his hand) */
-        { t: 0, name: 'hand', eye, at: [0.62, 0.86, 1.32], fp: 52, fd: 44, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+        { t: 0, name: 'hand', eye, at: [0.62, 0.91, 1.32], fp: 52, fd: 50, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
           atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.58), lp(handAt[1], g[1] - 0.1, 0.58), lp(handAt[2], g[2], 0.58)]; },
           holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
-        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.8, 1.22], fp: 50, fd: 42, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
+        { t: T.bag - 0.6, name: 'hand', eye: [eye[0] - 0.08, eye[1], eye[2] - 0.05], at: [0.6, 0.85, 1.22], fp: 50, fd: 48, hold: () => [[phoFace()[0], phoFace()[1] + 0.08, phoFace()[2], 0.12], [handAt[0], handAt[1], handAt[2], 0.1]], back: 0.45, fmax: 60,
           atP: () => { const g = graceFace(); return [lp(handAt[0], g[0], 0.6), lp(handAt[1], g[1] - 0.1, 0.6), lp(handAt[2], g[2], 0.6)]; },
           holdP: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.13], [handAt[0], handAt[1], handAt[2], 0.08]]; } },
         /* across the table to her: her face, both hands, the packet */
-        { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.52, g[2] + 0.35]; }, fp: 46, fd: 38, cut: true,
+        { t: T.bag - 0.05, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.08, g[1] - 0.52, g[2] + 0.35]; }, fp: 46, fd: 44, cut: true,
           hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [HER.bag.x, HER.bag.y + 0.1, HER.bag.z, 0.12], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
         /* (photographed 27 Nov: on a phone her face and the two hands meeting over the table are 25 degrees apart, and the
            packet passing was out of the picture. So the look goes down to the hands as she holds it out, and stays on them
            as it is laid in his palm: the beat is seen on every screen) */
-        { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 38,
+        { t: T.pull + 0.9, name: 'grace', eye, at: () => { const g = graceFace(); return [g[0] + 0.06, g[1] - 0.53, g[2] + 0.4]; }, fp: 46, fd: 44,
           hold: () => { const g = graceFace(); return [[g[0], g[1] + 0.04, g[2], 0.16], [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.1, 0.12]]; }, back: 0.4, fmax: 56 },
         { t: T.give - 0.9, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.05, KEEPG1.meet[2] - 0.02], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2], 0.2]], back: 0.3, fmax: 56 },
         { t: T.place - 0.15, name: 'hands', eye, at: [KEEPG1.meet[0], KEEPG1.meet[1] + 0.02, KEEPG1.meet[2] + 0.06], fp: 44, fd: 38, hold: [[KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] + 0.05, 0.2]], back: 0.3, fmax: 56 },
@@ -1139,7 +1142,9 @@
       const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
       if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
       const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
-      if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.6, -0.1, 0.3], [0, 1, 0], give, { out: 0.25, down: 0.25 });
+      /* (the bottle held out to him on his palm, his fingers along his forearm's line toward him: measured 27 Nov, the fingers
+         turned to his side bent his wrist back 105 degrees, past a real wrist's 70) */
+      if (give > 0.001) handTo(P, 'R', [lp(CB1.x, 1.04, smo(c01((tau - T.give) / 0.9))), lp(CLOTH_Y + 0.12, 0.74, smo(c01((tau - T.give) / 0.9))), lp(CB1.z, 1.62, smo(c01((tau - T.give) / 0.9)))], [0.75, -0.2, -0.1], [0, 1, 0.2], give, { out: 0.25, down: 0.25 });
       f1Gaze(P, tau, [[0, pk], [T.snap + 1.0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 1.0], [T.wrap - 0.4, pk, 0.7], [T.c2 + 0.2, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED), 0.7], [T.c3, () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6), 0.8], [T.pour - 0.4, 'lens', 0.8], [T.pour + 1.0, [CB1.x, CLOTH_Y + 0.05, CB1.z], 0.6], [T.give, 'lens', 0.8]], 0.85, 0.75, 0.03);
     }
     function cordGrace1(tau, T, t) {
