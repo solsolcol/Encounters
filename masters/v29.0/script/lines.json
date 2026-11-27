@@ -39,7 +39,9 @@
       "at": "open",
       "where": "the opening, over black (1.0 s)",
       "thought": true,
-      "text": "Case four."
+      "text": "Case four.",
+      "secs": 1.15,
+      "prompt": "[serious] Case four."
     },
     {
       "key": "zv51o2",
@@ -47,42 +49,54 @@
       "at": "open",
       "where": "the opening, the crane down the shophouse row at blue hour (2.6 s)",
       "thought": true,
-      "text": "A man asked us to come and see his colleague. He said she was not herself."
+      "text": "A man asked us to come and see his colleague. He said she was not herself.",
+      "secs": 5.51,
+      "prompt": "[reflective] A man asked us to come and see his colleague. He said she was not herself."
     },
     {
       "key": "mk51o1",
       "who": "mk",
       "at": "open",
       "where": "the opening, the five-foot way: Marcus comes to meet them (17.0 s)",
-      "text": "Thank you for coming, Grandmaster. She said you can come up."
+      "text": "Thank you for coming, Grandmaster. She said you can come up.",
+      "secs": 3.91,
+      "prompt": "[nervous] Thank you for coming, Grandmaster. She said you can come up."
     },
     {
       "key": "ph51o1",
       "who": "ph",
       "at": "open",
       "where": "the opening, the five-foot way: to Marcus (20.0 s)",
-      "text": "Thank you. Show us the way."
+      "text": "Thank you. Show us the way.",
+      "secs": 2.54,
+      "prompt": "[calm] Thank you. Show us the way."
     },
     {
       "key": "mk51o2",
       "who": "mk",
       "at": "open",
       "where": "the opening, the landing: Marcus knocks (35.5 s)",
-      "text": "Grace? They're here."
+      "text": "Grace? They're here.",
+      "secs": 2.22,
+      "prompt": "[gentle] Grace? They're here."
     },
     {
       "key": "gr51o1",
       "who": "gr",
       "at": "open",
       "where": "the opening, the landing: Grace opens her door (38.0 s)",
-      "text": "Come in. Sorry about the mess."
+      "text": "Come in. Sorry about the mess.",
+      "secs": 2.31,
+      "prompt": "[tired] Come in. Sorry about the mess."
     },
     {
       "key": "ph51o2",
       "who": "ph",
       "at": "open",
       "where": "the opening, the landing: to Grace (40.5 s)",
-      "text": "Thank you for letting us in."
+      "text": "Thank you for letting us in.",
+      "secs": 2.13,
+      "prompt": "[warm] Thank you for letting us in."
     },
     {
       "key": "zv51o3",
@@ -90,7 +104,9 @@
       "at": "open",
       "where": "the opening, her front room: he kneels and looks at the window's glass (47.0 s)",
       "thought": true,
-      "text": "She had let us in. But something kept turning her back to the door."
+      "text": "She had let us in. But something kept turning her back to the door.",
+      "secs": 4.57,
+      "prompt": "[uneasy] She had let us in. But something kept turning her back to the door."
     },
     {
       "key": "zv51r1",
@@ -98,14 +114,18 @@
       "at": "room",
       "where": "play, the room: he looks at her phone",
       "thought": true,
-      "text": "Every time it lit up, she leaned toward the door."
+      "text": "Every time it lit up, she leaned toward the door.",
+      "secs": 3.21,
+      "prompt": "[uneasy] Every time it lit up, she leaned toward the door."
     },
     {
       "key": "ph51r1",
       "who": "ph",
       "at": "room",
       "where": "play, the room: after he looks at her phone",
-      "text": "Don't look at what it says. Look at what it does to her."
+      "text": "Don't look at what it says. Look at what it does to her.",
+      "secs": 4.38,
+      "prompt": "[calm] Don't look at what it says. Look at what it does to her."
     },
     {
       "key": "zv51r2",
@@ -113,14 +133,18 @@
       "at": "room",
       "where": "play, the room: he looks at her reflection in the window",
       "thought": true,
-      "text": "In the glass, she was facing the stairs."
+      "text": "In the glass, she was facing the stairs.",
+      "secs": 2.89,
+      "prompt": "[uneasy] In the glass, she was facing the stairs."
     },
     {
       "key": "ph51r2",
       "who": "ph",
       "at": "room",
       "where": "play, the room: after he looks at her reflection",
-      "text": "The glass shows where she is being pulled."
+      "text": "The glass shows where she is being pulled.",
+      "secs": 3.28,
+      "prompt": "[calm] The glass shows where she is being pulled."
     },
     {
       "key": "zv51r3",
@@ -128,14 +152,18 @@
       "at": "room",
       "where": "play, the room: he looks at her hands on her bag strap",
       "thought": true,
-      "text": "Her hands never stopped. Like she was already leaving."
+      "text": "Her hands never stopped. Like she was already leaving.",
+      "secs": 3.13,
+      "prompt": "[concerned] Her hands never stopped. Like she was already leaving."
     },
     {
       "key": "ph51r3",
       "who": "ph",
       "at": "room",
       "where": "play, the room: after he looks at her hands",
-      "text": "She is not weak. She is tired of being pulled."
+      "text": "She is not weak. She is tired of being pulled.",
+      "secs": 3.84,
+      "prompt": "[gentle] She is not weak. She is tired of being pulled."
     },
     {
       "key": "zv51r4",
@@ -143,35 +171,45 @@
       "at": "room",
       "where": "play, the room: he looks at the packet in her open bag",
       "thought": true,
-      "text": "Something in her bag. Wrapped in cloth, tied with red cord."
+      "text": "Something in her bag. Wrapped in cloth, tied with red cord.",
+      "secs": 4.49,
+      "prompt": "[curious] Something in her bag. Wrapped in cloth, tied with red cord."
     },
     {
       "key": "ph51r4",
       "who": "ph",
       "at": "room",
       "where": "play, the room: after he looks at the packet",
-      "text": "Ask her where she got it."
+      "text": "Ask her where she got it.",
+      "secs": 1.84,
+      "prompt": "[calm] Ask her where she got it."
     },
     {
       "key": "zv51r5",
       "who": "zv",
       "at": "room",
       "where": "play, the room: he asks Grace",
-      "text": "Grace, the little packet in your bag. Where is it from?"
+      "text": "Grace, the little packet in your bag. Where is it from?",
+      "secs": 4.19,
+      "prompt": "[gentle] Grace, the little packet in your bag. Where is it from?"
     },
     {
       "key": "gr51r1",
       "who": "gr",
       "at": "room",
       "where": "play, the room: Grace answers, after a long pause",
-      "text": "He gave it to me. He said it would keep me safe."
+      "text": "He gave it to me. He said it would keep me safe.",
+      "secs": 3.61,
+      "prompt": "[defensive] He gave it to me. He said it would keep me safe."
     },
     {
       "key": "mk51r1",
       "who": "mk",
       "at": "room",
       "where": "play, the room: Marcus, quietly",
-      "text": "That was around when she changed."
+      "text": "That was around when she changed.",
+      "secs": 2.45,
+      "prompt": "[worried] That was around when she changed."
     },
     {
       "key": "zv51r6",
@@ -179,7 +217,9 @@
       "at": "room",
       "where": "play, the room: Spirit Vision open on Grace, the red line seen",
       "thought": true,
-      "text": "A thread. From her chest to the door."
+      "text": "A thread. From her chest to the door.",
+      "secs": 3.29,
+      "prompt": "[shaken] A thread. From her chest to the door."
     },
     {
       "key": "gr51r2",
@@ -187,7 +227,9 @@
       "at": "room",
       "where": "play, the room: Grace stands up the first time (40 s)",
       "text": "I should go.",
-      "note": "the first of two takes (the plan: two takes)"
+      "note": "the first of two takes (the plan: two takes)",
+      "secs": 0.82,
+      "prompt": "[restless] I should go."
     },
     {
       "key": "gr51r3",
@@ -196,35 +238,45 @@
       "where": "play, the room: Grace stands up the second time (110 s)",
       "text": "I should go.",
       "same": "gr51r2",
-      "note": "the second take, so the two times do not sound the same"
+      "note": "the second take, so the two times do not sound the same",
+      "secs": 0.87,
+      "prompt": "[anxious] I should go."
     },
     {
       "key": "mk51r2",
       "who": "mk",
       "at": "room",
       "where": "play, the room: each time Grace stands up",
-      "text": "Grace, please."
+      "text": "Grace, please.",
+      "secs": 1.53,
+      "prompt": "[pleading] Grace, please."
     },
     {
       "key": "ph51r5",
       "who": "ph",
       "at": "room",
       "where": "play, the room: each time Grace stands up, after Marcus",
-      "text": "Sit. A little longer."
+      "text": "Sit. A little longer.",
+      "secs": 2.24,
+      "prompt": "[gentle] Sit. A little longer."
     },
     {
       "key": "ph51k1",
       "who": "ph",
       "at": "keepsake",
       "where": "film, the keepsake: his open hand held out to Grace (0.8 s)",
-      "text": "May I hold it? Only for a while."
+      "text": "May I hold it? Only for a while.",
+      "secs": 2.81,
+      "prompt": "[gentle] May I hold it? Only for a while."
     },
     {
       "key": "ph51k2",
       "who": "ph",
       "at": "keepsake",
       "where": "film, the keepsake: to his student, the bowl lifted (23.0 s)",
-      "text": "Hold the water. Whatever happens, keep it still."
+      "text": "Hold the water. Whatever happens, keep it still.",
+      "secs": 3.85,
+      "prompt": "[serious] Hold the water. Whatever happens, keep it still."
     },
     {
       "key": "ph51ratana",
@@ -261,21 +313,53 @@
         ]
       ],
       "source": "Thanissaro Bhikkhu, A Chanting Guide: Cha Ratana Paritta Gatha, The Six Protective Verses from the Discourse on Treasures, its first three verses (https://www.dhammatalks.org/books/ChantingGuide/Section0052.html, read 27 Nov 2026)",
-      "note": "the plan names the Ratana Sutta's opening verses; the guide carries only these six protective verses of it, so the first three are taken (said to the coordinator). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced."
+      "note": "the plan names the Ratana Sutta's opening verses; the guide carries only these six protective verses of it, so the first three are taken (said to the coordinator). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced.",
+      "secs": 44.36,
+      "prompt": "[chanting slowly, deep and solemn] Yang kinci vittang idha va hurang va, Saggesu va yang ratanang panitang, Na no samang atthi Tathagatena. Idam pi Buddhe ratanang panitang, Etena saccena suvatthi hotu. Khayang viragang amatang panitang, Yad ajjhaga Sakyamuni samahito, Na tena dhammena samatthi kinci. Idam pi dhamme ratanang panitang, Etena saccena suvatthi hotu. Yam buddha settho parivannayi sucing, Samadhim anantarikannam ahu, Samadhina tena samo na vijjati. Idam pi dhamme ratanang panitang, Etena saccena suvatthi hotu.",
+      "times": [
+        [
+          0.06,
+          9.58
+        ],
+        [
+          10.0,
+          15.34
+        ],
+        [
+          15.74,
+          24.02
+        ],
+        [
+          24.46,
+          29.8
+        ],
+        [
+          30.18,
+          38.52
+        ],
+        [
+          38.92,
+          44.24
+        ]
+      ]
     },
     {
       "key": "ph51s1",
       "who": "ph",
       "at": "breaking",
       "where": "play, the breaking: the light stayed out of the ring too long; his hand comes under the bowl (that surge taken once more)",
-      "text": "Slowly. Again."
+      "text": "Slowly. Again.",
+      "secs": 2.49,
+      "prompt": "[calm] Slowly. Again."
     },
     {
       "key": "ph51c1",
       "who": "ph",
       "at": "cord",
       "where": "film, the cord: Grace breathes out and cries; gently (15.0 s)",
-      "text": "It's alright. It's finished."
+      "text": "It's alright. It's finished.",
+      "secs": 2.73,
+      "prompt": "[gentle] It's alright. It's finished."
     },
     {
       "key": "zv51c1",
@@ -283,49 +367,63 @@
       "at": "cord",
       "where": "film, the cord: her phone lights up; she turns it face down (29.0 s)",
       "thought": true,
-      "text": "For the first time all evening, she let it ring."
+      "text": "For the first time all evening, she let it ring.",
+      "secs": 2.97,
+      "prompt": "[relieved] For the first time all evening, she let it ring."
     },
     {
       "key": "ph51c2",
       "who": "ph",
       "at": "cord",
       "where": "film, the cord: to Grace, the packet bound in white thread (33.0 s)",
-      "text": "Rest tonight. Tomorrow, stay close to people who listen to you."
+      "text": "Rest tonight. Tomorrow, stay close to people who listen to you.",
+      "secs": 5.37,
+      "prompt": "[warm] Rest tonight. Tomorrow, stay close to people who listen to you."
     },
     {
       "key": "ph51c3",
       "who": "ph",
       "at": "cord",
       "where": "film, the cord: to Marcus (37.5 s)",
-      "text": "Don't let her meet him alone. A friend is medicine too."
+      "text": "Don't let her meet him alone. A friend is medicine too.",
+      "secs": 4.41,
+      "prompt": "[serious] Don't let her meet him alone. A friend is medicine too."
     },
     {
       "key": "mk51c1",
       "who": "mk",
       "at": "cord",
       "where": "film, the cord: Marcus (41.0 s)",
-      "text": "I won't. Thank you, Grandmaster."
+      "text": "I won't. Thank you, Grandmaster.",
+      "secs": 2.41,
+      "prompt": "[grateful] I won't. Thank you, Grandmaster."
     },
     {
       "key": "gr51c1",
       "who": "gr",
       "at": "cord",
       "where": "film, the cord: Grace, small (43.0 s)",
-      "text": "Thank you."
+      "text": "Thank you.",
+      "secs": 0.81,
+      "prompt": "[grateful] Thank you."
     },
     {
       "key": "ph51c4",
       "who": "ph",
       "at": "cord",
       "where": "film, the cord: the corked bottle given to him (48.0 s)",
-      "text": "For your altar."
+      "text": "For your altar.",
+      "secs": 1.21,
+      "prompt": "[warm] For your altar."
     },
     {
       "key": "ph51c5",
       "who": "ph",
       "at": "cord",
       "where": "film, the cord: to him (50.0 s)",
-      "text": "You held it well."
+      "text": "You held it well.",
+      "secs": 1.75,
+      "prompt": "[warm] You held it well."
     },
     {
       "key": "zv51c2",
@@ -334,7 +432,9 @@
       "where": "film, the cord: his look drops to his wrist (52.0 s)",
       "thought": true,
       "text": "My part was small. I only held the water.",
-      "note": "the case file's own words"
+      "note": "the case file's own words",
+      "secs": 2.97,
+      "prompt": "[modest] My part was small. I only held the water."
     },
     {
       "key": "zv51h1",
@@ -343,7 +443,9 @@
       "where": "film, home: in bed, his eyes closing (41.0 s)",
       "thought": true,
       "text": "Everyone thought that was the end of it.",
-      "note": "the case file's own words"
+      "note": "the case file's own words",
+      "secs": 2.01,
+      "prompt": "[reflective] Everyone thought that was the end of it."
     },
     {
       "key": "zv51n1",
@@ -351,7 +453,9 @@
       "at": "night",
       "where": "play, three o'clock: the first wave after he gets up (once)",
       "thought": true,
-      "text": "Like my head was in a vice."
+      "text": "Like my head was in a vice.",
+      "secs": 2.17,
+      "prompt": "[pained] Like my head was in a vice."
     },
     {
       "key": "zv51n2",
@@ -359,7 +463,9 @@
       "at": "night",
       "where": "play, three o'clock: a later wave, in the passage (once)",
       "thought": true,
-      "text": "Not a headache. Something was pressing in from every side."
+      "text": "Not a headache. Something was pressing in from every side.",
+      "secs": 5.37,
+      "prompt": "[pained] Not a headache. Something was pressing in from every side."
     },
     {
       "key": "zv51n3",
@@ -367,7 +473,9 @@
       "at": "night",
       "where": "play, three o'clock: the bottle of holy water on his altar trembling (once)",
       "thought": true,
-      "text": "The water I brought home was shaking."
+      "text": "The water I brought home was shaking.",
+      "secs": 2.25,
+      "prompt": "[afraid] The water I brought home was shaking."
     },
     {
       "key": "zv51n4",
@@ -375,7 +483,9 @@
       "at": "night",
       "where": "play, three o'clock: at the bedroom door, Spirit Vision forced open, his footsteps glowing red",
       "thought": true,
-      "text": "My own footsteps. Something was following them."
+      "text": "My own footsteps. Something was following them.",
+      "secs": 3.85,
+      "prompt": "[afraid] My own footsteps. Something was following them."
     },
     {
       "key": "ph51x1",
@@ -383,28 +493,40 @@
       "at": "barrier",
       "where": "film, the barrier: on the phone speaker (0 s)",
       "text": "The one who made the spell felt it break. He is sending it back, to find out who helped her.",
-      "note": "what the case file says his teacher told him that night: his words, never said as a belief (plan 3)"
+      "note": "what the case file says his teacher told him that night: his words, never said as a belief (plan 3)",
+      "secs": 6.86,
+      "prompt": "[serious] The one who made the spell felt it break. He is sending it back, to find out who helped her.",
+      "phone": "ph51x1tel"
     },
     {
       "key": "ph51x2",
       "who": "ph",
       "at": "barrier",
       "where": "film, the barrier: on the phone speaker (6 s)",
-      "text": "Get the white thread from your bag. Sit on the floor, in the middle of the room."
+      "text": "Get the white thread from your bag. Sit on the floor, in the middle of the room.",
+      "secs": 5.34,
+      "prompt": "[firm] Get the white thread from your bag. Sit on the floor, in the middle of the room.",
+      "phone": "ph51x2tel"
     },
     {
       "key": "ph51x3",
       "who": "ph",
       "at": "barrier",
       "where": "film, the barrier: on the phone speaker, as the circle nears closing",
-      "text": "Close it."
+      "text": "Close it.",
+      "secs": 0.73,
+      "prompt": "[firm] Close it.",
+      "phone": "ph51x3tel"
     },
     {
       "key": "ph51x4",
       "who": "ph",
       "at": "barrier",
       "where": "film, the barrier: on the phone speaker, the circle closed (22 s)",
-      "text": "Good. Now stay inside. Whatever you hear, stay inside."
+      "text": "Good. Now stay inside. Whatever you hear, stay inside.",
+      "secs": 4.64,
+      "prompt": "[calm] Good. Now stay inside. Whatever you hear, stay inside.",
+      "phone": "ph51x4tel"
     },
     {
       "key": "ph51jina",
@@ -433,63 +555,104 @@
         ]
       ],
       "source": "Thanissaro Bhikkhu, A Chanting Guide: Jinapanjara Gatha, The Victor's Cage, its first four verses, as docs/research/V29.0-LOVESPELL.md 3 has them (https://www.dhammatalks.org/books/ChantingGuide/Section0093.html)",
-      "note": "heard through the phone (band-limited). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced."
+      "note": "heard through the phone (band-limited). Captions timed on the take's breaths once voiced (v21.31). To Chad before it is voiced.",
+      "secs": 36.62,
+      "prompt": "[chanting slowly, deep and solemn] Jayasanagata Buddha, Jetva Marang savahanang, Catu saccasabhang rasang, Ye pivingsu narasabha. Tanhangkaradayo Buddha, Attha visati nayaka, Sabbe patitthita mayhang, Matthake te munissara. Sise patitthito mayhang, Buddho dhammo dvilocane, Sangho patitthito mayhang, Ure sabba gunakaro. Hadaye me Anuruddho, Sariputto ca dakkhine, Kondanno pitthi bhagasming, Moggallano ca vamake.",
+      "phone": "ph51jinatel",
+      "times": [
+        [
+          0.06,
+          9.32
+        ],
+        [
+          9.66,
+          18.1
+        ],
+        [
+          18.48,
+          27.4
+        ],
+        [
+          27.68,
+          36.46
+        ]
+      ]
     },
     {
       "key": "ph51x5",
       "who": "ph",
       "at": "barrier",
       "where": "film, the barrier: the pressure gone (46 s)",
-      "text": "It's gone. Breathe."
+      "text": "It's gone. Breathe.",
+      "secs": 2.19,
+      "prompt": "[relieved] It's gone. Breathe.",
+      "phone": "ph51x5tel"
     },
     {
       "key": "zv51x1",
       "who": "zv",
       "at": "barrier",
       "where": "film, the barrier: he asks",
-      "text": "Who was it?"
+      "text": "Who was it?",
+      "secs": 1.05,
+      "prompt": "[exhausted] Who was it?"
     },
     {
       "key": "ph51x6",
       "who": "ph",
       "at": "barrier",
       "where": "film, the barrier: on the phone speaker, the last words of the night",
-      "text": "Who it was does not matter tonight. Rest. I will come in the morning."
+      "text": "Who it was does not matter tonight. Rest. I will come in the morning.",
+      "secs": 7.45,
+      "prompt": "[calm] Who it was does not matter tonight. Rest. I will come in the morning.",
+      "phone": "ph51x6tel"
     },
     {
       "key": "ph51A1",
       "who": "ph",
       "at": "endA",
       "where": "ending A: he answers on the second ring",
-      "text": "I'm here. Tell me what you feel."
+      "text": "I'm here. Tell me what you feel.",
+      "secs": 2.72,
+      "prompt": "[calm] I'm here. Tell me what you feel.",
+      "phone": "ph51A1tel"
     },
     {
       "key": "zv51A1",
       "who": "zv",
       "at": "endA",
       "where": "ending A: on the phone",
-      "text": "My head... it's like something's crushing it from every side."
+      "text": "My head... it's like something's crushing it from every side.",
+      "secs": 4.81,
+      "prompt": "[pained] My head... it's like something's crushing it from every side."
     },
     {
       "key": "ph51A2",
       "who": "ph",
       "at": "endA",
       "where": "ending A: on the phone",
-      "text": "Listen to me, and do exactly what I say."
+      "text": "Listen to me, and do exactly what I say.",
+      "secs": 3.27,
+      "prompt": "[firm] Listen to me, and do exactly what I say.",
+      "phone": "ph51A2tel"
     },
     {
       "key": "ph51A3",
       "who": "ph",
       "at": "endA",
       "where": "ending A: at dawn, at the table (the ending's own line)",
-      "text": "You called at once. That is the first protection: knowing when something is more than you."
+      "text": "You called at once. That is the first protection: knowing when something is more than you.",
+      "secs": 6.89,
+      "prompt": "[warm] You called at once. That is the first protection: knowing when something is more than you."
     },
     {
       "key": "zv51B1",
       "who": "zv",
       "at": "endB",
       "where": "ending B: the phone set face down",
-      "text": "It's three in the morning. He worked all evening. Let him sleep."
+      "text": "It's three in the morning. He worked all evening. Let him sleep.",
+      "secs": 4.25,
+      "prompt": "[stubborn] It's three in the morning. He worked all evening. Let him sleep."
     },
     {
       "key": "zv51B2",
@@ -497,56 +660,75 @@
       "at": "endB",
       "where": "ending B: on the sofa, the threads at his feet",
       "thought": true,
-      "text": "I told myself I could carry it till morning."
+      "text": "I told myself I could carry it till morning.",
+      "secs": 2.81,
+      "prompt": "[regretful] I told myself I could carry it till morning."
     },
     {
       "key": "ph51B1",
       "who": "ph",
       "at": "endB",
       "where": "ending B: 3:41, he answers at once",
-      "text": "How long has it been like this?"
+      "text": "How long has it been like this?",
+      "secs": 2.09,
+      "prompt": "[concerned] How long has it been like this?",
+      "phone": "ph51B1tel"
     },
     {
       "key": "zv51B3",
       "who": "zv",
       "at": "endB",
       "where": "ending B: on the phone",
-      "text": "Since three."
+      "text": "Since three.",
+      "secs": 1.29,
+      "prompt": "[exhausted] Since three."
     },
     {
       "key": "ph51B2",
       "who": "ph",
       "at": "endB",
       "where": "ending B: on the phone",
-      "text": "Forty minutes. Why did you wait?"
+      "text": "Forty minutes. Why did you wait?",
+      "secs": 2.76,
+      "prompt": "[concerned] Forty minutes. Why did you wait?",
+      "phone": "ph51B2tel"
     },
     {
       "key": "zv51B4",
       "who": "zv",
       "at": "endB",
       "where": "ending B: on the phone",
-      "text": "I didn't want to wake you."
+      "text": "I didn't want to wake you.",
+      "secs": 1.61,
+      "prompt": "[ashamed] I didn't want to wake you."
     },
     {
       "key": "ph51B3",
       "who": "ph",
       "at": "endB",
       "where": "ending B: on the phone",
-      "text": "You held the water for her. Now let me hold it for you."
+      "text": "You held the water for her. Now let me hold it for you.",
+      "secs": 4.57,
+      "prompt": "[gentle] You held the water for her. Now let me hold it for you.",
+      "phone": "ph51B3tel"
     },
     {
       "key": "ph51B4",
       "who": "ph",
       "at": "endB",
       "where": "ending B: at dawn, at the table (the ending's own line)",
-      "text": "A student who won't wake his teacher is protecting the wrong person."
+      "text": "A student who won't wake his teacher is protecting the wrong person.",
+      "secs": 4.89,
+      "prompt": "[serious] A student who won't wake his teacher is protecting the wrong person."
     },
     {
       "key": "zv51C1",
       "who": "zv",
       "at": "endC",
       "where": "ending C: he gets up for a pill",
-      "text": "It's a migraine. That's all it is."
+      "text": "It's a migraine. That's all it is.",
+      "secs": 2.41,
+      "prompt": "[dismissive] It's a migraine. That's all it is."
     },
     {
       "key": "zv51C2",
@@ -554,91 +736,121 @@
       "at": "endC",
       "where": "ending C: on the sofa, the cushion over his eyes",
       "thought": true,
-      "text": "The pills did nothing. It was still pressing."
+      "text": "The pills did nothing. It was still pressing.",
+      "secs": 2.97,
+      "prompt": "[pained] The pills did nothing. It was still pressing."
     },
     {
       "key": "ph51C1",
       "who": "ph",
       "at": "endC",
       "where": "ending C: 3:22, he answers",
-      "text": "Tell me."
+      "text": "Tell me.",
+      "secs": 0.92,
+      "prompt": "[calm] Tell me.",
+      "phone": "ph51C1tel"
     },
     {
       "key": "zv51C3",
       "who": "zv",
       "at": "endC",
       "where": "ending C: on the phone",
-      "text": "It's just a migraine, I think. It won't stop."
+      "text": "It's just a migraine, I think. It won't stop.",
+      "secs": 3.45,
+      "prompt": "[pained] It's just a migraine, I think. It won't stop."
     },
     {
       "key": "ph51C2",
       "who": "ph",
       "at": "endC",
       "where": "ending C: on the phone",
-      "text": "This is not a headache. A headache does not follow you home."
+      "text": "This is not a headache. A headache does not follow you home.",
+      "secs": 4.54,
+      "prompt": "[serious] This is not a headache. A headache does not follow you home.",
+      "phone": "ph51C2tel"
     },
     {
       "key": "ph51C3",
       "who": "ph",
       "at": "endC",
       "where": "ending C: at dawn, at the table (the ending's own line)",
-      "text": "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
+      "text": "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask.",
+      "secs": 7.29,
+      "prompt": "[serious] Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
     },
     {
       "key": "zv51D1",
       "who": "zv",
       "at": "endD",
       "where": "ending D: he opens Spirit Vision on purpose",
-      "text": "Who's doing this?"
+      "text": "Who's doing this?",
+      "secs": 1.29,
+      "prompt": "[determined] Who's doing this?"
     },
     {
       "key": "ph51D1",
       "who": "ph",
       "at": "endD",
       "where": "ending D: he answers",
-      "text": "I'm here."
+      "text": "I'm here.",
+      "secs": 0.93,
+      "prompt": "[calm] I'm here.",
+      "phone": "ph51D1tel"
     },
     {
       "key": "zv51D2",
       "who": "zv",
       "at": "endD",
       "where": "ending D: on the phone, on his knees inside the balcony door",
-      "text": "It's outside. It's looking for me."
+      "text": "It's outside. It's looking for me.",
+      "secs": 2.97,
+      "prompt": "[afraid] It's outside. It's looking for me."
     },
     {
       "key": "ph51D2",
       "who": "ph",
       "at": "endD",
       "where": "ending D: on the phone",
-      "text": "Then stop looking for it. Sit down. Now."
+      "text": "Then stop looking for it. Sit down. Now.",
+      "secs": 4.01,
+      "prompt": "[firm] Then stop looking for it. Sit down. Now.",
+      "phone": "ph51D2tel"
     },
     {
       "key": "ph51D3",
       "who": "ph",
       "at": "endD",
       "where": "ending D: at dawn, the red mark round his wrist (the ending's own line)",
-      "text": "You went to a stranger's door and knocked. It answered."
+      "text": "You went to a stranger's door and knocked. It answered.",
+      "secs": 4.39,
+      "prompt": "[serious] You went to a stranger's door and knocked. It answered."
     },
     {
       "key": "ph51D4",
       "who": "ph",
       "at": "endD",
       "where": "ending D: at dawn, after a pause; he ties the white thread over the mark",
-      "text": "Curiosity is not courage."
+      "text": "Curiosity is not courage.",
+      "secs": 2.39,
+      "prompt": "[stern] Curiosity is not courage."
     },
     {
       "key": "ph51w1",
       "who": "ph",
       "at": "dawn",
       "where": "the dawn: at his door with breakfast (8.0 s)",
-      "text": "Eat first. You fought all night, even sitting still."
+      "text": "Eat first. You fought all night, even sitting still.",
+      "secs": 3.93,
+      "prompt": "[warm] Eat first. You fought all night, even sitting still."
     },
     {
       "key": "zv51w1",
       "who": "zv",
       "at": "dawn",
       "where": "the dawn: at the table",
-      "text": "I only held the water."
+      "text": "I only held the water.",
+      "secs": 1.69,
+      "prompt": "[tired] I only held the water."
     },
     {
       "key": "ph51w2",
@@ -646,14 +858,18 @@
       "at": "dawn",
       "where": "the dawn: at the table, before the ending's own line",
       "text": "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it.",
-      "note": "his words, never said as a belief (plan 3 and 10)"
+      "note": "his words, never said as a belief (plan 3 and 10)",
+      "secs": 7.37,
+      "prompt": "[serious] That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it."
     },
     {
       "key": "ph51w3",
       "who": "ph",
       "at": "dawn",
       "where": "the dawn: he ties a white thread round his wrist",
-      "text": "Before we help anyone, we protect ourselves. From now on, we prepare first."
+      "text": "Before we help anyone, we protect ourselves. From now on, we prepare first.",
+      "secs": 6.31,
+      "prompt": "[serious] Before we help anyone, we protect ourselves. From now on, we prepare first."
     },
     {
       "key": "zv51w2",
@@ -662,7 +878,9 @@
       "where": "the dawn: the last line, his eyes up to his teacher's face",
       "thought": true,
       "text": "I had thought I was only there to assist my teacher.",
-      "note": "the case file's own last sentence"
+      "note": "the case file's own last sentence",
+      "secs": 3.05,
+      "prompt": "[reflective] I had thought I was only there to assist my teacher."
     },
     {
       "key": "zv51A",
@@ -671,7 +889,9 @@
       "where": "under the outcome card, ending A",
       "thought": true,
       "text": "I called. He was already awake.",
-      "note": "the chapter's choices[A].say must be these words (assemble.py holds them together)"
+      "note": "the chapter's choices[A].say must be these words (assemble.py holds them together)",
+      "secs": 2.49,
+      "prompt": "[reflective] I called. He was already awake."
     },
     {
       "key": "zv51B",
@@ -680,7 +900,9 @@
       "where": "under the outcome card, ending B",
       "thought": true,
       "text": "I waited. It cost me an hour.",
-      "note": "as zv51A"
+      "note": "as zv51A",
+      "secs": 2.49,
+      "prompt": "[regretful] I waited. It cost me an hour."
     },
     {
       "key": "zv51C",
@@ -689,7 +911,9 @@
       "where": "under the outcome card, ending C",
       "thought": true,
       "text": "I called it a headache. It wasn't.",
-      "note": "as zv51A"
+      "note": "as zv51A",
+      "secs": 3.05,
+      "prompt": "[ashamed] I called it a headache. It wasn't."
     },
     {
       "key": "zv51D",
@@ -698,7 +922,9 @@
       "where": "under the outcome card, ending D",
       "thought": true,
       "text": "I went looking. It found me first.",
-      "note": "as zv51A"
+      "note": "as zv51A",
+      "secs": 2.81,
+      "prompt": "[regretful] I went looking. It found me first."
     }
   ]
 }

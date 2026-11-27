@@ -52,8 +52,8 @@
   "heard": "Her hands never stopped, like she was already leaving."
  },
  "ph51r3": {
-  "take": "c",
-  "heard": "She is not weak, she is tired of being pooed."
+  "take": "a",
+  "heard": "She is not weak, she is tired of being pulled."
  },
  "zv51r4": {
   "take": "b",
@@ -96,8 +96,8 @@
   "heard": "See it, a little longer."
  },
  "ph51k1": {
-  "take": "a",
-  "heard": "may hold it only for a while."
+  "take": "c",
+  "heard": "May I hold it? Only for a while."
  },
  "ph51k2": {
   "take": "c",
@@ -168,8 +168,8 @@
   "heard": "The one who made the spell fail it break, he is sending it back to find out who helped her."
  },
  "ph51x2": {
-  "take": "b",
-  "heard": "Get the white thread from your back. Sit on the floor in the middle of the room."
+  "take": "c",
+  "heard": "Get the white thread from your bag, sit on the floor in the middle of the room."
  },
  "ph51x3": {
   "take": "b",
@@ -180,8 +180,8 @@
   "heard": "Good, now stay inside. Whatever you hear, stay inside."
  },
  "ph51x5": {
-  "take": "b",
-  "heard": "is gone. Breathe."
+  "take": "c",
+  "heard": "It's gone. Breathe."
  },
  "zv51x1": {
   "take": "c",
