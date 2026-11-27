@@ -931,7 +931,10 @@
        to him; they meet 0.75 m out from his cushion; she steps back and sits) */
     /* (measured, the second build: his palm reached 0.56 m out from his cushion leaning half a radian, hers 0.5 m from where
        she stood: so both bend further to it, he 0.75 rad, she 0.8, and they meet 0.72 m out from his cushion) */
-    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.78, 1.15], head: 1.5 };
+    /* (stand: 27 Nov, clipscan and the limbs' check at the handoff: stepping to 0.55 her front foot and shins went 10 to 13 cm
+       into the coffee table's front (1,669 crossings) and her free hand through the lit candle2 (64); 0.12 m back she bends to
+       the meet at arm's length) */
+    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.43 }, meet: [0.45, 0.78, 1.15], head: 1.5 };
     /* THE SET-DOWN ON THE PLATE (seconds from T.place; the plate is ON_CLOTH.plate, PLAY's): his left palm comes beside the
        plate on his side of it, `off` m out from its middle along `dir` (a unit line from the plate toward his cushion that
        leaves the lit candle at the plate's far side 0.15 m off), `y` over the cloth (his hand's back clear of it), arriving
