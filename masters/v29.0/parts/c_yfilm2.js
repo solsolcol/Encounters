@@ -465,7 +465,10 @@
     const _bsS = new THREE.Matrix4(), _bsM = new THREE.Matrix4(), _bsP = new THREE.Matrix4(), _bsRed = new THREE.Color(F2RED), _bsWhite = new THREE.Color(0xffffff);
     function f2BandSpirit(on, alpha, white) {
       const B = F2W.bandSp, A = F2.api; if (!B) return;
-      B.m.visible = !!(on && B.h && A && A.vmCam); if (!B.m.visible) return;
+      /* (only while his left hand is drawn: in the world it stood alone over the chant, a red ring in the middle of the picture
+         with no hand under it, photographed) */
+      let shown = true; for (let o = B.fa; o; o = o.parent) if (!o.visible) { shown = false; break; }
+      B.m.visible = !!(on && shown && B.h && A && A.vmCam); if (!B.m.visible) return;
       const s = Math.tan(camera.fov * Math.PI / 360) / Math.tan(A.vmCam.fov * Math.PI / 360);
       camera.updateMatrixWorld(); A.vmCam.updateMatrixWorld(); B.fa.updateWorldMatrix(true, false);
       _bsM.copy(camera.matrixWorld).multiply(_bsS.makeScale(1, 1, 1 / s)).multiply(A.vmCam.matrixWorldInverse).multiply(B.fa.matrixWorld);
