@@ -218,8 +218,13 @@
        red is the spell's colour alone in this chapter, the plan's 4.5; until then that one stands in. A little of its own
        colour given back as light (no lamp), so in his dark room it reads as cloth and not as a grey slab: d7's desktop
        picture at 14.2 s) */
-    f2Clone(have('w51cushion') ? 'w51cushion' : 'w5cushion', (m) => { m.scale.set(0.9, 0.9, 0.9);
-      m.traverse(q => { if (q.isMesh && q.material && q.material.map && q.material.emissive) { q.material.emissiveMap = q.material.map; q.material.emissive.setScalar(0.14); q.material.needsUpdate = true; } });
+    const F2CUSH = have('w51cushion') ? 'w51cushion' : 'w5cushion';
+    f2Clone(F2CUSH, (m) => { m.scale.set(0.9, 0.9, 0.9);
+      m.traverse(q => { if (!q.isMesh || !q.material || !q.material.emissive) return;
+        /* (the stand-in's red paint taken off here, at runtime, its file untouched: a plain faded indigo with its own shape) */
+        if (F2CUSH === 'w5cushion') { q.material.map = null; q.material.color.setHex(0x4a5677); q.material.emissive.setHex(0x4a5677).multiplyScalar(0.14); }
+        else if (q.material.map) { q.material.emissiveMap = q.material.map; q.material.emissive.setScalar(0.14); }
+        q.material.needsUpdate = true; });
       f2Cushion.add(m); F2M.cushion = m; });
 
     /* ---------------------------------------------------------------- THE WHITE THREAD ROUND HIM (the plan's 9.7, 12)
@@ -961,10 +966,12 @@
       return f2AimOf(e, D.yaw + g.d, D.pitch + g.p, D.L);
     }
     /* ending C: the cushion held over his eyes, close before the lens in the hands' own pass (so a wall never cuts it), its
-       lower edge leaving a sliver of the room */
+       lower edge leaving a sliver of the room. ON THE HANDS' OWN ROOT, which is drawn while it is held (his arms hidden):
+       the engine draws the hands' pass only when that root has something visible in it (OPT.vmSkip), so laid beside the
+       root, with his hands hidden, the cushion was never drawn in any run, and what the pictures showed was his ceiling */
     function f2CushionAt(k, t) {
       const A = F2.api; if (!A || !A.handsRoot) return;
-      if (k > 0.001 && f2Cushion.parent !== A.handsRoot.parent) { A.handsRoot.parent.add(f2Cushion); }
+      if (k > 0.001 && f2Cushion.parent !== A.handsRoot) { A.handsRoot.add(f2Cushion); }
       f2Cushion.visible = k > 0.001;
       if (!f2Cushion.visible) return;
       /* (it comes up from under the lens and settles over his eyes, slipping down off them as his sight opens) */
@@ -1389,7 +1396,7 @@
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'C') {
-        f2PillsIn(false);
+        f2PillsIn(false); if (A && A.armR) A.armR.visible = true;
         if (t < E.walk + 0.5) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk, E.walk + 0.5)); return; }
         if (t >= E.drawer - 0.2 && t < E.sofa0 + 0.3) {
           /* the drawer (his hand down to it, out of the picture's foot), the strip of pills brought up before him where he can
@@ -1398,7 +1405,9 @@
              let back to rest before the next (two poses' shares never meet) */
           const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.3, E.pills - 0.45, E.pills - 0.2), pl = f2bell(t, E.pills - 0.2, E.pills + 0.15, E.pills + 0.55, E.pills + 0.8);
           const m = f2bell(t, E.pills + 0.8, E.pills + 1.05, E.tap - 0.2, E.tap + 0.1);
-          const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
+          /* (his hand out from under the water before it goes to his mouth: the two shares met from 7.9 to 8.2 s and the mouth
+             took over the frame its share began, the reach dropped from 0.84 to nothing: run t16's phone at 8.1 s) */
+          const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.8, E.sofa0 - 0.4), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
           f2Hold(null);
           if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp);
           else if (pl > 0.01) f2Hands(true, 'place', pl); else f2Hands(r > 0.01, 'reach', r);
@@ -1407,9 +1416,11 @@
           return;
         }
         if (t >= E.cushion - 0.6 && t < E.forced + 0.9) {
-          /* the cushion over his eyes, its lower edge a sliver of the room; it slides off as his sight opens */
-          f2Hold(null); f2Hands(false);
+          /* the cushion over his eyes, its lower edge a sliver of the room; it slides off as his sight opens (the hands' root
+             drawn for it, his arms hidden: his hands hold it at its sides, out of the picture) */
+          f2Hold(null);
           const on = f2smo(f2win(t, E.cushion - 0.6, E.cushion)) * (1 - f2smo(f2win(t, E.forced + 0.1, E.forced + 0.9)));
+          f2Hands(on > 0.001, null, 0); if (A && A.armR) A.armR.visible = false;
           f2CushionAt(on, t);
           return;
         }
