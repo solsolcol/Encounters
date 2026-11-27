@@ -30,7 +30,7 @@ four scenes (the plan's 9.6, 9.8). The lines are the plan's (§10), voiced; none
 |---|---|---|---|---|
 | A (best) | calls at once: his thumb on the name, two rings | "I'm here. Tell me what you feel." / "Listen to me, and do exactly what I say." | the night is shortest; the barrier holds | "You called at once. That is the first protection: knowing when something is more than you." |
 | B (good) | lays the phone face down ("Let him sleep."), sits with his palms together; two waves, his sight forced open on the threads at his feet; 3:41 on the oven; on the floor against the sofa, a slit of picture; crawls to the phone | "How long has it been like this?" "Forty minutes. Why did you wait?" ... "You held the water for her. Now let me hold it for you." | forty minutes; the threads already round him, the gold pushes harder | "A student who won't wake his teacher is protecting the wrong person." |
-| C (bad) | "It's a migraine.": at his counter, his hand down to the drawer and up with the strip of pills before him, one to his mouth, the tap; the sofa, a cushion over his eyes (the picture's lowest fifth left to the room); a wave, the glass ticking; his sight opens by itself on his red footsteps ending at the sofa and the threads at his feet; he sits up with the phone as the call connects and listens facing his glass | 3:22: "Tell me." ... "This is not a headache. A headache does not follow you home." | the pills did nothing; the threads already at his feet | "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask." |
+| C (bad) | "It's a migraine.": at his counter, his hand down to the drawer and up with the strip of pills before him, one to his mouth, the tap; the sofa, a cushion over his eyes (its head on the sofa's arm turned a little to his glass: the picture's lowest fifth the top of his glass doors and the city's night); a wave, the glass ticking; his sight opens by itself on his red footsteps ending at the sofa and the threads at his feet; he sits up with the phone as the call connects and listens facing his glass | 3:22: "Tell me." ... "This is not a headache. A headache does not follow you home." | the pills did nothing; the threads already at his feet | "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask." |
 | D (worst) | opens Spirit Vision on purpose, follows the threads to his balcony door, slides it open; one thread turns like a head and lunges: a band of red light round his left wrist, the picture crushed to a slit; tears himself back in, on his knees | "I'm here." "It's outside. It's looking for me." "Then stop looking for it. Sit down. Now." | the band burned off by the gold (a white flash, a hiss); a red mark left on his wrist | his teacher sees the mark: "You went to a stranger's door and knocked. It answered." ... "Curiosity is not courage." and ties the white thread over it |
 
 Their clocks (y_endings.js EN2, measured lines; seconds): A 148.4 (own 17.1, barrier 81.2, dawn 50.1); B 169.0 (38.5, 82.4,
@@ -69,8 +69,8 @@ Endings B and C give the barrier the threads already at his feet (`near`); B's g
 | inside | he steps back and aside to let him in (behind the middle of his sofa, 1.2 m off his way: at 0.65 m his teacher filled the picture passing and cut off his own head, photographed), his look going with him into the room | `helpers.walk` at 0.85 m/s |
 | wind (a cut) | his teacher sitting on the floor at the circle's edge, cross-legged as he always sits (the seated `cast.pho`, CROSS), the spool held upright in his right hand before his belly and turned as he winds, his left hand a little before it pinching the thread that comes up from the floor and feeding it on (both hands laid by `handTo` after his seated rest, as FILMS-1 lays his at her table; measured: 6): the loop drawn in across the floor to his hands (the circle scaled about the point where it leaves the floor: `f2CircleWound`), the sun behind him | the plan says "kneels": he has no kneel, and on the floor he always sits so (chapters 3 to 5, and her table here) |
 | table (a cut) | the dining table, his teacher across it on the other chair (WORLD's `chair2`, which faces the table: w51dinchair's back stands 0.245 m behind its middle, measured; his teacher sits forward on it), the kopi and the toast on his teacher's half to his right (`w51breakfast`), the spool set down on the other side; "I only held the water." "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it." and the ending's own line; a slow push on him (0.3 m) | the plan's 9.9 |
-| tie (a cut, an insert from his eyes) | his left wrist held out across the table (the hands' `reach` turned over), his teacher's two hands at it tying the white thread round and knotting it twice (knot1, knot2), in D over the red mark; his teacher's robe and beads behind | THE NARROW LENS that makes one size of his hand and his teacher's. His own hand is drawn in the hands' pass, on its own 52 degrees, at a place fixed on the screen (low on the left). On the world's lens f the same picture is a hand whose depth along the lens is zv / s (s = tan(f/2) / tan(26), zv its depth in the hands' camera) at the same sideways and upward metres: so his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens (22 degrees on a phone, 23 on a desk) is TURNED, no roll, so that point lies where his teacher reaches it across the table (over its middle, a hand's breadth and more over its top: `tieWant`; `f2TieCam`, `f2TieW`), and his teacher's hands go there from half a second before the cut. The first build looked at the table's middle and left his wrist where the lens put it: under the table's top, his teacher's hands short of it on his chair's back (photographed) |
-| up | his eyes up to his teacher's face: "Before we help anyone, we protect ourselves. From now on, we prepare first." | |
+| tie (a cut, an insert from his eyes) | his left wrist held out across the table (the hands' `place` turned over), coming up into the insert with the cut into his teacher's waiting hands, which come to its two sides and tie the white thread round it, knotting it twice (knot1: the first turn and the knot, its two cut ends on the side his eye sees; knot2: the second turn), in D over the red mark; his teacher's robe behind | THE NARROW LENS that makes one size of his hand and his teacher's. His own hand is drawn in the hands' pass, on its own 52 degrees, at a place fixed on the screen (low on the left). On the world's lens f the same picture is a hand whose depth along the lens is zv / s (s = tan(f/2) / tan(26), zv its depth in the hands' camera) at the same sideways and upward metres: so his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens (20 degrees on both screens) is TURNED, no roll, so that point lies where his teacher reaches it across the table (past its middle toward him, 15 cm over its top: `tieWant`; `f2TieCam`, `f2TieW`), his eye leaning in over the table's near edge (0.28 m on and 9 cm down from where he sits). The first build looked at the table's middle and left his wrist where the lens put it: under the table's top, his teacher's hands short of it on his chair's back (photographed); at 22 degrees with his eye 0.21 m in, the wrist lay 0.55 and 0.60 m from his teacher's shoulders, past an arm of about 0.50 m, and his hands stopped 10 cm short, over the back of the held hand (run 8, read and photographed) |
+| up (a cut) | his eyes up to his teacher's face: "Before we help anyone, we protect ourselves. From now on, we prepare first." | a cut: drawn as a move, the insert's 20 degrees opened to 50 in a second and a half as the look rose, a zoom no eye makes; his held hand is drawn back out of the insert after the second knot |
 | (after) | his thought, "I had thought I was only there to assist my teacher."; M8's last chord under it, and the picture and the music down together | v15.3 |
 
 M8 is 45.09 s, its last chord ringing out over its last 3.6 s; the dawn runs 48.1 to 51.2 s on its measured lines. Begun at
@@ -88,6 +88,18 @@ bag (`e4bag`, WORLD's), the bottle on his altar (WORLD's, trembling with each wa
 its two chairs (WORLD's, as WORLD stands them: build 2 of these films turned the chairs about for the dawn, read from a
 picture where his teacher sat back through the backrest; measured, they face the table, and the turn is gone). Grandmaster
 Pho standing is FILMSAPI.phoStand; seated on the floor, cast.pho; never both drawn at once (each swap on a cut, v24.12).
+THE RINGS ROUND HIS LEFT WRIST (D's band of red light and its haze, the mark it leaves, the dawn's white thread in two turns
+and its knot) are tubes laid on his own skin, in the hands' pass (`f2WristLoop`, `f2WristDress`): the hands' model hangs its
+hand bone from the armature, whose own units are not metres (arms.glb: `hand.R` a child of `armature`, which carries a
+hundred times, and the model is sized to a real hand by its own scale), so they are measured in the hands' own world:
+the forearm's line from the skin itself (its middle 3 to 9 cm behind the wrist's joint), a slice of the skin across it
+1.6 to 2.1 cm up the arm, and round the slice, every 7.5 degrees, the furthest skin from its middle, smoothed, then a
+little out (the thread 1.6 mm, 2.4 mm thick: a cotton cord's), carried by the armature in its own units. The knot is laid
+each frame on the side of the first turn his eye sees (`f2KnotLay`). Sized in metres inside the armature's frame, as the
+first build had them, they stood far out round his wrist, off every picture: no ending ever showed them (run 8's reading:
+the old measure, taken in the hand bone's frame, read 0.0042 of its units, the whole arm). THE STRIP OF PILLS in C is held
+up out of his loose fist between his thumb and his first finger, its tablets turned to his eye (`f2PillsGeo`: found from
+the hand's own bones with the pose laid whole, as the tie's wrist is); held at the palm, it lay under the hand.
 His legs in the circle are framed out, not drawn: the game has no take of his body sitting cross-legged, and a take
 retargeted from another body is a new motion that must pass the body rules before it is shown.
 
@@ -129,6 +141,19 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     held hand is the library's place, the wrist set where his hands reach it.
   - on the floor (run 5, feetscan): his right foot 2.2 cm and his robe's hem 4.8 cm into the floor: he sits 2 cm up.
   - jointscan at the winding, the table and the tie (run 5): no joint flagged.
+  - the tie (run 8, read at its first knot): the wrist the insert's lens set stood at (300.68, 0.89, -0.45), 0.55 and 0.60 m
+    from his teacher's shoulders (300.54, 1.07, -1.00) and (300.93, 1.06, -1.03); his hands stopped at 0.50 m from them, 10 cm
+    short, and were photographed lying over the back of the held hand: so the lens is 20 degrees, the eye leans further in
+    and the wrist is held lower and further over (3); the rings round the wrist were measured at 0.0042 of the hand bone's
+    own units and never drawn where a lens could see them: so they are laid on his skin in metres (4).
+  - his teacher's fingers at the tie (run 8, photographed straight and spread): the library's curlFingers looks for bones named
+    RightHandIndex1 or mixamorig:RightHandIndex1; his standing body's are named mixamorigRightHandIndex1 (glTF takes the
+    colon out), so it found none; the films' own curl (`f2Curl`) finds them either way.
+  - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
+    with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
+    side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
+    resting on it, under 2 cm into its top); the cloth bag through his arm at the door (1,639) and the thread through his
+    knees at the winding (45) are what the bag's place and the thread's way were changed for (run 9 reads them again).
 
 ## 7 · What is still open
 
@@ -147,4 +172,9 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
    FILMS-1's clasp in its films is at the engine's default height, -0.235, which shows the thumbs (e3c2's -0.33 hides
    them: B's here uses it); THINGS: the altar cabinet's top right edge is ragged where the lens passes it in the barrier
    and in C (photographed); his teacher's cloth bag hangs where his right arm swings (FILMS-1's c_yfilm.js phoBagOn1, and
-   the dawn's copy of it); tools/probes/voicescan.mjs counts no line's phone copy (`*tel`) as a voice.
+   the dawn's copy of it); tools/probes/voicescan.mjs counts no line's phone copy (`*tel`) as a voice; the cast's library
+   `curlFingers` (copied from episode 4 chapter 5) finds no finger on a body whose bones glTF named `mixamorigRightHandIndex1`
+   (it asks for `RightHandIndex1` or `mixamorig:RightHandIndex1`), so it does nothing on his teacher's standing body, where
+   FILMS-1's films call it too (c_yfilm.js, her table and the gift); WORLD's two picture frames on the wall by the passage
+   stand into the wall (clipscan, 428 and 422 crossings at x 303.3 to 304.2, 1.45 to 1.8 m up), and the clothes rack on his
+   balcony through the plant beside it (244).
