@@ -35,6 +35,18 @@ words() {
 
 # ---------------------------------------------------------------------------------------------------------------- 2 · CAST (M3)
 # (CAST's section: Grace and Marcus, every job id, every take, every measure: masters/v29.0/people/RECORD.md)
+# MARCUS'S THIRD THROW (CAST-3, R7 "just generate him without glasses", 27 Nov 2026; RECORD.md §9, PROMPTS3.txt). The second
+# throw kept: src/people/second/second-* and the ledger's `marcus_second`. Every id is also in src/people/jobs.json (`marcus`).
+#   reference   Higgsfield gpt_image_2_6 xhigh 2k 2:3, the second reference (media 31fceca2-fa91-4f31-a1bb-e9aae38709cd) as its
+#               image reference: job 5f29da16-5077-425e-baef-af197d8a9ed0 -> src/people/refs/marcus-a3-2k.png (3.5)
+#   model       python3 -I masters/v29.0/people/meshy.py model <[{"name":"marcus","image":"masters/v29.0/src/people/refs/marcus-a3-2k.png","kind":"person"}]>
+#               image-to-3D 01a21c08-6b2e-7257-b56a-50e81896ece9 (40)
+#   rig         sh masters/v29.0/people/rigall.sh marcus:1.72      rig 01a21c0c-b706-7709-9104-fdaf57e51a6f, fingers asked (5): 70 joints
+#   near body   sh masters/v29.0/people/bodies.sh marcus 40000     remesh 01a21c0f-1b28-779d-8707-d64a37294b2d (5), riglod on the rig
+#   the knock   sh masters/v29.0/people/takes.sh marcus t2m mknock  laid 01a21c0f-22ec-7656-bb08-17fe06c5c070 (3; the clip of §2, not made again)
+#   takes       sh masters/v29.0/people/retakes.sh marcus           (no credits: Jun's, Mr Koh's, Ravi's, the seated hermit's, his walk)
+#   prep        BPY=<blender venv python> sh masters/v29.0/people/people.sh marcus   -> assets/p51marcus.glb, assets/p51marcush.glb
+#               (the assets' hard links into dist/ and snapshots broken first: a copy renamed over the name)
 
 # ---------------------------------------------------------------------------------------------------------------- 3 · THINGS (M4)
 # (THINGS' section: masters/v29.0/props/RECORD.md)

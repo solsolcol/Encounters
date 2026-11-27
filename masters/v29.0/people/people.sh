@@ -49,6 +49,10 @@ go grace && ( CALM="" one grace $SRC/body-grace-40000.glb $SRC/rigged-grace.glb 
 # SECOND THROW (R5/R6, 27 Nov 2026): his new rig came back with every finger (72 joints, six empty stray bones on the
 # forearms holding no skin): no mend; his near body and full body are Meshy's own, and mknock is laid on this rig at Meshy
 # (takes-marcus-mknock.glb). FIRSTTHROW=1 runs the first throw's mended way below (its files are src/people/first/first-*).
+# THIRD THROW (R7, 27 Nov 2026, CAST-3: made again WITHOUT GLASSES): the same line, on the third rig (70 joints, every finger;
+# four stray bones under the head, Bone_029 to Bone_032, the most weight on no point). The second throw's files are
+# src/people/second/second-*. Write the assets only after their hard links into dist/ and snapshots are broken: prepmonk
+# writes in place (RECORD.md §9: a working build linked the full body mid-prep and its copy changed under it).
 go marcus && [ -z "$FIRSTTHROW" ] && ( CALM="Idle_3=7,0.6 Stand_and_Chat=7 Listening_Gesture=7 Walking=7,0.5,0.7" one marcus $SRC/body-marcus-40000.glb $SRC/rigged-marcus.glb \
   "$SRC/takes-marcus-ret.glb:Idle_3,Listening_Gesture,Stand_and_Chat,Talk_with_Hands_Open,kneelhold,Chair_Sit_Idle_M,Sitting_Answering_Questions,Walking" \
   $SRC/takes-marcus-mknock.glb:mknock )
