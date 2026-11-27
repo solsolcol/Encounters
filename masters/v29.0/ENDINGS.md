@@ -53,7 +53,7 @@ plan's barrier is 56 s with a 14 s chant, and the Jinapañjara as voiced is 36.6
 | touch (3rd verse) | the first thread meets the gold: SLOW MOTION (the threads' own clock at 0.4 over 1.5 s: `slow2`), sparks, the thread burning back from its tip, curls of ash | the plan's 4.4: slow motion once in each ending |
 | surge | the last surge: the picture pressed hardest (the vice) | |
 | brk (4th verse) | it breaks: the press springs back (0.55 s), his ears pop, the long breath out; the gold settles into the thread and fades; the bottle on his altar goes still | |
-| D only: wrist0, burn | his left hand lifted, the band of red light still round its wrist; the gold burns it off (a white flash, a sharp hiss); the red mark left | |
+| D only: wrist0, burn | his left hand lifted, the band of red light still round its wrist; the gold burns it off (a warm flash opening out from the wrist, a sharp hiss); the red mark left, the hand held up until the barrier is calm so it is seen | in Spirit Vision the band is a red spirit laid where the hands' pass draws it (`f2BandSpirit`): the vision turns his hands black and white with the world (everything but the entities), and the band drawn in the hands' pass read there as a grey ring (run 7); the flash drawn white at 0.9 stood as a solid white bangle, and the hand let down before the calm took the mark out of the picture 0.9 s after the flash (run 7, photographed) |
 | x5, zv x1, x6 | "It's gone. Breathe." "Who was it?" "Who it was does not matter tonight. Rest. I will come in the morning." | |
 | lie, black | he lies down inside the circle: the ceiling, the city's glow on it; the black | |
 
@@ -149,6 +149,12 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
   - his teacher's fingers at the tie (run 8, photographed straight and spread): the library's curlFingers looks for bones named
     RightHandIndex1 or mixamorig:RightHandIndex1; his standing body's are named mixamorigRightHandIndex1 (glTF takes the
     colon out), so it found none; the films' own curl (`f2Curl`) finds them either way.
+  - run 9 (read in the game): the wrist's slice at the thread, 39 points of skin, 2.08 to 2.79 cm from its middle (the
+    armature's unit 130.4 m in the hands' world: the old rings, sized in it as metres, stood 0.8 m round the wrist); his
+    teacher standing 3 cm up, his lowest skin 1.1 cm over the floor, and seated 2 cm up, 1.2 cm over it (so 2 cm and 1 cm:
+    feetscan's 3.2 and 2.2 cm under stood the same with him lifted or not, so it does not read him against this floor); at
+    the tie the held wrist at (300.73, 0.85, -0.61), and his hands' palms 7 cm to its sides over the back of the held hand,
+    their fingers straight (so they are turned in to face across it, 5 cm to its sides).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
