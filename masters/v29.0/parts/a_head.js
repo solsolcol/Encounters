@@ -164,7 +164,11 @@
        from Grace to the door), held open by the breaking and the barrier, forced open at the bedroom door at three
        o'clock (the plan's 8). TODO-SOUND: its own sounds (u51...), never another chapter's: a sound of another chapter
        named here would leave that chapter's pack. Until they land it is silent. */
-    vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
+    /* (PLAY, 27 Nov: its reach 200 m and the sky's 190, FILMS-2's finding: at the engine's 70 the city out of his glass past
+       70 m stayed un-inverted behind a curved edge across the blocks. The wave's pace through a room is rmax / outSecs (its
+       curve, main.js visCurve, starts at 0.30 of it), so both times are scaled by 200 / 70 from 2.2 and 1.6: it crosses the
+       room as it did, reaches 6 m (fully open, vis.k) in the same 0.6 s, and goes on out over the city) */
+    vision: { rmax: 200, sky: 190, outSecs: 6.3, inSecs: 4.6, band: 0.27, line: 0.24,
               front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
               /* (PLAY, M6: its own two sounds, chapter 4's copied under this chapter's names; no bed or music of its own: the
                  room's and the night's play their own under it. The night's heart is the play's: c_play.js) */
