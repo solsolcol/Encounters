@@ -86,6 +86,62 @@ thing, then released):
 | keycard | w51keycard | 01a21b47-2910-778b-a01e-476ccc9ccf97 | 48 MB |
 | gracephone | w51phone | 01a21b47-2e7e-703a-9406-bbf3d4f3e7f6 | 46 MB |
 
+## CP4.4 to CP4.6 · THINGS-2 (27 Nov 2026, later): the fifteen finished, two mends, the ritual set, the six of R6
+
+**The fifteen waiting remeshes, ONCE each** (`drive.sh`, then from the laptop on `drive2.sh` in the coordinator's order of
+need while Meshy was shared with Grace's and Marcus's new bodies; the tail started ahead with `meshy.py remeshstart` so the
+jobs ran at Meshy together). None failed; none made twice. Each photographed alone at 1100 px and opened full size.
+
+| thing | key | remesh job | state, and what is wrong |
+|---|---|---|---|
+| coffeetable | w51ctable | 01a21b72-48e6-774f-b3c7-6c7270d8e739 | MADE. Reads as the teak table with its shelf; more orange than the picture's dark honey |
+| gracesofa | w51gsofa | 01a21b76-d5ca-74b2-8375-3dcab6d535f2 | MADE. Dusty-blue two-seater, clean |
+| rattanchair | w51rattan | 01a21b7b-ac65-7613-98b4-0c35a38ba4dc | MADE. Clean, its cream cushion whole |
+| bookshelf | w51shelf | 01a21b80-f034-73fb-b94a-1c0904b7364e | MADE. Books, pothos, succulent, box; the side boards' edges a little wavy |
+| laptop | w51laptop | 01a21b85-a8b1-7004-a494-6e0d76c11744 | **FAULT**: its edges are torn (loose shards between lid and base, side view), and its silver came back a dark blotched blue-grey. Seen across Grace's room only. Another: 45 credits |
+| takeaway | w51takeaway | 01a21b9b-b0f3-77cf-97a1-3963ae1cb5da | MADE. Two boxes, chopsticks in their sleeve; the knotted bag reads as white cloth |
+| hissofa | w51sofa | 01a21b9b-b275-71b5-a976-a36d32220ea2 | MADE. Charcoal three-seater, clean |
+| histable | w51dintable | 01a21b9b-b3fe-71fa-a1d8-ef4a1b40971a | MADE. Oak top, black legs, clean |
+| hischair | w51dinchair | 01a21b9b-b5c1-75d2-8de5-27499596aa8d | MADE. Clean |
+| hisbed | w51bed | 01a21b9b-b7bf-7067-8c5f-f533231792a8 | MADE. Clean, the duvet turned back |
+| altarcab | w51altarcab | 01a21b8f-093c-765a-8bff-6510280851f7 | **FAULT**: the top edge of its back panel is torn into floating slivers, a dark smear painted on the back panel, the right side's foot ragged; the wood came red mahogany. Seen close (his altar): what stands on it covers part of the back panel. Another: 45 credits |
+| breakfast | w51breakfast | 01a21b9a-0cc7-77c0-a109-c9ad4e64c3f3 | MADE. Bag, two cups, wrapped toast |
+| pills | w51pills | 01a21b9b-b948-7631-a2b4-43c692e5b1d9 | MADE. Ten blisters, one pushed through; the foil reads dark |
+| keycard | w51keycard | 01a21b9b-ad81-7156-b9a4-67e8ac2c456d | MADE. Grey card, ring, two brass keys |
+| gracephone | w51phone | 01a21b9b-af17-744b-9df2-e0ecb016ffe7 | MADE. Pink case, black screen; a few tiny invented marks on its edge (unreadable) |
+
+**The two mends, at no credits** (Chad's defaults, shots/keepsake-q.jpg and bottle-q.jpg):
+- **w51keepsake**: the CLOTH repainted a faded pale cream, the CORD kept as Meshy painted it. Its one mesh is one connected
+  piece (the cord is fused to the cloth) and its sheet's 503 charts mix the two, so the cord was found by its GEOMETRY:
+  each point's normal spread in a 2.5 mm ball (a thin tube's normals turn all the way round inside it; the cloth's do not:
+  mend/keep-spread.py), the hot regions that hold the cord picked by their photograph (shots/keepsake51-cordmask-q.jpg),
+  grown face by face and STOPPED at the concave crease where the tube meets the cloth (keep-grow.py), the crease's ring
+  taken in and big flat faces given back (keep-repaint.py), each texel then owned by its face in the sheet. PROVED by the
+  two parts photographed apart (shots/keepsake51-split.jpg: the cord whole, the cloth whole with only the cord's footprint
+  missing) and the whole (keepsake51-mended-q.jpg). Its sheet stays 2048; the file grew 3.5 to 4.4 MB (the sheet saved at
+  q 95). The prepared file before the mend: src/props/prep-keepsake.glb.
+- **w51bottle**: cut at 0.835 of its height (under the lip ring: the neck carries a white strip of glass paint all the way
+  up, so no lower cut is clean: mend/bottle-cut.py): above, the cork and the lip ring keep the sheet untouched; below, the
+  glass gets a material of its own named `glass` (mend/glass.mjs: no colour sheet, a faint cool tint, alpha 0.28, roughness
+  0.06, not metal, single-sided, its normal sheet kept), and the glass's texels in the sheet are flattened to their own
+  white (the faint print painted out). shots/bottle51-glass-q.jpg. No water is seen in it (the material alone, as asked:
+  no inner shape made in code). **For the game**: a see-through material writes no depth (the game's own rule for glass,
+  e4c1's mGlass): the chapter sets `depthWrite = false` on every material named `glass` in w51bottle, w51jug, w51glass
+  (mend/shootglass.mjs photographs them that way).
+
+**The ritual set** (R4: one picture, one job, cut apart): picture refs/ritualset.png (gpt-image-2.6-sunburst, generation
+Z36lsHxFDpuSsGQkNKZv, 191 credits), looked at: the four apart, none touching, no print. Meshy image-to-3D
+01a21b7a-d653-7417-b778-8f264a7f2427 (40), remesh 40,000 01a21b7e-a9c8-73b0-94c6-2b4e20bfa4d5 (5). The model came back as
+SIX connected pieces: the lighter, the jug and the plate one each, and the tumbler as three (an outer shell 7,059
+triangles, a torn inner sheet 15,413 and a torn ring at its foot 2,964: Meshy's try at the water). Each piece cut out by
+its connected components with only its own points (mend/piece.mjs), then prepmeshy'd as its own model:
+| key | size | tris | sheet | state |
+|---|---|---|---|---|
+| w51lighter | 0.081 h | 4,722 | 2048 | MADE. Red body; the hood came BLACK where the picture's is steel, with faint invented marks on it |
+| w51jug | 0.20 h | 8,286 | 2048 | MADE, drawn as clear glass (mend/glass.mjs); one shell, so no water inside (shots/jug51-glass-q.jpg) |
+| w51plate | 0.16 across | 2,406 | 1024 | MADE, MENDED at no credits: Meshy made it an oval (0.162 x 0.134) tipped 9.2 degrees; levelled on its own plane and made round (mend/plate.mjs; the plain white sheet cannot show the stretch). shots/plate51-levelled.jpg; one side of its rim sits a little higher |
+| w51glass | 0.095 h | 7,059 | 1024 | **FAULT**: the outer shell alone (the torn inner pieces left out), drawn as clear glass; its own inner wall is torn, and through the glass that shows as grey patches with a line like a water level (shots/glass51-glass-q-FAULT.jpg). Tried at no credits and refused: its outermost skin alone, drawn from both sides and from one (mend/tumbler-outer.py; shots/glass51-outerskin-tried.jpg: worse, its faces overlap). Another: a picture of one tumbler (191 ElevenLabs) and a job (45 Meshy), likely the same; or the jug's glass alone serves at the bedside |
+
 ## What it cost (27 Nov 2026)
 | service | spent | balance |
 |---|---|---|
