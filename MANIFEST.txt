@@ -1624,6 +1624,10 @@ cbc98ebda5a58488db5a05e0226353e4f23ebe85756bf1a6e6e7bb9f6167a957  masters/v28.0/
 977c0de49bbcdb108fc04861f6d767b2fc4707862fd2ae79d09311aa85244da4  masters/v28.0/src/thumb-frontdoor-front.png
 e1dbd4475010f540ee32c1bd2ec62dd1300c21b617ef8c207dcded0e05ea41b4  masters/v28.0/src/thumb-frontdoor-left.png
 4fb8137a1f956d78e5762f02219d1c07047c747ede16858bf97827eb3bbdb32b  masters/v28.0/src/thumb-frontdoor-right.png
+0b32a01a9ee686bf5bb03e40a778e09182f6720f73e3a79fcc37378fa43500aa  masters/v28.0/src/thumb-gardenlamp-back.png
+ec30c7ef43d8b07735a46e10af937961cdf3acdd840f8cdb8b05ccb9b8cfc03f  masters/v28.0/src/thumb-gardenlamp-front.png
+76431f4290ee8ee8a8977fa0a0dd7163f0fe34b3167f572099a63af641e8f246  masters/v28.0/src/thumb-gardenlamp-left.png
+7b4aa9dc3f19a7ac259609a94dc1078cb94d91eb76c236b2aee16b4b52944519  masters/v28.0/src/thumb-gardenlamp-right.png
 a8c26c6d1a53722d776317cc42bdfb31af4d3da630193d34e3b46e5bfe7ed687  masters/v28.0/src/thumb-gate-back.png
 016fbc75265880eadb16c268d5d7b7e4cc927408062330a893bfc872c2d46a5b  masters/v28.0/src/thumb-gate-front.png
 49546b9fe68cfd15565fd495aca2e26c153b9ee68f97d074c8b3ce5505362207  masters/v28.0/src/thumb-gate-left.png
@@ -1684,6 +1688,10 @@ eb093bd7880e23b3e09dbd253719e67e1b967a12e040c90491e9dd59fd57a60a  masters/v28.0/
 73094f657fff64173d76327e07784bc67c6c5eb838db639bc3c7cb78d423fb12  masters/v28.0/src/thumb-planter2-front.png
 ed7fffa1d0562117bf6fee8f063ae88797ca8ebedeb6289b764e663b3ec9ba38  masters/v28.0/src/thumb-planter2-left.png
 efc16ab30be9626df4793d9723b1794646df3d4cb4ed58bcce3691d9f84b2496  masters/v28.0/src/thumb-planter2-right.png
+4b60360d3783c8ea1e3a20a813b0deb3e0393cd6acc2ea432c0e3650f75d5971  masters/v28.0/src/thumb-playground-back.png
+e4fcdedccda0ec951a521ad34b3f553ee7406d582e2f8e989f510128d36fc9ec  masters/v28.0/src/thumb-playground-front.png
+8d118a4c5b48df96bc62741c8aa80fd7cddd1ad49bb98b1d77f7a7e516a20a91  masters/v28.0/src/thumb-playground-left.png
+af86befe4d21e9e1f5d1728c624f69d877baa9a2eb637fab117d4c6db84d71cb  masters/v28.0/src/thumb-playground-right.png
 8e123e60c0d0c65bb0e9d4765ddd01102de89b7678b86e6a24cb52c05faea692  masters/v28.0/src/thumb-praicome-back.png
 fbe880a90390e417a7bbd1ea07ea087566cb7d59f494610bdee55f24da3c7959  masters/v28.0/src/thumb-praicome-front.png
 a8995d52e4e113d87b4b1be13f673d3c3dbe56ee62e5a02b2c3265689e7fb383  masters/v28.0/src/thumb-praicome-left.png
