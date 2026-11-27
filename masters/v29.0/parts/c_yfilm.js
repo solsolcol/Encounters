@@ -1013,20 +1013,23 @@
     const holdOf1 = (which) => { const H = HOLD1[which], P = H.play && S && S.plan && S.plan[H.play]; return P ? { prop: H.prop, pos: P.pos || H.pos, rot: P.rot || H.rot, s: P.s != null ? P.s : H.s } : H; };
     /* HOW HIGH HIS HANDS HOLD THE BOWL INTO THE PICTURE, by the shot (the hands' pass is the lens's: the bowl stands where
        the pose puts it in every shot). 1, the pose whole: the bowl in the picture's lower half, its water seen from above, as
-       he looks down into it; BOWLLOW1, the pose part way (the hands lower, the bowl at the picture's foot) where he looks
+       he looks down into it; BOWLDROP1, the pose whole lowered (the bowl at the picture's foot) where he looks
        at something across it: photographed 27 Nov, held at 1 it covered the packet on the plate as the cord was untied and
        his teacher's mouth as he watched it lifted. MEASURED the same evening (my scratch f1bowlk.mjs: the bowl's every point
        in a phone's picture by the share): its top edge stands at -0.61 of the picture's half-height at 0.1, -0.43 at 0.25,
        -0.07 at 0.55 (its brass side then filled the picture's lower half, photographed: a flat brown wall to the middle,
        the people's knees and the cloth's near half under it), +0.47 at 1; 30 cm across, it is wider than a phone's
-       picture at any share. 0.25: the far rim and the water's far side above the picture's lower bar, its lowest quarter */
-    const BOWLLOW1 = 0.25;
+       picture at any share. 0.25 put it there, but drew his hands only a quarter of the way to it: his right hand hung open
+       over it, photographed. So the pose is held whole (both hands on the bowl, the right's fingertips at its rim) and the
+       hands' root is lowered BOWLDROP1 m in the lens's frame (its top edge from +0.47 to about -0.43), the hands and the
+       bowl one thing; raised to 0 as he looks down into it */
+    const BOWLDROP1 = 0.24;
     function keepBowl1(t, T, api) {
       const lifted = t >= T.lift;
       const wb = things.holyBowl; if (wb) wb.visible = !lifted;
       /* (lifted into the picture's foot as he watches his teacher, raised as his look goes down into it, 26.4 to 33.4 s) */
-      const kUp = lp(BOWLLOW1, 1, smo(c01((t - T.lift - 0.4) / (T.wax - 2.0 - T.lift))));
-      f1HandsHold(api, "bowl", lifted ? kUp * smo(c01((t - T.lift) / 1.2)) : 0);
+      const up = smo(c01((t - T.lift - 0.4) / (T.wax - 2.0 - T.lift)));
+      f1HandsHold(api, "bowl", lifted ? smo(c01((t - T.lift) / 1.2)) : 0, BOWLDROP1 * (1 - up));
       f1Water(t, T.wax, lifted ? 1 : 0);
     }
     /* WHAT HIS HANDS HOLD in a film (his left hand under it, drawn in the hands' pass: kit.hold; the engine's own pose for
@@ -1051,8 +1054,11 @@
       g.parent.getWorldQuaternion(_bwq2); g.quaternion.copy(_bwq2.invert().multiply(_bwq));
       return true;
     }
-    function f1HandsHold(api, which, k) {
+    function f1HandsHold(api, which, k, drop = 0) {
       if (!api) return;
+      /* (the hands' root lowered `drop` m in the lens's frame while the bowl is held, else where the engine keeps it: a film
+         from play draws the hands itself, and play's first frame sets the root again) */
+      if (api.handsRoot) api.handsRoot.position.set(0, which === "bowl" && k > 0.001 ? -drop : 0, 0);
       if (k > 0.001 && which) {
         if (F1.held !== which) { if (F1.held && api.kit && api.kit.hold) api.kit.hold(null, { hand: 'left' });
           F1.held = which; const H = holdOf1(which); if (api.handsRoot) api.handsRoot.visible = true;
@@ -1181,10 +1187,10 @@
         f1Vision(t, T.snap - 0.05, 0.45, T.snap + 2.6, 1.4);
         cordPho1(t, T); cordGrace1(t, T, t); cordMarcus1(t, T); cordPacket1(t, T, t); cordWisp1(t, tau, T);
         /* the bowl in his hands until he hands it to his teacher to pour (44 s); then nothing; then the bottle */
-        /* (at the picture's foot below the packet and the people across the table, BOWLLOW1; his hands hidden in the two
+        /* (at the picture's foot below the packet and the people across the table, BOWLDROP1; his hands hidden in the two
            inserts that are not his eyes, from behind her shoulder and from above the plate) */
         const notHim = t >= T.phone && t < T.c3 - 0.3;
-        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb * BOWLLOW1); f1Water(t, null, kb, T.snap + 0.55);
+        if (t < T.pour + 0.9) { const kb = t < T.pour + 0.2 ? 1 : 1 - smo(c01((t - T.pour - 0.2) / 0.7)); f1HandsHold(api, "bowl", kb, BOWLDROP1); f1Water(t, null, kb, T.snap + 0.55);
           if (api && api.handsRoot) api.handsRoot.visible = !notHim; }
         else if (t < T.take) f1HandsHold(api, null, 0);
         else f1HandsHold(api, 'bottle', smo(c01((t - T.take) / 0.7)));
@@ -1217,7 +1223,9 @@
       /* (bent over the packet as he works it: measured 27 Nov, seated and leaning half a radian his hands reach about 0.6 m
          out from his cushion, and the plate stands 1.0 m from it (ON_CLOTH.plate: a layout call put to WORLD, the report); at
          0.65 rad his hands reach the place it is asked to move to) */
-      f1Lean(P, 0.65 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim);
+      /* (and his shoulders turned a little to his left, to it: 27 Nov, photographed, at 0.65 rad square to the cloth his right
+         hand fell short of the packet and hung by the incense) */
+      f1Lean(P, 0.75 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim + 0.3 * work);
       /* (each palm placed so its fingertips, about 9.5 cm on along the fingers, come to the packet's top at its near corners:
          27 Nov, with the plate moved within his reach, palms 7 and 17 cm from the packet put his left fingertips 1.7 cm down
          into the plate and his right ones on the cloth 13 cm from the knot) */
@@ -1231,7 +1239,10 @@
          the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;
          then his right hand corks it (POUR1, cordBowl1 carries the bowl where the hand is) */
       const pr = pourAt1(tau, T);
-      if (pr.k > 0.001) handTo(P, 'R', pr.hand, [-0.15, -0.35, -0.9], [0.1, 1, 0.15], pr.k, { out: 0.24, down: 0.25 });
+      /* (his hand on the bowl's near rim: the fingers over it and down inside, the palm to the bowl, turned to the bottle.
+         27 Nov, photographed: palm up, his hand lay flat over the water) */
+      if (pr.k > 0.001) { const dx = CB1.x - pr.hand[0], dz = CB1.z - pr.hand[2], L = Math.max(1e-3, Math.hypot(dx, dz)), ux = dx / L, uz = dz / L;
+        handTo(P, 'R', pr.hand, [0.3 * ux, -0.95, 0.3 * uz], [ux, 0.1, uz], pr.k, { out: 0.24, down: 0.25 }); }
       const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
       /* (his palm against the bottle's side, his fingers round its front: 27 Nov, clipscan, 3.5 cm off its middle his fingers
          went through it, 287 crossings) */
@@ -1256,7 +1267,9 @@
       else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
       const face = f1Env(tau, T.cry + 1.0, T.phone - 0.3, 0.9, 0.6);
       if (face > 0.001) { const h = P.head; if (h) { P.group.updateWorldMatrix(true, true); h.getWorldPosition(_f1A); const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(P.group.quaternion);
-        for (const [sd, sx] of [['L', 0.05], ['R', -0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
+        /* (rt is her right: her left hand to her left of her face, her right to her right. 27 Nov, photographed: given the
+           other way they crossed at the wrists before her chest, palms out) */
+        for (const [sd, sx] of [['L', -0.05], ['R', 0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
           handTo(P, sd, [at.x, at.y, at.z], [rt.x * -sx * 4, 1, rt.z * -sx * 4], [-fw.x, 0, -fw.z], face, { out: 0.12, down: 0.35 }); } } }
       const ph = f1Env(tau, T.phone + 1.6, T.phone + 4.2, 0.8, 0.8);
       if (ph > 0.001) handTo(P, 'R', [GRPHONE1.x, GRPHONE1.y + 0.04, GRPHONE1.z], [-0.3, -0.6, 0.6], [0, -1, 0], ph, { out: 0.2, down: 0.3 });
@@ -1291,14 +1304,27 @@
     }
     /* THE WISP: from the knot, a leap across the table that curls round under the bowl to his left wrist (where the hands'
        pass draws it: its end is a point of his own frame, carried into the world each frame), its tail fading behind it */
-    const _wA = new THREE.Vector3(), _wB = new THREE.Vector3(), _wC = new THREE.Vector3();
+    const _wA = new THREE.Vector3(), _wB = new THREE.Vector3(), _wC = new THREE.Vector3(), _wP = new THREE.Vector3();
+    /* (the wisp's end: his left wrist where the hands' pass DRAWS it (its own lens, 52 degrees at its origin: kit.handPalm,
+       the wrist a little under the palm), carried to the same place on the screen half a metre before the world's lens, and
+       kept above the picture's lower bar so it is seen to reach him. 27 Nov: a point of the lens's frame taken as the
+       world's, (-0.1, -0.24, -0.34), stood below a phone's picture, and his wrist under the bowl at the picture's foot is
+       below it too) */
+    function wispEnd1(out) {
+      const pm = kit && kit.handPalm ? kit.handPalm('left', _wP) : null, asp = camera.aspect, tv = Math.tan(26 * Math.PI / 180);
+      let nx = 0, ny = -0.9;
+      if (pm && pm.z < -0.05) { nx = pm.x / (-pm.z * tv * asp); ny = (pm.y - 0.05) / (-pm.z * tv); }
+      nx = Math.max(-0.85, Math.min(0.85, nx)); ny = Math.max(-0.72, Math.min(0.5, ny));
+      const D = 0.5, tw = Math.tan(camera.fov / 2 * Math.PI / 180);
+      return out.set(nx * tw * asp * D, ny * tw * D, -D).applyMatrix4(camera.matrixWorld);
+    }
     function cordWisp1(t, tau, T) {
       const u0 = tau - (T.snap + 0.05), dur = 0.42;
       const on = u0 > -0.01 && u0 < dur + 0.5;
       wispG1.visible = on;
       if (on) {
         _wA.set(ON_CLOTH.plate.x, CLOTH_Y + 0.05, ON_CLOTH.plate.z);
-        camera.updateMatrixWorld(true); _wB.set(-0.1, -0.24, -0.34).applyMatrix4(camera.matrixWorld);   // his left wrist under the bowl, in the lens's own frame
+        camera.updateMatrixWorld(true); wispEnd1(_wB);   // his left wrist under the bowl, where the hands' pass draws it
         _wC.copy(_wA).lerp(_wB, 0.5); _wC.y += 0.16;
         const head = c01(u0 / dur);
         for (let i = 0; i < wisp1.length; i++) { const s = head - i * 0.035, sp = wisp1[i];
@@ -1348,9 +1374,13 @@
     function cordBowl1(t, T) {
       const W = things.holyBowl, g = PROPS1.pourBowl, pr = pourAt1(t, T), P = cast.pho;
       const set = t >= T.pour + 3.0, held = t >= T.pour + 0.9 && !set;
-      if (W) W.visible = set;
+      /* (the bowl the size it was in his hands, holdOf1("bowl").s of the cloth's, from his hands to his teacher's and set
+         down at the cloth's bowl's place, where it stays to the film's end; the cloth's own, the larger, is hidden till then
+         (end() shows it again). 27 Nov, photographed: at the cloth's size it was 0.45 m across in one of his hands) */
+      const sc = holdOf1("bowl").s || 1;
+      if (W) W.visible = false;
       if (!g) return;
-      g.visible = held && !!g.userData.model && BOWL1.R > 0;
+      g.visible = (held || set) && !!g.userData.model && BOWL1.R > 0;
       if (!g.visible || !P || !P.ready) return;
       P.group.updateWorldMatrix(true, true); const pm = f1PalmOn(P, 'Right', _f1pb, 0); if (!pm) { g.visible = false; if (W) W.visible = true; return; }
       /* (the pour's direction: from his hand toward the bottle's mouth; the bowl's near rim under his fingers, 2 cm below the
@@ -1358,8 +1388,8 @@
          bottle) */
       const dx = CB1.x - pm.x, dz = CB1.z - pm.z, L = Math.max(1e-3, Math.hypot(dx, dz)), ux = dx / L, uz = dz / L;
       _f1pq.setFromAxisAngle(_f1pa.set(uz, 0, -ux), pr.tilt);
-      _f1pr.set(-BOWL1.R * ux, BOWL1.H, -BOWL1.R * uz).applyQuaternion(_f1pq);
-      g.position.set(pm.x - _f1pr.x, pm.y - 0.02 - _f1pr.y, pm.z - _f1pr.z); g.quaternion.copy(_f1pq); g.scale.setScalar(1);
+      _f1pr.set(-BOWL1.R * sc * ux, BOWL1.H * sc, -BOWL1.R * sc * uz).applyQuaternion(_f1pq);
+      g.position.set(pm.x - _f1pr.x, pm.y - 0.02 - _f1pr.y, pm.z - _f1pr.z); g.quaternion.copy(_f1pq); g.scale.setScalar(sc);
       /* (set down: eased onto the play's bowl's own place and turn over the last 0.4 s) */
       const u = smo(c01((t - T.pour - 2.6) / 0.4));
       if (u > 0 && W) { W.updateWorldMatrix(true, false); W.getWorldPosition(_f1pw); W.getWorldQuaternion(_f1pwq); g.position.lerp(_f1pw, u); g.quaternion.slerp(_f1pwq, u); }
