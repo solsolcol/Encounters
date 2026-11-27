@@ -530,6 +530,7 @@
       return [0, false];
     }
     function f2Vision(r, mv, t) {
+      F2.visR = r > 0.001 ? r : 0;
       if (!kit || !kit.vision) return;
       if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; F2.visZero = 0; }
       /* (shut: held at nothing for three drawn frames and a third of a second, so the vision's own radius is nothing when it
@@ -728,7 +729,12 @@
       const c0 = Bm.chant, up = f2smo(f2win(t, c0 + 0.3, c0 + 6.5)), fadeG = 1 - f2smo(f2win(t, Bm.brk + 1.5, Bm.calm + 1.2)), push = (o.push ? 0.45 : 0) + 0.55 * f2bell(t, Bm.touch - 0.5, Bm.touch + 1.0, Bm.surge, Bm.brk + 0.4);
       const gk = up * fadeG;
       f2Gold.visible = gk > 0.002;
-      f2DomeMat.uniforms.uK.value = gk * (0.85 + 0.4 * push) * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.brk + 1.0)));
+      /* (while his sight is open the gold is the vision's own glow alone: its light laid on the world was turned with the
+         world into the negative, a dark band wherever a ring crossed something pale, the balcony's chairs, the glass's
+         frame, as if the rings stood behind them: d7's desktop photograph at 58.6 s. So the light on the world goes as his
+         sight opens over its first metre and a half, and comes back as it shuts) */
+      const onWorld = 1 - c01((F2.visR || 0) / 1.5);
+      f2DomeMat.uniforms.uK.value = onWorld * gk * (0.85 + 0.4 * push) * (1 - 0.6 * f2smo(f2win(t, Bm.brk, Bm.brk + 1.0)));
       f2DomeMat.uniforms.uT.value = t; f2DomeMat.uniforms.uPush.value = push;
       for (let i = 0; i < f2Rings.length; i++) {
         /* each ring climbs from the floor to the crown over 4.4 s, one every 0.9 s from the chant's start, then round again */
@@ -736,11 +742,12 @@
         const h = F2G.H * Math.pow(cyc, 0.85), rr = F2G.R0 * Math.sqrt(Math.max(0, 1 - Math.pow(h / F2G.H, 2)));
         const m = f2Rings[i]; m.position.y = Math.max(0.004, h); m.scale.set(Math.max(0.02, rr), 1, Math.max(0.02, rr));
         const fadeTop = 1 - f2smo(c01((cyc - 0.78) / 0.22)), fadeBot = f2smo(c01(cyc / 0.06));
-        m.material.opacity = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0; m.visible = m.material.opacity > 0.002;
+        const op = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0;
+        m.visible = op > 0.002; m.material.opacity = op * onWorld;
       }
       if (f2GoldAura) f2GoldAura.set('uAlpha', gk * (0.8 + 0.4 * push));
-      f2GoldPool.m.opacity = 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;
-      f2GoldCeil.m.opacity = 0.07 * gk; f2GoldCeil.q.visible = f2GoldCeil.m.opacity > 0.002;
+      f2GoldPool.m.opacity = onWorld * 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;
+      f2GoldCeil.m.opacity = onWorld * 0.07 * gk; f2GoldCeil.q.visible = f2GoldCeil.m.opacity > 0.002;
       /* THE RED THREADS: in from the door and the glass from the vision's opening, to the gold; each meets it and burns back */
       const tv = Bm.vis0 + 0.4, burnK = 0.9, te = (F2.E && F2.E.slow) ? F2.E.slow(t) : t;
       let sparkN = 0, ashN = 0;
