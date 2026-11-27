@@ -1287,7 +1287,9 @@
          at 0.12, 0.15 turned to her middle he knelt into her legs (2,000 to 3,800 crossings), the sofa's front (1,900) and
          her phone on the cushion) */
       const M = CORDMK1;
-      if (P.acts.kneelhold && tau < T.c3 - 0.8) { put(P, M.x, M.z, faceTo(M.x, M.z, M.to[0], M.to[1]), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
+      /* (he stands behind the sofa from the cut to the two of them, T.c3 - 0.3: 27 Nov, the rows: risen 0.5 s before it he
+         was seen to jump at the edge of the insert from above, 26 to 42 px tall) */
+      if (P.acts.kneelhold && tau < T.c3 - 0.3) { put(P, M.x, M.z, faceTo(M.x, M.z, M.to[0], M.to[1]), 0); pose(P, 'kneelhold', 1.4 + 0.25 * Math.sin(tau * 0.6), false); }
       else { const K = KEEP1.mkStand; put(P, K.x, K.z, K.ry, 0); f1Speak(P, tau, ['Idle_3', 1.2, 0.3, true], [[T.m1, SECS.mk51c1, 'Stand_and_Chat', 0.55]]); }
       f1Gaze(P, tau, [[0, () => f1Head(cast.grace, [0.42, 1.02, -0.32], GRACE_HEAD_SEATED)], [T.c3 - 0.2, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.8]], 0.8, 0.75, 0.04);
     }
