@@ -1021,7 +1021,8 @@
       lookSpot('glass', 'g', () => SPOT.glass, ['zv51r2', 'ph51r2'], W.hotGlass),
       lookSpot('hands', 'h', () => graceHands, ['zv51r3', 'ph51r3'], W.hotHands),
       lookSpot('packet', 'k', () => SPOT.packet, ['zv51r4', 'ph51r4', 'zv51r5', '|', 'gr51r1', 'mk51r1'], W.hotPacket),
-      { id: 'getup', pos: SPOT.bed, radius: 2.4, prompt: W.hotGetUp, markY: 0,
+      /* (its mark is pressed as the thing itself, as every other here: the probe's tap on the mark did nothing, 27 Nov) */
+      { id: 'getup', pos: SPOT.bed, radius: 2.4, prompt: W.hotGetUp, markY: 0, hits: markHit(() => SPOT.bed, 0.1),
         enabled: () => phase === 'night' && !play.busy && !play.found.has('u'), onInteract() { return getUp(); } },
       { id: 'phone', pos: SPOT.phone, radius: 1.7, prompt: W.hotPhoneHis, markY: 0, hits: markHit(() => FILMPLACE.phoneAt, 0.09),
         enabled: () => phase === 'night' && !play.busy && play.found.has('u') && !(night5.kneeT > 0), onInteract() { return atPhone(); } }
