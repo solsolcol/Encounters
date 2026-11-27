@@ -31,7 +31,7 @@ for g in $GEN; do
   P="$asm/assemble.py $asm/parts src/chapters"
   git cat-file -e "HEAD:$asm/script" 2>/dev/null && P="$P $asm/script"
   git archive --format=tar HEAD -- $P | tar -x -C "$T" || { echo "relbuild: git archive failed for $key"; exit 2; }
-  ln -s "$ROOT/assets" "$T/assets"
+  ln -s "$ROOT/assets" "$T/assets"; ln -s "$ROOT/tools" "$T/tools"; [ -d "$ROOT/node_modules" ] && ln -s "$ROOT/node_modules" "$T/node_modules"
   python3 -I "$T/$asm/assemble.py" > "$T/assemble.log" 2>&1 || { echo "relbuild: $key does not assemble from HEAD's parts"; tail -5 "$T/assemble.log"; exit 1; }
   want=$(git show "HEAD:$ch" | sha1sum | cut -c1-40); got=$(sha1sum "$T/$ch" | cut -c1-40)
   [ "$want" = "$got" ] || { echo "relbuild: $key at HEAD is NOT its parts' assembly (committed $want, assembled $got): assemble, commit, try again"; exit 1; }
