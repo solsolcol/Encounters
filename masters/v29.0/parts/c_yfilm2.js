@@ -1363,7 +1363,9 @@
            f2TieCam; held still through the two knots) */
         { t: u(D.tie), e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie', cut: true },
         { t: u(D.up) - 0.05, e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie2', stop: true },
-        { t: u(D.up) + 1.4, e: [tE[0], tE[1] - 0.05, tE[2] - 0.2], a: [across[0], across[1] + 0.02, across[2]], fp: 50, fd: 42, n: 'dawn:face' },
+        /* (a cut up to his teacher's face: drawn as a move, the insert's 20 degrees opened to 50 in a second and a half as the
+           look rose, a zoom no eye makes) */
+        { t: u(D.up), e: [tE[0], tE[1] - 0.05, tE[2] - 0.2], a: [across[0], across[1] + 0.02, across[2]], fp: 50, fd: 42, n: 'dawn:face', cut: true },
         { t: u(D.black) + 1.6, e: [tE[0], tE[1] - 0.05, tE[2] - 0.24], a: [across[0], across[1] + 0.02, across[2]], fp: 48, fd: 40, n: 'dawn:face2', stop: true }
       ];
       return K;
@@ -1590,7 +1592,8 @@
       const A = F2.api; if (!A) return;
       const uTie = D.tie - D.d0, uK2 = D.knot2 - D.d0;
       /* (held out for the tie; drawn down out of the picture once it is knotted, before his eyes rise to his teacher's face) */
-      const inK = f2smo(f2win(u, uTie - 0.3, uTie + 0.4)), outK = f2smo(f2win(u, uK2 + 0.5, uK2 + 1.2)), out = inK * (1 - outK);
+      /* (drawn back out of the insert after the second knot, gone by the cut up to his teacher's face) */
+      const uUp = D.up - D.d0, inK = f2smo(f2win(u, uTie - 0.3, uTie + 0.4)), outK = f2smo(f2win(u, uK2 + 0.3, uUp - 0.05)), out = inK * (1 - outK);
       f2Hold(null);
       if (inK > 0.01 && outK < 0.995) { f2Hands(true, F2DW.tiePose, inK, { p: 0 });
         /* (the held hand placed for the insert before the left is laid as its mirror: F2TUNE.tieArm, metres in the hands' pass) */
