@@ -16,8 +16,10 @@
    Read in tools/probes/e4c5films.mjs (LIMBS=1: every row carries its findings, K) and by tools/probes/limbread.py. */
 (() => {
   const E = window.__enc, S = E.stage, V3 = E.camera.position.constructor, Q4 = E.camera.quaternion.constructor;
-  const FLOOR = /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector)$/, TOL = 0.02, GROW = 0.14;
-  const TORSO = { p5koh: 0.17, p5pho: 0.15 };
+  /* (v29.0, R15: episode 5 chapter 1's bodies added (the seated Grandmaster Pho `pho`, Grace and Marcus near and full); a
+     new chapter's bodies are added here, or a probe sets window.__limbFloor (a RegExp) before this file is evaluated) */
+  const FLOOR = window.__limbFloor || /^(p5pho|e4ton|p5jun|p5koh|p5zavier|p5collector|pho|p51grace|p51graceh|p51marcus|p51marcush)$/, TOL = 0.02, GROW = 0.14;
+  const TORSO = { p5koh: 0.17, p5pho: 0.15, pho: 0.15 };
   const seen = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
   const boneOf = (Q, nm) => { Q.__lb = Q.__lb || {}; if (nm in Q.__lb) return Q.__lb[nm];
     const re = new RegExp('^(mixamorig:?)?' + nm + '$'); let f = null; for (const k in (Q.bone || {})) if (re.test(k)) { f = Q.bone[k]; break; }
