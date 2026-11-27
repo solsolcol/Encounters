@@ -526,6 +526,28 @@
       if (!show) return;
       if (A.handPose) A.handPose(pose || null, pose ? c01(k) : 0, o || {});
     }
+    /* THE STRIP OF PILLS HELD UP TO HIS EYE (ending C): pinched between his thumb and the side of his first finger, standing
+       out of his loose fist toward the room with its tablets turned to his eye (held at the palm, it lay under his hand, palm
+       down in the library's place, never seen: run 7's photographs). Found from the hand's own bones with the pose laid whole
+       (as the tie's wrist is: laid, read, and left for the frame to lay its own), then carried by the arm */
+    const F2PILL = { g: null };
+    function f2PillsGeo() {
+      const A = F2.api, asp = A && A.vmCam ? A.vmCam.aspect : camera.aspect;
+      if (F2PILL.g && Math.abs(F2PILL.g.asp - asp) < 1e-4) return F2PILL.g;
+      if (!A || !A.armR || !A.vmCam || !A.handPose) return null;
+      f2Hands(true, 'place', 1, { p: 0 });
+      const R = A.armR; R.updateWorldMatrix(true, true);
+      const th = R.getObjectByName('thumb03R'), ix = R.getObjectByName('f_index02R'), wr = R.getObjectByName('handR');
+      if (!th || !ix || !wr) return null;
+      const T = th.getWorldPosition(new THREE.Vector3()), I = ix.getWorldPosition(new THREE.Vector3()), W = wr.getWorldPosition(new THREE.Vector3());
+      const Q = T.clone().add(I).multiplyScalar(0.5), u = Q.clone().sub(W).normalize(), C = Q.clone().addScaledVector(u, 0.04);
+      A.vmCam.updateMatrixWorld(); const eye = A.vmCam.getWorldPosition(new THREE.Vector3());
+      const n = eye.clone().sub(C).normalize(); n.addScaledVector(u, -n.dot(u)).normalize();
+      const zx = new THREE.Vector3().crossVectors(u, n).normalize(), qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(u, n, zx));
+      const rq = R.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qW), pl = R.worldToLocal(C.clone()), e = new THREE.Euler().setFromQuaternion(rq);
+      F2PILL.g = { asp, pos: [pl.x, pl.y, pl.z], rot: [e.x, e.y, e.z] };
+      return F2PILL.g;
+    }
     /* the left hand placed as the right one's mirror (the library's poses lay most things in the right; a left hand on a door's
        frame or held out to his teacher is the right one's pose turned over), the right one hidden */
     function f2MirrorLeft(on) {
@@ -934,8 +956,11 @@
         K.push({ t: E.sofa0, e: [tp[0] - 0.05, tp[1], tp[2] + 0.05], a: [F2P.tap.x, 0.93, F2P.tap.z], fp: 58, fd: 50, n: 'C:tap2', stop: true });
         f2WalkKeys([[tp[0], tp[2]], [F2HX - 0.6, -0.65], [F2HX - 1.6, -0.25], [lie[0] + 0.8, -0.3]], E.sofa0 + 0.4, E.lie, EYE, { a: [lie[0] - 0.6, 0.6, sf.z], fp: 62, fd: 54, n: 'C:tosofa' }).slice(1).forEach(q => K.push(q));
         K.push({ t: E.lie + 0.7, e: [lie[0] + 0.35, 1.05, lie[2] + 0.25], a: [lie[0] - 0.3, 1.4, lie[2] + 0.6], fp: 64, fd: 56, n: 'C:sit' });
-        K.push({ t: E.cushion, e: lie, a: [lie[0] + 0.25, FLAT.ceil, lie[2] + 0.15], fp: 64, fd: 56, n: 'C:lie', stop: true });
-        K.push({ t: E.forced, e: lie, a: [lie[0] + 0.28, FLAT.ceil, lie[2] + 0.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
+        /* (his head on the sofa's arm, turned a little toward his glass: under the cushion the picture's lowest fifth is the top of
+           his glass doors and the city's night through them; looking straight up, it was his ceiling, as dark as the cushion,
+           and the whole picture one grey for four seconds, photographed) */
+        K.push({ t: E.cushion, e: lie, a: [lie[0] + 0.1, lie[1] + 2.0, lie[2] + 2.07], fp: 64, fd: 56, n: 'C:lie', stop: true });
+        K.push({ t: E.forced, e: lie, a: [lie[0] + 0.12, lie[1] + 1.96, lie[2] + 2.12], fp: 62, fd: 54, n: 'C:lie2', stop: true });
         K.push({ t: E.forced + 1.4, e: [lie[0] + 0.05, lie[1] + 0.14, lie[2]], a: [sf.x + 1.4, 0.25, sf.z + 0.9], fp: 60, fd: 52, n: 'C:feet' });
         K.push({ t: E.phone, e: [lie[0] + 0.06, lie[1] + 0.16, lie[2]], a: [sf.x + 2.6, 0.1, sf.z + 0.6], fp: 60, fd: 52, n: 'C:steps', stop: true });
         /* (he sits up as the call connects, the phone before him, and listens facing his glass, the city's lights over the
@@ -1197,7 +1222,8 @@
           const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.3, E.pills - 0.45, E.pills - 0.2), pl = f2bell(t, E.pills - 0.2, E.pills + 0.15, E.pills + 0.55, E.pills + 0.8);
           const m = f2bell(t, E.pills + 0.8, E.pills + 1.05, E.tap - 0.2, E.tap + 0.1);
           const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
-          f2Hold(t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2Pills : null, { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
+          const pg = t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2PillsGeo() : null;
+          f2Hold(t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2Pills : null, pg ? { pos: pg.pos, rot: pg.rot } : { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
           if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp);
           else if (pl > 0.01) f2Hands(true, 'place', pl); else f2Hands(r > 0.01, 'reach', r);
           return;
