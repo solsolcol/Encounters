@@ -391,36 +391,83 @@
        a thread wraps round his left wrist at the balcony's door (ending D), burned off by the gold in a white flash, the red
        mark it leaves, and the white thread his teacher ties over the same wrist at dawn. Each a ring laid round the left
        hand's wrist bone in the hands' own pass (the left hand is the mirrored copy of the right: buildPrayerArm) */
-    const F2W = { band: null, mark: null, thread: null, flash: null, on: false };
-    /* THE WRIST'S OWN THICKNESS where the rings go, MEASURED on the hands' model once (its skin within 1.2 cm of the wrist's
-       joint along the hand, in the hand bone's own frame: the 85th of every hundred distances from the joint's axis, so the
-       thumb's root does not set it): laid at a guessed 3.45 cm, the rings sat inside the wrist and were never seen (the tie
-       photographed at both its knots, the thread nowhere) */
-    function f2WristR(L, wr) {
-      const v = new THREE.Vector3(), d = [];
-      L.updateWorldMatrix(true, true);
+    const F2W = { band: null, mark: null, thread: null, flash: null, on: false, knot: null, fit: null };
+    /* THE WAY ROUND HIS WRIST, laid on his own skin (the hands' model, measured once). The hand bone hangs from the model's
+       armature, whose own units are not metres (the file's armature carries a hundred times, and the model is sized to a
+       real hand by a scale of its own), so the rings sized in metres inside that frame stood far out round his wrist, off
+       every picture, never seen in any ending, and the measure taken in the hand bone's frame read the whole arm (0.0042 of
+       its units: run 8's reading). Measured in the hands' own world instead: the forearm's line from the skin itself (its
+       middle 3 to 9 cm behind the wrist's joint), a slice of the skin across that line `back` metres up the arm, and round
+       the slice, every 7.5 degrees, the furthest skin from its middle (so the loop never sinks into it), smoothed, then `gap`
+       metres out; a tube `th` thick, carried by the armature in that frame's own units (the forearm's skin moves with it:
+       the hand turns on its own bone) */
+    function f2WristLoop(L, wr, back, gap, th) {
+      const fa = wr.parent; L.updateWorldMatrix(true, true);
+      const O = new THREE.Vector3(), Yh = new THREE.Vector3(), v = new THREE.Vector3(), Cf = new THREE.Vector3(), ax = new THREE.Vector3();
+      wr.getWorldPosition(O); Yh.setFromMatrixColumn(wr.matrixWorld, 1).normalize();
+      const near = [];
       L.traverse(o => { if (!o.isSkinnedMesh || !o.geometry || !o.geometry.attributes.position) return;
         if (o.skeleton) o.skeleton.update();
         const pos = o.geometry.attributes.position;
-        for (let i = 0; i < pos.count; i++) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); wr.worldToLocal(v);
-          if (Math.abs(v.y) < 0.012) { const r = Math.hypot(v.x, v.z); if (r < 0.09) d.push(r); } } });
-      if (d.length < 12) return 0.033;
-      d.sort((a, b) => a - b); return d[Math.floor(d.length * 0.85)];
+        for (let i = 0; i < pos.count; i++) { o.getVertexPosition(i, v); v.applyMatrix4(o.matrixWorld); if (v.distanceToSquared(O) < 0.0144) near.push(v.clone()); } });
+      let nf = 0; for (const p of near) { const a = v.copy(p).sub(O).dot(Yh); if (a < -0.03 && a > -0.09) { Cf.add(p); nf++; } }
+      if (nf > 20) ax.copy(O).sub(Cf.multiplyScalar(1 / nf)).normalize(); else ax.copy(Yh);
+      const c0 = O.clone().addScaledVector(ax, -back);
+      const e1 = new THREE.Vector3(0, 1, 0).addScaledVector(ax, -ax.y); if (e1.lengthSq() < 1e-6) e1.set(1, 0, 0).addScaledVector(ax, -ax.x); e1.normalize();
+      const e2 = new THREE.Vector3().crossVectors(ax, e1).normalize();
+      const sl = []; for (const p of near) { v.copy(p).sub(c0); const a = v.dot(ax); if (Math.abs(a) < 0.005) sl.push([v.dot(e1), v.dot(e2)]); }
+      const N = 48, rb = new Array(N).fill(0);
+      let cx = 0, cy = 0;
+      if (sl.length >= 16) { let x0 = 9, x1 = -9, y0 = 9, y1 = -9; for (const [x, y] of sl) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+        cx = (x0 + x1) / 2; cy = (y0 + y1) / 2;
+        for (const [x, y] of sl) { const r = Math.hypot(x - cx, y - cy), b = ((Math.floor((Math.atan2(y - cy, x - cx) + Math.PI) / (2 * Math.PI) * N) % N) + N) % N; if (r > rb[b]) rb[b] = r; }
+        for (let pass = 0; pass < N && rb.some(r => !r); pass++) { const c = rb.slice(); for (let i = 0; i < N; i++) if (!c[i]) rb[i] = Math.max(c[(i + N - 1) % N], c[(i + 1) % N]); } }
+      else rb.fill(0.032);
+      const dl = rb.map((r, i) => Math.max(r, rb[(i + N - 1) % N], rb[(i + 1) % N]));
+      const R = dl.map((r, i) => (dl[(i + N - 1) % N] + 2 * r + dl[(i + 1) % N]) / 4 + gap);
+      const sp = new THREE.Vector3().setFromMatrixColumn(fa.matrixWorld, 1).length() || 1;
+      const pts = R.map((r, i) => { const a = (i + 0.5) / N * 2 * Math.PI - Math.PI;
+        return fa.worldToLocal(c0.clone().addScaledVector(e1, cx + r * Math.cos(a)).addScaledVector(e2, cy + r * Math.sin(a))); });
+      const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true, 'centripetal'), 96, th / sp, 8, true); owned.push(g);
+      return { g, pts, sp, n: sl.length, rx: (Math.max(...R) - gap), rn: (Math.min(...R) - gap), axLocal: fa.worldToLocal(O.clone()).sub(fa.worldToLocal(O.clone().addScaledVector(ax, -0.05))).normalize() };
     }
     function f2WristDress() {
       if (F2W.band || !F2.api || !F2.api.buildPrayerArm) return !!F2W.band;
       const L = F2.api.buildPrayerArm(); if (!L || !L.userData || !L.userData.model) return false;
       const wr = L.userData.model.getObjectByName('handR'); if (!wr || !wr.parent) return false;
-      const R = F2W.r = f2WristR(L, wr);
-      const mk = (r, th, color, add, op) => { const g = new THREE.TorusGeometry(r, th, 6, 40); owned.push(g);
-        const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
-        m.position.copy(wr.position); m.quaternion.copy(wr.quaternion); m.rotateX(Math.PI / 2); m.visible = false; m.frustumCulled = false; m.renderOrder = 3; wr.parent.add(m); return m; };
-      F2W.band = mk(R + 0.004, 0.006, F2RED, true, 0.9);
-      F2W.band2 = mk(R + 0.006, 0.011, 0xff5040, true, 0.35);
-      F2W.mark = mk(R + 0.001, 0.0042, 0xb04a46, false, 0.85);
-      F2W.thread = mk(R + 0.0025, 0.0022, 0xf4f2ea, false, 1.0);
-      F2W.thread2 = mk(R + 0.0025, 0.0022, 0xf4f2ea, false, 1.0); F2W.thread2.translateZ(0.005);
+      const mk = (back, gap, th, color, add, op) => { const fit = f2WristLoop(L, wr, back, gap, th);
+        const m = new THREE.Mesh(fit.g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: op, depthWrite: !add, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, toneMapped: false })); mats.push(m.material);
+        m.visible = false; m.frustumCulled = false; m.renderOrder = 3; m.userData.fit = fit; wr.parent.add(m); return m; };
+      /* (metres: the red band of ending D standing off the skin and glowing, its haze, the mark it leaves as a welt, and the
+         white thread's two turns side by side a little up from the wrist's crease, 2.4 mm thick, a cotton cord's) */
+      F2W.band = mk(0.018, 0.005, 0.0045, F2RED, true, 0.9);
+      F2W.band2 = mk(0.018, 0.008, 0.009, 0xff5040, true, 0.35);
+      F2W.mark = mk(0.018, -0.0011, 0.0026, 0xb04a46, false, 0.85);
+      F2W.thread = mk(0.016, 0.0016, 0.0012, 0xf4f2ea, false, 1.0);
+      F2W.thread2 = mk(0.021, 0.0016, 0.0012, 0xf4f2ea, false, 1.0);
+      const f = F2W.thread.userData.fit; F2W.fit = { slice: f.n, rMax: +f.rx.toFixed(4), rMin: +f.rn.toFixed(4), unit: +f.sp.toFixed(3) };
+      /* the knot: a small knot and its two cut ends, laid each frame on the turn's side his eye sees */
+      const sp = f.sp, kg = new THREE.IcosahedronGeometry(0.0026 / sp, 1), tg = new THREE.CylinderGeometry(0.0008 / sp, 0.0007 / sp, 0.014 / sp, 6, 1); tg.translate(0, 0.007 / sp, 0); owned.push(kg, tg);
+      const km = new THREE.MeshBasicMaterial({ color: 0xeeebe2, toneMapped: false }); mats.push(km);
+      const K = new THREE.Group(); K.add(new THREE.Mesh(kg, km)); const t1 = new THREE.Mesh(tg, km), t2 = new THREE.Mesh(tg, km); K.add(t1, t2);
+      K.traverse(o => { o.frustumCulled = false; o.renderOrder = 3; }); K.visible = false; wr.parent.add(K);
+      F2W.knot = { K, t1, t2, wr };
       return true;
+    }
+    /* the knot on the side of the first turn nearest his eye (the hands' lens: the wrist turns with the arm), its two ends
+       out from it, a little apart, toward the hand */
+    const _kc = new THREE.Vector3(), _kn = new THREE.Vector3(), _kt = new THREE.Vector3(), _kd = new THREE.Vector3(), _kup = new THREE.Vector3(0, 1, 0);
+    function f2KnotLay(on) {
+      const Kn = F2W.knot; if (!Kn) return; Kn.K.visible = !!on; if (!on) return;
+      const A = F2.api, fit = F2W.thread.userData.fit, fa = Kn.wr.parent; if (!A || !A.vmCam) return;
+      A.vmCam.updateMatrixWorld(); A.vmCam.getWorldPosition(_kc); fa.updateWorldMatrix(true, false); fa.worldToLocal(_kc);
+      let best = 0, bd = Infinity; for (let i = 0; i < fit.pts.length; i++) { const d = fit.pts[i].distanceToSquared(_kc); if (d < bd) { bd = d; best = i; } }
+      const p = fit.pts[best], c = _kd.set(0, 0, 0); for (const q of fit.pts) c.add(q); c.multiplyScalar(1 / fit.pts.length);
+      const ax = fit.axLocal; _kn.copy(p).sub(c); _kn.addScaledVector(ax, -_kn.dot(ax)).normalize();
+      Kn.K.position.copy(p).addScaledVector(_kn, 0.0012 / fit.sp);
+      _kt.crossVectors(ax, _kn).normalize();
+      const lay = (m, s) => { _kd.copy(_kn).multiplyScalar(0.55).addScaledVector(_kt, 0.6 * s).addScaledVector(ax, 0.55).normalize(); m.quaternion.setFromUnitVectors(_kup, _kd); };
+      lay(Kn.t1, 1); lay(Kn.t2, -1);
     }
     function f2WristShow(band, mark, thread, flash) {
       if (!f2WristDress()) return;
@@ -428,6 +475,7 @@
       F2W.band2.material.opacity = 0.35 * band + 0.9 * flash; F2W.band2.material.color.setHex(flash > band ? 0xffffff : 0xff5040);
       F2W.mark.visible = mark > 0.001; F2W.mark.material.opacity = 0.85 * mark;
       F2W.thread.visible = thread > 0.5; F2W.thread2.visible = thread > 1.5;
+      f2KnotLay(thread > 0.5);
     }
 
     /* ---------------------------------------------------------------- THE FILMS' FRAME, AND WHAT EACH ONE OWNS
@@ -1049,7 +1097,7 @@
       /* (a probe's) */
       marks: () => F2.E,
       tune: F2TUNE,
-      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wristR: F2W.r || null }; },
+      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice(), wrist: F2W.fit }; },
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -1303,16 +1351,20 @@
        where his teacher can reach across the table, the direction from his eye given by `tieWant` (over the table's middle,
        a hand's breadth and more over its top, in front of his teacher's chest); his teacher's hands go to it (f2TieW). The
        lens's angle stays the insert's own, so how far off the wrist stands is the hand's own depth's (read: ENDINGS.md 6) */
-    F2DW.tieFov = [22, 23];
+    /* (20 degrees on both screens: at 22 the wrist the lens's depth sets lay 0.88 m from his eye, 0.55 and 0.60 m from his
+       teacher's shoulders, past an arm of about 0.50 m: his hands stopped 10 cm short of it, over the back of the held hand,
+       run 8's reading and photographs; at 21 on a desk it lay 4 cm nearer him than on a phone, 0.49 m from the left shoulder) */
+    F2DW.tieFov = [20, 20];
     /* (his left hand held out in the library's `place`, turned over: its hand stands a third of the way down the picture, so
        its wrist, where the thread goes, is inside it; the reach's hand stood two thirds down, its wrist at the picture's
        foot and the back of the hand filling the bottom of a phone's picture, photographed) */
     F2DW.tiePose = 'place';
-    /* (his eye for it leaning in over the table's near edge, as a man holding his wrist out across a table leans: 0.21 m on and
-       0.07 m down from where he sits, so the wrist the lens's depth sets lies 0.56 m from his teacher's shoulder, not 0.63, his
-       teacher's arm then bent at the elbow, not straight) */
-    F2DW.tieEye = [F2DW.tableEye[0], F2DW.tableEye[1] - 0.07, F2DW.tableEye[2] - 0.21];
-    F2DW.tieWant = [HIS.chair1.x - 0.06, F2DW.TOP + 0.24, HIS.dining.z - 0.03];
+    /* (his eye for it leaning in over the table's near edge, as a man holding his wrist out across a table leans: 0.28 m on and
+       0.09 m down from where he sits, 9 cm behind the edge; and the wrist held lower, 15 cm over the table's top, past its
+       middle toward his teacher, so it lies 0.41 and 0.45 m from his teacher's shoulders with his hands at its two sides,
+       his arms bent at the elbow) */
+    F2DW.tieEye = [F2DW.tableEye[0], F2DW.tableEye[1] - 0.09, F2DW.tableEye[2] - 0.28];
+    F2DW.tieWant = [HIS.chair1.x - 0.02, F2DW.TOP + 0.15, HIS.dining.z - 0.37];
     const F2TIE = { geo: null }, _wa = new THREE.Vector3();
     /* his held left wrist in the hands' camera at the reach the tie holds it at (metres; the place the hands' pass draws it,
        measured once for this screen's shape: the pose is laid, read and left for the frame to lay its own) */
@@ -1397,6 +1449,24 @@
     }
     /* (a bone by its name, the rig's prefix with or without its colon: glTF strips it, mixamorigSpine2: v3.8) */
     const f2Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+    /* HIS FINGERS CLOSED A LITTLE ON THE THREAD: the library's curlFingers asks for RightHandIndex1 or mixamorig:RightHandIndex1,
+       and his standing body's bones are named mixamorigRightHandIndex1 (glTF takes the colon out), so it found none and his
+       fingers stood straight and spread at the tie (photographed). The same turn about the hand's across line, the bones found
+       either way; the turn is laid on what the take wrote this frame, and where the take writes no finger it is laid on the
+       fingers as they stood before it, so it never gathers frame on frame (th 0: the fingers given back) */
+    const _f2cq = new THREE.Quaternion(), _f2cq2 = new THREE.Quaternion(), _f2cf = new THREE.Vector3(), _f2cn = new THREE.Vector3(), _f2ca = new THREE.Vector3();
+    function f2Curl(P, sd, th) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a || !a.hand || !a.fL || !a.nL) return;
+      if (!a.f2fing) { a.f2fing = []; const S0 = sd === 'L' ? 'Left' : 'Right';
+        for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (let i = 1; i <= 3; i++) { const b = f2Bone(P, S0 + 'Hand' + f + i); if (b) a.f2fing.push({ b, i, base: new THREE.Quaternion(), last: null }); } }
+      for (const F of a.f2fing) { if (F.last && F.b.quaternion.equals(F.last)) F.b.quaternion.copy(F.base); else F.base.copy(F.b.quaternion); }
+      if (th > 0.001) {
+        a.hand.getWorldQuaternion(_f2cq); _f2cf.copy(a.fL).applyQuaternion(_f2cq); _f2cn.copy(a.nL).applyQuaternion(_f2cq); _f2ca.crossVectors(_f2cf, _f2cn).normalize();
+        for (const F of a.f2fing) { _f2cq.setFromAxisAngle(_f2ca, th * (F.i === 3 ? 0.7 : 1)); F.b.parent.getWorldQuaternion(_f2cq2);
+          F.b.quaternion.premultiply(_f2cq2).premultiply(_f2cq).premultiply(_f2cq2.invert()); } }
+      for (const F of a.f2fing) (F.last || (F.last = new THREE.Quaternion())).copy(F.b.quaternion);
+      return a.f2fing.length;
+    }
     /* his cloth bag hung at his right hip by its strap (FILMS-1 hangs it 0.2 m out from his spine, 0.52 m under his chest's
        bone: c_yfilm.js phoBagOn1); here 0.25 m out, 0.08 m behind his hip's line and 0.55 m down, so his right arm hangs and
        swings before it: at FILMS-1's place its strap and side went through his arm and side, clipscan 1,639 crossings at the
@@ -1485,8 +1555,8 @@
         const sx = 0.07 + 0.025 * pull;
         handTo(P, 'R', [w[0] - sx, w[1] + 0.025, w[2] - 0.03], [0.6, -0.15, 0.75], [0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
         handTo(P, 'L', [w[0] + sx, w[1] + 0.025, w[2] - 0.03], [-0.6, -0.15, 0.75], [-0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
-        curlFingers(P, 'R', 0.6 * kT); curlFingers(P, 'L', 0.6 * kT);
       }
+      f2Curl(P, 'R', 0.6 * kT); f2Curl(P, 'L', 0.6 * kT);
     }
     /* the hands' pass at dawn: none until the tie, then his left hand held out, palm down, across the table (the right one's
        reach turned over: f2MirrorLeft), the white thread laid round its wrist and knotted twice, over the red mark in D */
