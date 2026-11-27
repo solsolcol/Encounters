@@ -16,13 +16,16 @@ const m = fs.readFileSync(MASK);
 const mesh = d.getRoot().listMeshes()[0]; const p = mesh.listPrimitives()[0]; const src = p.getMaterial();
 const a = p.getIndices().getArray(); const keep = [], glass = [];
 for (let f = 0; f < a.length / 3; f++) (m[f] ? keep : glass).push(a[3*f], a[3*f+1], a[3*f+2]);
-const g = p.clone(); g.setIndices(d.createAccessor().setType('SCALAR').setArray(new Uint32Array(glass)).setBuffer(p.getIndices().getBuffer()));
-p.setIndices(d.createAccessor().setType('SCALAR').setArray(new Uint32Array(keep)).setBuffer(p.getIndices().getBuffer()));
+// (a thing that is glass all over, the jug and the tumbler: no face kept, so the one primitive itself takes the glass:
+//  an empty primitive beside it fails meshopt's encoder)
+const g = keep.length ? p.clone() : p;
+if (keep.length) { g.setIndices(d.createAccessor().setType('SCALAR').setArray(new Uint32Array(glass)).setBuffer(p.getIndices().getBuffer()));
+  p.setIndices(d.createAccessor().setType('SCALAR').setArray(new Uint32Array(keep)).setBuffer(p.getIndices().getBuffer())); }
 const t = TINT.split(',').map(Number);
 const gm = d.createMaterial('glass').setBaseColorFactor([t[0], t[1], t[2], Number(OP)]).setAlphaMode('BLEND')
   .setMetallicFactor(0).setRoughnessFactor(0.06).setDoubleSided(false);
 if (src.getNormalTexture()) { gm.setNormalTexture(src.getNormalTexture()); gm.setNormalScale(src.getNormalScale()); }
-g.setMaterial(gm); mesh.addPrimitive(g);
+g.setMaterial(gm); if (g !== p) mesh.addPrimitive(g);
 await d.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 const tmp = OUT + '.tmp.glb'; await io.write(tmp, d); fs.renameSync(tmp, OUT);
 console.log('kept', keep.length / 3, 'glass', glass.length / 3);

@@ -37,16 +37,28 @@ def phrases(x):
         if m and (a - m[-1][1]) * 0.02 < 0.35: m[-1][1] = b
         else: m.append([a, b])
     return [(round(a * 0.02, 2), round(b * 0.02, 2)) for a, b in m]
-def verses(ph, n, weights):
-    """the n-1 longest silences between phrases as the verse boundaries; None if fewer than n-1 or out of proportion"""
-    if len(ph) < n: return None
-    gaps = sorted(range(len(ph) - 1), key=lambda i: ph[i + 1][0] - ph[i][1], reverse=True)[:n - 1]
-    cuts = sorted(gaps); out = []; s = 0
-    for c in cuts + [len(ph) - 1]:
-        out.append((ph[s][0], ph[c][1])); s = c + 1
+def verses(x, n, weights):
+    """the verse boundaries are the take's breaths: of its silences of 0.2 s and more (20 ms frames under the peak - 32
+    dB), the n-1 that are longest, each weighed against where its verse should end were the chant's syllables evenly
+    paced (a breath far from there costs 0.05 of its length a second away: v4 sometimes breathes after a verse's first
+    half-line, and runs two verses on one breath with only a catch between them). Answers the verses' [start, end] and
+    whether they are in proportion (none under half or over twice its share)."""
+    d = frames(x); on = d > d.max() - 32; idx = np.where(on)[0]
+    v0, v1 = idx[0], idx[-1] + 1; gaps = []; s = None
+    for i in range(v0, v1):
+        if not on[i] and s is None: s = i
+        if on[i] and s is not None:
+            if (i - s) * 0.02 >= 0.2: gaps.append((s * 0.02, i * 0.02))
+            s = None
+    if len(gaps) < n - 1: return None
+    t0, t1 = v0 * 0.02, v1 * 0.02; cum = np.cumsum(weights)[:-1] / sum(weights); want = t0 + cum * (t1 - t0)
+    from itertools import combinations
+    best = max(combinations(range(len(gaps)), n - 1), key=lambda cs: sum(gaps[c][1] - gaps[c][0] for c in cs) - 0.05 * sum(abs((gaps[c][0] + gaps[c][1]) / 2 - w) for c, w in zip(cs, want)))
+    out = []; a = t0
+    for c in best: out.append((round(a, 2), round(gaps[c][0], 2))); a = gaps[c][1]
+    out.append((round(a, 2), round(t1, 2)))
     dur = np.array([b - a for a, b in out]); share = np.array(weights) / sum(weights) * dur.sum()
-    ok = bool(np.all(dur > 0.5 * share) and np.all(dur < 2 * share))
-    return out, ok
+    return out, bool(np.all(dur > 0.5 * share) and np.all(dur < 2 * share))
 def f0(fr):
     fr = fr - fr.mean(); ac = np.correlate(fr, fr, 'full')[len(fr) - 1:]
     if ac[0] < 1e-6: return None
@@ -87,7 +99,7 @@ if __name__ == '__main__':
     if '--times' in sys.argv:
         for k in CH:
             x = pcm(os.path.join(ROOT, 'assets', 'audio-opus', k + '.ogg')); n = len(ROWS[k]['captions'])
-            v, ok = verses(phrases(x), n, [syll(p) for p, _ in ROWS[k]['captions']])
+            v, ok = verses(x, n, [syll(p) for p, _ in ROWS[k]['captions']])
             res[k]['times'] = [[round(a, 2), round(b, 2)] for a, b in v]; res[k]['times_ok'] = ok; res[k]['final_len'] = round(len(x) / SR, 2)
             print(k, 'final %.2f s' % (len(x) / SR), 'verses', res[k]['times'], 'in proportion' if ok else 'OUT OF PROPORTION')
         open(OUT, 'w', encoding='utf-8').write(json.dumps(res, indent=1, ensure_ascii=False)); sys.exit(0)
@@ -97,14 +109,15 @@ if __name__ == '__main__':
         for l in 'abcdefghij':
             p = os.path.join(RAW, '%s_%s.mp3' % (k, l))
             if not os.path.exists(p): continue
-            x = pcm(p); ph = phrases(x); vv = verses(ph, n, wts); med, spread, hold = pitch(x); tdb, clean = end(x)
+            x = pcm(p); ph = phrases(x); vv = verses(x, n, wts); med, spread, hold = pitch(x); tdb, clean = end(x)
             e0, e1 = ph[0][0], ph[-1][1]
             takes[l] = dict(len=round(len(x) / SR, 2), e_first=e0, e_last=e1, phrases=ph, verses=vv[0] if vv else None,
                             whole=bool(vv and vv[1]), pitch=med, spread=spread, held=hold, tail_db=tdb, clean_end=clean,
-                            wps=round(words / max(0.25, e1 - e0), 2), hole=0.0, heard=heard(x, ph))
+                            wps=round(words / max(0.25, e1 - e0), 2), hole=0.0,
+                            heard=res[k]['takes'][l]['heard'] if l in res.get(k, {}).get('takes', {}) else heard(x, ph))   # (heard once: its words kept)
             t = takes[l]
-            print('%s %s  %.2f s  %d phrases  whole %s  pitch %.0f Hz spread %.1f st held %.2f s  end %.1f %s  %.2f w/s' % (
-                k, l, t['len'], len(ph), t['whole'], med, spread, hold, tdb, 'clean' if clean else 'ON SIGNAL', t['wps']))
+            print('%s %s  %.2f s  %d phrases  verses %s  whole %s  pitch %.0f Hz spread %.1f st held %.2f s  end %.1f %s  %.2f w/s' % (
+                k, l, t['len'], len(ph), t['verses'], t['whole'], med, spread, hold, tdb, 'clean' if clean else 'ON SIGNAL', t['wps']))
             for h in t['heard']: print('      ', h[:110])
         pace = float(r.get('pace', 1.4))
         sc = {l: (0 if (t['whole'] and t['clean_end'] and t['held'] < 1.2) else 1, abs(t['wps'] - pace)) for l, t in takes.items()}
