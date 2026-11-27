@@ -1,0 +1,30 @@
+{
+ "u51pour2_a": {
+  "len": 3.0,
+  "asked": 3.0,
+  "peak": -7.0,
+  "level": -34.0,
+  "loud": -23.3,
+  "silent": 0.0,
+  "first": 0.1,
+  "last": 2.95,
+  "phone": 0.91,
+  "voice": 0.79,
+  "sub120": 0.08,
+  "words": ""
+ },
+ "u51pour2_b": {
+  "len": 3.0,
+  "asked": 3.0,
+  "peak": -8.8,
+  "level": -34.8,
+  "loud": -25.1,
+  "silent": 0.02,
+  "first": 0.05,
+  "last": 2.9,
+  "phone": 0.94,
+  "voice": 0.83,
+  "sub120": 0.05,
+  "words": "Thanks for watching!"
+ }
+}

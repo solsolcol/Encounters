@@ -1,0 +1,134 @@
+{
+ "grace_adrina_1": {
+  "len": 3.44,
+  "heard": "Come in, sorry about the mess.",
+  "said": "Come in. Sorry about the mess.",
+  "tag_spoken": false,
+  "head": 0.1,
+  "tail": 0.59,
+  "end_on_signal": false,
+  "wps": 2.27,
+  "f0": 211.0
+ },
+ "grace_adrina_2": {
+  "len": 4.24,
+  "heard": "He gave it to me. He said it would keep me safe.",
+  "said": "He gave it to me. He said it would keep me safe.",
+  "tag_spoken": false,
+  "head": 0.15,
+  "tail": 0.04,
+  "end_on_signal": false,
+  "wps": 3.0,
+  "f0": 250.0
+ },
+ "grace_cynthia_1": {
+  "len": 3.52,
+  "heard": "Come in, sorry about the mess.",
+  "said": "Come in. Sorry about the mess.",
+  "tag_spoken": false,
+  "head": 0.05,
+  "tail": 0.07,
+  "end_on_signal": false,
+  "wps": 1.97,
+  "f0": 239.0
+ },
+ "grace_cynthia_2": {
+  "len": 4.56,
+  "heard": "He gave it to me. He said it would keep me safe.",
+  "said": "He gave it to me. He said it would keep me safe.",
+  "tag_spoken": false,
+  "head": 0.05,
+  "tail": 0.01,
+  "end_on_signal": true,
+  "wps": 2.8,
+  "f0": 234.0
+ },
+ "grace_jacqueline_1": {
+  "len": 2.32,
+  "heard": "Come in, sorry about the mess.",
+  "said": "Come in. Sorry about the mess.",
+  "tag_spoken": false,
+  "head": 0.0,
+  "tail": 0.02,
+  "end_on_signal": true,
+  "wps": 2.94,
+  "f0": 229.0
+ },
+ "grace_jacqueline_2": {
+  "len": 3.68,
+  "heard": "He gave it to me. He said it would keep me safe.",
+  "said": "He gave it to me. He said it would keep me safe.",
+  "tag_spoken": false,
+  "head": 0.1,
+  "tail": 0.03,
+  "end_on_signal": false,
+  "wps": 3.55,
+  "f0": 242.0
+ },
+ "marcus_gavin_1": {
+  "len": 4.16,
+  "heard": "Thank you for coming Grand Master. She said you can come up.",
+  "said": "Thank you for coming, Grandmaster. She said you can come up.",
+  "tag_spoken": false,
+  "head": 0.1,
+  "tail": 1.01,
+  "end_on_signal": false,
+  "wps": 3.5,
+  "f0": 153.0
+ },
+ "marcus_gavin_2": {
+  "len": 2.4,
+  "heard": "That was around when she changed.",
+  "said": "That was around when she changed.",
+  "tag_spoken": false,
+  "head": 0.05,
+  "tail": 0.05,
+  "end_on_signal": true,
+  "wps": 2.75,
+  "f0": 132.0
+ },
+ "marcus_wayne_1": {
+  "len": 4.24,
+  "heard": "Thank you for coming, Grandmaster. She said you can come up.",
+  "said": "Thank you for coming, Grandmaster. She said you can come up.",
+  "tag_spoken": false,
+  "head": 0.1,
+  "tail": 0.89,
+  "end_on_signal": false,
+  "wps": 3.4,
+  "f0": 106.0
+ },
+ "marcus_wayne_2": {
+  "len": 1.92,
+  "heard": "That was around when she changed.",
+  "said": "That was around when she changed.",
+  "tag_spoken": false,
+  "head": 0.1,
+  "tail": 0.02,
+  "end_on_signal": true,
+  "wps": 3.57,
+  "f0": 109.0
+ },
+ "marcus_amir_1": {
+  "len": 5.04,
+  "heard": "Thank you for coming, Grandmaster. She said you can come up.",
+  "said": "Thank you for coming, Grandmaster. She said you can come up.",
+  "tag_spoken": false,
+  "head": 0.0,
+  "tail": 0.04,
+  "end_on_signal": true,
+  "wps": 2.23,
+  "f0": 101.0
+ },
+ "marcus_amir_2": {
+  "len": 3.28,
+  "heard": "That was around when she changed.",
+  "said": "That was around when she changed.",
+  "tag_spoken": false,
+  "head": 0.0,
+  "tail": 0.23,
+  "end_on_signal": false,
+  "wps": 2.22,
+  "f0": 105.0
+ }
+}

@@ -1,0 +1,836 @@
+{
+ "u51band": {
+  "kind": "fx",
+  "take": "u51band_a",
+  "where": "ending D",
+  "hit": 1.23,
+  "why": "a: 96 % where a phone plays, loudest 50 ms -33.9 dBFS; it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51bbalc": {
+  "kind": "bed",
+  "take": "u51bbalc_a",
+  "where": "BALCONY bed: ending D, the door open",
+  "why": "a: 75 % where a phone plays, loudest 50 ms -14.1 dBFS"
+ },
+ "u51bcorr": {
+  "kind": "bed",
+  "take": "u51bcorr_a",
+  "where": "CORRIDOR bed: home, the walk to his door",
+  "why": "a: 83 % where a phone plays, loudest 50 ms -41.1 dBFS"
+ },
+ "u51bdawn": {
+  "kind": "copy",
+  "from": "k5dawnbed",
+  "where": "DAWN bed (the AC off)",
+  "why": "episode 3 chapter 5's dawn bed: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51bflat": {
+  "kind": "bed",
+  "take": "u51bflat_a",
+  "where": "HER FLAT bed: the room's play and its films",
+  "why": "a: 61 % where a phone plays, loudest 50 ms -29.4 dBFS"
+ },
+ "u51bloom": {
+  "kind": "fx",
+  "take": "u51bloom_a",
+  "where": "barrier 40.0 s: the cut to quiet",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.96,
+  "why": "a: 97 % where a phone plays, loudest 50 ms -43.5 dBFS (others, phone/loudest: b 0.95/-47.0); its 0.35 s silent head cut"
+ },
+ "u51bnight": {
+  "kind": "bed",
+  "take": "u51bnight_a",
+  "where": "FLAT AT NIGHT bed: home and three o'clock",
+  "why": "a: 55 % where a phone plays, loudest 50 ms -34.1 dBFS"
+ },
+ "u51bottle": {
+  "kind": "fx",
+  "take": "u51bottle_a",
+  "where": "three o'clock: the altar's bottle",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.36,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -16.5 dBFS (others, phone/loudest: b 0.97/-13.5 REFUSED (\"Thank you.\")); its 0.15 s silent head cut"
+ },
+ "u51bowlup": {
+  "kind": "fx",
+  "take": "u51bowlup_a",
+  "where": "keepsake 26.0 s",
+  "hit": 0.18,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -22.2 dBFS (others, phone/loudest: b 1.00/-25.1)"
+ },
+ "u51brass": {
+  "kind": "copy",
+  "from": "x3baiset",
+  "where": "the room: brass set on cloth",
+  "why": "episode 4 chapter 3's brass bowl set down on a mat: one soft dull touch: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51breath": {
+  "kind": "loop",
+  "take": "u51breath_a",
+  "where": "three o'clock: his breath (a loop)",
+  "why": "a: 89 % where a phone plays, loudest 50 ms -31.5 dBFS"
+ },
+ "u51bstair": {
+  "kind": "bed",
+  "take": "u51bstair_a",
+  "where": "STAIR bed: the climb",
+  "why": "a: 69 % where a phone plays, loudest 50 ms -38.1 dBFS"
+ },
+ "u51bstreet": {
+  "kind": "bed",
+  "take": "u51bstreet_a",
+  "where": "STREET bed: the opening, the five-foot way",
+  "why": "a: 57 % where a phone plays, loudest 50 ms -23.2 dBFS"
+ },
+ "u51bthree": {
+  "kind": "bed",
+  "take": "u51bnight_a",
+  "fc": "[0:a]lowpass=f=900,volume=-8dB",
+  "where": "THREE bed: the night thinned to almost nothing under the pressure",
+  "why": "MADE from u51bnight a: the same room low-passed at 900 Hz and 8 dB down before levelling, so it sits under the night as the pressure closes in (cue it under 0.4 and cross from u51bnight)"
+ },
+ "u51burn": {
+  "kind": "fx",
+  "take": "u51burn_b",
+  "where": "barrier from 32.0 s: each thread meeting the gold",
+  "hit": 0.46,
+  "why": "b: 95 % where a phone plays, loudest 50 ms -29.1 dBFS (others, phone/loudest: a 0.51/-21.0); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51busaway": {
+  "kind": "copy",
+  "from": "busaway",
+  "where": "opening 8.0 s: a bus pulls away (diesel, the air-brake's hiss)",
+  "why": "the lorong's bus pulling away (v21.17): the thing itself: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51buzz": {
+  "kind": "copy",
+  "from": "x2buzz",
+  "where": "the room: her phone's vibration every 20 s; cord 24.0 s",
+  "why": "episode 4 chapter 2's phone buzz, one buzz (cue two, 0.8 s apart, for a call): a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51carpet": {
+  "kind": "fx",
+  "take": "u51carpet_a",
+  "where": "home 0-6 s",
+  "harm": true,
+  "hit": 2.95,
+  "why": "a: 2 % where a phone plays, loudest 50 ms -19.5 dBFS; HARMONISED (a phone plays under 35 % of it); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51charger": {
+  "kind": "fx",
+  "take": "u51charger_a",
+  "where": "home 19.0 s",
+  "hit": 0.18,
+  "why": "a: 99 % where a phone plays, loudest 50 ms -23.3 dBFS (others, phone/loudest: b 0.99/-26.2); it ended on its own sound: its last 0.08 s faded",
+  "tail": 0.08
+ },
+ "u51clock": {
+  "kind": "copy",
+  "from": "u5clock",
+  "where": "home 34 and 45 s: the clock's tick (a loop)",
+  "why": "chapter 5's wall clock ticking, one tick a second: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51closed": {
+  "kind": "fx",
+  "take": "u51closed_a",
+  "where": "barrier: the circle closing",
+  "hit": 0.02,
+  "why": "a: 93 % where a phone plays, loudest 50 ms -22.0 dBFS (others, phone/loudest: b 1.00/-22.6)"
+ },
+ "u51cloth": {
+  "kind": "fx",
+  "take": "u51cloth_a",
+  "where": "opening 46.5 s",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.61,
+  "why": "a: 56 % where a phone plays, loudest 50 ms -18.1 dBFS (others, phone/loudest: b 0.53/-22.1); its 0.20 s silent head cut"
+ },
+ "u51clunk": {
+  "kind": "fx",
+  "take": "u51clunk_b",
+  "where": "home 6.6 s",
+  "hit": 0.49,
+  "why": "b: 98 % where a phone plays, loudest 50 ms -17.6 dBFS (others, phone/loudest: a 0.98/-17.9)"
+ },
+ "u51connect": {
+  "kind": "fx",
+  "take": "u51connect_a",
+  "where": "the endings: a call connecting",
+  "hit": 0.18,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -24.5 dBFS (others, phone/loudest: b 1.00/-26.3)"
+ },
+ "u51cork": {
+  "kind": "fx",
+  "take": "u51cork_a",
+  "where": "cord 44.5 s",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.53,
+  "why": "a: 99 % where a phone plays, loudest 50 ms -33.1 dBFS; its 0.15 s silent head cut"
+ },
+ "u51cups": {
+  "kind": "fx",
+  "take": "u51cups_b",
+  "where": "dawn: the kopi set down",
+  "hit": 0.15,
+  "why": "b: 89 % where a phone plays, loudest 50 ms -14.0 dBFS (others, phone/loudest: a 0.90/-17.0)"
+ },
+ "u51cushion": {
+  "kind": "fx",
+  "take": "u51cushion_b",
+  "where": "ending C",
+  "hit": 0.35,
+  "why": "b: 62 % where a phone plays, loudest 50 ms -37.6 dBFS (others, phone/loudest: a 0.42/-30.8)"
+ },
+ "u51dip": {
+  "kind": "fx",
+  "take": "u51dip_a",
+  "where": "the breaking: the fan dipped",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.12,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -31.6 dBFS (others, phone/loudest: b 1.00/-32.0); its 0.15 s silent head cut; it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51door": {
+  "kind": "fx",
+  "take": "u51door_a",
+  "where": "home 7.0 s",
+  "harm": true,
+  "hit": 0.31,
+  "why": "a: 2 % where a phone plays, loudest 50 ms -14.7 dBFS (others, phone/loudest: b 0.02/-17.0); HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51drag": {
+  "kind": "loop",
+  "take": "u51drag_a",
+  "where": "barrier 12-22 s: the thread's drag (a loop)",
+  "why": "a: 93 % where a phone plays, loudest 50 ms -38.6 dBFS"
+ },
+ "u51drawer": {
+  "kind": "fx",
+  "take": "u51drawer_b",
+  "where": "ending C",
+  "hit": 0.47,
+  "why": "b: 88 % where a phone plays, loudest 50 ms -30.6 dBFS (others, phone/loudest: a 0.91/-35.0)"
+ },
+ "u51exhale": {
+  "kind": "fx",
+  "take": "u51exhale_b",
+  "where": "barrier 41.0 s",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.53,
+  "why": "b: 74 % where a phone plays, loudest 50 ms -22.8 dBFS (others, phone/loudest: a 0.65/-21.4); its 0.35 s silent head cut"
+ },
+ "u51facedown": {
+  "kind": "fx",
+  "take": "u51facedown_b",
+  "where": "ending B",
+  "hit": 0.07,
+  "why": "b: 55 % where a phone plays, loudest 50 ms -19.5 dBFS (others, phone/loudest: a 0.47/-20.9)"
+ },
+ "u51fantick": {
+  "kind": "fx",
+  "take": "u51fantick_a",
+  "where": "opening 12.5 s",
+  "harm": true,
+  "hit": 0.76,
+  "why": "a: 0 % where a phone plays, loudest 50 ms -11.2 dBFS (others, phone/loudest: b 0.05/-12.0); HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51flick": {
+  "kind": "fx",
+  "take": "u51flick_b",
+  "where": "the breaking: the fan flicked",
+  "harm": true,
+  "hit": 0.01,
+  "why": "b: 22 % where a phone plays, loudest 50 ms -25.0 dBFS (others, phone/loudest: a 0.02/-18.9); HARMONISED (a phone plays under 35 % of it); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51floor": {
+  "kind": "fx",
+  "take": "u51floor_a",
+  "where": "three o'clock: floor creaks under his feet",
+  "hit": 0.46,
+  "why": "a: 97 % where a phone plays, loudest 50 ms -20.1 dBFS (others, phone/loudest: b 0.98/-21.3)"
+ },
+ "u51foil": {
+  "kind": "fx",
+  "take": "u51foil_b",
+  "where": "ending C",
+  "hit": 0.54,
+  "why": "b: 100 % where a phone plays, loudest 50 ms -26.8 dBFS (others, phone/loudest: a 1.00/-31.8); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51fold": {
+  "kind": "fx",
+  "take": "u51fold_a",
+  "where": "cord 32-44 s",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 2.39,
+  "why": "a: 46 % where a phone plays, loudest 50 ms -19.9 dBFS; its 0.20 s silent head cut"
+ },
+ "u51frames": {
+  "kind": "fx",
+  "take": "u51frames_b",
+  "where": "three o'clock: the passage's frames",
+  "hit": 0.95,
+  "why": "b: 52 % where a phone plays, loudest 50 ms -15.6 dBFS (others, phone/loudest: a 0.34/-16.3)"
+ },
+ "u51fray": {
+  "kind": "fx",
+  "take": "u51fray_a",
+  "where": "the breaking: the red line fraying in Spirit Vision",
+  "hit": 1.24,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -30.4 dBFS"
+ },
+ "u51gecko": {
+  "kind": "copy",
+  "from": "u4os5",
+  "where": "opening 48.5 s; her flat now and then",
+  "why": "chapter 4's gecko chirp indoors at night: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51glass": {
+  "kind": "fx",
+  "take": "u51glass_a",
+  "where": "three o'clock: the bedside glass",
+  "hit": 0.9,
+  "why": "a: 92 % where a phone plays, loudest 50 ms -16.5 dBFS (others, phone/loudest: b 0.78/-28.5)"
+ },
+ "u51gtick1": {
+  "kind": "fx",
+  "take": "u51gtick1_b",
+  "where": "three o'clock: the glass doors (1)",
+  "af": "atrim=start=0.32,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "harm": true,
+  "hit": 0.2,
+  "why": "b: 6 % where a phone plays, loudest 50 ms -13.1 dBFS (others, phone/loudest: a 0.06/-17.1); its 0.35 s silent head cut; HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51gtick2": {
+  "kind": "fx",
+  "take": "u51gtick2_a",
+  "where": "three o'clock: the glass doors (2)",
+  "hit": 0.14,
+  "why": "a: 91 % where a phone plays, loudest 50 ms -17.0 dBFS (others, phone/loudest: b 0.98/-26.6)"
+ },
+ "u51heart": {
+  "kind": "copy",
+  "from": "u4heart",
+  "where": "three o'clock: his heartbeat (with the HUD)",
+  "why": "chapter 4's single heartbeat, lub-dub: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51hinge": {
+  "kind": "copy",
+  "from": "u4doorease",
+  "where": "opening 36.5 s: the door's old hinge (with u51unlock)",
+  "why": "chapter 4's wooden door creaking open on old hinges: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51keycard": {
+  "kind": "fx",
+  "take": "u51keycard_b",
+  "where": "home 6.2 s",
+  "hit": 0.36,
+  "why": "b: 100 % where a phone plays, loudest 50 ms -19.8 dBFS (others, phone/loudest: a 0.98/-20.7)"
+ },
+ "u51keys": {
+  "kind": "fx",
+  "take": "u51keys_b",
+  "where": "home 21.0 s",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.05,
+  "why": "b: 99 % where a phone plays, loudest 50 ms -13.0 dBFS (others, phone/loudest: a 1.00/-13.7); its 0.15 s silent head cut"
+ },
+ "u51knee": {
+  "kind": "fx",
+  "take": "u51knee_a",
+  "where": "three o'clock: to one knee at full pressure",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "harm": true,
+  "hit": 0.23,
+  "why": "a: 0 % where a phone plays, loudest 50 ms -11.6 dBFS (others, phone/loudest: b 0.02/-14.1); its 0.15 s silent head cut; HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51knock": {
+  "kind": "copy",
+  "from": "doorknock",
+  "where": "opening 34.5 s: two knocks (cue it 0.82 s early: its knocks at 0.82 and 1.11 s)",
+  "why": "episode 1's door knock: two knocks, measured at 0.82 and 1.11 s: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51knot": {
+  "kind": "copy",
+  "from": "u5string",
+  "where": "cord 32-44 s (bound with white thread); dawn 36 s (tied and knotted twice)",
+  "why": "chapter 5's cotton string wound and tied in a knot: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51koel": {
+  "kind": "copy",
+  "from": "k5koel",
+  "where": "dawn 0.5 s and 24-36 s: a koel",
+  "why": "episode 3 chapter 5's koel calling: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51lap": {
+  "kind": "loop",
+  "take": "u51lap_a",
+  "where": "the breaking: the water's lap, following the mark",
+  "why": "a: 81 % where a phone plays, loudest 50 ms -42.4 dBFS"
+ },
+ "u51liedown": {
+  "kind": "fx",
+  "take": "u51liedown_b",
+  "where": "home 31.0 s",
+  "af": "atrim=start=0.22,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.17,
+  "why": "b: 47 % where a phone plays, loudest 50 ms -28.4 dBFS (others, phone/loudest: a 0.41/-32.3); its 0.25 s silent head cut"
+ },
+ "u51liftfar": {
+  "kind": "copy",
+  "from": "u4os1",
+  "where": "corridor: a lift far off",
+  "why": "chapter 4's lift arriving far down a corridor at night: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51lighter": {
+  "kind": "fx",
+  "take": "u51lighter_b",
+  "where": "the room: the lighter",
+  "af": "atrim=start=0.92,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.1,
+  "why": "b: 99 % where a phone plays, loudest 50 ms -14.7 dBFS (others, phone/loudest: a 1.00/-15.9); its 0.95 s silent head cut"
+ },
+ "u51m1blue": {
+  "kind": "music",
+  "take": "u51m1blue_a",
+  "where": "M1 Blue Hour: the opening, from 3.5 s",
+  "why": "a: 92 % where a phone plays (b 76, c 68), its seconds within the body never 14 dB under for more than a second at a time, its last sound at 57.9 s (61.4 s of the film: under the card)"
+ },
+ "u51m2room": {
+  "kind": "mbed",
+  "take": "u51m2room2_a",
+  "secs": 44,
+  "start": 4,
+  "where": "M2 The Room: the room's play, the keepsake, after the cord (a loop)",
+  "why": "MADE AGAIN (the first three 4 to 16 % where a phone plays, 77 to 91 % under 120 Hz): a 94 %; b 100 % but 16 dB quieter (median -41.5 dBFS), outside the house's 12 dB; a loop of 44 s cut from its body (musicloop: the flattest window, its end where the take meets its head, a 2 s crossfade)"
+ },
+ "u51m3pull": {
+  "kind": "mbed",
+  "take": "u51m3pull2_b",
+  "secs": 30,
+  "start": 3,
+  "where": "M3 The Pull: the 52-a-minute pulse and its violin slides, laid over M2 (a loop)",
+  "why": "MADE AGAIN (the first three 3 to 17 %): b 100 % where a phone plays, the fuller (median -27.0 against a -31.2); a loop of 30 s from its body"
+ },
+ "u51m4break": {
+  "kind": "music",
+  "take": "u51m4break_b",
+  "cut": [
+   [
+    72.3,
+    79.4
+   ]
+  ],
+  "where": "M4 The Breaking: under the event and the cord",
+  "why": "b: 37 % where a phone plays (a 33, c 15), its three surges at about 36, 49 and 65 s; its snap a full stop at 70.9 s (read in tenths: under -55 dBFS) and the warm chord from 79.55 s: the silence between cut from 8.6 s to 1.5 s (the plan: \"silent for 1.5 s at the snap\"; 72.3 to 79.4 taken out, a 30 ms crossfade in the silence), so the chord comes in at 72.45 s of the file and the piece is 102.9 s"
+ },
+ "u51m5city": {
+  "kind": "music",
+  "take": "u51m5city_b",
+  "where": "M5 Night City: home",
+  "why": "b: 72 % where a phone plays, no hole before its fade at 35 s (c 81 % REFUSED: the transcriber writes \"Mm.\"; a 54 %)"
+ },
+ "u51m6a": {
+  "kind": "mbed",
+  "take": "u51m6a_b",
+  "secs": 30,
+  "start": 4,
+  "where": "M6 Three O'Clock, layer 1 (from pressure 0.2; a loop)",
+  "why": "b: 54 % where a phone plays (a 29), the steadier (its seconds within 5.4 dB; a 12.4)"
+ },
+ "u51m6b": {
+  "kind": "mbed",
+  "take": "u51m6b2_b",
+  "secs": 30,
+  "start": 4,
+  "where": "M6 Three O'Clock, layer 2 (from pressure 0.5; a loop)",
+  "why": "MADE AGAIN (the first two 7 and 10 %): b 100 % (a REFUSED: the transcriber writes \"you\")"
+ },
+ "u51m6c": {
+  "kind": "mbed",
+  "take": "u51m6c_a",
+  "secs": 30,
+  "start": 4,
+  "where": "M6 Three O'Clock, layer 3, the vice (from pressure 0.8; a loop)",
+  "why": "a: 65 % where a phone plays (b 16), its seconds within 2.4 dB"
+ },
+ "u51m7circle": {
+  "kind": "music",
+  "take": "u51m7circle_a",
+  "where": "M7 The Circle: the barrier, from 26 s under the chant",
+  "why": "a: 91 % where a phone plays (b 28, c 24), quiet for its first 12 s under the chant (median -35 dBFS), its swell at 19-20 s, its last sound at 27.4 s"
+ },
+ "u51m8dawnA": {
+  "kind": "music",
+  "take": "u51m8dawnA_a",
+  "where": "M8 Dawn, ending A",
+  "why": "a: 87 % where a phone plays (b 83), no hole before its end"
+ },
+ "u51m8dawnB": {
+  "kind": "music",
+  "take": "u51m8dawnB_b",
+  "where": "M8 Dawn, ending B",
+  "why": "b: 91 % where a phone plays (a 76, with a hole at 9 s)"
+ },
+ "u51m8dawnC": {
+  "kind": "music",
+  "take": "u51m8dawnC_b",
+  "where": "M8 Dawn, ending C",
+  "why": "b: 94 % (a 98, within 0.08, but a hole at 12 s), the fuller"
+ },
+ "u51m8dawnD": {
+  "kind": "music",
+  "take": "u51m8dawnD_b",
+  "where": "M8 Dawn, ending D",
+  "why": "b: 81 % where a phone plays (a 76), no hole before its end"
+ },
+ "u51moto": {
+  "kind": "fx",
+  "take": "u51moto_a",
+  "where": "opening 0.4 s",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 1.4,
+  "why": "a: 67 % where a phone plays, loudest 50 ms -16.9 dBFS; its 0.20 s silent head cut"
+ },
+ "u51mynah": {
+  "kind": "copy",
+  "from": "u5mynah",
+  "where": "dawn: mynas",
+  "why": "chapter 5's mynah birds chattering: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51palms": {
+  "kind": "fx",
+  "take": "u51palms_b",
+  "where": "home 14.0 s",
+  "hit": 0.38,
+  "why": "b: 38 % where a phone plays, loudest 50 ms -37.7 dBFS (others, phone/loudest: a 0.00/-27.5); it ended on its own sound: its last 0.08 s faded",
+  "tail": 0.08
+ },
+ "u51paper": {
+  "kind": "fx",
+  "take": "u51paper_b",
+  "where": "dawn: a paper bag",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.27,
+  "why": "b: 91 % where a phone plays, loudest 50 ms -14.9 dBFS (others, phone/loudest: a 0.99/-16.7); its 0.15 s silent head cut"
+ },
+ "u51phoneup": {
+  "kind": "fx",
+  "take": "u51phoneup_a",
+  "where": "three o'clock: picking up the phone",
+  "hit": 0.12,
+  "why": "a: 76 % where a phone plays, loudest 50 ms -30.4 dBFS (others, phone/loudest: b 0.76/-33.7)"
+ },
+ "u51plate": {
+  "kind": "fx",
+  "take": "u51plate_a",
+  "where": "keepsake 14.5 s",
+  "hit": 0.04,
+  "why": "a: 94 % where a phone plays, loudest 50 ms -16.7 dBFS (others, phone/loudest: b 0.97/-17.8)"
+ },
+ "u51pop": {
+  "kind": "fx",
+  "take": "u51pop_a",
+  "where": "barrier 40.3 s",
+  "hit": 0.05,
+  "why": "a: 75 % where a phone plays, loudest 50 ms -20.0 dBFS (others, phone/loudest: b 0.23/-21.9)"
+ },
+ "u51pour": {
+  "kind": "fx",
+  "take": "u51pour2_a",
+  "where": "the room: the jug's pour (ASKED AGAIN: the first take refused, the transcriber wrote \"Thank you.\")",
+  "hit": 0.94,
+  "why": "a: 91 % where a phone plays, loudest 50 ms -23.3 dBFS (others, phone/loudest: b 0.94/-25.1 REFUSED (\"Thanks for watching!\")); u51pour asked again (its first take refused: \"Thank you.\"); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51press": {
+  "kind": "fx",
+  "take": "u51press_b",
+  "where": "home 46.0 s, cut at 49.5; three o'clock's first tone",
+  "hit": 0.79,
+  "why": "b: 100 % where a phone plays, loudest 50 ms -20.6 dBFS (others, phone/loudest: a 0.63/-17.0); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51rewind": {
+  "kind": "fx",
+  "take": "u51rewind_a",
+  "where": "dawn: the thread wound up",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.72,
+  "why": "a: 94 % where a phone plays, loudest 50 ms -38.6 dBFS; its 0.15 s silent head cut"
+ },
+ "u51ring": {
+  "kind": "copy",
+  "from": "x2ring",
+  "where": "the endings: the call ringing (a Singapore ring)",
+  "why": "episode 4 chapter 2's Singapore ring, 0.4 on, 0.2 off, 0.4 on: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51setglass": {
+  "kind": "fx",
+  "take": "u51setglass_b",
+  "where": "home 12.5 s",
+  "hit": 0.05,
+  "why": "b: 95 % where a phone plays, loudest 50 ms -15.5 dBFS (others, phone/loudest: a 0.97/-19.1)"
+ },
+ "u51shoe": {
+  "kind": "copy",
+  "from": "u5step1",
+  "where": "a man's single step in leather shoes (the five-foot way, dealt in turn)",
+  "why": "chapter 5's leather shoe on a smooth floor: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51shower": {
+  "kind": "copy",
+  "from": "showerrun",
+  "where": "home 24.0 s: the shower running (a loop)",
+  "why": "episode 2's shower running: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51showeroff": {
+  "kind": "copy",
+  "from": "showeroff",
+  "where": "home 28.0 s: the shower off",
+  "why": "episode 2's shower turned off: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51slam": {
+  "kind": "fx",
+  "take": "u51slam_a",
+  "where": "ending D",
+  "harm": true,
+  "hit": 1.03,
+  "why": "a: 33 % where a phone plays, loudest 50 ms -17.4 dBFS (others, phone/loudest: b 0.29/-20.7); HARMONISED (a phone plays under 35 % of it); it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51slide": {
+  "kind": "fx",
+  "take": "u51slide_a",
+  "where": "ending D",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "harm": true,
+  "hit": 1.95,
+  "why": "a: 31 % where a phone plays, loudest 50 ms -21.5 dBFS; its 0.15 s silent head cut; HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51snap": {
+  "kind": "fx",
+  "take": "u51snap_b",
+  "where": "cord 8.6 s (the snap: its crack near the end)",
+  "af": "atrim=start=0.72,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.86,
+  "why": "b: 95 % where a phone plays, loudest 50 ms -14.4 dBFS (others, phone/loudest: a 0.44/-17.1); its 0.75 s silent head cut"
+ },
+ "u51sofa": {
+  "kind": "fx",
+  "take": "u51sofa_b",
+  "where": "opening 56.0 s",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.43,
+  "why": "b: 42 % where a phone plays, loudest 50 ms -29.8 dBFS (others, phone/loudest: a 0.44/-31.9); its 0.15 s silent head cut"
+ },
+ "u51spill": {
+  "kind": "fx",
+  "take": "u51spill_a",
+  "where": "the breaking: a spill",
+  "hit": 0.37,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -20.0 dBFS"
+ },
+ "u51spool": {
+  "kind": "copy",
+  "from": "u5unwind",
+  "where": "barrier 6-12 s: the spool",
+  "why": "chapter 5's white thread unwound from a small reel: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51stair": {
+  "kind": "fx",
+  "take": "u51stair_a",
+  "where": "opening 24-34 s: the climb",
+  "hit": 2.44,
+  "why": "a: 95 % where a phone plays, loudest 50 ms -23.3 dBFS"
+ },
+ "u51stand": {
+  "kind": "fx",
+  "take": "u51stand_b",
+  "where": "the room: her standing, 40 s and 110 s",
+  "af": "atrim=start=0.17,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.54,
+  "why": "b: 58 % where a phone plays, loudest 50 ms -15.5 dBFS (others, phone/loudest: a 0.41/-21.1); its 0.20 s silent head cut"
+ },
+ "u51strap": {
+  "kind": "fx",
+  "take": "u51strap_b",
+  "where": "the room: her bag's strap, every 4-6 s",
+  "hit": 0.2,
+  "why": "b: 84 % where a phone plays, loudest 50 ms -32.5 dBFS (others, phone/loudest: a 0.89/-33.7)"
+ },
+ "u51swell": {
+  "kind": "fx",
+  "take": "u51swell_a",
+  "where": "barrier 33.5 s",
+  "harm": true,
+  "hit": 0.87,
+  "why": "a: 19 % where a phone plays, loudest 50 ms -16.8 dBFS (others, phone/loudest: b 0.18/-20.8); HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51tap": {
+  "kind": "fx",
+  "take": "u51tap_a",
+  "where": "ending C",
+  "hit": 0.37,
+  "why": "a: 93 % where a phone plays, loudest 50 ms -38.0 dBFS"
+ },
+ "u51taxiin": {
+  "kind": "fx",
+  "take": "u51taxiin_a",
+  "where": "opening 13.0 s",
+  "hit": 0.29,
+  "why": "a: 36 % where a phone plays, loudest 50 ms -32.4 dBFS; it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51taxiout": {
+  "kind": "fx",
+  "take": "u51taxiout_a",
+  "where": "opening 15.6 s",
+  "af": "atrim=start=0.57,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.58,
+  "why": "a: 41 % where a phone plays, loudest 50 ms -10.4 dBFS; its 0.60 s silent head cut"
+ },
+ "u51threads": {
+  "kind": "copy",
+  "from": "u5threads",
+  "where": "three o'clock: the threads in Spirit Vision (a loop)",
+  "why": "a COPY of chapter 5's u5threads (a faint dry airy hiss with tiny crackles): the one take asked here came back 96 % under 120 Hz and its loudest 50 ms at -2.1 dBFS, a rumble where a dry rustle was asked; nothing a phone could play"
+ },
+ "u51ticklast": {
+  "kind": "fx",
+  "take": "u51ticklast_b",
+  "where": "barrier 41.5 s",
+  "hit": 0.0,
+  "why": "b: 95 % where a phone plays, loudest 50 ms -17.9 dBFS (others, phone/loudest: a 0.92/-23.3)"
+ },
+ "u51tile": {
+  "kind": "copy",
+  "from": "u4tile",
+  "where": "a bare step on tile (his flat at night, dealt in turn)",
+  "why": "chapter 4's bare footstep on ceramic tile: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51tinnitus": {
+  "kind": "loop",
+  "take": "u51tinnitus_a",
+  "where": "three o'clock: tinnitus over pressure 0.6 (a loop)",
+  "why": "a: 96 % where a phone plays, loudest 50 ms -30.0 dBFS"
+ },
+ "u51tremor": {
+  "kind": "fx",
+  "take": "u51tremor_a",
+  "where": "the breaking: each surge",
+  "af": "atrim=start=0.27,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 0.97,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -13.9 dBFS (others, phone/loudest: b 1.00/-15.2); its 0.30 s silent head cut"
+ },
+ "u51tube": {
+  "kind": "copy",
+  "from": "u4tubetick",
+  "where": "opening 29.0 s: the tube flickers twice",
+  "why": "chapter 4's fluorescent tube flickering, quick ticks and a buzzing stutter: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51unlock": {
+  "kind": "fx",
+  "take": "u51unlock_a",
+  "where": "opening 36.5 s",
+  "af": "atrim=start=0.22,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 1.31,
+  "why": "a: 99 % where a phone plays, loudest 50 ms -15.9 dBFS; its 0.25 s silent head cut"
+ },
+ "u51vice": {
+  "kind": "fx",
+  "take": "u51vice_a",
+  "where": "barrier 37.0 s: the last surge",
+  "hit": 1.81,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -14.1 dBFS"
+ },
+ "u51visoff": {
+  "kind": "copy",
+  "from": "u4visoff",
+  "where": "Spirit Vision closed",
+  "why": "chapter 4's own: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51vison": {
+  "kind": "copy",
+  "from": "u4vison",
+  "where": "Spirit Vision opened (the room, three o'clock, the barrier)",
+  "why": "chapter 4's own (the plan's 11.4: \"chapter 4's\"); forced open harder: cue it louder: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51walk": {
+  "kind": "fx",
+  "take": "u51walk_a",
+  "where": "opening 15.5-24 s: his steps on the five-foot way",
+  "hit": 1.28,
+  "why": "a: 92 % where a phone plays, loudest 50 ms -23.5 dBFS; it ended on its own sound: its last 0.12 s faded",
+  "tail": 0.12
+ },
+ "u51wave": {
+  "kind": "fx",
+  "take": "u51wave_b",
+  "where": "three o'clock: each pressure wave",
+  "af": "atrim=start=0.12,asetpts=PTS-STARTPTS,afade=t=in:d=0.01",
+  "hit": 1.24,
+  "why": "b: 71 % where a phone plays, loudest 50 ms -30.8 dBFS (others, phone/loudest: a 0.54/-30.3); its 0.15 s silent head cut"
+ },
+ "u51wax": {
+  "kind": "fx",
+  "take": "u51wax_b",
+  "where": "keepsake 35.0, 36.5, 38.0 s",
+  "hit": 0.03,
+  "why": "b: 99 % where a phone plays, loudest 50 ms -28.3 dBFS (others, phone/loudest: a 1.00/-29.4); it ended on its own sound: its last 0.08 s faded",
+  "tail": 0.08
+ },
+ "u51wburn": {
+  "kind": "fx",
+  "take": "u51wburn_a",
+  "where": "ending D: the burn at the wrist",
+  "hit": 0.2,
+  "why": "a: 100 % where a phone plays, loudest 50 ms -24.0 dBFS (others, phone/loudest: b 1.00/-31.6)"
+ },
+ "u51whoosh": {
+  "kind": "fx",
+  "take": "u51whoosh_b",
+  "where": "cord 8.7 s",
+  "harm": true,
+  "hit": 0.25,
+  "why": "b: 13 % where a phone plays, loudest 50 ms -9.4 dBFS (others, phone/loudest: a 0.00/-9.5); HARMONISED (a phone plays under 35 % of it)"
+ },
+ "u51wick": {
+  "kind": "copy",
+  "from": "x3wick",
+  "where": "the room: the candle catching from the lighter",
+  "why": "episode 4 chapter 3's candle wick catching: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "u51wrist": {
+  "kind": "fx",
+  "take": "u51wrist_b",
+  "where": "cord 9.0 s: it touches his wrist",
+  "hit": 0.15,
+  "why": "b: 100 % where a phone plays, loudest 50 ms -6.0 dBFS (others, phone/loudest: a 1.00/-8.6)"
+ },
+ "u51zip": {
+  "kind": "copy",
+  "from": "x2bagzip",
+  "where": "keepsake 9.0 s (her bag); barrier 6-12 s (his bag)",
+  "why": "episode 4 chapter 2's sling bag zip pulled open, a hand rummaging: a COPY under this chapter's name, byte for byte (v7.1)"
+ },
+ "_voices": {
+  "grace": {
+   "voice": "KdGcLjKviIhd1TJjgsuv",
+   "name": "Adrina - Empathetic & Calm (ElevenLabs shared library; female, young, Singaporean)",
+   "model": "eleven_v3",
+   "why": "of three (Adrina, Cynthia, Jacqueline: audition-measures.json): both her lines whole and ending in quiet (neither on signal), at 2.27 and 3.0 words a second (Cynthia ends one line on signal; Jacqueline one on signal and rushed, 3.55); median pitch 211-250 Hz. The measured pick until Chad's ear (previews/voice_grace.mp3)"
+  },
+  "marcus": {
+   "voice": "PHS7Re4X5gu9oeMk7Pms",
+   "name": "Amir - Singapore (ElevenLabs shared library; male, warm and calm, Singaporean)",
+   "model": "eleven_v3",
+   "why": "of three (Gavin, Wayne, Amir): each of the three ends one of its two lines on signal (a take fault, re-taken per line), so by pace: Amir 2.23 and 2.22 words a second, the game's median (Gavin 3.5, Wayne 3.4 and 3.57: rushed, v5.30); median pitch 101-105 Hz, apart from Master Zavier's. UNSURE: the library labels him middle-aged, Marcus is about thirty. The measured pick until Chad's ear (previews/voice_marcus.mp3)"
+  }
+ }
+}

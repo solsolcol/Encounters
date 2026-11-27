@@ -1,0 +1,26 @@
+[
+ {
+  "name": "u51m2room2",
+  "secs": 60,
+  "takes": 2,
+  "model": "music_v2_5",
+  "where": "M2 The Room, MADE AGAIN (the first three: 4 to 16 % where a phone plays)",
+  "prompt": "Very sparse, quiet underscore for a dim living room at night where something is wrong: single soft notes of a wooden ranat, the Thai xylophone, in its middle and high register, struck now and then with long spaces between, over a soft airy sustained pad of violas and high strings; calm on the surface, a little uneasy underneath, never drawing attention, leaving room for speech. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. Nothing deep: no bass, no sub bass, no low drum, no low drone; everything in the middle and upper register, where a small phone speaker plays."
+ },
+ {
+  "name": "u51m3pull2",
+  "secs": 40,
+  "takes": 2,
+  "model": "music_v2_5",
+  "where": "M3 The Pull, MADE AGAIN (the first three: 3 to 17 % where a phone plays)",
+  "prompt": "An eerie layer for something pulling a woman toward a door: a very slow, soft pulse at 52 beats per minute played as a muted plucked viola note and a soft wooden tick in the middle register, steady throughout; over it, now and then, a single high violin harmonic that slides slowly down a semitone and fades; sparse, quiet, unsettling, much space. Instrumental only: no singing, no choir, no humming, no vocals of any kind. Nothing deep: no bass, no sub bass, no low drum, no low drone; everything in the middle and upper register, where a small phone speaker plays."
+ },
+ {
+  "name": "u51m6b2",
+  "secs": 40,
+  "takes": 2,
+  "model": "music_v2_5",
+  "where": "M6 layer 2, MADE AGAIN (the first two: 7 and 10 % where a phone plays)",
+  "prompt": "A dark ambient layer of rising dread: no melody, no beat; a bowed cymbal shimmering and swelling slowly, with sour violin and viola tones that waver against each other, tense. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. Nothing deep: no bass, no sub bass, no low drum, no low drone; everything in the middle and upper register, where a small phone speaker plays."
+ }
+]

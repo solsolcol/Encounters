@@ -1,0 +1,50 @@
+{
+ "grace": {
+  "lines": [
+   "[tired] Come in. Sorry about the mess.",
+   "[quiet] He gave it to me. He said it would keep me safe."
+  ],
+  "why": "plan \u00a76: Grace, a young office worker, a day without sleep, pulled toward the door; \u00a710 her lines",
+  "voices": [
+   {
+    "tag": "adrina",
+    "id": "KdGcLjKviIhd1TJjgsuv",
+    "label": "Adrina - Empathetic & Calm (female, young, Singaporean)"
+   },
+   {
+    "tag": "cynthia",
+    "id": "SEWXl8lPSO01tdGbWECX",
+    "label": "Cynthia (female, young, Singaporean, conversational)"
+   },
+   {
+    "tag": "jacqueline",
+    "id": "keq9BWrGRYbiHfZFjX0i",
+    "label": "Jacqueline - Casual (female, middle-aged, Singaporean)"
+   }
+  ]
+ },
+ "marcus": {
+  "lines": [
+   "[worried] Thank you for coming, Grandmaster. She said you can come up.",
+   "[worried] That was around when she changed."
+  ],
+  "why": "plan \u00a76: Marcus, her colleague, about thirty, worried and kind; \u00a710 his lines",
+  "voices": [
+   {
+    "tag": "gavin",
+    "id": "y6hZ25Fcq4pmYsc7UsbQ",
+    "label": "Gavin - Warm, Clear (male, middle-aged, Singaporean)"
+   },
+   {
+    "tag": "wayne",
+    "id": "Y4QW1GVPTWtbS9vlIcVk",
+    "label": "Wayne (male, young, Singaporean, smooth baritone)"
+   },
+   {
+    "tag": "amir",
+    "id": "PHS7Re4X5gu9oeMk7Pms",
+    "label": "Amir - Singapore (male, middle-aged, warm and calm)"
+   }
+  ]
+ }
+}

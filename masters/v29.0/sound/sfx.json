@@ -1,0 +1,772 @@
+[
+ {
+  "name": "u51bstreet",
+  "secs": 22,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.35,
+  "prompt": "An old Singapore shophouse street at blue hour in the evening: a coffee shop closing, plastic chairs being stacked, cutlery and cups clinking, a radio playing faintly far off, light traffic passing, a motorbike far away now and then, a steady warm outdoor ambience. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "STREET bed: the opening, the five-foot way"
+ },
+ {
+  "name": "u51bstair",
+  "secs": 12,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.4,
+  "prompt": "A narrow concrete stairwell inside an old shophouse at night: a fluorescent tube light humming and buzzing softly overhead, a faint muffled street outside, still air. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "STAIR bed: the climb"
+ },
+ {
+  "name": "u51bflat",
+  "secs": 22,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.35,
+  "prompt": "Inside a small rented flat above a shophouse at night with the window shutters half open: a ceiling fan turning steadily overhead with a soft rhythmic whir, the street below heard faintly through the window, a coffee shop's radio far off, a neighbour's television murmuring faintly through the wall with no clear words. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "HER FLAT bed: the room's play and its films"
+ },
+ {
+  "name": "u51bcorr",
+  "secs": 20,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.4,
+  "prompt": "A quiet carpeted corridor of a modern condominium tower at night: a soft hush, air vents breathing gently, a lift's motor humming very far away, nothing else. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "CORRIDOR bed: home, the walk to his door"
+ },
+ {
+  "name": "u51bnight",
+  "secs": 22,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.35,
+  "prompt": "Inside a dark modern condominium flat high up at night: an air conditioner humming softly and steadily, a refrigerator's low hum in the kitchen, the city's faint hum through closed glass doors, a far expressway's soft wash of traffic, very still and quiet. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "FLAT AT NIGHT bed: home and three o'clock"
+ },
+ {
+  "name": "u51bbalc",
+  "secs": 20,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.35,
+  "prompt": "On a high balcony of a city tower at night: a steady strong wind, the city loud below, an expressway's traffic rushing far off, a far aircraft passing high overhead. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "bed",
+  "where": "BALCONY bed: ending D, the door open"
+ },
+ {
+  "name": "u51moto",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A small motorbike passing by on a city street from left to right, its engine rising and fading away. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 0.4 s"
+ },
+ {
+  "name": "u51fantick",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A ceiling fan's single soft rhythmic tick as it wobbles on its mount, heard from a room above, quiet. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 12.5 s"
+ },
+ {
+  "name": "u51taxiin",
+  "secs": 4.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A taxi drawing in to the kerb on a damp city street: tyres hissing on wet tarmac as it slows and stops, its indicator clicking steadily. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 13.0 s"
+ },
+ {
+  "name": "u51taxiout",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A car door shut with a solid thunk, then the taxi pulling away from the kerb on a damp street, its engine fading. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 15.6 s"
+ },
+ {
+  "name": "u51walk",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A man walking in leather office shoes along a covered tiled walkway outside shops, six unhurried steps, close, a slight echo. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 15.5-24 s: his steps on the five-foot way"
+ },
+ {
+  "name": "u51stair",
+  "secs": 6.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "Two men climbing a narrow terrazzo staircase indoors, one in leather office shoes and one in soft cloth shoes, steady unhurried steps going up, a small echo. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 24-34 s: the climb"
+ },
+ {
+  "name": "u51unlock",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A door's lock turned from inside with a key, a metal bolt sliding back, then an old wooden door swinging open on a creaking hinge. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 36.5 s"
+ },
+ {
+  "name": "u51cloth",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A white cotton cloth shaken out once with a soft flap and laid down over a table. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 46.5 s"
+ },
+ {
+  "name": "u51sofa",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A person sitting down on an old fabric sofa, a soft cushion give and a faint spring creak. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "opening 56.0 s"
+ },
+ {
+  "name": "u51pour",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "Water poured from a small jug into a brass bowl, a bright ringing trickle that fills and settles. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the room: the jug's pour"
+ },
+ {
+  "name": "u51lighter",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small plastic lighter flicked: the wheel's scratch and the flame catching with a soft whoosh. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the room: the lighter"
+ },
+ {
+  "name": "u51strap",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A leather handbag strap twisted slowly in nervous hands, a soft leather creak and rub. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the room: her bag's strap, every 4-6 s"
+ },
+ {
+  "name": "u51stand",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A woman standing up suddenly from an old sofa: cushion springs releasing and a floorboard creaking under her feet. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the room: her standing, 40 s and 110 s"
+ },
+ {
+  "name": "u51plate",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small porcelain plate set down gently on a cloth covered table, one soft dull clink. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "keepsake 14.5 s"
+ },
+ {
+  "name": "u51bowlup",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A brass bowl of water lifted off a cloth, a soft metallic touch and the water slapping gently inside it. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "keepsake 26.0 s"
+ },
+ {
+  "name": "u51wax",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "One tiny drop of hot candle wax falling into a bowl of water, a very small quick hiss and a tiny plip. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "keepsake 35.0, 36.5, 38.0 s"
+ },
+ {
+  "name": "u51lap",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "Water lapping gently inside a small brass bowl held in the hands, slow soft sloshing. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: the water's lap, following the mark"
+ },
+ {
+  "name": "u51tremor",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A low glassy shiver rising and fading, as if a glass bowl were trembling under a strange pressure, eerie. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: each surge"
+ },
+ {
+  "name": "u51dip",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small paper fan dipped into a bowl of water, a quick soft splash. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: the fan dipped"
+ },
+ {
+  "name": "u51flick",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A fan flicked through the air, a quick whip and a spray of water droplets pattering onto cloth. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: the fan flicked"
+ },
+ {
+  "name": "u51spill",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "Water spilling over the rim of a bowl onto a cloth covered table, a short splash soaking into fabric. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: a spill"
+ },
+ {
+  "name": "u51fray",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A thin taut thread of red energy fraying and crackling, fine sharp dry crackles and a faint hum, eerie and magical. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the breaking: the red line fraying in Spirit Vision"
+ },
+ {
+  "name": "u51snap",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A short reverse swell rushing up, then a taut string snapping with one bright sharp crack. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "cord 8.6 s (the snap: its crack near the end)"
+ },
+ {
+  "name": "u51whoosh",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A low soft whoosh of a magical wisp crossing quickly past toward the listener. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "cord 8.7 s"
+ },
+ {
+  "name": "u51wrist",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A thin high glassy ring, one delicate crystal tone that hangs and fades, eerie. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "cord 9.0 s: it touches his wrist"
+ },
+ {
+  "name": "u51fold",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A white cloth folded over a small object and wrapped, soft fabric rustling, then cotton thread wound round it. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "cord 32-44 s"
+ },
+ {
+  "name": "u51cork",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "Water poured from a bowl into a small glass bottle, a narrow gurgling trickle, then a cork pushed into its neck with a soft squeak. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "cord 44.5 s"
+ },
+ {
+  "name": "u51carpet",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A man's footsteps walking unhurried on a carpeted corridor floor, soft muffled steps. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 0-6 s"
+ },
+ {
+  "name": "u51keycard",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "An electronic door lock reader's short double beep as a keycard is tapped, close. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 6.2 s"
+ },
+ {
+  "name": "u51clunk",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "An electronic door lock's motor whirring briefly and the bolt drawing back with a solid clunk. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 6.6 s"
+ },
+ {
+  "name": "u51door",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A heavy apartment front door opening inward with a soft rush of air and a light handle click. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 7.0 s"
+ },
+ {
+  "name": "u51setglass",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small glass bottle set down on a wooden shelf, one gentle clink of glass on wood. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 12.5 s"
+ },
+ {
+  "name": "u51palms",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Two palms pressed softly together, a quiet skin touch, close. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 14.0 s"
+ },
+ {
+  "name": "u51charger",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A phone placed on a wireless charger, one soft short electronic chirp. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 19.0 s"
+ },
+ {
+  "name": "u51keys",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A bunch of keys dropped into a ceramic bowl, a jingling clatter. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 21.0 s"
+ },
+ {
+  "name": "u51liedown",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man lying down on a soft bed, the mattress giving, a soft rustle of the sheet and pillow. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 31.0 s"
+ },
+ {
+  "name": "u51press",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A strange pressure building in the ears: a filtered rising swell of muffled tone in the low middle, like ears filling up under water, eerie, rising. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "home 46.0 s, cut at 49.5; three o'clock's first tone"
+ },
+ {
+  "name": "u51wave",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A wave of crushing pressure: a rising filtered swell of muffled low-middle tone and a faint creak, like ears filling and the head being squeezed, then easing. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: each pressure wave"
+ },
+ {
+  "name": "u51breath",
+  "secs": 4.0,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A man breathing fast and shallow through his mouth in fear and pain, close, only breath. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: his breath (a loop)"
+ },
+ {
+  "name": "u51tinnitus",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.5,
+  "prompt": "A soft, high, steady ringing in the ears, thin and faint, unsettling. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: tinnitus over pressure 0.6 (a loop)"
+ },
+ {
+  "name": "u51glass",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A drinking glass of water trembling on a bedside table, a fast faint rattling of glass on wood. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the bedside glass"
+ },
+ {
+  "name": "u51frames",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Picture frames tapping and rattling lightly against a wall, a few uneven small knocks. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the passage's frames"
+ },
+ {
+  "name": "u51gtick1",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A large glass sliding door ticking under stress, one sharp small crack-like tick. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the glass doors (1)"
+ },
+ {
+  "name": "u51gtick2",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A large pane of glass creaking under pressure, a slow strained groan of glass in its frame. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the glass doors (2)"
+ },
+ {
+  "name": "u51bottle",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small glass bottle rattling and shaking on a wooden altar shelf. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the altar's bottle"
+ },
+ {
+  "name": "u51floor",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A floorboard creaking under a careful footstep, one short creak. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: floor creaks under his feet"
+ },
+ {
+  "name": "u51knee",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man sinking down onto one knee on a hard floor, a soft thud and a rustle of clothes. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: to one knee at full pressure"
+ },
+ {
+  "name": "u51threads",
+  "secs": 5.0,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.5,
+  "prompt": "A dry rustle like long hair being drawn slowly over paper, soft and continuous, eerie. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: the threads in Spirit Vision (a loop)"
+ },
+ {
+  "name": "u51phoneup",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A mobile phone picked up off a wooden table, a soft slide and grip. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "three o'clock: picking up the phone"
+ },
+ {
+  "name": "u51drag",
+  "secs": 3.0,
+  "loop": true,
+  "takes": 1,
+  "influence": 0.5,
+  "prompt": "A thin cotton thread drawn slowly across a smooth floor, a very soft continuous drag. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 12-22 s: the thread's drag (a loop)"
+ },
+ {
+  "name": "u51closed",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A small bright chime and one tiny crisp spark tick, a circle closing, magical. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier: the circle closing"
+ },
+ {
+  "name": "u51burn",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A thread of red energy burning up against a golden barrier: a sharp hiss and quick crackling sparks. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier from 32.0 s: each thread meeting the gold"
+ },
+ {
+  "name": "u51swell",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A deep warm swell of magical energy rising and blooming. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 33.5 s"
+ },
+ {
+  "name": "u51vice",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "An intense crushing pressure at its peak: a loud straining creak like a vice tightening, with a tight muffled tone, frightening. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 37.0 s: the last surge"
+ },
+ {
+  "name": "u51bloom",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Sudden release: the pressure gone, a soft warm airy bloom of open sound. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 40.0 s: the cut to quiet"
+ },
+ {
+  "name": "u51pop",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man's ears popping, one small soft muffled pop. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 40.3 s"
+ },
+ {
+  "name": "u51exhale",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A man letting out one long slow breath of relief, close, only breath. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 41.0 s"
+ },
+ {
+  "name": "u51ticklast",
+  "secs": 0.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "One tiny glass tick of a small bottle settling on wood. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "barrier 41.5 s"
+ },
+ {
+  "name": "u51connect",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A mobile phone call connecting, one short soft click on the line. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "the endings: a call connecting"
+ },
+ {
+  "name": "u51facedown",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A mobile phone set face down on a wooden table, one soft tap. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending B"
+ },
+ {
+  "name": "u51drawer",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A kitchen drawer pulled open, things inside sliding, a soft wooden rumble. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending C"
+ },
+ {
+  "name": "u51foil",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A pill pushed out of a foil blister strip, a crinkle and a pop of foil. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending C"
+ },
+ {
+  "name": "u51tap",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A kitchen tap turned on, water running into a glass and filling it, then turned off. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending C"
+ },
+ {
+  "name": "u51cushion",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A soft sofa cushion pulled over a face, a muffled fabric rustle. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending C"
+ },
+ {
+  "name": "u51slide",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A large glass balcony sliding door pulled open along its track, and a sudden rush of night wind coming in. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending D"
+ },
+ {
+  "name": "u51slam",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A glass sliding door slamming shut in the wind, a hard bang of glass and frame. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending D"
+ },
+ {
+  "name": "u51band",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A band of red energy tightening round a wrist, a tight electric crackle and a strained hum. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending D"
+ },
+ {
+  "name": "u51wburn",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A sharp bright hiss as golden light burns a red band away, a quick searing sizzle. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "ending D: the burn at the wrist"
+ },
+ {
+  "name": "u51paper",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "A brown paper bag of takeaway food set down on a table, its paper crinkling. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "dawn: a paper bag"
+ },
+ {
+  "name": "u51rewind",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 1,
+  "influence": 0.45,
+  "prompt": "A cotton thread drawn slowly over a floor and wound onto a small spool, soft drags and a faint spinning. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "dawn: the thread wound up"
+ },
+ {
+  "name": "u51cups",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "influence": 0.45,
+  "prompt": "Two takeaway coffee cups set down on a wooden table, soft taps. Clear in the middle and high frequencies, no deep sub bass. No voice, no words.",
+  "family": "fx",
+  "where": "dawn: the kopi set down"
+ }
+]

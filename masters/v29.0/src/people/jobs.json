@@ -94,6 +94,9 @@
   "expires_at": 1796013109190,
   "image": "masters/v29.0/src/people/refs/marcus-a-2k.png",
   "image_to_3d": "01a21b41-aa59-70ea-8027-fd7e692f4a45",
+  "remesh": {
+   "40000": "01a21b4f-062a-75d0-8076-dcaa83088d0b"
+  },
   "rig": "01a21b46-ee2e-71e3-a7cb-fc5484eeecc8",
   "rig_credits": 5,
   "rig_settings": {

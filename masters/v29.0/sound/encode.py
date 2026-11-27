@@ -1,0 +1,150 @@
+"""v29.0 · episode 5 chapter 1's EFFECTS, BEDS AND MUSIC made into the game's files, from the picks (sound/picks.json, by
+sound/pick.py from sound/measures-*.json; every pick and why is there and in masters/v28.0/sound/make.sh). Chapter 4's
+chain (masters/v27.0/sound.sh), one rule a kind, run from the repo root:
+    python3 -I masters/v28.0/sound/encode.py [name ...]
+  ONE-SHOT   its loudest 50 ms at -14 dBFS (his own steps -16), peaks held at -2 by the numpy limiter
+             (../v26.0/sound/level_fx.py); in its own channels; a phone-deaf pick (under 35 % over 150 Hz) gets its own
+             low end's harmonics laid in under it (HARM, chapter 4's, the take kept whole); a silent head over 0.12 s cut
+  BED        a place's loop (16 s or longer): 60 Hz high-pass, its RMS at -30 dBFS with a ceiling of -12 (../v21.12/level_rms.py),
+             padded for the engine's insets (../v24.34/music/padloop.py): the chapter sets it near 0.55 (-35 dBFS in the mix)
+  LOOP       a short loop (a voice, a hum): levelled as a one-shot and padded as a bed
+  MUSIC      a film's cue at peak -3 dBFS (v22.4), its silent head cut, faded in where it begins on signal; a play cue
+             (M2, M4, M10, M13, M14) a loop cut from its body (../v21.2/musicloop.py) and padded; M7's five stems as
+             sound/stems.py made them, encoded as they are (one gain for all five: they must stay one piece)
+  THE COUNT  nine notes from one bowl (sound/notes.py)
+  COPIES     Spirit Vision's five, chapter 4's files byte for byte under this chapter's names (v7.1: a sound cued from
+             another chapter's name would make it every player's download)
+mp3 128k 44.1 kHz and Opus (96k effects, 128k music) 48 kHz, each from the same levelled master, both measured after (v9.6),
+metadata stripped."""
+import json, os, shutil, subprocess, sys, tempfile
+import numpy as np
+R = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(R, '..', '..', '..'))
+# (the lead's rule: encode into a scratch folder, OUT=<dir> with audio/ and audio-opus/ in it, then move the batch into
+#  assets/ and save it in the same step; with no OUT, assets/ itself. A copy's source is read from assets/ always)
+SA = os.path.join(ROOT, 'assets', 'audio'); SO = os.path.join(ROOT, 'assets', 'audio-opus')
+OUT = os.environ.get('OUT'); A = os.path.join(OUT, 'audio') if OUT else SA; O = os.path.join(OUT, 'audio-opus') if OUT else SO
+os.makedirs(A, exist_ok=True); os.makedirs(O, exist_ok=True); M = os.path.join(ROOT, 'masters')
+PICKS = json.load(open(os.path.join(R, 'picks.json'))); only = set(sys.argv[1:])
+HARM = "[0:a]asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0"
+TMP = tempfile.mkdtemp(prefix='u51enc_', dir=os.environ.get('TMPDIR', '/tmp'))
+def run(*a): subprocess.run(list(a), check=True)
+def chans(p): return int(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'stream=channels', '-of', 'csv=p=0', p], capture_output=True, text=True).stdout.split()[0])
+def peak(p):
+    r = subprocess.run(['ffmpeg', '-v', 'error', '-i', p, '-f', 'f32le', '-ac', '2', '-ar', '48000', '-'], capture_output=True).stdout
+    return 20 * np.log10(np.abs(np.frombuffer(r, np.float32)).max() + 1e-12)
+def flat(n, w, ch, br):
+    run('ffmpeg', '-v', 'error', '-y', '-i', w, '-ac', str(ch), '-map_metadata', '-1', '-c:a', 'libmp3lame', '-b:a', '128k', '-ar', '44100', os.path.join(A, n + '.mp3'))
+    run('ffmpeg', '-v', 'error', '-y', '-i', w, '-ac', str(ch), '-map_metadata', '-1', '-c:a', 'libopus', '-b:a', br, '-ar', '48000', os.path.join(O, n + '.ogg'))
+    pm, po = peak(os.path.join(A, n + '.mp3')), peak(os.path.join(O, n + '.ogg'))
+    print(f'{n:14s} mp3 peak {pm:6.1f}  ogg peak {po:6.1f}', flush=True); return pm, po
+def pre(src, n, af=None, fc=None):
+    w = os.path.join(TMP, n + '_w.wav')
+    if fc: run('ffmpeg', '-v', 'error', '-y', '-i', src, '-filter_complex', fc, '-ar', '48000', w)
+    else: run('ffmpeg', '-v', 'error', '-y', '-i', src, '-af', af or 'anull', '-ar', '48000', w)
+    return w
+def fx(n, src, lv, af=None, fc=None, loop=False):
+    ch = chans(src); w = pre(src, n, af, fc); l = os.path.join(TMP, n + '_l.wav')
+    run('python3', '-I', os.path.join(M, 'v26.0/sound/level_fx.py'), w, l, str(lv), '-2')
+    if loop:
+        xloop(l, 0.5)
+        p = os.path.join(TMP, n + '_p.wav'); run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), l, p); l = p; ch = 2
+    return flat(n, l, ch, '96k')
+def xloop(w, X):
+    # (v29.0) A LOOP MADE BY HAND (v9.2): the take's last X s laid over its first X s in an equal-power crossfade and the
+    # loop L = the take less X, so the sample after L's last is the take's own next one (L[0] = its sample at T - X, faded
+    # out against the head fading in): the seam is the take's own continuity. Measured: the step across the joint, and the
+    # RMS of the 250 ms either side of it
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float64) / (32768.0 if x.dtype == np.int16 else 1.0)
+    x = x if x.ndim > 1 else x[:, None]; k = int(X * sr); T = len(x)
+    f = np.linspace(0, 1, k)[:, None]
+    y = x[:T - k].copy(); y[:k] = x[:k] * np.sin(f * np.pi / 2) + x[T - k:] * np.cos(f * np.pi / 2)
+    q = int(0.25 * sr); r = lambda a: 20 * np.log10(np.sqrt((a ** 2).mean()) + 1e-12)
+    step = 20 * np.log10(np.abs(y[-1] - y[0]).max() + 1e-12); typ = 20 * np.log10(np.median(np.abs(np.diff(y[:, 0]))) + 1e-12)
+    print(f'  loop {len(y)/sr:.2f} s by hand ({X} s crossfade): the joint steps {step:.1f} dBFS (a sample to the next typically {typ:.1f}); 250 ms before it {r(y[-q:]):.1f}, after it {r(y[:q]):.1f} dBFS', flush=True)
+    wavfile.write(w, sr, y.astype(np.float32))
+def bed(n, src, t=-30, c=-12, fc=None):
+    w = pre(src, n, None if fc else 'highpass=f=60:poles=2', fc + ',highpass=f=60:poles=2' if fc else None); l = os.path.join(TMP, n + '_l.wav'); p = os.path.join(TMP, n + '_p.wav')
+    run('python3', '-I', os.path.join(M, 'v21.12/level_rms.py'), w, l, str(t), str(c))
+    xloop(l, 2.0)
+    run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), l, p)
+    return flat(n, p, 2, '96k')
+def splice(w, cuts):
+    # (R181) each cut [a, b, d], in the file's own seconds: at b the piece goes back to a and runs on from there, so the
+    # passage from a to b is heard twice and the piece is b - a longer; the one join an equal-power crossfade over d,
+    # centred on b and on a (the second time through reaches b and runs on into what followed it, unbroken)
+    import numpy as np
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float32) / (32768.0 if x.dtype == np.int16 else 1.0)
+    for a, b, d in cuts:
+        ia, ib, k = int(round(a * sr)), int(round(b * sr)), int(round(d * sr)) // 2 * 2
+        f = np.linspace(0.0, 1.0, k, dtype=np.float32); f = f[:, None] if x.ndim > 1 else f
+        j = x[ib - k // 2: ib + k // 2] * np.cos(f * np.pi / 2) + x[ia - k // 2: ia + k // 2] * np.sin(f * np.pi / 2)
+        x = np.concatenate([x[:ib - k // 2], j, x[ia + k // 2:]])
+    wavfile.write(w, sr, x.astype(np.float32))
+
+def limhead(w, end, under):
+    # (R182) the head of a piece, up to `end` s, held under the peak of the rest of it less `under` dB by the numpy look-ahead
+    # limiter (level_fx.py's: 5 ms ahead, 80 ms release; v10.7, ffmpeg's does not hold its limit): a build lifted under a
+    # limiter never sets the file's peak, so the normalising after it leaves the rest of the piece where it was
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float64) / (32768.0 if x.dtype == np.int16 else 1.0)
+    y = x if x.ndim > 1 else x[:, None]; ie = int(round(end * sr)); stop = min(len(y), ie + int(0.6 * sr))
+    ceil = np.abs(y[ie:]).max() * 10 ** (-under / 20); pk = np.abs(y[:stop]).max(1)
+    need = np.ones(stop); need[:ie] = np.minimum(1.0, ceil / np.maximum(pk[:ie], 1e-9)); win = int(0.005 * sr)
+    lim = np.lib.stride_tricks.sliding_window_view(np.concatenate([need, np.ones(win - 1)]), win).min(axis=1)
+    a_r = np.exp(-1 / (0.080 * sr)); gg = np.empty(stop); cur = 1.0
+    for i in range(stop):
+        v = lim[i]; cur = v if v < cur else v + a_r * (cur - v); gg[i] = cur
+    y[:stop] *= gg[:, None]
+    print(f'  head to {end:.2f} s held under {20 * np.log10(ceil + 1e-12):.1f} dBFS: the limiter took {-20 * np.log10(gg.min()):.1f} dB at most', flush=True)
+    wavfile.write(w, sr, (y if x.ndim > 1 else y[:, 0]).astype(np.float32))
+def cutout(w, cuts):
+    # (v29.0) each [a, b] taken out of the piece, a 30 ms equal-power crossfade at the join
+    from scipy.io import wavfile
+    sr, x = wavfile.read(w); x = x.astype(np.float32) / (32768.0 if x.dtype == np.int16 else 1.0)
+    for a, b in sorted(cuts, reverse=True):
+        ia, ib, k = int(a * sr), int(b * sr), int(0.03 * sr)
+        f = np.linspace(0, 1, k, dtype=np.float32); f = f[:, None] if x.ndim > 1 else f
+        j = x[ia:ia + k] * np.cos(f * np.pi / 2) + x[ib:ib + k] * np.sin(f * np.pi / 2)
+        x = np.concatenate([x[:ia], j, x[ib + k:]])
+    wavfile.write(w, sr, x); print(f'  cut {cuts}: now {len(x)/sr:.2f} s', flush=True)
+def mus(n, src, af, fc=None, cuts=None, lim=None, out=None):
+    w = pre(src, n, af, fc); x = os.path.join(TMP, n + '_x.wav')
+    if out: cutout(w, out)
+    if cuts: splice(w, cuts)
+    if lim: limhead(w, lim[0], lim[1])
+    p = peak(w); run('ffmpeg', '-v', 'error', '-y', '-i', w, '-af', f'volume={-3 - p:.2f}dB', '-c:a', 'pcm_f32le', x)
+    # the encoders move the peak a little each way (v9.6): one more pass on each from its own measure
+    flat(n, x, 2, '128k')
+    for ext, d, br in (('.mp3', A, '128k'), ('.ogg', O, '128k')):
+        q = peak(os.path.join(d, n + ext)); g = -3 - q
+        if abs(g) > 0.1:
+            y = os.path.join(TMP, n + '_y.wav'); run('ffmpeg', '-v', 'error', '-y', '-i', x, '-af', f'volume={g:.2f}dB', '-c:a', 'pcm_f32le', y)
+            if ext == '.mp3': run('ffmpeg', '-v', 'error', '-y', '-i', y, '-map_metadata', '-1', '-c:a', 'libmp3lame', '-b:a', '128k', '-ar', '44100', os.path.join(A, n + ext))
+            else: run('ffmpeg', '-v', 'error', '-y', '-i', y, '-map_metadata', '-1', '-c:a', 'libopus', '-b:a', '128k', '-ar', '48000', os.path.join(O, n + ext))
+    print(f'{n:14s} music: mp3 {peak(os.path.join(A, n + ".mp3")):.1f}  ogg {peak(os.path.join(O, n + ".ogg")):.1f}', flush=True)
+def mbed(n, src, secs, start, af):
+    w = pre(src, n, af + ',aformat=channel_layouts=stereo')
+    subprocess.run(['python3', os.path.join(M, 'v21.2/musicloop.py'), w, str(secs), str(start)], check=True, cwd=TMP)
+    lw = os.path.join(TMP, 'w_' + os.path.splitext(os.path.basename(w))[0] + '.wav')
+    p = os.path.join(TMP, n + '_p.wav'); run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), lw, p)
+    mus(n, p, 'anull')
+for n, o in PICKS.items():
+    if only and n not in only: continue
+    k = o['kind']; src = (os.path.join(R, 'raw', o['take'] + '.mp3') if os.path.exists(os.path.join(R, 'raw', o['take'] + '.mp3')) else os.path.join(os.environ.get('RAW', ''), o['take'] + '.mp3')) if o.get('take') else None
+    af = o.get('af'); fc = HARM if o.get('harm') else None
+    if o.get('tail'):   # (v29.0) a take that ends on its own sound: its last `tail` s faded out (an end on signal is refused, v25.5)
+        tf = f"areverse,afade=t=in:d={o['tail']},areverse,apad=pad_dur=0.04"; af = f'{af},{tf}' if af else tf
+        if fc: fc = fc + ',' + tf
+    if k == 'copy':
+        shutil.copyfile(os.path.join(SA, o['from'] + '.mp3'), os.path.join(A, n + '.mp3'))
+        shutil.copyfile(os.path.join(SO, o['from'] + '.ogg'), os.path.join(O, n + '.ogg')); print(f'{n:14s} copy of {o["from"]}')
+    elif k == 'fx': fx(n, src, o.get('level', -14), af, fc)
+    elif k == 'loop': fx(n, src, o.get('level', -14), af, fc, loop=True)
+    elif k == 'bed': bed(n, src, fc=o.get('fc') or fc)
+    # (R181: a piece cut and joined: its `splice`, or a graph of its own, its `fc`)
+    elif k == 'music': mus(n, src, af or 'anull', o.get('fc'), o.get('splice'), o.get('lim'), o.get('cut'))
+    elif k == 'mbed': mbed(n, src, o['secs'], o['start'], af or 'anull')
+    elif k in ('stem', 'note'): flat(n, os.path.join(os.environ.get('MADE', ''), o['wav']), 2 if k == 'stem' else 1, '128k' if k == 'stem' else '96k')
+shutil.rmtree(TMP, ignore_errors=True)
