@@ -482,6 +482,10 @@
         K.push({ t: Bm.touch + 1.6, e: [eyeSit[0], 0.74, eyeSit[2]], a: at(lp(Y0, Y1, 0.45), 0.36), fp: 66, fd: 58, n: 'bar:turn' });
         K.push({ t: Bm.surge, e: [eyeSit[0], 0.73, eyeSit[2]], a: at(Y1, 0.38), fp: 64, fd: 56, n: 'bar:surge', stop: true });
         K.push({ t: Bm.brk + 1.4, e: [eyeSit[0], 0.8, eyeSit[2]], a: at(Y1 + 0.2, 0.72), fp: 66, fd: 58, n: 'bar:break' });
+        if (F2.k === 'D' && Bm.wrist0 != null) {
+          K.push({ t: Bm.wrist0 + 0.6, e: [eyeSit[0], 0.81, eyeSit[2]], a: at(Math.PI - 0.2, 0.35, 1.4), fp: 64, fd: 56, n: 'bar:wrist', stop: true });
+          K.push({ t: Bm.burn + 0.8, e: [eyeSit[0], 0.8, eyeSit[2]], a: at(Math.PI - 0.22, 0.32, 1.4), fp: 64, fd: 56, n: 'bar:burnt', stop: true });
+        }
         K.push({ t: Bm.calm, e: [eyeSit[0], 0.82, eyeSit[2]], a: at(Math.PI - 0.3, 0.78), fp: 66, fd: 58, n: 'bar:quiet', stop: true });
         /* he lies down inside the circle on his back, his knees up: the ceiling, the city's glow on it */
         K.push({ t: Bm.lie, e: [eyeSit[0], 0.82, eyeSit[2]], a: at(Math.PI - 0.3, 0.9), fp: 66, fd: 58, n: 'bar:quiet2', stop: true });
@@ -582,6 +586,9 @@
       }
       f2Sparks.count = sparkN; f2Sparks.visible = sparkN > 0; f2Sparks.instanceMatrix.needsUpdate = true;
       f2Ash.count = ashN; f2Ash.visible = ashN > 0; f2Ash.instanceMatrix.needsUpdate = true;
+      /* D: the band of red light round his left wrist until the gold burns it off (a white flash), the red mark it leaves */
+      if (o.band) { const fl = f2bell(t, Bm.burn - 0.12, Bm.burn, Bm.burn + 0.1, Bm.burn + 0.45);
+        f2WristShow(t < Bm.burn ? 1 : 0, t >= Bm.burn ? 1 : 0, 0, fl); }
       /* the bottle on his altar: trembling with the pressure, still the moment the barrier holds */
       f2Bottle(t < Bm.brk ? 0.6 + 0.4 * Math.max(0, Math.sin((t - Bm.b0) * 2 * Math.PI / 8.0 - 0.4)) : 0, t);
     }
@@ -686,6 +693,15 @@
           f2Hands(k > 0.01, 'reach', k * 0.92, { p: 0 });
           if (k > 0.01) f2MirrorLeft(left);
         } else { f2Hold(null); f2Hands(false); f2MirrorLeft(false); }
+        return;
+      }
+      /* D: once his sight has gone, he lifts his left hand: the band still round its wrist; the gold burns it off */
+      if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm) {
+        const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm - 0.7, Bm.calm)));
+        f2Hold(null); f2Hands(up > 0.01, 'reach', up * 0.8, { p: 0 });
+        if (up > 0.01 && A.armR) { A.armR.position.y += 0.1 * up; A.armR.position.x -= 0.02 * up; A.armR.position.z += 0.03 * up;
+          A.armR.rotateZ(-0.5 * up); }
+        if (up > 0.01) f2MirrorLeft(true); else f2MirrorLeft(false);
         return;
       }
       f2Hold(null); f2MirrorLeft(false); f2Hands(false);
