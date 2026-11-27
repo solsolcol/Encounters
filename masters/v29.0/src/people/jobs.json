@@ -1,7 +1,56 @@
 {
+ "_motions": {
+  "gcry": {
+   "credits": 10,
+   "duration": 10.0,
+   "expires_at": 1796013082625,
+   "prompt": "A young woman sitting on a sofa lets out a long slow breath, her shoulders dropping, then she bows her head and covers her face with both hands, crying quietly, her shoulders shaking gently, and stays like that.",
+   "size": 16931856,
+   "task": "01a21b45-804a-7581-83c4-c7b31364d7fa"
+  },
+  "gsofa": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1796013087303,
+   "prompt": "A tired young woman sits on a low sofa, restless, her hands in her lap twisting the strap of a small shoulder bag round her fingers, her knee bouncing a little; she glances toward a door on her left and back again, shifts her weight, then is still for a moment.",
+   "size": 16954704,
+   "task": "01a21b45-8035-75a3-b710-bbe6a8c4f361"
+  },
+  "kept": {
+   "ERROR": "NOT A MOTION: sent by my own parsing slip (a line of MOTIONS.txt's header read as a row), 27 Nov 2026; its prompt is header text. 10 credits lost; never laid on a rig, never used.",
+   "duration": 3.0,
+   "prompt": "laid on a rig for 3 credits). Each prompt under 400 characters. A clip is judged on the body that wears it,",
+   "task": "01a21b45-8195-733f-bd6b-73fd5a230efc"
+  },
+  "mknock": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1796013078070,
+   "prompt": "A man standing in front of a closed door raises his right hand and knocks twice on the door with his knuckles, then lowers his hand to his side and waits, standing still.",
+   "size": 16825904,
+   "task": "01a21b45-80e1-7056-a6cf-76fbd90fc14c"
+  }
+ },
  "grace": {
+  "credits": 40,
+  "expires_at": 1796013125447,
   "image": "masters/v29.0/src/people/refs/grace-a-2k.png",
   "image_to_3d": "01a21b41-9f9c-741d-95c7-2efb1f87b269",
+  "remesh": {
+   "40000": "01a21b4a-20a8-7790-99be-b48788fc825f"
+  },
+  "rig": "01a21b46-ee2e-75d2-9e10-bf6fa8c4df05",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a21b41-9f9c-741d-95c7-2efb1f87b269",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 73107044,
+   "walk": 73348696
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -20,11 +69,43 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 66828572,
+   "pre": 17564484
+  },
+  "takes": {
+   "gcry": {
+    "credits": 3,
+    "motion": "01a21b45-804a-7581-83c4-c7b31364d7fa",
+    "size": 74536436,
+    "task": "01a21b4a-7df3-775d-861e-ed75020eff75"
+   },
+   "gsofa": {
+    "credits": 3,
+    "motion": "01a21b45-8035-75a3-b710-bbe6a8c4f361",
+    "size": 74270632,
+    "task": "01a21b4a-7f17-7336-bcf9-f063e8033321"
+   }
   }
  },
  "marcus": {
+  "credits": 40,
+  "expires_at": 1796013109190,
   "image": "masters/v29.0/src/people/refs/marcus-a-2k.png",
   "image_to_3d": "01a21b41-aa59-70ea-8027-fd7e692f4a45",
+  "rig": "01a21b46-ee2e-71e3-a7cb-fc5484eeecc8",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a21b41-aa59-70ea-8027-fd7e692f4a45",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 45421288,
+   "walk": 45573744
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -43,6 +124,18 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 41730720,
+   "pre": 8977428
+  },
+  "takes": {
+   "mknock": {
+    "credits": 3,
+    "motion": "01a21b45-80e1-7056-a6cf-76fbd90fc14c",
+    "size": 45816776,
+    "task": "01a21b4a-7de7-7687-957d-e7d9664894db"
+   }
   }
  }
 }

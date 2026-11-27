@@ -1,0 +1,15 @@
+{
+  "_": "v29.0 · Marcus's rig mended here (the collector's way B, Chad's default of R19 for the same fault; masters/v28.0/people/RECORD.md 3b). His rig came back with the collector's 52-joint skeleton, but its bones are numbered for the other side: each stray bone's share goes to the bone of a man's body it stands at, MEASURED on his file (each bone's rest place and the box of the points it holds most: people/RECORD.md §3), never copied from the collector's map. Each hand one rigid piece.",
+  "drop": {
+    "Bone_029": "LeftShoulder", "Bone_028": "LeftArm", "Bone_027": "LeftForeArm",
+    "Bone_034": "RightShoulder", "Bone_033": "RightArm", "Bone_032": "RightForeArm",
+    "Bone_002": "Hips", "Bone_015": "Hips", "Bone_016": "Hips",
+    "Bone_017": "Head",
+    "Bone_039": "LeftFoot", "Bone_040": "LeftFoot", "Bone_041": "LeftFoot",
+    "Bone_035": "RightFoot", "Bone_036": "RightFoot", "Bone_037": "RightFoot",
+    "Bone_043": "LeftHand", "Bone_044": "RightHand",
+    "LeftHandMiddle1": "LeftHand", "LeftHandMiddle2": "LeftHand", "LeftHandMiddle3": "LeftHand", "LeftHand_End": "LeftHand",
+    "RightHandMiddle1": "RightHand", "RightHandMiddle2": "RightHand", "RightHandMiddle3": "RightHand", "RightHand_End": "RightHand"
+  },
+  "fold": { "LeftToeBase": "LeftFoot", "RightToeBase": "RightFoot" }
+}

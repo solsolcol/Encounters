@@ -1,0 +1,11 @@
+v29.0 · the motions Meshy's library does not have, asked of its text-to-motion (prime, 10 credits a clip, skeleton-free,
+kept for three days; laid on a rig for 3 credits). Each prompt under 400 characters. A clip is judged on the body that wears it,
+full size, front and side, and measured as a motion (head and hips travel, headturn, jointscan, feetscan) before it is
+cast. The library (docs.meshy.ai animation library, read 27 Nov 2026: 804 entries) has no crying, no knocking, no strap
+twisted in the hands: those three are written here; everything else is the library's or the game's own takes,
+retargeted (people/RECORD.md §4).
+
+name     secs who     prompt
+gsofa    8    grace   A tired young woman sits on a low sofa, restless, her hands in her lap twisting the strap of a small shoulder bag round her fingers, her knee bouncing a little; she glances toward a door on her left and back again, shifts her weight, then is still for a moment.
+gcry     10   grace   A young woman sitting on a sofa lets out a long slow breath, her shoulders dropping, then she bows her head and covers her face with both hands, crying quietly, her shoulders shaking gently, and stays like that.
+mknock   4    marcus  A man standing in front of a closed door raises his right hand and knocks twice on the door with his knuckles, then lowers his hand to his side and waits, standing still.
