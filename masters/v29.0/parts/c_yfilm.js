@@ -1216,9 +1216,10 @@
       if (!api) return;
       const card = f1Env(t, T.card - 0.9, T.card + 0.45, 0.55, 0.45), bottle = f1Env(t, T.setb - 1.5, T.setb + 0.25, 0.7, 0.45),
             pray = f1Env(t, T.palms - 0.55, T.palms + 1.5, 0.55, 0.6), phone = f1Env(t, T.charge - 1.3, T.charge + 0.25, 0.6, 0.45);
+      /* (the bottle and the phone leave his hand on the moment they are shown where he sets them, never both at once) */
       if (card > 0.001) f1HandR(api, 'reach', 'handCard', card);
-      else if (bottle > 0.001) f1HandR(api, 'place', 'handBottleR', bottle);
-      else if (phone > 0.001) f1HandR(api, 'place', 'handPhone', phone);
+      else if (bottle > 0.001) f1HandR(api, 'place', t < T.setb ? 'handBottleR' : null, bottle);
+      else if (phone > 0.001) f1HandR(api, 'place', t < T.charge ? 'handPhone' : null, phone);
       else if (pray > 0.001) { f1HandR(api, null, null, 0); if (api.handsRoot) api.handsRoot.visible = true; if (api.handPose) api.handPose('pray', pray, {}); }
       else { f1HandR(api, null, null, 0); if (api.handPose) api.handPose('pray', 0); if (api.handsRoot) api.handsRoot.visible = false; }
     }
