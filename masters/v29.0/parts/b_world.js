@@ -59,7 +59,7 @@
   /* the new things of the plan's 7 the places stand, by the keys they land under (props/TABLE.txt): each placed now with
      an invisible stand-in for its collision, drawn the moment its file is in the build (keys.py adds it to `assets`),
      so nothing moves when it lands (v4.7) */
-  const WORLD_NEW = ['w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop', 'w51takeaway', 'w51sofa', 'w51dintable',
+  const WORLD_NEW = ['w51plate', 'w51lighter', 'w51jug', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop', 'w51takeaway', 'w51sofa', 'w51dintable',
                      'w51dinchair', 'w51bed', 'w51altarcab', 'w51bag', 'w51keepsake', 'w51bottle', 'w51threadreel'];
 
   function build(ctx) {
@@ -840,10 +840,10 @@
 
     /* ---------------------------------------------- HER FRONT ROOM, set for the evening (the plan's 5.3 and 8.1) */
     const HER = {
-      table:  { x: 0.5, z: 1.15, w: 1.0, d: 0.55, h: 0.42 },          // the coffee table under the white cloth
+      table:  { x: 0.5, z: 1.15, w: 1.0, d: 0.54, h: 0.40 },          // the coffee table under the white cloth
       pho:    { x: 0.5, z: 1.87, ry: Math.PI },                       // Grandmaster Pho on his cushion, facing the door across the room
       him:    { x: WORLD_AT.kneel.x, z: WORLD_AT.kneel.z, ry: WORLD_AT.kneel.ry },   // he kneels at Pho's right, by her windows
-      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.82, seat: 0.44, ry: 0 },   // her two-seat sofa, its back to the door
+      sofa:   { x: 0.5, z: -0.35, w: 1.5, d: 0.87, seat: 0.44, ry: 0 },   // her two-seat sofa, its back to the door
       grace:  { x: 0.42, z: -0.32, ry: 0 },                           // where she sits on it (her right-hand seat, facing him and Pho)
       rattan: { x: -1.55, z: -0.95, ry: 0.77, seat: 0.45 },           // the rattan chair by the door, turned to the table: Marcus
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
@@ -869,9 +869,9 @@
       place('ctable', 'w51ctable', T.x, 0, T.z, 0, { solid: [T.w, T.d, 0.6] });
       place('gsofa', 'w51gsofa', HER.sofa.x, 0, HER.sofa.z, HER.sofa.ry, { solid: [HER.sofa.w, HER.sofa.d, 0.9] });
       place('rattan', 'w51rattan', HER.rattan.x, 0, HER.rattan.z, HER.rattan.ry, { solid: [0.66, 0.66, 0.9] });
-      place('shelf', 'w51shelf', HER.shelf.x, 0, HER.shelf.z, HER.shelf.ry, { solid: [0.82, 0.32, 1.8],
+      place('shelf', 'w51shelf', HER.shelf.x, 0, HER.shelf.z, HER.shelf.ry, { solid: [0.82, 0.34, 1.4],
         done: (m, g) => { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m); if (things.herLamp) things.herLamp.position.y = Math.max(0.5, bb.max.y - g.position.y); } });
-      things.herLamp = place('herLamp', 'w5tablelamp', 0.18, 1.0, 0, 0, { parent: things.shelf });
+      things.herLamp = place('herLamp', 'w5tablelamp', 0.18, 1.39, 0, 0, { parent: things.shelf });
       place('phoCushion', 'w5cushion', HER.pho.x, 0, HER.pho.z, 0);
       place('hisCushion', 'w5cushion', HER.him.x, 0, HER.him.z - 0.05, 0.2);
       place('cushionA', 'w5cushion', -0.75, 0, 2.35, 0.4); place('cushionB', 'w5cushion', -1.05, 0.11, 2.42, 0.9);
@@ -882,6 +882,10 @@
       place('holyBowl', 'w4bigbowl', ON_CLOTH.bowl.x, ON_CLOTH.bowl.y, ON_CLOTH.bowl.z, 0, { lift: 3, done: tint(0xffd9a0, 1.0) });   // (a warm tint: the plan's brass, its silver file untouched)
       place('candle1', 'w3candlesmall', ON_CLOTH.candle1.x, ON_CLOTH.candle1.y, ON_CLOTH.candle1.z, 0);
       place('candle2', 'w3candlesmall', ON_CLOTH.candle2.x, ON_CLOTH.candle2.y, ON_CLOTH.candle2.z, 0);
+      /* the ritual's small things (props: made by THINGS, drawn when keyed): the white plate, the lighter, the jug */
+      place('plate', 'w51plate', ON_CLOTH.plate.x, ON_CLOTH.plate.y, ON_CLOTH.plate.z, 0);
+      place('lighter', 'w51lighter', ON_CLOTH.lighter.x, ON_CLOTH.lighter.y, ON_CLOTH.lighter.z, 0.6);
+      place('jug', 'w51jug', ON_CLOTH.jug.x, ON_CLOTH.jug.y, ON_CLOTH.jug.z, -0.4);
       /* the back room: her small table (its laptop closed on it), two chairs, the fridge, her takeaway boxes on the counter */
       place('dintable', 'w4dintable', -4.25, 0, 0.75, Math.PI / 2, { solid: [1.2, 0.85, 0.8], h: 0.74, done: matteOf });
       place('dinchairA', 'w4dinechair', -4.25, 0, 1.45, Math.PI, { solid: [0.48, 0.5, 0.9] });
@@ -949,7 +953,9 @@
       place('chair2', 'w51dinchair', HIS.chair2.x, 0, HIS.chair2.z, HIS.chair2.ry, { solid: [0.5, 0.5, 0.9] });
       place('hisPhone', 'e4phone', WORLD_AT.phone.x, WORLD_AT.phone.y, WORLD_AT.phone.z, 0.2);
       place('bed', 'w51bed', HIS.bed.x, 0, HIS.bed.z, HIS.bed.ry, { solid: [HIS.bed.w, HIS.bed.l, 0.7] });
-      place('bedLamp', 'w5tablelamp', HIS.bedside.x, 0.5, HIS.bedside.z, 0, { s: 0.8 });
+      place('bedLamp', 'w5tablelamp', HIS.bedside.x + 0.08, 0.5, HIS.bedside.z, 0, { s: 0.8 });
+      place('bedGlass', 'w51glass', HIS.bedside.x - 0.12, 0.5, HIS.bedside.z - 0.08, 0);            // the glass of water that trembles (8.3)
+      place('altarGlass', 'w51glass', HIS.altar.x + 0.1, HIS.altar.top, HIS.altar.z + 0.12, 0);
       boxW(mVeneer, HIS.bedside.x, 0.25, HIS.bedside.z, 0.45, 0.5, 0.4, 63); solidXZ(HIS.bedside.x - 0.23, HIS.bedside.z - 0.2, HIS.bedside.x + 0.23, HIS.bedside.z + 0.2, 0.6);   // (a bedside cabinet: his bed's own set lands with w51bed if it has one)
       place('wallClock', 'w5wallclock', HIS.clock.x, HIS.clock.y, HIS.clock.z, HIS.clock.ry);
       HIS.frames.forEach((f, i) => place('frame' + i, 'w5frame', f.x, f.y, f.z, Math.PI, { s: 0.55 }));
@@ -1092,7 +1098,7 @@
     {
       /* her table lamp on the bookshelf: its glow, the warmth it throws on the ceiling and the wall behind it */
       const L = HER.shelf;
-      glow(L.x, 1.55, L.z - 0.05, 0.9, 0xffc88a, 0.55, herThingsG, 'lamp');
+      glow(L.x - 0.18, 1.72, L.z - 0.02, 0.9, 0xffc88a, 0.55, herThingsG, 'lamp');
       pool(L.x, FRONT.ceil - 0.01, L.z - 0.5, 3.4, 3.0, 0xffb874, 0.22, { rx: Math.PI / 2, parent: herThingsG, look: 'lamp' });
       pool(L.x, 1.6, FRONT.z1 - 0.01, 2.6, 2.2, 0xffb874, 0.2, { rx: 0, ry: Math.PI, parent: herThingsG, look: 'lamp' });
       /* THE FAN'S SHADOW turning on the ceiling (the plan's 4.3 and 9.1): the lamp throws the blades up onto the plaster,

@@ -1,0 +1,326 @@
+{
+ "zv51o1": {
+  "take": "a",
+  "heard": "Case 4."
+ },
+ "zv51o2": {
+  "take": "b",
+  "heard": "A man asked us to come and see his colleague. He said she was not herself."
+ },
+ "mk51o1": {
+  "take": "c",
+  "heard": "Thank you for coming, Grandmaster. She said you can come up."
+ },
+ "ph51o1": {
+  "take": "b",
+  "heard": "Thank you. Show us the way."
+ },
+ "mk51o2": {
+  "take": "b",
+  "heard": "Grace, they're here."
+ },
+ "gr51o1": {
+  "take": "b",
+  "heard": "Come in, sorry about the mess."
+ },
+ "ph51o2": {
+  "take": "c",
+  "heard": "Thank you for letting us in."
+ },
+ "zv51o3": {
+  "take": "a",
+  "heard": "she had let us in, but something kept turning her back to the door."
+ },
+ "zv51r1": {
+  "take": "c",
+  "heard": "Every time it lit up, she leaned toward the door."
+ },
+ "ph51r1": {
+  "take": "a",
+  "heard": "Don't look at what it says, look at what it does to her."
+ },
+ "zv51r2": {
+  "take": "c",
+  "heard": "In the glass, she was facing the stairs."
+ },
+ "ph51r2": {
+  "take": "c",
+  "heard": "The glass shows where she is being pulled."
+ },
+ "zv51r3": {
+  "take": "a",
+  "heard": "Her hands never stopped, like she was already leaving."
+ },
+ "ph51r3": {
+  "take": "c",
+  "heard": "She is not weak, she is tired of being pooed."
+ },
+ "zv51r4": {
+  "take": "b",
+  "heard": "something in her bag, wrapped in cloth tied with red cord."
+ },
+ "ph51r4": {
+  "take": "c",
+  "heard": "Ask her where she got it."
+ },
+ "zv51r5": {
+  "take": "b",
+  "heard": "Grace, the little packet in your bag. Where is it from?"
+ },
+ "gr51r1": {
+  "take": "b",
+  "heard": "He gave it to me. He said it would keep me safe."
+ },
+ "mk51r1": {
+  "take": "c",
+  "heard": "That was around when she changed."
+ },
+ "zv51r6": {
+  "take": "a",
+  "heard": "a thread from her chest to the door."
+ },
+ "gr51r2": {
+  "take": "b",
+  "heard": "I should go."
+ },
+ "gr51r3": {
+  "take": "b",
+  "heard": "I should go."
+ },
+ "mk51r2": {
+  "take": "a",
+  "heard": "Grace, please."
+ },
+ "ph51r5": {
+  "take": "b",
+  "heard": "See it, a little longer."
+ },
+ "ph51k1": {
+  "take": "a",
+  "heard": "may hold it only for a while."
+ },
+ "ph51k2": {
+  "take": "c",
+  "heard": "Hold the water. Whatever happens, keep it still."
+ },
+ "ph51s1": {
+  "take": "b",
+  "heard": "slowly, again."
+ },
+ "ph51c1": {
+  "take": "a",
+  "heard": "It's all right. It's finished."
+ },
+ "zv51c1": {
+  "take": "b",
+  "heard": "For the first time all evening, she let it ring."
+ },
+ "ph51c2": {
+  "take": "c",
+  "heard": "rest tonight. Tomorrow, stay close to people who listen to you."
+ },
+ "ph51c3": {
+  "take": "b",
+  "heard": "Don't let her meet him alone. A friend is medicine too."
+ },
+ "mk51c1": {
+  "take": "a",
+  "heard": "I won't. Thank you, Grandmaster."
+ },
+ "gr51c1": {
+  "take": "a",
+  "heard": "Thank you!"
+ },
+ "ph51c4": {
+  "take": "a",
+  "heard": "for your order."
+ },
+ "ph51c5": {
+  "take": "c",
+  "heard": "You held it well."
+ },
+ "zv51c2": {
+  "take": "c",
+  "heard": "My part was small. I only held the water."
+ },
+ "zv51h1": {
+  "take": "b",
+  "heard": "Everyone thought that was the end of it."
+ },
+ "zv51n1": {
+  "take": "c",
+  "heard": "like my head was in a vice."
+ },
+ "zv51n2": {
+  "take": "b",
+  "heard": "not a headache. Something was pressing in from every side."
+ },
+ "zv51n3": {
+  "take": "a",
+  "heard": "The water I brought home was shaking."
+ },
+ "zv51n4": {
+  "take": "b",
+  "heard": "my own footsteps. Something was following them."
+ },
+ "ph51x1": {
+  "take": "a",
+  "heard": "The one who made the spell fail it break, he is sending it back to find out who helped her."
+ },
+ "ph51x2": {
+  "take": "b",
+  "heard": "Get the white thread from your back. Sit on the floor in the middle of the room."
+ },
+ "ph51x3": {
+  "take": "b",
+  "heard": "Close it."
+ },
+ "ph51x4": {
+  "take": "c",
+  "heard": "Good, now stay inside. Whatever you hear, stay inside."
+ },
+ "ph51x5": {
+  "take": "b",
+  "heard": "is gone. Breathe."
+ },
+ "zv51x1": {
+  "take": "c",
+  "heard": "Who was it?"
+ },
+ "ph51x6": {
+  "take": "c",
+  "heard": "Who it was does not matter tonight, rest I will come in the morning."
+ },
+ "ph51A1": {
+  "take": "b",
+  "heard": "I'm here. Tell me what you feel."
+ },
+ "zv51A1": {
+  "take": "c",
+  "heard": "My head. It's like something's crushing it from every side."
+ },
+ "ph51A2": {
+  "take": "b",
+  "heard": "Listen to me and do exactly what I say."
+ },
+ "ph51A3": {
+  "take": "a",
+  "heard": "you call at once. That is the first protection, knowing when something is more than you."
+ },
+ "zv51B1": {
+  "take": "b",
+  "heard": "It's three in the morning. He worked all evening. Let him sleep."
+ },
+ "zv51B2": {
+  "take": "a",
+  "heard": "I told myself I could carry it till morning."
+ },
+ "ph51B1": {
+  "take": "a",
+  "heard": "How long has it been like this?"
+ },
+ "zv51B3": {
+  "take": "a",
+  "heard": "Since 3."
+ },
+ "ph51B2": {
+  "take": "a",
+  "heard": "40 minutes. Why did you wait?"
+ },
+ "zv51B4": {
+  "take": "a",
+  "heard": "I didn't want to wake you."
+ },
+ "ph51B3": {
+  "take": "a",
+  "heard": "You held the water for her, now let me hold it for you."
+ },
+ "ph51B4": {
+  "take": "a",
+  "heard": "A student who won't wake his teacher is protecting the wrong person."
+ },
+ "zv51C1": {
+  "take": "c",
+  "heard": "It's a migraine, that's all it is."
+ },
+ "zv51C2": {
+  "take": "b",
+  "heard": "The pills did nothing. It was still pressing."
+ },
+ "ph51C1": {
+  "take": "b",
+  "heard": "Tell me."
+ },
+ "zv51C3": {
+  "take": "c",
+  "heard": "It's just a migraine, I think. It won't stop."
+ },
+ "ph51C2": {
+  "take": "b",
+  "heard": "This is not a headache. A headache does not follow you home."
+ },
+ "ph51C3": {
+  "take": "b",
+  "heard": "Don't believe too fast, don't dismiss too fast either, look first, then ask."
+ },
+ "zv51D1": {
+  "take": "c",
+  "heard": "Who's doing this?"
+ },
+ "ph51D1": {
+  "take": "c",
+  "heard": "I'm here."
+ },
+ "zv51D2": {
+  "take": "a",
+  "heard": "It's outside. It's looking for me."
+ },
+ "ph51D2": {
+  "take": "b",
+  "heard": "Then stop looking for it. Sit down now."
+ },
+ "ph51D3": {
+  "take": "a",
+  "heard": "You went to a stranger's door and knocked. It answered."
+ },
+ "ph51D4": {
+  "take": "a",
+  "heard": "Curiosity is not courage."
+ },
+ "ph51w1": {
+  "take": "b",
+  "heard": "Eat first, you fought all night, even sitting still."
+ },
+ "zv51w1": {
+  "take": "b",
+  "heard": "I only held the water."
+ },
+ "ph51w2": {
+  "take": "b",
+  "heard": "That was enough for it to find you, there is no only, whoever helps becomes part of it."
+ },
+ "ph51w3": {
+  "take": "c",
+  "heard": "Before we help anyone, we protect ourselves. From now on, we prepare first."
+ },
+ "zv51w2": {
+  "take": "c",
+  "heard": "I had thought I was only there to assist my teacher."
+ },
+ "zv51A": {
+  "take": "a",
+  "heard": "I called. He was already awake."
+ },
+ "zv51B": {
+  "take": "c",
+  "heard": "I waited. It cost me an hour."
+ },
+ "zv51C": {
+  "take": "c",
+  "heard": "I called it a headache. It wasn't."
+ },
+ "zv51D": {
+  "take": "a",
+  "heard": "I went looking. It found me first."
+ }
+}

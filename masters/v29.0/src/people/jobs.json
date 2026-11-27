@@ -32,6 +32,31 @@
   }
  },
  "grace": {
+  "image": "masters/v29.0/src/people/refs/grace-a2-2k.png",
+  "image_to_3d": "01a21b89-9759-728a-9143-1ac174c9c389",
+  "second_throw": "R5, 27 Nov 2026",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "grace_first": {
+  "NOTE": "the FIRST throw (27 Nov 2026), set aside when Grace was made again at Meshy at Chad's R5 (\"Just use meshy\"); its files are src/people/first/first-*",
   "credits": 40,
   "expires_at": 1796013125447,
   "image": "masters/v29.0/src/people/refs/grace-a-2k.png",
@@ -90,6 +115,31 @@
   }
  },
  "marcus": {
+  "image": "masters/v29.0/src/people/refs/marcus-a2-2k.png",
+  "image_to_3d": "01a21b8c-b892-7308-a894-f062cec450b6",
+  "second_throw": "R5/R6, 27 Nov 2026",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "marcus_first": {
+  "NOTE": "the FIRST throw (27 Nov 2026), set aside when Marcus was made again at Meshy at Chad's R5/R6; its files are src/people/first/first-*",
   "credits": 40,
   "expires_at": 1796013109190,
   "image": "masters/v29.0/src/people/refs/marcus-a-2k.png",
