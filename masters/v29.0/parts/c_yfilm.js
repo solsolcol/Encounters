@@ -872,7 +872,7 @@
        plate at the cloth's far corner (an insert from above, its red knot); his teacher turns to him; his hands lift the bowl
        and hold it before him, the water catching the candlelight; the wax: three drops, the ripples, the chant begins; into
        the breaking's brief, the lens looking down into the bowl in his hands */
-    const KEEP1 = { mkStand: { x: 0.12, z: -1.02, ry: 0.12 } };   // behind the sofa at her right shoulder
+    const KEEP1 = { mkStand: { x: 0.12, z: -1.12, ry: 0.12 } };   // behind the sofa at her right shoulder (27 Nov, limbclip: at z -1.02 his left hand went 25 cm into the sofa's back as he talked)
     FILMS1.keepsake = {
       begin(api, s) { F1.s = s; F1.lit = ''; F1.film = 'keepsake'; F1.api = api; F1.hands = false;
         if (api && api.handsRoot) api.handsRoot.visible = false;
@@ -1208,7 +1208,7 @@
         if (wristRing1.parent) wristRing1.parent.remove(wristRing1);
         f1HandsHold(F1.api, null, 0); glintMat1.opacity = 0; ringMat1.opacity = 0; if (things.holyBowl) things.holyBowl.visible = true; F1.api = null;
         PROPS1.clothBottle.visible = false; if (PROPS1.pourBowl) PROPS1.pourBowl.visible = false; if (PROPS1.spool) PROPS1.spool.visible = false; if (things.bottle) things.bottle.visible = false; f1LeanBack(cast.pho);
-        { const ph = herPhone1(); if (ph && F1.phoneRy != null) ph.rotation.set(0, F1.phoneRy, 0); F1.phoneRy = null; phoneLit1.m.opacity = 0; phoneLit1.q.visible = false; }
+        { const ph = herPhone1(); if (ph && F1.phoneRy != null) { ph.rotation.set(0, F1.phoneRy, 0); ph.position.y = F1.phoneY; } F1.phoneRy = null; phoneLit1.m.opacity = 0; phoneLit1.q.visible = false; }
         }
     };
     function cordPho1(tau, T) {
@@ -1229,15 +1229,15 @@
          0.65 rad his hands reach the place it is asked to move to) */
       /* (and his shoulders turned a little to his left, to it: 27 Nov, photographed, at 0.65 rad square to the cloth his right
          hand fell short of the packet and hung by the incense) */
-      f1Lean(P, 0.75 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim + 0.3 * work);
+      f1Lean(P, 0.68 * work + 0.22 * f1Env(tau, T.pour - 0.3, T.take + 0.8, 0.6, 0.7), -0.5 * toHim + 0.3 * work);   // (at 0.75 his chest met the incense sticks' tips: clipscan)
       /* (each palm placed so its fingertips, about 9.5 cm on along the fingers, come to the packet's top at its near corners:
          27 Nov, with the plate moved within his reach, palms 7 and 17 cm from the packet put his left fingertips 1.7 cm down
          into the plate and his right ones on the cloth 13 cm from the knot) */
       /* (and the palms DOWN over it, toward him, as hands that pick at a knot and bind: 27 Nov, photographed from above, the
          palm faced up and away, a hand held open over the packet; clipscan: the fingertips 1 to 2 cm into the packet) */
       if (work > 0.001) { const w = 0.012 * Math.sin(tau * 7.3);
-        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.088, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.1, -0.65, 0.75], work, { out: 0.22, down: 0.25 });
-        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.089, pk[2] + 0.056], [-0.5, -0.7, -0.4], [0.25, -0.6, 0.75], work, { out: 0.22, down: 0.25 }); }
+        handTo(P, 'L', [pk[0] + 0.0 + w, pk[1] + 0.108, pk[2] + 0.08], [-0.2, -0.7, -0.6], [0.1, -0.65, 0.75], work, { out: 0.22, down: 0.25 });
+        handTo(P, 'R', [pk[0] + 0.076 - w, pk[1] + 0.109, pk[2] + 0.056], [-0.5, -0.7, -0.4], [0.25, -0.6, 0.75], work, { out: 0.22, down: 0.25 }); }
       /* THE POUR (27 Nov: the first build set the bowl back on the cloth untouched and laid his hand on the bottle while the
          pour was heard): his right hand takes the bowl from his student, carries it by its rim over the bottle standing on
          the cloth before him, tilts it and pours, and sets it down at its place; his left hand steadies the bottle the while;
@@ -1284,7 +1284,7 @@
     const phoneLit1 = glow(0, -50, 0, 0.1, 0xd8e8ff, 0, world, null);
     const herPhone1 = () => things.herPhone || PROPS1.grPhone;
     const GRPHONE1 = { get x() { const g = herPhone1(); return g ? g.position.x : 0.09; }, get z() { const g = herPhone1(); return g ? g.position.z : -0.22; }, get y() { const g = herPhone1(); return g ? g.position.y : 0.51; } };
-    const CORDMK1 = { x: -0.05, z: 0.40, to: [0.36, -0.02], head: [-0.02, 1.0, 0.36] };
+    const CORDMK1 = { x: -0.11, z: 0.45, to: [0.36, -0.02], head: [-0.08, 1.0, 0.41] };   // (27 Nov, limbclip with her feet out 0.32 m: at -0.05, 0.40 his right foot was 2.4 cm in her right shin)
     function cordMarcus1(tau, T) {
       const P = cast.marcus; if (!P || !P.ready) return;
       /* (he knelt beside her as the cord snapped: the insert cannot see him; seen from 12 s, on one knee at her right, in
@@ -1305,8 +1305,11 @@
       const k = 1 - smo(c01((tau - T.snap) / 0.25));
       knotGlow1.q.position.set(g.position.x, g.position.y + 0.02, g.position.z); knotGlow1.m.opacity = 0.4 * k * (t < T.snap + 0.3 ? 1 : 0); knotGlow1.q.visible = knotGlow1.m.opacity > 0.001;
       /* her phone: lit while it buzzes (24 to 27 s), then turned face down by her hand (27 s), its screen to the sofa */
-      const ph = herPhone1(); if (ph) { if (F1.phoneRy == null) F1.phoneRy = ph.rotation.y;
-        const down = smo(c01((tau - T.phone - 2.75) / 0.45)); ph.rotation.set(Math.PI * down, F1.phoneRy, 0); ph.visible = true;
+      const ph = herPhone1(); if (ph) { if (F1.phoneRy == null) { F1.phoneRy = ph.rotation.y; F1.phoneY = ph.position.y;
+          /* (turned over about its own lowest face: raised by its height as it turns, so it lies face down ON the cushion.
+             27 Nov, clipscan: turned about its origin it lay in the cushion, 908 crossings) */
+          ph.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(ph); F1.phoneH = Math.max(0, Math.min(0.03, bb.max.y - bb.min.y)); }
+        const down = smo(c01((tau - T.phone - 2.75) / 0.45)); ph.rotation.set(Math.PI * down, F1.phoneRy, 0); ph.position.y = F1.phoneY + F1.phoneH * down; ph.visible = true;
         const lit = tau > T.phone - 0.05 && tau < T.phone + 2.8 ? 1 : 0; phoneLit1.q.position.set(ph.position.x, ph.position.y + 0.02, ph.position.z); phoneLit1.m.opacity = 0.55 * lit; phoneLit1.q.visible = lit > 0; }
     }
     /* THE WISP: from the knot, a leap across the table that curls round under the bowl to his left wrist (where the hands'
