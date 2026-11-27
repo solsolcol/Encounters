@@ -577,5 +577,8 @@ for (const tex of root.listTextures()) {
   tex.setImage(img).setMimeType('image/webp').setURI('');
 }
 await doc.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
-await io.write(OUT, doc);
+/* v29.0 (27 Nov 2026, CAST-3's slip): written to a file of its own and RENAMED over OUT, never written into it: a working
+   build (ENC_DISTLINK) hard-links assets/ into dist/ and its snapshots, so an asset written in place put new bytes
+   under an old content-hashed name there. A rename gives OUT a new inode; every link keeps the bytes it had. */
+{ const tmp = OUT.replace(/(\.glb)?$/, '.writing$1'); await io.write(tmp, doc); fs.renameSync(tmp, OUT); }
 console.log(`prepmonk ${OUT.split('/').pop()}: tris ${t0} -> ${tris()}, ${root.listAnimations().length} takes, ${(fs.statSync(OUT).size / 1024).toFixed(0)} KB`);

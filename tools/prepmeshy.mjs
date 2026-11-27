@@ -366,5 +366,8 @@ for (const m of root.listMaterials()) {
 if (SH) { for (const m of root.listMeshes()) { const ps = m.listPrimitives(); if (ps.length > 1) { const j = joinPrimitives(ps); for (const p of ps) { m.removePrimitive(p); p.dispose(); } m.addPrimitive(j); } }
   await doc.transform(prune()); }
 await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
-await io.write(OUT, doc);
+/* v29.0 (27 Nov 2026, CAST-3's slip): written to a file of its own and RENAMED over OUT, never written into it: a working
+   build (ENC_DISTLINK) hard-links assets/ into dist/ and its snapshots, so an asset written in place put new bytes
+   under an old content-hashed name there. A rename gives OUT a new inode; every link keeps the bytes it had. */
+{ const tmp = OUT.replace(/(\.glb)?$/, '.writing$1'); await io.write(tmp, doc); fs.renameSync(tmp, OUT); }
 console.log(`prepmeshy ${OUT.split('/').pop()}: ${t0} -> ${tris()} triangles; ${(before / 1048576).toFixed(1)} MB -> ${(fs.statSync(OUT).size / 1024).toFixed(0)} KB`);
