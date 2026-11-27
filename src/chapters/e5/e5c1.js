@@ -320,6 +320,7 @@
     assets: [
       /* >>> this chapter's own keys: written by masters/v29.0/keys.py (edit its table, not this list) >>> */
       'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
+      'w51lighter', 'w51jug', 'w51plate', 'w51glass',
       /* <<< this chapter's own keys <<< */
       /* the shared cast's stand-ins and reuse (masters/v29.0/parts/c_cast.js), each declared in `reuseInEpisode`:
          Grandmaster Pho as episode 4 chapter 5 casts him seated (his own file, look D), the white cloth over his crossed
@@ -3520,7 +3521,7 @@
 
     /* ================================================================ THE STAIR AND THE LANDING (the plan's 5.2): a narrow
        straight terrazzo stair from the street door up to her landing, one fluorescent tube, old green paint */
-    const STAIR_RISE = -GY / STAIR.risers, STAIR_RUN = 0.235;
+    const STAIR_RISE = -GY / STAIR.risers, STAIR_RUN = 0.235, F_Z0 = FRONT.z0;
     {
       const Z0 = STAIR.z0, Z1 = STAIR.z1;
       for (let i = 1; i < STAIR.risers; i++) {
@@ -3533,7 +3534,9 @@
       /* the underside of the flight (seen from the street door) */
       quad(mStairWhite, [STAIR.x1, GY, Z0], [STAIR.x1, GY, Z1], [STAIR.x0, -0.25, Z1], [STAIR.x0, -0.25, Z0]);
       /* the bay's two walls, green to the dado and white above, from the street's level to her ceiling */
-      wallRun(mStairWhite, 'x', Z0 - 0.075, 0.15, STAIR.top - 0.15, FRONT.x1, GY, FRONT.ceil, [], { solid: false, sides: 1 });
+      wallRun(mStairWhite, 'x', Z0 - 0.075, 0.15, STAIR.top - 0.15, STREET.shop, GY, FRONT.ceil, [], { solid: false, sides: 1 });
+      wallRun(mStairWhite, 'x', Z0 - 0.075, 0.15, STREET.shop, FRONT.x1, -0.3, FRONT.ceil, [], { solid: false, sides: 1 });   // (over the five-foot way, the bay's upper floor only)
+      floor(mTerrazzoGreen, STAIR.x0 - 0.1, Z0 - 0.15, STREET.shop, F_Z0, GY);                    // the bay's ground: the entry and under the flight
       wallRun(mStairWhite, 'x', Z1 + 0.075, 0.15, STAIR.x0, STREET.shop, GY, 0, [], { solid: false, sides: 2 });
       for (let i = 0; i < 4; i++) { const xa = STREET.shop - i * 1.1, xb = Math.max(STAIR.x0 - 0.8, xa - 1.1), ya = GY + Math.max(0, (STAIR.x1 - xa) / STAIR_RUN) * STAIR_RISE, yb = GY + Math.max(0, (STAIR.x1 - xb) / STAIR_RUN) * STAIR_RISE;
         quad(mStairGreen, [xb, yb, Z0 + 0.003], [xa, ya, Z0 + 0.003], [xa, ya + 1.2, Z0 + 0.003], [xb, yb + 1.2, Z0 + 0.003]);   // (faces +z: into the bay)
@@ -3653,7 +3656,8 @@
         vquadX(mShutter, X1 + 0.02, Z0 + 0.1, Z1 - 0.1, Y + 1.55, -0.55, 1);
         boxW(mShutter, X1 + 0.02, Y + 1.53, 0, 0.05, 0.05, Z1 - Z0 - 0.2, 63);
         boxW(mFacades[0], X1 + 0.14, -0.42, 0, 0.24, 0.26, Z1 - Z0, 63);
-        vquadX(mSign, STREET.face + 0.02, Z0 + 0.3, Z1 - 0.3, -0.28, 0.32, 1, true);
+        boxW(mMoulding, STREET.face + 0.11, 0.0, 0, 0.2, 0.62, Z1 - Z0 - 0.56, 2 | 1 | 16 | 32);   // the signboard over the five-foot way, its edges
+        vquadX(mSign, STREET.face + 0.212, Z0 + 0.3, Z1 - 0.3, -0.3, 0.3, 1, true);
       }
       /* the blocks that close the street's two ends (a cross street's corner), their windows real */
       for (const zE of [-44, 44]) { const f = zE < 0 ? 1 : -1, mat = mFacades[zE < 0 ? 3 : 1];
@@ -3935,6 +3939,7 @@
       stand('w4doorleaf', 0, 0, 0.47, Math.PI / 2, { parent: hp, done: matteOf });
       things.herDoorSolid = solidBox(0.1, 2.1, 0.95, FRONT.x0 - 0.075, 1.05, HER.door.z);
       stand('w4doorleaf', BACKR.x0 - 0.075, 0, -0.83, Math.PI / 2, { parent: herFlatG, done: matteOf });       // the bedroom door, shut
+      solidBox(0.1, 2.1, 0.94, BACKR.x0 - 0.075, 1.05, -0.83);
       const sp = new THREE.Group(); sp.position.set(STREET.shop, GY, STAIR.z1); sp.name = 'the street door'; streetG.add(sp); things.streetDoorPivot = sp;
       stand('w4doorleaf', 0, 0, -0.5, Math.PI / 2, { parent: sp, done: matteOf });
       /* on the landing: the metal gate folded back against the lobby's wall, her shoes by the door, a plant */
