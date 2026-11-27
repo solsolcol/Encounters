@@ -1056,7 +1056,7 @@
       if (kit && kit.captions) kit.captions(null);
       RATANA.reset(); playClear(); soundReset();
       Object.assign(room5, { t0: 0, ups: 0, phoneAt: 0 }); Object.assign(grace5, { up: false, reflK: 0, reflWant: 0 });
-      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false });
+      Object.assign(brk, { i: 0, retook: false, shares: [], spills: 0, on: false, drift: 0, share: undefined });
       Object.assign(night5, { p: 0, waves: [], nextWave: 0, kneeT: 0, tipSaid: false, forced: 0, said: new Set(), getUpT: 0, from: null, moving: 0, seed: 0x5101, waveN: 0, handed: false });
       fx.waterK = 0; fx.pourT = 0; fx.phoneLit = 0; fx.footRun = 0; footSet(0); lastPos = null;
       if (things.holyBowl) things.holyBowl.visible = true; if (things.hisPhone) things.hisPhone.visible = true;
