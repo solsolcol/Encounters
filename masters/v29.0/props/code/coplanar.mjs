@@ -53,11 +53,15 @@ for (const f of process.argv.slice(2)) {
       const to2 = (p) => [p[0]*u[0]+p[1]*u[1]+p[2]*u[2], p[0]*w[0]+p[1]*w[1]+p[2]*w[2]];
       const A = [s.a, s.b, s.c].map(to2), B = [t.a, t.b, t.c].map(to2);
       const ov = area2(clip(A, B)); if (ov < 1e-6) continue;
-      (dot > 0 ? flick : hidden).push({ at: s.a.map(v => +v.toFixed(3)), ov: +(ov * 1e6).toFixed(1), parts: [part[s.i], part[t.i]] }); } }
+      (dot > 0 ? flick : hidden).push({ at: s.a.map(v => +v.toFixed(3)), n: s.n.map(v => +v.toFixed(2)), ov: +(ov * 1e6).toFixed(1), parts: [part[s.i], part[t.i]] }); } }
   let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9]; for (const p of P) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], p[k]); hi[k] = Math.max(hi[k], p[k]); }
   const flickArea = flick.reduce((s, q) => s + q.ov, 0);
   console.log(f.split('/').pop(), `parts ${nparts}  base y ${lo[1].toFixed(4)}  footprint ${(hi[0]-lo[0]).toFixed(3)} x ${(hi[2]-lo[2]).toFixed(3)} (x ${lo[0].toFixed(3)}..${hi[0].toFixed(3)}, z ${lo[2].toFixed(3)}..${hi[2].toFixed(3)})  height ${(hi[1]-lo[1]).toFixed(3)}  FLICKER ${flick.length} pairs ${flickArea.toFixed(0)} mm2  HIDDEN ${hidden.length}`);
-  for (const q of flick.slice(0, 12)) console.log('   FLICKER at', q.at.join(','), q.ov, 'mm2');
+  const ext = new Map(); T.forEach((t, i) => { const k = part[i]; let e = ext.get(k); if (!e) { e = [[1e9,1e9,1e9],[-1e9,-1e9,-1e9]]; ext.set(k, e); } for (const j of t) for (let q = 0; q < 3; q++) { e[0][q] = Math.min(e[0][q], P[j][q]); e[1][q] = Math.max(e[1][q], P[j][q]); } });
+  const fmt = (k) => { const e = ext.get(k); return '[' + e[0].map(v => v.toFixed(3)).join(',') + ' .. ' + e[1].map(v => v.toFixed(3)).join(',') + ']'; };
+  const seen = new Set();
+  for (const q of flick) { const key2 = q.parts.slice().sort().join('-'); if (seen.has(key2)) continue; seen.add(key2); if (seen.size > 10) break;
+    console.log('   FLICKER at', q.at.join(','), 'n', q.n.join(','), q.ov, 'mm2; parts', fmt(q.parts[0]), fmt(q.parts[1])); }
   if (flick.length || Math.abs(lo[1]) > 0.0005) bad++;
 }
 process.exit(bad ? 1 : 0);

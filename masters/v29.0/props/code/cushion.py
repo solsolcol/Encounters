@@ -1,4 +1,4 @@
-"""v29.0 (E5C1 THINGS-3, R13) · w51cushion: a square floor cushion of faded turmeric-ochre woven cotton, made in code (in
+"""v29.0 (E5C1 THINGS-3, R13) · w51cushion: a square floor cushion of faded indigo cotton with thin cream stripes, made in code (in
 place of w5cushion, episode 4 chapter 5's red one: red is the spell's colour alone in this chapter, plan 4.5). 0.50 x 0.50,
 0.125 tall as the old one (cushionB stands on cushionA at y 0.121). A boxed cushion: its top puffed and pulled down to a
 covered button in the middle, its walls bellied, a piped seam round its top and bottom edges, soft creases from use.
@@ -25,32 +25,40 @@ def cloth(name, base, dark):
     m.rough = m.math('ADD', 0.82, m.math('MULTIPLY', weave, 0.1))
     m.height = m.math('ADD', m.math('MULTIPLY', weave, 0.7), m.math('MULTIPLY', slub, 0.3)); m.bump_strength = 0.35; m.bump_dist = 0.0008
     return proc(m)
-body = cloth('ochre', '#9a6a30', '#6b4521')
-pipe = cloth('ochrepipe', '#a57d43', '#7a5530')
-btn = cloth('ochrebtn', '#7d5527', '#5a3a1b')
+def striped(name):
+    """a faded indigo cotton woven with thin cream stripes (a stripe every 3.5 cm along y), its weave in the normal"""
+    m = M(name); co = m.coord('Object')
+    sep = m.n.new('ShaderNodeSeparateXYZ'); m.l.new(co, sep.inputs[0])
+    ph = m.math('FRACT', m.math('MULTIPLY', sep.outputs['Y'], 1 / 0.035))
+    stripe = m.math('MULTIPLY', m.math('GREATER_THAN', ph, 0.80), m.math('LESS_THAN', ph, 0.86))
+    stripe2 = m.math('MULTIPLY', m.math('GREATER_THAN', ph, 0.89), m.math('LESS_THAN', ph, 0.905))
+    a = m.wave(co, 125, dist=0.0, detail=0, kind='BANDS', axis='X'); b = m.wave(co, 125, dist=0.0, detail=0, kind='BANDS', axis='Y')
+    weave = m.math('MULTIPLY', m.math('ADD', a, b), 0.5)
+    fade = m.noise(co, 4.0, detail=3); slub = m.noise(m.mapping(co, scale=(3, 1, 3)), 40, detail=6, rough=0.7)
+    base = m.mix(m.math('MULTIPLY', fade, 0.6), '#34415a', '#4f5d74')
+    base = m.mix(m.math('MULTIPLY', slub, 0.2), base, '#5b6880')
+    base = m.mix(m.math('ADD', stripe, m.math('MULTIPLY', stripe2, 0.8)), base, '#d8cdb4')
+    m.col = m.mix(m.math('MULTIPLY', weave, 0.14), base, '#1e2533', 'MULTIPLY')
+    m.rough = m.math('ADD', 0.84, m.math('MULTIPLY', weave, 0.08))
+    m.height = m.math('ADD', m.math('MULTIPLY', weave, 0.7), m.math('MULTIPLY', slub, 0.3)); m.bump_strength = 0.3; m.bump_dist = 0.0007
+    return proc(m)
+body = striped('indigo')
 
 # the body: a box of cloth INFLATED by Blender's cloth simulation (pressure), its middle stitched down through to the
 # underside (the button's tuft, pinned), so its puff, its sagging corners and its creases are the cloth's own
 sc = bpy.context.scene
 sc.gravity = (0, 0, 0)
 bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
-bmesh.ops.scale(bm, vec=(S, S, 0.075), verts=bm.verts)
-bmesh.ops.translate(bm, vec=(0, 0, 0.0375), verts=bm.verts)
+H0 = float(os.environ.get('H0', '0.06'))
+bmesh.ops.scale(bm, vec=(S, S, H0), verts=bm.verts)
+bmesh.ops.translate(bm, vec=(0, 0, H0 / 2), verts=bm.verts)
 ob = mesh_from_bm('cushion', bm)
 bevel(ob, 0.006, segs=2); apply_mods(ob)
 sub = ob.modifiers.new('sub', 'SUBSURF'); sub.levels = 4; sub.subdivision_type = 'SIMPLE'; apply_mods(ob)
-# the tuft: the points at the middle of the top and the bottom are held (pinned) where the stitch pulls them
-vg = ob.vertex_groups.new(name='pin')
-for v in ob.data.vertices:
-    if math.hypot(v.co.x, v.co.y) < 0.012:
-        vg.add([v.index], 1.0, 'REPLACE')
-        if v.co.z > 0.03: v.co.z = 0.105
-        else: v.co.z = 0.0
 cl = ob.modifiers.new('cloth', 'CLOTH'); st = cl.settings
 st.quality = 8; st.mass = 0.3; st.air_damping = 3
 st.tension_stiffness = 25; st.compression_stiffness = 25; st.shear_stiffness = 10; st.bending_stiffness = 0.3
-st.use_pressure = True; st.uniform_pressure_force = 3.0; st.pressure_factor = 1.0
-st.vertex_group_mass = 'pin'
+st.use_pressure = True; st.uniform_pressure_force = float(os.environ.get('PR', '0.6')); st.pressure_factor = 1.0
 cl.collision_settings.use_self_collision = False
 cl.point_cache.frame_start = 1; cl.point_cache.frame_end = 40
 sc.frame_start, sc.frame_end = 1, 40
@@ -67,16 +75,12 @@ for v in ob.data.vertices:
     w = 0.0009 * (math.sin(x * 61 + y * 23) * math.sin(y * 47 - x * 11) + 0.5 * math.sin(x * 140 + 1.3) * math.sin(y * 133 + 0.4))
     if v.co.z > 0.02: v.co.z += w
     if v.co.z < 0.006: v.co.z *= 0.4
-Hs = max(v.co.z for v in ob.data.vertices); kz = 0.1215 / Hs       # pressed to its height (0.125 once sized to 0.50 wide)
-for v in ob.data.vertices: v.co.z *= kz
+Hs = max(v.co.z for v in ob.data.vertices); wd = max(v.co.x for v in ob.data.vertices) * 2
+print('SIM', 'H', round(Hs, 4), 'w', round(wd, 4), 'h at 0.50 wide', round(Hs * 0.5 / wd, 4))
+if os.environ.get('SIMONLY'): sys.exit(0)
 ob.data.update()
 ob.data.materials.append(body); smooth(ob, 180)
 parts = [ob]
-H = max(v.co.z for v in ob.data.vertices)
-top_at_c = min(v.co.z for v in ob.data.vertices if math.hypot(v.co.x, v.co.y) < 0.01 and v.co.z > 0.03)
-b = lathe('button', [(0.0, 0.0), (0.009, 0.0), (0.0105, 0.0025), (0.0095, 0.0045), (0.006, 0.0058), (0.0, 0.006)], n=32, mat=btn)
-b.location = (0, 0, top_at_c - 0.0028); parts.append(b)
-print('PUFF', round(H, 4), 'tuft', round(top_at_c, 4))
 ob = join(parts, 'cushion')
 stats(ob)
 uv_all(ob, margin=0.004)

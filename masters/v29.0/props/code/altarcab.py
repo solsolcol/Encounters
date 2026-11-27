@@ -31,9 +31,9 @@ for sx in (-1, 1):
 # the top: one thick board, its front and side edges eased round
 parts.append(box('top', W, D, 0.035, at=(0, 0, TOP - 0.0175), bev=0.006, segs=4, mat=wh))
 # the low back ledge on the top (a thing set at the back leans on it) and two small returns at its ends
-parts.append(box('ledge', W - 0.03, 0.022, 0.055, at=(0, D / 2 - 0.016, TOP + 0.0275), bev=0.004, segs=3, mat=wh))
+parts.append(box('ledge', W - 0.03, 0.022, 0.057, at=(0, D / 2 - 0.016, TOP + 0.0275 - 0.001), bev=0.004, segs=3, mat=wh))
 for sx in (-1, 1):
-    parts.append(box('ledgeend', 0.026, 0.12, 0.04, at=(sx * (W / 2 - 0.021), D / 2 - 0.075, TOP + 0.02), bev=0.004, segs=3, mat=wd))
+    parts.append(box('ledgeend', 0.026, 0.12, 0.043, at=(sx * (W / 2 - 0.021), D / 2 - 0.075, TOP + 0.0185), bev=0.004, segs=3, mat=wd))
 # the face: rails between drawers and doors (a front frame), the drawers, the doors
 fy = -D / 2 + 0.0125          # the front plane (the carcass's front at -D/2 + 0.028)
 inner = W - 0.04
@@ -41,7 +41,7 @@ parts.append(box('rail_top', inner, 0.022, 0.03, at=(0, fy + 0.008, cz1 - 0.015)
 dz0, dz1 = cz1 - 0.03 - 0.13, cz1 - 0.03      # the drawers' row
 parts.append(box('rail_mid', inner, 0.022, 0.025, at=(0, fy + 0.008, dz0 - 0.0125), bev=0.002, mat=wh))
 parts.append(box('rail_bot', inner, 0.022, 0.035, at=(0, fy + 0.008, cz0 + 0.0175), bev=0.002, mat=wh))
-parts.append(box('muntin', 0.03, 0.022, dz1 - (cz0 + 0.035), at=(0, fy + 0.008, (dz1 + cz0 + 0.035) / 2), bev=0.002, mat=wv))
+parts.append(box('muntin', 0.03, 0.021, dz1 - (cz0 + 0.035), at=(0, fy + 0.008, (dz1 + cz0 + 0.035) / 2), bev=0.002, mat=wv))
 gap = 0.003
 for sx in (-1, 1):
     # a drawer front, slightly proud, eased edges, a brass knob
@@ -71,7 +71,7 @@ for sx in (-1, 1):
     kx = ox - sx * (ow / 2 - st / 2)
     kz = (oz0 + oz1) / 2 + 0.06
     k = lathe('knob', [(0.0, 0.0), (0.006, 0.0), (0.009, 0.004), (0.0105, 0.010), (0.009, 0.015), (0.004, 0.0175), (0.0, 0.018)], n=40, mat=br)
-    k.rotation_euler = (math.radians(90), 0, 0); k.location = (kx, fy - 0.016, kz); parts.append(k)
+    k.rotation_euler = (math.radians(90), 0, 0); k.location = (kx, fy - 0.0155, kz); parts.append(k)
 # the gaps' dark behind the faces (so a door's edge reads as a door)
 parts.append(box('facegap', inner - 0.004, 0.004, dz1 - cz0 - 0.04, at=(0, fy + 0.019, (dz1 + cz0 + 0.035) / 2), bev=0, mat=dark))
 

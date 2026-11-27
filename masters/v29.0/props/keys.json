@@ -184,5 +184,11 @@
   "key": "w51snake",
   "file": "assets/w51snake.glb",
   "note": "a snake plant in a weathered terracotta pot, 0.60 m tall: the plant on her landing (in place of w4corrpots; no scale). Made new at Meshy his way (R13: THINGS-3; RECORD.md)"
+ },
+ {
+  "group": "things",
+  "key": "w51palm",
+  "file": "assets/w51palm.glb",
+  "note": "an areca palm in a square charcoal planter, 1.20 m tall: the plant on his balcony (in place of w3dracaena there, so her flat and his do not share one plant). Made new at Meshy his way (R13: THINGS-3; RECORD.md)"
  }
 ]

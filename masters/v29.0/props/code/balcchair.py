@@ -30,15 +30,15 @@ for x in xs:
     # the back leg straight up to the seat, then the back post leaning back to the top
     parts.append(beam('bleg', (x, by - 0.02, 0.005), (x, by - 0.02, SEAT), T, mat=alu))
     top = (x, by - 0.02 + math.tan(LEAN) * (TOP - SEAT - T / 2), TOP - T / 2)
-    parts.append(beam('bpost', (x, by - 0.02, SEAT - T / 2), top, T, mat=alu))
+    parts.append(beam('bpost', (x, by - 0.02, SEAT - T / 2), top, T - 0.0012, mat=alu))   # (a hair narrower than the leg it rises from: no shared face)
     # the arm: from over the front leg back into the back post
     ay = by - 0.02 + math.tan(LEAN) * (ARM - SEAT)
     parts.append(beam('arm', (x, fy - T / 2 - 0.002, ARM - T / 2 + 0.002), (x, ay, ARM - T / 2 + 0.002), T + 0.004, mat=alu))   # (a cap a little wider than the tubes: no shared face)
     # the side seat rail
-    parts.append(beam('srail', (x, fy, SEAT - 0.035), (x, by - 0.02, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
+    parts.append(beam('srail', (x, fy, SEAT - 0.035), (x, by - 0.02, SEAT - 0.035), T - 0.006, 0.04, mat=alu))
 # the front and back seat rails
-parts.append(beam('frail', (xs[0], fy, SEAT - 0.035), (xs[1], fy, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
-parts.append(beam('brail', (xs[0], by - 0.02, SEAT - 0.035), (xs[1], by - 0.02, SEAT - 0.035), 0.04, T - 0.006, mat=alu))
+parts.append(beam('frail', (xs[0], fy, SEAT - 0.036), (xs[1], fy, SEAT - 0.036), 0.037, T - 0.006, mat=alu))
+parts.append(beam('brail', (xs[0], by - 0.02, SEAT - 0.036), (xs[1], by - 0.02, SEAT - 0.036), 0.037, T - 0.006, mat=alu))
 # the back's top rail between the posts
 tz = TOP - T / 2; ty = by - 0.02 + math.tan(LEAN) * (TOP - SEAT - T / 2)
 parts.append(beam('trail', (xs[0], ty, tz), (xs[1], ty, tz), T - 0.004, T - 0.006, mat=alu))
