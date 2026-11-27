@@ -66,6 +66,19 @@ await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForFunction(() => { try { return window.__enc.stage.ready() && window.__enc.stage.info().applied; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
 console.log(el(), 'ready');
+/* the GL's own count of one drawn frame (every instance counted; both of the engine's passes): triangles and draws */
+await p.evaluate(() => {
+  const C = window.__glc = { on: false, calls: 0, tris: 0 };
+  const gl = window.__enc.renderer.getContext();
+  const tri = (m, n) => m === 4 ? n / 3 : (m === 5 || m === 6) ? Math.max(0, n - 2) : 0;
+  for (const [nm, ci, ii] of [['drawElements', 1, -1], ['drawArrays', 2, -1], ['drawElementsInstanced', 1, 4], ['drawArraysInstanced', 2, 3]]) {
+    const f = gl[nm]; if (!f) continue;
+    gl[nm] = function (...a) { if (C.on) { C.calls++; C.tris += tri(a[0], a[ci]) * (ii >= 0 ? (a[ii] || 1) : 1); } return f.apply(gl, a); };
+  }
+});
+const frameGL = () => p.evaluate(async () => { const C = window.__glc; await new Promise(r => requestAnimationFrame(r));
+  C.calls = 0; C.tris = 0; C.on = true; await new Promise(r => requestAnimationFrame(r)); await new Promise(r => requestAnimationFrame(r)); C.on = false;
+  return { tris: Math.round(C.tris / 2), draws: Math.round(C.calls / 2) }; });
 if (process.env.HANDS !== '1') await p.evaluate(() => { if (window.__enc.handsRoot) window.__enc.handsRoot.visible = false; });
 await p.addStyleTag({ content: '#hud, #objective, #reticle, .hudel, #hotBadge, #caption, #captions, #vignette { opacity: 0 !important; }' });
 const frames = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
@@ -86,10 +99,11 @@ for (const name of pick) {
   await frames(3); await p.waitForTimeout(SETTLE);
   await p.evaluate(([x, y, z]) => { const E = window.__enc; E.yaw.position.set(x, y, z); }, [x, y, z]);
   await frames(3);
-  const info = await p.evaluate(() => { const S = window.__enc.stage, W = S.plan && S.plan.ROOMTHINGS && S.plan.ROOMTHINGS.api; const r = window.__enc.renderer;
-    return { st: window.__enc.getState(), world: W ? W.state() : null, calls: r ? r.info.render.calls : null, tris: r ? r.info.render.triangles : null }; });
+  const info = await p.evaluate(() => { const S = window.__enc.stage, W = S.plan && S.plan.ROOMTHINGS && S.plan.ROOMTHINGS.api;
+    return { st: window.__enc.getState(), world: W ? W.state() : null }; });
+  info.gl = await frameGL();
   await p.screenshot({ path: `${OUT}/${name}.png`, timeout: 240000 });
-  console.log(el(), name, JSON.stringify(info).slice(0, 600));
+  console.log(el(), name, 'gl', JSON.stringify(info.gl), 'refl', JSON.stringify(info.world && info.world.refl && { on: info.world.refl.on, twins: info.world.refl.twins }), 'look', info.world && info.world.look);
 }
 await p.evaluate(() => { const S = window.__enc.stage; if (S.__g0) S.groundAt = S.__g0; });
 console.log(el(), 'errs', JSON.stringify(errs.slice(0, 20)));
