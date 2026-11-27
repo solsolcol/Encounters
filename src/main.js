@@ -2399,6 +2399,114 @@ function chillPaint(show) {
     + `rgba(104,158,232,${(0.12 * k + 0.08 * b).toFixed(3)}) ${(t0 + 24).toFixed(1)}%, rgba(40,82,158,${(0.40 * k + 0.16 * b).toFixed(3)}) 100%)`;
   canvas.style.filter = `saturate(${(1 - 0.5 * k).toFixed(3)}) brightness(${(1 - 0.16 * k - 0.06 * b).toFixed(3)})`;
 }
+/* v29.0 · THE PRESSURE — THE EIGHTY-FIRST SEAM (episode 5 chapter 1's three o'clock: "Like my head was in a vice";
+   docs/V29.0-E5C1-PLAN.md §8.3, §12, §13). kit.press(k, { secs, cine }) presses the picture in from every edge by k
+   (0..1): the image near each edge pushed in toward the middle (the same push, in pixels, from all four edges, in a band
+   as deep as the screen is half wide, the middle left as it is so he can still see his way), a dark edge closing in
+   behind it, the colour draining from the edges and a slight colour split there. Eased to k over `secs` on WALL time
+   (secs 0: at once); painted in play and the panels over it (as the cold is), and in a film only when that film has
+   asked (`cine: true`, cleared again by kitReset). Every heartbeat kit.pulse lands presses it a little harder for a
+   moment, so it pulses with the heart.
+   HOW IT IS DRAWN, and what it costs: after both passes (and Spirit Vision's, and before a smear), one copy of the drawn
+   frame into a texture and one full-screen quad of three samples over it — the smear's own path (no render target, no
+   light, no new program on any material the world draws). Its one small program is built at the first call, any k:
+   a chapter that calls kit.press(0) from build() has it compiled under the curtain, never on screen. At k 0 its texture
+   is let go and NOTHING runs (no copy, no draw); a chapter that never calls it draws every frame bit for bit as before.
+   In a film's letterbox it presses from the band's own edges. kitReset takes it back (and so does leaving a chapter). */
+const press = { k: 0, to: 0, secs: 1, last: 0, beat: 0, cine: false, tex: null, mesh: null, scene: null, cam: null, w: 0, h: 0,
+                ok: true, check: false, drawn: 0, copied: 0, err: 0, calls: 0 };
+const _prv = new THREE.Vector2(), _prs = new THREE.Vector2();
+const PRESS_FRAG = `
+uniform sampler2D map; uniform vec2 res; uniform vec4 box; uniform float k; uniform float L; uniform float P; uniform float S;
+varying vec2 vUv;
+void main() {
+  vec2 p = vUv * res;
+  vec2 c = 0.5 * (box.xy + box.zw), hs = 0.5 * (box.zw - box.xy);
+  vec2 d = p - c, sg = sign(d);
+  vec2 m = clamp(1.0 - (hs - abs(d)) / L, 0.0, 1.0);
+  vec2 mm = m * m;
+  vec2 sp = p + sg * P * mm;
+  float mv = min(1.0, pow(pow(m.x, 3.0) + pow(m.y, 3.0), 1.0 / 3.0));
+  vec2 dir = sg * mm; float dl = length(dir); dir = dl > 1e-4 ? dir / dl : vec2(0.0);
+  vec2 lo = box.xy + 0.5, hi = box.zw - 0.5, sh = dir * S * mv;
+  vec3 col = vec3(texture2D(map, clamp(sp + sh, lo, hi) / res).r, texture2D(map, clamp(sp, lo, hi) / res).g,
+                  texture2D(map, clamp(sp - sh, lo, hi) / res).b);
+  float v1 = 1.0 - 0.22 * k, v0 = max(0.05, v1 - 0.25 - 0.4 * k);
+  float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col = mix(col, vec3(lum), smoothstep(max(0.0, v0 - 0.25), v1, mv) * min(1.0, 0.4 + k));
+  col *= 1.0 - smoothstep(v0, v1, mv);
+  gl_FragColor = vec4(col, 1.0);
+}`;
+function pressBuild() {
+  if (press.mesh) return;
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { map: { value: null }, res: { value: new THREE.Vector2(1, 1) }, box: { value: new THREE.Vector4(0, 0, 1, 1) },
+                k: { value: 0 }, L: { value: 1 }, P: { value: 0 }, S: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: PRESS_FRAG, depthTest: false, depthWrite: false, toneMapped: false
+  });
+  press.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
+  press.mesh.frustumCulled = false;
+  press.scene = new THREE.Scene(); press.scene.add(press.mesh);
+  press.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  try { renderer.compile(press.scene, press.cam); } catch (err) { console.warn('press: compile', err); }
+}
+function kitPress(k, opts = {}) {
+  press.to = Math.max(0, Math.min(1, +k || 0));
+  if (opts.secs !== undefined) press.secs = Math.max(0.01, +opts.secs || 0.01);
+  if (opts.secs === 0) press.k = press.to;
+  if (opts.cine !== undefined) press.cine = !!opts.cine;
+  if (!press.last) press.last = performance.now();
+  press.calls++;
+  pressBuild();
+  return true;
+}
+function pressTick() {
+  if (press.k === 0 && press.to === 0) { press.last = 0; press.beat = 0; if (press.tex) pressFree(); return; }
+  const now = performance.now(), dt = press.last ? Math.min(0.25, (now - press.last) / 1000) : 0;
+  press.last = now;
+  if (press.k !== press.to) press.k = press.to > press.k ? Math.min(press.to, press.k + dt / press.secs) : Math.max(press.to, press.k - dt / press.secs);
+  press.beat *= Math.exp(-dt * 5.5);
+}
+function pressFree() { if (press.tex) press.tex.dispose(); press.tex = null; press.w = press.h = 0; }
+function pressLive() { return CHILL_LIVE(state) || (press.cine && state === 'cine'); }
+/* after both passes: the frame copied, then drawn back pressed. `band` is the letterbox's band while a film's passes are
+   scissored to it (its edges are the edges it presses from) */
+function pressPass(band) {
+  if (!press.ok || press.k <= 0.002 || !press.mesh || !pressLive()) return;
+  renderer.getDrawingBufferSize(_prv);
+  const w = _prv.x | 0, h = _prv.y | 0;
+  if (w < 2 || h < 2) return;
+  if (!press.tex || press.w !== w || press.h !== h) {
+    if (press.tex) press.tex.dispose();
+    press.tex = new THREE.FramebufferTexture(w, h);
+    press.tex.minFilter = press.tex.magFilter = THREE.LinearFilter;
+    press.w = w; press.h = h; press.check = true;
+  }
+  try {
+    const gl = renderer.getContext();
+    if (press.check) gl.getError();
+    renderer.copyFramebufferToTexture(press.tex);
+    if (press.check) {
+      press.check = false;
+      const e = gl.getError();
+      if (e !== gl.NO_ERROR) { press.ok = false; press.err = e; pressFree(); console.warn('press: this drawing buffer cannot be copied (' + e + '); off for this session'); return; }
+    }
+    press.copied++;
+    const U = press.mesh.material.uniforms, pr = renderer.getPixelRatio();
+    let y0 = 0, y1 = h;
+    if (band && letterbox) { renderer.getSize(_prs); const sy = h / Math.max(1, _prs.y); y0 = letterbox.y * sy; y1 = Math.min(h, (letterbox.y + letterbox.h) * sy); }
+    const ke = Math.min(1, press.k * (1 + 0.15 * press.beat));
+    const Lb = 0.85 * Math.min(w, y1 - y0) / 2;
+    U.map.value = press.tex; U.res.value.set(w, h); U.box.value.set(0, y0, w, y1);
+    U.k.value = ke; U.L.value = Math.max(1, Lb); U.P.value = 0.22 * ke * Lb; U.S.value = 3.5 * ke * pr;
+    renderer.autoClear = false;
+    renderer.render(press.scene, press.cam);
+    renderer.autoClear = true;
+    press.drawn++;
+  } catch (err) { press.ok = false; pressFree(); renderer.autoClear = true; console.warn('press: off for this session', err); }
+}
+function pressOff() { press.k = press.to = 0; press.beat = 0; press.last = 0; press.cine = false; pressFree(); }
 /* the heart. Beats are SPIKES on the wall clock — { t, kind } with kind 0 a beat, 1 an early wide one, 2 one that
    never comes — so the monitor can draw the P wave before a beat that has not landed yet and the T wave after one
    that has, and a page that freezes for a second draws the beats it missed without playing them late */
@@ -2445,6 +2553,7 @@ function kitPulseTick() {
       pulseLog.heard++;
       if (kp.sound) snd(kp.sound, kp.vol * (s.kind === 1 ? 0.82 : 1), s.kind === 1 ? 1.1 : 1);
       chill.beat = Math.max(chill.beat, s.kind === 1 ? 0.75 : 1);
+      press.beat = Math.max(press.beat, s.kind === 1 ? 0.75 : 1);   // v29.0 (seam 81): and the pressure presses with it
       if (kp.buzz) haptic(s.kind === 1 ? [10, 50, 16] : [24]);
     }
     // the next beat — when it lands and what it is, decided as this one lands
@@ -8038,6 +8147,7 @@ function kitReset() {
   handsOff();                            // v18.0: nor with them still moving on their own
   trem.k = trem.to = 0; trem.t = 0; trem.last = 0;   // v22.0: nor shaking
   coldOff();                             // v22.0: nor cold — no chill at the edges, his own heart back, no smear
+  pressOff();                            // v29.0 (seam 81): nor the picture still pressed in from its edges
   kitLensOff();                          // v26.0: nor with a borrowed lens (the forty-seventh seam)
   hushOff();                             // v26.0: nor with the world's sound still closed down (the forty-eighth)
   activeSpot = null;
@@ -9629,6 +9739,8 @@ const KIT = {
   pulse: kitPulseSet,              // v22.0: his heart taken over — rate, rhythm, heard and felt, on the monitor (the thirty-fourth)
   buzz: kitBuzz,                   // v28.0: the phone buzzed by a chapter, in play or a film (the seventy-second seam)
   smear: kitSmear,                 // v22.0: the picture lagging behind his eyes (the thirty-fifth)
+  press: kitPress,                 // v29.0: the picture pressed in from every edge (the eighty-first seam)
+  pressState: () => ({ k: +press.k.toFixed(3), to: press.to, cine: press.cine }),
   getPulse: () => (kitPulse ? { bpm: kitPulse.bpm, to: kitPulse.to, erratic: kitPulse.erratic } : null),
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
@@ -19947,6 +20059,7 @@ function tick(now = 0) {
   kitPulseTick();      // v22.0: a heart a chapter has taken over (kit.pulse) — its beats heard and felt as the monitor draws them
   chillTick();         // v22.0: the cold at the edges of his sight (kit.chill)
   smearTick();         // v22.0: and the picture lagging behind his eyes (kit.smear)
+  pressTick();         // v29.0: and the picture pressed in from every edge (kit.press)
   updatePulse(dt);
   /* v8.6: A LIGHT AT ZERO STILL COSTS EVERY PIXEL. three.js compiles the
      shader for the lights it COLLECTS, and it collects a light whether or
@@ -20073,6 +20186,7 @@ function tick(now = 0) {
   } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
   }
   if (OPT.lightMem) lightMemTick();      // v15: a compile on screen is remembered for the next curtain
+  if (press.k > 0.002) pressPass(band);   // v29.0 (seam 81): kit.press — a no-op unless a chapter asked
   if (smear.k > 0.002 || smear.at >= 0) smearPass();   // v22.0: kit.smear — a no-op unless a chapter asked
   } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
 }
@@ -20485,6 +20599,10 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                             beats: { ...pulseLog }, curBpm: +curBpm.toFixed(1),
                             smear: { k: +smear.k.toFixed(3), ok: smear.ok, err: smear.err, drawn: smear.drawn, copied: smear.copied, tex: !!smear.tex } };
                  },
+                 /* v29.0 (seam 81): the pressure, for the fixture and the probes — its level, its copies and draws */
+                 press: () => ({ k: +press.k.toFixed(3), to: press.to, beat: +press.beat.toFixed(3), cine: press.cine, live: pressLive(),
+                                 ok: press.ok, err: press.err, drawn: press.drawn, copied: press.copied, calls: press.calls,
+                                 tex: !!press.tex, built: !!press.mesh }),
                  gest: GEST, gestLayout,                   // v20.1: …and try its numbers
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponReloadTap, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
