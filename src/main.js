@@ -11958,7 +11958,13 @@ const ADULT_TAKES = new Set([
   'q5h5', 'q5p1', 'q5fb1', 'q5fw1', 'q5c0', 'q5c1', 'q5c2', 'q5c3', 'q5c4', 'q5c5',
   'q5b1', 'q5b2', 'q5t1', 'q5A1', 'q5A2', 'q5B1', 'q5B2', 'q5C1', 'q5D1', 'q5z1',
   'q5A', 'q5B', 'q5C', 'q5D',
-  /* E4C5 ADULT END */]);
+  /* E4C5 ADULT END */
+  /* E5C1 ADULT BEGIN: v29.0, episode 5 chapter 1 (masters/v29.0/voices/install.py) */
+  'zv51o1', 'zv51o2', 'zv51o3', 'zv51r1', 'zv51r2', 'zv51r3', 'zv51r4', 'zv51r5', 'zv51r6', 'zv51c1',
+  'zv51c2', 'zv51h1', 'zv51n1', 'zv51n2', 'zv51n3', 'zv51n4', 'zv51x1', 'zv51A1', 'zv51B1', 'zv51B2',
+  'zv51B3', 'zv51B4', 'zv51C1', 'zv51C2', 'zv51C3', 'zv51D1', 'zv51D2', 'zv51w1', 'zv51w2', 'zv51A',
+  'zv51B', 'zv51C', 'zv51D',
+  /* E5C1 ADULT END */]);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -12078,7 +12084,16 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'co5t5', 'co5t6', 'ph5t5', 'ph5t6', 'co5t7', 'co5A1', 'co5A2', 'ph5A1', 'ph5A2', 'co5B1',
   'co5B2', 'co5B3', 'co5B4', 'co5B5', 'ph5B1', 'co5C1', 'ph5C1', 'co5C2', 'ph5C2', 'co5D1',
   'ph5D1', 'ph5D2', 'co5z1',
-  /* E4C5 CAST END */]);
+  /* E4C5 CAST END */
+  /* E5C1 CAST BEGIN: v29.0, episode 5 chapter 1: Grandmaster Pho, Grace, Marcus, and Pho on the phone (masters/v29.0/voices/install.py) */
+  'mk51o1', 'ph51o1', 'mk51o2', 'gr51o1', 'ph51o2', 'ph51r1', 'ph51r2', 'ph51r3', 'ph51r4', 'gr51r1',
+  'mk51r1', 'gr51r2', 'gr51r3', 'mk51r2', 'ph51r5', 'ph51k1', 'ph51k2', 'ph51s1', 'ph51c1', 'ph51c2',
+  'ph51c3', 'mk51c1', 'gr51c1', 'ph51c4', 'ph51c5', 'ph51x1', 'ph51x2', 'ph51x3', 'ph51x4', 'ph51x5',
+  'ph51x6', 'ph51A1', 'ph51A2', 'ph51A3', 'ph51B1', 'ph51B2', 'ph51B3', 'ph51B4', 'ph51C1', 'ph51C2',
+  'ph51C3', 'ph51D1', 'ph51D2', 'ph51D3', 'ph51D4', 'ph51w1', 'ph51w2', 'ph51w3', 'ph51x1tel', 'ph51x2tel',
+  'ph51x3tel', 'ph51x4tel', 'ph51x5tel', 'ph51x6tel', 'ph51A1tel', 'ph51A2tel', 'ph51B1tel', 'ph51B2tel', 'ph51B3tel', 'ph51C1tel',
+  'ph51C2tel', 'ph51D1tel', 'ph51D2tel',
+  /* E5C1 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -17358,6 +17373,30 @@ const STING_SAMPLE = {
   u5pwgather: ['u5pwgather', 1], u5pwcharge: ['u5pwcharge', 1], u5pwsurge: ['u5pwsurge', 1],
   u5pweyes: ['u5pweyes', 1], u5nagaburst: ['u5nagaburst', 1],
   /* E4C5 FX END */
+  /* E5C1 VOICES BEGIN: v29.0, episode 5 chapter 1's voices, the two chants and Pho's phone copies (masters/v29.0/voices/install.py) */
+  zv51o1: ['zv51o1', 1], zv51o2: ['zv51o2', 1], mk51o1: ['mk51o1', 1], ph51o1: ['ph51o1', 1], mk51o2: ['mk51o2', 1],
+  gr51o1: ['gr51o1', 1], ph51o2: ['ph51o2', 1], zv51o3: ['zv51o3', 1], zv51r1: ['zv51r1', 1], ph51r1: ['ph51r1', 1],
+  zv51r2: ['zv51r2', 1], ph51r2: ['ph51r2', 1], zv51r3: ['zv51r3', 1], ph51r3: ['ph51r3', 1], zv51r4: ['zv51r4', 1],
+  ph51r4: ['ph51r4', 1], zv51r5: ['zv51r5', 1], gr51r1: ['gr51r1', 1], mk51r1: ['mk51r1', 1], zv51r6: ['zv51r6', 1],
+  gr51r2: ['gr51r2', 1], gr51r3: ['gr51r3', 1], mk51r2: ['mk51r2', 1], ph51r5: ['ph51r5', 1], ph51k1: ['ph51k1', 1],
+  ph51k2: ['ph51k2', 1], ph51ratana: ['ph51ratana', 1], ph51s1: ['ph51s1', 1], ph51c1: ['ph51c1', 1],
+  zv51c1: ['zv51c1', 1], ph51c2: ['ph51c2', 1], ph51c3: ['ph51c3', 1], mk51c1: ['mk51c1', 1], gr51c1: ['gr51c1', 1],
+  ph51c4: ['ph51c4', 1], ph51c5: ['ph51c5', 1], zv51c2: ['zv51c2', 1], zv51h1: ['zv51h1', 1], zv51n1: ['zv51n1', 1],
+  zv51n2: ['zv51n2', 1], zv51n3: ['zv51n3', 1], zv51n4: ['zv51n4', 1], ph51x1: ['ph51x1', 1], ph51x2: ['ph51x2', 1],
+  ph51x3: ['ph51x3', 1], ph51x4: ['ph51x4', 1], ph51jina: ['ph51jina', 1], ph51x5: ['ph51x5', 1],
+  zv51x1: ['zv51x1', 1], ph51x6: ['ph51x6', 1], ph51A1: ['ph51A1', 1], zv51A1: ['zv51A1', 1], ph51A2: ['ph51A2', 1],
+  ph51A3: ['ph51A3', 1], zv51B1: ['zv51B1', 1], zv51B2: ['zv51B2', 1], ph51B1: ['ph51B1', 1], zv51B3: ['zv51B3', 1],
+  ph51B2: ['ph51B2', 1], zv51B4: ['zv51B4', 1], ph51B3: ['ph51B3', 1], ph51B4: ['ph51B4', 1], zv51C1: ['zv51C1', 1],
+  zv51C2: ['zv51C2', 1], ph51C1: ['ph51C1', 1], zv51C3: ['zv51C3', 1], ph51C2: ['ph51C2', 1], ph51C3: ['ph51C3', 1],
+  zv51D1: ['zv51D1', 1], ph51D1: ['ph51D1', 1], zv51D2: ['zv51D2', 1], ph51D2: ['ph51D2', 1], ph51D3: ['ph51D3', 1],
+  ph51D4: ['ph51D4', 1], ph51w1: ['ph51w1', 1], zv51w1: ['zv51w1', 1], ph51w2: ['ph51w2', 1], ph51w3: ['ph51w3', 1],
+  zv51w2: ['zv51w2', 1], zv51A: ['zv51A', 1], zv51B: ['zv51B', 1], zv51C: ['zv51C', 1], zv51D: ['zv51D', 1],
+  ph51x1tel: ['ph51x1tel', 1], ph51x2tel: ['ph51x2tel', 1], ph51x3tel: ['ph51x3tel', 1], ph51x4tel: ['ph51x4tel', 1],
+  ph51jinatel: ['ph51jinatel', 1], ph51x5tel: ['ph51x5tel', 1], ph51x6tel: ['ph51x6tel', 1],
+  ph51A1tel: ['ph51A1tel', 1], ph51A2tel: ['ph51A2tel', 1], ph51B1tel: ['ph51B1tel', 1], ph51B2tel: ['ph51B2tel', 1],
+  ph51B3tel: ['ph51B3tel', 1], ph51C1tel: ['ph51C1tel', 1], ph51C2tel: ['ph51C2tel', 1], ph51D1tel: ['ph51D1tel', 1],
+  ph51D2tel: ['ph51D2tel', 1],
+  /* E5C1 VOICES END */
   /* E5C1 FX BEGIN: v29.0, episode 5 chapter 1's effects, beds and music (masters/v29.0/sound/STING_ROWS.txt; every pick and
      why in masters/v29.0/sound/make.sh and picks.json). Each row's gain is 1: a cue's volume is set where it is cued */
   u51band: ['u51band', 1],        // fx, 2.04 s, cue ~0.8: ending D; its hit at 1.23 s
