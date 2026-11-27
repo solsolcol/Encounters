@@ -1926,3 +1926,11 @@ e0eedb9ca904e4e3d0c92ee5817b1470c8ee8e05b33cba1416f708d820e3dff9  masters/v29.0/
 7715e9346726d99aaa293f27f766b8a39f11c6b9e923d244c5961c0c2eba350e  masters/v29.0/src/props/remeshed-histable-16000.glb
 d1230abe45cb1234d510e77c9411f1303a8ff153cff0f626dfa91ec33eb3e3b6  masters/v29.0/src/props/remeshed-incense-12000.glb
 856d7b1b165468a5fdee9b5eb42a20ec22596e580f21d12784aab4536596fa65  masters/v29.0/src/props/remeshed-jasmine-20000.glb
+b1889a0481c2cea089c12749a680b76e3392d3a8c30a5f614e066ced2911cbbc  masters/v29.0/src/props/remeshed-keepsake-12000.glb
+3303e8a832e8848cd0f3c0ffcd578c7ac3a8ce28221e4ad0ca9bf935853fcefb  masters/v29.0/src/props/remeshed-kettle-12000.glb
+2ff821f7ac2062a65c75f2ae55f17cca559664ef0df3474c266b00ce20efbc9c  masters/v29.0/src/props/remeshed-keycard-6000.glb
+66247dcae5c62a814c59140566797e3e2ff9c7c2d8c305b3c5f9137f293460e9  masters/v29.0/src/props/remeshed-laptop-6000.glb
+fc504cf1c54080f2b0607195ca5794c71c7ce38bf14f2d9dabf2fd1086455905  masters/v29.0/src/props/remeshed-phobag-16000.glb
+2e8ca271d5374fdccf01636d3a312cc91d0a48a25ddab7db226053bc08f799c9  masters/v29.0/src/props/remeshed-pills-6000.glb
+059c0f5dccfb8d663b1f81bd530a4a2dc43f8921441b8e0a3b842b00ba8d17a3  masters/v29.0/src/props/remeshed-rattanchair-30000.glb
+0270916859ef0a1bc1dd6a9c9a0084d0a297a707ad65738ef571c847320818e1  masters/v29.0/src/props/remeshed-ritualset-40000.glb

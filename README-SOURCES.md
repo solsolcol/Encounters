@@ -1,8 +1,8 @@
 # The 3D sources generated for Master Z's Encounters
 
 Originals, remeshes and rigs made for the game by Meshy, Hunyuan3D, Tripo and the rigging, at their own paths
-in the game's repository (masters/<version>/src, which the game's branch ignores): 130 of 132
-chunks, 1928 files. Made by tools/srcbackup.py on the game's branch. Only what was generated for
+in the game's repository (masters/<version>/src, which the game's branch ignores): 131 of 132
+chunks, 1936 files. Made by tools/srcbackup.py on the game's branch. Only what was generated for
 the game is here: none of Chad's own models, no bought model, no photograph.
 
 ## Restoring
@@ -38,3 +38,5 @@ file against the manifest (sha256sum's format, one line a whole file):
 - masters/v29.0/src/props/remeshed-gracesofa-30000.glb (2 pieces)
 - masters/v29.0/src/props/remeshed-hischair-12000.glb (2 pieces)
 - masters/v29.0/src/props/remeshed-hissofa-30000.glb (2 pieces)
+- masters/v29.0/src/props/remeshed-keepsake-12000.glb (2 pieces)
+- masters/v29.0/src/props/remeshed-rattanchair-30000.glb (2 pieces)
