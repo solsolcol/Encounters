@@ -30,11 +30,11 @@ four scenes (the plan's 9.6, 9.8). The lines are the plan's (§10), voiced; none
 |---|---|---|---|---|
 | A (best) | calls at once: his thumb on the name, two rings | "I'm here. Tell me what you feel." / "Listen to me, and do exactly what I say." | the night is shortest; the barrier holds | "You called at once. That is the first protection: knowing when something is more than you." |
 | B (good) | lays the phone face down ("Let him sleep."), sits with his palms together; two waves, his sight forced open on the threads at his feet; 3:41 on the oven; on the floor against the sofa, a slit of picture; crawls to the phone | "How long has it been like this?" "Forty minutes. Why did you wait?" ... "You held the water for her. Now let me hold it for you." | forty minutes; the threads already round him, the gold pushes harder | "A student who won't wake his teacher is protecting the wrong person." |
-| C (bad) | "It's a migraine.": the drawer, the pills, the tap; the sofa, a cushion over his eyes; a wave, the glass ticking; his sight opens by itself on his red footsteps ending at the sofa and the threads at his feet | 3:22: "Tell me." ... "This is not a headache. A headache does not follow you home." | the pills did nothing; the threads already at his feet | "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask." |
+| C (bad) | "It's a migraine.": at his counter, his hand down to the drawer and up with the strip of pills before him, one to his mouth, the tap; the sofa, a cushion over his eyes (the picture's lowest fifth left to the room); a wave, the glass ticking; his sight opens by itself on his red footsteps ending at the sofa and the threads at his feet; he sits up with the phone as the call connects and listens facing his glass | 3:22: "Tell me." ... "This is not a headache. A headache does not follow you home." | the pills did nothing; the threads already at his feet | "Don't believe too fast. Don't dismiss too fast either. Look first. Then ask." |
 | D (worst) | opens Spirit Vision on purpose, follows the threads to his balcony door, slides it open; one thread turns like a head and lunges: a band of red light round his left wrist, the picture crushed to a slit; tears himself back in, on his knees | "I'm here." "It's outside. It's looking for me." "Then stop looking for it. Sit down. Now." | the band burned off by the gold (a white flash, a hiss); a red mark left on his wrist | his teacher sees the mark: "You went to a stranger's door and knocked. It answered." ... "Curiosity is not courage." and ties the white thread over it |
 
 Their clocks (y_endings.js EN2, measured lines; seconds): A 148.4 (own 17.1, barrier 81.2, dawn 50.1); B 169.0 (38.5, 82.4,
-48.1); C 164.7 (33.0, 81.2, 50.5); D 161.3 (27.1, 83.0, 51.2). Longer than the plan's estimates (100 to 130 s): the
+48.1); C 164.1 (33.0, 80.6, 50.5); D 161.3 (27.1, 83.0, 51.2). Longer than the plan's estimates (100 to 130 s): the
 plan's barrier is 56 s with a 14 s chant, and the Jinapañjara as voiced is 36.6 s (its four verses on the take's breaths).
 
 ## 2 · The barrier (the plan's 9.7, the case file's; in every ending)
@@ -111,3 +111,20 @@ the phone's copies of a line, `*tel`, counted as the voice they are: the tool as
 ## 6 · Measured (filled in as each lands)
 
 ## 7 · What is still open
+
+1. THE PLAN'S "KNEELS" to wind the thread: Grandmaster Pho has no kneel in his file, and on the floor he always sits
+   cross-legged (chapters 3 to 5, her table here): so he sits to it (3).
+2. HIS OWN LEGS IN THE CIRCLE are framed out, not drawn: the game has no take of his body sitting cross-legged, and a take
+   retargeted from another body is a new motion that must pass the body rules before it is shown (4).
+3. THE PAPER BAG IN HIS TEACHER'S HAND AT THE DOOR (the plan's 9.9, 6 to 14 s) is not shown: `w51breakfast` is the set as
+   laid out on a table (the bag, two cups, the toast), not a bag to carry; at the door he has his cloth bag on his shoulder,
+   and the breakfast is on the table at the cut. A carried paper bag would need a model of its own (none made: a new model
+   only by the coordinator's word).
+4. M8 begins 3.0 to 6.1 s into the dawn, not at its first second, so its last chord falls under his thought (3).
+5. THE WINDING is 5 s and the spool is set on the table off the picture (the plan's 14 to 24 s gives it 10 s with the
+   setting down): the dawn already runs 48 to 51 s on its measured lines.
+6. Findings for other pieces, left as they are: PLAY's PHONEHELD shows the phone's back to the lens at the decision (4);
+   FILMS-1's clasp in its films is at the engine's default height, -0.235, which shows the thumbs (e3c2's -0.33 hides
+   them: B's here uses it); THINGS: the altar cabinet's top right edge is ragged where the lens passes it in the barrier
+   and in C (photographed); his teacher's cloth bag hangs where his right arm swings (FILMS-1's c_yfilm.js phoBagOn1, and
+   the dawn's copy of it); tools/probes/voicescan.mjs counts no line's phone copy (`*tel`) as a voice.
