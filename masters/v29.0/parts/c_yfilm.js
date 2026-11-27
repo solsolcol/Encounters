@@ -1246,7 +1246,8 @@
       const steady = f1Env(tau, T.pour + 0.85, T.pour + 3.55, 0.4, 0.3);
       /* (his palm against the bottle's side, his fingers round its front: 27 Nov, clipscan, 3.5 cm off its middle his fingers
          went through it, 287 crossings) */
-      if (steady > 0.001) handTo(P, 'L', [CB1.x - 0.05, CLOTH_Y + 0.07, CB1.z + 0.02], [0.2, -0.3, -0.9], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
+      /* (the bottle before his right knee is out of his left hand's reach: that hand stays on his knee) */
+      if (steady > 0.001 && CB1.x < 0.5) handTo(P, 'L', [CB1.x - 0.05, CLOTH_Y + 0.07, CB1.z + 0.02], [0.2, -0.3, -0.9], [1, 0.1, 0.1], steady, { out: 0.22, down: 0.28 });
       const cork = f1Env(tau, T.pour + 3.0, T.pour + 3.6, 0.25, 0.2);
       if (cork > 0.001) handTo(P, 'R', [CB1.x + 0.005, CLOTH_Y + 0.17, CB1.z + 0.01], [-0.1, -0.9, -0.3], [0.2, 0.2, 0.95], cork, { out: 0.24, down: 0.25 });
       const give = f1Env(tau, T.give, T.take + 0.7, 0.9, 0.6);
@@ -1347,13 +1348,19 @@
        wrapped white as the hands work (a white wrap over the red: the knot's red is covered) */
     /* (the bottle on the cloth before him, at his left of the bowl, between the lit candle and the incense: his right hand
        pours over it from his right, his left hand steadies it without crossing his body) */
-    const CB1 = { x: 0.36, z: 1.25 };
+    /* (27 Nov, photographed: at 0.36, 1.25 the pour stood beyond his right hand's reach, and the bowl he poured from hung over
+       the incense pot with its sticks up through it; here, before his right knee, the bowl over the bottle clears the pot) */
+    const CB1 = { x: 0.70, z: 1.36 };
+    const POURDIR1 = [0.707, 0.707];   // (from the bottle toward his right knee, where his pouring hand stands)
     const GIVE1 = [0.95, 0.80, 1.88];
     const POUR1 = { take: [1.06, 0.76, 1.58], tilt: 0.85 };
     /* where his right hand is in the pour, and how far into it (k): the student's bowl taken (pour - 0.3 to + 0.9), carried
        over the bottle (+0.9 to +1.4), tilted (+1.4 to +2.6), set down at its place on the cloth (+2.6 to +3.0), let go */
     function pourAt1(t, T) {
-      const P0 = T.pour, B = [CB1.x + 0.075, CLOTH_Y + 0.25, CB1.z + 0.035], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
+      /* (his hand on the bowl's near rim held off from the bottle toward his right knee by the bowl's width less a lip, so its
+         far rim, tilted down, pours into the bottle's mouth: 27 Nov, held 8 cm off the bottle, the bowl hung beyond it) */
+      const Rs = (BOWL1.R || 0.22) * (holdOf1("bowl").s || 1), off = 2 * Rs - 0.02;
+      const P0 = T.pour, B = [CB1.x + POURDIR1[0] * off, CLOTH_Y + 0.25, CB1.z + POURDIR1[1] * off], C = [ON_CLOTH.bowl.x + 0.06, CLOTH_Y + (BOWL1.H || 0.08) + 0.02, ON_CLOTH.bowl.z + 0.08];
       const k = smo(c01((t - P0 + 0.3) / 0.6)) * (1 - smo(c01((t - P0 - 2.95) / 0.25)));
       const u1 = smo(c01((t - P0 - 0.9) / 0.5)), u2 = smo(c01((t - P0 - 2.6) / 0.4));
       /* (set down along an arc toward the table's middle and up: straight, its rim went through the incense sticks, 27 Nov) */
@@ -1415,7 +1422,7 @@
       const mkHead = () => f1Head(cast.marcus, [KEEP1.mkStand.x, 1.6, KEEP1.mkStand.z], 1.6);
       const phoAt = (dx, dy) => { const f = f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95); return [f[0] + dx, f[1] + dy, f[2] - 0.05]; };
       const UNTIE1 = [eye[0] - 0.14, eye[1] + 0.15, eye[2] - 0.20];
-      const POURAT1 = [CB1.x + 0.03, CLOTH_Y + 0.15, CB1.z + 0.01];
+      const POURAT1 = [CB1.x + POURDIR1[0] * 0.12, CLOTH_Y + 0.16, CB1.z + POURDIR1[1] * 0.12];   // (between the bottle's mouth and the bowl over it)
       return [
         /* INSERT from above (his eyes looking down): his hands and the bowl at the picture's foot, the packet in its middle */
         /* (kneeling up and leaning in to watch it: 27 Nov, with the plate moved, from where he kneels the incense stood 2 cm
