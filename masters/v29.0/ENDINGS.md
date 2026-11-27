@@ -180,7 +180,13 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
 4. M8 begins 3.0 to 6.1 s into the dawn, not at its first second, so its last chord falls under his thought (3).
 5. THE WINDING is 5 s and the spool is set on the table off the picture (the plan's 14 to 24 s gives it 10 s with the
    setting down): the dawn already runs 48 to 51 s on its measured lines.
-6. Findings for other pieces, left as they are: PLAY's PHONEHELD shows the phone's back to the lens at the decision (4);
+6. THE BURN'S FLASH in D is the band's haze turned warm white and opened out about the wrist for 0.45 s (a translucent ring
+   of light, read from the photograph as a flash at the wrist); a sprite of light would be softer still.
+7. HIS TEACHER'S LEFT HAND at the tie lies straight along the wrist's side: his standing file (`p5pho`) carries finger bones
+   in the right hand only, so only the right closes on the thread.
+8. IN C THE TAP'S WATER falls a hand's width short of his hand under it (the hand is the hands' pass's own place on the
+   screen, the water the world's).
+9. Findings for other pieces, left as they are: PLAY's PHONEHELD shows the phone's back to the lens at the decision (4);
    FILMS-1's clasp in its films is at the engine's default height, -0.235, which shows the thumbs (e3c2's -0.33 hides
    them: B's here uses it); THINGS: the altar cabinet's top right edge is ragged where the lens passes it in the barrier
    and in C (photographed); his teacher's cloth bag hangs where his right arm swings (FILMS-1's c_yfilm.js phoBagOn1, and
