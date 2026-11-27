@@ -167,11 +167,13 @@
       return g;
     }
     const F2HELD = () => (S && S.plan && S.plan.PHONEHELD) || { pos: [-0.045, 0.06, -0.035], rot: [0.35, 0.25, 0] };
-    /* HIS PHONE HELD UP TO CALL (the endings' own hold: the play's at the decision shows the phone's back to the lens, its
-       screen turned down: measured, its screen's normal (0.31, -0.77, 0.56) in the lens's frame; said in ENDINGS.md). Here
-       the screen faces him, a little up (its normal (0.01, 0.46, 0.89)), in the library's closed grip; `F2TUNE` is a
-       probe's handle on these numbers (tools/probes/e5c1ends.mjs TUNE: many tries photographed from one boot) */
-    const F2TUNE = { phone: { arm: [-0.075, 0.07, 0.02], tilt: 0.42, roll: 0.12, pose: 'place', k: 1, pos: null }, chairY: 0, tieArm: [0, 0, 0], chairFlip: true, cam: null };
+    /* HIS PHONE HELD UP TO CALL (the endings' own hold: the play's at the decision, the hand at rest, shows the phone's back
+       to the lens, its screen turned down: measured, its screen's normal (0.31, -0.77, 0.56) in the lens's frame; said in
+       ENDINGS.md). The library's `place` grip at 0.4 turns the same hold's screen up to his eyes, low before him, the table
+       or the floor beyond it (photographed, build 2: "3:03" and his teacher's name read on a phone); `face` can turn the
+       screen to the lens whatever the arm (f2PhoneFace), unused by default. `F2TUNE` is a probe's handle on these numbers
+       (tools/probes/e5c1ends.mjs TUNE: many tries photographed from one boot) */
+    const F2TUNE = { phone: { arm: [0, 0, 0], tilt: 0.42, roll: 0.12, pose: 'place', k: 0.4, face: 0, pos: null }, chairY: 0, tieArm: [0, 0, 0], cam: null };
     const F2CALL = () => F2TUNE.phone;
     /* the phone in his right hand turned so its screen faces his eyes, whatever the arm's own turn: its turn in the world of
        the hands' pass laid from the lens's (the screen's normal toward the lens, tilted up by `tilt`, rolled by `roll`),
@@ -311,6 +313,18 @@
       const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
       return { curve, L: curve.getLength(), seed };
     }
+    /* THE THREADS AT HIS FEET (endings B and C, before the barrier: the plan's "the threads are already at his feet"): the same
+       threads from the same places (under his front door, through his glass) to his sofa, where he sits (B) or lies (C):
+       ended a stride in front of it, spread along it; those from his door come round his sofa's far end, never under it */
+    function f2WayNear(from, x0, i, seed) {
+      const pts = [], S = HIS.sofa, ex = S.x - 0.55 + 0.18 * i, ez = S.z + 0.62 + 0.06 * Math.sin(i * 2.1);
+      if (from === 'door') pts.push([x0, 0.006, LIV.z0 - 0.6], [x0, 0.006, LIV.z0 + 0.05], [S.x - 1.2, 0.007, S.z - 0.62], [S.x - 1.25, 0.008, S.z + 0.45]);
+      else pts.push([x0, 1.5, LIV.z1 + 1.4], [x0, 0.6, LIV.z1 + 0.25], [x0 + 0.05, 0.03, LIV.z1 - 0.15],
+                    [lp(x0, ex, 0.5) + Math.sin(seed * 3.1) * 0.3, 0.008, lp(LIV.z1 - 0.15, ez, 0.5) + Math.cos(seed * 2.3) * 0.25]);
+      pts.push([ex, 0.01, ez]);
+      const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
+      return { curve, L: curve.getLength(), seed };
+    }
     function f2WayAt(W, s, t, out) {
       const u = c01(s / W.L); W.curve.getPointAt(u, out);
       /* (the search: a sideways wave along it, travelling with the head, smaller near where it came in and at the gold) */
@@ -328,10 +342,10 @@
       { from: 'glass', x: F2P.balc.x - 0.2, aim: 1.0, t0: 0.2, v: 0.6 },
       { from: 'glass', x: F2P.circle.x + 2.9, aim: 1.6, t0: 1.8, v: 0.62 }
     ].map((T, i) => {
-      const W = f2Way(T.from, T.x, 0, T.aim, i + 1), g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial());
+      const W = f2Way(T.from, T.x, 0, T.aim, i + 1), Wn = f2WayNear(T.from, T.x, i, i + 1), g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial());
       m.name = 'a red thread (the barrier)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
       const sp = ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null;
-      return Object.assign({}, T, { W, g, m, sp, i });
+      return Object.assign({}, T, { W, Wn, g, m, sp, i });
     });
     /* THE SPARKS where a thread burns on the gold, and its ash: small motes in the vision (ctx.spirit on an instanced mote),
        each a pure function of the clock (born at a moment, flying out and falling, fading) */
@@ -411,10 +425,12 @@
     }
     function f2Vision(r, mv, t) {
       if (!kit || !kit.vision) return;
-      if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; }
-      /* (shut: held at nothing for a third of a second, so the vision's own radius is nothing when it is let go; let go while
-         it stood open, it would run home by itself over its own 1.6 s, across a cut) */
-      else if (F2.vis) { if (t != null && t - (F2.visT || 0) < 0.3 && t >= (F2.visT || 0)) kit.vision({ r: 0, moving: false }); else { kit.vision({ r: 0, moving: false }); kit.vision(null); F2.vis = false; } }
+      if (r > 0.001 || mv) { kit.vision({ r, moving: !!mv }); F2.vis = true; F2.visT = t; F2.visZero = 0; }
+      /* (shut: held at nothing for three drawn frames and a third of a second, so the vision's own radius is nothing when it
+         is let go; let go while it stood open, it runs home by itself over its own 1.6 s, across a cut: the oven's clock was
+         photographed inverted a second after B's cut, where a seek had jumped the third of a second) */
+      else if (F2.vis) { kit.vision({ r: 0, moving: false }); F2.visZero = (F2.visZero || 0) + 1;
+        if (F2.visZero > 3 && !(t != null && t - (F2.visT || 0) < 0.3 && t >= (F2.visT || 0))) { kit.vision(null); F2.vis = false; } }
     }
     function f2Look(name) { if (F2.look === name) return; F2.look = name; if (kit && kit.daylight && PRESETS[name]) kit.daylight(PRESETS[name], 0); }
     function f2Press(k) { if (kit && kit.press) kit.press(c01(k), { secs: 0, cine: true }); F2.press = k; }
@@ -635,10 +651,10 @@
        held off the gold's edge (there is no gold yet), searching */
     function f2ThreadsAt(t, te, o) {
       for (const T of F2THREADS) {
-        const L = T.W.L, start = L * 0.6, grow = Math.max(0, te - o.t0 - T.t0 * 0.4);
+        const W = T.Wn, L = W.L, start = L * 0.55, grow = Math.max(0, te - o.t0 - T.t0 * 0.4);
         const head = Math.min(L - 0.04 - 0.05 * Math.sin(te * 1.7 + T.i), start + grow * T.v);
         T.m.visible = head > 0.05;
-        if (T.m.visible) { f2TubeLay(T.g, (s2, out) => f2WayAt(T.W, s2, te, out), 0, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
+        if (T.m.visible) { f2TubeLay(T.g, (s2, out) => f2WayAt(W, s2, te, out), 0, head, F2T.r); if (T.sp) T.sp.set('uAlpha', 0.85); }
       }
     }
     /* ENDING D'S THREADS: streaming in from the dark beyond the city's lights, all from one direction, across his balcony and
@@ -780,7 +796,9 @@
         const seat = [sf.x + 0.05, F2EYE.sofa, sf.z + 0.2], fl = [sf.x + 0.1, 0.86, sf.z + 0.78], knee = [F2HX - 0.3, F2EYE.knees, 0.35];
         K.push({ t: E.down, e: [tb.x, EYE - 0.03, tb.z], a: [ph.x, 0.72, ph.z], fp: 60, fd: 52, n: 'B:down' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 1.6, 1.15, tb.z - 0.9], fp: 62, fd: 54, n: 'B:turn' });
-        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
+        /* (to his sofa looking at his altar across the room, its candle, his teacher's photograph: as he says he will not
+           wake him; in its last metre to his glass, where he sits facing it) */
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], look: () => [HIS.altar.x, 1.12, HIS.altar.z], fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
         K.push({ t: E.sit + 1.1, e: seat, a: [seat[0], 1.0, 2.6], fp: 64, fd: 56, n: 'B:sit', stop: true });
         K.push({ t: E.wave1, e: seat, a: [seat[0] + 0.05, 0.98, 2.6], fp: 64, fd: 56, n: 'B:pray', stop: true });
         K.push({ t: E.wave2, e: [seat[0], seat[1] - 0.02, seat[2] + 0.02], a: [seat[0] + 0.1, 0.92, 2.6], fp: 56, fd: 50, n: 'B:wave' });
@@ -900,7 +918,7 @@
         else if (t < E.b0) { f2CircleLay(0); f2EndFx(t, E, k); f2EndHands(t, E, k); }
         else { f2DawnFx(t - E.d0, E.dawn, k); }
         /* (the circle scaled only by the dawn's winding: before it, whole) */
-        if (t < E.d0) { f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0); f2DustAt(0, 0); f2Chairs(false); f2DawnOff(); }
+        if (t < E.d0) { f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0); f2DustAt(0, 0); f2DawnOff(); }
       },
       end() {
         if (!F2.on) return;
@@ -930,7 +948,6 @@
         F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false; F2DUST.pts.visible = false;
         WORLD.hisDoor(0); f2CircleWound(0); f2Circle.m.scale.set(1, 1, 1); f2Circle.m.position.set(0, 0, 0);
         if (F2.phoLv != null) f2PhoLevel(F2.phoLv);
-        f2Chairs(false);
         camera.rotation.z = 0;
       },
       /* CLOSE THE CIRCLE's event (the plan's 9.7: the hands-on kind's circling step, its own picture `circle`, briefed with
@@ -1010,7 +1027,8 @@
       if (near && visOpen) f2ThreadsAt(t, t, { near: true, t0: k === 'B' ? E.forced - 1.0 : E.forced - 1.0, hold: true });
       else if (k !== 'D') for (const T of F2THREADS) T.m.visible = false;
       /* B: the phone face down on his table from when he lays it there until he takes it again */
-      f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.55;
+      /* (taken from the table as his hand closes on it: one phone, never two) */
+      f2TablePhone.visible = k === 'B' && t >= E.flat && t < E.reach + 0.22;
       if (k === 'B') worldOven(t >= E.cut ? '3:41' : '3:03');
       /* C: the tap's water */
       f2Tap.visible = k === 'C' && t >= E.tap + 0.25 && t < E.sofa0 + 0.2;
@@ -1031,7 +1049,7 @@
       f2Hands(true, C.pose && kk > 0.01 ? C.pose : null, (C.k || 0) * kk); f2MirrorLeft(false);
       if (A && A.armR) { A.armR.position.x += C.arm[0] * kk; A.armR.position.y += C.arm[1] * kk - 0.07 * c01(low); A.armR.position.z += C.arm[2] * kk; }
       const g = F2M.phone; if (g && C.pos) { const H = F2HELD().pos; g.position.set(lp(H[0], C.pos[0], kk), lp(H[1], C.pos[1], kk), lp(H[2], C.pos[2], kk)); }
-      f2PhoneFace(kk);
+      f2PhoneFace(kk * (C.face || 0));
     }
     function f2EndHands(t, E, k) {
       const A = F2.api;
@@ -1116,9 +1134,10 @@
         C, TOP,
         /* inside his door, in the middle of its opening (his teacher framed in it: from the side its jamb hid half of him,
            photographed), clear of its leaf's swing (0.8 m round its hinge at the door's -x side: 0.9 m off); and where he steps
-           aside to let him in, behind his sofa's end */
+           back and aside to let him in, behind the middle of his sofa: 1.2 m off his teacher's way in (0.65 m off, he passed
+           the lens close enough to fill the picture and cut off his head, photographed) */
         doorEye: [HIS.door.x + 0.05, EYE, LIV.z0 + 0.78],
-        asideEye: [HIS.door.x + 0.75, EYE, LIV.z0 + 0.95],
+        asideEye: [HIS.door.x + 1.25, EYE, LIV.z0 + 0.62],
         phoDoor: { x: HIS.door.x + 0.05, z: LIV.z0 - 0.74 },
         /* (in past him on the door's side, between his altar and his sofa's end toward the circle: his student stands 0.5 m
            to his right) */
@@ -1130,10 +1149,15 @@
         /* his chair (WORLD's dawn seat: FILMPLACE.dawnSeat), his teacher's across the table */
         tableEye: [HIS.chair1.x, 1.17, HIS.chair1.z + 0.06],
         phoChair: { x: HIS.chair2.x, z: HIS.chair2.z, ry: 0 },
-        /* (the breakfast at the table's end, clear of the middle where his wrist is held out to be tied: at the middle it
-           stood between the lens and the tie, photographed) */
-        food: [dn.x - 0.56, TOP + 0.003, dn.z - 0.02, 0.5],
-        spoolT: [dn.x - 0.46, TOP + 0.002, dn.z - 0.3]
+        /* (WORLD's chairs face the table: w51dinchair's back stands at its -z, measured 0.245 m behind its middle, its seat's top
+           0.50 m; so `chair2` at ry 0 faces him. His teacher sits forward on it, toward the table, for the talk and the tie;
+           his height on it, phoSitY, is his posed seat's, measured) */
+        phoSitZ: 0.05, phoSitY: 0,
+        /* (the breakfast on his teacher's half of the table to his right, clear of the middle where the wrist is held out to be
+           tied (at the middle it stood between the lens and the tie, photographed) and of his teacher's right forearm reaching
+           it; the spool set down on the other side) */
+        food: [dn.x - 0.40, TOP + 0.003, dn.z - 0.2, 0.5],
+        spoolT: [dn.x + 0.22, TOP + 0.002, dn.z - 0.25]
       };
     })();
     /* the dawn's own things: the breakfast set (w51breakfast: the paper bag, two cups of kopi, the wrapped toast), the spool
@@ -1144,7 +1168,7 @@
     F2M.spoolTable = stand('w51threadreel', F2DW.spoolT[0], F2DW.spoolT[1], F2DW.spoolT[2], 0.6, { parent: hisSideG, s: 0.62 }); F2M.spoolTable.visible = false;
     const f2Lift = (() => { const g = f2TubeGeo(), m = new THREE.Mesh(g, M({ color: 0xf2f0e8, roughness: 0.85, emissive: 0x34342e })); m.name = 'the thread drawn up to his hands (the dawn)';
       m.frustumCulled = false; m.visible = false; hisSideG.add(m); return { g, m }; })();
-    const _dwA = new THREE.Vector3(), _dwB = new THREE.Vector3(), _dwC = new THREE.Vector3();
+    const _dwA = new THREE.Vector3();
     function f2PhoLevel(v) { if (typeof phoLook === 'object' && phoLook && phoLook.level) phoLook.level.value = v; }
     /* THE DAWN'S LENS, a shot of keys a dawn (u from d0) */
     function f2DawnKeys(D, k) {
@@ -1159,15 +1183,17 @@
            his head turns to it over his shoulder */
         { t: 0, e: lieE, a: [C.x + 0.03, 0.42, C.z + 2.4], fp: 64, fd: 56, n: 'dawn:wake', stop: true },
         { t: u(D.sit) - 0.05, e: [lieE[0], lieE[1] + 0.02, lieE[2] + 0.02], a: [C.x + 0.04, 0.38, C.z + 2.3], fp: 64, fd: 56, n: 'dawn:wake2', stop: true },
-        { t: u(D.sit) + 1.3, e: sitE, a: [C.x + 0.05, 0.2, C.z + 1.9], fp: 66, fd: 58, n: 'dawn:sat', stop: true },
-        { t: u(D.knock) + 0.25, e: sitE, a: [C.x + 0.05, 0.24, C.z + 1.9], fp: 66, fd: 58, n: 'dawn:sat2', stop: true },
+        /* (low enough that the thread round him is in the lower third and his glass above it: at 18 degrees down the thread
+           lay along the picture's foot, photographed) */
+        { t: u(D.sit) + 1.3, e: sitE, a: [C.x + 0.05, 0.22, C.z + 1.55], fp: 66, fd: 58, n: 'dawn:sat', stop: true },
+        { t: u(D.knock) + 0.25, e: sitE, a: [C.x + 0.05, 0.26, C.z + 1.55], fp: 66, fd: 58, n: 'dawn:sat2', stop: true },
         { t: u(D.door) - 0.05, e: [sitE[0], sitE[1] + 0.02, sitE[2]], a: [C.x - 2.0, 0.85, C.z + 0.9], fp: 66, fd: 58, n: 'dawn:toknock', stop: true },
         /* DOOR (a cut): the door drawn open on his teacher, framed in its middle */
         { t: u(D.door), e: dE, a: [F2DW.phoDoor.x, 1.36, F2DW.phoDoor.z + 0.2], fp: 58, fd: 50, n: 'dawn:door', cut: true },
         { t: u(D.door) + 1.1, e: dE, a: [phoFace[0], 1.4, phoFace[2]], fp: 56, fd: 48, n: 'dawn:pho', stop: true },
-        { t: u(D.inside) - 0.1, e: [dE[0], dE[1], dE[2] - 0.04], a: [phoFace[0], 1.38, phoFace[2] + 0.05], fp: 54, fd: 46, n: 'dawn:pho2', stop: true },
+        { t: u(D.inside) - 0.35, e: [dE[0], dE[1], dE[2] - 0.04], a: [phoFace[0], 1.38, phoFace[2] + 0.05], fp: 54, fd: 46, n: 'dawn:pho2', stop: true },
         /* he comes in past him: his look goes with him (the place the film walks him), into the room */
-        { t: u(D.inside) + 1.0, e: F2DW.asideEye, a: phoAt(1.3), fp: 58, fd: 50, n: 'dawn:in' },
+        { t: u(D.inside) + 1.1, e: F2DW.asideEye, a: phoAt(1.3), fp: 58, fd: 50, n: 'dawn:in' },
         { t: u(D.wind) - 0.05, e: F2DW.asideEye, a: phoAt(1.2), fp: 58, fd: 50, n: 'dawn:in2', stop: true },
         /* WIND (a cut): his teacher on the floor at the circle's edge, the loop drawn in to his hands; the sun behind him */
         { t: u(D.wind), e: wE, a: [wFace[0], 0.62, wFace[2] - 0.15], fp: 58, fd: 50, n: 'dawn:wind', cut: true },
@@ -1176,41 +1202,73 @@
         { t: u(D.table), e: tE, a: across, fp: 50, fd: 42, n: 'dawn:table', cut: true },
         { t: u(D.tie) - 0.05, e: [tE[0], tE[1] - 0.06, tE[2] - 0.3], a: [across[0], across[1] - 0.02, across[2]], fp: 48, fd: 40, n: 'dawn:table2', stop: true },
         /* TIE (a cut, an insert from his eyes): his wrist held out across the table, his teacher's hands; then his eyes up */
-        { t: u(D.tie), e: [tE[0], tE[1] - 0.04, tE[2] - 0.12], a: F2DW.tieAt.slice(), fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie', cut: true },
-        { t: u(D.up) - 0.05, e: [tE[0], tE[1] - 0.04, tE[2] - 0.12], a: [F2DW.tieAt[0], F2DW.tieAt[1] + 0.01, F2DW.tieAt[2] - 0.02], fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie2', stop: true },
+        /* (turned so his held wrist, which the hands' pass draws low on the left, stands where his teacher's hands reach it:
+           f2TieCam; held still through the two knots) */
+        { t: u(D.tie), e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie', cut: true },
+        { t: u(D.up) - 0.05, e: F2DW.tieEye, a: () => f2TieCam().aim, fp: F2DW.tieFov[0], fd: F2DW.tieFov[1], n: 'dawn:tie2', stop: true },
         { t: u(D.up) + 1.4, e: [tE[0], tE[1] - 0.05, tE[2] - 0.2], a: [across[0], across[1] + 0.02, across[2]], fp: 50, fd: 42, n: 'dawn:face' },
         { t: u(D.black) + 1.6, e: [tE[0], tE[1] - 0.05, tE[2] - 0.24], a: [across[0], across[1] + 0.02, across[2]], fp: 48, fd: 40, n: 'dawn:face2', stop: true }
       ];
       return K;
     }
-    /* where his wrist is held out for the tie, and the narrow lens that draws his own hand (the hands' pass, its fixed 52
-       degrees at its own depth) at the size the world's would be there: a world point at d metres on a lens of f degrees is
-       drawn as big as the hand at z on 52 when d tan(f/2) = z tan(26): so the wrist is laid where his teacher can reach it
-       across the table and the two are one size (ENDINGS.md 3) */
-    F2DW.tieFov = [26, 23];
-    F2DW.tieZ = 0.44;                                                                   // the held hand's own depth in the hands' pass (its reach)
-    F2DW.tieD = (f) => F2DW.tieZ * Math.tan(26 * Math.PI / 180) / Math.tan(f * Math.PI / 360);
-    /* (the point the insert looks at: a hand's breadth over the table's top, on the line from his leaning eye at the depth
-       the phone's narrow lens gives a hand 0.44 m into the hands' pass) */
+    /* THE TIE'S INSERT (ENDINGS.md 3). His own hand is drawn in the hands' pass: a lens of its own (52 degrees) and a place
+       fixed on the screen (the reach, turned over for the left: low on the left). On the world's lens f the same picture is a
+       hand whose depth along the lens is zv / s, s = tan(f/2) / tan(vm/2), at the same sideways and upward metres (xv, yv)
+       as in the hands' camera: so on a narrow lens (an insert's, v6.12) his hand is as big as a hand twice as far off, and
+       his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens is TURNED (no roll) so that point lies
+       where his teacher can reach across the table, the direction from his eye given by `tieWant` (over the table's middle,
+       a hand's breadth and more over its top, in front of his teacher's chest); his teacher's hands go to it (f2TieW). The
+       lens's angle stays the insert's own; so the wrist's distance is the hand's (0.81 m on a phone, 0.92 on a desk) */
+    F2DW.tieFov = [22, 23];
     F2DW.tieEye = [F2DW.tableEye[0], F2DW.tableEye[1] - 0.04, F2DW.tableEye[2] - 0.12];
-    F2DW.tieAt = (() => { const e = F2DW.tieEye, d = F2DW.tieD(F2DW.tieFov[0]), dy = (F2DW.TOP + 0.07) - e[1];
-      return [e[0], e[1] + dy, e[2] - Math.sqrt(Math.max(0.01, d * d - dy * dy))]; })();
-    /* WHERE HIS HELD WRIST IS IN THE WORLD for his teacher's hands to reach (the hands' pass draws his own hand on its fixed
-       52 degrees at its own depth z; on the world's lens f the same picture is a hand at z tan(26) / tan(f/2)): the left
-       wrist bone as drawn, its point on this screen and its depth there, laid out along the world lens's own ray */
-    const _wa = new THREE.Vector3(), _wb = new THREE.Vector3();
+    F2DW.tieWant = [HIS.chair1.x - 0.06, F2DW.TOP + 0.19, HIS.dining.z - 0.03];
+    const F2TIE = { geo: null }, _wa = new THREE.Vector3();
+    /* his held left wrist in the hands' camera at the reach the tie holds it at (metres; the place the hands' pass draws it,
+       measured once for this screen's shape: the pose is laid, read and left for the frame to lay its own) */
+    function f2TieGeo() {
+      const A = F2.api, asp = A && A.vmCam ? A.vmCam.aspect : camera.aspect;
+      if (F2TIE.geo && Math.abs(F2TIE.geo.asp - asp) < 1e-4) return F2TIE.geo;
+      let g = null;
+      if (A && A.buildPrayerArm && A.vmCam && A.handPose && A.armR) {
+        f2Hands(true, 'reach', 0.92, { p: 0 });
+        const T = F2TUNE.tieArm; if (T) { A.armR.position.x += T[0]; A.armR.position.y += T[1]; A.armR.position.z += T[2]; }
+        f2MirrorLeft(true);
+        const L = A.buildPrayerArm(), wr = L && L.userData.model ? L.userData.model.getObjectByName('handR') : null;
+        if (wr) { L.updateWorldMatrix(true, true); wr.getWorldPosition(_wa); A.vmCam.updateMatrixWorld(); _wa.applyMatrix4(A.vmCam.matrixWorldInverse);
+          if (-_wa.z > 0.05) g = { asp, xv: _wa.x, yv: _wa.y, zv: -_wa.z, vm: A.vmCam.fov, measured: true }; }
+      }
+      /* (before the hands have landed: the reach's own numbers, HPOSE.reach turned over) */
+      if (!g) { const zv = 0.383, h = zv * Math.tan(26 * Math.PI / 180); g = { asp, xv: -0.326 * h * asp, yv: -0.652 * h, zv, vm: 52, measured: false }; }
+      if (g.measured) F2TIE.geo = g;
+      return g;
+    }
+    /* the insert's turn: pitch phi and yaw psi taking (xv, yv, -zv/s) onto the wanted direction at its own length */
+    const _tc = { aim: [0, 0, 0], W: [0, 0, 0] };
+    function f2TieCam() {
+      const g = f2TieGeo(), E = F2DW.tieEye, f = f2Narrow() ? F2DW.tieFov[0] : F2DW.tieFov[1];
+      const s = Math.tan(f * Math.PI / 360) / Math.tan(g.vm * Math.PI / 360), vz = g.zv / s, D = Math.hypot(g.xv, g.yv, vz);
+      const want = F2DW.tieWant, dx = want[0] - E[0], dy = want[1] - E[1], dz = want[2] - E[2], L = Math.hypot(dx, dy, dz) || 1;
+      const w = [dx / L * D, dy / L * D, dz / L * D];
+      const rho = Math.hypot(g.yv, vz), del = Math.atan2(vz, g.yv), phi = del - Math.acos(Math.max(-1, Math.min(1, w[1] / rho)));
+      const z1 = g.yv * Math.sin(phi) - vz * Math.cos(phi), psi = Math.atan2(w[0], w[2]) - Math.atan2(g.xv, z1);
+      _tc.aim[0] = E[0] - Math.cos(phi) * Math.sin(psi); _tc.aim[1] = E[1] + Math.sin(phi); _tc.aim[2] = E[2] - Math.cos(phi) * Math.cos(psi);
+      _tc.W[0] = E[0] + w[0]; _tc.W[1] = E[1] + w[1]; _tc.W[2] = E[2] + w[2];
+      return _tc;
+    }
+    /* where his held wrist is for his teacher's hands (the insert's, whatever lens the frame has: before the cut his teacher
+       is already reaching to where it will be) */
+    const f2TieW = () => f2TieCam().W.slice();
+    /* WHERE HIS HELD LEFT WRIST IS IN THE WORLD under THIS frame's lens (ending D's band reaches it): the wrist bone as the
+       hands' pass draws it, at its sideways and upward metres in the hands' camera and at the depth zv / s along this lens */
     function f2WristAt(out) {
       const A = F2.api; if (!A || !A.buildPrayerArm || !A.vmCam) return null;
       const L = A.buildPrayerArm(); if (!L || !L.visible || !L.userData.model) return null;
       const wr = L.userData.model.getObjectByName('handR'); if (!wr) return null;
       wr.updateWorldMatrix(true, false); wr.getWorldPosition(_wa);
-      A.vmCam.updateMatrixWorld(); _wb.copy(_wa).applyMatrix4(A.vmCam.matrixWorldInverse); const zv = Math.max(0.05, -_wb.z);
-      _wa.project(A.vmCam);
+      A.vmCam.updateMatrixWorld(); _wa.applyMatrix4(A.vmCam.matrixWorldInverse);
+      const zv = Math.max(0.05, -_wa.z), s = Math.tan(camera.fov * Math.PI / 360) / Math.tan(A.vmCam.fov * Math.PI / 360);
       camera.updateMatrixWorld();
-      const d = zv * Math.tan(A.vmCam.fov * Math.PI / 360) / Math.tan(camera.fov * Math.PI / 360);
-      camera.getWorldPosition(_wb);
-      out.set(_wa.x, _wa.y, 0.5).unproject(camera).sub(_wb).normalize().multiplyScalar(d).add(_wb);
-      return out;
+      return out.set(_wa.x, _wa.y, -zv / s).applyMatrix4(camera.matrixWorld);
     }
 
     /* the people of the dawn (his teacher standing, sitting on the floor, at the table) and their things, at u */
@@ -1230,6 +1288,7 @@
           H.gaze(PS, u, [[uIn, 'lens', 0.4], [uIn + 0.9, [F2DW.C.x, 0.3, F2DW.C.z + 0.3], 0.8]], 0.7, 0.6, 0.02); }
         f2PhoBag(PS);
       }
+      if (!winding) F2M.spoolPho.visible = false;
       if (winding && PC.ready) f2Wind(u, uWind, uTable, PC);
       if (atTable && PS.ready) f2AtTable(u, uTable, uTie, D, k, PS);
       /* the thread and the spool: round him on the floor until his teacher winds it in; on the table after */
@@ -1244,41 +1303,45 @@
       const m = f2Circle.m, P = F2DW.pick, s = Math.max(0.0001, 1 - w);
       m.scale.set(s, 1, s); m.position.set(P[0] * (1 - s), 0, P[2] * (1 - s));
     }
+    /* (a bone by its name, the rig's prefix with or without its colon: glTF strips it, mixamorigSpine2: v3.8) */
+    const f2Bone = (P, nm) => { if (!P || !P.bone) return null; const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     /* his cloth bag on his left shoulder, hung at his right hip by its strap (as FILMS-1 hangs it: c_yfilm.js phoBagOn1) */
     function f2PhoBag(P) {
       const g = FILMSAPI.props.phoBag; if (!g || !P.ready || !P.group.visible) { if (g) g.visible = false; return; }
-      const sh = P.bone && (P.bone['mixamorig:Spine2'] || P.bone.Spine2 || P.bone['mixamorig:Spine1'] || P.bone.Spine1) || P.hips; if (!sh) return;
+      const sh = f2Bone(P, 'Spine2') || f2Bone(P, 'Spine1') || P.hips; if (!sh) return;
       P.group.updateWorldMatrix(true, true); sh.getWorldPosition(_dwA);
       const ry = P.group.rotation.y;
       if (g.parent !== world) world.attach(g);
       g.position.set(_dwA.x - Math.cos(ry) * 0.2 - Math.sin(ry) * 0.02, _dwA.y - 0.52, _dwA.z + Math.sin(ry) * 0.2 - Math.cos(ry) * 0.02);
       g.rotation.set(0, ry + Math.PI / 2, 0.08); g.scale.setScalar(1); g.visible = true;
     }
-    /* WIND: on the floor at the circle's edge, seated as he sits at her table (cast.pho, CROSS), his right hand turning the
-       spool in small circles over his lap, his left drawing the thread up to it */
+    /* WIND: on the floor at the circle's edge, seated as he sits at her table (cast.pho, CROSS), the spool held upright in his
+       right hand before his belly and turned as he winds, his left hand a little before it pinching the thread that comes up
+       from the floor and feeding it on: both hands laid by handTo after his seated rest, as FILMS-1 lays his at her table, and
+       measured (jointscan); facing -z here, so before him is -z and his right +x */
     function f2Wind(u, u0, u1, P) {
-      put(P, F2DW.wind.x, F2DW.wind.z, F2DW.wind.ry, 0);
-      /* (his own seated rest, his hands in his lap as the play seats him: the spool held in his right hand, turning slowly as
-         he winds; no hand laid on by a solve: v26.3, a pose is never laid on unmeasured) */
+      const W = F2DW.wind;
+      put(P, W.x, W.z, W.ry, 0);
       pose(P, 'Sit_to_Stand_Transition_M', 0.02 + 0.008 * Math.sin(u * 0.9), false);
-      const ph = (u - u0) * 2 * Math.PI * 0.45;
-      const g = F2M.spoolPho, hb = FILMSAPI.helpers && P.bone ? (P.bone['mixamorig:RightHand'] || P.bone.RightHand) : null;
-      const sp = [F2DW.wind.x, 0.4, F2DW.wind.z - 0.22];
-      if (g && hb) { P.group.updateWorldMatrix(true, true); hb.updateWorldMatrix(true, false);
-        const mid = P.bone['mixamorig:RightHandMiddle1'] || P.bone.RightHandMiddle1;
-        hb.getWorldPosition(_dwA); if (mid) { mid.getWorldPosition(_dwB); _dwA.lerp(_dwB, 0.7); }
-        if (g.parent !== world) world.attach(g);
-        g.position.set(_dwA.x, _dwA.y - 0.02, _dwA.z); g.rotation.set(0, ph, 0); g.scale.setScalar(1); g.visible = true;
-        sp[0] = _dwA.x; sp[1] = _dwA.y; sp[2] = _dwA.z; }
-      /* the thread from where it leaves the floor up to the spool in his hand */
+      const ph = (u - u0) * 2 * Math.PI * 0.45, feed = 0.018 * Math.sin(ph);
+      const S = [W.x + 0.06, 0.40, W.z - 0.27], Lp = [W.x - 0.04, 0.37 + 0.01 * Math.sin(ph + 1.2), W.z - 0.37 + feed];
+      handTo(P, 'R', [S[0] + 0.035, S[1] + 0.005, S[2]], [-0.2, -0.35, -0.9], [-1, 0.05, 0], 1, { out: 0.22, down: 0.3 });
+      handTo(P, 'L', Lp, [0.5, -0.25, -0.83], [0.35, -0.9, 0.2], 1, { out: 0.22, down: 0.3 });
+      curlFingers(P, 'R', 0.75); curlFingers(P, 'L', 0.5);
+      /* (the spool's foot at its middle less half its height: w51threadreel 0.084 m tall at 0.62) */
+      const g = F2M.spoolPho;
+      if (g) { if (g.parent !== world) world.attach(g); g.position.set(S[0], S[1] - 0.026, S[2]); g.rotation.set(0, ph * 2.2, 0); g.scale.setScalar(1); g.visible = true; }
+      /* the thread from where it leaves the floor up through his left hand's pinch and onto the spool */
       const pk = F2DW.pick;
-      f2TubeLay(f2Lift.g, (s, out) => { const q = c01(s); out.set(lp(pk[0], sp[0], q), lp(pk[1], sp[1], Math.pow(q, 0.7)), lp(pk[2], sp[2], q)); return out; }, 0, 1, F2C.r * 1.1, 0.001);
+      f2TubeLay(f2Lift.g, (s, out) => {
+        if (s < 0.8) { const q = s / 0.8; return out.set(lp(pk[0], Lp[0], q), lp(pk[1], Lp[1], Math.pow(q, 0.6)), lp(pk[2], Lp[2], q)); }
+        const q = (s - 0.8) / 0.2; return out.set(lp(Lp[0], S[0] - 0.03, q), lp(Lp[1], S[1], q), lp(Lp[2], S[2] - 0.015, q)); }, 0, 1, F2C.r * 1.1, 0.001);
     }
     /* TABLE: seated across from him on the other chair (the end of his rise played back to its start: a man on a chair),
        his forearms laid on the table's edge, his look on his student; then, for the tie, both hands to the held wrist */
     function f2AtTable(u, u0, uTie, D, k, P) {
       const ch = F2DW.phoChair, H = FILMSAPI.helpers;
-      put(P, ch.x, ch.z, ch.ry, F2TUNE.chairY || 0);
+      put(P, ch.x, ch.z + F2DW.phoSitZ, ch.ry, F2DW.phoSitY + (F2TUNE.chairY || 0));
       const sitT = 0.05 + 0.02 * Math.sin(u * 0.7);
       const talk = [[D.ph51w2 - D.d0, SECS.ph51w2, 'Sitting_Answering_Questions', 0.55]];
       const own = { A: ['ph51A3'], B: ['ph51B4'], C: ['ph51C3'], D: ['ph51D3', 'ph51D4'] }[k] || [];
@@ -1288,19 +1351,19 @@
       /* (his look on his student; in D down to the red mark on his wrist as he names it, and back; to the wrist for the tie,
          and up to him for the last words) */
       const G = [[u0, 'lens', 0.3]];
-      if (k === 'D' && D.ph51D3 != null) G.push([D.ph51D3 - D.d0 - 0.4, F2DW.tieAt, 0.7], [D.ph51D4 - D.d0 - 0.2, 'lens', 0.7]);
-      G.push([uTie - 0.2, F2DW.tieAt, 0.6], [D.up - D.d0, 'lens', 0.8]);
+      if (k === 'D' && D.ph51D3 != null) G.push([D.ph51D3 - D.d0 - 0.4, f2TieW, 0.7], [D.ph51D4 - D.d0 - 0.2, 'lens', 0.7]);
+      G.push([uTie - 0.2, f2TieW, 0.6], [D.up - D.d0, 'lens', 0.8]);
       H.gaze(P, u, G, 0.75, 0.65, 0.02);
-      /* the tie: both hands to his wrist (where the narrow lens draws it), the thread drawn round and knotted twice */
+      /* the tie: both hands to his wrist (f2TieW: where the insert draws it), the thread drawn round and knotted twice */
       const uK2 = D.knot2 - D.d0, kT = f2smo(f2win(u, uTie - 0.5, uTie + 0.5)) * (1 - f2smo(f2win(u, uK2 + 0.4, uK2 + 1.1)));
       if (kT > 0.001) {
-        /* (his wrist where the hands' pass draws it, at the depth the narrow lens gives it: f2WristAt; facing +z here, his
-           right hand is at -x of it and his left at +x, each a little beyond it, toward him, pinching the thread's ends) */
-        const w = f2WristAt(_dwC) ? [_dwC.x, _dwC.y, _dwC.z] : F2DW.tieAt;
+        /* (facing +z here, his right hand at -x of the wrist and his left at +x, a little over it and toward himself, the
+           fingers in toward it and the palms down and in, pinching the thread's two ends; drawn apart at each knot) */
+        const w = f2TieW();
         const pull = f2bell(u, D.knot1 - D.d0 - 0.35, D.knot1 - D.d0, D.knot1 - D.d0 + 0.05, D.knot1 - D.d0 + 0.4) + f2bell(u, D.knot2 - D.d0 - 0.35, D.knot2 - D.d0, D.knot2 - D.d0 + 0.05, D.knot2 - D.d0 + 0.4);
-        const sx = 0.065 + 0.025 * pull;
-        handTo(P, 'R', [w[0] - sx, w[1] + 0.01, w[2] - 0.05], [0.45, -0.2, 0.85], [0.5, -0.8, 0.2], kT, { out: 0.24, down: 0.3 });
-        handTo(P, 'L', [w[0] + sx, w[1] + 0.01, w[2] - 0.05], [-0.45, -0.2, 0.85], [-0.5, -0.8, 0.2], kT, { out: 0.24, down: 0.3 });
+        const sx = 0.07 + 0.025 * pull;
+        handTo(P, 'R', [w[0] - sx, w[1] + 0.025, w[2] - 0.03], [0.6, -0.15, 0.75], [0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
+        handTo(P, 'L', [w[0] + sx, w[1] + 0.025, w[2] - 0.03], [-0.6, -0.15, 0.75], [-0.55, -0.8, 0.1], kT, { out: 0.24, down: 0.3 });
         curlFingers(P, 'R', 0.6 * kT); curlFingers(P, 'L', 0.6 * kT);
       }
     }
@@ -1341,15 +1404,6 @@
         Dd.pos[i * 3] = b[0] + 0.05 * Math.sin(0.21 * u + ph); Dd.pos[i * 3 + 1] = b[1] + 0.06 * Math.sin(0.17 * u + ph * 1.7) + 0.004 * u; Dd.pos[i * 3 + 2] = b[2] + 0.04 * Math.sin(0.13 * u + ph * 0.6); }
       Dd.g.attributes.position.needsUpdate = true;
     }
-    /* THE DINING CHAIRS TURNED TO THE TABLE for the dawn: as WORLD stands them (`chair1` ry pi, `chair2` ry 0) their backs face
-       the table (photographed from his chair at dawn: the backrest of his teacher's stood between the table and him, his
-       body through it). The films turn them for their own time and put them back (a finding for WORLD, in the report) */
-    function f2Chairs(on) {
-      const c1 = things.chair1, c2 = things.chair2; if (!c1 || !c2) return;
-      if (!F2.chairRy) F2.chairRy = [c1.rotation.y, c2.rotation.y];
-      const f = on && F2TUNE.chairFlip ? Math.PI : 0;
-      c1.rotation.y = F2.chairRy[0] + f; c2.rotation.y = F2.chairRy[1] + f;
-    }
     /* (before the dawn nothing of it stands: a pure function of the clock, so a film sought back from the morning to the
        night draws the night) */
     function f2DawnOff() {
@@ -1359,7 +1413,6 @@
       F2M.food.visible = false; F2M.spoolPho.visible = false; F2M.spoolTable.visible = false; f2Lift.m.visible = false;
     }
     function f2DawnFx(u, D, k) {
-      f2Chairs(true);
       f2DustAt(u, f2smo(f2win(u, 0.0, 1.5)));
       f2Gold.visible = false; f2GoldPool.q.visible = false; f2GoldCeil.q.visible = false;
       for (const T of F2THREADS) T.m.visible = false; f2Sparks.visible = false; f2Ash.visible = false;

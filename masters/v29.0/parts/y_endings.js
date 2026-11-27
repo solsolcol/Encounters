@@ -93,6 +93,10 @@
        rises never carries a held hand up with it (the hands' pass is drawn from the lens, not from the world) */
     T.up = T.tie + 3.9;
     T.d0 = d0; T.end = T.black + 1.6;
+    /* M8 "Dawn" (45.09 s, its last chord ringing out over its last 3.6 s) begins where it ENDS with the picture: the dawn runs
+       48 to 51 s on its measured lines, so begun at 0 (the plan's 9.9) it fell silent before his last thought and left the
+       black with no music; begun here its last chord sounds under the thought and fades with the picture (v15.3) */
+    T.m8 = T.end - 45.1;
     return T;
   }
 
@@ -259,10 +263,10 @@
       sfx(B.lie + 0.5, 'u51floor', 0.3);                                           // he lies down inside the circle
       fade(B.black, B.end - 0.05, 0, 1);
       /* ================================ THE DAWN (the plan's 9.9) */
-      if (k === 'A') sfx(D.d0 + 0.05, 'u51m8dawnA', 0.7);                         // M8 Dawn, warm and full
-      else if (k === 'B') sfx(D.d0 + 0.05, 'u51m8dawnB', 0.7);                    // tender, a solo piano
-      else if (k === 'C') sfx(D.d0 + 0.05, 'u51m8dawnC', 0.7);                    // light
-      else sfx(D.d0 + 0.05, 'u51m8dawnD', 0.7);                                   // low strings, warming at the thread
+      if (k === 'A') sfx(D.m8, 'u51m8dawnA', 0.7);                                // M8 Dawn, warm and full
+      else if (k === 'B') sfx(D.m8, 'u51m8dawnB', 0.7);                           // tender, a solo piano
+      else if (k === 'C') sfx(D.m8, 'u51m8dawnC', 0.7);                           // light
+      else sfx(D.m8, 'u51m8dawnD', 0.7);                                          // low strings, warming at the thread
       sfx(D.d0, 'u51bdawn', 0.5); sfx(D.d0 + 28.5, 'u51bdawn', 0.5);               // the morning outside (a koel, mynas, a far train; the AC off)
       sfx(D.d0 + 0.5, 'u51koel', 0.5);
       fade(D.d0 + 0.05, D.d0 + 1.3, 1, 0);

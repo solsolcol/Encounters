@@ -169,21 +169,28 @@ for (const k of ENDS) {
         fs.writeFileSync(`${OUT}/bodies-end${k}.json`, JSON.stringify(out, null, 1));
       }
       /* TUNE='[["name", t, "js"], ...]' (MODE=pics): each try's snippet run in the page with T the films' tuning handle
-         (stage.films.ends2.tune), the film sought to t (twice: the second lays what the first changed), photographed */
+         (stage.films.ends2.tune), the film sought to t (twice: the second lays what the first changed), photographed (a try
+         named read-... is only read: T.read's answer printed, no picture) */
       for (const [nm, t, js] of JSON.parse(process.env.TUNE || '[]')) {
         await passCircle(t, null);
         await p.evaluate((js) => { const T = window.__enc.stage.films.ends2.tune, S = window.__enc.stage, E = window.__enc; return String(new Function('T', 'S', 'E', js)(T, S, E)); }, js);
-        await seekTo(t); await seekTo(t); await shoot('tune-' + nm);
+        await seekTo(t); await seekTo(t);
+        /* (a try may answer something to read after its seek: `T.read`, a function of (T, S, E), its answer printed) */
+        const said = await p.evaluate(() => { const T = window.__enc.stage.films.ends2.tune, S = window.__enc.stage, E = window.__enc; try { return T.read ? JSON.stringify(T.read(T, S, E)) : ''; } catch (e) { return 'read threw ' + e.message; } });
+        if (said) log(k, 'tune', nm, said);
+        if (!/^read-/.test(nm)) await shoot('tune-' + nm);
       }
     }
-    const e2 = await p.evaluate(() => window.__enc.stage.films.ends2.state());
+    const e2 = await Promise.race([p.evaluate(() => window.__enc.stage.films.ends2.state()), sleep(30000).then(() => 'no answer')]);
     log(k, 'state', JSON.stringify(e2));
     if (errs.length) log(k, 'errs', JSON.stringify(errs.slice(0, 8))); else log(k, 'errors none');
   } catch (e) { log(k, 'FAILED', String(e).slice(0, 400), JSON.stringify(errs.slice(0, 4))); }
   await p.close();
 }
 log('done');
-await b.close();
+/* (a browser that will not close is let go: the slot it holds is the machine's) */
+await Promise.race([b.close(), sleep(20000)]);
+process.exit(0);
 
 async function rowsOf(p, kA, kZ) {
   return p.evaluate(([kA, kZ, step, aD]) => { const E = window.__enc, C = E.cine, cam = E.camera, aP = cam.aspect, out = [], outD = [];
