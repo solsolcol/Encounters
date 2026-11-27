@@ -89,6 +89,22 @@ from here, what is measured, and what is still open. Read with PLAY.md (the play
   plate's insert looks down. The cord: his hands and the bowl were drawn in the two inserts that are not his eyes (now
   hidden there); the bottle stood 5 cm under his teacher's wrist (now on his palm); his teacher's wrist bent back 105
   degrees holding it out (jointscan; now eased).
+- THE THIRD ROUND (27 Nov, evening, with the plate moved within his teacher's reach, PLAY's 45cf36d; pictures full size on a
+  phone, rows every 0.1 s on both shapes, clipscan every 2 s round the lens). The cord: the plate crosses nothing (its
+  neighbours the candles, the bottle's spot and the packet); his teacher's fingertips stood 1 to 2 cm in the packet (now on
+  it, palms down); Marcus knelt into her legs, the sofa's front and her phone (2,000 to 3,800, 1,900 and up to 2,000
+  crossings: now in front of the sofa at her right knee, rising on the cut at 38.5 where the rows saw him jump at the
+  insert's edge); the steadying hand through the bottle (287) and the bowl set down through the incense sticks (61), both
+  moved with the pour. THE BOWL IN HIS HANDS, measured by the pose's share (scratch f1bowlk.mjs: the bowl's every point in
+  a phone's picture): its top edge at -0.61 of the half-height at 0.1, -0.07 at 0.55 (its brass side then filled the lower
+  half of every shot through his eyes, photographed), +0.47 at 1; held whole and lowered 0.24 m it stands at the foot with
+  his right fingertips at its rim (photographed). The cord's rows on a phone and a desk: the lens reverses only at its cuts
+  (12.0, 32.0, 38.5); no subject jumps on screen outside them but Marcus's rise (moved); the look's fastest is the cut at
+  47.2 (thanks to the pour). The lens comes nearest a head at Grace's, 0.68 m, beside it off the picture in the insert
+  over her shoulder. Every film's cues (scratch vscan.mjs, the films walked with a stub language): no voice over another;
+  every stretch of 1.5 s or more without a voice is held by the room's beds and music (the keepsake's 3.6 to 23.0 by her
+  flat's bed, M2 and M3 under the pull; the cord's by the bed and M2 warming after the snap; home's by M5, the clock and
+  the pressure's tone, its silence at 49.5 the designed one with the clock).
 - JOINTS, by jointscan.mjs's own measure (its MEASURE read and run at the films' moments: my scratch f1joints.mjs). Marcus's
   knocking hand: curled by +1.3 its fingers bent backward 58 to 69 degrees (the curl's sign turned, measured again). What
   stays, not mine: the player's own hands in the engine's `bowl` and `bottle` poses read out of a real hand's range in
