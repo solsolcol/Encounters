@@ -50,7 +50,14 @@
       const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
       for (const S0 in LG.R) { const r = LG.R[S0]; r.ank.z += d; r.pole.z += d; }
     }
-    const graceFeetOut = (P) => feetOut(P, GRACE_FEET);
+    /* (R16, 27 Nov, MEASURED again on the lower sofa: seated at hipOver 0.1 her hip joints stood AT the cushion's top and the
+       underside of her seat 0.094 m under it; so her hip joints are laid 0.184 over her seat (0.1 + 0.094 - the 1 cm a body sinks
+       into a cushion, v9.3). And her ankles are laid where her knees can stand highest with her feet flat, under them and a
+       little ahead: both at z 0.20 in the room (0.45 ahead of her place), the shins near upright; laid by the same amount
+       forward of the take's own, the right one stood 9 cm further out and its knee 3 cm lower, into the front roll) */
+    const GRACE_HIPOVER = 0.184, GRACE_ANKLE_Z = 0.45;
+    const graceFeetOut = (P) => { const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
+      for (const S0 in LG.R) { const r = LG.R[S0], d = GRACE_ANKLE_Z - r.ank.z; r.ank.z += d; r.pole.z += d; } };
     /* (MARCUS the same, measured by the same clipscan: his calves through the rattan chair's front, 1,046 crossings from
        0.09 to 0.42 m up; his feet laid `MARCUS_FEET` forward along his own facing, the chair's) */
     const MARCUS_FEET = 0.2;
@@ -58,7 +65,7 @@
     { const S0 = at0('room', 'grace');
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
         win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
-        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
+        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: GRACE_HIPOVER, edge: -9 }), rise: 'rise' },
         headDamp: { gsofa: [0.5, 'gsofa'] } });
       cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
     /* HER FEET FLAT WHEN SHE STANDS (PLAY, 27 Nov; MEASURED, tools/probes/e5c1lab.mjs: at the end of `rise` her ankles stand
