@@ -1,0 +1,670 @@
+[
+ {
+  "key": "zv51o1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] Case four."
+ },
+ {
+  "key": "zv51o2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[reflective] A man asked us to come and see his colleague. He said she was not herself."
+ },
+ {
+  "key": "mk51o1",
+  "speaker": "mk",
+  "voice_id": "PHS7Re4X5gu9oeMk7Pms",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[nervous] Thank you for coming, Grandmaster. She said you can come up."
+ },
+ {
+  "key": "ph51o1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Thank you. Show us the way."
+ },
+ {
+  "key": "mk51o2",
+  "speaker": "mk",
+  "voice_id": "PHS7Re4X5gu9oeMk7Pms",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] Grace? They're here."
+ },
+ {
+  "key": "gr51o1",
+  "speaker": "gr",
+  "voice_id": "KdGcLjKviIhd1TJjgsuv",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[tired] Come in. Sorry about the mess."
+ },
+ {
+  "key": "ph51o2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] Thank you for letting us in."
+ },
+ {
+  "key": "zv51o3",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[uneasy] She had let us in. But something kept turning her back to the door."
+ },
+ {
+  "key": "zv51r1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[uneasy] Every time it lit up, she leaned toward the door."
+ },
+ {
+  "key": "ph51r1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Don't look at what it says. Look at what it does to her."
+ },
+ {
+  "key": "zv51r2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[uneasy] In the glass, she was facing the stairs."
+ },
+ {
+  "key": "ph51r2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] The glass shows where she is being pulled."
+ },
+ {
+  "key": "zv51r3",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[concerned] Her hands never stopped. Like she was already leaving."
+ },
+ {
+  "key": "ph51r3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] She is not weak. She is tired of being pulled."
+ },
+ {
+  "key": "zv51r4",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[curious] Something in her bag. Wrapped in cloth, tied with red cord."
+ },
+ {
+  "key": "ph51r4",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Ask her where she got it."
+ },
+ {
+  "key": "zv51r5",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] Grace, the little packet in your bag. Where is it from?"
+ },
+ {
+  "key": "gr51r1",
+  "speaker": "gr",
+  "voice_id": "KdGcLjKviIhd1TJjgsuv",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[defensive] He gave it to me. He said it would keep me safe."
+ },
+ {
+  "key": "mk51r1",
+  "speaker": "mk",
+  "voice_id": "PHS7Re4X5gu9oeMk7Pms",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[worried] That was around when she changed."
+ },
+ {
+  "key": "zv51r6",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[shaken] A thread. From her chest to the door."
+ },
+ {
+  "key": "gr51r2",
+  "speaker": "gr",
+  "voice_id": "KdGcLjKviIhd1TJjgsuv",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[restless] I should go."
+ },
+ {
+  "key": "gr51r3",
+  "speaker": "gr",
+  "voice_id": "KdGcLjKviIhd1TJjgsuv",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[anxious] I should go."
+ },
+ {
+  "key": "mk51r2",
+  "speaker": "mk",
+  "voice_id": "PHS7Re4X5gu9oeMk7Pms",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pleading] Grace, please."
+ },
+ {
+  "key": "ph51r5",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] Sit. A little longer."
+ },
+ {
+  "key": "ph51k1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] May I hold it? Only for a while."
+ },
+ {
+  "key": "ph51k2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] Hold the water. Whatever happens, keep it still."
+ },
+ {
+  "key": "ph51ratana",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v4",
+  "takes": 3,
+  "chant": true,
+  "verses": 6,
+  "prompt": "[chanting slowly, deep and solemn] Yang kinci vittang idha va hurang va, Saggesu va yang ratanang panitang, Na no samang atthi Tathagatena. Idam pi Buddhe ratanang panitang, Etena saccena suvatthi hotu. Khayang viragang amatang panitang, Yad ajjhaga Sakyamuni samahito, Na tena dhammena samatthi kinci. Idam pi dhamme ratanang panitang, Etena saccena suvatthi hotu. Yam buddha settho parivannayi sucing, Samadhim anantarikannam ahu, Samadhina tena samo na vijjati. Idam pi dhamme ratanang panitang, Etena saccena suvatthi hotu."
+ },
+ {
+  "key": "ph51s1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Slowly. Again."
+ },
+ {
+  "key": "ph51c1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] It's alright. It's finished."
+ },
+ {
+  "key": "zv51c1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[relieved] For the first time all evening, she let it ring."
+ },
+ {
+  "key": "ph51c2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] Rest tonight. Tomorrow, stay close to people who listen to you."
+ },
+ {
+  "key": "ph51c3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] Don't let her meet him alone. A friend is medicine too."
+ },
+ {
+  "key": "mk51c1",
+  "speaker": "mk",
+  "voice_id": "PHS7Re4X5gu9oeMk7Pms",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[grateful] I won't. Thank you, Grandmaster."
+ },
+ {
+  "key": "gr51c1",
+  "speaker": "gr",
+  "voice_id": "KdGcLjKviIhd1TJjgsuv",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[grateful] Thank you."
+ },
+ {
+  "key": "ph51c4",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] For your altar."
+ },
+ {
+  "key": "ph51c5",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] You held it well."
+ },
+ {
+  "key": "zv51c2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[modest] My part was small. I only held the water."
+ },
+ {
+  "key": "zv51h1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[reflective] Everyone thought that was the end of it."
+ },
+ {
+  "key": "zv51n1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pained] Like my head was in a vice."
+ },
+ {
+  "key": "zv51n2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pained] Not a headache. Something was pressing in from every side."
+ },
+ {
+  "key": "zv51n3",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[afraid] The water I brought home was shaking."
+ },
+ {
+  "key": "zv51n4",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[afraid] My own footsteps. Something was following them."
+ },
+ {
+  "key": "ph51x1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] The one who made the spell felt it break. He is sending it back, to find out who helped her."
+ },
+ {
+  "key": "ph51x2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[firm] Get the white thread from your bag. Sit on the floor, in the middle of the room."
+ },
+ {
+  "key": "ph51x3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[firm] Close it."
+ },
+ {
+  "key": "ph51x4",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Good. Now stay inside. Whatever you hear, stay inside."
+ },
+ {
+  "key": "ph51jina",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v4",
+  "takes": 3,
+  "chant": true,
+  "verses": 4,
+  "prompt": "[chanting slowly, deep and solemn] Jayasanagata Buddha, Jetva Marang savahanang, Catu saccasabhang rasang, Ye pivingsu narasabha. Tanhangkaradayo Buddha, Attha visati nayaka, Sabbe patitthita mayhang, Matthake te munissara. Sise patitthito mayhang, Buddho dhammo dvilocane, Sangho patitthito mayhang, Ure sabba gunakaro. Hadaye me Anuruddho, Sariputto ca dakkhine, Kondanno pitthi bhagasming, Moggallano ca vamake."
+ },
+ {
+  "key": "ph51x5",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[relieved] It's gone. Breathe."
+ },
+ {
+  "key": "zv51x1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[exhausted] Who was it?"
+ },
+ {
+  "key": "ph51x6",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Who it was does not matter tonight. Rest. I will come in the morning."
+ },
+ {
+  "key": "ph51A1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] I'm here. Tell me what you feel."
+ },
+ {
+  "key": "zv51A1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pained] My head... it's like something's crushing it from every side."
+ },
+ {
+  "key": "ph51A2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[firm] Listen to me, and do exactly what I say."
+ },
+ {
+  "key": "ph51A3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] You called at once. That is the first protection: knowing when something is more than you."
+ },
+ {
+  "key": "zv51B1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[stubborn] It's three in the morning. He worked all evening. Let him sleep."
+ },
+ {
+  "key": "zv51B2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[regretful] I told myself I could carry it till morning."
+ },
+ {
+  "key": "ph51B1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[concerned] How long has it been like this?"
+ },
+ {
+  "key": "zv51B3",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[exhausted] Since three."
+ },
+ {
+  "key": "ph51B2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[concerned] Forty minutes. Why did you wait?"
+ },
+ {
+  "key": "zv51B4",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[ashamed] I didn't want to wake you."
+ },
+ {
+  "key": "ph51B3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[gentle] You held the water for her. Now let me hold it for you."
+ },
+ {
+  "key": "ph51B4",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] A student who won't wake his teacher is protecting the wrong person."
+ },
+ {
+  "key": "zv51C1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[dismissive] It's a migraine. That's all it is."
+ },
+ {
+  "key": "zv51C2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pained] The pills did nothing. It was still pressing."
+ },
+ {
+  "key": "ph51C1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] Tell me."
+ },
+ {
+  "key": "zv51C3",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[pained] It's just a migraine, I think. It won't stop."
+ },
+ {
+  "key": "ph51C2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] This is not a headache. A headache does not follow you home."
+ },
+ {
+  "key": "ph51C3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] Don't believe too fast. Don't dismiss too fast either. Look first. Then ask."
+ },
+ {
+  "key": "zv51D1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[determined] Who's doing this?"
+ },
+ {
+  "key": "ph51D1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[calm] I'm here."
+ },
+ {
+  "key": "zv51D2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[afraid] It's outside. It's looking for me."
+ },
+ {
+  "key": "ph51D2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[firm] Then stop looking for it. Sit down. Now."
+ },
+ {
+  "key": "ph51D3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] You went to a stranger's door and knocked. It answered."
+ },
+ {
+  "key": "ph51D4",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[stern] Curiosity is not courage."
+ },
+ {
+  "key": "ph51w1",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[warm] Eat first. You fought all night, even sitting still."
+ },
+ {
+  "key": "zv51w1",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[tired] I only held the water."
+ },
+ {
+  "key": "ph51w2",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it."
+ },
+ {
+  "key": "ph51w3",
+  "speaker": "ph",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[serious] Before we help anyone, we protect ourselves. From now on, we prepare first."
+ },
+ {
+  "key": "zv51w2",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[reflective] I had thought I was only there to assist my teacher."
+ },
+ {
+  "key": "zv51A",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[reflective] I called. He was already awake."
+ },
+ {
+  "key": "zv51B",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[regretful] I waited. It cost me an hour."
+ },
+ {
+  "key": "zv51C",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[ashamed] I called it a headache. It wasn't."
+ },
+ {
+  "key": "zv51D",
+  "speaker": "zv",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "model": "eleven_v3",
+  "takes": 3,
+  "prompt": "[regretful] I went looking. It found me first."
+ }
+]

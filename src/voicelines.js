@@ -238,11 +238,11 @@
               note: "Shawn Ng: a younger Malaysian Chinese man, plain and tired; the measured pick of three, until Chad's ear. RMS -16." },
         /* E4C5 SPEAKERS END */
     /* E5C1 SPEAKERS BEGIN: episode 5 chapter 1's two new people (the plan's 6 and 11.5: each auditioned three ways, loudness-matched,
-       Chad picks by ear: v5.18). PLACEHOLDERS until SOUND casts them (masters/v29.0/sound): the voice id is written here then */
-    grace51: { name: "Grace, the colleague Marcus brings them to see (episode 5, chapter 1)", voice: "TO BE CAST", model: "eleven_v3",
-              note: "Late twenties, Singaporean Chinese, polite, restless and exhausted. Placeholder until SOUND auditions three and picks by measure, until Chad's ear. RMS -16." },
-    marcus51: { name: "Marcus, her colleague (episode 5, chapter 1)", voice: "TO BE CAST", model: "eleven_v3",
-              note: "Early thirties, Singaporean Chinese, respectful, a little out of place, persistent. Placeholder until SOUND auditions three, as Grace's. RMS -16." },
+       Chad picks by ear: v5.18). Cast by SOUND's measure (1130de8, masters/v29.0/sound/audition), until Chad's ear */
+    grace51: { name: "Grace, the colleague Marcus brings them to see (episode 5, chapter 1)", voice: "KdGcLjKviIhd1TJjgsuv", model: "eleven_v3",
+              note: "Adrina. Late twenties, Singaporean Chinese, polite, restless and exhausted: the measured pick of three (masters/v29.0/sound/audition), until Chad's ear. RMS -16." },
+    marcus51: { name: "Marcus, her colleague (episode 5, chapter 1)", voice: "PHS7Re4X5gu9oeMk7Pms", model: "eleven_v3",
+              note: "Amir. Early thirties, Singaporean Chinese, respectful, a little out of place, persistent: the measured pick of three (masters/v29.0/sound/audition; the library calls him middle-aged), until Chad's ear. RMS -16." },
         /* E5C1 SPEAKERS END */
     /* E4C1 SPEAKERS END */
   };
