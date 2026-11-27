@@ -84,6 +84,14 @@ standing at `stage.info().story.pressure` (a film shows the press only with `cin
 | `cast.grace` | `p51grace` (first throw), full `p51graceh` within 2.2 m | the sofa, `GRACE_SEAT` 0.51 (seatDown by her skin) | `gsofa` window 0.25..1.85 s there and back in 7.5 s; stands by `rise` (0 to its end over 2.4 s) and sits by it played back |
 | `cast.marcus` | `p51marcus`, full `p51marcush` (CAST-3's no-glasses body drops in under the same keys) | the rattan chair, `MARCUS_SEAT` 0.42 | `Sitting_Answering_Questions` window 0.2..1.2 s in 9 s |
 
+HER FEET WHEN SHE STANDS (27 Nov, measured): `rise` ended on tiptoe (ankles 0.19 m up, toes 0.03: held 7 cm off the floor,
+heels in the air). c_cast.js `riseFeetFlat` lays the take's foot and toe turns, in memory, toward her Idle_3's by the rise
+curve's own k (a seated foot is the take's) and grounds the rise again: the clip itself, so a film that stands her up or sits
+her down with `rise` wears it too.
+
+THE WATER IN THE JUG (27 Nov): `w51jug` is one clear shell with nothing in it; the play draws the water inside it (the jug's
+own shape, 0.7 full, lowered to 0.3 by the pour), a child of `things.jug`, so it goes wherever the jug goes and hides with it.
+
 Her reflection: the play sets `WORLD.reflect.set('grace', { face })` every frame in her room: at rest half turned to her door,
 all the way when she stands (a beat before her). A film that poses her reflection sets it on its own clock; when it ends the
 play's frame lays it again.
