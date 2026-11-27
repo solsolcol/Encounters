@@ -56,7 +56,7 @@ const COP = () => {
       if (en.flip) { nx = -nx; ny = -ny; nz = -nz; }
       const m = matOf(t);
       out.push({ v, n: [nx / L, ny / L, nz / L], area: L / 2, ok: lib.objKey(en, i0), mk: m ? m.uuid : '', ek: base, label: en.label + (en.pc ? ' piece' : '') + (m && m.blending === 2 ? ' additive' : ''),
-                 dbl: m ? m.side === 2 : false, guard: !!(m && ((m.polygonOffset && (m.polygonOffsetFactor || m.polygonOffsetUnits)) || m.depthTest === false)) });
+                 dbl: m ? m.side === 2 : false, dw: m ? m.depthWrite !== false : true, guard: !!(m && ((m.polygonOffset && (m.polygonOffsetFactor || m.polygonOffsetUnits)) || m.depthTest === false)) });
     }
     return out;
   };
@@ -88,13 +88,13 @@ const COP = () => {
     let ar = 0; for (let i = 1; i + 1 < P.length; i++) { const u = [P[i][0] - P[0][0], P[i][1] - P[0][1], P[i][2] - P[0][2]], w = [P[i + 1][0] - P[0][0], P[i + 1][1] - P[0][1], P[i + 1][2] - P[0][2]];
       ar += Math.hypot(u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]) / 2; }
     if (ar < 1e-9) return null;
-    let gap = 0; for (const q of P) gap = Math.max(gap, Math.abs(dPl(q)));
-    return { ar, P, gap };
+    let gap = 0, gmin = Infinity; for (const q of P) { const g = Math.abs(dPl(q)); gap = Math.max(gap, g); gmin = Math.min(gmin, g); }
+    return { ar, P, gap, gmin };
   };
   const agg = (M, A, B, r, guarded) => {
     const [X, Y] = A.ok + '|' + A.mk < B.ok + '|' + B.mk ? [A, B] : [B, A], key = X.ok + '|' + X.mk + '#' + Y.ok + '|' + Y.mk;
-    let G = M.get(key); if (!G) M.set(key, G = { a: X.label, b: Y.label, ea: X.ek, eb: Y.ek, area: 0, tris: 0, gap: 0, guarded, n: X.n.map(v => +v.toFixed(3)), box: [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity] });
-    G.area += r.ar; G.tris++; G.gap = Math.max(G.gap, r.gap);
+    let G = M.get(key); if (!G) M.set(key, G = { a: X.label, b: Y.label, ea: X.ek, eb: Y.ek, area: 0, tris: 0, gap: 0, gmin: Infinity, order: !X.dw && !Y.dw, dbl: X.dbl || Y.dbl, guarded, n: X.n.map(v => +v.toFixed(3)), box: [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity] });
+    G.area += r.ar; G.tris++; G.gap = Math.max(G.gap, r.gap); G.gmin = Math.min(G.gmin, r.gmin);
     for (const q of r.P) for (let c = 0; c < 3; c++) { G.box[c] = Math.min(G.box[c], q[c]); G.box[c + 3] = Math.max(G.box[c + 3], q[c]); }
   };
   const meet = (R1, list, o, M) => { for (const B of list) { const r = pairTest(R1, B, o); if (r) agg(M, R1, B, r, R1.guard || B.guard); } };
@@ -125,11 +125,22 @@ const COP = () => {
     const MD = new Map(), tmp = new Map();
     for (const en of dyn) { const rr = recs(en, en.mesh.uuid); for (const R1 of rr) query(R1, S.cells, o, MD, null, null); for (const R1 of rr) query(R1, tmp, o, MD, null, tmp); }
     const out = [], guarded = { n: 0 };
+    /* WHETHER IT FIGHTS FROM HERE: a 24-bit depth buffer tells apart, at d m from the lens, surfaces about
+       d * d / (near * 2^24) m apart (0.8 um at 1 m, 0.02 mm at 5 m, 0.7 mm at 30 m with the game's near 0.08). A pair whose
+       planes are `gmin` apart is safe to safeTo = sqrt(gmin / 2 / that), and FIGHTS when the lens is farther (gap 0: always).
+       Two layers that both write no depth (a painted shadow under a painted glow) cannot fight in depth: they are drawn
+       in their sorted order (`order`), listed after */
+    const res = 1 / (cam.near * 16777216);
     const take = (G) => { if (G.area < o.MINAREA) return; if (G.guarded) { guarded.n++; return; }
-      out.push({ a: G.a, b: G.b, area: +G.area.toFixed(6), tris: G.tris, gap: +G.gap.toFixed(4), n: G.n, box: G.box.map(v => +v.toFixed(3)) }); };
+      const c = [(G.box[0] + G.box[3]) / 2, (G.box[1] + G.box[4]) / 2, (G.box[2] + G.box[5]) / 2], dist = Math.hypot(c[0] - eye.x, c[1] - eye.y, c[2] - eye.z);
+      const safeTo = Math.sqrt(G.gmin / 2 / res);
+      /* (one-sided surfaces turned away from the lens are not drawn from here: `away`) */
+      const away = !G.dbl && (G.n[0] * (eye.x - c[0]) + G.n[1] * (eye.y - c[1]) + G.n[2] * (eye.z - c[2])) < 0;
+      out.push({ a: G.a, b: G.b, area: +G.area.toFixed(6), tris: G.tris, gap: +G.gap.toFixed(4), gmin: +G.gmin.toFixed(5), dist: +dist.toFixed(2), safeTo: +safeTo.toFixed(1),
+                 fights: !G.order && !away && dist > safeTo, away, order: G.order, n: G.n, box: G.box.map(v => +v.toFixed(3)) }); };
     for (const G of S.pairs.values()) if (present.has(G.ea) && present.has(G.eb) && Math.max(...[0, 2].map(c => Math.abs((G.box[c] + G.box[c + 3]) / 2 - [eye.x, 0, eye.z][c]))) <= o.R) take(G);
     for (const G of MD.values()) take(G);
-    out.sort((x, y) => y.area - x.area);
+    out.sort((x, y) => (y.fights - x.fights) || (x.order - y.order) || (y.area - x.area));
     return { eye: [eye.x, eye.y, eye.z].map(v => +v.toFixed(3)), objs: EN.length, indexed: S.idx.size, pairs: out, guarded: guarded.n };
   };
   lib.copCheck = (o = {}) => {
@@ -165,9 +176,9 @@ const report = { ch: CH, view: VIEW, step: STEP, args: ARGS, films: {}, play: {}
 const install = async (p) => { await p.evaluate(LIB); await p.evaluate(COP); };
 const pairsOf = (rows) => { const M = new Map();
   for (const row of rows) for (const q of row.r.pairs) { const k = q.a + ' || ' + q.b; let G = M.get(k);
-    if (!G) M.set(k, G = { a: q.a, b: q.b, from: row.t, to: row.t, moments: 0, area: 0, gap: 0, box: q.box, n: q.n, views: new Set() });
-    G.to = row.t; G.moments++; G.views.add(row.v); if (q.area > G.area) { G.area = q.area; G.box = q.box; } G.gap = Math.max(G.gap, q.gap); }
-  return [...M.values()].map(G => ({ ...G, views: [...G.views] })).sort((x, y) => y.area - x.area); };
+    if (!G) M.set(k, G = { a: q.a, b: q.b, from: row.t, to: row.t, moments: 0, fightMoments: 0, area: 0, gap: 0, gmin: q.gmin, safeTo: q.safeTo, nearest: q.dist, order: q.order, away: q.away, box: q.box, n: q.n, views: new Set() });
+    G.to = row.t; G.moments++; if (q.fights) G.fightMoments++; G.views.add(row.v); if (q.area > G.area) { G.area = q.area; G.box = q.box; } G.gap = Math.max(G.gap, q.gap); G.nearest = Math.min(G.nearest, q.dist); }
+  return [...M.values()].map(G => ({ ...G, views: [...G.views] })).sort((x, y) => (y.fightMoments > 0) - (x.fightMoments > 0) || (y.area - x.area)); };
 for (const job of FILMS) {
   const p = await ctx.newPage(), errs = [];
   try {
@@ -176,7 +187,7 @@ for (const job of FILMS) {
     const { dur, rows } = await sweepFilm(p, { fn: 'copAt', STEP, FROM, UNTIL, BOTH, args: ARGS, log, job });
     const P = pairsOf(rows); report.films[job] = { dur, moments: rows.length, pairs: P, guarded: Math.max(0, ...rows.map(r => r.r.guarded)), errs };
     log(job, 'dur', dur.toFixed(2), rows.length, 'moments,', P.length, 'pairs', errs.length ? 'errs ' + JSON.stringify(errs.slice(0, 3)) : '');
-    for (const q of P) log('  ', q.from.toFixed(2) + '..' + q.to.toFixed(2), 'area', q.area, 'gap', q.gap, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
+    for (const q of P) log('  ', q.from.toFixed(2) + '..' + q.to.toFixed(2), q.fightMoments ? 'FIGHTS ' + q.fightMoments + '/' + q.moments : (q.order ? 'order' : (q.away ? 'away' : 'safe')), 'area', q.area, 'gap', q.gmin + '..' + q.gap, 'safe to', q.safeTo, 'm, nearest', q.nearest, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
   } catch (e) { log(job, 'FAILED', String(e).slice(0, 300), JSON.stringify(errs.slice(0, 4))); report.films[job] = { failed: String(e).slice(0, 300), errs }; }
   fs.writeFileSync(`${OUT}/coplanar-${CH}-${VIEW}.json`, JSON.stringify(report, null, 1));
   await p.close();
@@ -190,8 +201,8 @@ if (PHASES.length) {
       if (process.env.CHECK === '1') log(ph, 'CHECK', JSON.stringify(await p.evaluate((a) => window.__clip.copCheck(a), ARGS)));
       const r = await p.evaluate((a) => window.__clip.copAt(a), ARGS);
       report.play[ph] = r;
-      log('play', ph, r.objs, 'meshes,', r.indexed, 'indexed,', r.pairs.length, 'pairs,', r.guarded, 'guarded');
-      for (const q of r.pairs) log('  ', 'area', q.area, 'gap', q.gap, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
+      log('play', ph, r.objs, 'meshes,', r.indexed, 'indexed,', r.pairs.length, 'pairs (' + r.pairs.filter(q => q.fights).length + ' fight from the lens),', r.guarded, 'guarded');
+      for (const q of r.pairs) log('  ', q.fights ? 'FIGHTS' : (q.order ? 'order' : (q.away ? 'away' : 'safe')), 'area', q.area, 'gap', q.gmin + '..' + q.gap, 'safe to', q.safeTo, 'm, at', q.dist, 'n', q.n.join(','), 'box', q.box.join(','), '|', q.a.slice(0, 70), '||', q.b.slice(0, 70));
       fs.writeFileSync(`${OUT}/coplanar-${CH}-${VIEW}.json`, JSON.stringify(report, null, 1));
     }
     report.playErrs = errs;
