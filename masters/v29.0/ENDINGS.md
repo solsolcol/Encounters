@@ -83,7 +83,7 @@ under his thought and fades with the picture.
 His phone (`e4phone`, the play's model: `f2PhoneGroup`, its screen drawn: 3:03 and his teacher's name, "Calling…", the
 call's seconds), held with its screen to him (`f2PhoneFace`: the play's hold at the decision shows the phone's back to the
 lens, its screen's normal (0.31, -0.77, 0.56) in the lens's frame, measured: a finding for PLAY, said in the report);
-his oven's clock (WORLD's `ovenClock`: each ending's own time, 3:03, then B's 3:41, C's 3:22, D's 3:05, and 7:10 at dawn), the spool (`w51threadreel`), the pills (`w51pills`), a cushion (`w5cushion`, reused), the breakfast (`w51breakfast`), his
+his oven's clock (WORLD's `ovenClock`: each ending's own time, 3:03, then B's 3:41, C's 3:22, D's 3:05, and 7:10 at dawn), the spool (`w51threadreel`), the pills (`w51pills`), a cushion (THINGS' `w51cushion` once its file is in the build; until then episode 4 chapter 5's `w5cushion` stands in), the breakfast (`w51breakfast`), his
 bag (`e4bag`, WORLD's), the bottle on his altar (WORLD's, trembling with each wave, still at the break), the dining table and
 its two chairs (WORLD's, as WORLD stands them: build 2 of these films turned the chairs about for the dawn, read from a
 picture where his teacher sat back through the backrest; measured, they face the table, and the turn is gone). Grandmaster
@@ -192,6 +192,26 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
     in A, clipscan over the world within 4 m of the lens, the limbs' own check (tools/probes/limbclip.js, the shared file at
     5b212b7: his teacher standing and seated), clipscan over the hands' own scene (his arms, the phone, the strip, the
     spool, the rings, the cushion), and his teacher's bodies at their moments (jointscan, feetscan): its findings below.
+  - THE DESKTOP (run d7: every ending's beats at 1280 x 800 drawn at two pixels a point, each picture read at one pixel a CSS
+    pixel and its details at its own pixels). What it found, and what was done: (a) the gold in the barrier, while his sight
+    was open, crossed the balcony's chairs and the glass's frame as dark bands, as if behind them (A 58.6, 66.0, 77.0 s):
+    its light on the world was turned with the world into the vision's negative; now, as his sight opens, the gold is the
+    vision's own glow alone (`onWorld`), and back on the world as it shuts. (b) The tap's water met the sink above his hand
+    and, on a desktop, a fifth of the screen to its side (C 6.6 s; the phone at 7.2 s: 5 % of the picture above it): the
+    tap's two shots are lifted and turned for each screen's shape so the water's line crosses his knuckles and meets the
+    sink just under their line (`f2TapGeo`: the reach laid whole and read), the water whole from the spout to the sink, his
+    hand drawn over it from his knuckles down. (c) The cushion over his eyes read as a grey slab (C 14.2 s): a little of
+    its own colour given back as light; THINGS' faded indigo cushion (`w51cushion`) used once its file is in the build (the
+    red one of episode 4 chapter 5 stands in: red is the spell's colour alone here, the plan's 4.5). (d) The burn's flash
+    stood as a hard-edged white disc behind his wrist (D 91.3 s): now a soft round light of its own at the band's middle,
+    7 cm across and 19 cm as it fades. (e) The strip of pills stood behind his knuckles, a sliver (C 5.3 s): laid every
+    frame from the hand as drawn (4). Read and left, for others: past 70 m the vision leaves the city as it is, its edge a
+    curve across the blocks out of his glass (D 7.2 s, A 77.0 s, C 17.6 s: the chapter declares no `vision.rmax`, the
+    engine's 70 m; put to the coordinator, and the films now follow whatever the chapter declares); his front door's foot
+    shows a white wedge with blue and yellow slivers (A 30.0 s: the corridor's light through the gap, WORLD's); at the
+    dawn's door his cloth bag's side lies over his right forearm (A 104.6 s; clipscan 1,092 crossings of the bag with his
+    body there, from 1,639 at FILMS-1's place: the strap's way down past his shoulder and the bag's side by his forearm),
+    and a flat white patch stands over his right elbow (A 110.3 s: his robe's inner face unshaded, the model's, CAST's).
   - jointscan at the door, the winding, the table and the tie (run 8): no joint flagged. clipscan (run 8): his teacher's robe
     with his own chair, 4,209 crossings at the table (his robe over the seat and against the chair's back: read from his
     side, a sitter's cloth on and behind his seat, which no shot sees: left); with the table's far edge, 316 (his forearms
@@ -211,12 +231,11 @@ from the models' own files. Runs 4 to 7, 27 Nov 2026; every picture opened at it
 4. M8 begins 3.0 to 6.1 s into the dawn, not at its first second, so its last chord falls under his thought (3).
 5. THE WINDING is 5 s and the spool is set on the table off the picture (the plan's 14 to 24 s gives it 10 s with the
    setting down): the dawn already runs 48 to 51 s on its measured lines.
-6. THE BURN'S FLASH in D is the band's haze turned warm white and opened out about the wrist for 0.45 s (a translucent ring
-   of light, read from the photograph as a flash at the wrist); a sprite of light would be softer still.
+6. THE BURN'S FLASH in D (0.45 s) is a soft round light at the band's middle (6 (d)); its pictures on a phone and a desktop are
+   run t16's.
 7. HIS TEACHER'S LEFT HAND at the tie lies straight along the wrist's side: his standing file (`p5pho`) carries finger bones
    in the right hand only, so only the right closes on the thread.
-8. IN C THE TAP'S WATER falls a hand's width short of his hand under it (the hand is the hands' pass's own place on the
-   screen, the water the world's).
+8. IN C THE TAP'S WATER and his hand: the shots solved for each screen (6 (b)); their pictures are run t16's.
 9. Findings for other pieces, left as they are: PLAY's PHONEHELD shows the phone's back to the lens at the decision (4);
    FILMS-1's clasp in its films is at the engine's default height, -0.235, which shows the thumbs (e3c2's -0.33 hides
    them: B's here uses it); THINGS: the altar cabinet's top right edge is ragged where the lens passes it in the barrier
