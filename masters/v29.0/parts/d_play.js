@@ -26,6 +26,9 @@
       wallClock.t += wdt;
       worldFrame(wdt, st);                                     // (the world's hook: its people and their levels)
       fxTick(wdt, st);                                         // (the play's drawn things, the chant, the beds: c_play.js)
+      /* the bowl in his hands laid on his left palm, turned to the lens, by the films' own helper (FILMS-1's bowlInHands, the
+         keepsake's last picture and the event's first one bowl from one function): BOWLHELD alone stood it below the picture */
+      if (brk.held && FILMSAPI.helpers && FILMSAPI.helpers.bowlInHands) FILMSAPI.helpers.bowlInHands(brk.held);
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
