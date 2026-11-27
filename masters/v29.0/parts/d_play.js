@@ -100,7 +100,7 @@
       /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
       chant: RATANA, beds: BEDS,
       /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
-      dbg: { cast, people, clocks: {}, bowl: BOWLFIT, sofaRest: SOFAREST, fn: { span, rest, take, pose, hold, put, gaze } },
+      dbg: { cast, people, clocks: {}, bowl: BOWLFIT, sofaRest: SOFAREST, held: () => ({ bowl: brk.held, phone: phone5.g }), fn: { span, rest, take, pose, hold, put, gaze } },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen, story: storySnap() }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
