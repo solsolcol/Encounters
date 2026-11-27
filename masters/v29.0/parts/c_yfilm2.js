@@ -555,30 +555,37 @@
       if (!show) return;
       if (A.handPose) A.handPose(pose || null, pose ? c01(k) : 0, o || {});
     }
-    /* THE STRIP OF PILLS HELD UP TO HIS EYE (ending C): pinched between his thumb and the side of his first finger, standing
-       out of his loose fist toward the room with its tablets turned to his eye (held at the palm, it lay under his hand, palm
-       down in the library's place, never seen: run 7's photographs). Found from the hand's own bones with the pose laid whole
-       (as the tie's wrist is: laid, read, and left for the frame to lay its own), then carried by the arm */
-    const F2PILL = { g: null };
-    function f2PillsGeo() {
-      const A = F2.api, asp = A && A.vmCam ? A.vmCam.aspect : camera.aspect;
-      if (F2PILL.g && Math.abs(F2PILL.g.asp - asp) < 1e-4) return F2PILL.g;
-      if (!A || !A.armR || !A.vmCam || !A.handPose) return null;
-      f2Hands(true, 'place', 1, { p: 0 });
-      const R = A.armR; R.updateWorldMatrix(true, true);
-      const th = R.getObjectByName('thumb03R'), ix = R.getObjectByName('f_index02R');
-      if (!th || !ix) return null;
-      const T = th.getWorldPosition(new THREE.Vector3()), I = ix.getWorldPosition(new THREE.Vector3());
-      /* (standing UP out of the pinch, held up to be read: along the fingers it hung down under the fist, the fist's grip
-         curling them down, and was seen as a sliver under it, photographed) */
-      A.vmCam.updateMatrixWorld(); const eye = A.vmCam.getWorldPosition(new THREE.Vector3()), up = new THREE.Vector3().setFromMatrixColumn(A.vmCam.matrixWorld, 1).normalize();
-      const Q = T.clone().add(I).multiplyScalar(0.5), C = Q.clone().addScaledVector(up, 0.06);
-      const n = eye.clone().sub(C).normalize(), u = up.clone().addScaledVector(n, -up.dot(n)).normalize();
-      C.addScaledVector(n, 0.02);
-      const zx = new THREE.Vector3().crossVectors(u, n).normalize(), qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(u, n, zx));
-      const rq = R.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qW), pl = R.worldToLocal(C.clone()), e = new THREE.Euler().setFromQuaternion(rq);
-      F2PILL.g = { asp, pos: [pl.x, pl.y, pl.z], rot: [e.x, e.y, e.z] };
-      return F2PILL.g;
+    /* THE STRIP OF PILLS HELD UP TO HIS EYE (ending C): pinched between his thumb and the side of his first finger, its lower
+       end in the pinch and its length leaning up and toward his eye so it stands in FRONT of his fist, its tablets turned to
+       him. Held at the palm it lay under his hand, never seen (run 7's photographs); stood straight up out of the pinch it
+       went up behind his knuckles, a sliver under the fist on a desktop and half of it on a phone (run 9, d7's photographs).
+       Laid EVERY frame from the hand as this frame's pose draws it (the thumb's tip, the first finger's middle joint, the
+       knuckles), on the right arm so the arm's sway carries it: leaning toward his eye far enough that, at his knuckles'
+       height, it stands 3 cm nearer him than they do */
+    const F2PB = { R: null, th: null, ix: null, k1: null, k2: null };
+    const _f2pq = new THREE.Vector3(), _f2pk = new THREE.Vector3(), _f2pk2 = new THREE.Vector3(), _f2pu = new THREE.Vector3(), _f2pn = new THREE.Vector3(),
+      _f2py = new THREE.Vector3(), _f2pz = new THREE.Vector3(), _f2pc = new THREE.Vector3(), _f2pm = new THREE.Matrix4(), _f2pM = new THREE.Matrix4();
+    function f2PillsIn(on) {
+      const A = F2.api, R = A && A.armR;
+      if (!on || !R || !A.vmCam || !F2M.pills) { f2Pills.visible = false; return; }
+      if (F2PB.R !== R) { F2PB.R = R; F2PB.th = R.getObjectByName('thumb03R'); F2PB.ix = R.getObjectByName('f_index02R');
+        F2PB.k1 = R.getObjectByName('f_index01R'); F2PB.k2 = R.getObjectByName('f_middle01R'); }
+      if (!F2PB.th || !F2PB.ix || !F2PB.k1 || !F2PB.k2) { f2Pills.visible = false; return; }
+      if (f2Pills.parent !== R) R.add(f2Pills);
+      R.updateWorldMatrix(true, true); A.vmCam.updateMatrixWorld();
+      F2PB.th.getWorldPosition(_f2pq); F2PB.ix.getWorldPosition(_f2pk); _f2pq.add(_f2pk).multiplyScalar(0.5);
+      F2PB.k1.getWorldPosition(_f2pk); F2PB.k2.getWorldPosition(_f2pk2); _f2pk.add(_f2pk2).multiplyScalar(0.5).sub(_f2pq);
+      _f2pn.setFromMatrixPosition(A.vmCam.matrixWorld).sub(_f2pq).normalize();
+      _f2pu.setFromMatrixColumn(A.vmCam.matrixWorld, 1).normalize(); _f2pu.addScaledVector(_f2pn, -_f2pu.dot(_f2pn)).normalize();
+      const h = Math.max(0.02, _f2pk.dot(_f2pu)), lean = Math.min(1.5, Math.max(0.35, (_f2pk.dot(_f2pn) + 0.03) / h));
+      _f2pu.addScaledVector(_f2pn, lean).normalize();
+      _f2py.copy(_f2pn).addScaledVector(_f2pu, -_f2pn.dot(_f2pu)).normalize(); _f2pz.crossVectors(_f2pu, _f2py).normalize();
+      /* (the strip's own frame: its length on x, 0.10 m; its tablets on +y; its width on z, 0.043 m) */
+      _f2pc.copy(_f2pq).addScaledVector(_f2pu, 0.05 - 0.015).addScaledVector(_f2py, -0.004);
+      _f2pm.makeBasis(_f2pu, _f2py, _f2pz).setPosition(_f2pc);
+      _f2pM.copy(R.matrixWorld).invert().multiply(_f2pm).decompose(f2Pills.position, f2Pills.quaternion, f2Pills.scale);
+      f2Pills.visible = true;
+      F2PB.lean = lean;
     }
     /* the left hand placed as the right one's mirror (the library's poses lay most things in the right; a left hand on a door's
        frame or held out to his teacher is the right one's pose turned over), the right one hidden */
@@ -1120,6 +1127,7 @@
         if (F2.vis && kit && kit.vision) kit.vision(null); F2.vis = false;
         if (kit && kit.captions) kit.captions(null);
         f2Hold(null); f2MirrorLeft(false);
+        f2PillsIn(false); if (f2Pills.parent) f2Pills.parent.remove(f2Pills);
         if (F2.api && F2.api.handsRoot) { F2.api.handsRoot.visible = true; F2.api.handsRoot.position.set(0, 0, 0); }
         if (F2.api && F2.api.handPose) F2.api.handPose(null, 0);
         f2Beds(null);
@@ -1283,6 +1291,7 @@
         f2Hold(null); f2Hands(false); return;
       }
       if (k === 'C') {
+        f2PillsIn(false);
         if (t < E.walk + 0.5) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, null, 0); if (A && A.armR) A.armR.position.y -= 0.12 * f2smo(f2win(t, E.walk, E.walk + 0.5)); return; }
         if (t >= E.drawer - 0.2 && t < E.sofa0 + 0.3) {
           /* the drawer (his hand down to it, out of the picture's foot), the strip of pills brought up before him where he can
@@ -1292,10 +1301,11 @@
           const r = f2bell(t, E.drawer - 0.2, E.drawer + 0.3, E.pills - 0.45, E.pills - 0.2), pl = f2bell(t, E.pills - 0.2, E.pills + 0.15, E.pills + 0.55, E.pills + 0.8);
           const m = f2bell(t, E.pills + 0.8, E.pills + 1.05, E.tap - 0.2, E.tap + 0.1);
           const tp = f2bell(t, E.tap + 0.1, E.tap + 0.5, E.sofa0 - 0.5, E.sofa0 - 0.1), m2 = f2bell(t, E.sofa0 - 0.4, E.sofa0 - 0.1, E.sofa0, E.sofa0 + 0.3);
-          const pg = t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2PillsGeo() : null;
-          f2Hold(t >= E.pills - 0.2 && t < E.tap - 0.15 ? f2Pills : null, pg ? { pos: pg.pos, rot: pg.rot } : { pos: [0.0, -0.06, -0.14], rot: [0.0, 0.3, 1.4] });
+          f2Hold(null);
           if (m > 0.01) f2Hands(true, 'mouth', m); else if (m2 > 0.01) f2Hands(true, 'mouth', m2); else if (tp > 0.01) f2Hands(true, 'reach', tp);
           else if (pl > 0.01) f2Hands(true, 'place', pl); else f2Hands(r > 0.01, 'reach', r);
+          /* (laid after the pose this frame draws, from the hand as drawn) */
+          f2PillsIn(t >= E.pills - 0.2 && t < E.tap - 0.15);
           return;
         }
         if (t >= E.cushion - 0.6 && t < E.forced + 0.9) {
