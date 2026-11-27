@@ -40,37 +40,52 @@
   let S = null;
 
   /* ---------------------------------------------------- the light (painted, never a lamp added on screen: v15.1)
-     TODO-WORLD: the four looks of the plan's 4.3, each a first guess to be set from photographs when its place is built */
+     WORLD's block (masters/v29.0/parts/b_world.js builds the places these light). The five looks of the plan's 4.3, each
+     the sky, the fog and the three global lights; what a look paints in the world itself (her lamps' pools, the city's
+     lit windows, the altar's candle, dawn's patches of sun on his floor) b_world.js's `worldLook` sets from the same
+     name, and it follows on its own when a look's background is the scene's (WORLD.md: each look's `bg` is its own). A
+     key's direction is where its light comes from: her street is to her room's +x, his city to his flat's +z. */
   const sky = (o) => Object.assign({ stars: 0, moon: 0, sun: 0, clouds: 0 }, o);
-  /* THE SHOPHOUSE ROW AT BLUE HOUR (7:20 PM): the sky deep blue, her windows amber, the street lamps sodium-orange */
+  /* THE SHOPHOUSE ROW AT BLUE HOUR (7:20 PM): the sky deep blue over the row (lighter at the horizon, where the city's
+     glow is), the light cool and low; her windows amber and the street lamps sodium-orange are painted (b_world.js) */
   const BLUE = sky({
-    stops: [[0.00, '#3a4a78'], [0.12, '#2f3f6e'], [0.35, '#243464'], [0.65, '#1b2856'], [1.00, '#121c44']],
-    bg: 0x1e2a52, fog: [0x26305a, 0.006],
-    hemi: [0x7f90c8, 0x4a3a30, 0.6], key: [0xffb46a, 0.55, -2.0, 1.6, 1.5], fill: [0x6070b0, 0.22],
-    stars: 0.05, moon: 0,
-    vmHemi: [0x8090c8, 0x4a3a30, 0.6], vmKey: [0xffb878, 0.45] });
-  /* HER FRONT ROOM IN LAMPLIGHT (7:30 to 8:30 PM): warm white from a standing lamp and a table lamp, the windows black */
+    stops: [[0.00, '#5a6c9c'], [0.10, '#465a8e'], [0.30, '#33477c'], [0.60, '#24366a'], [1.00, '#17244e']],
+    bg: 0x22305a, fog: [0x2c3a66, 0.0055],
+    hemi: [0x8094cc, 0x3a3634, 0.62], key: [0xc4b0a0, 0.42, -2.0, 2.4, 1.2], fill: [0x5a6cb0, 0.26],
+    stars: 0.04, moon: 0,
+    vmHemi: [0x8094cc, 0x3a3634, 0.62], vmKey: [0xc4b0a0, 0.4] });
+  /* HER FRONT ROOM IN LAMPLIGHT (7:30 to 8:30 PM): warm white from her table lamp and his teacher's candles; the
+     windows black with the street's glow (her walls and ceiling carry the lamps' warmth as painted light) */
   const LAMP = sky({
-    stops: [[0.00, '#1c2240'], [0.20, '#161c38'], [0.50, '#111632'], [0.80, '#0c1028'], [1.00, '#090c22']],
-    bg: 0x14182e, fog: [0x14182e, 0.004],
-    hemi: [0xffe2bc, 0x5a4636, 0.78], key: [0xffd2a0, 0.85, 1.2, 2.4, -0.8], fill: [0x8a7a70, 0.24],
+    stops: [[0.00, '#26305a'], [0.20, '#1c2448'], [0.50, '#151b3a'], [0.80, '#0f142e'], [1.00, '#0b0f26']],
+    bg: 0x14182e, fog: [0x161a30, 0.004],
+    hemi: [0xffe0b8, 0x5a4636, 0.74], key: [0xffcf9c, 0.62, -1.6, 2.2, 2.4], fill: [0x8a7a70, 0.22],
     stars: 0, moon: 0,
-    vmHemi: [0xffe2bc, 0x5a4636, 0.75], vmKey: [0xffd2a0, 0.55] });
-  /* HIS FLAT AT NIGHT (11:52 PM and three o'clock): no lights on, the city's glow through the glass, cold blue-grey */
+    vmHemi: [0xffe0b8, 0x5a4636, 0.74], vmKey: [0xffcf9c, 0.52] });
+  /* HIS FLAT AT 11:52 PM (home): no lights on; the city's glow through his glass (+z), cold blue-grey, a little warmth
+     from the towers' lit windows; the altar's candle a small warm point (painted) */
+  const HOME = sky({
+    stops: [[0.00, '#3a4058'], [0.12, '#2a3048'], [0.35, '#1e243c'], [0.70, '#141a30'], [1.00, '#0c1124']],
+    bg: 0x121a2c, fog: [0x1a2034, 0.0042],
+    hemi: [0x8c9cbc, 0x2c2c32, 0.5], key: [0xb4c0dc, 0.42, 0.6, 1.4, 3.0], fill: [0x6070a4, 0.22],
+    stars: 0.06, moon: 0,
+    vmHemi: [0x8c9cbc, 0x2c2c32, 0.5], vmKey: [0xb4c0dc, 0.36] });
+  /* THREE O'CLOCK (3:00 to 3:40 AM): the same, darker and colder; fewer of the city's windows lit */
   const NIGHT = sky({
-    stops: [[0.00, '#2a3448'], [0.15, '#202a40'], [0.40, '#171f36'], [0.70, '#10172c'], [1.00, '#0a0f22']],
-    bg: 0x111829, fog: [0x111829, 0.005],
-    hemi: [0x8a9ab8, 0x2a2a30, 0.42], key: [0xa8b8d8, 0.4, -1.5, 2.0, 2.0], fill: [0x5868a0, 0.2],
+    stops: [[0.00, '#2a3044'], [0.15, '#1e2438'], [0.40, '#161c30'], [0.70, '#0f1428'], [1.00, '#0a0d1e']],
+    bg: 0x0d1322, fog: [0x12182a, 0.0046],
+    hemi: [0x7c8cac, 0x24242a, 0.38], key: [0x9cacd0, 0.32, 0.6, 1.4, 3.0], fill: [0x4c5c94, 0.18],
     stars: 0.1, moon: 0,
-    vmHemi: [0x8a9ab8, 0x2a2a30, 0.45], vmKey: [0xa8b8d8, 0.35] });
-  /* HIS FLAT AT DAWN (7:10 AM): low gold sun through the glass, long warm light across the floor */
+    vmHemi: [0x7c8cac, 0x24242a, 0.4], vmKey: [0x9cacd0, 0.3] });
+  /* HIS FLAT AT DAWN (7:10 AM): the low sun in through his glass (+z, a little to the east), long warm light across his
+     floor (dawn's patches of sun are painted: b_world.js), the city washed clean */
   const DAWN = sky({
-    stops: [[0.00, '#ffd9a0'], [0.12, '#f4c89a'], [0.35, '#c8c4d0'], [0.65, '#9cb4d8'], [1.00, '#7aa0d0']],
-    bg: 0xd8c8b0, fog: [0xd8c8b8, 0.003],
-    hemi: [0xfff0d8, 0x9a8670, 0.95], key: [0xffc888, 1.1, -3.0, 1.2, 1.0], fill: [0xa0b0d0, 0.25],
-    stars: 0, moon: 0,
+    stops: [[0.00, '#ffd49a'], [0.10, '#f6c896'], [0.30, '#d2c6c8'], [0.60, '#a4bad8'], [1.00, '#7ea2d0']],
+    bg: 0xd8c8b0, fog: [0xdcccb8, 0.0028],
+    hemi: [0xfff0d8, 0x9a8670, 0.92], key: [0xffc888, 1.05, 1.6, 1.0, 3.0], fill: [0xa0b0d0, 0.26],
+    stars: 0, moon: 0, sun: 0.6,
     vmHemi: [0xfff0d8, 0x9a8670, 0.9], vmKey: [0xffc888, 0.6] });
-  const PRESETS = { BLUE, LAMP, NIGHT, DAWN };
+  const PRESETS = { BLUE, LAMP, HOME, NIGHT, DAWN };
 
 //@@LINES
 

@@ -1038,26 +1038,49 @@ await lbl('press');
   R.drawsWhenOn = s2.ok === true && s2.err === 0 && s2.drawn >= 3 && s2.copied >= 3 && s2.tex === true && s2.k === 1 && s2.live === true;
   const B = await pics();
   R.readable = await p.evaluate(() => window.__enc.kit.pressState().k === 1 && window.__enc.kit.pressState().to === 1);
+  /* off at once, and the picture taken again straight away: the world moves on between pictures (its own noise grows with
+     the time between two), so each claim is read between two pictures taken one step apart */
+  await p.evaluate(() => window.__enc.kit.press(0, { secs: 0 }));
+  await p.waitForFunction(() => window.__enc.press().tex === false, null, { timeout: 120000, polling: 50 });
+  const d0 = (await st()).drawn; await fr(3);
+  const s3 = await st();
+  R.offNothingDrawn = s3.drawn === d0 && s3.tex === false && s3.k === 0;
+  const C = await pics();
   /* eased on wall time: the first k read under 1 after the call is still over 0 (2 s to go, and no frame steps more than
-     a quarter of a second) */
+     a quarter of a second); and once home, nothing drawn and its texture let go */
+  await p.evaluate(() => window.__enc.kit.press(1, { secs: 0 }));
+  await p.waitForFunction(() => window.__enc.press().drawn > 0 && window.__enc.press().k === 1, null, { timeout: 120000, polling: 50 }); await fr(2);
   await p.evaluate(() => window.__enc.kit.press(0, { secs: 2 }));
   await p.waitForFunction(() => window.__enc.press().k < 1, null, { timeout: 120000, polling: 20 });
   const kMid = (await st()).k;
   R.eases = kMid > 0 && kMid < 1;
-  await p.waitForFunction(() => { const s = window.__enc.press(); return s.k === 0 && s.tex === false; }, null, { timeout: 120000, polling: 50 });
-  const d0 = (await st()).drawn; await fr(4);
-  const s3 = await st();
-  R.offNothingDrawn = s3.drawn === d0 && s3.tex === false && s3.beat === 0;
-  const C = await pics();
+  R.easesHome = await p.waitForFunction(() => { const s = window.__enc.press(); return s.k === 0 && s.tex === false && s.beat === 0; }, null, { timeout: 120000, polling: 50 }).then(() => true, () => false);
   const nE = diff(A.e, A2.e), nM = diff(A.m, A2.m);
   const lim = (n) => Math.max(1.5, 3 * n);
-  R.absentSame = diff(A.e, W.e) <= lim(nE) && diff(A.m, W.m) <= lim(nM);          // warmed at 0: the picture is the picture
-  R.offSame = diff(A.e, C.e) <= lim(nE) && diff(A.m, C.m) <= lim(nM);             // and back at 0, the same again
-  const dE = diff(A.e, B.e), dM = diff(A.m, B.m), mA = mean(A.e), mB = mean(B.e);
+  R.absentSame = diff(A2.e, W.e) <= lim(nE);                                       // warmed at 0: the edges as they were (and nothing drawn: above)
+  R.offSame = diff(W.e, C.e) <= lim(nE);                                           // and back at 0, the edges as they were
+  const dE = diff(W.e, B.e), dM = diff(B.m, C.m), mA = mean(W.e), mB = mean(B.e);
   R.edgesPressed = dE > Math.max(6, 4 * nE) && (mA < 10 || mB < 0.5 * mA);         // the edges change, and go dark
-  R.middleKept = dM <= Math.max(lim(nM), 0.25 * dE);                              // the middle is left as it is
-  console.log('press: edges pressed', dE.toFixed(2), '(mean', mA.toFixed(1), '->', mB.toFixed(1) + ') | middle', dM.toFixed(2),
-              '| noise edges', nE.toFixed(2), 'middle', nM.toFixed(2), '| warmed', diff(A.e, W.e).toFixed(2), '| off again', diff(A.e, C.e).toFixed(2), '| eased k', kMid);
+  /* the middle is left as it is. The world in the middle moves (the fire's smoke and embers, the ghost walking), so the
+     claim is read on PAIRS taken the same few frames apart: pressed then not, against not then not, three times each, by
+     their medians (a ghost walking through one pair does not decide it) */
+  const on2 = [], same2 = [];
+  for (let i = 0; i < 3; i++) {
+    await p.evaluate(() => window.__enc.kit.press(1, { secs: 0 }));
+    await p.waitForFunction(() => window.__enc.press().tex === true, null, { timeout: 120000, polling: 20 }); await fr(2);
+    const X = await mid();
+    await p.evaluate(() => window.__enc.kit.press(0, { secs: 0 }));
+    await p.waitForFunction(() => window.__enc.press().tex === false, null, { timeout: 120000, polling: 20 }); await fr(2);
+    const Y = await mid(); await fr(3);
+    const Z = await mid();
+    on2.push(diff(X, Y)); same2.push(diff(Y, Z));
+  }
+  const med = (a) => [...a].sort((x, y) => x - y)[1];
+  R.middleKept = med(on2) <= Math.max(1.5, 2 * med(same2) + 1);
+  console.log('press: the middle, pressed against not', on2.map(v => v.toFixed(2)).join(' '), '| not against not', same2.map(v => v.toFixed(2)).join(' '));
+  console.log('press: edges pressed', dE.toFixed(2), '(mean', mA.toFixed(1), '->', mB.toFixed(1) + ') | middle on/off once', dM.toFixed(2),
+              '| noise edges', nE.toFixed(2), 'middle', nM.toFixed(2), '| warmed', diff(A2.e, W.e).toFixed(2),
+              '| off again', diff(W.e, C.e).toFixed(2), '| eased k', kMid);
   await bare(false);
   /* a film that has not asked: nothing painted while it plays; a film that asks: painted, and given back at its end */
   const filmRun = (key, before) => p.evaluate(async ([key, before]) => {
