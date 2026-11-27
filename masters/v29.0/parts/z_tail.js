@@ -136,7 +136,7 @@
     T.c5 = T.c4 + SECS.ph51c4 + 0.45;                           // "You held it well."
     T.wrist = T.c5 + SECS.ph51c5 + 0.3;                         // his look drops to his wrist for 1.5 s
     T.z2 = T.wrist;                                             // "My part was small. I only held the water."
-    T.black = T.z2 + SECS.zv51c2 + 0.5;
+    T.black = Math.max(T.z2 + SECS.zv51c2 + 0.5, T.wrist + 3.45);   // (after his look is back on his teacher: 1.2 s down, 1.0 held, 1.2 back)
     T.end = T.black + 1.1;
     return T;
   })();
@@ -172,11 +172,14 @@
 
   /* HOME (the plan's 9.4; 11:52 PM): from the cord's black, into three o'clock in bed */
   const HM51 = (() => {
-    const T = { m5: 0.5, card: 6.2, lock: 6.6, door: 7.0, altar: 10.0, setb: 12.5, palms: 14.0, phone: 18.0, charge: 19.0, keys: 21.0, bed: 24.0,
-                shower: 24.0, showerOff: 28.0, sit: 28.4, lie: 31.0, clock: 34.0, close: 40.0, h1: 41.0, tick: 45.0, press: 46.0, open: 49.5 };
+    /* (27 Nov, measured: the walk in from his door to his altar takes 3.9 s at a walk, so the altar's moments are a little
+       after the plan's; the altar to the table is a cut, and waking a slow roll of his head on the pillow: the clock, then
+       the room where he will get up) */
+    const T = { m5: 0.5, card: 6.2, lock: 6.6, door: 7.0, walkIn: 7.9, altar: 11.8, setb: 12.9, palms: 14.5, table0: 17.2, phone: 18.1, charge: 19.2, keys: 21.0,
+                bed: 24.0, shower: 24.0, showerOff: 28.0, sit: 28.4, lie: 31.0, clock: 34.0, close: 40.0, h1: 41.0, tick: 45.0, press: 46.0, open: 49.5 };
     T.h1 = Math.max(T.h1, T.close + 0.8);
     T.cut = T.open;
-    T.end = T.open + 4.6;                                       // the clock read (3:00), the ceiling again, and the room: where play begins
+    T.end = T.open + 6.9;                                       // the ceiling held, the clock read (3:00), the ceiling again, and the room: where play begins
     return T;
   })();
   function filmHome(c, s, api) {
