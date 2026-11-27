@@ -1302,7 +1302,9 @@
     /* (PLAY, M6) THE BREAKING: the room's places, but Marcus STANDING behind the sofa at her right shoulder, where the
        keepsake's film leaves him (c_yfilm.js: KEEP1.mkStand + (0.02, 0.17), as of c433770), so a Continue into the breaking
        lands as play does (PLAY.md 2) */
-    STATION.breaking = Object.assign({}, STATION.room, { marcus: { x: 0.14, z: -0.85, ry: 0.12, stand: true } });
+    /* (clipscan of the breaking, 27 Nov: at z -0.85 his front stood 5 cm into the sofa's back, 705 crossings from 0.37 to 0.76 m
+       up, z -0.79 to -0.74; so 0.08 m further back) */
+    STATION.breaking = Object.assign({}, STATION.room, { marcus: { x: 0.14, z: -0.93, ry: 0.12, stand: true } });
     STATION.ask = { at: { x: WORLD_AT.phone.x + 0.25, z: WORLD_AT.phone.z + 0.85, ry: 0.3 } };
     /* the opening's and the films' places (WORLD.md, the plan's 9) */
     const FILMPLACE = {
