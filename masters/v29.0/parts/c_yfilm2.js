@@ -667,27 +667,43 @@
     for (let i = 0; i < F2D.n; i++) { const g = f2TubeGeo(), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial()); m.name = 'a red thread (ending D)'; m.frustumCulled = false; m.visible = false; hisSideG.add(m);
       f2DT.push({ g, m, sp: ctx.spirit ? ctx.spirit(m, { color: F2RED, fill: 0.6, rim: 1.2, flicker: 0.35, xray: 0.6 }) : null, i }); }
     const _dA = new THREE.Vector3(), _dB = new THREE.Vector3(), _dW = new THREE.Vector3();
+    /* the outdoor way of ending D's red threads, at q (0 out in the dark over the city, 1 at the end it is given, d0 metres out
+       from his glass on his balcony's floor): from 9 m up 70 m out, down over the city to his balcony's rail and OVER it (the
+       rail 1.1 m up, 1.56 m out: b_world.js BALC; the first way passed it 0.14 m up, through its glass, read from its own
+       numbers), then down onto the balcony's floor; sampled thickest near his door (the distance out goes as (1 - q) cubed,
+       so the few metres he sees are drawn smooth) */
+    function f2DOut(q, x0, z0, d0, i, t, out) {
+      const d = d0 + (70 - d0) * Math.pow(1 - q, 3), k = (d - d0) / (70 - d0), rail = 1.56;
+      const y = d < rail ? 0.01 + 1.21 * f2smo(c01((d - 0.6) / (rail - 0.6))) : 1.22 + 7.78 * Math.pow((d - rail) / (70 - rail), 0.7);
+      return out.set(x0 + 22 * k + Math.sin(k * 9 + t * 0.9 + i) * 0.25 * k, y, z0 + d);
+    }
     function f2DThreads(t, E) {
-      const bl = F2P.balc, door = [bl.x - 0.08, LIV.z1], src = [bl.x + 22, 9.0, LIV.z1 + 70];
+      const bl = F2P.balc, door = [bl.x - 0.08, LIV.z1];
       for (const D of f2DT) {
-        const show = F2.vis && t >= E.vis + 0.6 && t < E.wrap + 0.05;
+        /* (already there when his sight opens: he follows them; grown in over four seconds from the city, they reached his
+           door only as he got there, and his first look down met a bare floor, photographed) */
+        const show = F2.vis && t >= E.vis && t < E.wrap + 0.05;
         D.m.visible = show; if (!show) continue;
         const i = D.i, lunge = i === 2, sp = (i - (F2D.n - 1) / 2) * 0.07;
-        /* each from far away out in the dark, low over the city, in at the door and onto his floor toward where he stands */
-        const grow = c01((t - E.vis - 0.6 - i * 0.25) / 4.0);
+        /* each from far away out in the dark, low over the city, in at the door and over his floor to his feet at the table
+           (the one that will turn ends just inside the door, where he will stand) */
+        const grow = 1, feet = [F2P.table.x - 0.2 + sp * 2.5, F2P.table.z - 0.1 + Math.abs(sp)];
         const at = (s, out) => {
           const u = s;
-          if (lunge && t >= E.turn) {
-            /* the one that turns: its head lifts off the floor like a head turning, then lunges at the wrist */
-            const tu = f2smo(f2win(t, E.turn, E.lunge)), lu = f2s5(f2win(t, E.lunge, E.wrap));
-            camera.updateMatrixWorld(); const W2 = f2WristAt(_dW) || f2WristWorld(_dW);
-            const base = _dA.set(lp(src[0], door[0], u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] + 0.3, u));
+          if (lunge) {
+            /* the one that turns, its own way the whole time (from the city to the balcony's floor just outside his door, where
+               he will look along it): its head lifts off the floor like a head turning, then lunges at the wrist */
+            const tu = t >= E.turn ? f2smo(f2win(t, E.turn, E.lunge)) : 0, lu = t >= E.lunge ? f2s5(f2win(t, E.lunge, E.wrap)) : 0;
+            const base = f2DOut(u, door[0], door[1], 0.3, i, t, _dA);
             const lift = Math.sin(Math.PI * c01((u - 0.82) / 0.18)) * 0.45 * tu;
             base.y += lift;
-            if (W2 && u > 0.7) { const w = f2smo((u - 0.7) / 0.3) * lu; base.lerp(W2, w); }
+            if (lu > 0 && u > 0.7) { camera.updateMatrixWorld(); const W2 = f2WristAt(_dW) || f2WristWorld(_dW);
+              if (W2) { const w = f2smo((u - 0.7) / 0.3) * lu; base.lerp(W2, w); } }
             return out.copy(base);
           }
-          return out.set(lp(src[0], door[0] + sp, u) + Math.sin(u * 9 + t * 0.9 + i) * 0.25 * (1 - u), lp(src[1], 0.03, Math.pow(u, 0.6)), lp(src[2], door[1] - 0.6 * u * u, u) + sp * 0.5);
+          if (u <= 0.8) return f2DOut(u / 0.8, door[0] + sp, door[1], 0, i, t, out);
+          const r = (u - 0.8) / 0.2;
+          return out.set(lp(door[0] + sp, feet[0], r) + Math.sin(r * 5 + t * 1.1 + i) * 0.06 * Math.sin(Math.PI * r), lp(0.01, 0.03, r), lp(door[1], feet[1], r));
         };
         f2TubeLay(D.g, at, 0.0, Math.max(0.02, grow), F2T.r * 1.3, 0.02);
         if (D.sp) D.sp.set('uAlpha', 0.9);
@@ -759,9 +775,10 @@
       /* D: once his sight has gone, he lifts his left hand: the band still round its wrist; the gold burns it off */
       if (F2.k === 'D' && Bm.wrist0 != null && t >= Bm.wrist0 && t < Bm.calm) {
         const up = f2smo(f2win(t, Bm.wrist0, Bm.wrist0 + 0.7)) * (1 - f2smo(f2win(t, Bm.calm - 0.7, Bm.calm)));
-        f2Hold(null); f2Hands(up > 0.01, 'reach', up * 0.8, { p: 0 });
-        if (up > 0.01 && A.armR) { A.armR.position.y += 0.1 * up; A.armR.position.x -= 0.02 * up; A.armR.position.z += 0.03 * up;
-          A.armR.rotateZ(-0.5 * up); }
+        /* (held up in the library's place, turned over, its wrist and the band inside the picture: lifted in the reach and
+           turned, the forearm crossed the picture and the wrist, the band and its burning stood off its edge, photographed) */
+        f2Hold(null); f2Hands(up > 0.01, 'place', up, { p: 0 });
+        if (up > 0.01 && A.armR) { A.armR.position.y += 0.03 * up; A.armR.position.z += 0.02 * up; }
         if (up > 0.01) f2MirrorLeft(true); else f2MirrorLeft(false);
         return;
       }
@@ -856,11 +873,14 @@
            city; one turns like a head and lunges: a band of red light round his wrist, the pressure doubled, the picture
            crushed to a slit and the lens narrowing (64 to 48 / 56 to 42), pulled half a step; he tears himself back inside,
            the door slides shut in the wind; on his knees, he calls */
-        const dr = [bl.x, EYE - 0.02, bl.z - 0.15], out = [bl.x - 0.1, 1.5, LIV.z1 + 40], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
-        K.push({ t: E.vis, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.5, 0.2, tb.z - 0.4], fp: 64, fd: 56, n: 'D:look' });
+        const out = [bl.x - 0.1, 1.5, LIV.z1 + 40], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
+        /* (his sight opened, his eyes go down to his feet: the threads end there, come in over his floor from his glass) */
+        K.push({ t: E.vis, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.25, 0.0, tb.z + 0.15], fp: 64, fd: 56, n: 'D:look' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.6, 0.35, tb.z + 1.6], fp: 64, fd: 56, n: 'D:turn' });
-        K.push({ t: E.door, e: dr, a: [bl.x - 0.05, 0.6, LIV.z1 + 1.2], fp: 64, fd: 56, n: 'D:door', stop: true });
-        K.push({ t: E.slide + 1.2, e: [dr[0] - 0.02, dr[1], dr[2] + 0.02], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
+        /* (a step back from the glass, its sliding leaf's edge and handle before him as he draws it aside: from half a metre,
+           looking down through it, the picture was the floor and his hand, the door never in it, photographed) */
+        K.push({ t: E.door, e: [bl.x - 0.2, EYE - 0.02, LIV.z1 - 0.95], a: [bl.x + 0.2, 1.0, LIV.z1], fp: 64, fd: 56, n: 'D:door', stop: true });
+        K.push({ t: E.slide + 1.2, e: [bl.x - 0.06, EYE - 0.02, LIV.z1 - 0.45], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
         K.push({ t: E.step + 0.9, e: [bl.x - 0.08, EYE - 0.02, LIV.z1 - 0.12], a: out, fp: 64, fd: 56, n: 'D:doorway' });
         K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 1.2, 1.0, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
         K.push({ t: E.lunge, e: [bl.x - 0.08, EYE - 0.04, LIV.z1 - 0.12], a: [bl.x + 0.4, 1.1, LIV.z1 + 2.0], fp: 62, fd: 54, n: 'D:turns' });
@@ -1117,11 +1137,13 @@
         /* his left hand: on the door's handle as he slides it, then on its frame; the band round its wrist */
         if (t >= E.slide - 0.3 && t < E.tear + 0.2) {
           const k2 = f2smo(f2win(t, E.slide - 0.3, E.slide + 0.1)) * (1 - f2smo(f2win(t, E.tear - 0.1, E.tear + 0.2)));
-          f2Hold(null); f2Hands(k2 > 0.01, 'reach', k2 * 0.85, { p: 0 });
+          /* (held up in the library's place, turned over, as at the dawn's tie: its wrist inside the picture, where the band of
+             red light goes; in the reach the wrist stood at the picture's foot and the band was never seen, photographed) */
+          f2Hold(null); f2Hands(k2 > 0.01, 'place', k2, { p: 0 });
           if (k2 > 0.01 && A && A.armR) {
-            /* (on the frame at his left: the hand a little higher than the reach lays it, nearer the frame's edge on screen) */
+            /* (on the frame at his left: nearer the frame's edge on screen; drawn out toward the door as the band pulls) */
             const onFrame = f2smo(f2win(t, E.step, E.step + 0.8)), pull = f2bell(t, E.wrap, E.wrap + 0.2, E.tear - 0.4, E.tear);
-            A.armR.position.x += 0.02 * onFrame + 0.03 * pull; A.armR.position.y += 0.07 * onFrame - 0.02 * pull; A.armR.position.z -= 0.04 * pull;
+            A.armR.position.x += 0.02 * onFrame + 0.03 * pull; A.armR.position.y += 0.02 * onFrame - 0.02 * pull; A.armR.position.z -= 0.04 * pull;
           }
           if (k2 > 0.01) f2MirrorLeft(true);
           return;
@@ -1237,13 +1259,14 @@
       return K;
     }
     /* THE TIE'S INSERT (ENDINGS.md 3). His own hand is drawn in the hands' pass: a lens of its own (52 degrees) and a place
-       fixed on the screen (the reach, turned over for the left: low on the left). On the world's lens f the same picture is a
+       fixed on the screen (the library's place, turned over for the left: a third of the way down, on the left). On the
+       world's lens f the same picture is a
        hand whose depth along the lens is zv / s, s = tan(f/2) / tan(vm/2), at the same sideways and upward metres (xv, yv)
        as in the hands' camera: so on a narrow lens (an insert's, v6.12) his hand is as big as a hand twice as far off, and
        his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens is TURNED (no roll) so that point lies
        where his teacher can reach across the table, the direction from his eye given by `tieWant` (over the table's middle,
        a hand's breadth and more over its top, in front of his teacher's chest); his teacher's hands go to it (f2TieW). The
-       lens's angle stays the insert's own; so the wrist's distance is the hand's (0.81 m on a phone, 0.92 on a desk) */
+       lens's angle stays the insert's own, so how far off the wrist stands is the hand's own depth's (read: ENDINGS.md 6) */
     F2DW.tieFov = [22, 23];
     /* (his left hand held out in the library's `place`, turned over: its hand stands a third of the way down the picture, so
        its wrist, where the thread goes, is inside it; the reach's hand stood two thirds down, its wrist at the picture's
