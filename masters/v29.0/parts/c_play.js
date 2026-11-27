@@ -234,7 +234,7 @@
       lighter: { x: ON_CLOTH.lighter.x, y: CLOTH_Y + 0.12, z: ON_CLOTH.lighter.z },
       phone:   { x: DATA.shrine.x, y: 0.85, z: DATA.shrine.z },
       grace:   { x: HER.grace.x, y: 1.0, z: HER.grace.z },
-      herPhone: { x: HER.grace.x - 0.33, y: HER.sofa.seat + 0.02, z: HER.grace.z + 0.1 },
+      herPhone: { x: HER.grace.x - 0.39, y: HER.sofa.seat + 0.02, z: HER.grace.z + 0.1 },   // (27 Nov: x from -0.33, its end under her left hand, clipscan)
       glass:   { x: MIRROR_X - 0.03, y: 1.12, z: 1.08 },            // her reflection on window B, as seen from his place (WORLD.md 1)
       packet:  { x: HER.bag.x + 0.02, y: HER.bag.y + 0.1, z: HER.bag.z },
       bowl:    { x: ON_CLOTH.bowl.x, y: CLOTH_Y + 0.1, z: ON_CLOTH.bowl.z },

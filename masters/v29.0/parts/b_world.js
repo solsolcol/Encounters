@@ -877,7 +877,7 @@
       door:   { x: FRONT.x0, z: -2.375, w: 0.95, hingeZ: -2.85 },     // her front door, in the back wall off the landing
       shelf:  { x: -1.6, z: 2.78, ry: Math.PI },                      // the bookshelf against the +z wall
       fan:    { x: 0.45, z: 0.75 },                                   // the ceiling fan over the table
-      bag:    { x: 0.86, y: 0.50, z: -0.36 },                         // her open bag on the sofa beside her, the packet in it
+      bag:    { x: 0.86, y: 0.50, z: -0.31 },                         // her open bag on the sofa beside her, the packet in it (PLAY, 27 Nov: z from -0.36, its back was in the back cushion, clipscan; its height is read off the cushion as it lands, c_play.js sofaRest)
       plant:  { x: 2.25, z: -2.55 }
     };
     /* on the cloth when play begins (the plan's 8.1): the bowl, two candles, the jug and the lighter beside his knee (the

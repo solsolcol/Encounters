@@ -45,11 +45,15 @@
        (photographed). So her body stays where it sits and only her FEET go forward: the ankles her seated legs are laid to
        (restLegs, the seat's own leg-laying) moved `GRACE_FEET` m ahead, the knees' pole with them, so her shins stand just in
        front of the sofa's face */
-    const GRACE_FEET = 0.26;
-    function graceFeetOut(P) {
+    const GRACE_FEET = 0.32;   // (0.26 first: clipscan of the room still crossed her calves with the sofa's front, 27 Nov)
+    function feetOut(P, d) {
       const LG = P.restLegs; if (!LG || LG.feetOut) return; LG.feetOut = true;
-      for (const S0 in LG.R) { const r = LG.R[S0]; r.ank.z += GRACE_FEET; r.pole.z += GRACE_FEET; }
+      for (const S0 in LG.R) { const r = LG.R[S0]; r.ank.z += d; r.pole.z += d; }
     }
+    const graceFeetOut = (P) => feetOut(P, GRACE_FEET);
+    /* (MARCUS the same, measured by the same clipscan: his calves through the rattan chair's front, 1,046 crossings from
+       0.09 to 0.42 m up; his feet laid `MARCUS_FEET` forward along his own facing, the chair's) */
+    const MARCUS_FEET = 0.2;
     const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
       cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
@@ -114,6 +118,7 @@
         shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
       cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    whenReady(cast.marcus, (P) => feetOut(P, MARCUS_FEET));
 
     /* ================================================================ THE WORLD'S PHASES (the hooks: c_play.js book() and
        applyPhase() call worldPhase, d_play.js's frame calls worldFrame, its reset worldReset). The evening's three stand
