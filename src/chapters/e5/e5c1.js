@@ -320,7 +320,9 @@
     assets: [
       /* >>> this chapter's own keys: written by masters/v29.0/keys.py (edit its table, not this list) >>> */
       'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
-      'w51lighter', 'w51jug', 'w51plate', 'w51glass',
+      'w51lighter', 'w51jug', 'w51plate', 'w51glass', 'w51ctable', 'w51gsofa', 'w51rattan', 'w51shelf', 'w51laptop',
+      'w51takeaway', 'w51sofa', 'w51dintable', 'w51dinchair', 'w51bed', 'w51altarcab', 'w51breakfast', 'w51pills',
+      'w51keycard', 'w51phone', 'w51clock', 'w51aircon', 'w51phobag', 'w51incense', 'w51kettle', 'w51jasmine',
       /* <<< this chapter's own keys <<< */
       /* the shared cast's stand-ins and reuse (masters/v29.0/parts/c_cast.js), each declared in `reuseInEpisode`:
          Grandmaster Pho as episode 4 chapter 5 casts him seated (his own file, look D), the white cloth over his crossed
@@ -3284,6 +3286,8 @@
     const poolTex = (() => { const [c, x] = wCanvas(128, 128);
       const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.35, 'rgba(255,255,255,0.45)'); g.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = g; x.fillRect(0, 0, 128, 128); return tex(done(THREE, c, false)); })();
+    const rectTex = (() => { const [c, x] = wCanvas(64, 128); x.fillStyle = 'rgba(255,255,255,0)'; x.fillRect(0, 0, 64, 128);
+      x.filter = 'blur(3px)'; x.fillStyle = '#ffffff'; x.fillRect(6, 6, 52, 116); return tex(done(THREE, c, false)); })();
     const glowTex = (() => { const [c, x] = wCanvas(64, 64);
       const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.18, 'rgba(255,255,255,0.7)'); g.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
@@ -3296,9 +3300,9 @@
     const mTimber = M({ color: 0x5a3a26, roughness: 0.58 });                        // her windows' frames and the half wall's cap
     const mTimberDark = M({ color: 0x3a2618, roughness: 0.6 });
     const mLouvre = M({ map: wPic(wLouvre([150, 104, 70]), 0.5, 0.55), roughness: 0.7 });
-    const mTerrazzoGreen = M({ map: wPic(wTerrazzo(51003, '#8a8e84', ['#f0eee6', '#5a6058', '#c4c0b0', '#2e322e', '#a8b098']), 0.6, 0.6), roughness: 0.5 });
-    const mStairGreen = M({ map: wPic(wPaint('#5f7e68', 51004, 140, 0.02), 1.2, 1.2), roughness: 0.6 });     // old green gloss to the dado
-    const mStairWhite = M({ map: wPic(wPaint('#d8d6c8', 51005, 160, 0.025), 1.4, 1.4), roughness: 0.92 });
+    const mTerrazzoGreen = M({ map: wPic(wTerrazzo(51003, '#9a9c90', ['#f0eee6', '#e4e2d8', '#7a8074', '#c4c0b0', '#b0b8a0', '#4a4e48']), 0.45, 0.45), roughness: 0.5, emissive: 0x0c0e10 });
+    const mStairGreen = M({ map: wPic(wPaint('#5f7e68', 51004, 140, 0.02), 1.2, 1.2), roughness: 0.6, emissive: 0x0a120e });     // old green gloss to the dado
+    const mStairWhite = M({ map: wPic(wPaint('#d8d6c8', 51005, 160, 0.025), 1.4, 1.4), roughness: 0.92, emissive: 0x16181a });
     const mKitchen = M({ color: 0xe8e4da, roughness: 0.45 });                        // her kitchenette's cabinet fronts
     const mWorktop = M({ map: wPic(wTerrazzo(51006, '#6a6660', ['#d8d4ca', '#3a3834', '#a09a90']), 0.5, 0.5), roughness: 0.35 });
     const mSteelSink = M({ color: 0xaab0b4, roughness: 0.3, metalness: 0.6 });
@@ -3324,7 +3328,13 @@
       x.fillStyle = '#f0dca0'; x.font = 'bold 50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('咖 啡 店   KOPI', 256, 50);
       const t = tex(done(THREE, c, false)); return M({ map: t, roughness: 0.8, emissive: 0x1a0a06 }); })();
     /* glass: her windows' panes, dark at night (what they reflect is built behind them: the reflection below); a shop's */
-    const mPaneNight = M({ color: 0x0c1220, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.58, depthWrite: false, side: THREE.DoubleSide });
+    const sheenTex = (() => { const [c, x] = wCanvas(128, 256);
+      const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, 'rgb(150,158,176)'); g.addColorStop(0.5, 'rgb(118,124,140)'); g.addColorStop(1, 'rgb(104,108,120)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 256);
+      const s2 = x.createLinearGradient(0, 30, 128, 160); s2.addColorStop(0, 'rgba(255,255,255,0)'); s2.addColorStop(0.5, 'rgba(255,255,255,0.35)'); s2.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = s2; x.beginPath(); x.moveTo(10, 0); x.lineTo(60, 0); x.lineTo(128, 130); x.lineTo(128, 200); x.closePath(); x.fill();
+      return tex(done(THREE, c, false)); })();
+    const mPaneNight = M({ map: sheenTex, color: 0x0c1220, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.58, depthWrite: false, side: THREE.DoubleSide });
     const mPaneOut = M({ color: 0x1a2236, roughness: 0.08, metalness: 0.3, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide });
     /* his place's surfaces */
     const mPorcelain = M({ map: wPic(wTiles(512, 2, [196, 190, 180], '#8a847a', 51020, 0.05, 60), 1.2, 1.2), roughness: 0.38 });
@@ -3570,24 +3580,25 @@
     const UNITS = [];                                                    // [{ z0, z1, her }] her unit -4.45..3.15
     { let z = -4.45; while (z > -40) { UNITS.unshift({ z0: z - UNIT, z1: z }); z -= UNIT; }
       UNITS.push({ z0: -4.45, z1: 3.15, her: true });
-      z = 3.15; while (z < 40) { UNITS.push({ z0: z, z1: z + UNIT }); z += UNIT; } }
+      z = 3.15; while (z + UNIT < 41) { UNITS.push({ z0: z, z1: z + UNIT }); z += UNIT; } }
     const SIDE = { near: { face: STREET.face, n: 1, shop: STREET.shop, back: -12 }, far: { face: STREET.across, n: -1, shop: STREET.across + 1.85, back: 24 } };
     const UP_TOP = FRONT.ceil + 0.5;                                     // the façade's cornice over the upper floor
     {
       const rr = rng(51040);
+      const ZE = 40.6;                                                   // the row's two ends
       /* THE ROAD: asphalt between the kerbs, its lines (a broken centre line, double yellow kerb lines: no stopping) */
-      floor(mAsphalt, STREET.kerb, -40, STREET.across - 0.55, 40, GY - 0.15);
-      for (let z = -40; z < 40; z += 6) boxW(mLine, (STREET.road[0] + STREET.road[1]) / 2, GY - 0.148, z + 1.5, 0.12, 0.004, 3.0, 16);
-      for (const xo of [0.25, 0.4]) { boxW(mYellow, STREET.kerb + xo, GY - 0.148, 0, 0.08, 0.004, 80, 16); boxW(mYellow, STREET.road[1] - xo, GY - 0.148, 0, 0.08, 0.004, 80, 16); }
+      floor(mAsphalt, STREET.kerb, -ZE, STREET.across - 0.55, ZE, GY - 0.15);
+      for (let z = -ZE; z < ZE; z += 6) boxW(mLine, (STREET.road[0] + STREET.road[1]) / 2, GY - 0.148, z + 1.5, 0.12, 0.004, 3.0, 16);
+      for (const xo of [0.25, 0.4]) { boxW(mYellow, STREET.kerb + xo, GY - 0.148, 0, 0.08, 0.004, 2 * ZE, 16); boxW(mYellow, STREET.road[1] - xo, GY - 0.148, 0, 0.08, 0.004, 2 * ZE, 16); }
       for (const S0 of [SIDE.near, SIDE.far]) {
         const n = S0.n, F0 = S0.face;
         /* the drain and the kerb in front of the five-foot way (a grating over the drain), the five-foot way, its soffit */
         const kx0 = n > 0 ? F0 : STREET.road[1], kx1 = n > 0 ? STREET.kerb : F0;
-        floor(mGrate, kx0, -40, kx1, 40, GY - 0.03);
-        vquadX(mKerb, n > 0 ? kx1 : kx0, -40, 40, GY - 0.15, GY - 0.03, n);
+        floor(mGrate, kx0, -ZE, kx1, ZE, GY - 0.03);
+        vquadX(mKerb, n > 0 ? kx1 : kx0, -ZE, ZE, GY - 0.15, GY - 0.03, n);
         const fx0 = n > 0 ? S0.shop : F0, fx1 = n > 0 ? F0 : S0.shop;
-        floor(mFiveFoot, fx0, -40, fx1, 40, GY);
-        ceilQ(mSoffit, fx0, -40, fx1, 40, -0.3);
+        floor(mFiveFoot, fx0, -ZE, fx1, ZE, GY);
+        ceilQ(mSoffit, fx0, -ZE, fx1, ZE, -0.3);
         for (const U of UNITS) {
           const mat = U.her && n > 0 ? mFacades[0] : mFacades[(rr() * mFacades.length) | 0];
           const zc = (U.z0 + U.z1) / 2, wz = U.z1 - U.z0;
@@ -3621,11 +3632,13 @@
             boxW(mFacades[(rr() * 5) | 0], sx + n * 0.12, -0.42, zc, 0.24, 0.26, wz - 0.5, 63);
             vquadX(mat, sx, a, b, -0.55, -0.3, n);
           }
+          /* the pier between two shop fronts, under the pillar's line */
+          boxW(mat, S0.shop - n * 0.12, (GY - 0.3) / 2, U.z0, 0.24, -0.3 - GY, 0.5, 63);
         }
         /* the roof: clay tiles from the cornice back to the ridge, a parapet's top */
         const rx0 = F0 - n * 0.3, rx1 = F0 - n * 6.5, ridge = UP_TOP + 2.6;
-        quad(mRoof, [rx0, UP_TOP - 0.05, n > 0 ? 40 : -40], [rx0, UP_TOP - 0.05, n > 0 ? -40 : 40], [rx1, ridge, n > 0 ? -40 : 40], [rx1, ridge, n > 0 ? 40 : -40]);
-        quad(mRoof, [rx1, ridge, n > 0 ? 40 : -40], [rx1, ridge, n > 0 ? -40 : 40], [F0 - n * 13, UP_TOP - 0.6, n > 0 ? -40 : 40], [F0 - n * 13, UP_TOP - 0.6, n > 0 ? 40 : -40]);
+        quad(mRoof, [rx0, UP_TOP - 0.05, n > 0 ? ZE : -ZE], [rx0, UP_TOP - 0.05, n > 0 ? -ZE : ZE], [rx1, ridge, n > 0 ? -ZE : ZE], [rx1, ridge, n > 0 ? ZE : -ZE]);
+        quad(mRoof, [rx1, ridge, n > 0 ? ZE : -ZE], [rx1, ridge, n > 0 ? -ZE : ZE], [F0 - n * 13, UP_TOP - 0.6, n > 0 ? -ZE : ZE], [F0 - n * 13, UP_TOP - 0.6, n > 0 ? ZE : -ZE]);
       }
       /* HER UNIT'S UPPER FAÇADE, outside: its plaster round her two windows (their frames and panes are her front wall's,
          above), the stair bay's small window, the mouldings */
@@ -3660,8 +3673,8 @@
         vquadX(mSign, STREET.face + 0.212, Z0 + 0.3, Z1 - 0.3, -0.3, 0.3, 1, true);
       }
       /* the blocks that close the street's two ends (a cross street's corner), their windows real */
-      for (const zE of [-44, 44]) { const f = zE < 0 ? 1 : -1, mat = mFacades[zE < 0 ? 3 : 1];
-        boxW(mat, 8.6, GY + 7.5, zE - f * 4, 30, 15, 8, 63);
+      for (const zE of [UNITS[0].z0 - 0.05, UNITS[UNITS.length - 1].z1 + 0.05]) { const f = zE < 0 ? 1 : -1, mat = mFacades[zE < 0 ? 3 : 1];
+        boxW(mat, 8.6, GY + 7.5, zE - f * 3.8, 30, 15, 7.6, 63);
         for (let i = 0; i < 7; i++) for (let j = 0; j < 3; j++) { const x0 = -5.5 + i * 4.2, y0 = GY + 4.2 + j * 3.4;
           vquadZ(rr() < 0.25 ? mLitRoom : mDarkRoom, zE + f * 0.02, x0, x0 + 1.6, y0, y0 + 1.9, f);
           boxW(mMoulding, x0 + 0.8, y0 - 0.06, zE + f * 0.05, 1.8, 0.1, 0.1, 63); } }
@@ -3741,6 +3754,8 @@
       quad(mGlassHis, [CORR.x0 - 0.075, 0.8, CORR.z0 + 0.3], [CORR.x0 - 0.075, 0.8, CORR.z1 - 0.3], [CORR.x0 - 0.075, 2.3, CORR.z1 - 0.3], [CORR.x0 - 0.075, 2.3, CORR.z0 + 0.3]);
       boxW(mVeneer, HX - 3.8, 2.16, LIV.z0 - 0.15, 0.92, 0.08, 0.04, 63);                   // his door's head
       boxW(mAlu, HX - 3.32, 1.05, LIV.z0 - 0.16, 0.06, 0.12, 0.02, 63);                     // the keycard reader beside it
+      for (const x of [HX - 4.22, HX - 3.38]) boxW(mVeneer, x, 1.06, LIV.z0 - 0.075, 0.06, 2.12, 0.2, 63);   // the door's jambs (its leaf's edges in them)
+      boxW(mVeneer, HX - 3.8, 2.15, LIV.z0 + 0.03, 0.9, 0.06, 0.02, 63);
       /* HIS BLOCK'S FACE round his windows (the neighbours' balconies beside and over and under his, the tower's walls),
          seen from his balcony and along his glass */
       for (let k = -3; k <= 3; k++) {
@@ -3770,8 +3785,9 @@
       for (let i = 0; i < 26; i++) {
         let x, z, ok = false;
         for (let tries = 0; tries < 30 && !ok; tries++) {
-          x = HX + (r() * 2 - 1) * 118; z = 24 + r() * 108;
-          ok = Math.hypot(x - HX, z) < 150 && sites.every(s => Math.hypot(s[0] - x, s[1] - z) > 26);
+          x = HX + (r() * 2 - 1) * 118; z = 42 + r() * 92;
+          /* (nothing close in front of his glass: the view over the city is open, the nearest towers off to the sides) */
+          ok = Math.hypot(x - HX, z) < 150 && (Math.abs(x - HX) > 34 || z > 72) && sites.every(s => Math.hypot(s[0] - x, s[1] - z) > 26);
         }
         if (!ok) continue;
         sites.push([x, z]);
@@ -4181,7 +4197,7 @@
       things.bathPool = pool(HX + 5.45, 0.004, -0.4, 1.4, 1.6, 0xfff2e0, 0.35, { parent: hisG, look: 'bath' });
       /* DAWN's sun through his glass: long warm patches across his floor (their mullions' gaps between) */
       things.sunPatches = [];
-      for (let x = LIV.x0 + 0.1; x < LIV.x1 - 0.5; x += 1.25) things.sunPatches.push(pool(x + 0.62, 0.005, 1.25, 1.1, 2.6, 0xffc070, 0.4, { add: true, parent: hisG, look: 'dawn', rz: 0.32 }));
+      for (let x = LIV.x0 + 0.1; x < LIV.x1 - 0.5; x += 1.25) things.sunPatches.push(pool(x + 0.62, 0.005, 1.0, 1.05, 3.0, 0xffc070, 0.5, { map: rectTex, parent: hisG, look: 'dawn', rz: 0.32 }));
     }
     /* THE LOOKS of the world (the head's PRESETS, by name): what each shows of the painted light. `worldLook(name)` sets
        it; the world's own tick follows the sky on its own when the scene's background is a preset's (the play and the
