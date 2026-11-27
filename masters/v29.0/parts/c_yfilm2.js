@@ -528,7 +528,10 @@
     /* SPIRIT VISION held by the film's clock (the engine's own curve out from his eyes over `secs` from `t0`, full until `t1`,
        home over `back`), held only round the moments it is open (a held radius of 0 draws every frame through the vision's
        pass for nothing: episode 4 chapter 5's R51) */
-    const F2VR = 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
+    /* (the films open his sight as far as play does: the chapter's own declared reach, the engine's 70 m when it names none.
+       At 70 m the city past it stays as it is, its edge a curve across the blocks out of his glass: d7's desktop pictures
+       at D 7.2 s and A 77.0 s; said to the coordinator, the chapter's to decide, and these films follow it) */
+    const F2VR = (DATA.vision && DATA.vision.rmax) || 70, f2VisCurve = (u) => 0.30 * u + 0.70 * u * u * u;
     function f2VisionR(t, t0, secs, t1, back) {
       if (t >= t0 && t < t0 + secs) return [F2VR * f2VisCurve((t - t0) / secs), true];
       if (t >= t0 + secs && t < t1) return [F2VR, false];
