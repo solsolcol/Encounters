@@ -263,7 +263,7 @@ const ANALYSE = ([VOX, R, FLAT, CX = 0, CZ = 0]) => {
 async function scanNow(tag) {
   await p.waitForFunction(() => { try { const i = window.__enc.stage.info(); return !i.waiting || !i.waiting.length; } catch { return false; } }, null, { timeout: 600000, polling: 1000 }).catch(() => log('some models never landed'));
   await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 4 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
-  const res = await p.evaluate(ANALYSE, [VOX, R, FLAT]);
+  const res = await p.evaluate(ANALYSE, [VOX, R, FLAT, +(process.env.CX || 0), +(process.env.CZ || 0)]);   // (v29.0: CX, CZ the range's middle in play too)
   /* WHAT HE CAN WALK INTO: every thing on the ground he is kept on, taller than 0.8 m and not a person, whose footprint's
      middle no blocker holds at the height collide() samples (a metre): his eye could go inside it */
   res.walkInto = await p.evaluate((objs) => {

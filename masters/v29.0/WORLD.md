@@ -120,7 +120,7 @@ and costs one draw per body part and per piece of her room while drawn.
 | `bed` | 307.27, 0.8 (-π/2), 1.7 x 1.87, mattress about 0.5 | `w51bed`, its head on the +x wall; `bedEdge` (306.55, 0.55, 0.15), `bedHead` (307.85, 0.62, 0.8) |
 | `getUp` | 306.7, -0.48 | where he stands up from it: `STATION.night.at` (yaw 2.17, toward the bedroom door) |
 | `bedDoor` | 304.4, 1.2; hinge z 1.65 | `WORLD.bedDoor(k)` 1 open (play), ~0.15 ajar |
-| `clock` | 307.79, y 0.5, 2.16 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside cabinet 307.95, 2.05, top 0.5, with his lamp and a glass of water (`things.bedGlass`, the one that trembles) |
+| `clock` | 307.98, y 0.45, 2.1 (turned to the bed) | the alarm clock on his bedside (`w51clock`, `things.bedClock`): 9.4's insert, 11:58 and 3:00 (its face is the films'); the bedside is a stool (`w4stool`, `things.bedside`) at 307.95, 2.05, top 0.45, a glass of water on it (`things.bedGlass`, the one that trembles) |
 | `aircon` | 308.08, y 2.25, 0.8 | the wall unit over his bed's head (`w51aircon`) |
 | `kettle` | 302.0, -2.2, y 0.92 | on his kitchen counter (`w51kettle`) |
 | `oven` | 301.75, y 0.86, -1.88 | `WORLD.ovenClock('3:41')` (ending B) |
@@ -151,3 +151,25 @@ Her room: w51ctable, w51gsofa, w51rattan, w51shelf, w51plate, w51lighter, w51jug
 His: w51sofa, w51dintable, w51dinchair (two), w51bed, w51altarcab, w51jasmine, w51glass (two), w51clock, w51aircon,
 w51kettle. Not placed by the world: w51phobag (Grandmaster Pho's, CAST and FILMS hang it on him), w51breakfast, w51pills,
 w51keycard, w51phone (the films' and the play's, in hands). Not made: a standing lamp (her room has its table lamp only).
+
+## 6 · The phone's budget, measured (the GL's own count of one drawn frame, both passes, every instance; 390 x 844 at two pixels a point, touch)
+
+`tools/probes/e5c1world.mjs` with `WORLD=1` draws each view twice: as it stands, and with the people hidden (their bodies
+and their copies in her glass). The chapter's budget is under 0.9 million triangles a frame (episode 4 chapter 5's §13).
+
+| view (the plan's camera place) | everything | the places alone | draws (places) |
+|---|---|---|---|
+| the crane's start (9.1) | 0.93 M | 0.45 M | 96 |
+| his place kneeling, at Grace (8.1) | 1.03 M | 0.19 M | 61 |
+| the cloth from his place (9.2) | 1.08 M | 0.24 M | 72 |
+| the glass (8.1, 9.1) | 0.66 M | 0.17 M | 64 |
+| her back room from the window side | 1.33 M | 0.22 M | 69 |
+| his corridor (9.4) | 0.30 M | 0.30 M | 54 |
+| his bedroom door to the front door (8.3) | 0.32 M | 0.32 M | 53 |
+| dawn (9.9) | 0.26 M | 0.26 M | 49 |
+
+The places hold to 0.17 to 0.45 M; what passes the budget in her room is the people (today Pho's seated body, and the
+stand-ins Mala's full body, 356 k, and the collector's): CAST's. The crane's places are the street's real models (the taxi
+`e4sedan` 99 k close at its end, the row's merged fabric, the coffee shop's chairs): FILMS may show the taxi only from
+its arrival (13.0 s). Each pocket is drawn only while the lens is in it (the world's tick), and the reflection's bodies
+are their lightest level (the stand-ins have only one: Grace's and Marcus's own lighter levels will take its place).

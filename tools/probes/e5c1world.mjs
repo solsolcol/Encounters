@@ -83,6 +83,26 @@ if (process.env.HANDS !== '1') await p.evaluate(() => { if (window.__enc.handsRo
 await p.addStyleTag({ content: '#hud, #objective, #reticle, .hudel, #hotBadge, #caption, #captions, #vignette { opacity: 0 !important; }' });
 const frames = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
 let curPhase = null;
+/* MEASURE=1: the tops of the landed things where a body sits or a thing stands (the highest point of each model within
+   r of a spot, from its own drawn vertices): the numbers WORLD.md gives PLAY, FILMS and CAST */
+if (process.env.MEASURE) { const m = await p.evaluate(() => { const S = window.__enc.stage, T = S.plan.ROOMTHINGS.things, out = {};
+  const top = (name, x, z, r = 0.12) => { const g = T[name]; if (!g) return null; g.updateWorldMatrix(true, true); let best = -1e9, n = 0;
+    g.traverse(o => { if (!o.isMesh || !o.geometry || !o.visible) return; const pa = o.geometry.attributes.position, e = o.matrixWorld.elements;
+      for (let i = 0; i < pa.count; i++) { const a = pa.getX(i), b = pa.getY(i), c = pa.getZ(i);
+        const wx = e[0] * a + e[4] * b + e[8] * c + e[12], wy = e[1] * a + e[5] * b + e[9] * c + e[13], wz = e[2] * a + e[6] * b + e[10] * c + e[14];
+        if (Math.hypot(wx - x, wz - z) < r) { n++; if (wy > best) best = wy; } } });
+    return n ? +best.toFixed(3) : null; };
+  const g = (k) => { const v = T[k]; return v ? [+v.position.x.toFixed(3), +v.position.z.toFixed(3)] : null; };
+  out.rattanSeat = top('rattan', -1.55 + 0.08 * Math.sin(0.77), -0.95 + 0.08 * Math.cos(0.77), 0.16);
+  out.gsofaSeatL = top('gsofa', 0.15, -0.25, 0.1); out.gsofaSeatR = top('gsofa', 0.85, -0.25, 0.1);
+  out.ctableTop = top('ctable', 0.5, 1.15, 0.2); out.cushionTop = top('phoCushion', 0.5, 1.87, 0.1);
+  out.hisSofaSeat = top('hisSofa', 300 - 2.3, -0.85, 0.12); out.bedTop = top('bed', 300 + 6.9, 0.8, 0.2);
+  out.diningTop = top('dining', 300.75, -0.25, 0.25); out.altarTop = top('altarcab', 295.71, 0.35, 0.2);
+  out.chairSeat = top('chair1', 300.75, 0.55, 0.1); out.dintableHerTop = top('dintable', -4.25, 0.6, 0.25);
+  out.shelfTop = top('shelf', -1.6, 2.78, 0.2);
+  out.altar = []; for (let d = -0.27; d <= 0.29; d += 0.04) out.altar.push([+(295.71 + d).toFixed(2), top('altarcab', 295.71 + d, 0.35, 0.025)]);   // (its top from the wall outward)
+  out.bedside = top('bedside', 300 + 7.95, 2.05, 0.08);
+  return out; }); console.log('MEASURE', JSON.stringify(m)); }
 for (const name of pick) {
   const v = ALL[name]; if (!v) { console.log('no view', name); continue; }
   const [phase, look, x, y, z, tx, ty, tz, fov] = v;
@@ -102,6 +122,10 @@ for (const name of pick) {
   const info = await p.evaluate(() => { const S = window.__enc.stage, W = S.plan && S.plan.ROOMTHINGS && S.plan.ROOMTHINGS.api;
     return { st: window.__enc.getState(), world: W ? W.state() : null }; });
   info.gl = await frameGL();
+  /* WORLD=1: the same frame without the people (their bodies and their copies in her glass): the places' own share */
+  if (process.env.WORLD) { await p.evaluate(() => { const S = window.__enc.stage, C = S.films && S.films.cast; if (C) for (const k in C) if (C[k] && C[k].group) { C[k].group.userData.__v = C[k].group.visible; C[k].group.visible = false; } });
+    info.glWorld = await frameGL();
+    await p.evaluate(() => { const S = window.__enc.stage, C = S.films && S.films.cast; if (C) for (const k in C) if (C[k] && C[k].group && C[k].group.userData.__v != null) C[k].group.visible = C[k].group.userData.__v; }); }
   /* TRIS=1: what draws them, the visible meshes summed by their place in the world (each instance counted) */
   if (process.env.TRIS) info.census = await p.evaluate(() => { const E = window.__enc, S = E.stage, out = {};
     const root = S.world; const cam = E.pitch.children.find(o => o.isCamera); cam.updateMatrixWorld(); const fr = new (root.constructor.prototype.constructor === undefined ? Object : Object)();
@@ -112,7 +136,7 @@ for (const name of pick) {
       out[k] = (out[k] || 0) + n; });
     return Object.entries(out).sort((a, b) => b[1] - a[1]).slice(0, 18).map(([k, n]) => k + ' ' + Math.round(n)); });
   await p.screenshot({ path: `${OUT}/${name}.png`, timeout: 240000 });
-  console.log(el(), name, 'gl', JSON.stringify(info.gl), 'refl', JSON.stringify(info.world && info.world.refl && { on: info.world.refl.on, twins: info.world.refl.twins }), 'look', info.world && info.world.look, info.census ? '\n   ' + info.census.join('\n   ') : '');
+  console.log(el(), name, 'gl', JSON.stringify(info.gl), info.glWorld ? 'world ' + JSON.stringify(info.glWorld) : '', 'refl', JSON.stringify(info.world && info.world.refl && { on: info.world.refl.on, twins: info.world.refl.twins }), 'look', info.world && info.world.look, info.census ? '\n   ' + info.census.join('\n   ') : '');
 }
 await p.evaluate(() => { const S = window.__enc.stage; if (S.__g0) S.groundAt = S.__g0; });
 console.log(el(), 'errs', JSON.stringify(errs.slice(0, 20)));
