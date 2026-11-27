@@ -63,15 +63,20 @@ Endings B and C give the barrier the threads already at his feet (`near`); B's g
 
 | marks (from d0) | shot | why |
 |---|---|---|
-| 0 to sit | on his back inside the circle where he lay down: the ceiling in the warm light; his head down to his glass, the sun; he sits up, the thread still round him on the floor | M8 from 0 (coloured per ending), the koel |
+| 0 to sit | on his back inside the circle where he lay down, his eyes down along himself to his glass: the white thread on the floor round him in the low sun; he sits up, the thread still round him | the morning bed and the koel; M8 (coloured per ending) comes in at `m8`, 3.0 to 6.1 s in (below) |
 | knock | two knocks at his door; his head turns to them over his shoulder | |
 | door (a cut) | at his door, drawn open (`WORLD.hisDoor`): Grandmaster Pho standing in the corridor in white, his cloth bag on his shoulder (`FILMSAPI.phoStand`, `props.phoBag`): "Eat first. You fought all night, even sitting still." (his talk capped at 0.35: his open hands) | his eye beside the door clear of its leaf's swing |
-| inside | he comes in past him, his look on the circle | `helpers.walk` at 0.85 m/s |
-| wind (a cut) | his teacher sitting on the floor at the circle's edge, cross-legged as he always sits (the seated `cast.pho`, CROSS), winding the thread onto its spool in his right hand, his left drawing it up: the loop drawn in across the floor to his hands (the circle scaled about the point where it leaves the floor: `f2CircleWound`), the sun behind him | the plan says "kneels": he has no kneel, and on the floor he always sits so (chapters 3 to 5, and her table here) |
-| table (a cut) | the dining table, his teacher across it on the other chair (WORLD's dawn seats, `FILMPLACE.dawnSeat`), the kopi and the toast between them (`w51breakfast`), the spool by his hand; "I only held the water." "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it." and the ending's own line; a slow push on him (0.3 m) | the plan's 9.9 |
-| tie (a cut, an insert from his eyes) | his left wrist held out across the table (the hands' `reach` turned over), his teacher's two hands at it tying the white thread round and knotting it twice (knot1, knot2), in D over the red mark | THE NARROW LENS that makes one size of his hand and his teacher's: the hands' pass draws his own hand on its fixed 52 degrees at its own depth z; a world point at d metres on a lens of f degrees is drawn as big when d tan(f/2) = z tan(26). At 26 / 23 degrees his wrist, 0.44 m into the hands' pass, stands where a hand 0.93 m off is, half across the table: where his teacher reaches it (`f2WristAt`) |
-| up | his eyes up to his teacher's face: "Before we help anyone, we protect ourselves. From now on, we prepare first." | M8 decays from its 41st second under this line (its last chord, as the plan has it) |
-| (after) | his thought, "I had thought I was only there to assist my teacher.", in the morning's quiet; the picture goes down with the birds | v15.3 |
+| inside | he steps back and aside to let him in (behind the middle of his sofa, 1.2 m off his way: at 0.65 m his teacher filled the picture passing and cut off his own head, photographed), his look going with him into the room | `helpers.walk` at 0.85 m/s |
+| wind (a cut) | his teacher sitting on the floor at the circle's edge, cross-legged as he always sits (the seated `cast.pho`, CROSS), the spool held upright in his right hand before his belly and turned as he winds, his left hand a little before it pinching the thread that comes up from the floor and feeding it on (both hands laid by `handTo` after his seated rest, as FILMS-1 lays his at her table; measured: 6): the loop drawn in across the floor to his hands (the circle scaled about the point where it leaves the floor: `f2CircleWound`), the sun behind him | the plan says "kneels": he has no kneel, and on the floor he always sits so (chapters 3 to 5, and her table here) |
+| table (a cut) | the dining table, his teacher across it on the other chair (WORLD's `chair2`, which faces the table: w51dinchair's back stands 0.245 m behind its middle, measured; his teacher sits forward on it), the kopi and the toast on his teacher's half to his right (`w51breakfast`), the spool set down on the other side; "I only held the water." "That was enough for it to find you. There is no 'only'. Whoever helps becomes part of it." and the ending's own line; a slow push on him (0.3 m) | the plan's 9.9 |
+| tie (a cut, an insert from his eyes) | his left wrist held out across the table (the hands' `reach` turned over), his teacher's two hands at it tying the white thread round and knotting it twice (knot1, knot2), in D over the red mark; his teacher's robe and beads behind | THE NARROW LENS that makes one size of his hand and his teacher's. His own hand is drawn in the hands' pass, on its own 52 degrees, at a place fixed on the screen (low on the left). On the world's lens f the same picture is a hand whose depth along the lens is zv / s (s = tan(f/2) / tan(26), zv its depth in the hands' camera) at the same sideways and upward metres: so his wrist IS at E + R (xv, yv, -zv / s), R the lens's turn. The insert's lens (22 degrees on a phone, 23 on a desk) is TURNED, no roll, so that point lies where his teacher reaches it across the table (over its middle, a hand's breadth and more over its top: `tieWant`; `f2TieCam`, `f2TieW`), and his teacher's hands go there from half a second before the cut. The first build looked at the table's middle and left his wrist where the lens put it: under the table's top, his teacher's hands short of it on his chair's back (photographed) |
+| up | his eyes up to his teacher's face: "Before we help anyone, we protect ourselves. From now on, we prepare first." | |
+| (after) | his thought, "I had thought I was only there to assist my teacher."; M8's last chord under it, and the picture and the music down together | v15.3 |
+
+M8 is 45.09 s, its last chord ringing out over its last 3.6 s; the dawn runs 48.1 to 51.2 s on its measured lines. Begun at
+0, as the plan's table has it, it fell silent before his last thought and left the black with no music; so it begins at
+`m8` = the dawn's end less 45.1 s (A 5.0 s in, B 3.0, C 5.4, D 6.1: under the knock or the door), and its last chord sounds
+under his thought and fades with the picture.
 
 ## 4 · The things and the people the endings use
 
@@ -79,8 +84,10 @@ His phone (`e4phone`, the play's model: `f2PhoneGroup`, its screen drawn: 3:03 a
 call's seconds), held with its screen to him (`f2PhoneFace`: the play's hold at the decision shows the phone's back to the
 lens, its screen's normal (0.31, -0.77, 0.56) in the lens's frame, measured: a finding for PLAY, said in the report);
 the spool (`w51threadreel`), the pills (`w51pills`), a cushion (`w5cushion`, reused), the breakfast (`w51breakfast`), his
-bag (`e4bag`, WORLD's), the bottle on his altar (WORLD's, trembling with each wave, still at the break). Grandmaster Pho
-standing is FILMSAPI.phoStand; seated on the floor, cast.pho; never both drawn at once (each swap on a cut, v24.12).
+bag (`e4bag`, WORLD's), the bottle on his altar (WORLD's, trembling with each wave, still at the break), the dining table and
+its two chairs (WORLD's, as WORLD stands them: build 2 of these films turned the chairs about for the dawn, read from a
+picture where his teacher sat back through the backrest; measured, they face the table, and the turn is gone). Grandmaster
+Pho standing is FILMSAPI.phoStand; seated on the floor, cast.pho; never both drawn at once (each swap on a cut, v24.12).
 His legs in the circle are framed out, not drawn: the game has no take of his body sitting cross-legged, and a take
 retargeted from another body is a new motion that must pass the body rules before it is shown.
 
@@ -88,10 +95,18 @@ retargeted from another body is a new motion that must pass the body rules befor
 
 Every cue a literal `sfx(t, 'name')` in the scene's own source (v10.2), none after the film's last track (v12.3). The
 static scan (tools/probes/voicescan.mjs, with the phone copies `*tel` counted as the voices they are): NO VOICE OVER
-ANOTHER in any ending; the stretches of 1.5 s or more without a voice: the barrier's end into the dawn (held by the
-night's bed under the black, then M8, the koel, his rising, the knock, the door), the dawn's walk-in and winding (his
-teacher's steps, the thread drawn in and wound, the paper bag, the cups, M8, the morning bed), and the last 2.2 s (the
-picture going down with the birds). Every other stretch in all four is spoken over.
+ANOTHER in any ending; the stretches of 1.5 s or more without a voice: the opening of A (the phone lifted, two rings, the
+call connecting, his heart under it all: 5.3 s), of B (the phone laid down, the sofa, his palms, his breath, the waves: 6.3
+s; the oven's clock and the floor: 9.9 s, his heart, the clock's tick, the crawl, the phone up, the ring), of C (the walk to
+the kitchen, the drawer, the foil, the tap, the walk to the sofa, the cushion, the wave, the glass doors ticking, his sight
+opening: 14.3 s, his heart under all of it) and of D (his sight opened, his steps, the door slid, the balcony's air, the
+threads, the band, the slam, his knees, the phone, the ring: 16.6 s); in every barrier his walk to his bag and round to the
+circle (12.3 to 14.1 s: his steps, the bag's zip, his heart, the spool, the floor as he sits, a wave, the thread closed); the
+barrier's end into the dawn (8.4 s: the morning's bed from the black, the koel, his rising, his breath out, the knock, M8
+coming in, the latch, the door), the dawn's walk-in and winding (9.1 s: his teacher's steps, the thread drawn in and wound,
+the paper bag, the cups, M8, the morning bed), and the last 2.2 s (the picture and M8 going down together with the birds).
+Every other stretch in all four is spoken over. (tools/probes/voicescan.mjs's walk over the assembled chapter, 27 Nov, with
+the phone's copies of a line, `*tel`, counted as the voice they are: the tool as it stands leaves them out, a finding.)
 
 ## 6 · Measured (filled in as each lands)
 

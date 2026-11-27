@@ -107,9 +107,9 @@
         const u = i / n, s = L * u, p = f2PathAt(P, s), q = f2PathAt(P, Math.min(L, s + ahead)), qq = (q[0] === p[0] && q[1] === p[1]) ? f2PathAt(P, L) : q;
         let dx = qq[0] - p[0], dz = qq[1] - p[1]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
         let a = [p[0] + dx * 2.5, aY, p[1] + dz * 2.5];
-        /* (o.look(s, L): a thing to look at while he walks, by how far along he is, eased in over his first metre: a man
-           crossing his room looks where he is going TO, not 2.5 m along his own feet's line, which met his bare walls) */
-        if (o.look) { const q = o.look(s, L); if (q) { const w = f2smo(c01(s / 1.0)); a = [lp(a[0], q[0], w), lp(a[1], q[1], w), lp(a[2], q[2], w)]; } }
+        /* (o.look(s, L): a thing to look at while he walks, by how far along he is, eased in over his first metre (o.lookIn): a
+           man crossing his room looks where he is going TO, not 2.5 m along his own feet's line, which met his bare walls) */
+        if (o.look) { const q = o.look(s, L); if (q) { const w = f2smo(c01(s / (o.lookIn || 1.0))); a = [lp(a[0], q[0], w), lp(a[1], q[1], w), lp(a[2], q[2], w)]; } }
         if (o.a && s > L - 1.0) { const w = f2smo((s - (L - 1.0)) / 1.0); a = [lp(a[0], o.a[0], w), lp(a[1], o.a[1], w), lp(a[2], o.a[2], w)]; }
         /* (the time at each key: eased away from his first step and into his last, a constant pace between) */
         const ease = Math.min(0.3, 0.5 * 1.0 / Math.max(1, L));
@@ -798,7 +798,7 @@
         K.push({ t: E.walk, e: [tb.x, EYE - 0.03, tb.z], a: [tb.x - 1.6, 1.15, tb.z - 0.9], fp: 62, fd: 54, n: 'B:turn' });
         /* (to his sofa looking at his altar across the room, its candle, his teacher's photograph: as he says he will not
            wake him; in its last metre to his glass, where he sits facing it) */
-        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], look: () => [HIS.altar.x, 1.12, HIS.altar.z], fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
+        f2WalkKeys([[tb.x, tb.z], [F2HX - 0.5, 0.35], [F2HX - 1.5, 0.05], [seat[0] + 0.05, -0.25]], E.walk + 0.35, E.sit, EYE, { a: [seat[0], 1.05, 2.5], look: () => [HIS.altar.x, 1.12, HIS.altar.z], lookIn: 0.5, fp: 62, fd: 54, n: 'B:tosofa' }).slice(1).forEach(q => K.push(q));
         K.push({ t: E.sit + 1.1, e: seat, a: [seat[0], 1.0, 2.6], fp: 64, fd: 56, n: 'B:sit', stop: true });
         K.push({ t: E.wave1, e: seat, a: [seat[0] + 0.05, 0.98, 2.6], fp: 64, fd: 56, n: 'B:pray', stop: true });
         K.push({ t: E.wave2, e: [seat[0], seat[1] - 0.02, seat[2] + 0.02], a: [seat[0] + 0.1, 0.92, 2.6], fp: 56, fd: 50, n: 'B:wave' });
@@ -911,7 +911,9 @@
         if (t < E.d0) f2Beds(f2NightBeds(t < E.b0 ? p : Math.min(p, t < Bm.chant ? 1 : 0.4), vr[0] > 0.5, t >= Bm.chant ? { m6a: 0, m6b: 0, m6c: 0, tin: 0, brth: t < Bm.brk ? 0.22 : 0.1, night: t >= Bm.brk ? 0.32 : 0.05 } : null));
         else f2Beds({ night: 0, three: 0 });
         /* the screen of his phone: the decision's, the call ringing, the call with its seconds */
-        if (t < E.ring) f2Screen('home', 0, '3:03');
+        /* (its home screen at the decision's 3:03 until the ending's own time has come: in B the oven's 3:41 after the cut, in C
+           and D the minutes he lost before he picks it up; photographed, B's phone said 3:03 forty minutes on) */
+        if (t < E.ring) f2Screen('home', 0, (k === 'B' ? t >= E.cut : E.phone != null && t >= E.phone - 0.6) ? E.clock : '3:03');
         else if (t < E.connect) f2Screen('ring', 0, E.clock);
         else f2Screen('call', t - E.connect, E.clock);
         if (t >= E.b0 && t < E.d0) { f2BarrierFx(t, Bm, { push: k === 'B', near: k === 'B' || k === 'C', band: k === 'D' }); f2BarrierHands(t, Bm); }
@@ -983,6 +985,7 @@
       /* (a probe's) */
       marks: () => F2.E,
       tune: F2TUNE,
+      tie: () => { const c = f2TieCam(); return { geo: Object.assign({}, f2TieGeo()), aim: c.aim.slice(), W: c.W.slice() }; },
       state: () => ({ on: F2.on, k: F2.k, shot: F2.shot, cirK: F2.cirK, cirShow: F2.cirShow, cirDone: F2.cirDone, look: F2.look, press: F2.press, vis: F2.vis }),
       subjects() {
         const C = F2P.circle, o = { circle: [C.x, 0.0, C.z + C.r, 1], door: [F2P.door.x, 0.05, F2P.door.z, 1], bag: [F2P.bag.x, 0.15, F2P.bag.z, 1],
@@ -1063,7 +1066,10 @@
         if (t < E.flat) { f2Hold(F2M.phone, { pos: F2HELD().pos, rot: F2HELD().rot }); const d = f2smo(f2win(t, E.down, E.flat));
           f2Hands(true, d > 0.01 ? 'place' : null, d); return; }
         if (t < E.flat + 0.6) { f2Hold(null); f2Hands(true, 'place', 1 - f2smo(f2win(t, E.flat, E.flat + 0.6))); return; }
-        if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1)))); return; }
+        /* (his palms together at the height that keeps the thumbs out of the picture: the engine's own default, chapter 1's
+           -0.235, shows them, as e3c2 found at v16.5 and v18.4; -0.33 is that chapter's, photographed with his thumbs at the
+           middle of a phone's picture at -0.235) */
+        if (t >= E.pray - 0.2 && t < E.cut) { f2Hold(null); f2Hands(true, 'pray', f2smo(f2win(t, E.pray - 0.2, E.pray + 0.8)) * (1 - 0.15 * f2smo(f2win(t, E.forced, E.forced + 1))), { y: -0.33 }); return; }
         if (t >= E.reach - 0.3 && t < E.reach + 0.6) { f2Hold(t >= E.reach + 0.25 ? F2M.phone : null, { pos: F2HELD().pos, rot: F2HELD().rot }); f2Hands(true, 'reach', f2bell(t, E.reach - 0.3, E.reach + 0.1, E.reach + 0.2, E.reach + 0.6));
           if (t >= E.reach + 0.25) f2PhoneFace(1); return; }
         if (t >= E.reach + 0.6) { f2PhoneIn(f2smo(f2win(t, E.reach + 0.6, E.ring + 0.2)), f2smo(f2win(t, E.connect + 0.5, E.connect + 2.0))); return; }
