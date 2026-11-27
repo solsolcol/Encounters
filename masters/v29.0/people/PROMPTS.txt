@@ -1,0 +1,37 @@
+v29.0 · the people of episode 5 chapter 1: the reference pictures (helper CAST, 27 Nov 2026)
+(Chad, 11 Nov 2026: "first generate a reference of the person, describe it to GPTimage, person in photorealistic
+details, against a white background, in A pose." The shared wording is v28.0's, masters/v28.0/people/PROMPTS.txt, with
+its lesson kept: palms toward the lens, every finger apart, or the hands come back as mittens.)
+Higgsfield, model gpt_image_2_6, quality xhigh, resolution 2k, aspect 2:3, no image reference. Both people are MADE UP:
+nobody is modelled on a real person; no name, no brand, no badge. The pictures are kept on the working machine only
+(masters/v29.0/src/people/, ignored by git); each is at Higgsfield under its job id (people/RECORD.md).
+
+grace   (plan §6: late twenties, Singaporean Chinese, office clothes a day old, hair tied back carelessly, a cardigan)
+  Photorealistic full-body studio photograph of a Singaporean Chinese woman of about twenty-eight, slim, of average
+  height, an oval face with tired eyes and faint dark circles under them, no make-up, black hair tied back carelessly
+  in a messy low bun at the nape, standing upright in an A-pose: both arms straight and held about 35 degrees away from
+  the body, both hands open with the palms turned to face the camera and all five fingers of each hand spread wide
+  apart, a clear gap of white background visible between every two fingers, feet shoulder-width apart, facing the
+  camera straight on, head level, looking at the camera, in plain black flat shoes. She wears a plain pale blue
+  long-sleeved button-front office blouse, a day old and a little creased, tucked into plain charcoal grey straight
+  office slacks to the ankle, and over it a thin plain oatmeal knit cardigan, open, fitting close to the body, its
+  sleeves to the wrists, its two front edges hanging straight down and ending at the hip. There is clear empty white
+  space between each arm and her sides; nothing hangs between an arm and the body. Her hands are empty. The whole
+  figure is in frame from the top of the head to the toes with a clear margin all round. Even soft studio lighting
+  from the front, no cast shadow, pure white seamless background. Sharp focus, a tired, worn neutral expression, mouth
+  closed, natural skin texture, realistic cloth folds. No wristwatch, no jewellery, no bag, no lanyard, no text, no
+  logo, no watermark, no props.
+
+marcus  (plan §6: early thirties, Singaporean Chinese, an office shirt, glasses)
+  Photorealistic full-body studio photograph of a Singaporean Chinese man of about thirty-two, of average build and
+  height, a kind, earnest face, clean-shaven, short neat black hair, thin plain black rectangular glasses, standing
+  upright in an A-pose: both arms straight and held about 35 degrees away from the body, both hands open with the palms
+  turned to face the camera and all five fingers of each hand spread wide apart, a clear gap of white background visible
+  between every two fingers, feet shoulder-width apart, facing the camera straight on, head level, looking at the
+  camera, in plain black leather office shoes. He wears a plain light grey long-sleeved cotton office shirt with a plain
+  collar, the top button open, no tie, the sleeves rolled up once at the wrists, tucked into plain dark navy straight
+  office trousers with a plain black belt. There is clear empty white space between each arm and his sides; nothing
+  hangs between an arm and the body. His hands are empty. The whole figure is in frame from the top of the head to the
+  toes with a clear margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless
+  background. Sharp focus, a calm, slightly worried neutral expression, mouth closed, natural skin texture, realistic
+  cloth folds. No wristwatch, no jewellery, no bag, no lanyard, no text, no logo, no watermark, no props.

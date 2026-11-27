@@ -1,0 +1,106 @@
+[
+ {
+  "name": "u51m1blue",
+  "secs": 62,
+  "takes": 3,
+  "where": "M1 Blue Hour: the opening film, from 3.5 s to its card (about 62 s)",
+  "prompt": "Opening of a quiet supernatural drama at blue hour in an old Singapore shophouse street: a solo khim, the Thai hammered zither, playing a few slow sparse notes with long gaps, warm but uneasy; from about eight seconds a soft slow bed of low strings comes in under it; it grows a little fuller and more uneasy, and ends on a held, unresolved chord that fades away. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m2room",
+  "secs": 60,
+  "takes": 3,
+  "where": "M2 The Room: the room's play, the keepsake, after the cord (a loop)",
+  "prompt": "Very sparse, quiet underscore for a dim living room at night where something is wrong: single soft notes of a low wooden ranat, the Thai xylophone, struck now and then with long spaces between, over a soft warm sustained pad; calm on the surface, a little uneasy underneath, never drawing attention, leaving room for speech. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m3pull",
+  "secs": 40,
+  "takes": 3,
+  "where": "M3 The Pull: stings and a slow 52-a-minute pulse laid over M2 where the pull is shown",
+  "prompt": "An eerie layer for something pulling a woman toward a door: a very slow, soft pulse like a heartbeat at 52 beats per minute on a muted low drum and a deep plucked string, steady throughout; over it, now and then, a single high violin harmonic that slides slowly down a semitone and fades; sparse, quiet, unsettling, much space. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m4break",
+  "secs": 110,
+  "takes": 3,
+  "where": "M4 The Breaking: under the event and the cord (three surges, the snap, the warm chord)",
+  "prompt": "Tense cue for a spiritual struggle in a small room: a low bowed-metal drone and low strings, building in three slow surges, each surge rising and swelling then easing back, with a soft frame drum hit at the peak of each surge; tension rises across the three; after the third, a sudden full stop of silence for one or two seconds, and then a warm, gentle resolving major chord on strings that settles and fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m5city",
+  "secs": 40,
+  "takes": 3,
+  "where": "M5 Night City: home, 11:52 PM",
+  "prompt": "A lonely late night cue for a man coming home alone to his flat high above a city: a soft electric piano playing two slow chords, over a gentle wide city-night pad, calm, reflective, a little lonely, unhurried; it fades out gently at the end. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m6a",
+  "secs": 40,
+  "takes": 2,
+  "where": "M6 Three O'Clock, layer 1 (from pressure 0.2): a loop, no melody",
+  "prompt": "A dark ambient layer for a supernatural pressure building in a dark bedroom at three in the morning: no melody, no beat; slow detuned string clusters held and slowly shifting in the middle register, soft and low in level, uneasy. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m6b",
+  "secs": 40,
+  "takes": 2,
+  "where": "M6 Three O'Clock, layer 2 (from pressure 0.5): a loop, no melody",
+  "prompt": "A dark ambient layer of rising dread: no melody, no beat; a bowed cymbal shimmering and swelling slowly, with sour high-middle string tones that waver against each other, tense, in the middle and upper-middle register. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m6c",
+  "secs": 40,
+  "takes": 2,
+  "where": "M6 Three O'Clock, layer 3 (from pressure 0.8): the vice, a loop, no melody",
+  "prompt": "A dark ambient layer for a crushing pressure like a vice around the head: no melody, no beat; a slow grinding creak of heavily bowed strings, a tight strained tremolo, metallic stress, intense but steady, in the middle register. Loopable: a steady level from its first seconds to its last, no intro, no ending, no climax, no build. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m7circle",
+  "secs": 30,
+  "takes": 3,
+  "where": "M7 The Circle: the barrier, from 26 s under the chant (about 30 s)",
+  "prompt": "A protective, sacred cue: it begins very quiet and sparse, leaving room; warm low strings come in and a soft khim tremolo, the Thai hammered zither; then a rising shimmer of small bells as a golden light rises; a deep swell at its peak; then a soft, warm major chord of release that settles and fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m8dawnA",
+  "secs": 45,
+  "takes": 2,
+  "where": "M8 Dawn, ending A: warm and full",
+  "prompt": "A gentle morning cue after a long frightening night: piano and khim, the Thai hammered zither, warm and full, with soft strings, hopeful and grateful, tender sunrise light; it ends on a last soft chord that fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m8dawnB",
+  "secs": 45,
+  "takes": 2,
+  "where": "M8 Dawn, ending B: a tender solo piano",
+  "prompt": "A gentle morning cue after a long frightening night: a tender solo piano, slow and quiet, a little sad and forgiving, with very faint khim notes, the Thai hammered zither, far behind it; it ends on a last soft chord that fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m8dawnC",
+  "secs": 45,
+  "takes": 2,
+  "where": "M8 Dawn, ending C: light",
+  "prompt": "A gentle morning cue after a long night: light and simple, piano and khim, the Thai hammered zither, airy and clear, a soft smile in it, an easy morning; it ends on a last soft chord that fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ },
+ {
+  "name": "u51m8dawnD",
+  "secs": 45,
+  "takes": 2,
+  "where": "M8 Dawn, ending D: low strings warming as the thread is tied",
+  "prompt": "A gentle morning cue after a dangerous night: it begins with low sober strings, serious and quiet, with a few soft piano notes; from about thirty seconds the strings warm and soften, the khim, the Thai hammered zither, comes in, and it ends on a warm last chord that fades. Instrumental only: no singing, no choir, no humming, no vocals of any kind. No deep sub bass: the low end carried by cellos and low strings a small phone speaker can play.",
+  "model": "music_v2_5"
+ }
+]

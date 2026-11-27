@@ -1,0 +1,6 @@
+[
+ {"name": "keepsake", "kind": "prop", "image": "masters/v29.0/props/refs/keepsake.png"},
+ {"name": "shoulderbag", "kind": "prop", "image": "masters/v29.0/props/refs/shoulderbag.png"},
+ {"name": "bottle", "kind": "prop", "image": "masters/v29.0/props/refs/bottle.png"},
+ {"name": "coffeetable", "kind": "prop", "image": "masters/v29.0/props/refs/coffeetable.png"}
+]
