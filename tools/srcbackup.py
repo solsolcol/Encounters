@@ -52,8 +52,10 @@ PIECE = 95 * 1024 * 1024
 BRANCH = 'claude/model-sources'
 LABEL = os.environ.get('SRCBACKUP_LABEL', 'v26.12')          # (the version a chunk's commit message begins with)
 SCR = os.environ.get('SRCBACKUP_GIT')
-TRAILER = ('\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>\n'
-           'Claude-Session: https://claude.ai/code/session_012dssR6qAN57acivr6t6QeS\n')
+# (27 Nov 2026, R9: the session link is this machine's own session, never the old one written in here before)
+TRAILER = ('\n\nCo-Authored-By: ' + os.environ.get('ENC_COAUTHOR', 'Claude Opus 5.5') + ' <noreply@anthropic.com>\n'
+           'Claude-Session: ' + os.environ.get('ENC_SESSION_URL', 'https://claude.ai/code/session_'
+           + (os.environ.get('CLAUDE_CODE_REMOTE_SESSION_ID', '').replace('cse_', '', 1) or 'unknown')) + '\n')
 
 def run(args, cwd, input=None, binary=False, check=True):
     r = subprocess.run(args, cwd=cwd, capture_output=True, input=input, text=not binary)
