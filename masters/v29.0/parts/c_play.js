@@ -357,7 +357,7 @@
       room5.t0 = dayClock.t; room5.ups = 0; room5.phoneAt = dayClock.t + 6;
       things.holyBowl && (things.holyBowl.visible = true);
       if (WORLD.candleLit) WORLD.candleLit('candle2', play.found.has('l'));
-      gazeRest(cast.pho); gazeRest(cast.marcus); gazeRest(cast.grace);
+      peopleRest('room', 0);
       objectiveFor({ complete: false });
       if (roomDone()) roomEnd();
     }
@@ -527,7 +527,8 @@
       if (kit.lens) kit.lens(isNarrow() ? 50 : 44, { secs: 0.6 });
       if (kit.vision) { kit.vision(true); kit.vision({ lock: true, why: W.visionHeld }); }
       if (!RATANA.state().on) RATANA.begin();                  // (a Continue into the breaking: the chant begins at its start)
-      gazeRest(cast.pho); gaze(cast.grace, null, { secs: 0.6 }); gaze(cast.marcus, [HER.grace.x, 1.0, HER.grace.z], { secs: 0.8 });
+      peopleRest('breaking', 0.4);
+      gaze(cast.grace, null, { secs: 0.6 }); gaze(cast.marcus, [HER.grace.x, 1.0, HER.grace.z], { secs: 0.8 });
       objectiveFor({ complete: false });
       const run = play.run; after(0.4, () => { if (live(run)) surge(0, false); });
     }
@@ -857,6 +858,20 @@
       if (P === cast.pho) gaze(P, [HER.grace.x, 0.95, HER.grace.z], { secs: 1.0, reach: 0.6 });
       else if (P === cast.marcus) gaze(P, [HER.grace.x, 0.95, HER.grace.z], { secs: 1.0, reach: 0.6 });
       else gaze(P, null, { secs: 1.0 });
+    }
+    /* EACH PHASE BEGINS WITH ITS PEOPLE IN THE PLAY'S OWN REST, whatever a film left them in (a film skipped mid-way leaves
+       a body in whatever take it had reached: the opening skipped before Grace sits left her standing in front of the sofa
+       in its Idle_3, 27 Nov). The room: the three seated at rest. The breaking: Grandmaster Pho and Grace seated, Marcus
+       STANDING behind the sofa at her right shoulder (STATION.breaking.marcus), where the keepsake's film leaves him and the
+       cord's begins, so a Continue into the breaking lands as play does. `fade` 0 is a cut (under the opening's black);
+       the keepsake hands to the event in one picture, so its rests are eased */
+    function peopleRest(p, fade) {
+      if (cast.pho) rest(cast.pho, fade);
+      if (cast.grace) { grace5.up = false; rest(cast.grace, fade); }
+      if (cast.marcus) {
+        const M = STATION[p] && STATION[p].marcus;
+        if (M && M.stand) hold(cast.marcus, 'Idle_3', null, null, fade); else rest(cast.marcus, fade); }
+      gazeRest(cast.pho); gazeRest(cast.marcus); gazeRest(cast.grace);
     }
 
     /* ---------------------------------------------------------------- the things he can press (each offered only in its

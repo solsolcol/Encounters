@@ -1293,7 +1293,10 @@
                   gets up on (yaw 0.8: the getting-up spot in view on a phone), a little up (pitch 0.12) */
                bed: { x: HIS.bed.x + 0.2, z: HIS.bed.z, ry: 0.8, y: 0.82, pitch: 0.12 } }
     };
-    STATION.breaking = STATION.room;
+    /* (PLAY, M6) THE BREAKING: the room's places, but Marcus STANDING behind the sofa at her right shoulder, where the
+       keepsake's film puts him and the cord's film has him (c_yfilm.js KEEP1.mkStand), so a Continue into the breaking
+       lands as play does (PLAY.md 2) */
+    STATION.breaking = Object.assign({}, STATION.room, { marcus: { x: 0.12, z: -1.02, ry: 0.12, stand: true } });
     STATION.ask = { at: { x: WORLD_AT.phone.x + 0.25, z: WORLD_AT.phone.z + 0.85, ry: 0.3 } };
     /* the opening's and the films' places (WORLD.md, the plan's 9) */
     const FILMPLACE = {

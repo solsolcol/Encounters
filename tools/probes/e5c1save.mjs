@@ -32,7 +32,8 @@ const landed = async () => {
 const read = () => p.evaluate(() => { const E = window.__enc, S = E.stage, i = S.info();
   return { state: E.getState(), phase: i.story.phase, found: i.story.found.join(','), saved: E.kit.getPhase(), at: [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z].map(v => +v.toFixed(2)),
            pose: E.kit.getPose(), ev: !!E.kit.eventActive(), obj: ((document.querySelector('#objective .obox') || {}).textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70),
-           vis: (E.kit.vision() || {}).on, chant: i.story.chant, p: i.story.pressure }; });
+           vis: (E.kit.vision() || {}).on, chant: i.story.chant, p: i.story.pressure,
+           takes: Object.fromEntries(Object.entries(S.dbg.cast).map(([k, P]) => [k, P.hidden ? '-' : P.cur])) }; });
 async function continueFrom(save) {
   await p.evaluate((s) => localStorage.setItem('mz.encounters.checkpoint', JSON.stringify(s)), save);
   await boot(); await tapEl('startBtn'); await landed();
@@ -44,9 +45,9 @@ await p.evaluate(() => window.__enc.saveCheckpoint && window.__enc.saveCheckpoin
 const base = await p.evaluate(() => window.__enc.loadCheckpoint());
 say('base save', JSON.stringify(base).slice(0, 200));
 const CASES = [
-  ['room:w,l', (r) => r.phase === 'room' && r.found === 'w,l' && r.pose === 'lying' && Math.abs(r.at[1] - 1.12) < 0.05 && /Watch Grace/.test(r.obj)],
+  ['room:w,l', (r) => r.phase === 'room' && r.found === 'w,l' && r.pose === 'lying' && Math.abs(r.at[1] - 1.12) < 0.05 && /Watch Grace/.test(r.obj) && r.takes.grace === 'gsofa' && r.takes.marcus === 'Sitting_Answering_Questions'],
   ['room:w,l,p,g,h,k', (r) => r.phase === 'room' && r.found === 'w,l,p,g,h,k' && /Spirit Vision/.test(r.obj)],
-  ['breaking:', (r) => r.phase === 'breaking' && r.ev && r.vis && r.chant.on],
+  ['breaking:', (r) => r.phase === 'breaking' && r.ev && r.vis && r.chant.on && r.takes.grace === 'gsofa' && r.takes.marcus === 'Idle_3'],
   ['night:', (r) => r.phase === 'night' && r.found === '' && r.pose === 'lying' && r.at[0] > 306 && /Get up/.test(r.obj)],
   ['night:u,f', (r) => r.phase === 'night' && r.found === 'u,f' && r.pose === 'standing' && /phone/.test(r.obj)],
   ['ask:', (r) => r.phase === 'ask' && r.state === 'decide']
@@ -70,6 +71,26 @@ for (const [ph, want] of CASES) {
   await frames(10); await sleep(1500);
   const A = await p.evaluate(() => { const E = window.__enc, S = E.stage; return { story: S.info().story, press: E.kit.pressState(), pulse: E.kit.getPulse(), lens: null, beds: Object.fromEntries(S.beds ? Object.entries(S.beds.mix).map(([k, v]) => [k, +v.toFixed(2)]) : []) }; });
   ok('replay: the play\'s state back to a fresh start', A.story.found.length === 0 && A.story.pressure === 0 && !A.story.chant.on && A.story.brk.spills === 0 && A.story.grace.ups === 0 && A.story.night.waves === 0 && A.press.k === 0 && !A.pulse, A); }
+/* a REAL replay (v8.2, v7.3: every way into a chapter): from the night with the pressure up, the menu, Select a chapter,
+   this chapter, Play it, all tapped; the opening (skipped as a player may) and the room read key by key against what a fresh
+   start of the room is: nothing found, no pressure, no chant, no event, nothing in his hands, the three seated at rest */
+{ const s = JSON.parse(JSON.stringify(base)); s.ch = 'e5c1'; s.phase = 'night:u'; s.at = { x: 306.7, y: 1.62, z: -0.48, ry: 2.17 };
+  await p.evaluate(() => localStorage.setItem('mz.encounters.progress', JSON.stringify({ reached: 'e5c1' })));
+  await continueFrom(s); await sleep(9000);
+  await tapEl('menuBtn'); await sleep(800); await tapEl('menuChapters'); await sleep(1500);
+  const tile = await p.evaluate(() => { const e = document.querySelector('#chList .chTile[data-ch="e5c1"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+  if (tile) { await p.touchscreen.tap(tile.x, tile.y); await sleep(900); await tapEl('chYes'); }
+  await toPlay(p, 1500000); await landed(); await sleep(3000);
+  const R = await p.evaluate(() => { const E = window.__enc, S = E.stage, i = S.info(), c = S.dbg.cast;
+    return { state: E.getState(), story: i.story, saved: E.kit.getPhase(), pose: E.kit.getPose(), press: E.kit.pressState().k, pulse: !!E.kit.getPulse(), vis: (E.kit.vision() || {}).on,
+             ev: !!E.kit.eventActive(), at: [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z].map(v => +v.toFixed(2)),
+             takes: { pho: c.pho.cur, grace: c.grace.cur, marcus: c.marcus.cur }, hidden: { grace: c.grace.hidden, marcus: c.marcus.hidden },
+             beds: Object.fromEntries(Object.entries(S.beds.mix).map(([k, v]) => [k, +v.toFixed(2)])) }; });
+  const fresh = R.story.phase === 'room' && R.story.found.length === 0 && R.story.pressure === 0 && !R.story.chant.on && !R.story.chant.done && R.story.brk.spills === 0 && R.story.brk.shares.length === 0
+    && R.story.grace.ups === 0 && !R.story.grace.up && R.story.night.waves === 0 && !R.story.night.tip && R.press === 0 && !R.pulse && !R.vis && !R.ev && R.pose === 'lying'
+    && Math.hypot(R.at[0] - 1.45, R.at[2] - 1.9) < 0.05 && R.takes.grace === 'gsofa' && R.takes.marcus === 'Sitting_Answering_Questions' && !R.hidden.grace && R.beds.three === 0 && R.beds.m6a === 0;
+  ok('replay by the selector: the room as a fresh start', !!tile && fresh, R);
+  await p.screenshot({ path: `${OUT}/${++n}-replay-selector.png`, timeout: 300000 }); }
 fs.writeFileSync(OUT + '/save.json', JSON.stringify({ res, errs }, null, 1));
 for (const e of errs.slice(0, 12)) say(e);
 const bad = Object.values(res).filter(r => !r.ok).length;
