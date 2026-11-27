@@ -49,6 +49,8 @@ const ALL = {
   dawn:      ['night', 'DAWN', HX - 3.6, 1.62, -1.9,  HX + 1, 0.3, 1.5, 0],
   dawntable: ['night', 'DAWN', HX + 0.75, 1.2, 0.45,  HX + 0.75, 1.1, -0.95, PHONE ? 50 : 42]
 };
+/* the doors a view needs open (the films open them): street door and her door */
+const OPEN = { stairfoot: [1, 1], stairmid: [1, 1], landing: [0, 1], herdoor: [0, 1], roomdoor: [0, 1], glass: [0, 1], glassnear: [0, 1] };
 const pick = process.env.VIEWS ? process.env.VIEWS.split(',') : Object.keys(ALL);
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true }
@@ -74,12 +76,13 @@ for (const name of pick) {
   const yawD = Math.atan2(-(tx - x), -(tz - z)) * 180 / Math.PI, pitchD = Math.atan2(ty - y, Math.hypot(tx - x, tz - z)) * 180 / Math.PI;
   if (phase !== curPhase) { await p.evaluate((ph) => window.__enc.stage.setPhase(ph), phase); curPhase = phase;
     await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 300 }); await frames(4); }
-  await p.evaluate(([look, x, y, z, yawD, pitchD, fov]) => { const E = window.__enc, S = E.stage, d = Math.PI / 180;
+  await p.evaluate(([look, x, y, z, yawD, pitchD, fov, open]) => { const E = window.__enc, S = E.stage, d = Math.PI / 180;
     if (S.presets && S.presets[look]) E.kit.daylight(S.presets[look], 0);
+    const W = S.plan && S.plan.ROOMTHINGS && S.plan.ROOMTHINGS.api; if (W) { W.streetDoor(open[0]); W.herDoor(open[1]); }
     if (!S.__g0) S.__g0 = S.groundAt;
     S.groundAt = () => y - 1.62;
     E.yaw.position.set(x, y, z); E.yaw.rotation.y = yawD * d; E.pitch.rotation.x = pitchD * d;
-    const cam = E.pitch.children.find(o => o.isCamera); if (cam) { cam.fov = fov || 72; cam.updateProjectionMatrix(); } }, [look, x, y, z, yawD, pitchD, fov]);
+    const cam = E.pitch.children.find(o => o.isCamera); if (cam) { cam.fov = fov || 72; cam.updateProjectionMatrix(); } }, [look, x, y, z, yawD, pitchD, fov, OPEN[name] || [0, 0]]);
   await frames(3); await p.waitForTimeout(SETTLE);
   await p.evaluate(([x, y, z]) => { const E = window.__enc; E.yaw.position.set(x, y, z); }, [x, y, z]);
   await frames(3);
