@@ -50,7 +50,9 @@ PHONE = ['ph51x1', 'ph51x2', 'ph51x3', 'ph51x4', 'ph51jina', 'ph51x5', 'ph51x6',
 CHANT_SAY = {}
 # RE-SAID (27 Nov 2026, the coordinator's check with ElevenLabs Scribe): ph51A3's takes a to c all drop the -ed of
 # "called" ("You call at once", Scribe and faster-whisper alike), so takes d to f are given the one ellipsis his rules
-# allow, after "called", to give the -ed room (the pause it makes measured before a pick)
+# allow, after "called", to give the -ed room (the pause it makes measured before a pick). Scribe heard all three "You
+# call at once" too (their pauses after it 0.44 to 0.56 s): no take says it, so take a stays the pick (his accent), and
+# the line's prompt stays its own; the re-said prompt is kept as `resay` (raw/ph51A3_d..f.mp3 were asked with it)
 RESAY = {'ph51A3': 'You called... at once. That is the first protection: knowing when something is more than you.'}
 
 def plain(s):
@@ -74,10 +76,10 @@ for r in L['lines']:
                         verses=len(verses), prompt='[%s] %s' % (CHANT_TAG, words)))
         continue
     assert k in TAG, k + ': no tag'
-    words = RESAY.get(k, r.get('say', r['text']))
+    words = r.get('say', r['text'])
     assert 'LP' not in words.split() and 'L.P.' not in words, k + ': an abbreviated title'
     out.append(dict(key=k, speaker=r['who'], voice_id=VOICE[r['who']], model='eleven_v3', takes=3,
-                    prompt='[%s] %s' % (TAG[k], words)))
+                    prompt='[%s] %s' % (TAG[k], words), **({'resay': '[%s] %s' % (TAG[k], RESAY[k]), 'resay_takes': 'def'} if k in RESAY else {})))
 assert not set(TAG) - keys, set(TAG) - keys
 assert not set(PHONE) - keys, set(PHONE) - keys
 json.dump(out, open(os.path.join(HERE, 'prompts.json'), 'w', encoding='utf-8'), indent=1, ensure_ascii=False)

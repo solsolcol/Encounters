@@ -49,7 +49,7 @@ ph51x6    ph take c  the unhurried read             voice 0.04-7.42 s of 7.44, 1
 ph51A1    ph take b  the unhurried read             voice 0.04-2.56 s of 2.72, 2.78 words a second  (a 2.28 s, c 2.42 s)  -> 2.72 s  [cast, RMS -16; the phone copy ph51A1tel 2.72 s]
 zv51A1    zv take c  the tighter read               voice 0.14-4.78 s of 4.80, 2.16 words a second  (a 5.50 s, b 5.18 s)  -> 4.81 s  [him]
 ph51A2    ph take b  the unhurried read             voice 0.08-3.26 s of 3.28, 2.83 words a second  (a 2.90 s, c 3.04 s)  -> 3.27 s  [cast, RMS -16; the phone copy ph51A2tel 3.27 s]
-ph51A3    ph take a  the unhurried read             voice 0.06-6.86 s of 6.88, 2.35 words a second  (b 6.52 s, c 6.16 s (cut on a word))  -> 6.89 s  [cast, RMS -16]
+ph51A3    ph take a  the unhurried read             voice 0.06-6.86 s of 6.88, 2.35 words a second  (b 6.52 s, c 6.16 s (cut on a word))  -> 6.89 s  [cast, RMS -16]  [heard "You call at once" by Scribe (scribe_v1) in all six takes, a to c and the re-said d to f ("You called... at once.", pauses 0.44-0.56 s): his accent; a kept]
 zv51B1    zv take b  the tighter read               voice 0.08-4.22 s of 4.24, 2.90 words a second  (a 4.44 s, c 3.64 s)  -> 4.25 s  [him]
 zv51B2    zv take a  the easier pace                voice 0.00-2.76 s of 2.80, 3.26 words a second  (b 2.40 s, c 2.50 s)  -> 2.81 s  [him]
 ph51B1    ph take a  the unhurried read             voice 0.14-2.06 s of 2.08, 3.65 words a second  (b 1.82 s, c 1.88 s)  -> 2.09 s  [cast, RMS -16; the phone copy ph51B1tel 2.09 s]

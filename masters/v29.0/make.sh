@@ -59,7 +59,10 @@ words() {
 #                AGAIN UNPROMPTED from its shipped file (voices/finish.py -> heard.json), and four picks moved to the take
 #                whose words an unprompted ear hears right (pick.py CHOSEN): ph51r3 a ("pulled", not "pooed"), ph51k1 c
 #                ("May I"), ph51x2 c ("bag", not "back"), ph51x5 c ("It's"). Every line's pick and why: voices/CHAIN.txt.
-#                Heard otherwise and KEPT (his accent against a small English model, every take the same): ph51c4
+#                ph51A3 RE-SAID at the coordinator's word (Scribe heard "You call at once"): takes d to f asked "[warm] You
+#                called... at once. ..." (prompts.py RESAY; 300 characters); Scribe hears "call" in all six (the pause
+#                after it 0.44 to 0.56 s in d to f), so take a stays the pick, said in CHAIN.txt (his accent). ph51c4 and
+#                ph51x1 heard right by Scribe ("altar", "felt"). Heard otherwise and KEPT (his accent against a small English model, every take the same): ph51c4
 #                "altar" heard "order" in all three; ph51x1 "felt" heard "fail" in both clean takes (the third, cut on
 #                its last word, "felt"); ph51A3 "called" heard "call" in all three; ph51r5 "Sit." heard "See it" from the
 #                shipped file and "Sit" from its raw take. Number words (Case 4, Since 3, 40 minutes) are the

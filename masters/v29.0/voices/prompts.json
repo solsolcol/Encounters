@@ -433,7 +433,9 @@
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "model": "eleven_v3",
   "takes": 3,
-  "prompt": "[warm] You called... at once. That is the first protection: knowing when something is more than you."
+  "prompt": "[warm] You called at once. That is the first protection: knowing when something is more than you.",
+  "resay": "[warm] You called... at once. That is the first protection: knowing when something is more than you.",
+  "resay_takes": "def"
  },
  {
   "key": "zv51B1",

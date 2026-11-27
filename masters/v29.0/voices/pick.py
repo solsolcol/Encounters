@@ -99,7 +99,9 @@ REFUSED = {}
 CHOSEN = {'ph51r3': ('a', 'the one take whose "pulled" an unprompted transcriber hears (b and c "pooed")'),
           'ph51k1': ('c', 'the one clean take whose "May I" is heard unprompted (a "may hold it"; b cut on its last word)'),
           'ph51x2': ('c', 'its "bag" heard unprompted (b "your back"); c the slower of a and c'),
-          'ph51x5': ('c', 'its "It\'s" heard unprompted (b "is gone"; a cut on its last word)')}
+          'ph51x5': ('c', 'its "It\'s" heard unprompted (b "is gone"; a cut on its last word)'),
+          # (re-said d to f with "You called... at once.": Scribe hears "You call at once" in all six; a stays, his accent)
+          'ph51A3': ('a', 'heard "You call at once" by Scribe in all six takes (d to f re-said with an ellipsis after "called"): his accent; a, the unhurried read')}
 
 def score(t, who, nwords, med=None):
     ok = t['clean_end'] and not t['tag_said'] and t['sim'] >= 0.8 and not t.get('refused')
