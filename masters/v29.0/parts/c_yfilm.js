@@ -907,22 +907,31 @@
        between the sofa and the table, and bends over the table holding it out to him; he leans to it from his cushion
        and her hand and his palm meet over the cloth's near half (0.8 m up); she lets it go into his palm at 12.5, straightens
        and sits down again under the insert that follows (14 s on). Marcus's hand leaves her shoulder as she rises */
-    const KEEPG1 = { stand: { x: 0.42, z: 0.40 }, meet: [0.45, 0.8, 1.0], head: 1.5 };
-    const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 0.8) / 2.4)));
+    /* (photographed 27 Nov, the second build: stood up 0.72 m forward her hand met the place, and his palm, 0.83 m out from
+       his cushion, stopped 0.25 m short of it. So she rises a little forward, takes one step to the table's edge and bends
+       to him; they meet 0.75 m out from his cushion; she steps back and sits) */
+    const KEEPG1 = { rise: { x: 0.42, z: 0.15 }, stand: { x: 0.44, z: 0.55 }, meet: [0.45, 0.8, 1.12], head: 1.5 };
+    const keepGraceUp1 = (t, T) => smo(c01((t - T.pull - 0.3) / 2.0)) * (1 - smo(c01((t - T.give - 1.0) / 2.4)));
+    const keepGraceStep1 = (t, T) => smo(c01((t - T.pull - 2.3) / 0.6)) * (1 - smo(c01((t - T.give - 0.4) / 0.6)));
     const keepGraceH1 = (t, T) => lp(GRACE_HEAD_SEATED, KEEPG1.head, keepGraceUp1(t, T));
     function keepGrace1(t, T) {
       const P = cast.grace; if (!P || !P.ready) return;
       f1LeanBack(P);
-      const st = STATION.room.grace, up = keepGraceUp1(t, T);
-      put(P, lp(st.x, KEEPG1.stand.x, up), lp(st.z, KEEPG1.stand.z, up), st.ry, (P.home && P.home.y) || 0);
-      /* (seated as the opening seats her, at the start of her rise, and stood up by it: photographed 27 Nov, in her restless
-         rest's pose her hips sat at the seat's front edge and her knees went into its front) */
-      if (P.acts.rise) pose(P, 'rise', lp(0.05, 4.9, up), false);
+      const st = STATION.room.grace, up = keepGraceUp1(t, T), step = keepGraceStep1(t, T), R = KEEPG1.rise, S2 = KEEPG1.stand;
+      put(P, lp(lp(st.x, R.x, up), S2.x, step), lp(lp(st.z, R.z, up), S2.z, step), st.ry, (P.home && P.home.y) || 0);
+      /* (seated in her rest as the play seats her, inside its clean window, and stood up by her rise blended in as she gets
+         up: photographed 27 Nov, the rise's own first moment has her slumped back with both hands out on the seat) */
+      /* (her one step forward and back: her walk laid over her standing by the step's own share, its weight greatest at
+         the middle of the step, one step of the walk's cycle along it) */
+      const W = P.acts.Walking, stepping = step > 0.001 && step < 0.999 && up > 0.98;
+      if (stepping && W && P.acts.rise) pose(P, 'rise', 4.9, false, 'Walking', 0.9 * Math.sin(Math.PI * step), step * W.getClip().duration / 2);
+      else if (P.acts.gsofa && P.acts.rise) { if (up > 0.001) pose(P, 'gsofa', 0.3, false, 'rise', up, lp(0.05, 4.9, up)); else pose(P, 'gsofa', 0.3, false); }
+      else if (P.acts.rise) pose(P, 'rise', lp(0.05, 4.9, up), false);
       else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
       /* her left hand to her open bag beside her and stopped there (6 to 9 s); then the packet out, and held out over the
          table to his teacher's palm as she stands, her fingers closed on it, bent to him (9.5 to 12.5 s); let go; her hand back */
-      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull + 0.5, T.give + 0.9, 1.6, 0.8);
-      f1Lean(P, 0.55 * hold * up);
+      const toBag = f1Env(t, T.bag - 0.4, T.pull + 0.4, 0.7, 0.4), hold = f1Env(t, T.pull + 2.4, T.give + 0.5, 0.6, 0.4);
+      f1Lean(P, 0.6 * hold * up);
       if (toBag > 0.001) handTo(P, 'L', [HER.bag.x - 0.02, HER.bag.y + 0.12, HER.bag.z + 0.04], [0.2, -0.6, 0.3], [0, 0, 1], toBag, { out: 0.2, down: 0.3 });
       if (hold > 0.001) { const M = KEEPG1.meet; handTo(P, 'L', [M[0] + 0.01, M[1] + 0.02, M[2] - 0.03], [0.05, -0.15, 1], [0, -1, 0], hold, { out: 0.18, down: 0.28 }); curlFingers(P, 'L', 0.55 * hold * (1 - smo(c01((t - T.give) / 0.4)))); }
       f1Gaze(P, t, [[0, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95)], [T.bag - 0.2, [HER.bag.x, HER.bag.y, HER.bag.z], 0.7], [T.pull + 0.4, [KEEPG1.meet[0], KEEPG1.meet[1], KEEPG1.meet[2] - 0.05], 0.8], [T.give + 0.6, () => f1Head(cast.pho, [0.5, 1.0, 1.87], 0.95), 0.9]], 0.85, 0.8, 0.02);
@@ -1153,7 +1162,7 @@
       /* her long breath out, then quiet crying, her hands over her face (her written take's EARLY window only: its later fold
          to her knees is far more than the plan's "cries quietly": people/RECORD.md 4); her phone; her small thank you */
       if (P.acts.gcry && tau >= T.cry) { const u = c01((tau - T.cry) / 2.2); pose(P, 'gcry', lp(0.0, 1.6, smo(u)) + 0.05 * Math.sin(tau * 1.7) * u, false); }
-      else { const tk = P.acts.rise ? 'rise' : P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'rise' ? 0.05 : tk === 'gsofa' ? 0.3 : 0.8, false); }
+      else { const tk = P.acts.gsofa ? 'gsofa' : P.acts.wsit ? 'wsit' : 'Idle_3'; pose(P, tk, tk === 'gsofa' ? 0.3 : 0.8, false); }
       const face = f1Env(tau, T.cry + 1.0, T.phone - 0.3, 0.9, 0.6);
       if (face > 0.001) { const h = P.head; if (h) { P.group.updateWorldMatrix(true, true); h.getWorldPosition(_f1A); const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(P.group.quaternion);
         for (const [sd, sx] of [['L', 0.05], ['R', -0.05]]) { const rt = new THREE.Vector3(-fw.z, 0, fw.x); const at = _f1A.clone().addScaledVector(fw, 0.11).addScaledVector(rt, sx); at.y -= 0.02;
