@@ -890,7 +890,7 @@
       plate:    { x: 0.08, y: CLOTH_Y, z: 0.96 },                     // the small white plate's corner, apart from everything (9.2)
       lighter:  { x: 0.95, y: CLOTH_Y, z: 1.36 },
       incense:  { x: 0.52, y: CLOTH_Y, z: 1.38 },
-      jug:      { x: 1.18, y: 0, z: 1.58 }                            // on the floor at his knee
+      jug:      { x: 1.12, y: 0, z: 1.36 }                            // on the floor at his knee, by the table's end (PLAY, M6: from 1.18, 1.58, under his own knees and out of his sight)
     };
     {
       const T = HER.table;
@@ -1287,7 +1287,11 @@
       room:  { at: { x: HER.him.x, z: HER.him.z, ry: HER.him.ry },
                pho: { x: HER.pho.x, z: HER.pho.z, ry: HER.pho.ry }, grace: { x: HER.grace.x, z: HER.grace.z, ry: HER.grace.ry, y: HER.sofa.seat },
                marcus: { x: HER.rattan.x, z: HER.rattan.z, ry: HER.rattan.ry, y: HER.rattan.seat } },
-      night: { at: { x: HIS.getUp.x, z: HIS.getUp.z, ry: 2.17 } }
+      night: { at: { x: HIS.getUp.x, z: HIS.getUp.z, ry: 2.17 },
+               /* (PLAY, M6) where he LIES in bed when three o'clock begins (the film of home ends here: PLAY.md): on his back on
+                  the mattress, his head toward its head on the +x wall, the eye 0.82 m up, his head turned toward the side he
+                  gets up on (yaw 0.8: the getting-up spot in view on a phone), a little up (pitch 0.12) */
+               bed: { x: HIS.bed.x + 0.2, z: HIS.bed.z, ry: 0.8, y: 0.82, pitch: 0.12 } }
     };
     STATION.breaking = STATION.room;
     STATION.ask = { at: { x: WORLD_AT.phone.x + 0.25, z: WORLD_AT.phone.z + 0.85, ry: 0.3 } };

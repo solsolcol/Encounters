@@ -165,7 +165,10 @@
        o'clock (the plan's 8). TODO-SOUND: its own sounds (u51...), never another chapter's: a sound of another chapter
        named here would leave that chapter's pack. Until they land it is silent. */
     vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
-              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1 },
+              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
+              /* (PLAY, M6: its own two sounds, chapter 4's copied under this chapter's names; no bed or music of its own: the
+                 room's and the night's play their own under it. The night's heart is the play's: c_play.js) */
+              sound: { on: 'u51vison', off: 'u51visoff', vol: 0.85 } },
     /* (in the run from its first build: Chad's rule of v27.0, every build a full release; never a preview chapter) */
 
     assets: [
@@ -177,9 +180,9 @@
       /* <<< this chapter's own keys <<< */
       /* the shared cast's stand-ins and reuse (masters/v29.0/parts/c_cast.js), each declared in `reuseInEpisode`:
          Grandmaster Pho as episode 4 chapter 5 casts him seated (his own file, look D), the white cloth over his crossed
-         legs; and until Grace and Marcus land (M3), the two of the game's people who wear their roles. (Standing, at
+         legs. (Grace and Marcus are their own bodies, above: PLAY put them in on 27 Nov 2026.) (Standing, at
          dawn, he is chapter 5's copy with finger bones, p5pho: the FILMS piece adds it with his standing body) */
-      'pho', 'w3pholap', 'p4mala', 'p4malah', 'p5collector'
+      'pho', 'w3pholap'
     ],
     /* FRESH (chaptertest): what this chapter takes from episodes 1 to 3, declared (Chad, v17.4): nothing */
     reuse: {},
@@ -188,16 +191,15 @@
     reuseInEpisode: {
       pho: "Grandmaster Pho, Chad's own model, as episode 4 chapters 3 to 5 cast him (his look D): seated on his cushion at Grace's low table",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, episode 4 chapter 3's hall: his seat at her table" },
-    placeholders: {
-      p4mala: "STAND-IN for Grace until her own body lands (M3): Mala, Amma's daughter, met only in episode 4 chapter 4 (her mother's flat)",
-      p4malah: "Mala's full body, for within 2.2 m (v26.5), with the stand-in",
-      p5collector: "STAND-IN for Marcus until his own body lands (M3): the collector, met only in episode 4 chapter 5's last case (the receiving room)" },
+    placeholders: {},
     items: [],
 
     musicVol: 0,
-    /* THE BEDS (the plan's 11.3): TODO-SOUND, each a loop at 0 here, set by the play's mixer by place and beat once SOUND
-       has made them (u51...). None is declared until its file exists: a bed named before then plays nothing. */
-    ambience: { beds: [] },
+    /* THE BEDS (the plan's 11.3) and the play's loops, each declared at 0 and eased by the play's mixer by place and beat
+       (c_play.js PLAYSOUND: her flat, his flat at night and at three, M2 and M3 in the room, M6's three layers, the water's
+       lap, the tinnitus, his breath, the threads). In a film every one is the film's (`stage.beds.film`), else 0 */
+    ambience: { beds: [['u51bflat', 0], ['u51bnight', 0], ['u51bthree', 0], ['u51m2room', 0], ['u51m3pull', 0], ['u51m6a', 0], ['u51m6b', 0],
+                       ['u51m6c', 0], ['u51lap', 0], ['u51tinnitus', 0], ['u51breath', 0], ['u51threads', 0]] },
     voiceLine: null,
 
     words: {
@@ -237,7 +239,11 @@
       evCircleKey: 'Lay the thread all the way round you. Circle the mouse round the screen.',
       // THE SKELETON'S STAND-INS (TODO-PLAY): what is pressed until its play is built. Mine, not the plan's: each goes
       // when the play it stands for is built
-      hotStill: 'Hold the bowl'
+      hotStill: 'Hold the bowl',
+      /* (PLAY, M6: mine, plain words) the eye's lock while the breaking holds his sight open (a lock always says why: v8.1),
+         the room's look-spots' second name, the decision's thing to press */
+      visionHeld: 'Keep your eyes on the water.',
+      hotLook: 'Look'
     },
     sayPrefix: 'zv51'
   };

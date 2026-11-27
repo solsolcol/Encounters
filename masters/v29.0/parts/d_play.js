@@ -25,6 +25,7 @@
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       wallClock.t += wdt;
       worldFrame(wdt, st);                                     // (the world's hook: its people and their levels)
+      fxTick(wdt, st);                                         // (the play's drawn things, the chant, the beds: c_play.js)
       if (st !== 'play') { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
         if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
@@ -32,6 +33,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue();
+      storyTick(Math.min(0.25, wdt));
     }
     function updatePile() {}
     function updateFire() {}
@@ -41,7 +43,7 @@
     function restore() {}
     /* A SAME-CHAPTER REPLAY never runs build() again: everything a run changes is put back here (v8.1) */
     function reset() {
-      phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
+      phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); lineBuilt = null;
       dayClock.t = 0; wallClock.t = 0; lastWall0 = 0; lastWall = 0; pausedAt = 0;
       storyReset(); worldReset();
     }
@@ -91,9 +93,13 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       presets: PRESETS,
-      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS },
+      plan: { ROOM, STREET, FLAT, STATION, SPOT, ROOMTHINGS, FLATTHINGS, KNEEL, LIE, BOWLHELD, PHONEHELD, SURGE },
+      /* (PLAY.md: the chant across the keepsake, the breaking and the cord, and the beds a film may write) */
+      chant: RATANA, beds: BEDS,
+      /* (the body probes' handle: feetscan, jointscan, clipscan, headturn read the cast and every person by it) */
+      dbg: { cast, people, clocks: {} },
       info: () => ({ phase, mark: mark(), t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
-                     pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen }),
+                     pending: speak.pending ? speak.pending.name : null, applied: booted, busy: play.busy, decOpen, story: storySnap() }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       /* (a probe's handle on the script as the chapter holds it) */
       script: { SECS, LINES, SAID, CHANTS },

@@ -7,11 +7,10 @@
                       v24.52: "unlit, except for the robe"), every posture law episode 4 learned on him: copied here number
                       for number (a declared reuse). Standing at dawn he is chapter 5's copy with finger bones (p5pho):
                       FILMS adds that body with the dawn
-         cast.grace   GRACE (the plan's 6). STAND-IN until her own body lands (M3, `p51grace`): Mala, Amma's daughter,
-                      whom the player met only in episode 4 chapter 4 (her mother's flat), standing by the sofa
-         cast.marcus  MARCUS (the plan's 6). STAND-IN until his own body lands (M3, `p51marcus`): the collector, whom the
-                      player met only in episode 4 chapter 5's last case (the receiving room), seated on the rattan chair
-       (Neither stand-in is admintee, granny or yinkeeper, each of whom Chad has ruled out.) Nobody is a block figure: a body
+         cast.grace   GRACE (the plan's 6): her own body, `p51grace` (CAST's first throw, which stays: Chad has not
+                      answered on her second), seated on her sofa
+         cast.marcus  MARCUS (the plan's 6): his own body, `p51marcus`, seated on the rattan chair by her door
+       (PLAY swapped the stand-ins, Mala and the collector, for these on 27 Nov 2026.) Nobody is a block figure: a body
        is not drawn at all until its model has landed (v21.16). */
 
     /* ---------------------------------------------------------------- GRANDMASTER PHO'S LAWS, copied from episode 4
@@ -32,21 +31,32 @@
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.pho.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
-    /* GRACE (STAND-IN: p4mala, as episode 4 chapter 4 cast her: her rest, her talk, her full body within 2.2 m). TODO-CAST:
-       her own body, `p51grace`, seated on the sofa (the plan's 8.1: her two stand-ups at 40 s and 110 s) */
+    /* GRACE (the plan's 6; CAST's first throw, `p51grace`, her full body `p51graceh` within 2.2 m: v26.5) ON HER SOFA (its
+       cushions' top 0.51 m, measured: WORLD.md), seated by her own posed skin (seatDown, as chapter 5 seats its sitters).
+       Her rest is `gsofa` (written for her: restless, the hands working the strap) inside its clean window only: at 0.6 of
+       its length her right forearm goes into her hip (people/RECORD.md 4), so the window is its first quarter, there and
+       back slowly. She stands up twice in the room (the plan's 8.1) by `rise` (seat.rise: her height laid from her own
+       feet as she comes up) and sits again by the same take played back. She has met the player only here (a new body). */
+    const GRACE_SEAT = (STATION.room.grace && STATION.room.grace.y) || 0.51;
+    const GRACE_SITS = /^(gsofa|wsit|gcry|palmover|Sitting_Answering_Questions|rise)$/;
     { const S0 = at0('room', 'grace');
-      cast.grace = mkPerson('p4mala', S0.x, S0.z, S0.ry, { take: 'Idle_3', phase: 0.15,
-        talk: 'Stand_and_Chat', skins: { 0: 'p4malah' }, blobW: 0.75, blobD: 0.6 });
-      cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry }; }
-    /* MARCUS (STAND-IN: p5collector, as episode 4 chapter 5 seated him in case three: his sit, his full body). TODO-CAST:
-       his own body, `p51marcus`, on the rattan chair by the door. TODO-WORLD: the chair's seat height (here the plain block's 0.45 m) */
+      cast.grace = mkPerson('p51grace', S0.x, S0.z, S0.ry, { y: 0, take: 'gsofa', centre: true,
+        win: { gsofa: [0.25, 1.6, 7.5] }, skins: { 0: 'p51graceh' }, blobW: 0.75, blobD: 0.6,
+        seat: { y: GRACE_SEAT, takes: GRACE_SITS, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }), rise: 'rise' },
+        headDamp: { gsofa: [0.5, 'gsofa'] } });
+      cast.grace.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
+    /* MARCUS (the plan's 6; `p51marcus`, his full body `p51marcush`: CAST-3 is making him again without glasses at Chad's
+       word, R7, under the same keys, so a new body drops in here unchanged) ON THE RATTAN CHAIR by her door (its cushion's
+       top 0.42 m, measured), seated by his own posed skin; his rest the seated talk's upright first second, there and back
+       slowly (Chair_Sit_Idle_M sinks his fingertips into his thighs: people/RECORD.md 8.4). A new body: met only here */
+    const MARCUS_SEAT = (STATION.room.marcus && STATION.room.marcus.y) || 0.42;
     { const S0 = at0('room', 'marcus');
-      cast.marcus = mkPerson('p5collector', S0.x, S0.z, S0.ry, { take: 'Sitting_Answering_Questions', centre: true, skins: false,
-        win: { Sitting_Answering_Questions: [0.2, 1.2, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
-        seat: { y: 0.45, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
+      cast.marcus = mkPerson('p51marcus', S0.x, S0.z, S0.ry, { y: 0, take: 'Sitting_Answering_Questions', centre: true,
+        skins: { 0: 'p51marcush' }, win: { Sitting_Answering_Questions: [0.2, 1.0, 9] }, talk: 'Sitting_Answering_Questions', blobW: 0.8, blobD: 0.8,
+        seat: { y: MARCUS_SEAT, takes: /^(Sit|Chair)/, down: Object.assign({}, MASTER_DOWN, { hipOver: 0.1, edge: -9 }) },
         shoulders: { Sitting_Answering_Questions: 0.5, Idle_3: 1 },
         headDamp: { Sitting_Answering_Questions: [0.3, 'Sitting_Answering_Questions'] } });
-      cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0.45 }; }
+      cast.marcus.home = { x: S0.x, z: S0.z, ry: S0.ry, y: 0 }; }
 
     /* ================================================================ THE WORLD'S PHASES (the hooks: c_play.js book() and
        applyPhase() call worldPhase, d_play.js's frame calls worldFrame, its reset worldReset). The evening's three stand
@@ -61,7 +71,8 @@
     function worldPhase(p, place = true) {
       const st = STATION[p] || STATION.room; worldAt = p;
       standAt(cast.pho, st.pho ? Object.assign({ y: CUSHION_TOP }, st.pho) : null);
-      standAt(cast.grace, st.grace || null); standAt(cast.marcus, st.marcus ? Object.assign({ y: 0.45 }, st.marcus) : null);
+      /* (a sitter's group stands on the FLOOR: seatDown lays the body on its seat, `seat.y` above it; a station's y is its seat's height) */
+      standAt(cast.grace, st.grace ? Object.assign({}, st.grace, { y: 0 }) : null); standAt(cast.marcus, st.marcus ? Object.assign({}, st.marcus, { y: 0 }) : null);
       if (place && st.at) { yaw.position.set(st.at.x, EYE, st.at.z); yaw.rotation.y = st.at.ry; pitch.rotation.x = -0.04; }
     }
     function worldFrame(wdt, st) {
