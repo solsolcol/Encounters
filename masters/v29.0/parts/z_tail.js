@@ -60,21 +60,6 @@
      charger; the shower, the bed, 11:58; his eyes closing (zv51h1); 3:00. Play begins in bed. Its lines: SAID.home. */
   function filmHome(c, s, api) { stubFilm(c, s, api); }
 
-  /* THE FOUR ENDINGS (the plan's 9.8), each a whole story: its own beginning, then THE BARRIER (its 9.7, the case file's:
-     the call on the speaker, the white thread, CLOSE THE CIRCLE inside it by eventWait (W.evCircleTitle), the
-     Jinapañjara through the phone with its captions, the gold rising and the red threads burning, the release) and THE
-     DAWN (its 9.9: Pho at the door with breakfast, the thread wound up, the ending's own line, the thread tied on his
-     wrist). Each ending's lines: SAID.endA to SAID.endD, with SAID.barrier and SAID.dawn. Then the four lines and the
-     lesson card. TODO-FILM: all four, and the barrier and the dawn they share. */
-  /* A · "CALL GRANDMASTER PHO NOW." (best): he knows at once that it is more than him, and asks */
-  function scCall(c, s, api) { stubEnding(c, s, api); }
-  /* B · "DON'T WAKE HIM. IT'S THREE IN THE MORNING." (good): humility misread; 3:41, the call made at last */
-  function scWait(c, s, api) { stubEnding(c, s, api); }
-  /* C · "IT'S ONLY A MIGRAINE. TAKE A PILL AND SLEEP." (bad): dismissal before looking; 3:22, the call */
-  function scPill(c, s, api) { stubEnding(c, s, api); }
-  /* D · "OPEN SPIRIT VISION AND FIND WHO'S DOING THIS." (worst): curiosity dressed as courage; a thread wraps his wrist at
-     the balcony's door (he never goes past its frame), then the call */
-  function scSeek(c, s, api) { stubEnding(c, s, api); }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e5c1 = Object.assign(DATA, {
     build,
