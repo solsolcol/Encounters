@@ -277,6 +277,12 @@ that fits it, with the version it came from.
   on opus, resume exactly where things were left off". So when Fable 5.2's limit is reached, a session on Opus BUILDS
   the chapter on, from the tracker (docs/V28.0-E4C5-BUILD.md, its section 6 says how each piece is picked up), and does
   not stop to ask for the model to be switched; when Fable is back, the work goes back to it.
+- Episode 5 chapter 1 (27 Nov 2026: S1·16, the love spell, in Singapore) is BUILT FROM ITS TRACKER, docs/V29.0-E5C1-BUILD.md: read
+  it first ("Build it all completely now, have a plan with checkpoints and milestones. To avoid session restarts,
+  memory loss, context loss, compaction."). Its plan is docs/V29.0-E5C1-PLAN.md (§0 his words, R0 on), and its evening
+  happens in the lady's own home ("It should be a different room, it should be the lady's house"). Every checkpoint
+  is ticked in the tracker and pushed the moment it is true, and a piece is picked up from the tracker's section 6.
+  (v29.0)
 - A generated model is not made a second time without his yes ("Why did you generate 4 models of zavier, when the first
   one already looked the best? You are burning my credits": Master Zavier's body was generated four times, 50 Meshy
   credits each, the first refused by me for its joined fingers and never shown to him). When a model comes back with a
@@ -1579,6 +1585,12 @@ asks table, how the work is picked up), docs/V28.0-E4C5-PLAN.md its plan (§0 hi
 docs/V28.0-E4C5-DEBUG.md R75's debug round; built on Opus at his word (R32). **`src/chapters/e4/e4c5.js` is GENERATED**
 by masters/v28.0/assemble.py from masters/v28.0/parts/*.js: edit the parts, never the chapter file. With it all five
 chapters of episode 4 are live.
+**Episode 5 chapter 1, The Love Spell That Followed Me Home** (S1·16, case four: Grandmaster Pho breaks a love spell
+in Grace's own home while Master Zavier holds the water, and at three that morning it comes looking for him), is
+BEING BUILT from 27 Nov 2026 (R3): its tracker **docs/V29.0-E5C1-BUILD.md** (read it first: the milestones M0 to M10,
+each checkpoint ticked as it lands, section 6 how each piece is picked up), its plan docs/V29.0-E5C1-PLAN.md, its
+research docs/research/V29.0-LOVESPELL.md. **`src/chapters/e5/e5c1.js` is GENERATED** by masters/v29.0/assemble.py
+from masters/v29.0/parts/*.js: edit the parts, never the chapter file.
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
