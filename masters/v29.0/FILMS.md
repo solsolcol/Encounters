@@ -67,3 +67,31 @@ from here, what is measured, and what is still open. Read with PLAY.md (the play
   outside its cuts. The cord: the phone's insert 0.36 m from Marcus's head and 0.48 m from Grace's; the look to his wrist
   136 degrees a second. Home: 2.1 m of walk in 0.6 s into the room (4.2 m a second), 3.4 m from the altar to the table in
   2 s with the look on the floor (pitch -69 degrees, 78 degrees a second), the wake 225 degrees a second.
+- THE SECOND ROUND (27 Nov, afternoon: every beat photographed full size on a phone, 780 x 1688, and a desk, 1280 x 800;
+  rows every 0.1 s on both shapes; each fault fixed in §2 and photographed again). The opening: his teacher missing from
+  every picture before the cut inside (shown only by the film's first step, so a seek back from past the cut found him gone:
+  now shown on every frame before it); the crane's first frame cut her nearer window at a phone's edge (now square to the
+  two windows' middle, 3.5 m back: both whole); the phones stood across the hand like a book (now flat in the palm by the
+  hand's own measured axes); Marcus's look back down the stair bowed with no side to turn to (now a turn on his tread and
+  his head over his left shoulder); his teacher stopped between treads with a foot in the air (now on the thirteenth,
+  both feet down); Marcus stood 2.6 s at the top in mid-stride (now a closing step and his rest); the knock was an open
+  hand splayed before his face 0.27 m from the door (now a loose fist from 0.4 m); the look held on Grace as she stepped
+  back found the jamb (now it goes to his teacher on his line); her stand-in place before she shows swung the look 13
+  degrees in a tenth of a second (now her own place); his teacher's bag hung through his bare arm (now on his left
+  shoulder). The keepsake: the bowl in his hands was drawn but never seen (2 draw calls, 33,000 triangles, its box below
+  a phone's picture: x -1.69..0.36, y -1.45..-0.67) and now sits on his palm in the lens's frame; their hands stayed 1.27 m
+  apart at the handoff and now meet (her wrist and his 0.26 m apart, her fingertips over his palm, photographed); his
+  teacher's line to him was said in profile (now his shoulders turn); Marcus's hand stopped 0.3 m short of her shoulder
+  (now he stands at the sofa's back and leans); the packet lay on the back of her hand and then on his wrist (now under
+  her fingers, then on his palm: his seated body has no finger bones, and the palm is found by the hand's own measure).
+  The keepsake's rows on a phone: no subject's drawn size jumping on screen and no look faster than 90 degrees a second
+  outside its cuts; the nearest a head comes to the lens is his teacher's, 0.67 m, beside it, off the picture, as the
+  plate's insert looks down. The cord: his hands and the bowl were drawn in the two inserts that are not his eyes (now
+  hidden there); the bottle stood 5 cm under his teacher's wrist (now on his palm); his teacher's wrist bent back 105
+  degrees holding it out (jointscan; now eased).
+- JOINTS, by jointscan.mjs's own measure (its MEASURE read and run at the films' moments: my scratch f1joints.mjs). Marcus's
+  knocking hand: curled by +1.3 its fingers bent backward 58 to 69 degrees (the curl's sign turned, measured again). What
+  stays, not mine: the player's own hands in the engine's `bowl` and `bottle` poses read out of a real hand's range in
+  every pose and at rest (fingers sideways 37 to 72 degrees, a ring finger folded 177), Marcus's and Grace's resting hands
+  a little spread (13 to 20 degrees between fingers), and the reflected people in her glass with forearms wrung 116 to 175
+  degrees (WORLD's reflection bodies): listed in the report.
