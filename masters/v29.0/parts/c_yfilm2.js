@@ -284,7 +284,10 @@
     const f2GoldCeil = pool(F2P.circle.x, FLAT.ceil - 0.01, F2P.circle.z, 3.4, 3.4, 0xffb850, 0.0, { rx: Math.PI / 2, parent: hisSideG, look: null });
     /* in the vision: the rings and the dome's skin as glows of the vision's own (Grandmaster Pho's gold in it, as chapter 5
        lays his) */
-    const f2GoldAura = ctx.spiritAura ? ctx.spiritAura(f2Gold, { color: F2GOLD, fill: 0.08, rim: 1.25, power: 2.0, flicker: 0.12, xray: 1 }) : null;
+    /* (the dome's skin faint, as it is out of the vision; each ring a gold band of its own, filled: with the group's one faint
+       glow alone the rings stood as pale peach lines on the vision's white, run p11's phone at D 88.8 s) */
+    const f2GoldAura = ctx.spiritAura ? ctx.spiritAura(f2Dome, { color: F2GOLD, fill: 0.08, rim: 1.25, power: 2.0, flicker: 0.12, xray: 1 }) : null;
+    const f2RingAuras = ctx.spiritAura ? f2Rings.map(m => ctx.spiritAura(m, { color: F2GOLD, fill: 0.7, rim: 1.2, power: 2.0, flicker: 0.12, xray: 1 })) : [];
 
     /* ---------------------------------------------------------------- THE RED THREADS (the plan's 12): fine filaments of
        red that come in under his front door and through his glass, feeling along the floor, following his footsteps toward
@@ -771,6 +774,7 @@
         const fadeTop = 1 - f2smo(c01((cyc - 0.78) / 0.22)), fadeBot = f2smo(c01(cyc / 0.06));
         const op = born ? gk * fadeTop * fadeBot * (0.75 + 0.35 * push) : 0;
         m.visible = op > 0.002; m.material.opacity = op * onWorld;
+        if (f2RingAuras[i]) f2RingAuras[i].set('uAlpha', Math.min(1, op * 1.15));
       }
       if (f2GoldAura) f2GoldAura.set('uAlpha', gk * (0.8 + 0.4 * push));
       f2GoldPool.m.opacity = onWorld * 0.2 * gk * (0.8 + 0.4 * push); f2GoldPool.q.visible = f2GoldPool.m.opacity > 0.002;

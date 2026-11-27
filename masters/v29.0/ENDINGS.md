@@ -99,11 +99,12 @@ each frame on the side of the first turn his eye sees (`f2KnotLay`). Sized in me
 first build had them, they stood far out round his wrist, off every picture: no ending ever showed them (run 8's reading:
 the old measure, taken in the hand bone's frame, read 0.0042 of its units, the whole arm). THE STRIP OF PILLS in C is laid
 EVERY FRAME from the hand as that frame's pose draws it (`f2PillsIn`, after `f2Hands`, on the right arm so its sway
-carries it): its lower end 1.5 cm into the pinch (the middle of the thumb's tip, `thumb03R`, and the first finger's middle
-joint, `f_index02R`), its length leaning up and toward his eye so that at his knuckles' height (`f_index01R`,
-`f_middle01R`) it stands 3 cm nearer him than they do, its tablets turned to him. Held at the palm it lay under the hand
-(run 7); stood straight up out of the pinch, placed once from a pose laid whole and read, it went up behind his knuckles:
-half of it under the fist on a phone (run 9) and a sliver on a desktop (d7, 5.3).
+carries it): held by its top end, 1.5 cm into the pinch (the middle of the thumb's tip, `thumb03R`, and the first
+finger's middle joint, `f_index02R`), a centimetre nearer his eye so the thumb lies over it, the rest hanging below his
+fist with its tablets to him and its foot swung 0.2 rad to his left, clear of his forearm. From his eye the back of his
+hand covers everything above the pinch: held at the palm the strip lay under the hand (run 7); stood up out of the pinch
+it went up behind the back of his hand (run 9, d7's desktop at 5.3 s); leaned toward his eye from the pinch it still
+showed one tablet (run p11's phone at 5.1 and 5.4 s).
 His legs in the circle are framed out, not drawn: the game has no take of his body sitting cross-legged, and a take
 retargeted from another body is a new motion that must pass the body rules before it is shown.
 
