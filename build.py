@@ -919,13 +919,17 @@ ASSETS = {
     # e5c1 (people): people
     'p51grace':     ('assets/p51grace.glb', True, False),     # Grace, the near body (40,759 triangles, Meshy's own remesh at 40,000 on her 66-joint rig, every finger), with every take she wears: Idle_3, Walking, Listening_Gesture (Mala's), wsit, rise (Amma's), palmover, Sitting_Answering_Questions (the seated hermit's), gsofa, gcry (written for her); 1.60 m, feet at 0, facing +z (people/RECORD.md)
     'p51graceh':    ('assets/p51graceh.glb', True, False),     # Grace, her full body (every triangle the generator made), drawn within 2.2 m and in the films' close shots; no takes of its own: bound at run time to p51grace's bones by name (v26.5)
-    'p51marcus':    ('assets/p51marcus.glb', True, False),     # Marcus, the near body (41,415 triangles) on his MENDED rig (26 joints, no finger bones: each hand one rigid piece; people/rigmend-marcus.json), with Idle_3, Listening_Gesture, Stand_and_Chat, Talk_with_Hands_Open, kneelhold, Chair_Sit_Idle_M, Sitting_Answering_Questions, Walking, mknock; 1.72 m, feet at 0, facing +z
-    'p51marcush':   ('assets/p51marcush.glb', True, False),     # Marcus, his full body (every triangle), within 2.2 m and in close shots; bound at run time to p51marcus's bones by name
+    'p51marcus':    ('assets/p51marcus.glb', True, False),     # Marcus, the near body, SECOND THROW (R5/R6: made again at Meshy; 41,358 triangles, Meshy's own remesh at 40,000 on his 72-joint rig with every finger: six stray forearm bones hold no points), with Idle_3, Listening_Gesture, Stand_and_Chat, Talk_with_Hands_Open, kneelhold, Chair_Sit_Idle_M, Sitting_Answering_Questions, Walking, mknock; 1.72 m, feet at 0, facing +z (people/RECORD.md §8)
+    'p51marcush':   ('assets/p51marcush.glb', True, False),     # Marcus, his full body, SECOND THROW (313,548 triangles, every triangle), within 2.2 m and in close shots; bound at run time to p51marcus's bones by name (people/RECORD.md §8)
     # e5c1 (props): things
-    'w51keepsake':  ('assets/w51keepsake.glb', True, False),     # the keepsake: a palm-sized packet of faded cloth tied with reddish cord (in Grace's bag; on the white plate)
+    'w51keepsake':  ('assets/w51keepsake.glb', True, False),     # the keepsake: a palm-sized packet of faded pale cream cloth tied with a reddish cord (in Grace's bag; on the white plate). Mended at no credits: the cloth repainted cream, the cord kept, split by its geometry (mend/keep-*.py)
     'w51bag':       ('assets/w51bag.glb', True, False),     # Grace's taupe leather shoulder bag, its zip open
-    'w51bottle':    ('assets/w51bottle.glb', True, False),     # the small corked bottle of the water he held (Pho's gift; his altar)
+    'w51bottle':    ('assets/w51bottle.glb', True, False),     # the small corked bottle of the water he held (Pho's gift; his altar). Mended at no credits: its body drawn as clear glass (an alpha-blended material of its own, mend/glass.mjs), the print painted out, the cork untouched
     'w51threadreel':('assets/w51threadreel.glb', True, False),     # the spool of white thread: chapter 5's w5threadreel with its loose end laid along the ground (mend/threadmend.mjs, no credits; the old file untouched)
+    'w51lighter':   ('assets/w51lighter.glb', True, False),     # a plain red disposable lighter, 8.1 cm (the ritual set: one Meshy job cut apart by connected components, its own piece)
+    'w51jug':       ('assets/w51jug.glb', True, False),     # a clear glass water jug with a handle, 20 cm tall (the ritual set's piece; drawn as clear glass: its own material named glass, alpha-blended; the game draws glass with depthWrite off). ORDER 1 of the room, pressed
+    'w51plate':     ('assets/w51plate.glb', True, False),     # a small round white porcelain plate, 16 cm across (the ritual set's piece; Meshy's oval levelled and made round at no credits, mend/plate.mjs). The keepsake is laid on it
+    'w51glass':     ('assets/w51glass.glb', True, False),     # a plain drinking glass, 9.5 cm (the ritual set's piece, its outer shell; drawn as clear glass, material named glass, depthWrite off in the game). FAULT: torn inner sheets show through as grey patches (RECORD.md)
     # <<< e5c1 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -1101,6 +1105,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            # <<< e4c5 keys <<<
            # >>> e5c1 keys (masters/v29.0/keys.py) >>>
            'p51grace', 'p51graceh', 'p51marcus', 'p51marcush', 'w51keepsake', 'w51bag', 'w51bottle', 'w51threadreel',
+           'w51lighter', 'w51jug', 'w51plate', 'w51glass',
            # <<< e5c1 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
