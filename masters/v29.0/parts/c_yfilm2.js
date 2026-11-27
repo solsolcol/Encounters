@@ -1018,16 +1018,20 @@
            city; one turns like a head and lunges: a band of red light round his wrist, the pressure doubled, the picture
            crushed to a slit and the lens narrowing (64 to 48 / 56 to 42), pulled half a step; he tears himself back inside,
            the door slides shut in the wind; on his knees, he calls */
-        const out = [bl.x - 0.1, 1.5, LIV.z1 + 40], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
+        /* (his look out over the city 6 m out, not 40: the keys' curve through so far a point threw the look between the door and
+           the doorway back under his eye and up again, 80 degrees down and round in half a second, measured as a move) */
+        const out = [bl.x - 0.1, 1.5, LIV.z1 + 6], knees = [bl.x - 0.1, F2EYE.knees, bl.z - 0.15];
         /* (his sight opened, his eyes go down to his feet: the threads end there, come in over his floor from his glass) */
-        K.push({ t: E.vis, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.25, 0.0, tb.z + 0.15], fp: 64, fd: 56, n: 'D:look' });
+        /* (down by the moment his sight opens, so there is a second to look up along them to his glass: down at it, the look rose
+           40 degrees in 0.4 s, measured as a move) */
+        K.push({ t: E.vis - 0.55, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.25, 0.0, tb.z + 0.15], fp: 64, fd: 56, n: 'D:look' });
         K.push({ t: E.walk, e: [tb.x, EYE - 0.02, tb.z], a: [tb.x - 0.6, 0.35, tb.z + 1.6], fp: 64, fd: 56, n: 'D:turn' });
         /* (a step back from the glass, its sliding leaf's edge and handle before him as he draws it aside: from half a metre,
            looking down through it, the picture was the floor and his hand, the door never in it, photographed) */
         K.push({ t: E.door, e: [bl.x - 0.2, EYE - 0.02, LIV.z1 - 0.95], a: [bl.x + 0.2, 1.0, LIV.z1], fp: 64, fd: 56, n: 'D:door', stop: true });
         K.push({ t: E.slide + 1.2, e: [bl.x - 0.06, EYE - 0.02, LIV.z1 - 0.45], a: [bl.x - 0.1, 0.9, LIV.z1 + 3], fp: 64, fd: 56, n: 'D:open' });
         K.push({ t: E.step + 0.9, e: [bl.x - 0.08, EYE - 0.02, LIV.z1 - 0.12], a: out, fp: 64, fd: 56, n: 'D:doorway' });
-        K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 1.2, 1.0, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
+        K.push({ t: E.turn, e: [bl.x - 0.08, EYE - 0.03, LIV.z1 - 0.12], a: [out[0] + 0.18, 1.5, out[2]], fp: 64, fd: 56, n: 'D:along', stop: true });
         K.push({ t: E.lunge, e: [bl.x - 0.08, EYE - 0.04, LIV.z1 - 0.12], a: [bl.x + 0.4, 1.1, LIV.z1 + 2.0], fp: 62, fd: 54, n: 'D:turns' });
         K.push({ t: E.wrap + 0.45, e: [bl.x - 0.05, EYE - 0.08, LIV.z1 - 0.04], a: [bl.x + 0.5, 0.95, LIV.z1 + 1.6], fp: 48, fd: 42, n: 'D:pulled' });
         K.push({ t: E.tear - 0.1, e: [bl.x - 0.05, EYE - 0.1, LIV.z1 - 0.05], a: [bl.x + 0.45, 0.9, LIV.z1 + 1.8], fp: 48, fd: 42, n: 'D:held', stop: true });
